@@ -1,0 +1,4 @@
+# Copyright 2015 Google Inc. All Rights Reserved.
+handlers:
+- url: /_ah/stats.*
+  script: google.appengine.ext.appstats.ui.app

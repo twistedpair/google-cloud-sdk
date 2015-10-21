@@ -1,0 +1,5 @@
+# Copyright 2015 Google Inc. All Rights Reserved.
+handlers:
+- url: /_ah/queue/deferred
+  script: $PYTHON_LIB/google/appengine/ext/deferred/handler.py
+  login: admin

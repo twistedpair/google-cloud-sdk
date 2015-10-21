@@ -1,0 +1,917 @@
+# Google Cloud SDK - Release Notes
+
+Copyright 2014-2015 Google Inc. All rights reserved.
+
+## 0.9.83 (2015/10/21)
+
+### App Engine
+
+* In a future release, the `gcloud preview app deploy` command will no longer
+  support deploying multiple modules in the same invocation.
+
+### Compute
+
+* Ubuntu 14.10 is end of life: https://wiki.ubuntu.com/Releases
+
+* Fixed external issue
+  [#291](https://code.google.com/p/google-cloud-sdk/issues/detail?id=291),
+  related to handling network addresses on Windows.
+
+### Container Engine
+
+* `gcloud container clusters list` now displays the current number of nodes
+  for the cluster.
+
+### Windows support
+
+* When running Cloud SDK tools from PowerShell the `gcloud-ps.ps1` wrapper
+  scripts now can be used which no longer call to `cmd.exe`. Using `gcloud-ps`,
+  complex arguments can be passed without escaping for Windows command line.
+  Using `gcloud`, the following command would be correctly escaped when running
+  gcloud in PowerShell:
+
+    gcloud fun --arg='"test ^< 123"'
+
+  With the new `gcloud-ps`, the same command can be simply written as:
+
+    gcloud-ps fun --arg='test < 123'
+
+  Permissions to run PowerShell scripts must be given to PowerShell before these
+  will work. Permissions can be changed with
+  `"Set-ExecutionPolicy RemoteSigned"`.
+
+## 0.9.82 (2015/10/14)
+
+### App Engine
+
+*   The App Engine Admin API is now the default path for deployments in the
+    `gcloud preview app deploy` command. This transition should be transparent,
+    but if you experience any issues and would like to revert to the old
+    behavior, please run `gcloud config set app/use_appengine_api false`.
+
+    See <https://cloud.google.com/appengine/docs/admin-api/> for more
+    information about this API.
+
+*   With `env: 2`, valid python runtimes are `python` and `python-compat`.
+
+*   Implemented fingerprinting support for python.
+
+### Container Engine
+
+*   `gcloud container clusters create`: The flag `--container-ipv4-cidr` has
+    been deprecated; `--cluster-ipv4-cidr` should be used instead.
+
+### SQL
+
+*   `gcloud beta sql operations describe` and `gcloud beta sql operations wait`
+    no longer need `--instance` flag (`gcloud beta sql operations list` still
+    does).
+
+*   Fixed issue with `gcloud sql instances clone` when `--bin-log-file-name` and
+    `--bin-log-position` are set.
+    (<https://code.google.com/p/google-cloud-sdk/issues/detail?id=201>).
+
+## 0.9.81 (2015/10/07)
+
+### Breaking Changes
+
+*   If you are using a service account to run commands under
+    `gcloud preview app`, you must enable the "App Engine Admin API" in the
+    Developers Console (<https://console.developers.google.com>; navigate to
+    **APIs and Auth > APIs**).
+
+*   In a future Cloud SDK release, deployments that promote the new version to
+    receive all traffic will stop the previous version by default.
+
+    To keep the current behavior, pass the `--no-stop-previous-version`
+    flag, or run the following command:
+
+       $ gcloud config set app/stop_previous_version false
+
+*   Removed `app get-resource-limits` command.
+
+### App Engine
+
+*   GAE components updated to 1.9.27. Please see the following release notes for details:
+    *   Python: <https://cloud.google.com/appengine/docs/python/release-notes>
+    *   Java: <https://cloud.google.com/appengine/docs/java/release-notes>
+*   The `gcloud preview app deploy` command now requires that users specify or omit the runtime: field from app.yaml if a Dockerfile is also specified.
+*   The `gcloud preview app deploy` command now supports the "engines" field in package.json for node.js applications.
+
+### Misc. Changes
+
+*   Windows Installer has an option to run `gcloud init` after the installation
+  finishes.
+
+## 0.9.80 (2015/09/30)
+
+*   `gcloud app`
+    *   Soon, deployments will set the deployed version to receive all traffic by
+        default.  To keep the current behavior, use the `--no-promote` flag or
+        run the following command:
+
+            $ gcloud config set app/promote_by_default false
+
+        To adopt the new behavior early, use the `--promote` flag or run the
+        following command:
+
+            $ gcloud config set app/promote_by_default true
+
+    *   The `--set-default` flag is deprecated. Please use the `--promote` flag
+        instead.
+    *   In a future Cloud SDK release, deployments that promote the new version
+        to receive all traffic will stop the previous version by default.  To
+        keep the current behavior, pass the `--no-stop-previous-version` flag, or
+        run the following command:
+
+            $ gcloud config set app/stop_previous_version true
+
+    *   The `app run` command is deprecated and will soon be removed.  Please use
+        dev_appserver (found in the same directory as the `gcloud command)
+        instead.
+    *   The `gcloud preview app modules download command` is deprecated, and
+        will be removed soon.
+
+*   The Windows installer has an option to run `gcloud init` after the
+    installation finishes.
+*   The `preview` component has been removed.
+    *   The `gcloud preview app` commands remain available as usual and
+        are still shipped through the `app` component.
+    *   Please use `gcloud compute instance-groups unmanaged` instead
+        of `gcloud preview instance-groups`.  Note that you will need to
+        modify some command invocations when switching to the non-preview
+        commands.
+    *   Please use `gcloud compute instance-groups managed` instead of
+        `gcloud preview managed-instance-groups`.  Note that you will need to
+        modify some command invocations when switching to the non-preview
+        commands.
+*   All Google Compute User Accounts commands have moved to beta.
+*   Deployment-manager list commands now support pagination.
+*   Minor bug fixes.
+
+## 0.9.79 (2015/09/23)
+
+*   The following commands have been promoted from beta to GA:
+    *   gcloud config configurations ...
+    *   gcloud source repos clone
+    *   gcloud beta init. Old `gcloud init` behavior has been removed, and
+        partially replaced by new gcloud init or directly via gcloud source
+        repos clone.
+*   Release gcloud beta dataproc.
+*   The --env-vars flag in gcloud preview app deploy has been removed.
+*   Automatic ssh key generation respects the --quiet flag.
+*   The --format flag now supports extended format expressions. For details run
+    $ gcloud topic formats.
+*   Most commands now document the positive Boolean --FLAG form and accept
+    --no-FLAG to disable. For the past few releases --log-http accepted an
+    optional true/false value. It has been restored to its original definition
+    of being a Boolean flag that has no value.
+*   `gcloud sql` operations are now automatically retried for 2s in case of
+    HttpException: The Cloud SQL instance operation does not exist.
+*   Update gcloud's kubectl from 1.0.5 to 1.0.6.
+*   Deprecate `gcloud preview app get-resource-limits`.
+
+## 0.9.78 (2015/09/16)
+
+*   GAE components updated to 1.9.26. Please visit
+    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for details.
+*   Increase the default boot disk size for remote build VMs in
+    `gcloud preview app deploy`.
+*   The `--instance` flag to the `gcloud preview app modules set-managed-by`
+    command now takes an instance name instead of an index.
+*   The V1Beta4 API for sqladmin can now be accessed through the
+    `gcloud beta sql` surface.
+*   Usability enhancements for `gcloud beta init` and named configurations.
+
+## 0.9.77 (2015/09/09)
+
+*   gcloud preview logging is now gcloud beta logging.
+*   Update kubectl to version 1.0.5
+*   Windows Cloud SDK installer improvements:
+    *   Now allows changing the installation mode. You can choose between a
+        "current user" installation and an "all users" installation.
+    *   Now has an uninstaller and writes "Add/Remove Programs" uninstall
+        entries.
+*   Removal of unsupported --env-vars argument from gcloud preview app deploy.
+*   gcloud compute instance groups: Allow --named-ports flag to be empty and
+    clean named ports in set-named-ports commands.
+*   Change in gcloud compute backend-services: introduce new flag
+    --instance-group which takes advantage of new Instance Groups API.
+
+## 0.9.76 (2015/09/02)
+
+*   Update gsutil component to 4.14.
+*   Resource views commands have moved from preview to alpha. Please use `gcloud
+    alpha compute resource-views` in place of `gcloud preview resource-views`.
+*   Replica pool commands have moved from preview to alpha. Please use `gcloud
+    alpha compute replica-pools` in place of `gcloud preview replica-pools`.
+*   `gcloud beta source repo` was renamed to `gcloud beta source repos`
+*   Created google-cloud-sdk-announce@googlegroups.com
+    <https://groups.google.com/d/forum/google-cloud-sdk-announce> email group to
+    announce new releases and other important information.
+*   'gcloud alpha init' command is now also in beta.
+*   Add target size of managed instance group for "compute instance-groups
+    managed list" command.
+*   Fixed the removal of platform-specific components when running `gcloud
+    components remove`.
+*   Fixed a bug related to checking for SDK updates when the SDK is installed as
+    root (like on Debian GCE images).
+    *   Affected users should now see less frequent update messages and overall
+        improved gcloud performance
+*   `gcloud preview app deploy` won't update local images automatically anymore.
+
+## 0.9.75 (2015/08/26)
+
+*   Container Engine
+    *   Container Engine GA commands available under `gcloud container`.
+    *   `gcloud beta container get-credentials` now takes cluster name as argument
+        instead of `--cluster` flag for consistency with other commands.
+    *   Added `gcloud alpha container clusters update <cluster>
+        --cloud-monitoring=<val>` command.
+*   New release notes are printed on upgrade. (This won't take effect until
+    an upgrade from this version to a later version.)
+*   New `gcloud alpha genomics variantsets export` command.
+*   Commands promoted from `gcloud alpha` to `gcloud beta`:
+    *    `gcloud beta config configurations ...`
+    *    `gcloud beta sources clone`
+*   Improvements in error reporting and default output formatting.
+
+
+## 0.9.74 (2015/08/19)
+
+*   New list and import commands under `gcloud alpha genomics variants`.
+*   Removed `--remote` flag. Instead, please use the `--docker-build=remote`
+    flag (or use `--docker-build=local` to force a local build).
+*   In this release, Docker builds are hosted by default. To opt-in to the old
+    behavior, please use the `--docker-build=local` flag.
+
+
+## 0.9.73 (2015/08/12)
+
+*   gcloud sql instances create default to MySQL 5.6
+*   gcloud beta container get-credentials renamed to gcloud beta container
+    clusters get-credentials
+*   New commands
+    *   gcloud beta projects ...
+    *   gcloud alpha genomics callsets ...
+    *   gcloud beta emulators datastore ...
+    *   gcloud beta container get-server-config
+    *   gcloud alpha config configurations
+
+
+## 0.9.72 (2015/08/05)
+
+*   gcloud compute
+    *   initial surface changes for the backend-bucket.
+    *   `instance-groups set-named-ports`: introduced a new flag
+        `--named-ports NAME:PORT,[NAME:PORT,...]` - no need to specify names
+        and ports in separate flags.
+*   gcloud preview app deploy
+    Deprecate `--remote` flag in preparation for hosted Docker builds by
+    default. Instead, please use the `--docker-build={remote,local}` flag.
+    The default is still a local Docker build; in two releases, the default
+    will switch to a hosted build.
+*   New gcloud alpha genomics operations {list, cancel, describe} commands
+
+
+## 0.9.71 (2015/07/29)
+
+*   Launching `gcloud alpha pubsub` commands.
+*   Moved `gcloud preview rolling-updates` to `gcloud alpha compute
+    rolling-updates`.
+*   `gcloud alpha compute disks resize` command enabling resizing of persistent
+    disks.
+*   Beta launch of customer supplied encryption keys for GCE.
+*   Updated kubectl to 1.0.1.
+*   `gcloud alpha container` commands now target GKE v1 API. Options for `gcloud
+    alpha container clusters create` updated accordingly:
+    *   `--user` renamed to `--username`
+    *   `--cluster-api-version` removed. Cluster version is not selectable in v1
+        API; new clusters always created at latest supported version.
+    *   `--image` option removed. Source image not selectable in v1 API;
+        clusters are always created with latest supported ContainerVM image.
+        Note that using an unsupported image (i.e. not ContainerVM) would
+        result in an unusable cluster in most cases anyway.
+    *   Added `--no-enable-cloud-monitoring` to turn off cloud monitoring
+        (on by default).
+    *   Added `--disk-size` option for specifying boot disk size of node vms.
+*   GAE components updated to 1.9.24. Please visit
+    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for details.
+
+    For several months on the Managed VMs team we've been testing a new mode of
+    `dockerless` local development on gcloud that makes developing a module for
+    Python, Java and Go users similar to development of regular App Engine
+    applications. This new mode relaxes the sandbox constraints present in the
+    devappserver for `vm: false` applications, and does not require Docker to be
+    installed.
+
+    You can currently opt-into this behavior by setting GAE_LOCAL_VM_RUNTIME=1;
+    In this release of the Cloud SDK, we will be making this behavior the
+    default for Managed VM users who are using gcloud.
+
+    You can still opt-out of this behavior by setting: GAE_LOCAL_VM_RUNTIME=0.
+
+    For custom runtime users, if you are relying on the local Development Server
+    to build your application, will now need to pass the `--custom-entrypoint`
+    flag to `gcloud preview app run` to provide gcloud with the correct
+    command to call.
+
+    This does not affect users developing for non-managed VMs, or for users who
+    are not using gcloud."
+*   Bug fixes for:
+    *   `gcloud preview app deploy` file paths issue on Windows.
+    *   `gcloud compute instance-groups managed wait-until-stable` periodic user
+        prompting for target zone.
+
+
+## 0.9.70 (2015/07/22)
+
+*   Add `gcloud compute instance-groups` commands.
+*   Move `gcloud beta deployment-manager` commands to general availability as
+    `gcloud deployment-manager` and update to use the v2beta3 API. This change
+    does not alter the gcloud surface for users of the deployment-manager
+    component.
+*   Update kubectl to 1.0.0.
+*   `gcloud alpha genomics` commands now use the genomics V1 API. The
+    --project-number flag for `dataset create` and `dataset list` is now
+    obsolete. The configured --project-id is used instead and can be overridden
+    with the --project-id flag.
+*   Fix hang on errors in `gcloud preview app deploy`.
+
+## 0.9.69 (2015/07/15)
+
+*   Update kubectl to 0.20.2.
+*   Fix an authentication issue with 'gcloud docker' affecting docker version
+    1.7.0 and later.
+*   Remove `gcloud preview dm-v2` command group.
+*   Remove `gcloud preview deployment-manager` command group
+    (`gcloud beta deployment-manager` still exists; see
+    <https://cloud.google.com/sdk/#install-version> if you want to pin your
+    installation to an old version).
+*   Bug fixes.
+
+## 0.9.68 (2015/07/08)
+
+*   Deprecated gcutil tool is no longer distributed with Cloud SDK.
+    It is still available via <https://cloud.google.com/compute/docs/gcutil>.
+*   Added support for Container engine BETA commands under the
+    `gcloud beta container` command group.  Existing `gcloud alpha container`
+    commands are unchanged.
+*   The standalone App Engine SDKs are no longer distributed through the Cloud
+    SDK.
+    *    App Engine functionality can still be used through the
+        `gcloud preview app` command group.
+    *    The gae-java, gae-python, gae-php, and gae-go components no longer
+         exist in the component manager.
+    *    If you need to use appcfg or dev_appserver directly, these are still
+         available in the App Engine SDK downloads that can be found here:
+         <https://cloud.google.com/appengine/downloads>
+*   Bug fixes.
+
+## 0.9.67 (2015/07/01)
+
+*   GAE components updated to 1.9.23. Please visit
+    <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes> for details.
+*   Added the "gen-config" command to app surface to generate configuration
+    files for node.js apps.
+*   New `compute instance-groups unmanaged` commands group for Instance Groups
+    which are not managed by Instance Group Manager
+*   Moved `gcloud beta sql instances connect` to `gcloud beta sql connect`.
+*   Smarter polling while waiting for SQL operations to finish, reducing the
+    number of requests sent to the server.
+*   Linux/Mac install script disables prompts if there is no controlling tty.
+*   Linux/Mac install script now properly detects zsh and ksh RC files.
+*   Bug fixes.
+
+## 0.9.66 (2015/06/24)
+
+
+*   New commands
+    *   `gcloud alpha compute instances set-machine-type` for managing types
+    *   `gcloud topic` for supplementary help topics.
+*   `gcloud deployment-manager deployments delete` prompt defaults to false.
+
+## 0.9.65 (2015/06/17)
+
+*   Fixes `reset-windows-password` on Windows if `openssl` is present on the path.
+*   `gcloud compute reset-windows-password` is now available as a GA command.
+*   Prevent creation of a user that matches the machine name on Windows.
+*   gsutil now runs properly from not-default drive letters on Windows.
+*   kubectl updated to 0.18.1.
+*   `gcloud preview docker` moved to `gcloud docker`.
+
+## 0.9.64 (2015/06/10)
+
+*   New commands
+    *   `gcloud beta compute scp` for secure copy.
+    *   `gcloud alpha genomics` commands (on datasets).
+    *   `gcloud alpha source list` to lists project repositories.
+*   kubectl will no longer be installed by default.
+*   Bug fixes for https load balancing.
+*   The help pager is $PAGER or less(1) if available, otherwise a builtin pager.
+*   Update of gsutil component to version 4.13.
+
+## 0.9.63 (2015/06/03)
+
+*   2x faster command load times.
+*   Fix to allow `preview app` to use oauth service accounts
+    <https://code.google.com/p/google-cloud-sdk/issues/detail?id=133>
+
+## 0.9.62 (2015/05/27)
+
+*   Not released.
+
+## 0.9.61 (2015/05/20)
+
+*   New kubectl component (installed by default)
+*   Internal improvements to gcloud preview app deploy; includes changes to
+    command output.
+*   `gcloud preview projects` moved to `gcloud alpha projects`
+*   Tab completion for `gcloud compute ssh`
+
+## 0.9.60 (2015/05/13)
+
+*   VPN moved to GA.
+*   Preemptible VM support.
+*   Bug fixes.
+
+## 0.9.59 (2015/05/06)
+
+*   Bug fixes.
+
+## 0.9.58 (2015/04/29)
+
+*   gcloud alpha bigquery launch.
+*   Better error reporting in Customer Supplied Encryption Key files.
+*   Bug fixes.
+
+## 0.9.57 (2015/04/22)
+
+*   gcloud beta deployment-manager launch.
+*   gcloud app new deployment behavior.
+    *   deploy and run commands no longer take directories, only take a list of
+        explicit yaml files.
+*   gcloud beta compute reset-windows-password, support for new authentication
+    scheme on Windows guest agent versions 3.0.0.0 and later.
+*   Bug fixes.
+
+## 0.9.56 (2015/04/15)
+
+*   Bug fixes.
+
+## 0.9.55 (2015/04/8)
+
+*   New and improved gcloud dns surface including:
+    *   Transactions for scriptable editing of record-sets.
+    *   Importing record-sets from zone files and yaml files.
+    *   Exporting record-sets to zone files and yaml files.
+*   VPN commands surfaced under gcloud compute.
+*   Dataflow CLI commands launched under gcloud alpha!
+
+## 0.9.52 (2015/03/18)
+
+*   Bug Fixes.
+
+## 0.9.51 (2015/03/11)
+
+*   Bug Fixes.
+
+## 0.9.50 (2015/03/04)
+
+*   Introducing the `gcloud beta ...` command group
+    *   Existing gcloud commands will be replicated under this new group, but use
+        the beta version of their API instead of the GA version.
+    *   New command behavior and features that are beta only will first appear
+        under this group until the feature gets promoted to general availability.
+    *   Run `gcloud components update beta` to access the new commands, or it will
+        be automatically installed for you on first run attempt.
+*   `gcloud beta compute ...` is now available, using the compute 'beta' API.
+    Cloud VPN.  See <https://cloud.google.com/compute/docs/vpn>
+    for details.
+*   Release of `gcloud compute instances move` and `gcloud compute disks move`.
+
+## 0.9.49 (2015/02/25)
+
+*   The Google Container Registry is now used by default for deployment of
+    Managed VM applications. See here for more information:
+    <https://cloud.google.com/tools/container-registry/>
+*   We've increased the speed of the "image push" phase of Managed VM
+    deployments.
+*   The heavy lifting of retrieving the Go toolchain has been moved into the
+    base Go Docker image which dramatically reduces the bandwidth consumed
+    locally when running and deploying your images. You must delete your
+    Dockerfile to pick up the changes.
+*   We've fixed several bugs related to port forwarding in the local
+    devappserver.
+
+## 0.9.48 (2015/02/18)
+
+*   A bug fix for running setup-managed-vms multiple times when using the Google
+    Container Registry
+
+## 0.9.47 (2015/02/11)
+
+*   Bug fixes that allow tab completion to work for components in preview.
+*   GCloud now auto installs components based on command execution.
+
+## 0.9.46 (2015/02/04)
+
+*   We've made significant improvements to the stability and speed of deploying
+    Managed VMs by leveraging the new Google Container Registry. See this post
+    for details on how to try it out today:
+    <https://groups.google.com/forum/#!topic/google-appengine/c543NHZGhKM>
+
+## 0.9.45 (2015/01/28)
+
+*   Several bug fixes in the Dockerfile generated for the 'go' runtime. Delete
+    the Dockerfile in your application directory and the Cloud SDK will copy the
+    updated Dockerfile on your next deployment.
+*   Several bug fixes related to flakiness in the setup-managed-vms command.
+
+## 0.9.44 (2015/01/21)
+
+*   Fixes applied to the google/appengine-gobase image for managed VMs.
+*   Tab completion for gcloud SQL commands.
+
+## 0.9.43 (2015/01/14)
+
+*   Support added for authenticating service accounts with JSON keys. If using
+    JSON keys, PyOpenSSL is no longer a dependency. Refer to help docs here:
+    <https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account>.
+
+## 0.9.42 (2015/01/08)
+
+*   Suport for local ssds in instance templates for gcloud compute.
+
+## 0.9.41 (2014/12/17)
+
+*   Progress Bars.
+*   Compute Instances start/ stop commands.
+
+## 0.9.40 (2014/12/09)
+
+*   Bug Fixes.
+
+## 0.9.39 (2014/12/03)
+
+*   Bug Fixes.
+
+## 0.9.37 (2014/11/19)
+
+*   Added support for local SSD.
+
+## 0.9.36 (2014/11/12)
+
+*   Bug Fixes.
+
+## 0.9.35 (2014/11/04)
+
+*   Added support for Google Container Engine. It is available under the
+    'gcloud preview container' command group.
+
+## 0.9.34 (2014/10/14)
+
+*   Added support for Google Compute Engine Instance Templates in
+    compute component.
+*   Launch of instance-groups and managed-instance-groups in
+    preview component.
+
+## 0.9.33 (2014/09/30)
+
+*   Overhaul of 'gcloud sql'
+    *   Updated the output for all commands.
+    *   Updated usage for 'gcloud sql ssl-certs create'.
+
+## 0.9.32 (2014/09/16)
+
+*   Bug Fixes.
+
+## 0.9.31 (2014/09/02)
+
+*   Added support for creating and maintaining Cloud SQL read replica instances.
+    *   Added --master-instance-name property that can be set during replica
+        creation to indicate the replication master for the read replica instance.
+    *   Added --enable-database-replication, --no-enable-database-replication
+        flags that can be used to start, stop replication for the read replica
+        instance.
+    *   Added 'promote-replica' command that promotes a read replica instance into
+        a stand-alone Cloud SQL instance.
+*   Added several new features to the compute component:
+    *   Implemented new subcommands for interacting with HTTP load balancing:
+        *   gcloud compute backend-services update
+        *   gcloud compute url-maps add-host-rule
+        *   gcloud compute url-maps add-path-matcher
+        *   gcloud compute url-maps remove-host-rule
+        *   gcloud compute url-maps remove-path-matcher
+        *   gcloud compute url-maps set-default-service
+    *   Added support for automatically generating initial Windows username and
+        password when creating a virtual machine instance from a Windows
+        image or a disk initializaed from a Windows image.
+    *   Added a new scope alias for Cloud SQL administration: 'sql-admin'.
+
+## 0.9.30 (2014/08/19)
+
+*   Bug Fixes.
+
+## 0.9.29 (2014/08/11)
+
+*   The compute component is now in General Availability.
+    *   Added new 'compute/zone' and 'compute/region' properties that
+        can be used to set a default zone and region. To set the
+        properties, run 'gcloud config set compute/zone ZONE' and 'gcloud
+        config set compute/region REGION'.
+    *   Added support for overriding disk auto-deletion during instance
+        deletion.
+    *   Updated the output of commands that mutate resources to be more
+        human-friendly. The --format flag can be used for more verbose
+        output.
+    *   Replaced all 'get' subcommands with 'describe' subcommands (e.g.,
+        'gcloud compute instances get' has been replaced with 'gcloud
+        compute instances describe').
+    *   Renamed the 'firewalls' collection to 'firewall-rules'.
+    *   Added support to the 'addresses' collection for interacting with
+        global addresses.
+
+## 0.9.28 (2014/07/18)
+
+*   Updated gcutil to 1.16.3 and various AppEngine runtimes to 1.9.7 binaries.
+*   Support running several modules by gcloud app run and fixed output errors.
+*   Limit gcloud upgrade nags to once per day.
+*   Bring help files up to date (for example improved the documentation for DM 'templates create' and 'deployments create').
+*   Added prompting for regions and zones to most subcommands of the compute component.
+*   Added new subcommands to the compute component for adding and removing backends from backend services.
+*   Added --ssh-flags to 'gcloud compute ssh' for passing additional flags to ssh.
+*   Added image alias support for the --image flag in the compute component.
+
+
+## 0.9.27 (2014/06/18)
+
+*   Added --shell mode to all gcloud commands
+    *   Type a partial command followed by '--shell' to drop into a sub shell at that
+        point in the command tree.
+    *   Eg:
+        $ gcloud compute --shell
+        gcloud compute $ instances list
+        gcloud compute $ copy-files ...
+*   Updated gsutil to 4.3
+*   Allow installed crcmod to be used by default with gsutil by enabling site packages
+
+
+## 0.9.26 (2014/06/04)
+
+*   Windows support for SSH and SCP to Compute VMs
+    *   The following will now work natively on Windows without the need for cygwin:
+        *   gcloud compute ssh
+        *   gcloud compute copy-files
+        *   gcutil ssh
+        *   gcutil push
+        *   gcutil pull
+*   Support for Java apps in 'gcloud preview app run'
+*   Updated gsutil to 4.1
+*   Updated gcutil to 1.16.0
+*   Updated all App Engine tools to 1.9.6
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+
+
+## 0.9.25 (2014/05/21)
+
+*   'gcloud preview app deploy' and '... run' argument updates.
+*   'gcloud config *' argument updates.
+*   Updated all App Engine tools to 1.9.5
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+
+
+## 0.9.24 (2014/05/07)
+
+*   gcloud now has App Engine and Cloud Datastore integration.
+    *   Commands can be found under `gcloud preview app` and `gcloud preview datastore`
+
+
+## 0.9.23 (2014/05/01)
+
+*   New `gcloud compute` tool for working with compute engine (RC)
+    *   Run `gcloud components update compute` to install
+    *   Run `gcloud help compute` for more information
+*   Updated all App Engine tools to 1.9.4
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Added color to error and warning messages (on Linux and Mac)
+    *   To disable, run `gcloud config set disable_color true`
+
+
+## 0.9.22 (2014/04/23)
+
+*   New 'gcloud help command'
+    *   Displays man style extended help for commands (where available).
+*   New 'gcloud auth activate-service-account' command
+    *   Used to authenticate with gcloud using a service account key file.
+    *   See: <https://developers.google.com/storage/docs/authentication#service_accounts>
+*   Bug fixes and improved error handling.
+
+
+## 0.9.21 (2014/04/09)
+
+*   Minor updates and bug fixes.
+
+
+## 0.9.20 (2014/03/24)
+
+*   Minor updates and bug fixes.
+
+
+## 0.9.19 (2014/03/19)
+
+*   Minor updates and bug fixes.
+
+
+## 0.9.18 (2014/03/05)
+
+*   New 'gcloud init' command
+    *   Crpace for your project with a git clone of your Google
+        hosted repository.
+*   Updated gcutil to 1.14.0
+
+
+## 0.9.17 (2014/02/11)
+
+*   Updated all App Engine tools to 1.9.0
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Cloud SDK now distributed under the Apache v2.0 license.  Please see LICENSE
+    for more information.
+
+
+## 0.9.16 (2014/01/28)
+
+*   Added Python2.6 compatibility.
+*   Added ability to symlink directly to scripts in the bin/ directory.
+*   Fixed bug in default setup of credentials when on a Compute Engine VM.
+
+
+## 0.9.15 (2014/01/15)
+
+*   Updated gsutil to 3.40
+*   Updated all App Engine tools to 1.8.9
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Fixed broken PHP runtimes on Mac and Windows installs when running
+    the dev_appserver.
+*   Adding sh/cmd wrapper scripts for bq, gcutil, and gsutil for better PATH
+    handling on Windows.
+*   Fixed issue with failing `goapp build`
+
+
+## 0.9.14 (2013/12/17)
+
+*   'gcloud sql' now available.
+    *   Find out more: <https://developers.google.com/cloud-sql/docs/cloud-sdk>
+*   Added bash completion for gcloud commands.
+    *   Choose 'yes' at the prompt during installation to add it to your bash
+        profile.
+*   Added 'gcloud version' command.
+*   More flexible support of virtual env installations.
+*   Fix for environments with protobuf installed.
+
+
+## 0.9.13.1 (2013/12/04)
+
+*   Validate queries to metadata server.
+
+
+## 0.9.13 (2013/11/19)
+
+*   Updated all App Engine tools to 1.8.8
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Disabling site packages when running commands, to avoid library conflicts.
+
+
+## 0.9.12 (2013/11/06)
+
+*   Updated all App Engine tools to 1.8.7
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Updated bq to 2.0.17
+*   A few usability improvements in the component manager and install flow.
+
+
+## 0.9.11 (2013/10/28)
+
+*   The Cloud SDK is now distributed using a new component manager.
+    *   Download a small initial zip file, then install the tools you want on
+        demand.
+    *   Updates to tools in the Cloud SDK are performed in-place, incrementally,
+        without the need to re-download the entire SDK.
+    *   The component manager allows you to see when updates are available.
+    *   Run 'gcloud components --help' for more information.
+*   New authentication features:
+    *   The gauth command has been replaced by 'gcloud auth'.  Run
+        'gcloud auth --help' for more information.
+    *   It now supports authenticating multiple users simultaneously.  Use
+        'gcloud config set account <account>' to choose your active account.
+*   For more information, please see:
+    <https://developers.google.com/cloud/sdk/gettingstarted>
+
+
+## 0.9.10 (2013/10/20)
+
+*   Upgraded all App Engine tools to 1.8.6.
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Upgraded bq to 2.0.16.
+*   Upgraded gcutil to 1.9.1.
+*   A few improvements to the gauth web flow.
+
+
+## 0.9.9 (2013/09/26)
+
+*   Upgraded all App Engine tools to 1.8.5.
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Upgraded bq to 2.0.15.
+*   Upgraded gcutil to 1.8.4.
+*   Upgraded gsutil to 3.37.
+
+
+## 0.9.8 (2013/08/27)
+
+*   Upgraded all App Engine tools to 1.8.4.
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Upgraded gcutil to 1.8.3.
+*   Upgraded gsutil to 3.35.
+
+
+## 0.9.7 (2013/08/06)
+
+*   Upgraded all App Engine tools to 1.8.3
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Upgraded gsutil to 3.34
+
+
+## 0.9.6 (2013/07/17)
+
+*   Upgraded all App Engine tools to 1.8.2
+    *   <https://code.google.com/p/googleappengine/wiki/SdkReleaseNotes>
+    *   <https://code.google.com/p/googleappengine/wiki/SdkForJavaReleaseNotes>
+*   Upgraded bq to 2.0.14
+*   Upgraded gcutil to 1.8.2
+*   Upgraded gsutil to 3.33
+
+
+## 0.9.5 (2013/06/18)
+
+*   App Engine Hotfix
+
+
+## 0.9.4 (2013/06/12)
+
+*   archive file name changed to google-cloud-sdk
+*   Upgraded all App Engine tools to 1.8.1
+*   Upgraded gcutil to 1.8.1
+*   Upgraded gsutil to 3.31 (3.30 was never released)
+*   More improvements to gauth experience
+    *   gauth now provides links to the new Cloud Console (for obtaining your
+        project id), as opposed to the API console
+    *   Suppression of spurious error related to the Windows Registry
+
+
+## 0.9.3 (2013/05/24)
+
+*   Upgraded gcutil to 1.8.0
+*   Upgraded gsutil to 3.29
+
+
+## 0.9.2 (2013/05/07)
+
+*   Upgraded all App Engine tools to 1.8.0
+*   Upgraded gsutil to 3.27
+*   Several improvements to gauth experience
+    *   Will not re-run oauth2 flow if you already have valid credentials (you
+        can force re-auth with the --login flag)
+    *   Added --set-project to change your current project without having to
+        re-auth
+    *   Renamed gauth.py to gauth for simplicity
+    *   gauth will warn you if there are older versions of the cloud tools on your
+        path.
+
+
+## 0.9.1 (2013/04/10)
+
+*   Fixed an issue with gauth that occurred when running a command before
+    credentials were created.
+
+
+## 0.9.0 (2013/04/09)
+
+*   Developer preview release of the Cloud SDK
+*   Includes command line tools for:
+    *   App Engine
+    *   BigQuery
+    *   Compute Engine
+    *   Cloud Storage
+    *   Cloud SQL
+*   Includes the new gauth tool for one time common authentication for all tools

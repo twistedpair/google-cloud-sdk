@@ -1,0 +1,165 @@
+# Copyright 2015 Google Inc. All Rights Reserved.
+#!/usr/bin/python2.4
+#
+# Copyright 2008 Google Inc. All Rights Reserved.
+
+"""CronInfo tools.
+
+A library for working with CronInfo records, describing cron entries for an
+application. Supports loading the records from yaml.
+"""
+
+__author__ = 'arb@google.com (Anthony Baxter)'
+
+# WARNING: This file is externally viewable by our users.  All comments from
+# this file will be stripped.  The docstrings will NOT.  Do not put sensitive
+# information in docstrings.  If you must communicate internal information in
+# this source file, please place them in comments only.
+
+import logging
+import sys
+import traceback
+
+try:
+  import pytz
+except ImportError:
+  pytz = None
+
+from googlecloudsdk.appengine.lib.external.googlecron import groc
+from googlecloudsdk.appengine.lib.external.googlecron import groctimespecification
+from googlecloudsdk.appengine.lib.external.api import appinfo
+from googlecloudsdk.appengine.lib.external.api import validation
+from googlecloudsdk.appengine.lib.external.api import yaml_builder
+from googlecloudsdk.appengine.lib.external.api import yaml_listener
+from googlecloudsdk.appengine.lib.external.api import yaml_object
+
+_URL_REGEX = r'^/.*$'
+_TIMEZONE_REGEX = r'^.{0,100}$'
+_DESCRIPTION_REGEX = ur'^.{0,499}$'
+# TODO(user): Figure out what engine-related work needs to happen here.
+SERVER_ID_RE_STRING = r'(?!-)[a-z\d\-]{1,63}'
+# NOTE(user): The length here must remain 100 for backwards compatibility,
+# see b/5485871 for more information.
+SERVER_VERSION_RE_STRING = r'(?!-)[a-z\d\-]{1,100}'
+_VERSION_REGEX = r'^(?:(?:(%s):)?)(%s)$' % (SERVER_ID_RE_STRING,
+                                            SERVER_VERSION_RE_STRING)
+
+
+# This is in groc format - see
+class GrocValidator(validation.Validator):
+  """Checks that a schedule is in valid groc format."""
+
+  def Validate(self, value, key=None):
+    """Validates a schedule."""
+    if value is None:
+      raise validation.MissingAttribute('schedule must be specified')
+    if not isinstance(value, basestring):
+      raise TypeError('schedule must be a string, not \'%r\''%type(value))
+    try:
+      groctimespecification.GrocTimeSpecification(value)
+    except groc.GrocException, e:
+      raise validation.ValidationError('schedule \'%s\' failed to parse: %s'%(
+          value, e.args[0]))
+    return value
+
+
+class TimezoneValidator(validation.Validator):
+  """Checks that a timezone can be correctly parsed and is known."""
+
+  def Validate(self, value, key=None):
+    """Validates a timezone."""
+    if value is None:
+      # optional
+      return
+    if not isinstance(value, basestring):
+      raise TypeError('timezone must be a string, not \'%r\'' % type(value))
+    if pytz is None:
+      # pytz not installed, silently accept anything without validating
+      return value
+    try:
+      pytz.timezone(value)
+    except pytz.UnknownTimeZoneError:
+      raise validation.ValidationError('timezone \'%s\' is unknown' % value)
+    except IOError:
+      # When running under dev_appserver, pytz can't open it's resource files.
+      # I have no idea how to test this.
+      return value
+    except:
+      # The yaml and validation code repeatedly re-raise exceptions that
+      # consume tracebacks.
+      unused_e, v, t = sys.exc_info()
+      logging.warning('pytz raised an unexpected error: %s.\n' % (v) +
+                      'Traceback:\n' + '\n'.join(traceback.format_tb(t)))
+      raise
+    return value
+
+
+CRON = 'cron'
+
+URL = 'url'
+SCHEDULE = 'schedule'
+TIMEZONE = 'timezone'
+DESCRIPTION = 'description'
+TARGET = 'target'
+
+RETRY_PARAMETERS = 'retry_parameters'
+JOB_RETRY_LIMIT = 'job_retry_limit'
+JOB_AGE_LIMIT = 'job_age_limit'
+MIN_BACKOFF_SECONDS = 'min_backoff_seconds'
+MAX_BACKOFF_SECONDS = 'max_backoff_seconds'
+MAX_DOUBLINGS = 'max_doublings'
+
+class MalformedCronfigurationFile(Exception):
+  """Configuration file for Cron is malformed."""
+  pass
+
+
+class RetryParameters(validation.Validated):
+  """Retry parameters for a single cron job."""
+  ATTRIBUTES = {
+      JOB_RETRY_LIMIT: validation.Optional(
+          validation.Range(0, None, range_type=int)),
+      JOB_AGE_LIMIT: validation.Optional(validation.TimeValue()),
+      MIN_BACKOFF_SECONDS: validation.Optional(
+          validation.Range(0.0, None, range_type=float)),
+      MAX_BACKOFF_SECONDS: validation.Optional(
+          validation.Range(0.0, None, range_type=float)),
+      MAX_DOUBLINGS: validation.Optional(
+          validation.Range(0, None, range_type=int)),
+  }
+
+
+class CronEntry(validation.Validated):
+  """A cron entry describes a single cron job."""
+  ATTRIBUTES = {
+      URL: _URL_REGEX,
+      SCHEDULE: GrocValidator(),
+      TIMEZONE: TimezoneValidator(),
+      DESCRIPTION: validation.Optional(_DESCRIPTION_REGEX),
+      RETRY_PARAMETERS: validation.Optional(RetryParameters),
+      TARGET: validation.Optional(_VERSION_REGEX),
+  }
+
+
+class CronInfoExternal(validation.Validated):
+  """CronInfoExternal describes all cron entries for an application."""
+  ATTRIBUTES = {
+      appinfo.APPLICATION: validation.Optional(appinfo.APPLICATION_RE_STRING),
+      CRON: validation.Optional(validation.Repeated(CronEntry))
+  }
+
+
+def LoadSingleCron(cron_info, open_fn=None):
+  """Load a cron.yaml file or string and return a CronInfoExternal object."""
+  builder = yaml_object.ObjectBuilder(CronInfoExternal)
+  handler = yaml_builder.BuilderHandler(builder)
+  listener = yaml_listener.EventListener(handler)
+  listener.Parse(cron_info)
+
+  cron_info_result = handler.GetResults()
+  if len(cron_info_result) < 1:
+    raise MalformedCronfigurationFile('Empty cron configuration.')
+  if len(cron_info_result) > 1:
+    raise MalformedCronfigurationFile('Multiple cron sections '
+                                      'in configuration.')
+  return cron_info_result[0]

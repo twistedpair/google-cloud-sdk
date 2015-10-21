@@ -1,0 +1,87 @@
+# Copyright 2015 Google Inc. All Rights Reserved.
+
+"""Cloud SDK markdown document renderer base class."""
+
+import abc
+
+from googlecloudsdk.core import log
+
+
+# Font Attributes.
+BOLD, ITALIC, CODE = range(3)
+
+
+class Renderer(object):
+  """Markdown renderer base class.
+
+  The member functions provide an abstract document model that matches markdown
+  entities to output document renderings.
+
+  Attributes:
+    _font: The font attribute bitmask.
+    _out: The output stream.
+    _title: The document tile.
+    _width: The output width in characters.
+  """
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, out=None, title=None, width=80):
+    self._font = 0
+    self._out = out or log.out
+    self._title = title
+    self._width = width
+
+  def Entities(self, buf):
+    """Converts special characters to their entity tags.
+
+    This is applied after font embellishments.
+
+    Args:
+      buf: The normal text that may contain special characters.
+
+    Returns:
+      The escaped string.
+    """
+    return buf
+
+  def Escape(self, buf):
+    """Escapes special characters in normal text.
+
+    This is applied before font embellishments.
+
+    Args:
+      buf: The normal text that may contain special characters.
+
+    Returns:
+      The escaped string.
+    """
+    return buf
+
+  def Finish(self):
+    """Finishes all output document rendering."""
+    pass
+
+  def Font(self, unused_attr, unused_out=None):
+    """Returns the font embellishment string for attr.
+
+    Args:
+      unused_attr: None to reset to the default font, otherwise one of BOLD,
+        ITALIC, or CODE.
+      unused_out: Writes tags line to this stream if not None.
+
+    Returns:
+      The font embellishment string.
+    """
+    return ''
+
+  def Link(self, target, text):
+    """Renders an anchor.
+
+    Args:
+      target: The link target URL.
+      text: The text to be displayed instead of the link.
+
+    Returns:
+      The rendered link anchor and text.
+    """
+    return text or target
