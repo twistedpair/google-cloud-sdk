@@ -1,7 +1,7 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for removing project-wide metadata."""
 
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class RemoveMetadata(base_classes.ProjectMetadataMutatorMixin,

@@ -28,7 +28,7 @@ class Action(_messages.Message):
 
 class Alias(_messages.Message):
   """An alias is a named reference to a revision. Examples include git
-  branches and tags, and Mercurial bookmarks.
+  branches and tags.
 
   Enums:
     KindValueValuesEnum: The alias kind.
@@ -36,9 +36,8 @@ class Alias(_messages.Message):
   Fields:
     kind: The alias kind.
     name: The alias name.
-    revisionId: The revision referred to by this alias. For Mercurial tags and
-      bookmarks, and for git tags and branches,  this is the corresponding
-      hash.
+    revisionId: The revision referred to by this alias. For git tags and
+      branches, this is the corresponding hash.
     workspaceNames: The list of workspace names whose alias is this one. NOT
       YET IMPLEMENTED (b/16943429).
   """
@@ -49,11 +48,11 @@ class Alias(_messages.Message):
     Values:
       ANY: ANY is used to indicate to ListAliases to return aliases of all
         kinds, and when used with GetAlias, the GetAlias function will return
-        a FIXED, MOVABLE, or MERCURIAL_BRANCH alias, in that priority order.
-        Using ANY with CreateAlias or DeleteAlias will result in an error.
-      FIXED: Git tag or Mercurial tag
-      MOVABLE: Git branch or Mercurial bookmark
-      MERCURIAL_BRANCH: Mercurial branch
+        a FIXED, or MOVABLE, in that priority order. Using ANY with
+        CreateAlias or DeleteAlias will result in an error.
+      FIXED: Git tag
+      MOVABLE: Git branch
+      MERCURIAL_BRANCH_DEPRECATED: <no description>
       OTHER: OTHER is used to fetch non-standard aliases, which are none of
         the kinds above or below. For example, if a git repo has a ref named
         "refs/foo/bar", it is considered to be OTHER.
@@ -62,7 +61,7 @@ class Alias(_messages.Message):
     ANY = 0
     FIXED = 1
     MOVABLE = 2
-    MERCURIAL_BRANCH = 3
+    MERCURIAL_BRANCH_DEPRECATED = 3
     OTHER = 4
     SPECIAL_DEPRECATED = 5
 
@@ -242,19 +241,20 @@ class CreateWorkspaceRequest(_messages.Message):
     actions: An ordered sequence of actions to perform in the workspace. Can
       be empty. Specifying actions here instead of using ModifyWorkspace saves
       one RPC.
-    repoId: The following fields of workspace must be set:  id.name Provide
-      the name for the workspace that is unique within the repo. Do not set
-      the repo_id field of the workspace ID; instead, set the repo_id field of
-      this request.  alias: If alias names an existing movable alias, the
-      workspace's baseline is set to the alias's revision.  If a movable alias
-      with that name doesn't exist, then the workspace has no baseline. When
-      the workspace is committed, a new root revision is created, with no
-      parents. The new revision will become the workspace baseline, and the
-      alias name will be used to create a movable alias referring to that
-      revision.
-    workspace: baseline: A revision ID (hexadecimal string) for sequencing: if
-      non-empty, the alias must exist, and baseline must match the alias's
-      revision ID.  No other fields should be set.
+    repoId: A RepoId attribute.
+    workspace: The following fields of workspace, with the allowable exception
+      of baseline, must be set. No other fields of workspace should be set.
+      id.name Provides the name of the workspace and must be unique within the
+      repo. Note: Do not set field id.repo_id.  The repo_id is provided above
+      as a CreateWorkspaceRequest field.  alias: If alias names an existing
+      movable alias, the workspace's baseline is set to the alias's revision.
+      If alias does not name an existing movable alias, then the workspace is
+      created with no baseline. When the workspace is committed, a new root
+      revision is created with no parents. The new revision becomes the
+      workspace's baseline and the alias name is used to create a movable
+      alias referring to the revision.  baseline: A revision ID (hexadecimal
+      string) for sequencing. If non-empty, alias must name an existing
+      movable alias and baseline must match the alias's revision ID.
   """
 
   actions = _messages.MessageField('Action', 1, repeated=True)
@@ -720,8 +720,7 @@ class ReadResponse(_messages.Message):
   Fields:
     entries: Contains the directory entries if the request specifies a
       directory.
-    externalReference: The read path denotes a Git submodule or Mercurial
-      subrepository.
+    externalReference: The read path denotes a Git submodule.
     file: Contains file metadata and contents if the request specifies a file.
     nextPageToken: Use as the value of page_token in the next call to obtain
       the next page of results. If empty, there are no more results.
@@ -757,6 +756,7 @@ class Repo(_messages.Message):
 
   Fields:
     createTime: Timestamp when the repo was created.
+    firstUseTime: Timestamp when the repo was first used.
     id: Randomly generated ID that uniquely identifies a repo.
     lastUpdateTime: Timestamp of last update to the repo. This can be either a
       metadata change (i.e., a change to this proto) or a commit to the code
@@ -792,21 +792,22 @@ class Repo(_messages.Message):
     Values:
       VCS_UNSPECIFIED: No version control system was specified.
       GIT: The Git version control system.
-      MERCURIAL: The Mercurial version control system.
+      MERCURIAL: <no description>
     """
     VCS_UNSPECIFIED = 0
     GIT = 1
     MERCURIAL = 2
 
   createTime = _messages.StringField(1)
-  id = _messages.StringField(2)
-  lastUpdateTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  projectNumber = _messages.IntegerField(6)
-  repoSyncConfig = _messages.MessageField('RepoSyncConfig', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  vcs = _messages.EnumField('VcsValueValuesEnum', 9)
+  firstUseTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  lastUpdateTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  projectId = _messages.StringField(6)
+  projectNumber = _messages.IntegerField(7)
+  repoSyncConfig = _messages.MessageField('RepoSyncConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  vcs = _messages.EnumField('VcsValueValuesEnum', 10)
 
 
 class RepoId(_messages.Message):
@@ -910,8 +911,7 @@ class Revision(_messages.Message):
   Fields:
     author: The name of the user who wrote the revision. (In Git, this can
       differ from committer.)
-    branchName: If this represents a Mercurial revision, the named branch
-      associated with the revision if any.
+    branchName: Mercurial branch name.
     changedFiles: Files changed in this revision.
     changedFilesUnknown: In some cases changed-file information is generated
       asynchronously. So there is a period of time when it is not available.
@@ -1030,20 +1030,6 @@ class SourceProjectsCloneRepoRequest(_messages.Message):
   repoName = _messages.StringField(8)
 
 
-class SourceProjectsCopyExternalRepoRequest(_messages.Message):
-  """A SourceProjectsCopyExternalRepoRequest object.
-
-  Fields:
-    projectId: The project ID of the repo to create.
-    repoName: The name of the repo to create.
-    url: The URL of the repo to copy.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  repoName = _messages.StringField(2)
-  url = _messages.StringField(3)
-
-
 class SourceProjectsReposAliasesCreateRequest(_messages.Message):
   """A SourceProjectsReposAliasesCreateRequest object.
 
@@ -1083,14 +1069,14 @@ class SourceProjectsReposAliasesDeleteRequest(_messages.Message):
       ANY: <no description>
       FIXED: <no description>
       MOVABLE: <no description>
-      MERCURIAL_BRANCH: <no description>
+      MERCURIAL_BRANCH_DEPRECATED: <no description>
       OTHER: <no description>
       SPECIAL_DEPRECATED: <no description>
     """
     ANY = 0
     FIXED = 1
     MOVABLE = 2
-    MERCURIAL_BRANCH = 3
+    MERCURIAL_BRANCH_DEPRECATED = 3
     OTHER = 4
     SPECIAL_DEPRECATED = 5
 
@@ -1219,14 +1205,14 @@ class SourceProjectsReposAliasesGetRequest(_messages.Message):
       ANY: <no description>
       FIXED: <no description>
       MOVABLE: <no description>
-      MERCURIAL_BRANCH: <no description>
+      MERCURIAL_BRANCH_DEPRECATED: <no description>
       OTHER: <no description>
       SPECIAL_DEPRECATED: <no description>
     """
     ANY = 0
     FIXED = 1
     MOVABLE = 2
-    MERCURIAL_BRANCH = 3
+    MERCURIAL_BRANCH_DEPRECATED = 3
     OTHER = 4
     SPECIAL_DEPRECATED = 5
 
@@ -1260,14 +1246,14 @@ class SourceProjectsReposAliasesListRequest(_messages.Message):
       ANY: <no description>
       FIXED: <no description>
       MOVABLE: <no description>
-      MERCURIAL_BRANCH: <no description>
+      MERCURIAL_BRANCH_DEPRECATED: <no description>
       OTHER: <no description>
       SPECIAL_DEPRECATED: <no description>
     """
     ANY = 0
     FIXED = 1
     MOVABLE = 2
-    MERCURIAL_BRANCH = 3
+    MERCURIAL_BRANCH_DEPRECATED = 3
     OTHER = 4
     SPECIAL_DEPRECATED = 5
 
@@ -1852,15 +1838,35 @@ class SourceProjectsReposWorkspacesGetRequest(_messages.Message):
 class SourceProjectsReposWorkspacesListRequest(_messages.Message):
   """A SourceProjectsReposWorkspacesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Specifies which parts of the Workspace resource
+      should be returned in the response.
+
   Fields:
     projectId: The ID of the project.
     repoName: The name of the repo. Leave empty for the default repo.
     uid: A server-assigned, globally unique identifier.
+    view: Specifies which parts of the Workspace resource should be returned
+      in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Specifies which parts of the Workspace resource should be returned in
+    the response.
+
+    Values:
+      STANDARD: <no description>
+      MINIMAL: <no description>
+      FULL: <no description>
+    """
+    STANDARD = 0
+    MINIMAL = 1
+    FULL = 2
 
   projectId = _messages.StringField(1, required=True)
   repoName = _messages.StringField(2, required=True)
   uid = _messages.StringField(3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class SourceProjectsReposWorkspacesModifyWorkspaceRequest(_messages.Message):

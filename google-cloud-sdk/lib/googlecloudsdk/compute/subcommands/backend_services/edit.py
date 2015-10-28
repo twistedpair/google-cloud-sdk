@@ -1,10 +1,17 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for modifying backend services."""
 
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
 
-from googlecloudsdk.shared.compute import base_classes
+
+class InvalidResourceError(exceptions.ToolException):
+  # Normally we'd want to subclass core.exceptions.Error, but base_classes.Edit
+  # abuses ToolException to classify errors when displaying messages to users,
+  # and we should continue to fit in that framework for now.
+  pass
 
 
 class Edit(base_classes.BaseEdit):
@@ -68,29 +75,40 @@ class Edit(base_classes.BaseEdit):
 
   @property
   def reference_normalizers(self):
-    def NormalizeHealthChecks(value):
-      """Returns normalized URI for healthChecks field."""
-      try:
-        value_ref = self.resources.Parse(value)
-      except resources.UnknownCollectionException:
-        raise exceptions.ToolException(
-            '[healthChecks] must be referenced using URIs.')
-      if value_ref.Collection() not in [
-          'compute.httpHealthChecks',
-          'compute.httpsHealthChecks'
-          ]:
-        raise exceptions.ToolException(
-            'Invalid [healthChecks] reference: [{0}].'. format(value))
-      return value_ref.SelfLink()
 
-    def NormalizeGroup(value):
-      return self.CreateGlobalReference(
-          value, resource_type='zoneViews').SelfLink()
+    def MakeReferenceNormalizer(field_name, allowed_collections):
+      """Returns a function to normalize resource references."""
+      def NormalizeReference(reference):
+        """Returns normalized URI for field_name."""
+        try:
+          value_ref = self.resources.Parse(reference)
+        except resources.UnknownCollectionException:
+          raise InvalidResourceError(
+              '[{field_name}] must be referenced using URIs.'.format(
+                  field_name=field_name))
 
+        if value_ref.Collection() not in allowed_collections:
+          raise InvalidResourceError(
+              'Invalid [{field_name}] reference: [{value}].'. format(
+                  field_name=field_name, value=reference))
+        return value_ref.SelfLink()
+      return NormalizeReference
+
+    # Ensure group is a uri or full collection path representing a resource
+    # view or an instance group.  Full uris/paths are required because if the
+    # user gives us less, we don't want to be in the business of guessing
+    # resource view or instance group.  The same applies, mutatis mutandis,
+    # to health checks.
     return [
-        ('healthChecks[]', NormalizeHealthChecks),
-        ('backends[].group', NormalizeGroup),
-    ]
+        ('healthChecks[]',
+         MakeReferenceNormalizer(
+             'healthChecks',
+             ('compute.httpHealthChecks', 'compute.httpsHealthChecks'))),
+
+        ('backends[].group',
+         MakeReferenceNormalizer(
+             'group',
+             ('resourceviews.zoneViews', 'compute.instanceGroups')))]
 
   def GetGetRequest(self, args):
     return (

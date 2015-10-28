@@ -7,10 +7,9 @@ TODO(danielsb) make snapshot a group with "create", "list", etc.
 
 import json
 import os
-
+from googlecloudsdk.api_lib.source import snapshot
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.source import snapshot
 
 
 class Upload(base.Command):

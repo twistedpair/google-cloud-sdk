@@ -1,8 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for adding access configs to virtual machine instances."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import utils
 
 
 class AddAccessConfigInstances(base_classes.NoOutputAsyncMutator):

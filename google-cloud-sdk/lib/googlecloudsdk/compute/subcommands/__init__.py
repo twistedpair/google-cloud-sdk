@@ -3,11 +3,12 @@
 import argparse
 import sys
 
+
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.compute import utils
 
 from googlecloudsdk.compute.lib import utils as internal_utils
 

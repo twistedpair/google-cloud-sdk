@@ -8,7 +8,10 @@ from googlecloudsdk.appengine.lib import flags
 
 
 class CancelDeployment(base.Command):
-  """Cancel an in progress or hung deployment of the given modules.
+  """(DEPRECATED) Cancel an in progress or hung deployment of the given modules.
+
+  This command is deprecated, and will soon be removed. It is no longer
+  necessary, given recent improvements to deployment infrastructure.
 
   This command cancels an in progress or hung deployment of the given modules.
   This command should only be necessary when a deployment fails and a subsequent

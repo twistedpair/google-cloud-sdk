@@ -45,11 +45,21 @@ def AddCommonTestRunArgs(parser):
       '--async', action='store_true',
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
-      '--auto-google-login', action='store_true',
+      '--auto-google-login', '-L', action='store_true',
       help=argparse.SUPPRESS)
       # TODO(user): add this help text when ready for this to be exposed:
       # help='Automatically log into the test device using a preconfigured '
       # 'Google account before beginning the test.')
+  parser.add_argument(
+      '--obb-files', '-O',
+      type=arg_parsers.ArgList(min_length=1, max_length=2),
+      metavar='OBB_FILE',
+      action=arg_parsers.FloatingListValuesCatcher(),
+      help='A list of one or two Android OBB file names which will be copied '
+      'to each test device before the tests will run (default: None). Each '
+      'OBB file name must conform to the format as specified by Android (e.g. '
+      '[main|patch].0300110.com.example.android.obb) and will be installed '
+      'into <shared-storage>/Android/obb/<package-name>/ on the test device')
 
 
 def AddSharedCommandArgs(parser):
@@ -202,38 +212,36 @@ def AddRoboTestArgs(parser):
 
 
 def Prepare(args, catalog):
-  """Load, apply defaults, and perform validation on test CLI arguments.
+  """Load, apply defaults, and perform validation on test arguments.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to the
       command invocation (i.e. group and command arguments combined).
-    catalog: the TestingEnvironmentCatalog used to find dimension defaults.
+    catalog: the TestingEnvironmentCatalog used to find defaults for matrix
+      dimension args.
 
   Raises:
-    InvalidArgumentException: An argument does not contain a valid value or is
-        not valid when used with the given type of test.
+    InvalidArgumentException: If an argument name is unknown, an argument does
+      not contain a valid value, or an argument is not valid when used with the
+      given type of test.
+    RequiredArgumentException: If a required arg is missing.
   """
   all_test_args_set = _GetSetOfAllTestArgs(_TEST_TYPE_ARG_RULES,
                                            _SHARED_ARG_RULES)
   args_from_file = arg_file.GetArgsFromArgFile(args.argspec, all_test_args_set)
-  _ApplyArgDefaults(args, args_from_file, True)
+  _ApplyLowerPriorityArgs(args, args_from_file, True)
 
   test_type = _GetTestTypeOrRaise(args, _TEST_TYPE_ARG_RULES)
-  _ApplyArgDefaults(args, _TEST_TYPE_ARG_RULES[test_type]['defaults'])
-  _ApplyArgDefaults(args, _SHARED_ARG_RULES['defaults'])
-  _ApplyArgDefaults(args, _GetDefaultsFromAndroidCatalog(catalog))
+  _ApplyLowerPriorityArgs(args, _TEST_TYPE_ARG_RULES[test_type]['defaults'])
+  _ApplyLowerPriorityArgs(args, _SHARED_ARG_RULES['defaults'])
+  _ApplyLowerPriorityArgs(args, _GetDefaultsFromAndroidCatalog(catalog))
   arg_validate.ValidateArgsForTestType(args,
                                        test_type,
                                        _TEST_TYPE_ARG_RULES,
                                        _SHARED_ARG_RULES,
                                        all_test_args_set)
   arg_validate.ValidateResultsBucket(args)
-  # Note: Duration args are converted to an int in seconds (e.g. --timeout 5m
-  # becomes args.timeout with value 300). Duration proto fields are converted
-  # to strings during discovery doc creation, so we have to convert the int
-  # timeout back into a string-formatted Duration (i.e. append an 's') before
-  # passing it to the Testing Service.
-  args.timeout = '{secs}s'.format(secs=args.timeout)
+  arg_validate.ValidateObbFileNames(args.obb_files)
 
 
 # These nested dictionaries define which test args are required, optional, or
@@ -270,7 +278,7 @@ _TEST_TYPE_ARG_RULES = {
 _SHARED_ARG_RULES = {
     'required': ['type', 'app'],
     'optional': ['device_ids', 'os_version_ids', 'locales', 'orientations',
-                 'app_package', 'async', 'auto_google_login',
+                 'app_package', 'async', 'auto_google_login', 'obb_files',
                  'results_bucket', 'results_history_name', 'timeout'],
     'defaults': {
         'async': False,
@@ -312,7 +320,7 @@ def _GetDefaultsFromAndroidCatalog(catalog):
   Returns:
     A dictionary containing the default dimensions. If there is more than one
     dimension value marked as default (a bug), the first one found is used.
-    Return value is formatted to be used with _ApplyArgDefaults.
+    Return value is formatted to be used with _ApplyLowerPriorityArgs.
 
   Raises:
     exceptions.UnknownArgumentException: if the default argument could not be
@@ -366,33 +374,36 @@ def _GetSetOfAllTestArgs(type_rules, shared_rules):
   return set(all_test_args_list)
 
 
-def _ApplyArgDefaults(args, defaults_dict, issue_warning=False):
-  """Apply default values from a dictionary to args with no values.
+def _ApplyLowerPriorityArgs(args, lower_pri_args, issue_cli_warning=False):
+  """Apply lower-priority arg values from a dictionary to args without values.
 
-  Args which already have a value are never modified by this function. Thus,
-  if there are multiple sets of default args, they should be applied in order
-  from highest-to-lowest precedence.
+  May be used to apply arg default values, or to merge args from another source,
+  such as an arg-file. Args which already have a value are never modified by
+  this function. Thus, if there are multiple sets of lower-priority args, they
+  should be applied in order from highest-to-lowest precedence.
 
   Args:
-    args: an argparse namespace. All the arguments that were provided to the
-      command invocation (i.e. group and command arguments combined), plus any
-      arg defaults already applied to the namespace.
-    defaults_dict: a map of arg names to their default values.
-    issue_warning: (boolean) issue a warning if an arg already has a value and
-      we do not apply the provided default (used for arg-files where any args
-      specified in the file are lower-priority than the CLI args.).
+    args: the existing argparse.Namespace. All the arguments that were provided
+      to the command invocation (i.e. group and command arguments combined),
+      plus any arg defaults already applied to the namespace. These args have
+      higher priority than the lower_pri_args.
+    lower_pri_args: a dict mapping lower-priority arg names to their values.
+    issue_cli_warning: (boolean) issue a warning if an arg already has a value
+      from the command line and we do not apply the lower-priority arg value
+      (used for arg-files where any args specified in the file are lower in
+      priority than the CLI args.).
   """
-  for arg in defaults_dict:
+  for arg in lower_pri_args:
     if getattr(args, arg, None) is None:
       log.debug('Applying default {0}: {1}'
-                .format(arg, str(defaults_dict[arg])))
-      setattr(args, arg, defaults_dict[arg])
-    elif issue_warning and getattr(args, arg) != defaults_dict[arg]:
+                .format(arg, str(lower_pri_args[arg])))
+      setattr(args, arg, lower_pri_args[arg])
+    elif issue_cli_warning and getattr(args, arg) != lower_pri_args[arg]:
       ext_name = arg_validate.ExternalArgNameFrom(arg)
       log.warning(
           'Command-line argument "--{0} {1}" overrides file argument "{2}: {3}"'
           .format(ext_name, _FormatArgValue(getattr(args, arg)),
-                  ext_name, _FormatArgValue(defaults_dict[arg])))
+                  ext_name, _FormatArgValue(lower_pri_args[arg])))
 
 
 def _FormatArgValue(value):

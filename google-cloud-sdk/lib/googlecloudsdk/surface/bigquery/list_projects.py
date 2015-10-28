@@ -3,9 +3,9 @@
 """Implementation of gcloud bigquery list_projects.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared.bigquery import bigquery
 from googlecloudsdk.surface import bigquery as commands
 
 

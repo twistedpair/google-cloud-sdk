@@ -41,7 +41,8 @@ class ArrayValue(_messages.Message):
   """An array value.
 
   Fields:
-    values: Values in the array.
+    values: Values in the array. The order of this array may not be preserved
+      if it contains a mix of indexed and unindexed values.
   """
 
   values = _messages.MessageField('Value', 1, repeated=True)
@@ -52,9 +53,11 @@ class BeginTransactionRequest(_messages.Message):
 
   Fields:
     databaseId: Database ID against which to make the request.
+    transactionOptions: Options for a new transaction.
   """
 
   databaseId = _messages.StringField(1)
+  transactionOptions = _messages.MessageField('TransactionOptions', 2)
 
 
 class BeginTransactionResponse(_messages.Message):
@@ -67,6 +70,82 @@ class BeginTransactionResponse(_messages.Message):
   transaction = _messages.BytesField(1)
 
 
+class Change(_messages.Message):
+  """A change to a set of entities being watched. Usually a change to an
+  individual entity, but sometimes a change to the set of entities being
+  watched.
+
+  Enums:
+    NoChangeValueValuesEnum: No change has occurred. Usually returned to
+      provide an updated `resume_token`.
+    TargetChangeValueValuesEnum: The targets associate with this stream have
+      been modified. The affected targets are listed in `target_ids`.
+
+  Fields:
+    cause: The error that resulted in this change, if applicable.
+    continued: If true, more changes are needed to construct a consistent
+      snapshot.
+    existenceFilter: A filter representing delete mutations. Applies to the
+      *set* of entities previously returned for the given `target_ids`.
+    mutation: A mutation to a watched entity.
+    noChange: No change has occurred. Usually returned to provide an updated
+      `resume_token`.
+    resumeToken: A token that provides a compact representation of all the
+      changes that have been received by the caller up to this point
+      (including this one) that can be used to resume the stream. May not be
+      set on every change. Only valid for the targets specified in
+      `target_ids`.
+    targetChange: The targets associate with this stream have been modified.
+      The affected targets are listed in `target_ids`.
+    targetIds: The set of targets to which this change applies. When empty,
+      the change applies to all targets.
+  """
+
+  class NoChangeValueValuesEnum(_messages.Enum):
+    """No change has occurred. Usually returned to provide an updated
+    `resume_token`.
+
+    Values:
+      NULL_VALUE: Null value.
+    """
+    NULL_VALUE = 0
+
+  class TargetChangeValueValuesEnum(_messages.Enum):
+    """The targets associate with this stream have been modified. The affected
+    targets are listed in `target_ids`.
+
+    Values:
+      TARGET_CHANGE_UNSPECIFIED: <no description>
+      TARGET_ADDED: <no description>
+      TARGET_REMOVED: <no description>
+      TARGET_REJECTED: <no description>
+    """
+    TARGET_CHANGE_UNSPECIFIED = 0
+    TARGET_ADDED = 1
+    TARGET_REMOVED = 2
+    TARGET_REJECTED = 3
+
+  cause = _messages.MessageField('Status', 1)
+  continued = _messages.BooleanField(2)
+  existenceFilter = _messages.MessageField('ExistenceFilter', 3)
+  mutation = _messages.MessageField('Mutation', 4)
+  noChange = _messages.EnumField('NoChangeValueValuesEnum', 5)
+  resumeToken = _messages.BytesField(6)
+  targetChange = _messages.EnumField('TargetChangeValueValuesEnum', 7)
+  targetIds = _messages.IntegerField(8, repeated=True, variant=_messages.Variant.INT32)
+
+
+class ChangeBatch(_messages.Message):
+  """The streamed response for google.datastore.v1beta3.DatastoreWatcher.Watch
+  and google.datastore.v1beta3.DatastoreWatcher.MultiWatch.
+
+  Fields:
+    changes: A Change attribute.
+  """
+
+  changes = _messages.MessageField('Change', 1, repeated=True)
+
+
 class CommitRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.Commit.
 
@@ -77,16 +156,18 @@ class CommitRequest(_messages.Message):
   Fields:
     databaseId: Database ID against which to make the request.
     mode: The type of commit to perform. Defaults to `TRANSACTIONAL`.
-    mutations: The mutations to perform. / When mode is `TRANSACTIONAL`,
+    mutations: The mutations to perform.  When mode is `TRANSACTIONAL`,
       mutations affecting a single entity are applied in order. The following
       sequences of mutations affecting a single entity are not permitted in a
       single `Commit` request: - `insert` followed by `insert` - `update`
       followed by `insert` - `upsert` followed by `insert` - `delete` followed
       by `update`  When mode is `NON_TRANSACTIONAL`, no two mutations may
       affect a single entity.
-    transaction: The transaction identifier, returned by a call to
-      google.datastore.v1beta3.Datastore.BeginTransaction. Must be set when
-      mode is `TRANSACTIONAL`.
+    singleUseTransaction: Options for beginning a new transaction for this
+      request. The transaction is committed when the request completes. If
+      specified, google.datastore.v1beta3.TransactionOptions.mode must be
+      google.datastore.v1beta3.TransactionOptions.ReadWrite
+    transaction: The transaction in which to write.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -104,7 +185,8 @@ class CommitRequest(_messages.Message):
   databaseId = _messages.StringField(1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   mutations = _messages.MessageField('Mutation', 3, repeated=True)
-  transaction = _messages.BytesField(4)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 4)
+  transaction = _messages.BytesField(5)
 
 
 class CommitResponse(_messages.Message):
@@ -340,6 +422,19 @@ class DatastoreProjectsLookupRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
 
 
+class DatastoreProjectsMultiWatchRequest(_messages.Message):
+  """A DatastoreProjectsMultiWatchRequest object.
+
+  Fields:
+    multiWatchRequest: A MultiWatchRequest resource to be passed as the
+      request body.
+    projectId: Project ID against which to make the request.
+  """
+
+  multiWatchRequest = _messages.MessageField('MultiWatchRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
 class DatastoreProjectsOperationsCancelRequest(_messages.Message):
   """A DatastoreProjectsOperationsCancelRequest object.
 
@@ -410,6 +505,18 @@ class DatastoreProjectsRunQueryRequest(_messages.Message):
 
   projectId = _messages.StringField(1, required=True)
   runQueryRequest = _messages.MessageField('RunQueryRequest', 2)
+
+
+class DatastoreProjectsWatchRequest(_messages.Message):
+  """A DatastoreProjectsWatchRequest object.
+
+  Fields:
+    projectId: Project ID against which to make the request.
+    watchRequest: A WatchRequest resource to be passed as the request body.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  watchRequest = _messages.MessageField('WatchRequest', 2)
 
 
 class Empty(_messages.Message):
@@ -519,6 +626,38 @@ class EntityResult(_messages.Message):
   cursor = _messages.BytesField(1)
   entity = _messages.MessageField('Entity', 2)
   version = _messages.IntegerField(3)
+
+
+class ExistenceFilter(_messages.Message):
+  """An existence filter that must be applied and verified locally to resolve
+  possible delete mutations.
+
+  Enums:
+    StrategyValueValuesEnum: The strategy used to map a key to the filter
+      bits.
+
+  Fields:
+    bits: The filter bits.
+    count: The total number of keys represented in this filter. Used to detect
+      the presence of false positives.
+    hashCount: The number of hashes used in `bits`.
+    strategy: The strategy used to map a key to the filter bits.
+  """
+
+  class StrategyValueValuesEnum(_messages.Enum):
+    """The strategy used to map a key to the filter bits.
+
+    Values:
+      STRATEGY_NOT_SPECIFIED: <no description>
+      MURMUR128_MITZ_64: <no description>
+    """
+    STRATEGY_NOT_SPECIFIED = 0
+    MURMUR128_MITZ_64 = 1
+
+  bits = _messages.BytesField(1)
+  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  hashCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
 
 
 class ExportMetadata(_messages.Message):
@@ -1012,11 +1151,32 @@ class LookupResponse(_messages.Message):
     missing: Entities not found as `ResultType.KEY_ONLY` entities. The order
       of results in this field is undefined and has no relation to the order
       of the keys in the input.
+    transaction: The transaction that was started as part of this Lookup
+      request. Set only when
+      google.datastore.v1beta3.ReadOptions.begin_transaction was set in
+      google.datastore.v1beta3.LookupRequest.read_options.
   """
 
   deferred = _messages.MessageField('Key', 1, repeated=True)
   found = _messages.MessageField('EntityResult', 2, repeated=True)
   missing = _messages.MessageField('EntityResult', 3, repeated=True)
+  transaction = _messages.BytesField(4)
+
+
+class MultiWatchRequest(_messages.Message):
+  """A request for google.datastore.v1beta3.DatastoreWatcher.MultiWatch
+
+  Fields:
+    addTargets: The set of watch targets to add to this stream. changes will
+      be returned with server assigned `target_ids` in the same order as
+      targets are specified here.
+    databaseId: Database ID against which to make the request.
+    removeTargets: The IDs of watch targets to remove from this stream.
+  """
+
+  addTargets = _messages.MessageField('WatchTarget', 1, repeated=True)
+  databaseId = _messages.StringField(2)
+  removeTargets = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
 
 
 class Mutation(_messages.Message):
@@ -1389,7 +1549,7 @@ class QueryResultBatch(_messages.Message):
 
     Values:
       MORE_RESULTS_TYPE_UNSPECIFIED: Unspecified. This value is never used.
-      NOT_FINISHED: There are additional batches to fetch from this query.
+      NOT_FINISHED: There may be additional batches to fetch from this query.
       MORE_RESULTS_AFTER_LIMIT: The query is finished, but there may be more
         results after the limit.
       MORE_RESULTS_AFTER_CURSOR: The query is finished, but there may be more
@@ -1410,6 +1570,10 @@ class QueryResultBatch(_messages.Message):
   skippedResults = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class ReadOnly(_messages.Message):
+  """Options specific to read-only transactions."""
+
+
 class ReadOptions(_messages.Message):
   """Options shared by read requests.
 
@@ -1418,9 +1582,13 @@ class ReadOptions(_messages.Message):
       use. Cannot be set to `STRONG` for global queries.
 
   Fields:
+    newTransaction: Options for beginning a new transaction for this request.
+      The new transaction handle will be returned in the corresponding
+      response as either google.datastore.v1beta3.LookupResponse.transaction
+      or google.datastore.v1beta3.RunQueryResponse.transaction.
     readConsistency: The non-transactional read consistency to use. Cannot be
       set to `STRONG` for global queries.
-    transaction: The transaction identifier to use.
+    transaction: The transaction in which to read.
   """
 
   class ReadConsistencyValueValuesEnum(_messages.Enum):
@@ -1436,8 +1604,13 @@ class ReadOptions(_messages.Message):
     STRONG = 1
     EVENTUAL = 2
 
-  readConsistency = _messages.EnumField('ReadConsistencyValueValuesEnum', 1)
-  transaction = _messages.BytesField(2)
+  newTransaction = _messages.MessageField('TransactionOptions', 1)
+  readConsistency = _messages.EnumField('ReadConsistencyValueValuesEnum', 2)
+  transaction = _messages.BytesField(3)
+
+
+class ReadWrite(_messages.Message):
+  """Options specific to read / write transactions."""
 
 
 class RollbackRequest(_messages.Message):
@@ -1486,10 +1659,15 @@ class RunQueryResponse(_messages.Message):
   Fields:
     batch: A batch of query results (always present).
     query: The parsed form of the `GqlQuery` from the request, if it was set.
+    transaction: The transaction that was started as part of this RunQuery
+      request. Set only when
+      google.datastore.v1beta3.ReadOptions.begin_transaction was set in
+      google.datastore.v1beta3.RunQueryRequest.read_options.
   """
 
   batch = _messages.MessageField('QueryResultBatch', 1)
   query = _messages.MessageField('Query', 2)
+  transaction = _messages.BytesField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1637,6 +1815,21 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TransactionOptions(_messages.Message):
+  """Options for beginning a new transaction. Transactions can be created
+  explicitly with calls to google.datastore.v1beta3.Datastore.BeginTransaction
+  or implicitly by setting
+  google.datastore.v1beta3.ReadOptions.new_transaction in read requests.
+
+  Fields:
+    readOnly: The transaction should only allow reads.
+    readWrite: The transaction should allow both reads and writes.
+  """
+
+  readOnly = _messages.MessageField('ReadOnly', 1)
+  readWrite = _messages.MessageField('ReadWrite', 2)
+
+
 class UpdateIndexMetadata(_messages.Message):
   """Metadata for build index operations.
 
@@ -1707,6 +1900,37 @@ class Value(_messages.Message):
   nullValue = _messages.EnumField('NullValueValueValuesEnum', 11)
   stringValue = _messages.StringField(12)
   timestampValue = _messages.StringField(13)
+
+
+class WatchRequest(_messages.Message):
+  """The request for google.datastore.v1beta3.DatastoreWatcher.Watch
+
+  Fields:
+    databaseId: Database ID against which to make the request.
+    targets: The set of watcher targets to include in the stream. changes will
+      be returned with server assigned `target_ids` in the same order as the
+      targets are specified here.
+  """
+
+  databaseId = _messages.StringField(1)
+  targets = _messages.MessageField('WatchTarget', 2, repeated=True)
+
+
+class WatchTarget(_messages.Message):
+  """A specification of a set of entities to watch.
+
+  Fields:
+    gqlQuery: The GQL query to watch.
+    partitionId: The partition id to watch.
+    query: The query to watch.
+    resumeToken: A resume token from a stream containing an identical watch
+      target.
+  """
+
+  gqlQuery = _messages.MessageField('GqlQuery', 1)
+  partitionId = _messages.MessageField('PartitionId', 2)
+  query = _messages.MessageField('Query', 3)
+  resumeToken = _messages.BytesField(4)
 
 
 encoding.AddCustomJsonEnumMapping(

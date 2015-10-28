@@ -27,7 +27,7 @@ class CallFunctionResponse(_messages.Message):
 
   error = _messages.StringField(1)
   executionId = _messages.StringField(2)
-  result = _messages.BytesField(3)
+  result = _messages.StringField(3)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -48,7 +48,7 @@ class CloudfunctionsProjectsRegionsFunctionsCallRequest(_messages.Message):
     name: The name of the function to be called.
   """
 
-  data = _messages.BytesField(1)
+  data = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
 
 

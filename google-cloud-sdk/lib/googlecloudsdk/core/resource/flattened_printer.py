@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 Google Inc. All Rights Reserved.
 
 """Flattened tree resource printer."""
@@ -94,7 +93,7 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
       self._out.write('---\n')
     flattened_record = _Flatten(record)
     if flattened_record:
-      pad = 'no-pad' not in self._attributes
+      pad = 'no-pad' not in self.attributes
       if pad:
         max_key_len = max(len(key) for key, _ in flattened_record)
       for key, value in flattened_record:

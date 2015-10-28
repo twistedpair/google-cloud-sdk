@@ -7,6 +7,7 @@ from googlecloudsdk.core import exceptions
 
 from googlecloudsdk.appengine.lib import fingerprinting
 from googlecloudsdk.appengine.lib.runtimes import go
+from googlecloudsdk.appengine.lib.runtimes import java
 from googlecloudsdk.appengine.lib.runtimes import nodejs
 from googlecloudsdk.appengine.lib.runtimes import python
 from googlecloudsdk.appengine.lib.runtimes import ruby
@@ -18,6 +19,7 @@ RUNTIMES = [
     go,  # Go's position is relatively flexible due to its orthogonal nature.
     ruby,
     nodejs,
+    java,
     python,  # python is last because it passes if there are any .py files.
 ]
 

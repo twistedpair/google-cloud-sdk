@@ -70,7 +70,7 @@ class ProjectionSpec(object):
       symbols: Transform function symbol table dict indexed by function name.
     """
     self.aliases = {}
-    self._attributes = {}
+    self.attributes = {}
     self._columns = []
     self._empty = None
     self._name = None
@@ -154,7 +154,7 @@ class ProjectionSpec(object):
       name: The attribute name.
       value: The attribute value
     """
-    self._attributes[name] = value
+    self.attributes[name] = value
 
   def DelAttribute(self, name):
     """Deletes name from the attributes if it is in the attributes.
@@ -162,8 +162,8 @@ class ProjectionSpec(object):
     Args:
       name: The attribute name.
     """
-    if name in self._attributes:
-      del self._attributes[name]
+    if name in self.attributes:
+      del self.attributes[name]
 
   def AddAlias(self, name, key):
     """Adds name as an alias for key to the projection.
@@ -272,7 +272,7 @@ class ProjectionSpec(object):
     Returns:
       The projection _Attribute dictionary.
     """
-    return self._attributes
+    return self.attributes
 
   def Alignments(self):
     """Returns the projection column justfication list.

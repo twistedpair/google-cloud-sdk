@@ -137,12 +137,15 @@ def _ParseFormatDocString(printer):
       attribute = attribute.strip()
       attribute = attribute.lstrip('*')
       attribute_description = [text.strip()]
+  if attribute:
+    attributes.append((attribute, ' '.join(attribute_description)))
   return ' '.join(descriptions), attributes, example
 
 
 def FormatRegistryDescriptions():
   """Returns help markdown for all registered resource printer formats."""
-  descriptions = ['The supported formats and format specific attributes are:']
+  # Generate the printer markdown.
+  descriptions = ['The formats and format specific attributes are:']
   for name, printer in sorted(resource_printer.GetFormatRegistry().iteritems()):
     description, attributes, example = _ParseFormatDocString(printer)
     descriptions.append('\n*{name}*::\n{description}'.format(
@@ -155,6 +158,19 @@ def FormatRegistryDescriptions():
     if example:
       descriptions.append('+\nFor example`:`:::\n')
       descriptions.append(' '.join(example))
+
+  # Generate the "attributes for all printers" markdown.
+  description, attributes, example = _ParseFormatDocString(
+      resource_printer.PrinterAttributes)
+  if attributes:
+    descriptions.append('\n{description}:\n'.format(
+        description=description[:-1]))
+    for attribute, description in attributes:
+      descriptions.append('*{attribute}*:::\n{description}'.format(
+          attribute=attribute, description=description))
+  if example:
+    descriptions.append('+\nFor example`:`:::\n')
+    descriptions.append(' '.join(example))
   descriptions.append('')
   return '\n'.join(descriptions)
 

@@ -1,9 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for setting machine type for virtual machine instances."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import instance_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import instance_utils
-from googlecloudsdk.shared.compute import utils
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)

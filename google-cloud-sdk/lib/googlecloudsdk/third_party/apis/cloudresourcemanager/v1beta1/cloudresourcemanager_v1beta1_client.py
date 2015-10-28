@@ -11,7 +11,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
   MESSAGES_MODULE = messages
 
   _PACKAGE = u'cloudresourcemanager'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = u'v1beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

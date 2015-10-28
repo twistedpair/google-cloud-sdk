@@ -33,7 +33,9 @@ def PrintFlattenedCommandTree(command, out=None):
       args_next = args + [command['_root_']]
     if 'commands' in command:
       for c in command['commands']:
-        commands.append(' '.join(args_next + [c]))
+        name = c.get('_name_', c)
+        flags = c.get('_flags_', [])
+        commands.append(' '.join(args_next + [name] + flags))
     if 'groups' in command:
       for g in command['groups']:
         WalkCommandTree(commands, g, args_next)
@@ -51,20 +53,22 @@ class ListCommands(base.Command):
   @staticmethod
   def Args(parser):
     parser.add_argument(
+        '--flags',
+        action='store_true',
+        help='Include the non-global flags for each command/group.')
+    parser.add_argument(
         '--hidden',
         action='store_true',
-        default=None,
-        help=('Include hidden commands and groups.'))
+        help='Include hidden commands and groups.')
     parser.add_argument(
         'restrict',
         metavar='COMMAND/GROUP',
         nargs='*',
-        default=None,
         help='Restrict the listing to the specified command groups.')
 
   def Run(self, args):
-    return walker_util.CommandTreeGenerator(self.cli).Walk(args.hidden,
-                                                           args.restrict)
+    return walker_util.CommandTreeGenerator(
+        self.cli, flags=args.flags).Walk(args.hidden, args.restrict)
 
   def Display(self, args, result):
     return PrintFlattenedCommandTree(result)

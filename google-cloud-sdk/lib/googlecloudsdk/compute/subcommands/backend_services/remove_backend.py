@@ -2,11 +2,11 @@
 """Command for removing a backend from a backend service."""
 import copy
 
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
 
 
 class RemoveBackend(base_classes.ReadWriteCommand):

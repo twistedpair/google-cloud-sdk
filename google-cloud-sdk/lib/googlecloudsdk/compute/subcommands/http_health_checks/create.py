@@ -1,7 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating HTTP health checks."""
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.shared.compute import base_classes
 
 
 class Create(base_classes.BaseAsyncCreator):

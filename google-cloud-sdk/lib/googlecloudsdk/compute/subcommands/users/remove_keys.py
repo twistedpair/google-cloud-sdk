@@ -1,11 +1,11 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for removing public keys to users."""
-from googlecloudsdk.calliope import arg_parsers
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import gaia_utils
-from googlecloudsdk.shared.compute import user_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import gaia_utils
+from googlecloudsdk.api_lib.compute import user_utils
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import arg_parsers
 
 
 class RemoveKeys(base_classes.NoOutputAsyncMutator,

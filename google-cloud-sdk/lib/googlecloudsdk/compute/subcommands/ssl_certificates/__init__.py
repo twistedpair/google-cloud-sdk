@@ -4,7 +4,6 @@
 from googlecloudsdk.calliope import base
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class SslCertificates(base.Group):
   """List, create, and delete Google Compute Engine SSL certificates."""
 

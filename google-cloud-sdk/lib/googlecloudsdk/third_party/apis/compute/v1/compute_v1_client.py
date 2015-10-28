@@ -44,6 +44,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalOperations = self.GlobalOperationsService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
+    self.httpsHealthChecks = self.HttpsHealthChecksService(self)
     self.images = self.ImagesService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
@@ -57,7 +58,9 @@ class ComputeV1(base_api.BaseApiClient):
     self.regions = self.RegionsService(self)
     self.routes = self.RoutesService(self)
     self.snapshots = self.SnapshotsService(self)
+    self.sslCertificates = self.SslCertificatesService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
+    self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
     self.targetInstances = self.TargetInstancesService(self)
     self.targetPools = self.TargetPoolsService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
@@ -1684,6 +1687,169 @@ class ComputeV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class HttpsHealthChecksService(base_api.BaseApiService):
+    """Service class for the httpsHealthChecks resource."""
+
+    _NAME = u'httpsHealthChecks'
+
+    def __init__(self, client):
+      super(ComputeV1.HttpsHealthChecksService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.httpsHealthChecks.delete',
+              ordered_params=[u'project', u'httpsHealthCheck'],
+              path_params=[u'httpsHealthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+              request_field='',
+              request_type_name=u'ComputeHttpsHealthChecksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.httpsHealthChecks.get',
+              ordered_params=[u'project', u'httpsHealthCheck'],
+              path_params=[u'httpsHealthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+              request_field='',
+              request_type_name=u'ComputeHttpsHealthChecksGetRequest',
+              response_type_name=u'HttpsHealthCheck',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.httpsHealthChecks.insert',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks',
+              request_field=u'httpsHealthCheck',
+              request_type_name=u'ComputeHttpsHealthChecksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.httpsHealthChecks.list',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/global/httpsHealthChecks',
+              request_field='',
+              request_type_name=u'ComputeHttpsHealthChecksListRequest',
+              response_type_name=u'HttpsHealthCheckList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.httpsHealthChecks.patch',
+              ordered_params=[u'project', u'httpsHealthCheck'],
+              path_params=[u'httpsHealthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+              request_field=u'httpsHealthCheckResource',
+              request_type_name=u'ComputeHttpsHealthChecksPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.httpsHealthChecks.update',
+              ordered_params=[u'project', u'httpsHealthCheck'],
+              path_params=[u'httpsHealthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+              request_field=u'httpsHealthCheckResource',
+              request_type_name=u'ComputeHttpsHealthChecksUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified HttpsHealthCheck resource.
+
+      Args:
+        request: (ComputeHttpsHealthChecksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified HttpsHealthCheck resource.
+
+      Args:
+        request: (ComputeHttpsHealthChecksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpsHealthCheck) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a HttpsHealthCheck resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeHttpsHealthChecksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of HttpsHealthCheck resources available to the specified project.
+
+      Args:
+        request: (ComputeHttpsHealthChecksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpsHealthCheckList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+
+      Args:
+        request: (ComputeHttpsHealthChecksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates a HttpsHealthCheck resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeHttpsHealthChecksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""
 
@@ -2261,7 +2427,7 @@ See Accessing images for more information.
           }
 
     def AddInstances(self, request, global_params=None):
-      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. TODO: Change to comment to state "if IG is load balanced.".
+      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -2721,7 +2887,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def AggregatedList(self, request, global_params=None):
-      """AggregatedList method for the instances service.
+      """Retrieves aggregated list of instance resources.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -3659,6 +3825,119 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class SslCertificatesService(base_api.BaseApiService):
+    """Service class for the sslCertificates resource."""
+
+    _NAME = u'sslCertificates'
+
+    def __init__(self, client):
+      super(ComputeV1.SslCertificatesService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.sslCertificates.delete',
+              ordered_params=[u'project', u'sslCertificate'],
+              path_params=[u'project', u'sslCertificate'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/sslCertificates/{sslCertificate}',
+              request_field='',
+              request_type_name=u'ComputeSslCertificatesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.sslCertificates.get',
+              ordered_params=[u'project', u'sslCertificate'],
+              path_params=[u'project', u'sslCertificate'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/sslCertificates/{sslCertificate}',
+              request_field='',
+              request_type_name=u'ComputeSslCertificatesGetRequest',
+              response_type_name=u'SslCertificate',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.sslCertificates.insert',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/sslCertificates',
+              request_field=u'sslCertificate',
+              request_type_name=u'ComputeSslCertificatesInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.sslCertificates.list',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/global/sslCertificates',
+              request_field='',
+              request_type_name=u'ComputeSslCertificatesListRequest',
+              response_type_name=u'SslCertificateList',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified SslCertificate resource.
+
+      Args:
+        request: (ComputeSslCertificatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified SslCertificate resource.
+
+      Args:
+        request: (ComputeSslCertificatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslCertificate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a SslCertificate resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSslCertificatesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of SslCertificate resources available to the specified project.
+
+      Args:
+        request: (ComputeSslCertificatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslCertificateList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpProxies resource."""
 
@@ -3789,6 +4068,169 @@ For more information, see Deleting snaphots.
 
       Args:
         request: (ComputeTargetHttpProxiesSetUrlMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetUrlMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class TargetHttpsProxiesService(base_api.BaseApiService):
+    """Service class for the targetHttpsProxies resource."""
+
+    _NAME = u'targetHttpsProxies'
+
+    def __init__(self, client):
+      super(ComputeV1.TargetHttpsProxiesService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.targetHttpsProxies.delete',
+              ordered_params=[u'project', u'targetHttpsProxy'],
+              path_params=[u'project', u'targetHttpsProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+              request_field='',
+              request_type_name=u'ComputeTargetHttpsProxiesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.targetHttpsProxies.get',
+              ordered_params=[u'project', u'targetHttpsProxy'],
+              path_params=[u'project', u'targetHttpsProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+              request_field='',
+              request_type_name=u'ComputeTargetHttpsProxiesGetRequest',
+              response_type_name=u'TargetHttpsProxy',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetHttpsProxies.insert',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetHttpsProxies',
+              request_field=u'targetHttpsProxy',
+              request_type_name=u'ComputeTargetHttpsProxiesInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.targetHttpsProxies.list',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/global/targetHttpsProxies',
+              request_field='',
+              request_type_name=u'ComputeTargetHttpsProxiesListRequest',
+              response_type_name=u'TargetHttpsProxyList',
+              supports_download=False,
+          ),
+          'SetSslCertificates': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetHttpsProxies.setSslCertificates',
+              ordered_params=[u'project', u'targetHttpsProxy'],
+              path_params=[u'project', u'targetHttpsProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
+              request_field=u'targetHttpsProxiesSetSslCertificatesRequest',
+              request_type_name=u'ComputeTargetHttpsProxiesSetSslCertificatesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetUrlMap': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetHttpsProxies.setUrlMap',
+              ordered_params=[u'project', u'targetHttpsProxy'],
+              path_params=[u'project', u'targetHttpsProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
+              request_field=u'urlMapReference',
+              request_type_name=u'ComputeTargetHttpsProxiesSetUrlMapRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified TargetHttpsProxy resource.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified TargetHttpsProxy resource.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetHttpsProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of TargetHttpsProxy resources available to the specified project.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetHttpsProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetSslCertificates(self, request, global_params=None):
+      """Replaces SslCertificates for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetSslCertificatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslCertificates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetUrlMap(self, request, global_params=None):
+      """Changes the URL map for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetUrlMapRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.

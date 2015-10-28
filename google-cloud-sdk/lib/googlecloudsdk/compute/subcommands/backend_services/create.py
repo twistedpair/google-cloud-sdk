@@ -3,25 +3,24 @@
 
    There are separate alpha, beta, and GA command classes in this file.  The
    key differences are that each track passes different message modules for
-   inferring options to --balancing-mode, and to enable or disable support for
-   https load balancing.
+   inferring options to --balancing-mode.
 """
 
 import argparse
 
+
+from googlecloudsdk.api_lib.compute import backend_services_utils
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import backend_services_utils
-from googlecloudsdk.shared.compute import base_classes
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_messages
 from googlecloudsdk.third_party.apis.compute.beta import compute_beta_messages
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 
 
-def _Args(parser, messages, include_https_health_checks):
+def _Args(parser, messages):
   """Common arguments to create commands for each release track."""
-  backend_services_utils.AddUpdatableArgs(parser, messages,
-                                          include_https_health_checks)
+  backend_services_utils.AddUpdatableArgs(parser, messages)
 
   parser.add_argument(
       'name',
@@ -34,7 +33,7 @@ class CreateGA(base_classes.BaseAsyncCreator):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_v1_messages, include_https_health_checks=False)
+    _Args(parser, compute_v1_messages)
 
   @property
   def service(self):
@@ -105,7 +104,7 @@ class CreateAlpha(CreateGA):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_alpha_messages, include_https_health_checks=True)
+    _Args(parser, compute_alpha_messages)
 
     enable_cdn = parser.add_argument(
         '--enable-cdn',
@@ -137,11 +136,10 @@ class CreateBeta(CreateGA):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_beta_messages, include_https_health_checks=True)
+    _Args(parser, compute_beta_messages)
 
 
 CreateGA.detailed_help = {
-    'brief': 'Create a backend service',
     'DESCRIPTION': """
         *{command}* is used to create backend services. Backend
         services define groups of backends that can receive

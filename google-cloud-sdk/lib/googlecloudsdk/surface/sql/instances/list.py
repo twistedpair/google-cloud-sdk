@@ -6,12 +6,12 @@ Lists instances in a given project in the alphabetical order of the
  instance name.
 """
 
+from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core import resources
-from googlecloudsdk.shared.sql import errors
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

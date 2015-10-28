@@ -3,8 +3,8 @@
 """Implementation of gcloud dataflow jobs describe command.
 """
 
+from googlecloudsdk.api_lib.dataflow import job_utils
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.dataflow import job_utils
 
 
 class Describe(base.Command):

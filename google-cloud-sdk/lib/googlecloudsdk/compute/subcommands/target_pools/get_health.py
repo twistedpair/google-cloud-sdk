@@ -1,8 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for getting a target pool's health."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import utils
 
 
 class GetHealth(base_classes.BaseCommand):

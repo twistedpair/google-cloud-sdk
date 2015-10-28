@@ -188,10 +188,11 @@ class InvalidResourceException(UserError):
 class WrongResourceCollectionException(UserError):
   """A command line that was given had the wrong collection."""
 
-  def __init__(self, expected, got):
+  def __init__(self, expected, got, path):
     super(WrongResourceCollectionException, self).__init__(
-        'wrong collection: expected [{expected}], got [{got}]'.format(
-            expected=expected, got=got))
+        'wrong collection: expected [{expected}], got [{got}], for '
+        'path [{path}]'.format(
+            expected=expected, got=got, path=path))
 
 
 class WrongFieldNumberException(UserError):
@@ -345,7 +346,7 @@ class _ResourceParser(object):
 
     if collection and collection != self.collection:
       raise WrongResourceCollectionException(
-          expected=self.collection, got=collection)
+          expected=self.collection, got=collection, path=collection_path)
 
     # collection-paths that begin with a slash must have an entry for all
     # ordered params, especially including the project.
@@ -907,7 +908,7 @@ class Registry(object):
 
     if collection and resource.Collection() != collection:
       raise WrongResourceCollectionException(
-          expected=collection, got=resource.Collection())
+          expected=collection, got=resource.Collection(), path=url)
     return resource
 
   def Parse(self, line, params=None, collection=None, resolve=True):

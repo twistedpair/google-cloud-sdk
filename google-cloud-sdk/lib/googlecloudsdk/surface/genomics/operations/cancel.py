@@ -2,12 +2,12 @@
 """Implementation of gcloud genomics operations cancel.
 """
 
+from googlecloudsdk.api_lib import genomics as lib
+from googlecloudsdk.api_lib.genomics import genomics_util
+from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared import genomics as lib
-from googlecloudsdk.shared.genomics import genomics_util
-from googlecloudsdk.shared.genomics.exceptions import GenomicsError
 
 
 class Cancel(base.Command):

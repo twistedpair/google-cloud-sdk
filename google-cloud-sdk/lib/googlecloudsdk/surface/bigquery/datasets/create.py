@@ -3,12 +3,12 @@
 """Implementation of gcloud bigquery datasets create.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
+from googlecloudsdk.api_lib.bigquery import bigquery_client_helper
+from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.bigquery import bigquery
-from googlecloudsdk.shared.bigquery import bigquery_client_helper
-from googlecloudsdk.shared.bigquery import message_conversions
 from googlecloudsdk.surface import bigquery as commands
 
 

@@ -126,14 +126,18 @@ class _Parser(object):
   def _CheckParenthesization(self, op):
     """Checks that AND and OR do not appear in the same parenthesis group.
 
+    This method is called each time an AND or OR operator is seen in an
+    expression. self._parenthesize[] keeps track of AND and OR operators seen in
+    the nested parenthesis groups. ExpressionSyntaxError is raised if both AND
+    and OR appear in the same parenthesis group. The top expression with no
+    parentheses is considered a parenthesis group.
+
     The One-Platform list filter spec on which this parser is based has an
     unconventional OR higher than AND logical operator precedence. Allowing that
     in the Cloud SDK would lead to user confusion and many bug reports. To avoid
     that and still be true to the spec this method forces expressions containing
     AND and OR combinations to be fully parenthesized so that the desired
     precedence is explicit and unambiguous.
-
-    The top expression with no parentheses is considered a parenthesis group.
 
     Args:
       op: self._OP_AND or self._OP_OR.
@@ -237,17 +241,19 @@ class _Parser(object):
             'Term expected [{0}].'.format(self._lex.Annotate(here)))
       return None
 
-    # Check for (...) term.
+    # Check for end of (...) term.
+    if self._lex.IsCharacter(')', peek=True):
+      # The caller will determine if this ends (...) or is a syntax error.
+      return None
+
+    # Check for start of (...) term.
     if self._lex.IsCharacter('('):
       self._parenthesize.append(set())
       tree = self._ParseExpr()
+      # Either the next char is ')' or we hit an end of expression syntax error.
       self._lex.IsCharacter(')')
       self._parenthesize.pop()
       return tree
-
-    # Check for end of (...) term.
-    if self._lex.IsCharacter(')', peek=True):
-      return None
 
     # Check for term inversion.
     invert = self._lex.IsCharacter('-')
@@ -416,10 +422,11 @@ class _Parser(object):
     return tree
 
   def Parse(self, expression, aliases=None):
-    """Parses the resource list filter expression.
+    """Parses a resource list filter expression.
 
     This is a hand-rolled recursive descent parser based directly on the
-    left-factorized BNF grammar in the file docstring.
+    left-factorized BNF grammar in the file docstring. The parser is not thread
+    safe. Each thread should use distinct _Parser objects.
 
     Args:
       expression: A resource list filter expression string.

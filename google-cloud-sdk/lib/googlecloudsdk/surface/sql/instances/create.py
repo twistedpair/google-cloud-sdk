@@ -3,7 +3,10 @@
 """Creates a new Cloud SQL instance."""
 import argparse
 import logging
-
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import instances
+from googlecloudsdk.api_lib.sql import operations
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -11,10 +14,6 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import instances
-from googlecloudsdk.shared.sql import operations
-from googlecloudsdk.shared.sql import validate
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

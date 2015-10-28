@@ -189,9 +189,8 @@ returned.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns information about an alias. Kind ANY returns a FIXED,.
-MOVABLE, or MERCURIAL_BRANCH alias, in that order, and ignores
-all other kinds.
+      """Returns information about an alias. Kind ANY returns a FIXED or.
+MOVABLE alias, in that order, and ignores all other kinds.
 
       Args:
         request: (SourceProjectsReposAliasesGetRequest) input message
@@ -634,7 +633,7 @@ least recent.
               method_id=u'source.projects.repos.workspaces.list',
               ordered_params=[u'projectId', u'repoName'],
               path_params=[u'projectId', u'repoName'],
-              query_params=[u'uid'],
+              query_params=[u'uid', u'view'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesListRequest',
@@ -1082,18 +1081,6 @@ last-updated time.
               response_type_name=u'Repo',
               supports_download=False,
           ),
-          'CopyExternalRepo': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.copyExternalRepo',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'repoName', u'url'],
-              relative_path=u'v1/projects/{projectId}:copyExternalRepo',
-              request_field='',
-              request_type_name=u'SourceProjectsCopyExternalRepoRequest',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
@@ -1110,21 +1097,6 @@ No association is kept between the two repos.
         (Repo) The response message.
       """
       config = self.GetMethodConfig('CloneRepo')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def CopyExternalRepo(self, request, global_params=None):
-      """Create a new repo and copy the contents of an external repo into it.
-No association is kept between the two repos.
-DEPRECATED. Use CloneRepo instead.
-
-      Args:
-        request: (SourceProjectsCopyExternalRepoRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Repo) The response message.
-      """
-      config = self.GetMethodConfig('CopyExternalRepo')
       return self._RunMethod(
           config, request, global_params=global_params)
 

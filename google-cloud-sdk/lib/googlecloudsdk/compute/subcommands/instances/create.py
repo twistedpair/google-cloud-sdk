@@ -2,18 +2,18 @@
 """Command for creating instances."""
 import collections
 
+
+from googlecloudsdk.api_lib.compute import addresses_utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import csek_utils
+from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import instance_utils
+from googlecloudsdk.api_lib.compute import metadata_utils
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-
-from googlecloudsdk.shared.compute import addresses_utils
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import csek_utils
-from googlecloudsdk.shared.compute import image_utils
-from googlecloudsdk.shared.compute import instance_utils
-from googlecloudsdk.shared.compute import metadata_utils
-from googlecloudsdk.shared.compute import utils
-from googlecloudsdk.shared.compute import zone_utils
 
 DISK_METAVAR = (
     'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '

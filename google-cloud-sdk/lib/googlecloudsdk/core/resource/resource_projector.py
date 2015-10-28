@@ -63,6 +63,8 @@ class Projector(object):
 
   Attributes:
     _projection: The projection object.
+    _been_here_done_that: A LIFO of the current objects being projected. Used
+      to catch recursive objects like datetime.datetime.max.
     _by_columns: True if Projector projects to a list of columns.
     _transforms_enabled_attribute: The projection.Attributes()
       transforms_enabled setting.
@@ -79,6 +81,7 @@ class Projector(object):
     """
     self._projection = projection
     self._by_columns = by_columns
+    self._been_here_done_that = []
     if 'transforms' in projection.Attributes():
       self._transforms_enabled_attribute = True
     elif 'no-transforms' in projection.Attributes():
@@ -286,7 +289,9 @@ class Projector(object):
       An object containing only the key:values selected by projection, or obj if
       the projection is None or empty.
     """
-    if obj is None:
+    if obj in self._been_here_done_that:
+      obj = None
+    elif obj is None:
       pass
     elif isinstance(obj, (basestring, bool, int, long, float, complex)):
       # primitive data type
@@ -295,6 +300,7 @@ class Projector(object):
       # bytearray copied to disassociate from original obj.
       obj = str(obj)
     else:
+      self._been_here_done_that.append(obj)
       if isinstance(obj, messages.Message):
         # protorpc message.
         obj = encoding.MessageToDict(obj)
@@ -307,16 +313,21 @@ class Projector(object):
           obj = obj.next()
         except StopIteration:
           obj = None
-        return self._Project(obj, projection, flag, leaf)
-      if projection and projection.attribute and projection.attribute.transform:
+        obj = self._Project(obj, projection, flag, leaf)
+      elif (projection and projection.attribute and
+            projection.attribute.transform):
         # Transformed nodes prune here.
-        return self._ProjectTransform(obj, projection.attribute.transform)
-      if ((flag >= self._projection.PROJECT or projection and projection.tree)
-          and hasattr(obj, '__iter__')):
+        obj = self._ProjectTransform(obj, projection.attribute.transform)
+      elif ((flag >= self._projection.PROJECT or projection and projection.tree)
+            and hasattr(obj, '__iter__')):
         if hasattr(obj, 'iteritems'):
-          return self._ProjectDict(obj, projection, flag)
+          obj = self._ProjectDict(obj, projection, flag)
         else:
-          return self._ProjectList(obj, projection, flag)
+          obj = self._ProjectList(obj, projection, flag)
+      self._been_here_done_that.pop()
+      return obj
+    # _ProjectAttribute() may apply transforms functions on obj, even if it is
+    # None. For example, a tranform that returns 'FAILED' for None values.
     return obj if leaf else self._ProjectAttribute(obj, projection, flag)
 
   def SetByColumns(self, enable):

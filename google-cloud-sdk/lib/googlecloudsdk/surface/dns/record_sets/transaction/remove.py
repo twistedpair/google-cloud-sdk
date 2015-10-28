@@ -2,12 +2,12 @@
 
 """gcloud dns record-sets transaction remove command."""
 
+from googlecloudsdk.api_lib.dns import transaction_util as trans_util
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.dns import transaction_util as trans_util
-from googlecloudsdk.shared.dns import util
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

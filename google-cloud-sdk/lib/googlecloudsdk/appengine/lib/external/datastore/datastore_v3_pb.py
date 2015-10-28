@@ -230,6 +230,8 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
   handle_ = 0
   has_app_ = 0
   app_ = ""
+  has_database_ = 0
+  database_ = ""
   has_mark_changes_ = 0
   mark_changes_ = 0
 
@@ -283,6 +285,19 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def has_app(self): return self.has_app_
 
+  def database(self): return self.database_
+
+  def set_database(self, x):
+    self.has_database_ = 1
+    self.database_ = x
+
+  def clear_database(self):
+    if self.has_database_:
+      self.has_database_ = 0
+      self.database_ = ""
+
+  def has_database(self): return self.has_database_
+
   def mark_changes(self): return self.mark_changes_
 
   def set_mark_changes(self, x):
@@ -318,6 +333,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     if (x.has_header()): self.mutable_header().MergeFrom(x.header())
     if (x.has_handle()): self.set_handle(x.handle())
     if (x.has_app()): self.set_app(x.app())
+    if (x.has_database()): self.set_database(x.database())
     if (x.has_mark_changes()): self.set_mark_changes(x.mark_changes())
     for i in xrange(x.composite_index_size()): self.add_composite_index().CopyFrom(x.composite_index(i))
 
@@ -329,6 +345,8 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     if self.has_handle_ and self.handle_ != x.handle_: return 0
     if self.has_app_ != x.has_app_: return 0
     if self.has_app_ and self.app_ != x.app_: return 0
+    if self.has_database_ != x.has_database_: return 0
+    if self.has_database_ and self.database_ != x.database_: return 0
     if self.has_mark_changes_ != x.has_mark_changes_: return 0
     if self.has_mark_changes_ and self.mark_changes_ != x.mark_changes_: return 0
     if len(self.composite_index_) != len(x.composite_index_): return 0
@@ -355,6 +373,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     n = 0
     if (self.has_header_): n += 1 + self.lengthString(self.header_.ByteSize())
     n += self.lengthString(len(self.app_))
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     if (self.has_mark_changes_): n += 2
     n += 1 * len(self.composite_index_)
     for i in xrange(len(self.composite_index_)): n += self.lengthString(self.composite_index_[i].ByteSize())
@@ -368,6 +387,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     if (self.has_app_):
       n += 1
       n += self.lengthString(len(self.app_))
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     if (self.has_mark_changes_): n += 2
     n += 1 * len(self.composite_index_)
     for i in xrange(len(self.composite_index_)): n += self.lengthString(self.composite_index_[i].ByteSizePartial())
@@ -377,6 +397,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     self.clear_header()
     self.clear_handle()
     self.clear_app()
+    self.clear_database()
     self.clear_mark_changes()
     self.clear_composite_index()
 
@@ -396,6 +417,9 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(42)
       out.putVarInt32(self.composite_index_[i].ByteSize())
       self.composite_index_[i].OutputUnchecked(out)
+    if (self.has_database_):
+      out.putVarInt32(50)
+      out.putPrefixedString(self.database_)
 
   def OutputPartial(self, out):
     if (self.has_handle_):
@@ -415,6 +439,9 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(42)
       out.putVarInt32(self.composite_index_[i].ByteSizePartial())
       self.composite_index_[i].OutputPartial(out)
+    if (self.has_database_):
+      out.putVarInt32(50)
+      out.putPrefixedString(self.database_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -440,6 +467,9 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
         d.skip(length)
         self.add_composite_index().TryMerge(tmp)
         continue
+      if tt == 50:
+        self.set_database(d.getPrefixedString())
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
@@ -454,6 +484,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
       res+=prefix+">\n"
     if self.has_handle_: res+=prefix+("handle: %s\n" % self.DebugFormatFixed64(self.handle_))
     if self.has_app_: res+=prefix+("app: %s\n" % self.DebugFormatString(self.app_))
+    if self.has_database_: res+=prefix+("database: %s\n" % self.DebugFormatString(self.database_))
     if self.has_mark_changes_: res+=prefix+("mark_changes: %s\n" % self.DebugFormatBool(self.mark_changes_))
     cnt=0
     for e in self.composite_index_:
@@ -472,6 +503,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
   kheader = 4
   khandle = 1
   kapp = 2
+  kdatabase = 6
   kmark_changes = 3
   kcomposite_index = 5
 
@@ -482,7 +514,8 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     3: "mark_changes",
     4: "header",
     5: "composite_index",
-  }, 5)
+    6: "database",
+  }, 6)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -491,7 +524,8 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     3: ProtocolBuffer.Encoder.NUMERIC,
     4: ProtocolBuffer.Encoder.STRING,
     5: ProtocolBuffer.Encoder.STRING,
-  }, 5, ProtocolBuffer.Encoder.MAX_TYPE)
+    6: ProtocolBuffer.Encoder.STRING,
+  }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -847,6 +881,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
   header_ = None
   has_app_ = 0
   app_ = ""
+  has_database_ = 0
+  database_ = ""
   has_name_space_ = 0
   name_space_ = ""
   has_kind_ = 0
@@ -927,6 +963,19 @@ class Query(ProtocolBuffer.ProtocolMessage):
       self.app_ = ""
 
   def has_app(self): return self.has_app_
+
+  def database(self): return self.database_
+
+  def set_database(self, x):
+    self.has_database_ = 1
+    self.database_ = x
+
+  def clear_database(self):
+    if self.has_database_:
+      self.has_database_ = 0
+      self.database_ = ""
+
+  def has_database(self): return self.has_database_
 
   def name_space(self): return self.name_space_
 
@@ -1297,6 +1346,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     assert x is not self
     if (x.has_header()): self.mutable_header().MergeFrom(x.header())
     if (x.has_app()): self.set_app(x.app())
+    if (x.has_database()): self.set_database(x.database())
     if (x.has_name_space()): self.set_name_space(x.name_space())
     if (x.has_kind()): self.set_kind(x.kind())
     if (x.has_ancestor()): self.mutable_ancestor().MergeFrom(x.ancestor())
@@ -1329,6 +1379,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if self.has_header_ and self.header_ != x.header_: return 0
     if self.has_app_ != x.has_app_: return 0
     if self.has_app_ and self.app_ != x.app_: return 0
+    if self.has_database_ != x.has_database_: return 0
+    if self.has_database_ and self.database_ != x.database_: return 0
     if self.has_name_space_ != x.has_name_space_: return 0
     if self.has_name_space_ and self.name_space_ != x.name_space_: return 0
     if self.has_kind_ != x.has_kind_: return 0
@@ -1410,6 +1462,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     n = 0
     if (self.has_header_): n += 2 + self.lengthString(self.header_.ByteSize())
     n += self.lengthString(len(self.app_))
+    if (self.has_database_): n += 2 + self.lengthString(len(self.database_))
     if (self.has_name_space_): n += 2 + self.lengthString(len(self.name_space_))
     if (self.has_kind_): n += 1 + self.lengthString(len(self.kind_))
     if (self.has_ancestor_): n += 2 + self.lengthString(self.ancestor_.ByteSize())
@@ -1449,6 +1502,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if (self.has_app_):
       n += 1
       n += self.lengthString(len(self.app_))
+    if (self.has_database_): n += 2 + self.lengthString(len(self.database_))
     if (self.has_name_space_): n += 2 + self.lengthString(len(self.name_space_))
     if (self.has_kind_): n += 1 + self.lengthString(len(self.kind_))
     if (self.has_ancestor_): n += 2 + self.lengthString(self.ancestor_.ByteSizePartial())
@@ -1485,6 +1539,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
   def Clear(self):
     self.clear_header()
     self.clear_app()
+    self.clear_database()
     self.clear_name_space()
     self.clear_kind()
     self.clear_ancestor()
@@ -1600,6 +1655,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(314)
       out.putVarInt32(self.header_.ByteSize())
       self.header_.OutputUnchecked(out)
+    if (self.has_database_):
+      out.putVarInt32(338)
+      out.putPrefixedString(self.database_)
 
   def OutputPartial(self, out):
     if (self.has_app_):
@@ -1691,6 +1749,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(314)
       out.putVarInt32(self.header_.ByteSizePartial())
       self.header_.OutputPartial(out)
+    if (self.has_database_):
+      out.putVarInt32(338)
+      out.putPrefixedString(self.database_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -1794,6 +1855,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
         d.skip(length)
         self.mutable_header().TryMerge(tmp)
         continue
+      if tt == 338:
+        self.set_database(d.getPrefixedString())
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
@@ -1807,6 +1871,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
       res+=self.header_.__str__(prefix + "  ", printElemNumber)
       res+=prefix+">\n"
     if self.has_app_: res+=prefix+("app: %s\n" % self.DebugFormatString(self.app_))
+    if self.has_database_: res+=prefix+("database: %s\n" % self.DebugFormatString(self.database_))
     if self.has_name_space_: res+=prefix+("name_space: %s\n" % self.DebugFormatString(self.name_space_))
     if self.has_kind_: res+=prefix+("kind: %s\n" % self.DebugFormatString(self.kind_))
     if self.has_ancestor_:
@@ -1888,6 +1953,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
 
   kheader = 39
   kapp = 1
+  kdatabase = 42
   kname_space = 29
   kkind = 3
   kancestor = 17
@@ -1953,7 +2019,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
     37: "persist_offset",
     39: "header",
     40: "geo_region",
-  }, 40)
+    42: "database",
+  }, 42)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -1989,7 +2056,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
     37: ProtocolBuffer.Encoder.NUMERIC,
     39: ProtocolBuffer.Encoder.STRING,
     40: ProtocolBuffer.Encoder.STRING,
-  }, 40, ProtocolBuffer.Encoder.MAX_TYPE)
+    42: ProtocolBuffer.Encoder.STRING,
+  }, 42, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -4294,6 +4362,8 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
   cursor_ = 0
   has_app_ = 0
   app_ = ""
+  has_database_ = 0
+  database_ = ""
 
   def __init__(self, contents=None):
     if contents is not None: self.MergeFromString(contents)
@@ -4324,11 +4394,25 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
 
   def has_app(self): return self.has_app_
 
+  def database(self): return self.database_
+
+  def set_database(self, x):
+    self.has_database_ = 1
+    self.database_ = x
+
+  def clear_database(self):
+    if self.has_database_:
+      self.has_database_ = 0
+      self.database_ = ""
+
+  def has_database(self): return self.has_database_
+
 
   def MergeFrom(self, x):
     assert x is not self
     if (x.has_cursor()): self.set_cursor(x.cursor())
     if (x.has_app()): self.set_app(x.app())
+    if (x.has_database()): self.set_database(x.database())
 
   def Equals(self, x):
     if x is self: return 1
@@ -4336,6 +4420,8 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
     if self.has_cursor_ and self.cursor_ != x.cursor_: return 0
     if self.has_app_ != x.has_app_: return 0
     if self.has_app_ and self.app_ != x.app_: return 0
+    if self.has_database_ != x.has_database_: return 0
+    if self.has_database_ and self.database_ != x.database_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -4349,6 +4435,7 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     n = 0
     if (self.has_app_): n += 1 + self.lengthString(len(self.app_))
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     return n + 9
 
   def ByteSizePartial(self):
@@ -4356,11 +4443,13 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
     if (self.has_cursor_):
       n += 9
     if (self.has_app_): n += 1 + self.lengthString(len(self.app_))
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     return n
 
   def Clear(self):
     self.clear_cursor()
     self.clear_app()
+    self.clear_database()
 
   def OutputUnchecked(self, out):
     out.putVarInt32(9)
@@ -4368,6 +4457,9 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
     if (self.has_app_):
       out.putVarInt32(18)
       out.putPrefixedString(self.app_)
+    if (self.has_database_):
+      out.putVarInt32(26)
+      out.putPrefixedString(self.database_)
 
   def OutputPartial(self, out):
     if (self.has_cursor_):
@@ -4376,6 +4468,9 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
     if (self.has_app_):
       out.putVarInt32(18)
       out.putPrefixedString(self.app_)
+    if (self.has_database_):
+      out.putVarInt32(26)
+      out.putPrefixedString(self.database_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -4385,6 +4480,9 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
         continue
       if tt == 18:
         self.set_app(d.getPrefixedString())
+        continue
+      if tt == 26:
+        self.set_database(d.getPrefixedString())
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -4396,6 +4494,7 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
     res=""
     if self.has_cursor_: res+=prefix+("cursor: %s\n" % self.DebugFormatFixed64(self.cursor_))
     if self.has_app_: res+=prefix+("app: %s\n" % self.DebugFormatString(self.app_))
+    if self.has_database_: res+=prefix+("database: %s\n" % self.DebugFormatString(self.database_))
     return res
 
 
@@ -4404,18 +4503,21 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
 
   kcursor = 1
   kapp = 2
+  kdatabase = 3
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
     1: "cursor",
     2: "app",
-  }, 2)
+    3: "database",
+  }, 3)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
     1: ProtocolBuffer.Encoder.DOUBLE,
     2: ProtocolBuffer.Encoder.STRING,
-  }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
+    3: ProtocolBuffer.Encoder.STRING,
+  }, 3, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -9122,6 +9224,8 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
   app_ = ""
   has_allow_multiple_eg_ = 0
   allow_multiple_eg_ = 0
+  has_database_ = 0
+  database_ = ""
 
   def __init__(self, contents=None):
     self.lazy_init_lock_ = thread.allocate_lock()
@@ -9172,12 +9276,26 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
 
   def has_allow_multiple_eg(self): return self.has_allow_multiple_eg_
 
+  def database(self): return self.database_
+
+  def set_database(self, x):
+    self.has_database_ = 1
+    self.database_ = x
+
+  def clear_database(self):
+    if self.has_database_:
+      self.has_database_ = 0
+      self.database_ = ""
+
+  def has_database(self): return self.has_database_
+
 
   def MergeFrom(self, x):
     assert x is not self
     if (x.has_header()): self.mutable_header().MergeFrom(x.header())
     if (x.has_app()): self.set_app(x.app())
     if (x.has_allow_multiple_eg()): self.set_allow_multiple_eg(x.allow_multiple_eg())
+    if (x.has_database()): self.set_database(x.database())
 
   def Equals(self, x):
     if x is self: return 1
@@ -9187,6 +9305,8 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if self.has_app_ and self.app_ != x.app_: return 0
     if self.has_allow_multiple_eg_ != x.has_allow_multiple_eg_: return 0
     if self.has_allow_multiple_eg_ and self.allow_multiple_eg_ != x.allow_multiple_eg_: return 0
+    if self.has_database_ != x.has_database_: return 0
+    if self.has_database_ and self.database_ != x.database_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -9203,6 +9323,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_header_): n += 1 + self.lengthString(self.header_.ByteSize())
     n += self.lengthString(len(self.app_))
     if (self.has_allow_multiple_eg_): n += 2
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     return n + 1
 
   def ByteSizePartial(self):
@@ -9212,12 +9333,14 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       n += 1
       n += self.lengthString(len(self.app_))
     if (self.has_allow_multiple_eg_): n += 2
+    if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     return n
 
   def Clear(self):
     self.clear_header()
     self.clear_app()
     self.clear_allow_multiple_eg()
+    self.clear_database()
 
   def OutputUnchecked(self, out):
     out.putVarInt32(10)
@@ -9229,6 +9352,9 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(26)
       out.putVarInt32(self.header_.ByteSize())
       self.header_.OutputUnchecked(out)
+    if (self.has_database_):
+      out.putVarInt32(34)
+      out.putPrefixedString(self.database_)
 
   def OutputPartial(self, out):
     if (self.has_app_):
@@ -9241,6 +9367,9 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(26)
       out.putVarInt32(self.header_.ByteSizePartial())
       self.header_.OutputPartial(out)
+    if (self.has_database_):
+      out.putVarInt32(34)
+      out.putPrefixedString(self.database_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -9257,6 +9386,9 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
         d.skip(length)
         self.mutable_header().TryMerge(tmp)
         continue
+      if tt == 34:
+        self.set_database(d.getPrefixedString())
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
@@ -9271,6 +9403,7 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
       res+=prefix+">\n"
     if self.has_app_: res+=prefix+("app: %s\n" % self.DebugFormatString(self.app_))
     if self.has_allow_multiple_eg_: res+=prefix+("allow_multiple_eg: %s\n" % self.DebugFormatBool(self.allow_multiple_eg_))
+    if self.has_database_: res+=prefix+("database: %s\n" % self.DebugFormatString(self.database_))
     return res
 
 
@@ -9280,20 +9413,23 @@ class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
   kheader = 3
   kapp = 1
   kallow_multiple_eg = 2
+  kdatabase = 4
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
     1: "app",
     2: "allow_multiple_eg",
     3: "header",
-  }, 3)
+    4: "database",
+  }, 4)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
     1: ProtocolBuffer.Encoder.STRING,
     2: ProtocolBuffer.Encoder.NUMERIC,
     3: ProtocolBuffer.Encoder.STRING,
-  }, 3, ProtocolBuffer.Encoder.MAX_TYPE)
+    4: ProtocolBuffer.Encoder.STRING,
+  }, 4, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \

@@ -3,10 +3,9 @@
 
 import argparse
 import re
-
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
 
 
 _PRINTABLE_CHARS_PATTERN = r'[ -~]+'

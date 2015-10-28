@@ -1,8 +1,9 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for removing a user from a group."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import user_utils
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import user_utils
 
 
 class RemoveMembers(base_classes.NoOutputAsyncMutator,

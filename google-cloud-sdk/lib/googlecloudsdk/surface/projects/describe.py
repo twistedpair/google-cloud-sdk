@@ -3,9 +3,8 @@
 """Command to show metadata for a specified project."""
 
 import textwrap
-
+from googlecloudsdk.api_lib.projects import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.projects import util
 
 
 class Describe(base.Command):

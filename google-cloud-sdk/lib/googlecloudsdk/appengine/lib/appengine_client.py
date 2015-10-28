@@ -26,6 +26,7 @@ from googlecloudsdk.appengine.lib import appengine_deployments
 from googlecloudsdk.appengine.lib import logs_requestor
 from googlecloudsdk.appengine.lib import module_downloader
 from googlecloudsdk.appengine.lib import util
+from googlecloudsdk.appengine.lib import version_util
 from googlecloudsdk.appengine.lib import yaml_parsing
 
 
@@ -225,6 +226,23 @@ class AppengineClient(object):
     rpcserver = self._GetRpcServer()
     response = rpcserver.Send('/api/versions/list', app_id=self.project)
     return yaml.safe_load(response)
+
+  def ListVersions(self):
+    """List all versions for an app.
+
+    Returns:
+      generator of (service, version) tuples
+    """
+    all_versions = []
+    for service, versions in self.ListModules().items():
+      # The first version from the API is the default
+      all_versions.append(version_util.Version(self.project, service,
+                                               versions[0],
+                                               traffic_allocation=100))
+      for version in versions[1:]:
+        all_versions.append(version_util.Version(self.project, service,
+                                                 version, traffic_allocation=0))
+    return all_versions
 
   def DeployModule(self, module, version, module_yaml, module_yaml_path):
     """Updates and deploys new app versions based on given config.

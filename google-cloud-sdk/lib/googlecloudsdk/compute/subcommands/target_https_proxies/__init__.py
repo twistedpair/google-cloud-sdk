@@ -4,7 +4,6 @@
 from googlecloudsdk.calliope import base
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class TargetHTTPSProxies(base.Group):
   """List, create, and delete target HTTPS proxies."""
 

@@ -2,10 +2,11 @@
 """Command for updating a backend in a backend service."""
 import copy
 
+
+from googlecloudsdk.api_lib.compute import backend_services_utils
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.compute import backend_services_utils
-from googlecloudsdk.shared.compute import base_classes
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 
 

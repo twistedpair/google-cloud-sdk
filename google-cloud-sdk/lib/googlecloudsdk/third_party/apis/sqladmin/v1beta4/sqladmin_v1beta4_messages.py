@@ -717,8 +717,9 @@ class Settings(_messages.Message):
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
       are enabled.
-    dataDiskSize: The size of data disk for the performance instance,
-      specified in bytes.
+    dataDiskSizeGb: The size of data disk for the performance instance,
+      specified in GB. Setting this value for non-performance instances will
+      result in an error.
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.
@@ -745,7 +746,7 @@ class Settings(_messages.Message):
   authorizedGaeApplications = _messages.StringField(2, repeated=True)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 3)
   crashSafeReplicationEnabled = _messages.BooleanField(4)
-  dataDiskSize = _messages.IntegerField(5)
+  dataDiskSizeGb = _messages.IntegerField(5)
   databaseFlags = _messages.MessageField('DatabaseFlags', 6, repeated=True)
   databaseReplicationEnabled = _messages.BooleanField(7)
   ipConfiguration = _messages.MessageField('IpConfiguration', 8)

@@ -1193,18 +1193,22 @@ class Command(CommandCommon):
       exceptions.ExitCodeNoError: if the command is returning with a non-zero
         exit code.
     """
+    metrics.Loaded()
+
     def Http(**kwargs):
       # Possibly override timeout, making sure to leave kwargs[timeout]
       # undefined (as opposed to None) if args.http_timout is not set.
       if args.http_timeout:
         kwargs['timeout'] = args.http_timeout
 
-      return core_cli.Http(cmd_path=self.dotted_name,
-                           trace_token=args.trace_token,
-                           trace_email=args.trace_email,
-                           trace_log=args.trace_log,
-                           log_http=properties.VALUES.core.log_http.GetBool(),
-                           **kwargs)
+      return core_cli.Http(
+          cmd_path=self.dotted_name,
+          trace_token=args.trace_token,
+          trace_email=args.trace_email,
+          trace_log=args.trace_log,
+          log_http=properties.VALUES.core.log_http.GetBool(),
+          authority_selector=properties.VALUES.auth.authority_selector.Get(),
+          **kwargs)
 
     tool_context = self._config_hooks.load_context()
     last_group = None
@@ -1219,7 +1223,6 @@ class Command(CommandCommon):
         format_string=args.format or 'yaml')
 
     log.debug('Running %s with %s.', self.dotted_name, args)
-    metrics.Loaded()
     resources = command_instance.Run(args)
     display.Displayer(command_instance, args, resources).Display()
     metrics.Ran()

@@ -1,11 +1,11 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for attaching a disk to an instance."""
 
-from googlecloudsdk.calliope import base
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import csek_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import csek_utils
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import base
 
 MODE_OPTIONS = ['ro', 'rw']
 

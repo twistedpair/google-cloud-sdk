@@ -8,15 +8,15 @@ import os
 import re
 import textwrap
 
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import lister
+from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.compute import ssh_utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import lister
-from googlecloudsdk.shared.compute import path_simplifier
-from googlecloudsdk.shared.compute import ssh_utils
 
 
 # DO NOT CHANGE THE NEXT TWO LINES.

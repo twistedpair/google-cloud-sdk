@@ -2452,7 +2452,7 @@ See Accessing images for more information.
           }
 
     def AddInstances(self, request, global_params=None):
-      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. TODO: Change to comment to state "if IG is load balanced.".
+      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -2845,6 +2845,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'SetMachineType': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.setMachineType',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineType',
+              request_field=u'instancesSetMachineTypeRequest',
+              request_type_name=u'ComputeInstancesSetMachineTypeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetMetadata': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.setMetadata',
@@ -2924,7 +2936,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def AggregatedList(self, request, global_params=None):
-      """AggregatedList method for the instances service.
+      """Retrieves aggregated list of instance resources.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -3076,6 +3088,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetMachineType(self, request, global_params=None):
+      """Sets machine type for the specified instances to the data included in the request.
+
+      Args:
+        request: (ComputeInstancesSetMachineTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMachineType')
       return self._RunMethod(
           config, request, global_params=global_params)
 

@@ -2,7 +2,7 @@
 """Command for changing the default service of a URL map."""
 import copy
 
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class SetDefaultService(base_classes.ReadWriteCommand):

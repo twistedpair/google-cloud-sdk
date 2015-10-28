@@ -1,9 +1,9 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Cloud Pub/Sub subscription modify-push-config command."""
 
+from googlecloudsdk.api_lib.pubsub import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.pubsub import util
 
 
 class ModifyPushConfig(base.Command):

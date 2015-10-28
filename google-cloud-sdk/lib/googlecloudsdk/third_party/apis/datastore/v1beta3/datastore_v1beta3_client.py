@@ -375,6 +375,18 @@ to use different resource name schemes, such as `users/*/operations`.
               response_type_name=u'LookupResponse',
               supports_download=False,
           ),
+          'MultiWatch': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'datastore.projects.multiWatch',
+              ordered_params=[u'projectId'],
+              path_params=[u'projectId'],
+              query_params=[],
+              relative_path=u'v1beta3/projects/{projectId}:multiWatch',
+              request_field=u'multiWatchRequest',
+              request_type_name=u'DatastoreProjectsMultiWatchRequest',
+              response_type_name=u'ChangeBatch',
+              supports_download=False,
+          ),
           'Rollback': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'datastore.projects.rollback',
@@ -397,6 +409,18 @@ to use different resource name schemes, such as `users/*/operations`.
               request_field=u'runQueryRequest',
               request_type_name=u'DatastoreProjectsRunQueryRequest',
               response_type_name=u'RunQueryResponse',
+              supports_download=False,
+          ),
+          'Watch': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'datastore.projects.watch',
+              ordered_params=[u'projectId'],
+              path_params=[u'projectId'],
+              query_params=[],
+              relative_path=u'v1beta3/projects/{projectId}:watch',
+              request_field=u'watchRequest',
+              request_type_name=u'DatastoreProjectsWatchRequest',
+              response_type_name=u'ChangeBatch',
               supports_download=False,
           ),
           }
@@ -495,6 +519,19 @@ subset of the data has already been imported to the Datastore.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def MultiWatch(self, request, global_params=None):
+      """Watch changes to the results of a dynamically changeable set of queries.
+
+      Args:
+        request: (DatastoreProjectsMultiWatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ChangeBatch) The response message.
+      """
+      config = self.GetMethodConfig('MultiWatch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Rollback(self, request, global_params=None):
       """Roll back a transaction.
 
@@ -518,5 +555,18 @@ subset of the data has already been imported to the Datastore.
         (RunQueryResponse) The response message.
       """
       config = self.GetMethodConfig('RunQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Watch(self, request, global_params=None):
+      """Watch changes to the results of a given set of queries.
+
+      Args:
+        request: (DatastoreProjectsWatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ChangeBatch) The response message.
+      """
+      config = self.GetMethodConfig('Watch')
       return self._RunMethod(
           config, request, global_params=global_params)

@@ -226,13 +226,16 @@ class CommandTreeGenerator(walker.Walker):
   This implements the resource generator for gcloud meta list-commands.
   """
 
-  def __init__(self, cli):
+  def __init__(self, cli, flags=False):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
+      flags: Include the non-global flags for each command/group if True.
     """
     super(CommandTreeGenerator, self).__init__(cli)
+    self._flags = flags
+    self._global_flags = set()
 
   def Visit(self, node, parent, is_group):
     """Visits each node in the CLI command tree to construct the dict tree.
@@ -246,9 +249,30 @@ class CommandTreeGenerator(walker.Walker):
       The subtree parent value, used here to construct a dict tree.
     """
     name = node.name.replace('_', '-')
+    info = {'_name_': name}
+    if self._flags:
+      no_prefix = '--no-'
+      flags = []
+      all_flags = [f for x in node.GetAllAvailableFlags()
+                   for f in x.option_strings]
+      for flag in all_flags:
+        if flag in self._global_flags:
+          continue
+        if flag.startswith(no_prefix):
+          positive = '--' + flag[len(no_prefix):]
+          if positive in all_flags:
+            continue
+        flags.append(flag)
+      if flags:
+        info['_flags_'] = sorted(flags)
+        if not self._global_flags:
+          # Most command flags are global (defined by the root command) or
+          # command-specific. Group-specific flags are rare. Separating out
+          # the global flags streamlines command descriptions and prevents
+          # global flag changes (we already have too many!) from making it
+          # look like every command has changed.
+          self._global_flags.update(flags)
     if is_group:
-      info = {}
-      info['_name_'] = name
       if parent:
         if 'groups' not in parent:
           parent['groups'] = []
@@ -256,7 +280,7 @@ class CommandTreeGenerator(walker.Walker):
       return info
     if 'commands' not in parent:
       parent['commands'] = []
-    parent['commands'].append(name)
+    parent['commands'].append(info)
     return None
 
 

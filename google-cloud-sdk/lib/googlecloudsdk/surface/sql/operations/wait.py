@@ -2,11 +2,11 @@
 
 """Retrieves information about a Cloud SQL instance operation."""
 
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import operations
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import operations
-from googlecloudsdk.shared.sql import validate
 
 
 class _BaseWait(object):

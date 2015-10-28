@@ -1,13 +1,13 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for adding public keys to users."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import file_utils
+from googlecloudsdk.api_lib.compute import gaia_utils
+from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.api_lib.compute import user_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import file_utils
-from googlecloudsdk.shared.compute import gaia_utils
-from googlecloudsdk.shared.compute import time_utils
-from googlecloudsdk.shared.compute import user_utils
 
 
 class AddKeys(base_classes.NoOutputAsyncMutator):

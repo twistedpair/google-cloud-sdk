@@ -1,8 +1,9 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for updating HTTPS health checks."""
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import base_classes
 
 THRESHOLD_UPPER_BOUND = 10
 THRESHOLD_LOWER_BOUND = 1

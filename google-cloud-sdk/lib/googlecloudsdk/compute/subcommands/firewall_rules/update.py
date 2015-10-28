@@ -1,8 +1,9 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for updating firewall rules."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import firewalls_utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import firewalls_utils
 
 
 class UpdateFirewall(base_classes.ReadWriteCommand):

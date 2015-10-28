@@ -3093,6 +3093,23 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesSetMachineTypeRequest(_messages.Message):
+  """A ComputeInstancesSetMachineTypeRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
+      to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMachineTypeRequest = _messages.MessageField('InstancesSetMachineTypeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesSetMetadataRequest(_messages.Message):
   """A ComputeInstancesSetMetadataRequest object.
 
@@ -5432,8 +5449,8 @@ class ForwardingRule(_messages.Message):
       cannot be a dash.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
-      target. Forwarding rules with the same `[IPAddress, IPProtocol]` pair
-      must have disjoint port ranges.
+      target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
+      have disjoint port ranges.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -7141,6 +7158,17 @@ class InstancesSetLabelsRequest(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
 
 
+class InstancesSetMachineTypeRequest(_messages.Message):
+  """A InstancesSetMachineTypeRequest object.
+
+  Fields:
+    machineType: Full or partial URL of the machine type resource. See
+      Instance.machine_type.
+  """
+
+  machineType = _messages.StringField(1)
+
+
 class License(_messages.Message):
   """A license resource.
 
@@ -7992,9 +8020,7 @@ class PathMatcher(_messages.Message):
   service will be used.
 
   Fields:
-    defaultService: The URL to the BackendService resource. This will be used
-      if none of the 'pathRules' defined by this PathMatcher is met by the
-      URL's path portion.
+    defaultService: A string attribute.
     description: An optional textual description of the resource.
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules.

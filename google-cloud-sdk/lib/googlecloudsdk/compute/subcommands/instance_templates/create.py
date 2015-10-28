@@ -1,13 +1,15 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating instance templates."""
 import collections
+
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import instance_utils
+from googlecloudsdk.api_lib.compute import metadata_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import image_utils
-from googlecloudsdk.shared.compute import instance_utils
-from googlecloudsdk.shared.compute import metadata_utils
-from googlecloudsdk.shared.compute import utils
 
 
 DISK_METAVAR = (

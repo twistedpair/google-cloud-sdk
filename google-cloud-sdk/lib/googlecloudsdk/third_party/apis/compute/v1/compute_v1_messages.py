@@ -786,8 +786,10 @@ class BackendService(_messages.Message):
 
     Values:
       HTTP: <no description>
+      HTTPS: <no description>
     """
     HTTP = 0
+    HTTPS = 1
 
   backends = _messages.MessageField('Backend', 1, repeated=True)
   creationTimestamp = _messages.StringField(2)
@@ -1905,6 +1907,101 @@ class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
 
   httpHealthCheck = _messages.StringField(1, required=True)
   httpHealthCheckResource = _messages.MessageField('HttpHealthCheck', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksDeleteRequest object.
+
+  Fields:
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to delete.
+    project: Name of the project scoping this request.
+  """
+
+  httpsHealthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHttpsHealthChecksGetRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksGetRequest object.
+
+  Fields:
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to return.
+    project: Name of the project scoping this request.
+  """
+
+  httpsHealthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHttpsHealthChecksInsertRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksInsertRequest object.
+
+  Fields:
+    httpsHealthCheck: A HttpsHealthCheck resource to be passed as the request
+      body.
+    project: Name of the project scoping this request.
+  """
+
+  httpsHealthCheck = _messages.MessageField('HttpsHealthCheck', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHttpsHealthChecksListRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      FIELD_NAME COMPARISON_STRING LITERAL_STRING.  The FIELD_NAME is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The COMPARISON_STRING must be either eq
+      (equals) or ne (not equals). The LITERAL_STRING is the string value to
+      filter to. The literal value must be valid for the type of field
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, filter=name ne example-
+      instance.
+    maxResults: Maximum count of results to be returned.
+    pageToken: Specifies a page token to use. Use this parameter if you want
+      to list the next page of results. Set pageToken to the nextPageToken
+      returned by a previous list request.
+    project: Name of the project scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksPatchRequest object.
+
+  Fields:
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
+    httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
+      request body.
+    project: Name of the project scoping this request.
+  """
+
+  httpsHealthCheck = _messages.StringField(1, required=True)
+  httpsHealthCheckResource = _messages.MessageField('HttpsHealthCheck', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksUpdateRequest object.
+
+  Fields:
+    httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
+    httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
+      request body.
+    project: Name of the project scoping this request.
+  """
+
+  httpsHealthCheck = _messages.StringField(1, required=True)
+  httpsHealthCheckResource = _messages.MessageField('HttpsHealthCheck', 2)
   project = _messages.StringField(3, required=True)
 
 
@@ -3188,6 +3285,71 @@ class ComputeSnapshotsListRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class ComputeSslCertificatesDeleteRequest(_messages.Message):
+  """A ComputeSslCertificatesDeleteRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    sslCertificate: Name of the SslCertificate resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  sslCertificate = _messages.StringField(2, required=True)
+
+
+class ComputeSslCertificatesGetRequest(_messages.Message):
+  """A ComputeSslCertificatesGetRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    sslCertificate: Name of the SslCertificate resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  sslCertificate = _messages.StringField(2, required=True)
+
+
+class ComputeSslCertificatesInsertRequest(_messages.Message):
+  """A ComputeSslCertificatesInsertRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    sslCertificate: A SslCertificate resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  sslCertificate = _messages.MessageField('SslCertificate', 2)
+
+
+class ComputeSslCertificatesListRequest(_messages.Message):
+  """A ComputeSslCertificatesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      FIELD_NAME COMPARISON_STRING LITERAL_STRING.  The FIELD_NAME is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The COMPARISON_STRING must be either eq
+      (equals) or ne (not equals). The LITERAL_STRING is the string value to
+      filter to. The literal value must be valid for the type of field
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, filter=name ne example-
+      instance.
+    maxResults: Maximum count of results to be returned.
+    pageToken: Specifies a page token to use. Use this parameter if you want
+      to list the next page of results. Set pageToken to the nextPageToken
+      returned by a previous list request.
+    project: Name of the project scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
   """A ComputeTargetHttpProxiesDeleteRequest object.
 
@@ -3266,6 +3428,104 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   targetHttpProxy = _messages.StringField(2, required=True)
+  urlMapReference = _messages.MessageField('UrlMapReference', 3)
+
+
+class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesDeleteRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetHttpsProxiesGetRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesGetRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetHttpsProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesInsertRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxy = _messages.MessageField('TargetHttpsProxy', 2)
+
+
+class ComputeTargetHttpsProxiesListRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      FIELD_NAME COMPARISON_STRING LITERAL_STRING.  The FIELD_NAME is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The COMPARISON_STRING must be either eq
+      (equals) or ne (not equals). The LITERAL_STRING is the string value to
+      filter to. The literal value must be valid for the type of field
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, filter=name ne example-
+      instance.
+    maxResults: Maximum count of results to be returned.
+    pageToken: Specifies a page token to use. Use this parameter if you want
+      to list the next page of results. Set pageToken to the nextPageToken
+      returned by a previous list request.
+    project: Name of the project scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    targetHttpsProxiesSetSslCertificatesRequest: A
+      TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxiesSetSslCertificatesRequest = _messages.MessageField('TargetHttpsProxiesSetSslCertificatesRequest', 2)
+  targetHttpsProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesSetUrlMapRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
+      to be set.
+    urlMapReference: A UrlMapReference resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetHttpsProxy = _messages.StringField(2, required=True)
   urlMapReference = _messages.MessageField('UrlMapReference', 3)
 
 
@@ -4647,8 +4907,8 @@ class ForwardingRule(_messages.Message):
       cannot be a dash.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
-      target. Forwarding rules with the same `[IPAddress, IPProtocol]` pair
-      must have disjoint port ranges.
+      target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
+      have disjoint port ranges.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -4965,6 +5225,79 @@ class HttpHealthCheckList(_messages.Message):
   id = _messages.StringField(1)
   items = _messages.MessageField('HttpHealthCheck', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#httpHealthCheckList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class HttpsHealthCheck(_messages.Message):
+  """An HttpsHealthCheck resource. This resource defines a template for how
+  individual instances should be checked for health, via HTTPS.
+
+  Fields:
+    checkIntervalSec: How often (in seconds) to send a health check. The
+      default value is 5 seconds.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    healthyThreshold: A so-far unhealthy instance will be marked healthy after
+      this many consecutive successes. The default value is 2.
+    host: The value of the host header in the HTTPS health check request. If
+      left empty (default value), the public IP on behalf of which this health
+      check is performed will be used.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    port: The TCP port number for the HTTPS health check request. The default
+      value is 443.
+    requestPath: The request path of the HTTPS health check request. The
+      default value is "/".
+    selfLink: [Output Only] Server-defined URL for the resource.
+    timeoutSec: How long (in seconds) to wait before claiming failure. The
+      default value is 5 seconds. It is invalid for timeoutSec to have a
+      greater value than checkIntervalSec.
+    unhealthyThreshold: A so-far healthy instance will be marked unhealthy
+      after this many consecutive failures. The default value is 2.
+  """
+
+  checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  host = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#httpsHealthCheck')
+  name = _messages.StringField(8)
+  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  requestPath = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  timeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  unhealthyThreshold = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+
+
+class HttpsHealthCheckList(_messages.Message):
+  """Contains a list of HttpsHealthCheck resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of HttpsHealthCheck resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('HttpsHealthCheck', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#httpsHealthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
 
@@ -7025,9 +7358,7 @@ class PathMatcher(_messages.Message):
   service will be used.
 
   Fields:
-    defaultService: The URL to the BackendService resource. This will be used
-      if none of the 'pathRules' defined by this PathMatcher is met by the
-      URL's path portion.
+    defaultService: A string attribute.
     description: An optional textual description of the resource.
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules.
@@ -7572,6 +7903,65 @@ class SnapshotList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class SslCertificate(_messages.Message):
+  """An SslCertificate resource. This resource provides a mechanism to upload
+  an SSL key and certificate to global HTTPS loadbalancer to serve secure
+  connections.
+
+  Fields:
+    certificate: A local certificate file. The certificate must be in PEM
+      format. The certificate chain must be no greater than 5 certs long. The
+      chain must include at least one intermediate cert.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource. Provided by
+      the client when the resource is created.
+    id: [Output Only] Unique identifier for the resource. Defined by the
+      server.
+    kind: [Output Only] Type of the resource. Always compute#sslCertificate
+      for SSL certificates.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    privateKey: A write-only private key in PEM format. Only insert RPCs will
+      include this field.
+    selfLink: [Output only] Server-defined URL for the resource.
+  """
+
+  certificate = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#sslCertificate')
+  name = _messages.StringField(6)
+  privateKey = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+
+
+class SslCertificateList(_messages.Message):
+  """Contains a list of SslCertificate resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource. Defined by the
+      server.
+    items: A list of SslCertificate resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SslCertificate', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#sslCertificateList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -7682,6 +8072,74 @@ class TargetHttpProxyList(_messages.Message):
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetHttpProxy', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetHttpProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
+  """A TargetHttpsProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    sslCertificates: New set of URLs to SslCertificate resources to associate
+      with this TargetHttpProxy. Currently exactly one ssl certificate must be
+      specified.
+  """
+
+  sslCertificates = _messages.StringField(1, repeated=True)
+
+
+class TargetHttpsProxy(_messages.Message):
+  """A TargetHttpsProxy resource. This resource defines an HTTPS proxy.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource. Provided by
+      the client when the resource is created.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    sslCertificates: URLs to SslCertificate resources that are used to
+      authenticate connections to Backends. Currently exactly one SSL
+      certificate must be specified.
+    urlMap: URL to the UrlMap resource that defines the mapping from URL to
+      the BackendService.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetHttpsProxy')
+  name = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  sslCertificates = _messages.StringField(7, repeated=True)
+  urlMap = _messages.StringField(8)
+
+
+class TargetHttpsProxyList(_messages.Message):
+  """Contains a list of TargetHttpsProxy resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of TargetHttpsProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetHttpsProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetHttpsProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
 

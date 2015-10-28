@@ -5,16 +5,15 @@
 
 import itertools
 import sys
-
+from googlecloudsdk.api_lib.bigquery import bigquery
+from googlecloudsdk.api_lib.bigquery import job_control
+from googlecloudsdk.api_lib.bigquery import job_display
+from googlecloudsdk.api_lib.bigquery import job_progress
+from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.bigquery import bigquery
-from googlecloudsdk.shared.bigquery import job_control
-from googlecloudsdk.shared.bigquery import job_display
-from googlecloudsdk.shared.bigquery import job_progress
-from googlecloudsdk.shared.bigquery import message_conversions
 from googlecloudsdk.surface import bigquery as commands
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 

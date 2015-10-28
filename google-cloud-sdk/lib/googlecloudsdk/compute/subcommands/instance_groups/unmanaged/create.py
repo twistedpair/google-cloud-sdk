@@ -1,8 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating unmanaged instance groups."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
-from googlecloudsdk.shared.compute import zone_utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute import zone_utils
 
 
 class Create(base_classes.BaseAsyncCreator, zone_utils.ZoneResourceFetcher):

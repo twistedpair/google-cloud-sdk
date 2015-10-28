@@ -1,13 +1,14 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating disks."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import csek_utils
+from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import csek_utils
-from googlecloudsdk.shared.compute import image_utils
-from googlecloudsdk.shared.compute import utils
-from googlecloudsdk.shared.compute import zone_utils
 
 
 DETAILED_HELP = {

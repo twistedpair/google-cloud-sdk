@@ -3,11 +3,11 @@
 """Implementation of gcloud bigquery tables remove.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.bigquery import bigquery
 from googlecloudsdk.surface import bigquery as commands
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 

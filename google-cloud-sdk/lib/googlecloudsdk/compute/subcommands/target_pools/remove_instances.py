@@ -1,9 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for removing instances from target pools."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
 
 
 class RemoveInstances(base_classes.NoOutputAsyncMutator):

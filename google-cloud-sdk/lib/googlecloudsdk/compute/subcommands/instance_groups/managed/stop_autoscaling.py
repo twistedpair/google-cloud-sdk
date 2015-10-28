@@ -1,8 +1,8 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for stopping autoscaling of a managed instance group."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import managed_instance_groups_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
+from googlecloudsdk.api_lib.compute import utils
 
 
 class StopAutoscaling(base_classes.BaseAsyncMutator):

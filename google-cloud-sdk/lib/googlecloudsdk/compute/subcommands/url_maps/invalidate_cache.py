@@ -1,9 +1,9 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for cache invalidation."""
 
-from googlecloudsdk.calliope import base
 
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.calliope import base
 
 
 @base.Hidden

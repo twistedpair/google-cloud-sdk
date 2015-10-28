@@ -1,12 +1,11 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Cloud Pub/Sub subscription list command."""
 import re
-
+from googlecloudsdk.api_lib.pubsub import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io as io
-from googlecloudsdk.shared.pubsub import util
 
 MAX_SUBSCRIPTIONS_RESULTS = 5000
 

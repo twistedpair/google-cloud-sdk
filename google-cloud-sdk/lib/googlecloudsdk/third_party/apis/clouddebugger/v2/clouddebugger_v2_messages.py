@@ -166,6 +166,9 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
 
   Fields:
     debuggeeId: Identifies the debuggee.
+    successOnTimeout: If set to true, returns OK status rather than ABORTED
+      and sets the wait_expired field to true in the response when the request
+      times-out.
     waitToken: A wait token that, if specified, blocks the method call until
       the list of active breakpoints has changed, or a server selected timeout
       has expired.  The value should be set from the last returned response.
@@ -174,7 +177,8 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
   """
 
   debuggeeId = _messages.StringField(1, required=True)
-  waitToken = _messages.StringField(2)
+  successOnTimeout = _messages.BooleanField(2)
+  waitToken = _messages.StringField(3)
 
 
 class ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest(_messages.Message):
@@ -485,10 +489,13 @@ class ListActiveBreakpointsResponse(_messages.Message):
       'location' are guranteed to be set on each breakpoint.
     nextWaitToken: A wait token that can be used in the next method call to
       block until the list of breakpoints changes.
+    waitExpired: The wait_expired field is set to true by the server when the
+      request times-out and the field success_on_timeout is set to true.
   """
 
   breakpoints = _messages.MessageField('Breakpoint', 1, repeated=True)
   nextWaitToken = _messages.StringField(2)
+  waitExpired = _messages.BooleanField(3)
 
 
 class ListBreakpointsResponse(_messages.Message):

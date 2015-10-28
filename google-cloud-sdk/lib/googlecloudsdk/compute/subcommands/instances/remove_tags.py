@@ -1,8 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for removing tags from instances."""
 import copy
+
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.shared.compute import base_classes
 
 
 class RemoveTags(base_classes.InstanceTagsMutatorMixin,

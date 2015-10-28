@@ -62,15 +62,18 @@
     locales: [de, en_US, en_GB, es, fr, it, ru, zh]
 """
 
+import re
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
+
 import yaml
 
 from googlecloudsdk.test.lib import arg_validate
 
 
-INCLUDE = 'include'
-ALREADY_INCLUDED = '__already_included__'
+_ARG_GROUP_PATTERN = re.compile(r'^[a-zA-Z0-9._\-]+\Z')
+
+_INCLUDE = 'include'
 
 
 def GetArgsFromArgFile(argspec, all_test_args_set):
@@ -80,11 +83,11 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
     argspec: string containing an ARG_FILE:ARG_GROUP_NAME pair, where ARG_FILE
       is the path to a file containing groups of test arguments in yaml format,
       and ARG_GROUP_NAME is a yaml object name of a group of arg:value pairs.
-    all_test_args_set: a set of strings for every gcloud-test argument. Used
-      for validation.
+    all_test_args_set: a set of strings for every possible gcloud-test argument
+      name regardless of test type. Used for validation.
 
   Returns:
-    A dictionary created from the file which maps arg names to arg values.
+    A {str:str} dict created from the file which maps arg names to arg values.
 
   Raises:
     BadFileException: the YAML parser encountered an I/O error or syntax error
@@ -101,6 +104,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
   except IOError as err:
     raise exceptions.BadFileException(
         'Error reading argument file [{f}]: {e}'.format(f=arg_file, e=err))
+  _ValidateArgGroupNames(all_arg_groups.keys())
 
   args_from_file = {}
   _MergeArgGroupIntoArgs(args_from_file, group_name, all_arg_groups,
@@ -153,15 +157,26 @@ def _ReadArgGroupsFromFile(arg_file):
   return all_groups
 
 
+def _ValidateArgGroupNames(group_names):
+  for group_name in group_names:
+    if not _ARG_GROUP_PATTERN.match(group_name):
+      raise exceptions.BadFileException(
+          'Invalid argument group name [{0}]. Names may only use a-zA-Z0-9._-'
+          .format(group_name))
+
+
 def _MergeArgGroupIntoArgs(
-    args_from_file, group_name, all_arg_groups, all_test_args_set):
+    args_from_file, group_name, all_arg_groups, all_test_args_set,
+    already_included_set=None):
   """Merges args from an arg group into the given args_from_file dictionary.
 
   Args:
     args_from_file: dict of arg:value pairs already loaded from the arg-file.
     group_name: str, the name of the arg-group to merge into args_from_file.
     all_arg_groups: dict containing all arg-groups loaded from the arg-file.
-    all_test_args_set: set of valid arg name strings.
+    all_test_args_set: set of str, all possible test arg names.
+    already_included_set: set of str, all group names which were already
+      included. Used to detect 'include:' cycles.
 
   Raises:
     BadFileException: an undefined arg-group name was encountered.
@@ -169,6 +184,12 @@ def _MergeArgGroupIntoArgs(
       use of include: led to cyclic references.
     ToolException: an undefined argument name was encountered.
   """
+  if already_included_set is None:
+    already_included_set = set()
+  elif group_name in already_included_set:
+    raise arg_validate.InvalidArgException(
+        _INCLUDE,
+        'Detected cyclic reference to arg group [{g}]'.format(g=group_name))
   if group_name not in all_arg_groups:
     raise exceptions.BadFileException(
         'Could not find argument group [{g}] in argument file.'
@@ -178,15 +199,11 @@ def _MergeArgGroupIntoArgs(
   if not arg_group:
     log.warning('Argument group [{0}] is empty.'.format(group_name))
     return
-  if ALREADY_INCLUDED in arg_group:
-    raise arg_validate.InvalidArgException(
-        INCLUDE,
-        'Detected cyclic reference to arg group [{g}]'.format(g=group_name))
 
   for arg_name in arg_group:
     arg = arg_validate.InternalArgNameFrom(arg_name)
     # Must process include: groups last in order to follow precedence rules.
-    if arg == INCLUDE:
+    if arg == _INCLUDE:
       continue
 
     if arg not in all_test_args_set:
@@ -201,15 +218,14 @@ def _MergeArgGroupIntoArgs(
       args_from_file[arg] = arg_validate.ValidateArgFromFile(
           arg, arg_group[arg_name])
 
-  arg_group[ALREADY_INCLUDED] = True  # Prevent "include:" cycles
+  already_included_set.add(group_name)  # Prevent "include:" cycles
 
-  if INCLUDE in arg_group:
-    included_groups = arg_validate.ValidateStringList(INCLUDE,
-                                                      arg_group[INCLUDE])
+  if _INCLUDE in arg_group:
+    included_groups = arg_validate.ValidateStringList(_INCLUDE,
+                                                      arg_group[_INCLUDE])
     for included_group in included_groups:
-      _MergeArgGroupIntoArgs(
-          args_from_file, included_group, all_arg_groups, all_test_args_set)
-  return
+      _MergeArgGroupIntoArgs(args_from_file, included_group, all_arg_groups,
+                             all_test_args_set, already_included_set)
 
 
 # pylint: disable=unused-argument

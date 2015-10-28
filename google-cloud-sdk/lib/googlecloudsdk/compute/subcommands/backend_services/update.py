@@ -10,21 +10,21 @@
 import argparse
 import copy
 
+
+from googlecloudsdk.api_lib.compute import backend_services_utils
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import backend_services_utils
-from googlecloudsdk.shared.compute import base_classes
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_messages
 from googlecloudsdk.third_party.apis.compute.beta import compute_beta_messages
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 
 
-def _Args(parser, messages, include_https_health_checks):
+def _Args(parser, messages):
   """Common arguments to create commands for each release track."""
   backend_services_utils.AddUpdatableArgs(
       parser,
       messages,
-      include_https_health_checks,
       default_protocol=None,
       default_timeout=None)
 
@@ -39,7 +39,7 @@ class UpdateGA(base_classes.ReadWriteCommand):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_v1_messages, include_https_health_checks=False)
+    _Args(parser, compute_v1_messages)
 
   @property
   def service(self):
@@ -101,7 +101,7 @@ class UpdateGA(base_classes.ReadWriteCommand):
         args.protocol,
         args.description is not None,
         args.http_health_checks,
-        getattr(args, 'https_health_checks', None),
+        args.https_health_checks,
         args.timeout is not None,
         args.port,
         args.port_name,
@@ -117,7 +117,7 @@ class UpdateAlpha(UpdateGA):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_alpha_messages, include_https_health_checks=True)
+    _Args(parser, compute_alpha_messages)
 
     enable_cdn = parser.add_argument(
         '--enable-cdn',
@@ -161,7 +161,7 @@ class UpdateBeta(UpdateGA):
 
   @staticmethod
   def Args(parser):
-    _Args(parser, compute_beta_messages, include_https_health_checks=True)
+    _Args(parser, compute_beta_messages)
 
 
 UpdateGA.detailed_help = {

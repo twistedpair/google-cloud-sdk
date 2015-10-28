@@ -53,7 +53,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
               method_id=u'clouddebugger.controller.debuggees.breakpoints.list',
               ordered_params=[u'debuggeeId'],
               path_params=[u'debuggeeId'],
-              query_params=[u'waitToken'],
+              query_params=[u'successOnTimeout', u'waitToken'],
               relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints',
               request_field='',
               request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsListRequest',

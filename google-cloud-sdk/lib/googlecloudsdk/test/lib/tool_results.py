@@ -12,7 +12,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-STATUS_INTERVAL_SECS = 3
+_STATUS_INTERVAL_SECS = 3
 
 
 class BadMatrixException(exceptions.ToolException):
@@ -50,8 +50,8 @@ def CreateToolResultsUiUrl(project_id, tool_results_ids):
   return urlparse.urljoin(url_base, url_end)
 
 
-def GetToolResultsIds(matrix, testing_api_helper,
-                      status_interval=STATUS_INTERVAL_SECS):
+def GetToolResultsIds(matrix, matrix_monitor,
+                      status_interval=_STATUS_INTERVAL_SECS):
   """Gets the Tool Results history ID and execution ID for a test matrix.
 
   Sometimes the IDs are available immediately after a test matrix is created.
@@ -61,7 +61,7 @@ def GetToolResultsIds(matrix, testing_api_helper,
 
   Args:
     matrix: a TestMatrix which was just created by the Testing service.
-    testing_api_helper: a TestingApiHelper object.
+    matrix_monitor: a MatrixMonitor object.
     status_interval: float, number of seconds to sleep between status checks.
 
   Returns:
@@ -82,7 +82,7 @@ def GetToolResultsIds(matrix, testing_api_helper,
         if history_id and execution_id:
           break
 
-      if matrix.state in testing_api_helper.completed_matrix_states:
+      if matrix.state in matrix_monitor.completed_matrix_states:
         raise BadMatrixException(
             '\nMatrix [{m}] unexpectedly reached final status {s} without '
             'returning a URL to any test results in the Developers Console. '
@@ -91,6 +91,6 @@ def GetToolResultsIds(matrix, testing_api_helper,
             .format(m=matrix.testMatrixId, s=matrix.state))
 
       time.sleep(status_interval)
-      matrix = testing_api_helper.GetTestMatrixStatus(matrix.testMatrixId)
+      matrix = matrix_monitor.GetTestMatrixStatus()
 
   return ToolResultsIds(history_id=history_id, execution_id=execution_id)

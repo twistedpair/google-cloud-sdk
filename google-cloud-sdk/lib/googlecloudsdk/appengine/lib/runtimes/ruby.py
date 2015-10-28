@@ -15,20 +15,41 @@ from googlecloudsdk.appengine.lib import fingerprinting
 from googlecloudsdk.appengine.lib.images import config
 
 
-# Keep these up to date.
+# Keep these up to date. You can find the latest versions by visiting
+# rubygems.org and searching for "bundler" and for "foreman".
+# Checking about once every month or two should be sufficient.
+# (Last checked 2015.10.20.)
 BUNDLER_VERSION = '1.10.6'
 FOREMAN_VERSION = '0.78.0'
 
+# Mapping from Gemfile versions to rbenv versions with patchlevel.
+# Keep this up to date. The canonical version list can be found at
+# https://github.com/sstephenson/ruby-build/tree/master/share/ruby-build
+# Find the highest patchlevel for each version. (At this point, we expect
+# only 2.0.0 to need updating, since earlier versions are end-of-lifed, and
+# later versions don't seem to be using patchlevels.)
+# Checking about once a quarter should be sufficient.
+# (Last checked 2015.10.20.)
+RUBY_VERSION_MAP = {
+    '1.8.6': '1.8.6-p420',
+    '1.8.7': '1.8.7-p375',
+    '1.9.1': '1.9.1-p430',
+    '1.9.2': '1.9.2-p330',
+    '1.9.3': '1.9.3-p551',
+    '2.0.0': '2.0.0-p647'
+}
+
 # Mapping from gems to libraries they expect.
+# We should add to this list as we find more common cases.
 GEM_PACKAGES = {
     'rgeo': ['libgeos-dev', 'libproj-dev']
 }
 
 APP_YAML_CONTENTS = textwrap.dedent("""\
-    runtime: ruby
+    runtime: {runtime}
     vm: true
     api_version: 1
-    entrypoint: {0}
+    entrypoint: {entrypoint}
     """)
 DOCKERIGNORE_CONTENTS = textwrap.dedent("""\
     .dockerignore
@@ -96,28 +117,27 @@ ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E production /app/config.ru'
 class RubyConfigurator(fingerprinting.Configurator):
   """Generates configuration for a Ruby app."""
 
-  def __init__(self, path, deploy, ruby_version, entrypoint, packages):
+  def __init__(self, path, params, ruby_version, entrypoint, packages):
     """Constructor.
 
     Args:
       path: (str) Root path of the source tree.
-      deploy: (bool) True if this is being driven from the "deploy" command. In
-        this case, we do not generate app.yaml and we make the code cleanup
-        whatever we generate.
+      params: (fingerprinting.Params) Parameters passed through to the
+        fingerprinters.
       ruby_version: (str) The ruby interpreter in rbenv format
       entrypoint: (str) The entrypoint command
       packages: ([str, ...]) A set of packages to install
     """
 
     self.root = path
-    self.deploy = deploy
+    self.params = params
     self.ruby_version = ruby_version
     self.entrypoint = entrypoint
     self.packages = packages
 
     # Write messages to the console or to the log depending on whether we're
     # doing a "deploy."
-    if deploy:
+    if params.deploy:
       self.notify = log.info
     else:
       self.notify = log.status.Print
@@ -131,10 +151,11 @@ class RubyConfigurator(fingerprinting.Configurator):
 
     cleaner = fingerprinting.Cleaner()
 
-    self._GenerateDockerfile(cleaner)
-    if not self.deploy:
+    if not self.params.deploy:
       self._GenerateAppYaml(cleaner)
-    self._GenerateDockerignore(cleaner)
+    if self.params.custom or self.params.deploy:
+      self._GenerateDockerfile(cleaner)
+      self._GenerateDockerignore(cleaner)
 
     if not cleaner.HasFiles():
       self.notify('All config files already exist, not generating anything.')
@@ -150,8 +171,10 @@ class RubyConfigurator(fingerprinting.Configurator):
     app_yaml = os.path.join(self.root, 'app.yaml')
     if not os.path.exists(app_yaml):
       self.notify('Saving [app.yaml] to [{0}].'.format(self.root))
+      runtime = 'custom' if self.params.custom else 'ruby'
       with open(app_yaml, 'w') as f:
-        f.write(APP_YAML_CONTENTS.format(self.entrypoint))
+        f.write(APP_YAML_CONTENTS.format(runtime=runtime,
+                                         entrypoint=self.entrypoint))
       cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
@@ -242,7 +265,7 @@ def Fingerprint(path, params):
     if not entrypoint:
       return None
 
-  return RubyConfigurator(path, params.deploy, ruby_version, entrypoint,
+  return RubyConfigurator(path, params, ruby_version, entrypoint,
                           packages)
 
 
@@ -278,9 +301,10 @@ def _DetectRubyInterpreter(path):
   """
   ruby_info = _RunSubprocess('bundle platform --ruby')
   if not re.match('^No ', ruby_info):
-    match = re.match(r'^ruby (\d+\.\d+(\.\d+(-p\d+)?)?)', ruby_info)
+    match = re.match(r'^ruby (\d+\.\d+(\.\d+)?)', ruby_info)
     if match:
       ruby_version = match.group(1)
+      ruby_version = RUBY_VERSION_MAP.get(ruby_version, ruby_version)
       log.info(
           'Using MRI {0} as requested in the Gemfile.'.format(ruby_version))
       return ruby_version
@@ -412,3 +436,4 @@ def _ReadFile(root, filename, required=False):
     return None
   with open(path) as f:
     return f.read()
+

@@ -249,6 +249,8 @@ class ModuleYamlInfo(_YamlInfo):
     until all images in production are pushed via gcloud (and therefore all
     builds happen locally in the SDK).
 
+    Also sets module_yaml_path which is needed for some runtimes.
+
     Raises:
       AppConfigError: if the function was called for the module which is not a
         Managed VM module.
@@ -258,6 +260,7 @@ class ModuleYamlInfo(_YamlInfo):
     if not self.parsed.vm_settings:
       self.parsed.vm_settings = appinfo.VmSettings()
     self.parsed.vm_settings['has_docker_image'] = True
+    self.parsed.vm_settings['module_yaml_path'] = os.path.basename(self.file)
 
 
 def _CheckAttribute(name, gcloud_name, warn_remove, yaml_info, extractor_func,

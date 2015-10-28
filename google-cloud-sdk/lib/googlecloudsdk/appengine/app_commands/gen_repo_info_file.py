@@ -2,9 +2,9 @@
 
 """The gen_repo_info_file command."""
 
-from googlecloudsdk.calliope import base
 
-from googlecloudsdk.shared.source import generate_source_context
+from googlecloudsdk.api_lib.source import generate_source_context
+from googlecloudsdk.calliope import base
 
 
 @base.Hidden

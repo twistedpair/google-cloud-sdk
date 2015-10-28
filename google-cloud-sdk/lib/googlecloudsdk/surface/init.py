@@ -160,7 +160,7 @@ class Init(base.Command):
       return None
     choices = []
     active_config = active_configs[0]
-    log.status.write('Settings from you current configuration [{0}] are:\n'
+    log.status.write('Settings from your current configuration [{0}] are:\n'
                      .format(active_config))
     log.status.flush()
     # Not using self._RunCmd to get command actual output.

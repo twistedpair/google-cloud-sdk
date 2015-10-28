@@ -2,10 +2,10 @@
 
 """call sets list command."""
 
+from googlecloudsdk.api_lib import genomics as lib
+from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared import genomics as lib
-from googlecloudsdk.shared.genomics import genomics_util
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

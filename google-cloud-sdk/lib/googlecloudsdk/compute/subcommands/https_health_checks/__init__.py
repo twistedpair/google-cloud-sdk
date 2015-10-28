@@ -3,7 +3,6 @@
 from googlecloudsdk.calliope import base
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class HttpsHealthChecks(base.Group):
   """Read and manipulate HTTPS health checks for load balanced instances."""
 

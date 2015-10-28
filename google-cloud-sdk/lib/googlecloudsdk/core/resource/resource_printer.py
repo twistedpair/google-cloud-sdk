@@ -54,9 +54,9 @@ class DefaultPrinter(yaml_printer.YamlPrinter):
 
 
 class NonePrinter(resource_printer_base.ResourcePrinter):
-  """Disables formatted output.
+  """Disables formatted output and consumes the resources.
 
-  Disables formatted output.
+  Disables formatted output and consumes the resources.
   """
 
 
@@ -64,6 +64,19 @@ class TextPrinter(flattened_printer.FlattenedPrinter):
   """An alias for FlattenedPrinter.
 
   An alias for the *flattened* format.
+  """
+
+
+class PrinterAttributes(resource_printer_base.ResourcePrinter):
+  """Attributes for all printers. This docstring is used to generate topic docs.
+
+  All formats have these attributes.
+
+  Printer attributes:
+    disable: Disables formatted output and does not consume the resources.
+    private: Disables log file output. Use this for sensitive resource data
+      that should not be displayed in log files. Explicit command line IO
+      redirection overrides this attribute.
   """
 
 
@@ -146,6 +159,9 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
       provided.
   """
   printer = Printer(print_format, out=out, defaults=defaults)
+  if 'disable' in printer.attributes:
+    # Disables formatted output and does not consume the resources.
+    return
   if printer.ByColumns() and not printer.column_attributes.Columns():
     raise ProjectionRequiredError(
         'Format [{0}] requires a non-empty projection.'.format(

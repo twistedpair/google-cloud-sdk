@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 Google Inc. All Rights Reserved.
 
 """Table format resource printer."""
@@ -7,7 +6,6 @@ import cStringIO
 import json
 import operator
 
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
 
@@ -41,27 +39,29 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   Printer attributes:
     box: Prints a box around the entire table and each cell, including the
       title if any.
-    empty-legend=_SENTENCES_: Prints _SENTENCES_ after the table if the table
-      has no rows. The default *empty-legend* is "Listed 0 items.".
+    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
+      are no items. The default *empty-legend* is "Listed 0 items.".
       *no-empty-legend* disables the default.
     no-heading: Disables the column headings.
-    legend=_SENTENCES_: Prints _SENTENCES_ after the table if the table has at
-      least one row. The legend is not included in the table box.
+    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
+      item if there is at least one item.
+    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
+      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
+      *info*, *warn*, or *error*.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
+    page=N: If _N_ > 0 then output is grouped into tables with _N_ rows. The
+      last table may have less rows. Headings, alignment and sorting are done
+      per-page. The title, if any, is printed before the first table. The
+      legend, if any, is printed after the last table.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
       the table box if *box* is enabled.
 
   Attributes:
+    _page_count: The output page count, incremented before each page.
+    _rows_per_page: The number of rows in each resource page. 0 mean no paging.
     _rows: The list of all resource columns indexed by row.
   """
-  _WRITERS = {
-      'status': lambda x: log.status.write(x + '\n'),
-      'debug': log.debug,
-      'info': log.info,
-      'warn': log.warn,
-      'error': log.error,
-      }
 
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
@@ -69,11 +69,13 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     super(TablePrinter, self).__init__(*args, by_columns=True, **kwargs)
     encoding = None
     for name in ['ascii', 'utf8', 'win']:
-      if name in self._attributes:
+      if name in self.attributes:
         encoding = name
         break
     self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
                                                      out=self._out)
+    self._rows_per_page = self.attributes.get('page', 0)
+    self._page_count = 0
 
   def _AddRecord(self, record, delimit=True):
     """Adds a list of columns. Output delayed until Finish().
@@ -82,46 +84,37 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
+    if self._rows_per_page and len(self._rows) >= self._rows_per_page:
+      self._page_count += 1
+      self.Finish(last_page=False)
+      self._rows = []
     self._rows.append(record)
 
-  def _Legend(self):
-    """Prints the table legend if it was specified.
+  def Finish(self, last_page=True):
+    """Prints the table.
 
-    The legend is one or more lines of text printed after the table data.
+    Args:
+      last_page: True if this is the last resource page.
     """
-    writer = self._WRITERS.get(self._attributes.get('log'),
-                               lambda x: self._out.write(x + '\n'))
-    if self._rows:
-      legend = self._attributes.get('legend')
-      if legend and 'log' not in self._attributes:
-        legend = '\n' + legend
-    else:
-      legend = self._attributes.get('empty-legend')
-      if legend is None and 'no-empty-legend' not in self._attributes:
-        legend = 'Listed 0 items.'
-        writer = self._WRITERS['status']
-    if legend is not None:
-      writer(legend)
-
-  def Finish(self):
-    """Prints the actual table."""
-    if not self._rows:
+    if last_page and not self._rows:
       # Table is empty but there might be an empty legend.
-      self._Legend()
+      self.AddLegend()
       return
 
     # Border box decorations.
-    if 'box' in self._attributes:
+    if 'box' in self.attributes:
       box = self._console_attr.GetBoxLineCharacters()
       table_column_pad = 1
     else:
       box = None
-      table_column_pad = self._attributes.get('pad', _TABLE_COLUMN_PAD)
+      table_column_pad = self.attributes.get('pad', _TABLE_COLUMN_PAD)
+      if self._page_count > 1:
+        self._out.write('\n')
 
     # Determine the max column widths of heading + rows
     rows = [[_Stringify(cell) for cell in row] for row in self._rows]
     heading = []
-    if 'no-heading' not in self._attributes:
+    if 'no-heading' not in self.attributes:
       labels = self._heading or self.column_attributes.Labels()
       if labels:
         heading = [[_Stringify(cell) for cell in labels]]
@@ -131,7 +124,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         col_widths[i] = max(col_widths[i], len(row[i]))
 
     # Print the title if specified.
-    title = self._attributes.get('title')
+    title = self.attributes.get('title') if self._page_count <= 1 else None
     if title is not None:
       if box:
         line = box.dr
@@ -268,4 +261,5 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._out.write('\n')
 
     # Print the legend if any.
-    self._Legend()
+    if last_page:
+      self.AddLegend()

@@ -1,10 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """gcloud dns managed-zone create command."""
 
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.dns import util
 
 
 class Create(base.Command):

@@ -3,9 +3,9 @@
 """Implementation of gcloud bigquery tables show-rows.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
+from googlecloudsdk.api_lib.bigquery import schema_and_rows
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.bigquery import bigquery
-from googlecloudsdk.shared.bigquery import schema_and_rows
 from googlecloudsdk.surface import bigquery as commands
 
 

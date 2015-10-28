@@ -1,6 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for listing networks."""
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class List(base_classes.GlobalLister):

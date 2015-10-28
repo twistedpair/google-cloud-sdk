@@ -3,11 +3,10 @@
 """Command to create a new project."""
 
 import textwrap
-
+from googlecloudsdk.api_lib.projects import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.projects import util
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)

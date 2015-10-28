@@ -2,8 +2,8 @@
 
 """gcloud dns record-sets transaction describe command."""
 
+from googlecloudsdk.api_lib.dns import transaction_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.dns import transaction_util
 
 
 class Describe(base.Command):

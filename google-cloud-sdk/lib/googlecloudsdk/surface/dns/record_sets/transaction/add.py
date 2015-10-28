@@ -2,9 +2,9 @@
 
 """gcloud dns record-sets transaction add command."""
 
+from googlecloudsdk.api_lib.dns import transaction_util as trans_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.dns import transaction_util as trans_util
 
 
 class Add(base.Command):

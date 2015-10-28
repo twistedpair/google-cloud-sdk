@@ -3,14 +3,13 @@
 """gcloud dns record-sets transaction execute command."""
 
 import os
-
+from googlecloudsdk.api_lib.dns import import_util
+from googlecloudsdk.api_lib.dns import transaction_util
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.dns import import_util
-from googlecloudsdk.shared.dns import transaction_util
-from googlecloudsdk.shared.dns import util
 
 
 class Execute(base.Command):

@@ -1,7 +1,7 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for describing managed instance groups."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import managed_instance_groups_utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 
 
 class Describe(base_classes.ZonalDescriber):

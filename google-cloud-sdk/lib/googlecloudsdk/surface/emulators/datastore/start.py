@@ -1,10 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """gcloud datastore emulator start command."""
 
+from googlecloudsdk.api_lib.emulators import datastore_util
+from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.emulators import datastore_util
-from googlecloudsdk.shared.emulators import util
 
 
 class Start(base.Command):

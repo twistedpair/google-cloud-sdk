@@ -2,12 +2,12 @@
 
 """The main command group for cloud source command group."""
 
+from googlecloudsdk.api_lib.source import source
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.shared.source import source
 
 
 class Source(base.Group):

@@ -6,11 +6,11 @@ Imports data into a Cloud SQL instance from a MySQL dump file in
 Google Cloud Storage.
 """
 
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import operations
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import operations
-from googlecloudsdk.shared.sql import validate
 
 
 class _BaseImport(object):

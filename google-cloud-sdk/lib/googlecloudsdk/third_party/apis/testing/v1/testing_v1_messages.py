@@ -466,13 +466,10 @@ class DeviceFile(_messages.Message):
   """A single device file description.
 
   Fields:
-    obbFile: Opaque Binary Blob (OBB) file(s) to install on the device File
-      names must conform to the format as specified by Android e.g.
-      [main|patch].0300110.com.example.android.obb which will be installed
-      into   <shared-storage>/Android/obb/<package-name>/ on the device
+    obbFile: A ObbFile attribute.
   """
 
-  obbFile = _messages.MessageField('FileReference', 1)
+  obbFile = _messages.MessageField('ObbFile', 1)
 
 
 class DeviceStateDetails(_messages.Message):
@@ -669,6 +666,21 @@ class Locale(_messages.Message):
   name = _messages.StringField(2)
   region = _messages.StringField(3)
   tags = _messages.StringField(4, repeated=True)
+
+
+class ObbFile(_messages.Message):
+  """A ObbFile object.
+
+  Fields:
+    obb: Opaque Binary Blob (OBB) file(s) to install on the device
+    obbFileName: OBB file name which must conform to the format as specified
+      by Android e.g. [main|patch].0300110.com.example.android.obb which will
+      be installed into   <shared-storage>/Android/obb/<package-name>/ on the
+      device
+  """
+
+  obb = _messages.MessageField('FileReference', 1)
+  obbFileName = _messages.StringField(2)
 
 
 class Orientation(_messages.Message):

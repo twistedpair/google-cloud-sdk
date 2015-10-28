@@ -2,10 +2,9 @@
 
 """Command for removing a BGP peer from a router."""
 import copy
-
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
 
 
 class PeerNotFoundError(exceptions.Error):

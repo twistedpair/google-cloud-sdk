@@ -67,10 +67,9 @@ def GetDefaultTimeout():
   return 300
 
 
-def Http(cmd_path=None, trace_token=None,
-         trace_email=None,
-         trace_log=False,
-         auth=True, creds=None, timeout='unset', log_http=False):
+def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
+         auth=True, creds=None, timeout='unset', log_http=False,
+         authority_selector=None):
   """Get an httplib2.Http object for working with the Google API.
 
   Args:
@@ -85,6 +84,8 @@ def Http(cmd_path=None, trace_token=None,
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
     log_http: bool, Enable/disable client side logging of service requests.
+    authority_selector: str, The IAM authority selector to pass as a header,
+        or None to not pass anything.
 
   Returns:
     An authorized httplib2.Http object, or a regular httplib2.Http object if no
@@ -116,15 +117,80 @@ def Http(cmd_path=None, trace_token=None,
                                             trace_email,
                                             trace_log,
                                             gcloud_ua)
+
+  if authority_selector:
+    http = _WrapRequestForIAMAuthoritySelector(http, authority_selector)
+
   if auth:
     if not creds:
       creds = c_store.Load()
     http = creds.authorize(http)
     # Wrap the request method to put in our own error handling.
     http = _WrapRequestForAuthErrHandling(http)
+
   return http
 
 
+def _RequestArgsGetHeader(args, kwargs, header, default=None):
+  """Get a specific header given the args and kwargs of an Http Request call."""
+  if 'headers' in kwargs:
+    return kwargs['headers'].get(header, default)
+  elif len(args) > 3:
+    return args[3].get(header, default)
+  else:
+    return default
+
+
+def _RequestArgsSetHeader(args, kwargs, header, value):
+  """Set a specific header given the args and kwargs of an Http Request call."""
+  if 'headers' in kwargs:
+    kwargs['headers'][header] = value
+  elif len(args) > 3:
+    args[3][header] = value
+  else:
+    kwargs['headers'] = {header: value}
+
+
+# TODO(b/25115137): Refactor the wrapper functions to be more clear.
+def _WrapRequestForIAMAuthoritySelector(http, authority_selector):
+  """Wrap request with IAM authority seelctor.
+
+  Args:
+    http: The original http object.
+    authority_selector: str, The authority selector string we want to use for
+        the request.
+
+  Returns:
+    http: The same http object but with the request method wrapped.
+  """
+  orig_request = http.request
+
+  def RequestWithIAMAuthoritySelector(*args, **kwargs):
+    """Wrap request with IAM authority selector.
+
+    Args:
+      *args: Positional arguments.
+      **kwargs: Keyword arguments.
+
+    Returns:
+      Wrapped request with IAM authority selector.
+    """
+    modified_args = list(args)
+    _RequestArgsSetHeader(modified_args, kwargs,
+                          'x-goog-iam-authority-selector', authority_selector)
+    return orig_request(*modified_args, **kwargs)
+
+  http.request = RequestWithIAMAuthoritySelector
+
+  # apitools needs this attribute to do credential refreshes during batch API
+  # requests.
+  if hasattr(orig_request, 'credentials'):
+    setattr(http.request, 'credentials', orig_request.credentials)
+
+  return http
+
+
+# TODO(b/25115137): Refactor the wrapper functions to be more clear.
 def _WrapRequestForUserAgentAndTracing(http, trace_token,
                                        trace_email,
                                        trace_log,
@@ -143,7 +209,6 @@ def _WrapRequestForUserAgentAndTracing(http, trace_token,
   """
   orig_request = http.request
 
-  # TODO(vilasj): Use @functools.wraps, and then remove credentials attr check.
   def RequestWithUserAgentAndTracing(*args, **kwargs):
     """Wrap request with user-agent, and trace reporting.
 
@@ -161,14 +226,9 @@ def _WrapRequestForUserAgentAndTracing(http, trace_token,
     def UserAgent(current=''):
       user_agent = '{0} {1}'.format(current, gcloud_ua)
       return user_agent.strip()
-    if 'headers' in kwargs:
-      cur_ua = kwargs['headers'].get('user-agent', '')
-      kwargs['headers']['user-agent'] = UserAgent(cur_ua)
-    elif len(args) > 3:
-      cur_ua = modified_args[3].get('user-agent', '')
-      modified_args[3]['user-agent'] = UserAgent(cur_ua)
-    else:
-      kwargs['headers'] = {'user-agent': UserAgent()}
+    cur_ua = _RequestArgsGetHeader(modified_args, kwargs, 'user-agent', '')
+    _RequestArgsSetHeader(modified_args, kwargs,
+                          'user-agent', UserAgent(cur_ua))
 
     # Modify request url to enable requested tracing.
     url_parts = urlparse.urlsplit(args[0])
@@ -197,6 +257,7 @@ def _WrapRequestForUserAgentAndTracing(http, trace_token,
   return http
 
 
+# TODO(b/25115137): Refactor the wrapper functions to be more clear.
 def _WrapRequestForAuthErrHandling(http):
   """Wrap request with exception handling for auth.
 
@@ -214,7 +275,6 @@ def _WrapRequestForAuthErrHandling(http):
   """
   orig_request = http.request
 
-  # TODO(vilasj): Use @functools.wraps, and then remove credentials attr check.
   def RequestWithErrHandling(*args, **kwargs):
     try:
       return orig_request(*args, **kwargs)
@@ -233,6 +293,7 @@ def _WrapRequestForAuthErrHandling(http):
   return http
 
 
+# TODO(b/25115137): Refactor the wrapper functions to be more clear.
 def _WrapRequestForLogging(http):
   """Wrap request for capturing and logging of http request/response data.
 
@@ -245,7 +306,6 @@ def _WrapRequestForLogging(http):
 
   orig_request = http.request
 
-  # TODO(vilasj): Use @functools.wraps, and then remove credentials attr check.
   def RequestWithLogging(*args, **kwargs):
     """Wrap request for request/response logging.
 

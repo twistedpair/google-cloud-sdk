@@ -17,6 +17,7 @@ NODEJS_RUNTIME_NAME = 'nodejs'
 
 # TODO(user): move these into the node_app directory.
 NODEJS_APP_YAML = textwrap.dedent("""\
+    runtime: {runtime}
     vm: true
     api_version: 1
     """)
@@ -113,14 +114,15 @@ https://storage.googleapis.com/gae_node_packages/node-$version-linux-x64.tar.gz 
 class NodeJSConfigurator(fingerprinting.Configurator):
   """Generates configuration for a node.js class."""
 
-  def __init__(self, path, got_package_json, got_npm_start,
+  def __init__(self, path, params, got_package_json, got_npm_start,
                got_shrinkwrap,
-               deploy,
                nodejs_version):
     """Constructor.
 
     Args:
       path: (str) Root path of the source tree.
+      params: (fingerprinting.Params) Parameters passed through to the
+        fingerprinters.
       got_package_json: (bool) If true, the runtime contains a package.json
         file and we should do an npm install while building the docker image.
       got_npm_start: (bool) If true, the runtime contains a "start" script in
@@ -129,9 +131,6 @@ class NodeJSConfigurator(fingerprinting.Configurator):
         server.js" instead.
       got_shrinkwrap: (bool) True if the user provided an
         "npm-shrinkwrap.json" file.
-      deploy: (bool) True if this is being driven from the "deploy" command. In
-        this case, we want to not generate app.yaml and make the code cleanup
-        whatever we generate.
       nodejs_version: (str or None) Required version of node.js (extracted
         from the engines.node field of package.json)
     """
@@ -140,80 +139,82 @@ class NodeJSConfigurator(fingerprinting.Configurator):
     self.got_package_json = got_package_json
     self.got_npm_start = got_npm_start
     self.got_shrinkwrap = got_shrinkwrap
-    self.deploy = deploy
+    self.params = params
     self.nodejs_version = nodejs_version
 
   def GenerateConfigs(self):
     """Generate all config files for the module."""
     # Write "Saving file" messages to the user or to log depending on whether
     # we're in "deploy."
-    if self.deploy:
+    if self.params.deploy:
       notify = log.info
     else:
       notify = log.status.Print
 
-    cleaner = fingerprinting.Cleaner()
-    dockerfile = os.path.join(self.root, config.DOCKERFILE)
-    if not os.path.exists(dockerfile):
-      notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
-      util.FindOrCopyDockerfile(NODEJS_RUNTIME_NAME, self.root,
-                                cleanup=self.deploy)
-      cleaner.Add(dockerfile)
-
-      # Customize the dockerfile.
-      os.chmod(dockerfile, os.stat(dockerfile).st_mode | 0200)
-      with open(dockerfile, 'a') as out:
-
-        # Generate copy for shrinkwrap file.
-        if self.got_shrinkwrap:
-          out.write('COPY npm-shrinkwrap.json /app/\n')
-
-        # Generate npm install if there is a package.json.
-        if self.got_package_json:
-          out.write(textwrap.dedent("""\
-              COPY package.json /app/
-              # You have to specify "--unsafe-perm" with npm install
-              # when running as root.  Failing to do this can cause
-              # install to appear to succeed even if a preinstall
-              # script fails, and may have other adverse consequences
-              # as well.
-              RUN npm --unsafe-perm install
-              """))
-
-        out.write('COPY . /app/\n')
-
-        if self.nodejs_version:
-          # Let node check to see if it satisfies the version constraint and
-          # try to install the correct version if not.
-          out.write(INSTALL_NODE_TEMPLATE %
-                    {'version_spec': self.nodejs_version})
-
-        # Generate the appropriate start command.
-        if self.got_npm_start:
-          out.write('CMD npm start\n')
-        else:
-          out.write('CMD node server.js\n')
-
     # Generate app.yaml.
-    if not self.deploy:
+    cleaner = fingerprinting.Cleaner()
+    if not self.params.deploy:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
         cleaner.Add(app_yaml)
+        runtime = 'custom' if self.params.custom else 'nodejs'
         with open(app_yaml, 'w') as f:
-          f.write(NODEJS_APP_YAML)
+          f.write(NODEJS_APP_YAML.format(runtime=runtime))
 
-    # Generate .dockerignore TODO(user): eventually this file will just be
-    # copied verbatim.
-    dockerignore = os.path.join(self.root, '.dockerignore')
-    if not os.path.exists(dockerignore):
-      notify('Saving [.dockerignore] to [%s].' % self.root)
-      cleaner.Add(dockerignore)
-      with open(dockerignore, 'w') as f:
-        f.write(DOCKERIGNORE)
+    if self.params.custom or self.params.deploy:
+      dockerfile = os.path.join(self.root, config.DOCKERFILE)
+      if not os.path.exists(dockerfile):
+        notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
+        util.FindOrCopyDockerfile(NODEJS_RUNTIME_NAME, self.root,
+                                  cleanup=self.params.deploy)
+        cleaner.Add(dockerfile)
 
-      if self.deploy:
-        atexit.register(util.Clean, dockerignore)
+        # Customize the dockerfile.
+        os.chmod(dockerfile, os.stat(dockerfile).st_mode | 0200)
+        with open(dockerfile, 'a') as out:
+
+          # Generate copy for shrinkwrap file.
+          if self.got_shrinkwrap:
+            out.write('COPY npm-shrinkwrap.json /app/\n')
+
+          # Generate npm install if there is a package.json.
+          if self.got_package_json:
+            out.write(textwrap.dedent("""\
+                COPY package.json /app/
+                # You have to specify "--unsafe-perm" with npm install
+                # when running as root.  Failing to do this can cause
+                # install to appear to succeed even if a preinstall
+                # script fails, and may have other adverse consequences
+                # as well.
+                RUN npm --unsafe-perm install
+                """))
+
+          out.write('COPY . /app/\n')
+
+          if self.nodejs_version:
+            # Let node check to see if it satisfies the version constraint and
+            # try to install the correct version if not.
+            out.write(INSTALL_NODE_TEMPLATE %
+                      {'version_spec': self.nodejs_version})
+
+          # Generate the appropriate start command.
+          if self.got_npm_start:
+            out.write('CMD npm start\n')
+          else:
+            out.write('CMD node server.js\n')
+
+      # Generate .dockerignore TODO(user): eventually this file will just be
+      # copied verbatim.
+      dockerignore = os.path.join(self.root, '.dockerignore')
+      if not os.path.exists(dockerignore):
+        notify('Saving [.dockerignore] to [%s].' % self.root)
+        cleaner.Add(dockerignore)
+        with open(dockerignore, 'w') as f:
+          f.write(DOCKERIGNORE)
+
+        if self.params.deploy:
+          atexit.register(util.Clean, dockerignore)
 
     if not cleaner.HasFiles():
       notify('All config files already exist, not generating anything.')
@@ -277,8 +278,8 @@ def Fingerprint(path, params):
                'see https://docs.npmjs.com/files/package.json#engines')
 
   if got_npm_start or os.path.exists(os.path.join(path, 'server.js')):
-    return NodeJSConfigurator(path, got_package_json, got_npm_start,
-                              got_shrinkwrap, params.deploy, node_version)
+    return NodeJSConfigurator(path, params, got_package_json, got_npm_start,
+                              got_shrinkwrap, node_version)
   else:
     log.debug('nodejs. checker: No npm start and no server.js')
     return None

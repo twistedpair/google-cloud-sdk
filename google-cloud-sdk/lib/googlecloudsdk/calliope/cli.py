@@ -467,6 +467,12 @@ class CLILoader(object):
         action=actions.StoreBooleanProperty(properties.VALUES.core.log_http),
         help='Log all HTTP server requests and responses to stderr.')
 
+    top_element.ai.add_argument(
+        '--authority-selector',
+        default=None,
+        action=actions.StoreProperty(properties.VALUES.auth.authority_selector),
+        help=argparse.SUPPRESS)
+
     # Timeout value for HTTP requests.
     top_element.ai.add_argument(
         '--http-timeout',
@@ -606,7 +612,7 @@ class CLI(object):
       else:
         # Make sure any uncaught exceptions still make it into the log file.
         exc_printable = self.SafeExceptionToString(exc)
-        log.file_only_logger.debug(exc_printable, exc_info=sys.exc_info())
+        log.debug(exc_printable, exc_info=sys.exc_info())
         metrics.Error(command_path_string, exc)
         raise
     finally:

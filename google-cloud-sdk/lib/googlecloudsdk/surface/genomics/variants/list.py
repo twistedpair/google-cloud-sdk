@@ -3,11 +3,11 @@
 """Implementation of gcloud genomics variants list.
 """
 
+from googlecloudsdk.api_lib import genomics as lib
+from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared import genomics as lib
-from googlecloudsdk.shared.genomics import genomics_util
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
@@ -37,24 +37,21 @@ class List(base.Command):
                         help=('Restrict the list to variants which have calls '
                               'from the listed call sets. If omitted, a '
                               '--variant-set-id must be specified.'))
-    parser.add_argument('--variant-name',
-                        type=str,
-                        help=('Only return variants which have exactly this '
-                              'name.'))
     parser.add_argument('--reference-name',
                         type=str,
                         help='Only return variants in this reference sequence.')
     parser.add_argument('--start',
                         type=long,
-                        help=('The beginning of the window (0-based, '
+                        help=('The beginning of the window (0-based '
                               'inclusive) for which overlapping variants '
                               'should be returned. If unspecified, defaults '
                               'to 0.'))
     parser.add_argument('--end',
                         type=long,
-                        help=('The end of the window, 0-based exclusive. If '
-                              'unspecified or 0, defaults to the length of '
-                              'the reference.'))
+                        help=('The end of the window (0-based exclusive) for '
+                              'which variants should be returned. If '
+                              'unspecified or 0, defaults to the length of the '
+                              'reference.'))
 
   @genomics_util.ReraiseHttpException
   def Run(self, args):
@@ -76,7 +73,6 @@ class List(base.Command):
     request = req_class(
         variantSetIds=[args.variant_set_id],
         callSetIds=args.call_set_ids,
-        variantName=args.variant_name,
         referenceName=args.reference_name,
         start=args.start,
         end=args.end,

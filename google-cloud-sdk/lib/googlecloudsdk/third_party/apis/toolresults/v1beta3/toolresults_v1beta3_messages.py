@@ -698,13 +698,16 @@ class TestExecutionStep(_messages.Message):
       uploaded.  The maximum allowed number of test suite overviews per step
       is 1000.  - In response: always set - In create request: optional - In
       update request: never (use publishXunitXmlFiles custom method instead)
+    testTiming: The timing break down of the test execution.  - In response:
+      present if set by create or update - In create/update request: optional
     toolExecution: Represents the execution of the test runner.  The exit code
       of this tool will be used to determine if the test passed.  - In
       response: always set - In create/update request: optional
   """
 
   testSuiteOverviews = _messages.MessageField('TestSuiteOverview', 1, repeated=True)
-  toolExecution = _messages.MessageField('ToolExecution', 2)
+  testTiming = _messages.MessageField('TestTiming', 2)
+  toolExecution = _messages.MessageField('ToolExecution', 3)
 
 
 class TestSuiteOverview(_messages.Message):
@@ -740,6 +743,18 @@ class TestSuiteOverview(_messages.Message):
   skippedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   totalCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   xmlSource = _messages.MessageField('FileReference', 6)
+
+
+class TestTiming(_messages.Message):
+  """Testing timing break down to know phases.
+
+  Fields:
+    testProcessDuration: How long it took to run the test process.  - In
+      response: present if previously set. - In create/update request:
+      optional
+  """
+
+  testProcessDuration = _messages.MessageField('Duration', 1)
 
 
 class Thumbnail(_messages.Message):

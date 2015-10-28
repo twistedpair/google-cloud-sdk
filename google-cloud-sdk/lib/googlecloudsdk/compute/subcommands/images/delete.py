@@ -1,6 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for deleting images."""
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class Delete(base_classes.GlobalDeleter):

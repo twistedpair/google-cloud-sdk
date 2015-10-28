@@ -3,9 +3,9 @@
 """List snapshots in a project repository.
 """
 
+from googlecloudsdk.api_lib.source import snapshot
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared.source import snapshot
 
 
 class List(base.Command):

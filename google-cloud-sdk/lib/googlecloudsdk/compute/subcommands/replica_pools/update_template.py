@@ -2,14 +2,14 @@
 
 """replicapool update-template command."""
 
+
 from apiclient import errors
+from googlecloudsdk.api_lib.compute import replica_template_util
+from googlecloudsdk.api_lib.compute import rolling_updates_util as util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-
-from googlecloudsdk.shared.compute import replica_template_util
-from googlecloudsdk.shared.compute import rolling_updates_util as util
 
 
 class UpdateTemplate(base.Command):

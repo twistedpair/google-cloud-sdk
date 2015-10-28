@@ -19,9 +19,9 @@ from googlecloudsdk.test.lib import arg_util
 from googlecloudsdk.test.lib import ctrl_c_handler
 from googlecloudsdk.test.lib import exit_code
 from googlecloudsdk.test.lib import history_picker
+from googlecloudsdk.test.lib import matrix_ops
 from googlecloudsdk.test.lib import results_bucket
 from googlecloudsdk.test.lib import results_summary
-from googlecloudsdk.test.lib import testing_api
 from googlecloudsdk.test.lib import tool_results
 from googlecloudsdk.test.lib import util
 
@@ -139,8 +139,6 @@ class Run(base.Command):
     arg_util.Prepare(args, util.GetAndroidCatalog(self.context))
 
     project = util.GetProject()
-    test_client = self.context['testing_client']
-    test_messages = self.context['testing_messages']
     tr_client = self.context['toolresults_client']
     tr_messages = self.context['toolresults_messages']
     storage_client = self.context['storage_client']
@@ -154,33 +152,35 @@ class Run(base.Command):
     bucket_ops = results_bucket.ResultsBucketOps(
         project, args.results_bucket, unique_object,
         tr_client, tr_messages, storage_client)
-    bucket_ops.UploadApkFileToGcs(args.app)
+    bucket_ops.UploadFileToGcs(args.app)
     if args.test:
-      bucket_ops.UploadApkFileToGcs(args.test)
+      bucket_ops.UploadFileToGcs(args.test)
+    for obb_file in (args.obb_files or []):
+      bucket_ops.UploadFileToGcs(obb_file)
     bucket_ops.LogGcsResultsUrl()
 
     tr_history_picker = history_picker.ToolResultsHistoryPicker(
         project, tr_client, tr_messages)
     history_id = tr_history_picker.FindToolResultsHistoryId(args)
-    helper = testing_api.TestingApiHelper(project, args, history_id,
-                                          bucket_ops.gcs_results_root,
-                                          test_client, test_messages)
-    matrix = helper.CreateTestMatrix()
+    matrix = matrix_ops.CreateMatrix(
+        args, self.context, history_id, bucket_ops.gcs_results_root)
+    matrix_id = matrix.testMatrixId
+    monitor = matrix_ops.MatrixMonitor(matrix_id, args.type, self.context)
 
-    with ctrl_c_handler.CancellableTestSection(matrix.testMatrixId, helper):
-      supported_executions = helper.HandleUnsupportedExecutions(matrix)
-      tr_ids = tool_results.GetToolResultsIds(matrix, helper)
+    with ctrl_c_handler.CancellableTestSection(monitor):
+      supported_executions = monitor.HandleUnsupportedExecutions(matrix)
+      tr_ids = tool_results.GetToolResultsIds(matrix, monitor)
+
       url = tool_results.CreateToolResultsUiUrl(project, tr_ids)
-      log.status.Print('\nTest results will be streamed to [{0}].'.format(url))
       if args.async:
         return url
+      log.status.Print('\nTest results will be streamed to [{0}].'.format(url))
 
       # If we have exactly one testExecution, show detailed progress info.
       if len(supported_executions) == 1:
-        helper.MonitorTestExecutionProgress(matrix.testMatrixId,
-                                            supported_executions[0].id)
+        monitor.MonitorTestExecutionProgress(supported_executions[0].id)
       else:
-        helper.MonitorTestMatrixProgress(matrix.testMatrixId)
+        monitor.MonitorTestMatrixProgress()
 
     log.status.Print('\nMore details are available at [{0}].'.format(url))
     # Fetch the per-dimension test outcomes list, and also the "rolled-up"
@@ -205,7 +205,8 @@ class Run(base.Command):
     if type(result) == types.ListType:
       resource_printer.Print(result, results_summary.TEST_OUTCOME_FORMAT)
     elif type(result) == types.StringType:
-      log.out.Print('\nMore details are available at [{0}].'.format(result))
+      log.out.Print(
+          '\nMore detailed test results are available at [{0}].'.format(result))
     elif result is not None:
       log.out.Print(result)
 
@@ -217,6 +218,7 @@ def _EnsureUserAcceptsTermsOfService():
     if properties.VALUES.core.disable_prompts.GetBool():
       log.error('Trusted Tester Agreement has not been accepted. Please run '
                 'gcloud with prompts enabled to accept the Terms of Service.')
+      raise console_io.OperationCancelledError()
     console_io.PromptContinue(
         message='The Google Cloud Platform Terms of Service notwithstanding, '
         'your use of Google Cloud Test Lab is governed by the Trusted Tester '

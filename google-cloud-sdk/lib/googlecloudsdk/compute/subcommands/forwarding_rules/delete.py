@@ -1,8 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for deleting forwarding rules."""
 
-from googlecloudsdk.shared.compute import forwarding_rules_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import forwarding_rules_utils
+from googlecloudsdk.api_lib.compute import utils
 
 
 class Delete(forwarding_rules_utils.ForwardingRulesMutator):

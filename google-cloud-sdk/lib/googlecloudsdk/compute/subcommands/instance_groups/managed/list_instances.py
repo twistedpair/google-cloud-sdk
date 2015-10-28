@@ -3,10 +3,10 @@
 
 It's an alias for the instance-groups list-instances command.
 """
-from googlecloudsdk.shared.compute import instance_groups_utils
-from googlecloudsdk.shared.compute import path_simplifier
-from googlecloudsdk.shared.compute import property_selector
-from googlecloudsdk.shared.compute import request_helper
+from googlecloudsdk.api_lib.compute import instance_groups_utils
+from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.compute import property_selector
+from googlecloudsdk.api_lib.compute import request_helper
 
 
 def LastAttemptErrorToMessage(last_attempt):

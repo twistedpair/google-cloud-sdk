@@ -18,11 +18,10 @@ class CancellableTestSection(object):
   the test matrix is running.
   """
 
-  def __init__(self, matrix_id, testing_api_helper):
+  def __init__(self, matrix_monitor):
     self._old_sigint_handler = None
     self._old_sigterm_handler = None
-    self._matrix_id = matrix_id
-    self._testing_api_helper = testing_api_helper
+    self._matrix_monitor = matrix_monitor
 
   def __enter__(self):
     self._old_sigint_handler = signal.getsignal(signal.SIGINT)
@@ -38,7 +37,7 @@ class CancellableTestSection(object):
 
   def _Handler(self, unused_signal, unused_frame):
     log.status.write('\n\nCancelling test [{id}]...\n\n'
-                     .format(id=self._matrix_id))
-    self._testing_api_helper.CancelTestMatrix(self._matrix_id)
+                     .format(id=self._matrix_monitor.matrix_id))
+    self._matrix_monitor.CancelTestMatrix()
     log.status.write('\nTest matrix has been cancelled.\n')
     raise exceptions.ExitCodeNoError(exit_code=exit_code.MATRIX_CANCELLED)

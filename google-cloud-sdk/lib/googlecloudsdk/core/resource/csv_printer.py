@@ -42,7 +42,7 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
     #   3: Default heading from format labels, if specified.
     if not self._heading_printed:
       self._heading_printed = True
-      if 'no-heading' not in self._attributes:
+      if 'no-heading' not in self.attributes:
         if self._heading:
           labels = self._heading
         else:
@@ -67,9 +67,19 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
 class ValuePrinter(CsvPrinter):
   """A printer for printing value data.
 
-  CSV with no heading and <TAB> delimiter instead of <COMMA>. Used to retrieve
-  individual resource values. This format requires a projection to define the
-  value(s) to be printed.
+  CSV with no heading and <TAB> delimiter instead of <COMMA>, and a legend. Used
+  to retrieve individual resource values. This format requires a projection to
+  define the value(s) to be printed.
+
+  Printer attributes:
+    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
+      are no items. The default *empty-legend* is "Listed 0 items.".
+      *no-empty-legend* disables the default.
+    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
+      item if there is at least one item.
+    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
+      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
+      *info*, *warn*, or *error*.
   """
 
   def __init__(self, *args, **kwargs):
@@ -77,3 +87,7 @@ class ValuePrinter(CsvPrinter):
     self._heading_printed = True
     self._add_csv_row = csv.writer(self._out, dialect='excel',
                                    delimiter='\t', lineterminator='\n').writerow
+
+  def Finish(self):
+    """Prints the legend if any."""
+    self.AddLegend()

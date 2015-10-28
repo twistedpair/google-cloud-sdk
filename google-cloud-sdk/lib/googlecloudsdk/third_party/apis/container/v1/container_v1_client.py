@@ -226,7 +226,7 @@ to make modifications to its user's project.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
-[default network](/compute/docs/networking#networks_1).
+[default network](/compute/docs/networks-and-firewalls#networks).
 
 One firewall is added for the cluster. After cluster creation,
 the cluster creates routes for each node to allow the containers

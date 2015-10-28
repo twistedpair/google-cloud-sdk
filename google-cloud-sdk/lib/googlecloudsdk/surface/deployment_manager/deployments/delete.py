@@ -2,14 +2,14 @@
 
 """deployments delete command."""
 
+from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
+from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.deployment_manager import dm_v2_util
-from googlecloudsdk.shared.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 # Number of seconds (approximately) to wait for each delete operation to

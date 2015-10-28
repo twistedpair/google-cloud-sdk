@@ -580,7 +580,8 @@ class ExternalDataConfiguration(_messages.Message):
 
   Fields:
     compression: [Optional] The compression type of the data source. Possible
-      values include GZIP and NONE. The default value is NONE.
+      values include GZIP and NONE. The default value is NONE. This setting is
+      ignored for Google Cloud Datastore backups.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
@@ -589,18 +590,24 @@ class ExternalDataConfiguration(_messages.Message):
       returned in the job result. The default value is false. The sourceFormat
       property determines what BigQuery treats as an extra value: CSV:
       Trailing columns JSON: Named values that don't match any column names
+      Google Cloud Datastore backups: This setting is ignored.
     maxBadRecords: [Optional] The maximum number of bad records that BigQuery
       can ignore when reading data. If the number of bad records exceeds this
       value, an invalid error is returned in the job result. The default value
-      is 0, which requires that all records are valid.
-    schema: [Required] The schema for the data.
+      is 0, which requires that all records are valid. This setting is ignored
+      for Google Cloud Datastore backups.
+    schema: [Optional] The schema for the data. Schema is required for CSV and
+      JSON formats. Schema is disallowed for Google Cloud Datastore backups.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
-      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON".
+      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Google
+      Cloud Datastore backups, specify "DATASTORE_BACKUP".
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud Storage. Each URI can contain one '*' wildcard character
       and it must come after the 'bucket' name. Size limits related to load
       jobs apply to external data sources, plus an additional limit of 10 GB
-      maximum size across all URIs.
+      maximum size across all URIs. For Google Cloud Datastore backups,
+      exactly one URI can be specified, and it must end with '.backup_info'.
+      Also, the '*' wildcard character is not allowed.
   """
 
   compression = _messages.StringField(1)

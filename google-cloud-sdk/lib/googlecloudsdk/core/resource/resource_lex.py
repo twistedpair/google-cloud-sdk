@@ -171,7 +171,8 @@ class Lexer(object):
     """Checks if the next character is in characters and consumes it if it is.
 
     Args:
-      characters: The characters to check for.
+      characters: A set of characters to check for. It may be a string, tuple,
+        list or set.
       peek: Does not consume a matching character if True.
       eoi_ok: True if end of input is OK. Returns None if at end of input.
 
@@ -229,8 +230,9 @@ class Lexer(object):
     mid token (foo" & "bar => "foo & bar").
 
     Args:
-      terminators: The characters that terminate the token. isspace() characters
-        always terminate the token.
+      terminators: A set of characters that terminate the token. isspace()
+        characters always terminate the token. It may be a string, tuple, list
+          or set.
       space: True if space characters should be skipped after the token. Space
         characters are always skipped before the token.
       convert: Converts unquoted numeric string tokens to numbers if True.
@@ -389,12 +391,12 @@ class Lexer(object):
 
 
 def GetKeyName(key):
-  """Returns string representation for a parsed key.
+  """Returns the string representation for a parsed key.
 
-  This is the inverse of Lex.Get().
+  This is the inverse of Lex.Key().
 
   Args:
-    key: Ordered list of key names/indices, applied left to right. Each
+    key: A parsed key, which is an ordered list of key names/indices. Each
       element in the list may be one of:
         str - A resource property name. This could be a class attribute name or
           a dict index.

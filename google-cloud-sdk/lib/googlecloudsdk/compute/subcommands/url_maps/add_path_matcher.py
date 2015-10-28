@@ -3,10 +3,10 @@
 import collections
 import copy
 
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-
-from googlecloudsdk.shared.compute import base_classes
 
 
 class AddPathMatcher(base_classes.ReadWriteCommand):

@@ -3817,7 +3817,7 @@ See Accessing images for more information.
           }
 
     def AddInstances(self, request, global_params=None):
-      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. TODO: Change to comment to state "if IG is load balanced.".
+      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -4451,7 +4451,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def AggregatedList(self, request, global_params=None):
-      """AggregatedList method for the instances service.
+      """Retrieves aggregated list of instance resources.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message

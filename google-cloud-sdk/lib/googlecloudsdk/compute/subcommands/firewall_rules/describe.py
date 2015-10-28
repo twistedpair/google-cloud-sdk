@@ -1,6 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for describing firewall rules."""
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class Describe(base_classes.GlobalDescriber):

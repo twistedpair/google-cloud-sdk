@@ -3,16 +3,15 @@
 """Connects to a Cloud SQL instance."""
 
 import datetime
-
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import network
+from googlecloudsdk.api_lib.sql import operations
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import network
-from googlecloudsdk.shared.sql import operations
-from googlecloudsdk.shared.sql import validate
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 import protorpc.util
 

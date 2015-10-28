@@ -2,11 +2,11 @@
 
 """operations wait command."""
 
+from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
+from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.deployment_manager import dm_v2_util
-from googlecloudsdk.shared.deployment_manager.exceptions import DeploymentManagerError
 
 # Number of seconds (approximately) to wait for each operation to complete.
 OPERATION_TIMEOUT = 20 * 60  # 20 mins

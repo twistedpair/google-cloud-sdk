@@ -3,10 +3,10 @@
 """bigtable clusters list command."""
 
 
+from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io as io
-from googlecloudsdk.shared.bigtable import util
 
 
 class ListClusters(base.Command):

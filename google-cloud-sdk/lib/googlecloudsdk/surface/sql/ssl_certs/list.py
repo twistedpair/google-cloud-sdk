@@ -3,11 +3,10 @@
 """Lists all SSL certs for a Cloud SQL instance."""
 
 
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import validate
 
 
 class _BaseList(object):

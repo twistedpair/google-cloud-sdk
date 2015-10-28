@@ -3,11 +3,11 @@
 """Implementation of gcloud dataflow logs list-messages command.
 """
 
+from googlecloudsdk.api_lib.dataflow import job_utils
+from googlecloudsdk.api_lib.dataflow import list_pager
+from googlecloudsdk.api_lib.dataflow import time_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.dataflow import job_utils
-from googlecloudsdk.shared.dataflow import list_pager
-from googlecloudsdk.shared.dataflow import time_util
 from googlecloudsdk.surface import dataflow as commands
 
 

@@ -3,10 +3,10 @@
 """Implementation of gcloud bigquery datasets list.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.bigquery import bigquery
 from googlecloudsdk.surface import bigquery as commands
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 

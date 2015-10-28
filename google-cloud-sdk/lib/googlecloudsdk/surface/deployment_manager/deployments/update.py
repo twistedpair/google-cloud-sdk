@@ -2,6 +2,8 @@
 
 """deployments update command."""
 
+from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
+from googlecloudsdk.api_lib.deployment_manager import importer
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -9,8 +11,6 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.shared.deployment_manager import dm_v2_util
-from googlecloudsdk.shared.deployment_manager import importer
 from googlecloudsdk.third_party.apis.deploymentmanager.v2 import deploymentmanager_v2_messages as v2_messages
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 

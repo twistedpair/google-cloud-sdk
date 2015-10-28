@@ -16,12 +16,11 @@ import os
 import re
 import textwrap
 import urllib
-
+from googlecloudsdk.api_lib.sdktool import info_holder
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.sdktool import info_holder
 
 
 STACKOVERFLOW_URL = 'http://stackoverflow.com/questions/tagged/gcloud'
@@ -216,10 +215,10 @@ def _CommonPrefix(paths):
   prefix = os.path.commonprefix(map(os.path.dirname, paths))
   if not prefix:
     return prefix
-  if all([path.startswith(prefix + '/') for path in paths]):
-    return prefix + '/'
+  if all([path.startswith(prefix + os.path.sep) for path in paths]):
+    return prefix + os.path.sep
   else:
-    return os.path.dirname(prefix) + '/'
+    return os.path.dirname(prefix) + os.path.sep
 
 
 def _FormatIssueBody(info, log_data=None):

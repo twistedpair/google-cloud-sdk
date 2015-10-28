@@ -1,7 +1,7 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for adding health checks to target pools."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 
 
 class AddHealthChecks(base_classes.NoOutputAsyncMutator):

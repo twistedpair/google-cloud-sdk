@@ -4,14 +4,13 @@
 """
 
 import urlparse
-
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import cli
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.shared.bigquery import bigquery
 from googlecloudsdk.third_party.apis.bigquery.v2 import bigquery_v2_client
 from googlecloudsdk.third_party.apis.bigquery.v2 import bigquery_v2_messages
 

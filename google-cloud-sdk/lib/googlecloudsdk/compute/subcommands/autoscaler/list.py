@@ -1,12 +1,13 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for listing autoscalers."""
 
+
+from googlecloudsdk.api_lib.compute import autoscaler_utils as util
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.compute import autoscaler_utils as util
-from googlecloudsdk.shared.compute import base_classes
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 

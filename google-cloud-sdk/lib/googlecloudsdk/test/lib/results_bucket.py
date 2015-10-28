@@ -129,51 +129,51 @@ class ResultsBucketOps(object):
                .format(b=bucket_name, e=util.GetError(err)))
       raise exceptions.BadFileException(msg)
 
-  def UploadApkFileToGcs(self, apk):
-    """Upload an APK file to the GCS results bucket using the storage API.
+  def UploadFileToGcs(self, path):
+    """Upload a file to the GCS results bucket using the storage API.
 
     Args:
-      apk: str, the absolute or relative path of the APK file to upload. File
+      path: str, the absolute or relative path of the file to upload. File
         may be in located in GCS or the local filesystem.
 
     Raises:
       BadFileException if the file upload is not successful.
     """
-    log.status.Print('Uploading [{f}] to the Cloud Test Lab...'.format(f=apk))
+    log.status.Print('Uploading [{f}] to the Cloud Test Lab...'.format(f=path))
     try:
-      if apk.startswith(GCS_PREFIX):
+      if path.startswith(GCS_PREFIX):
         # Perform a GCS object to GCS object copy
-        apk_bucket, apk_obj = _SplitBucketAndObject(apk)
+        file_bucket, file_obj = _SplitBucketAndObject(path)
         copy_req = storage_v1.StorageObjectsCopyRequest(
-            sourceBucket=apk_bucket,
-            sourceObject=apk_obj,
+            sourceBucket=file_bucket,
+            sourceObject=file_obj,
             destinationBucket=self._results_bucket,
-            destinationObject='{obj}/{apk}'.format(
-                obj=self._gcs_object_name, apk=os.path.basename(apk_obj)))
+            destinationObject='{obj}/{name}'.format(
+                obj=self._gcs_object_name, name=os.path.basename(file_obj)))
         self._storage_client.objects.Copy(copy_req)
       else:
-        # Perform a GCS insert of a local APK file
+        # Perform a GCS insert of a file which is not in GCS
         try:
-          apk_size = os.path.getsize(apk)
-          apk_stream = open(apk, 'r')
+          file_size = os.path.getsize(path)
+          file_stream = open(path, 'r')
         except os.error:
           raise exceptions.BadFileException('[{0}] not found or not accessible'
-                                            .format(apk))
-        src_obj = storage_v1.Object(size=apk_size)
+                                            .format(path))
+        src_obj = storage_v1.Object(size=file_size)
         upload = apitools_base.Upload.FromStream(
-            apk_stream,
+            file_stream,
             mime_type='application/vnd.android.package-archive',
-            total_size=apk_size)
+            total_size=file_size)
         insert_req = storage_v1.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
-            name='{obj}/{apk}'.format(obj=self._gcs_object_name,
-                                      apk=os.path.basename(apk)),
+            name='{obj}/{name}'.format(obj=self._gcs_object_name,
+                                       name=os.path.basename(path)),
             object=src_obj)
         self._storage_client.objects.Insert(insert_req, upload=upload)
     except apitools_base.HttpError as err:
       raise exceptions.BadFileException(
           'Could not copy [{f}] to [{gcs}] {e}.'
-          .format(f=apk, gcs=self.gcs_results_root, e=util.GetError(err)))
+          .format(f=path, gcs=self.gcs_results_root, e=util.GetError(err)))
 
   def LogGcsResultsUrl(self):
     log.status.Print('Raw results will be stored in your GCS bucket at [{0}]\n'

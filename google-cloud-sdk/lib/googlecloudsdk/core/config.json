@@ -7,5 +7,5 @@
   "snapshot_schema_version": 3, 
   "snapshot_url": "https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json", 
   "user_agent": "Cloud SDK Command Line Tool", 
-  "version": "0.9.83"
+  "version": "0.9.84"
 }

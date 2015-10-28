@@ -1,7 +1,8 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
-"""A shared library to validate gcloud test CLI arguments."""
+"""A shared library to validate 'gcloud test' CLI argument values."""
 
+import re
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
@@ -9,7 +10,7 @@ from googlecloudsdk.calliope import exceptions
 
 
 class InvalidArgException(exceptions.InvalidArgumentException):
-  """InvalidArgException is for malformed gcloud test arguments.
+  """InvalidArgException is for malformed gcloud test argument values.
 
   It provides a wrapper around Calliope's InvalidArgumentException that
   conveniently converts internal arg names with underscores into the external
@@ -22,7 +23,7 @@ class InvalidArgException(exceptions.InvalidArgumentException):
 
 
 def ValidateArgFromFile(arg_internal_name, arg_value):
-  """Do checks/mutations on args parsed from YAML which need extra validation.
+  """Do checks/mutations on arg values parsed from YAML which need validation.
 
   Any arg not appearing in the _ARG_VALIDATORS dictionary is assumed to be a
   simple string to be validated by the default _ValidateString() function.
@@ -144,10 +145,7 @@ def _ValidateNonNegativeInteger(arg_internal_name, arg_value):
 
 def _ValidateOrientationList(arg_internal_name, arg_value):
   """Validates that 'orientations' only contains 'portrait' and 'landscape'."""
-  if isinstance(arg_value, basestring):
-    arg_value = [arg_value]
-  elif not isinstance(arg_value, list):
-    raise InvalidArgException(arg_internal_name, arg_value)
+  arg_value = ValidateStringList(arg_internal_name, arg_value)
   for orientation in arg_value:
     if orientation not in ORIENTATION_LIST:
       raise InvalidArgException(arg_internal_name, orientation)
@@ -157,7 +155,16 @@ def _ValidateOrientationList(arg_internal_name, arg_value):
   return arg_value
 
 
-# Map of args to their appropriate validation functions.
+def _ValidateObbFileList(arg_internal_name, arg_value):
+  """Validates that 'obb-files' contains at most 2 entries."""
+  arg_value = ValidateStringList(arg_internal_name, arg_value)
+  if len(arg_value) > 2:
+    raise InvalidArgException(arg_internal_name,
+                              'At most two OBB files may be specified.')
+  return arg_value
+
+
+# Map of internal arg names to their appropriate validation functions.
 # Any arg not appearing in this map is assumed to be a simple string.
 _ARG_VALIDATORS = {
     'async': _ValidateBool,
@@ -167,6 +174,7 @@ _ARG_VALIDATORS = {
     'os_version_ids': ValidateStringList,
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
+    'obb_files': _ValidateObbFileList,
     'event_count': _ValidatePositiveInteger,
     'event_delay': _ValidateNonNegativeInteger,
     'random_seed': _ValidateInteger,
@@ -175,13 +183,29 @@ _ARG_VALIDATORS = {
 }
 
 
+def InternalArgNameFrom(arg_external_name):
+  """Converts a user-visible arg name into its corresponding internal name."""
+  return arg_external_name.replace('-', '_')
+
+
+def ExternalArgNameFrom(arg_internal_name):
+  """Converts an internal arg name into its corresponding user-visible name."""
+  return arg_internal_name.replace('_', '-')
+
+
+# Validation methods below this point are meant to be used on args regardless
+# of whether they came from the command-line or an arg-file, while the methods
+# above here are only for arg-file args, which bypass the standard validations
+# performed by the argparse package (which only works with CLI args).
+
 def ValidateArgsForTestType(
     args, test_type, type_rules, shared_rules, all_test_args_set):
   """Raise errors if required args are missing or invalid args are present.
 
   Args:
-    args: an argparse namespace. All the arguments that were provided to the
-      command invocation (i.e. group and command arguments combined).
+    args: an argparse.Namespace object which contains attributes for all the
+      arguments that were provided to the command invocation (i.e. command
+      group and command arguments combined).
     test_type: string containing the type of test to run.
     type_rules: a nested dictionary defining the required and optional args
       per type of test, plus any default values.
@@ -199,15 +223,14 @@ def ValidateArgsForTestType(
   allowable_args_for_type = required_args + optional_args
 
   # Raise an error if an optional test arg is not allowed with this test_type.
-  for arg in args.__dict__:
-    if args.__dict__[arg] is not None:  # Ignore args equal to None
-      if arg in all_test_args_set:  # Ignore non-test args from gcloud core
-        if arg not in allowable_args_for_type:
-          raise InvalidArgException(
-              arg, "may not be used with test type '{0}'.".format(test_type))
+  for arg in all_test_args_set:
+    if getattr(args, arg, None) is not None:  # Ignore args equal to None
+      if arg not in allowable_args_for_type:
+        raise InvalidArgException(
+            arg, "may not be used with test type '{0}'.".format(test_type))
   # Raise an error if a required test arg is missing or equal to None.
   for arg in required_args:
-    if not hasattr(args, arg) or args.__dict__[arg] is None:
+    if getattr(args, arg, None) is None:
       raise exceptions.RequiredArgumentException(
           '{0}'.format(ExternalArgNameFrom(arg)),
           "must be specified with test type '{0}'.".format(test_type))
@@ -226,11 +249,15 @@ def ValidateResultsBucket(args):
         'results-bucket', 'Results bucket name is not valid')
 
 
-def InternalArgNameFrom(arg_external_name):
-  """Converts a user-visible arg name into its corresponding internal name."""
-  return arg_external_name.replace('-', '_')
+_OBB_FILE_REGEX = re.compile(
+    r'(.*[\\/:])?(main|patch)\.\d+(\.[a-zA-Z]\w*)+\.obb$')
 
 
-def ExternalArgNameFrom(arg_internal_name):
-  """Converts an internal arg name into its corresponding user-visible name."""
-  return arg_internal_name.replace('_', '-')
+def ValidateObbFileNames(obb_files):
+  """Confirm that any OBB file names follow the required Android pattern."""
+  for obb_file in (obb_files or []):
+    if not _OBB_FILE_REGEX.match(obb_file):
+      raise InvalidArgException(
+          'obb_files',
+          '[{0}] is not a valid OBB file name, which must have the format: '
+          '(main|patch).<versionCode>.<package.name>.obb'.format(obb_file))

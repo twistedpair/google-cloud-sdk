@@ -2,8 +2,9 @@
 """Command for adding tags to instances."""
 import copy
 
+
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.shared.compute import base_classes
 
 
 class InstancesAddTags(base_classes.InstanceTagsMutatorMixin,

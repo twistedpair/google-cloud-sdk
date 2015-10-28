@@ -11,7 +11,6 @@ import os
 import re
 import signal
 import sys
-import traceback
 
 
 # Disable stack traces when people kill a command.
@@ -135,17 +134,11 @@ def CreateCLI():
   loader.AddModule('compute',
                    os.path.join(pkg_root, 'compute', 'subcommands'),
                    component='gcloud')
-  loader.AddModule('container',
-                   os.path.join(pkg_root, 'container', 'commands'),
-                   component='gcloud')
   loader.AddModule('dataproc',
                    os.path.join(pkg_root, 'dataproc', 'commands'),
                    component='gcloud')
   loader.AddModule('deployment_manager',
                    os.path.join(pkg_root, 'deployment_manager', 'commands'),
-                   component='gcloud')
-  loader.AddModule('functions',
-                   os.path.join(pkg_root, 'functions', 'commands'),
                    component='gcloud')
   loader.AddModule('internal',
                    os.path.join(pkg_root, 'internal', 'commands'),
@@ -159,9 +152,6 @@ def CreateCLI():
   loader.AddModule('preview.datastore',
                    os.path.join(pkg_root, 'appengine', 'datastore_commands'),
                    component='app')
-  loader.AddModule('logging',
-                   os.path.join(pkg_root, 'logging', 'commands'),
-                   component='gcloud')
   loader.AddModule('services',
                    os.path.join(pkg_root, 'service_management', 'subcommands'),
                    component=None)
@@ -186,15 +176,21 @@ def main():
   try:
     _cli.Execute()
   except Exception as e:  # pylint:disable=broad-except
-    log.err.Print('Traceback (most recent call last):')
-    unused_ex_type, unused_ex, tb = sys.exc_info()
-    traceback.print_tb(tb, file=log.err)
-    log.err.Print(type(e).__name__ + ': ' + _cli.SafeExceptionToString(e))
-
+    log.error('gcloud crashed ({0}): {1}'.format(
+        getattr(e, 'error_name', type(e).__name__),
+        _cli.SafeExceptionToString(e)))
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')
-    sys.exit(1)
+
+    if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
+      # We want to see the traceback as normally handled by Python
+      raise
+    else:
+      # This is the case for most non-Cloud SDK developers. They shouldn't see
+      # the full stack trace, but just the nice "gcloud crashed" message.
+      sys.exit(1)
+
 
 if __name__ == '__main__':
   try:

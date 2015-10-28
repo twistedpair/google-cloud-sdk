@@ -66,16 +66,30 @@ class _CommandTimer(object):
   def __init__(self, start_time):
     self.__start = _GetTimeMillis(start_time)
     self.__events = []
+    self.__category = 'unknown'
     self.__action = 'unknown'
+    self.__label = None
 
-  def SetAction(self, action):
-    self.__action = action.replace('.', ',').replace('-', '_')
+  def SetContext(self, category, action, label):
+    self.__category = category
+    self.__action = action
+    self.__label = label
+
+  def GetAction(self):
+    return self.__action
 
   def Event(self, name):
     self.__events.append(_TimedEvent(name))
 
+  def _GetCSIAction(self):
+    csi_action = '{0},{1}'.format(self.__category, self.__action)
+    if self.__label:
+      csi_action = '{0},{1}'.format(csi_action, self.__label)
+    csi_action = csi_action.replace('.', ',').replace('-', '_')
+    return csi_action
+
   def GetCSIParams(self):
-    params = [('action', self.__action)]
+    params = [('action', self._GetCSIAction())]
 
     response_times = [
         '{0}.{1}'.format(event.name, event.time_millis - self.__start)
@@ -191,6 +205,10 @@ class _MetricsCollector(object):
     self.StartTimer(time.time())
     self._metrics = []
 
+    # Tracking the level so we can only report metrics for the top level action
+    # (and not other actions executed within an action). Zero is the top level.
+    self._action_level = 0
+
     log.debug('Metrics collector initialized...')
 
   @staticmethod
@@ -215,14 +233,42 @@ class _MetricsCollector(object):
 
     return cid
 
+  def IncrementActionLevel(self):
+    self._action_level += 1
+
+  def DecrementActionLevel(self):
+    self._action_level -= 1
+
   def StartTimer(self, start_time):
     self._timer = _CommandTimer(start_time)
 
-  def RecordTimedEvent(self, name):
-    self._timer.Event(name)
+  def RecordTimedEvent(self, name, record_only_on_top_level=False):
+    """Records the time when a particular event happened.
 
-  def SetTimerAction(self, action):
-    self._timer.SetAction(action)
+    Args:
+      name: str, Name of the event.
+      record_only_on_top_level: bool, Whether to record only on top level.
+    """
+    if self._action_level == 0 or not record_only_on_top_level:
+      self._timer.Event(name)
+
+  def SetTimerContext(self, category, action, label=None):
+    """Sets the context for which the timer is collecting timed events.
+
+    Args:
+      category: str, Category of the action being timed.
+      action: str, Name of the action being timed.
+      label: str, Additional information about the action being timed.
+    """
+    # We only want to time top level commands
+    if category is _GA_COMMANDS_CATEGORY and self._action_level != 0:
+      return
+
+    # We want to report error times against the top level action
+    if category is _GA_ERROR_CATEGORY and self._action_level != 0:
+      action = self._timer.GetAction()
+
+    self._timer.SetContext(category, action, label)
 
   def CollectCSIMetric(self):
     """Adds metric with latencies for the given command to the metrics queue."""
@@ -277,7 +323,7 @@ class _MetricsCollector(object):
     log.debug('Metrics reporting process started...')
 
 
-def _CollectGAMetricAndSetTimerAction(category, action, label, value=0):
+def _CollectGAMetricAndSetTimerContext(category, action, label, value=0):
   """Common code for processing a GA event."""
   collector = _MetricsCollector.GetCollector()
   if collector:
@@ -289,10 +335,10 @@ def _CollectGAMetricAndSetTimerAction(category, action, label, value=0):
 
     # Dont include version. We already send it as the rls CSI parameter.
     if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
-      collector.SetTimerAction('{0}.{1}'.format(category, action))
+      collector.SetTimerContext(category, action)
     elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
                       _GA_TEST_EXECUTIONS_CATEGORY]:
-      collector.SetTimerAction('{0}.{1}.{2}'.format(category, action, label))
+      collector.SetTimerContext(category, action, label)
     # Ignoring installs for now since there could be multiple per cmd execution.
 
 
@@ -310,7 +356,7 @@ def CaptureAndLogException(func):
 def StartTestMetrics(test_group_id, test_method):
   _MetricsCollector.ResetCollectorInstance(False, _GA_TID_TESTING)
   _MetricsCollector.test_group = test_group_id
-  _CollectGAMetricAndSetTimerAction(
+  _CollectGAMetricAndSetTimerContext(
       _GA_TEST_EXECUTIONS_CATEGORY,
       test_method,
       test_group_id,
@@ -344,7 +390,7 @@ def Installs(component_id, version_string):
     component_id: str, The component id that was installed.
     version_string: str, The version of the component.
   """
-  _CollectGAMetricAndSetTimerAction(
+  _CollectGAMetricAndSetTimerContext(
       _GA_INSTALLS_CATEGORY, component_id, version_string)
 
 
@@ -358,7 +404,7 @@ def Commands(command_path, version_string):
   """
   if not version_string:
     version_string = 'unknown'
-  _CollectGAMetricAndSetTimerAction(
+  _CollectGAMetricAndSetTimerContext(
       _GA_COMMANDS_CATEGORY, command_path, version_string)
 
 
@@ -370,7 +416,7 @@ def Help(command_path, mode):
     command_path: str, The '.' separated name of the calliope command.
     mode: str, The way help was invoked (-h, --help, help).
   """
-  _CollectGAMetricAndSetTimerAction(_GA_HELP_CATEGORY, command_path, mode)
+  _CollectGAMetricAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
 
 
 @CaptureAndLogException
@@ -387,7 +433,7 @@ def Error(command_path, exc):
   # pylint:disable=bare-except, Never want to fail on metrics reporting.
   except:
     name = 'unknown'
-  _CollectGAMetricAndSetTimerAction(_GA_ERROR_CATEGORY, command_path, name)
+  _CollectGAMetricAndSetTimerContext(_GA_ERROR_CATEGORY, command_path, name)
 
 
 @CaptureAndLogException
@@ -400,7 +446,7 @@ def Executions(command_name, version_string):
   """
   if not version_string:
     version_string = 'unknown'
-  _CollectGAMetricAndSetTimerAction(
+  _CollectGAMetricAndSetTimerContext(
       _GA_EXECUTIONS_CATEGORY, command_name, version_string)
 
 
@@ -417,7 +463,9 @@ def Loaded():
   """Record the time when command loading was completed."""
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.RecordTimedEvent(_CSI_LOAD_EVENT)
+    collector.RecordTimedEvent(name=_CSI_LOAD_EVENT,
+                               record_only_on_top_level=True)
+    collector.IncrementActionLevel()
 
 
 @CaptureAndLogException
@@ -425,7 +473,9 @@ def Ran():
   """Record the time when command running was completed."""
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.RecordTimedEvent(_CSI_RUN_EVENT)
+    collector.DecrementActionLevel()
+    collector.RecordTimedEvent(name=_CSI_RUN_EVENT,
+                               record_only_on_top_level=True)
 
 
 @CaptureAndLogException

@@ -3,11 +3,10 @@
 """Lists all available service tiers for Google Cloud SQL."""
 
 
+from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-
-from googlecloudsdk.shared.sql import errors
 
 
 class _BaseList(object):

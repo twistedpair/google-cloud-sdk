@@ -1,9 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for adding instances to unmanaged instance group."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import instance_groups_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import instance_groups_utils
-from googlecloudsdk.shared.compute import utils
 
 
 class AddInstances(base_classes.NoOutputAsyncMutator):

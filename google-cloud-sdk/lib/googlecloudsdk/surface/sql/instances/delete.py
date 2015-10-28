@@ -1,13 +1,13 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
 """Deletes a Cloud SQL instance."""
 
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import operations
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import operations
-from googlecloudsdk.shared.sql import validate
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

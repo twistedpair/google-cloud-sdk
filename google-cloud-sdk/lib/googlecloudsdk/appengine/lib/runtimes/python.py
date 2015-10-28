@@ -16,10 +16,10 @@ PYTHON_RUNTIME_NAME = 'python'
 # TODO(user): We'll move these into directories once we externalize
 # fingerprinting.
 PYTHON_APP_YAML = textwrap.dedent("""\
-    runtime: custom
+    runtime: {runtime}
     env: 2
     api_version: 1
-    entrypoint: %s
+    entrypoint: {entrypoint}
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore
@@ -39,18 +39,19 @@ DOCKERFILE_INSTALL_APP = 'ADD . /app/\n'
 class PythonConfigurator(fingerprinting.Configurator):
   """Generates configuration for a Python application."""
 
-  def __init__(self, path, deploy, got_requirements_txt, entrypoint):
+  def __init__(self, path, params, got_requirements_txt, entrypoint):
     """Constructor.
 
     Args:
       path: (str) Root path of the source tree.
-      deploy: (bool) True if run in deployment mode.
+      params: (fingerprinting.Params) Parameters passed through to the
+        fingerprinters.
       got_requirements_txt: (bool) True if there's a requirements.txt file.
       entrypoint: (str) Name of the entrypoint to generate.
     """
 
     self.root = path
-    self.deploy = deploy
+    self.params = params
     self.got_requirements_txt = got_requirements_txt
     self.entrypoint = entrypoint
 
@@ -58,47 +59,50 @@ class PythonConfigurator(fingerprinting.Configurator):
     """Generate all config files for the module."""
     # Write "Saving file" messages to the user or to log depending on whether
     # we're in "deploy."
-    if self.deploy:
+    if self.params.deploy:
       notify = log.info
     else:
       notify = log.status.Print
 
-    cleaner = fingerprinting.Cleaner()
-    dockerfile = os.path.join(self.root, config.DOCKERFILE)
-    if not os.path.exists(dockerfile):
-      notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
-      # Customize the dockerfile.
-      with open(dockerfile, 'w') as out:
-        out.write(DOCKERFILE_PREAMBLE)
-
-        if self.got_requirements_txt:
-          out.write(DOCKERFILE_REQUIREMENTS_TXT)
-
-        out.write(DOCKERFILE_INSTALL_APP)
-
-        # Generate the appropriate start command.
-        if self.entrypoint:
-          out.write('CMD %s\n' % self.entrypoint)
-
-      cleaner.Add(dockerfile)
-
     # Generate app.yaml.
-    if not self.deploy:
+    cleaner = fingerprinting.Cleaner()
+    if not self.params.deploy:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
+        runtime = 'custom' if self.params.custom else 'python'
         with open(app_yaml, 'w') as f:
-          f.write(PYTHON_APP_YAML % self.entrypoint)
+          f.write(PYTHON_APP_YAML.format(entrypoint=self.entrypoint,
+                                         runtime=runtime))
         cleaner.Add(app_yaml)
 
-    # Generate .dockerignore TODO(user): eventually this file will just be
-    # copied verbatim.
-    dockerignore = os.path.join(self.root, '.dockerignore')
-    if not os.path.exists(dockerignore):
-      notify('Saving [.dockerignore] to [%s].' % self.root)
-      with open(dockerignore, 'w') as f:
-        f.write(DOCKERIGNORE)
-      cleaner.Add(dockerignore)
+    if self.params.custom or self.params.deploy:
+      dockerfile = os.path.join(self.root, config.DOCKERFILE)
+      if not os.path.exists(dockerfile):
+        notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
+        # Customize the dockerfile.
+        with open(dockerfile, 'w') as out:
+          out.write(DOCKERFILE_PREAMBLE)
+
+          if self.got_requirements_txt:
+            out.write(DOCKERFILE_REQUIREMENTS_TXT)
+
+          out.write(DOCKERFILE_INSTALL_APP)
+
+          # Generate the appropriate start command.
+          if self.entrypoint:
+            out.write('CMD %s\n' % self.entrypoint)
+
+        cleaner.Add(dockerfile)
+
+      # Generate .dockerignore TODO(user): eventually this file will just be
+      # copied verbatim.
+      dockerignore = os.path.join(self.root, '.dockerignore')
+      if not os.path.exists(dockerignore):
+        notify('Saving [.dockerignore] to [%s].' % self.root)
+        with open(dockerignore, 'w') as f:
+          f.write(DOCKERIGNORE)
+        cleaner.Add(dockerignore)
 
     if not cleaner.HasFiles():
       notify('All config files already exist, not generating anything.')
@@ -168,5 +172,5 @@ def Fingerprint(path, params):
                'an "entrypoint" field defining the full command.')
       return None
 
-  return PythonConfigurator(path, params.deploy, got_requirements_txt,
+  return PythonConfigurator(path, params, got_requirements_txt,
                             entrypoint)

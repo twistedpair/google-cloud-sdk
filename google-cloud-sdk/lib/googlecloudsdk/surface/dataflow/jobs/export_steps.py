@@ -2,11 +2,11 @@
 
 """Implementation of gcloud dataflow jobs export-steps command."""
 
+from googlecloudsdk.api_lib.dataflow import job_utils
+from googlecloudsdk.api_lib.dataflow import step_graph
+from googlecloudsdk.api_lib.dataflow import step_json
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.dataflow import job_utils
-from googlecloudsdk.shared.dataflow import step_graph
-from googlecloudsdk.shared.dataflow import step_json
 
 
 class ExportSteps(base.Command):

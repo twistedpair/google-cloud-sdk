@@ -2,6 +2,39 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 0.9.84 (2015/10/28)
+
+### App Engine
+
+* Due to PageSpeed service deprecation, user will receive a warning when
+  deploying a new version to App Engine.
+
+* Implemented fingerprinting support for Java.
+
+* The gen-config flag now generates only app.yaml for the matching runtime by
+  default, you must use the --custom flag to generate an app.yaml with a runtime
+  of "custom" and Dockerfile (and other configs).
+
+### Compute
+
+* GA support for https load balancing features.
+
+* Deprecated --clear-target-pool flag from compute instance-groups managed
+  set-target-pools command.
+
+### Windows support
+
+* Windows Installer can now take a /logtofile flag to write installation logs to
+  file CloudSDKInstall.log located in the same directory.
+
+* Windows installer now displays an error message when the installation
+  does not succeed.
+
+### Command Line Interface support
+
+* The [page=N] table format attribute prints one or more tables of at most N
+  rows. Use this to view paged server data as it arrives at the client.
+
 ## 0.9.83 (2015/10/21)
 
 ### App Engine

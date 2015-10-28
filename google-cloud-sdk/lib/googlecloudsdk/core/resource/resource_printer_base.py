@@ -33,15 +33,26 @@ class ResourcePrinter(object):
   """Base class for printing JSON-serializable Python objects.
 
   Attributes:
-    _attributes: Optional printer attribute dict indexed by attribute name.
+    attributes: Optional printer attribute dict indexed by attribute name.
     _by_columns: True if AddRecord() expects a list of columns.
     column_attributes: Projection ColumnAttributes().
+    _empty: True if there are no records.
     _heading: The list of column heading label strings.
     _name: Format name.
     _out: Output stream.
     _process_record: The function called to process each record passed to
       AddRecord() before calling _AddRecord(). It is called like this:
         record = process_record(record)
+
+  Printer attributes:
+    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
+      are no items. The default *empty-legend* is "Listed 0 items.".
+      *no-empty-legend* disables the default.
+    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
+      item if there is at least one item.
+    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
+      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
+      *info*, *warn*, or *error*.
   """
 
   def __init__(self, out=None, name=None, attributes=None,
@@ -49,7 +60,9 @@ class ResourcePrinter(object):
     """Constructor.
 
     Args:
-      out: The output stream, log.out if None.
+      out: The output stream, log.out if None. If the 'private' attribute is set
+        and the output stream is a log._ConsoleWriter then the underlying stream
+        is used instead to disable output to the log file.
       name: The format name.
       attributes: Optional printer attribute dict indexed by attribute name.
       column_attributes: Projection ColumnAttributes().
@@ -58,12 +71,19 @@ class ResourcePrinter(object):
         AddRecord() before calling _AddRecord(). It is called like this:
           record = process_record(record)
     """
-    self._attributes = attributes or {}
+    self.attributes = attributes or {}
     self._by_columns = by_columns
     self.column_attributes = column_attributes
+    self._empty = True
     self._heading = None
     self._name = name
     self._out = out or log.out
+    if 'private' in self.attributes:
+      try:
+        # Disable log file writes by printing directly to the console stream.
+        self._out = self._out.GetConsoleWriterStream()
+      except AttributeError:
+        pass
     self._process_record = (process_record or
                             resource_projector.Compile().Evaluate)
 
@@ -85,6 +105,7 @@ class ResourcePrinter(object):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
+    pass
 
   def AddRecord(self, record, delimit=True):
     """Adds a record for printing.
@@ -97,7 +118,37 @@ class ResourcePrinter(object):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
+    self._empty = False
     self._AddRecord(self._process_record(record), delimit)
+
+  def AddLegend(self):
+    """Prints the table legend if it was specified.
+
+    The legend is one or more lines of text printed after the table data.
+    """
+    writers = {
+        'out': lambda x: self._out.write(x + '\n'),
+        'status': lambda x: log.status.write(x + '\n'),
+        'debug': log.debug,
+        'info': log.info,
+        'warn': log.warn,
+        'error': log.error,
+        }
+
+    log_type = self.attributes.get('log', None)
+    if self._empty:
+      if not log_type:
+        log_type = 'status'
+      legend = self.attributes.get('empty-legend')
+      if legend is None and 'no-empty-legend' not in self.attributes:
+        legend = 'Listed 0 items.'
+    else:
+      legend = self.attributes.get('legend')
+      if legend and not log_type:
+        legend = '\n' + legend
+    if legend is not None:
+      writer = writers.get(log_type or 'out')
+      writer(legend)
 
   def ByColumns(self):
     """Returns True if AddRecord() expects a list of columns.
@@ -109,12 +160,13 @@ class ResourcePrinter(object):
 
   def Finish(self):
     """Prints the results for non-streaming formats."""
+    pass
 
   def PrintSingleRecord(self, record):
     """Print one record by itself.
 
     Args:
-      record: Prints resource delimiters if True.
+      record: A JSON-serializable object.
     """
     self.AddRecord(record, delimit=False)
     self.Finish()

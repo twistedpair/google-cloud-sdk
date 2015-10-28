@@ -623,7 +623,7 @@ Only logs that have entries are listed.
           }
 
     def Create(self, request, global_params=None):
-      """Create the specified log metric resource.
+      """Creates a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsCreateRequest) input message
@@ -636,7 +636,7 @@ Only logs that have entries are listed.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified log metric.
+      """Deletes a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsDeleteRequest) input message
@@ -649,7 +649,7 @@ Only logs that have entries are listed.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Get the specified log metric resource.
+      """Gets a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsGetRequest) input message
@@ -662,7 +662,7 @@ Only logs that have entries are listed.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """List log metrics associated with the specified project.
+      """Lists the logs-based metrics associated with a project.
 
       Args:
         request: (LoggingProjectsMetricsListRequest) input message
@@ -675,7 +675,7 @@ Only logs that have entries are listed.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Create or update the specified log metric resource.
+      """Creates or updates a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsUpdateRequest) input message

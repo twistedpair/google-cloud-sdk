@@ -2,8 +2,8 @@
 
 """Command to get IAM policy for a resource."""
 
+from googlecloudsdk.api_lib.projects import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.projects import util
 
 
 @base.Hidden

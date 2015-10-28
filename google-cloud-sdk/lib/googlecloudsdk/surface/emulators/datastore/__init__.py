@@ -1,8 +1,8 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """The gcloud datastore emulator group."""
 
+from googlecloudsdk.api_lib.emulators import datastore_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.emulators import datastore_util
 
 
 class Datastore(base.Group):

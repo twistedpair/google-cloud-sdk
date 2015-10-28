@@ -33,6 +33,7 @@ class Build(_messages.Message):
       steps are complete, they will all be pushed and recorded in the build's
       results.
     projectId: The ID of the project. @OutputOnly.
+    projectNum: A string attribute.
     results: The results of this build. @OutputOnly
     source: Describes where to find source files to build.
     startTime: The time that execution of the build was started. @OutputOnly
@@ -72,14 +73,15 @@ class Build(_messages.Message):
   id = _messages.StringField(4)
   images = _messages.StringField(5, repeated=True)
   projectId = _messages.StringField(6)
-  results = _messages.MessageField('Results', 7)
-  source = _messages.MessageField('Source', 8)
-  startTime = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  steps = _messages.MessageField('BuildStep', 11, repeated=True)
-  timeout = _messages.StringField(12)
-  userId = _messages.IntegerField(13)
-  workerId = _messages.StringField(14)
+  projectNum = _messages.IntegerField(7)
+  results = _messages.MessageField('Results', 8)
+  source = _messages.MessageField('Source', 9)
+  startTime = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  steps = _messages.MessageField('BuildStep', 12, repeated=True)
+  timeout = _messages.StringField(13)
+  userId = _messages.IntegerField(14)
+  workerId = _messages.StringField(15)
 
 
 class BuildStep(_messages.Message):

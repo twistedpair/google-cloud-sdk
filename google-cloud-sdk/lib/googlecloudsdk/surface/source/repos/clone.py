@@ -4,13 +4,12 @@
 """
 
 import textwrap
-
+from googlecloudsdk.api_lib.source import git
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.shared.source import git
 
 
 class Clone(base.Command):

@@ -1,12 +1,12 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for waiting until managed instance group becomes stable."""
 
-from googlecloudsdk.core import log
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import time_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.core import log
 
 
 class WaitUntilStable(base_classes.BaseCommand):

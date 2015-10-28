@@ -3,9 +3,9 @@
 """Implementation of gcloud bigquery jobs show-rows.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.shared.bigquery import bigquery
 
 
 class JobsShowRows(base.Command):

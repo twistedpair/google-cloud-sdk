@@ -2,9 +2,9 @@
 """Command for removing a host rule from a URL map."""
 import copy
 
-from googlecloudsdk.calliope import exceptions
 
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.calliope import exceptions
 
 
 class RemoveHostRule(base_classes.ReadWriteCommand):

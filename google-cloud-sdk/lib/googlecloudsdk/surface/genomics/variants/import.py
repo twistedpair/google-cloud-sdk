@@ -1,10 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Implementation of gcloud genomics variants import.
 """
+from googlecloudsdk.api_lib import genomics as lib
+from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared import genomics as lib
-from googlecloudsdk.shared.genomics import genomics_util
 
 
 class Import(base.Command):

@@ -2,12 +2,13 @@
 
 """rolling-updates start command."""
 
+
+from googlecloudsdk.api_lib.compute import rolling_updates_util as updater_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.compute import rolling_updates_util as updater_util
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

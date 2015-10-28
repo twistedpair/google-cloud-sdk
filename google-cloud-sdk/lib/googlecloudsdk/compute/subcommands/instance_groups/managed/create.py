@@ -1,11 +1,13 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for creating managed instance group."""
 import argparse
+
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
-from googlecloudsdk.shared.compute import zone_utils
 
 
 @base.ReleaseTracks(base.ReleaseTrack.GA)

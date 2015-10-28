@@ -1,8 +1,8 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
 """Command for creating routers."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 
 
 class Create(base_classes.BaseAsyncCreator):

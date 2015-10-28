@@ -1,8 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating firewall rules."""
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import firewalls_utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import firewalls_utils
 
 
 class Create(base_classes.BaseAsyncCreator):

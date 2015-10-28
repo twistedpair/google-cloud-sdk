@@ -2,9 +2,9 @@
 
 """bigtable clusters delete command."""
 
+from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.bigtable import util
 
 
 class DeleteCluster(base.Command):

@@ -1,10 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating forwarding rules."""
 
-from googlecloudsdk.calliope import base
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import forwarding_rules_utils as utils
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import forwarding_rules_utils as utils
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 
 
@@ -12,29 +12,10 @@ def _SupportedProtocols(messages):
   return sorted(
       messages.ForwardingRule.IPProtocolValueValuesEnum.to_dict().keys())
 
-# TODO(user): VPN-Alpha Add --target-vpn-gateway to the help text below.
-_DESCRIPTION = """\
-        *{command}* is used to create a forwarding rule. Forwarding
-        rules match and direct certain types of traffic to a load
-        balancer which is controlled by a target pool, a target instance,
-        or a target HTTP proxy. Target pools and target instances perform load
-        balancing at the layer 3 of the OSI networking model
-        (link:http://en.wikipedia.org/wiki/Network_layer[]). Target
-        HTTP proxies perform load balancing at layer 7.
 
-        Forwarding rules can be either regional or global. They are
-        regional if they point to a target pool or a target instance
-        and global if they point to a target HTTP proxy.
-
-        For more information on load balancing, see
-        link:https://cloud.google.com/compute/docs/load-balancing-and-autoscaling/[].
-"""
-
-
-def _Args(parser, beta_features):
+def _Args(parser):
   """Argument parsing."""
-  utils.ForwardingRulesTargetMutator.Args(
-      parser, include_beta_targets=beta_features)
+  utils.ForwardingRulesTargetMutator.Args(parser)
 
   address = parser.add_argument(
       '--address',
@@ -78,14 +59,13 @@ def _Args(parser, beta_features):
       """
 
 
-@base.ReleaseTracks(base.ReleaseTrack.GA)
-class CreateGA(base_classes.ListOutputMixin,
-               utils.ForwardingRulesTargetMutator):
+class Create(base_classes.ListOutputMixin,
+             utils.ForwardingRulesTargetMutator):
   """Create a forwarding rule to direct network traffic to a load balancer."""
 
   @staticmethod
   def Args(parser):
-    _Args(parser, beta_features=False)
+    _Args(parser)
 
   @property
   def method(self):
@@ -144,30 +124,12 @@ class CreateGA(base_classes.ListOutputMixin,
     return [request]
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
-class CreateAlphaBeta(CreateGA):
-  """Create a forwarding rule to direct network traffic to a load balancer."""
+Create.detailed_help = {
+    'DESCRIPTION': ("""\
+        *{{command}}* is used to create a forwarding rule. {overview}
 
-  @staticmethod
-  def Args(parser):
-    _Args(parser, beta_features=True)
-
-CreateGA.detailed_help = {
-    'brief': ('Create a forwarding rule to direct network traffic to a load '
-              'balancer'),
-    'DESCRIPTION': (_DESCRIPTION + """\
-        When creating a forwarding rule, exactly one of  ``--target-instance'',
-        ``--target-pool'', ``--target-http-proxy'',
-        and ``--target-vpn-gateway'' must be specified.
-        """),
-}
-
-CreateAlphaBeta.detailed_help = {
-    'brief': ('Create a forwarding rule to direct network traffic to a load '
-              'balancer'),
-    'DESCRIPTION': (_DESCRIPTION + """\
         When creating a forwarding rule, exactly one of  ``--target-instance'',
         ``--target-pool'', ``--target-http-proxy'', ``-target-https-proxy'',
         and ``--target-vpn-gateway'' must be specified.
-        """),
+        """.format(overview=utils.FORWARDING_RULES_OVERVIEW)),
 }

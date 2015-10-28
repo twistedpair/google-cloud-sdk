@@ -2,9 +2,9 @@
 """Command for adding a host rule to a URL map."""
 import copy
 
-from googlecloudsdk.calliope import arg_parsers
 
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.calliope import arg_parsers
 
 
 class AddHostRule(base_classes.ReadWriteCommand):

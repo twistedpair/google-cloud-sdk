@@ -1,7 +1,7 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Utility functions that don't belong in the other utility modules."""
 
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.third_party.apis.clouduseraccounts.alpha import clouduseraccounts_alpha_client
 from googlecloudsdk.third_party.apis.clouduseraccounts.beta import clouduseraccounts_beta_client
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_client

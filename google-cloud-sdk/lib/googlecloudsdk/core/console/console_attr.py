@@ -116,7 +116,7 @@ class BoxLineCharactersUtf8(BoxLineCharacters):
 
 
 class BoxLineCharactersWindows(BoxLineCharacters):
-  """UTF-8 Box/line drawing characters."""
+  """Windows cp437 Box/line drawing characters."""
   dl = '\xBF'
   dr = '\xDA'
   h = '\xC4'

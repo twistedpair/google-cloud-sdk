@@ -2,9 +2,10 @@
 """Command for setting whether to auto-delete a disk."""
 import copy
 
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
 
 
 class SetDiskAutoDelete(base_classes.ReadWriteCommand):

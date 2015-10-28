@@ -2,12 +2,10 @@
 """Retrieves information about a backup."""
 
 import sys
-
-
+from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.sql import errors
-from googlecloudsdk.shared.sql import validate
 
 
 class _BaseDescribe(object):

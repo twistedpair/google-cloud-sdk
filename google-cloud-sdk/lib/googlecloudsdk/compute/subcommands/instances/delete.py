@@ -1,11 +1,11 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for deleting instances."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.console import console_io
-
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import utils
 
 AUTO_DELETE_OVERRIDE_CHOICES = ['boot', 'data', 'all']
 

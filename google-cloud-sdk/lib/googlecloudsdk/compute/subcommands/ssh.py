@@ -3,12 +3,12 @@
 """Implements the command for SSHing into an instance."""
 import getpass
 
+
+from googlecloudsdk.api_lib.compute import gaia_utils
+from googlecloudsdk.api_lib.compute import ssh_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-
-from googlecloudsdk.shared.compute import gaia_utils
-from googlecloudsdk.shared.compute import ssh_utils
-from googlecloudsdk.shared.compute import utils
 
 
 def _Args(parser):

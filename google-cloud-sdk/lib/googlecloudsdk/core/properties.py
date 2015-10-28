@@ -508,6 +508,8 @@ class _SectionCore(_Section):
     self.check_gce_metadata = self._Add(
         'check_gce_metadata', hidden=True,
         callbacks=[lambda: True])
+    self.print_unhandled_tracebacks = self._Add(
+        'print_unhandled_tracebacks', hidden=True)
 
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
@@ -566,6 +568,7 @@ class _SectionAuth(_Section):
     self.client_secret = self._Add(
         'client_secret', hidden=True,
         callbacks=[lambda: config.CLOUDSDK_CLIENT_NOTSOSECRET])
+    self.authority_selector = self._Add('authority_selector', hidden=True)
 
 
 class _SectionMetrics(_Section):

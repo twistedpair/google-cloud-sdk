@@ -5,12 +5,12 @@ import collections
 import getpass
 import logging
 
+
+from googlecloudsdk.api_lib.compute import ssh_utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
-
-from googlecloudsdk.shared.compute import ssh_utils
 
 
 RemoteFile = collections.namedtuple(

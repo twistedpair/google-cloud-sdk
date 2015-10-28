@@ -2,6 +2,8 @@
 
 """deployments create command."""
 
+from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
+from googlecloudsdk.api_lib.deployment_manager import importer
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -9,8 +11,6 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.shared.deployment_manager import dm_v2_util
-from googlecloudsdk.shared.deployment_manager import importer
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 # Number of seconds (approximately) to wait for create operation to complete.

@@ -638,7 +638,7 @@ _BUILTIN_TRANSFORMS = {
 #   module_path: A dotted module path that contains a transform dict.
 #   method_name: A method name in the module that returns the transform dict.
 _API_TO_TRANSFORMS = {
-    'compute': ('googlecloudsdk.shared.compute.transforms', 'GetTransforms'),
+    'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
 }
 
 

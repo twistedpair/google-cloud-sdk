@@ -14,7 +14,9 @@ from googlecloudsdk.appengine.lib import flags
 
 
 class Download(base.Command):
-  """Download a specific version of the given modules of your app.
+  """(DEPRECATED) Download a specific version of the given modules of your app.
+
+  This command is deprecated and will soon be removed.
 
   This command downloads the files that were in the deployment of the given
   modules.  For each module you specify, a directory named for that module will

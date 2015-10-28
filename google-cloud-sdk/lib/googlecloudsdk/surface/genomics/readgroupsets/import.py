@@ -4,13 +4,12 @@
 """
 
 import sys
-
+from googlecloudsdk.api_lib import genomics as lib
+from googlecloudsdk.api_lib.genomics import genomics_util
+from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared import genomics as lib
-from googlecloudsdk.shared.genomics import genomics_util
-from googlecloudsdk.shared.genomics.exceptions import GenomicsError
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

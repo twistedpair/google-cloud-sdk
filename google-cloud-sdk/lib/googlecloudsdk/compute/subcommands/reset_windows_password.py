@@ -4,24 +4,24 @@ import copy
 import json
 import textwrap
 
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import gaia_utils
+from googlecloudsdk.api_lib.compute import metadata_utils
+from googlecloudsdk.api_lib.compute import openssl_encryption_utils
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import gaia_utils
-from googlecloudsdk.shared.compute import metadata_utils
-from googlecloudsdk.shared.compute import openssl_encryption_utils
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import time_utils
-from googlecloudsdk.shared.compute import utils
-
 # This will only succeed on Windows machines.
 try:
   # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.shared.compute import windows_encryption_utils
+  from googlecloudsdk.api_lib.compute import windows_encryption_utils
 except ImportError:
   windows_encryption_utils = None
 

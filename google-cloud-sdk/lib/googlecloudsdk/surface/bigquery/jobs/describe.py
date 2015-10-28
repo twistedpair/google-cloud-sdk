@@ -3,11 +3,10 @@
 """Implementation of gcloud bigquery jobs describe.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
+from googlecloudsdk.api_lib.bigquery import job_display
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-
-from googlecloudsdk.shared.bigquery import bigquery
-from googlecloudsdk.shared.bigquery import job_display
 
 
 class JobsDescribe(base.Command):

@@ -3,7 +3,7 @@
 
 It's an alias for the instance-groups set-named-ports command.
 """
-from googlecloudsdk.shared.compute import instance_groups_utils
+from googlecloudsdk.api_lib.compute import instance_groups_utils
 
 
 class SetNamedPorts(instance_groups_utils.InstanceGroupSetNamedPorts):

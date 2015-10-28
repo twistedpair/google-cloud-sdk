@@ -3,15 +3,15 @@
 """Implementation of gcloud bigquery query.
 """
 
+from googlecloudsdk.api_lib.bigquery import job_control
+from googlecloudsdk.api_lib.bigquery import job_ids
+from googlecloudsdk.api_lib.bigquery import job_progress
+from googlecloudsdk.api_lib.bigquery import message_conversions
+from googlecloudsdk.api_lib.bigquery import schema_and_rows
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.shared.bigquery import job_control
-from googlecloudsdk.shared.bigquery import job_ids
-from googlecloudsdk.shared.bigquery import job_progress
-from googlecloudsdk.shared.bigquery import message_conversions
-from googlecloudsdk.shared.bigquery import schema_and_rows
 from googlecloudsdk.surface import bigquery as commands
 
 

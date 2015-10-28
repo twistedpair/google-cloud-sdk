@@ -3,7 +3,7 @@
 
 It's an alias for the instance-groups describe command.
 """
-from googlecloudsdk.shared.compute import instance_groups_utils
+from googlecloudsdk.api_lib.compute import instance_groups_utils
 
 
 class Describe(instance_groups_utils.InstanceGroupDescribe):

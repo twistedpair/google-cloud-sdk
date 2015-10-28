@@ -1,7 +1,7 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
 """Command for describing routers."""
-from googlecloudsdk.shared.compute import base_classes
+from googlecloudsdk.api_lib.compute import base_classes
 
 
 class Describe(base_classes.RegionalDescriber):

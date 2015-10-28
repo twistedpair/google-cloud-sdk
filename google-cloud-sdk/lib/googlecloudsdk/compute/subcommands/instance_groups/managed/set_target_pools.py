@@ -1,9 +1,14 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for setting target pools of managed instance group."""
+
+import argparse
+
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.core import log
 
 
 class SetTargetPools(base_classes.BaseAsyncMutator):
@@ -16,15 +21,15 @@ class SetTargetPools(base_classes.BaseAsyncMutator):
     mutually_exclusive_group.add_argument(
         '--clear-target-pools',
         action='store_true',
-        help='Do not add instances to any Compute Engine Target Pools.')
+        help=argparse.SUPPRESS)
     mutually_exclusive_group.add_argument(
         '--target-pools',
-        type=arg_parsers.ArgList(min_length=1),
+        type=arg_parsers.ArgList(min_length=0),
         action=arg_parsers.FloatingListValuesCatcher(),
         metavar='TARGET_POOL',
         help=('Compute Engine Target Pools to add the instances to. '
-              'Target Pools must can specified by name or by URL. Example: '
-              '--target-pool target-pool-1,target-pool-2'))
+              'Target Pools must be specified by name or by URL. Example: '
+              '--target-pool target-pool-1,target-pool-2.'))
     utils.AddZoneFlag(
         parser,
         resource_type='instance group manager',
@@ -47,6 +52,9 @@ class SetTargetPools(base_classes.BaseAsyncMutator):
       raise exceptions.InvalidArgumentException(
           '--target-pools', 'not passed but --clear-target-pools not present '
           'either.')
+    if args.clear_target_pools:
+      log.warn('Flag --clear-target-pools is deprecated. Use --target-pools '
+               'with empty string ("") as the target pool list instead.')
 
   def CreateRequests(self, args):
     self._ValidateArgs(args)

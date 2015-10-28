@@ -2,11 +2,12 @@
 
 """Constants for the dataproc tool."""
 
+
+from googlecloudsdk.api_lib.compute import constants as compute_constants
+from googlecloudsdk.api_lib.compute import scope_prompter
+from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
-from googlecloudsdk.shared.compute import constants as compute_constants
-from googlecloudsdk.shared.compute import scope_prompter
-from googlecloudsdk.shared.compute import utils as compute_utils
 
 
 # Copy into dataproc for cleaner separation

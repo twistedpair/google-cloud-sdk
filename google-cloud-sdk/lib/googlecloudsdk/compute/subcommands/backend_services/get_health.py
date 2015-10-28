@@ -1,9 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for getting health status of backend(s) in a backend service."""
 
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.core import exceptions
 
 
 class GetHealth(base_classes.BaseCommand):
@@ -83,16 +84,44 @@ class GetHealth(base_classes.BaseCommand):
           backendService=self.backend_service_ref.Name())
       requests.append((self.service, 'GetHealth', request_message))
 
+    # Instead of batching-up all requests and making a single
+    # request_helper.MakeRequests call, go one backend at a time.
+    # We do this because getHealth responses don't say what resource
+    # they correspond to.  It's not obvious how to reliably match up
+    # responses and backends when there are errors.  Addtionally the contract
+    # for MakeRequests doesn't guarantee response order will match
+    # request order.
+    #
+    # TODO(b/25015230) Simply make a batch request once the response
+    # gives more information.
     errors = []
-    resources = request_helper.MakeRequests(
-        requests=requests,
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None)
+    for request in requests:
+      # The list() call below is itended to force the generator returned by
+      # MakeRequests.  If there are exceptions the command will abort, which is
+      # expected.  Having a list simplifies some of the checks that follow.
+      resources = list(request_helper.MakeRequests(
+          requests=[request],
+          http=self.http,
+          batch_url=self.batch_url,
+          errors=errors,
+          custom_get_requests=None))
 
-    for resource in resources:
-      yield resource
+      if len(resources) is 0:
+        #  Request failed, error information will accumulate in errors
+        continue
+
+      try:
+        [resource] = resources
+      except ValueError:
+        # Intended to throw iff resources contains more than one element.  Just
+        # want to avoid a user potentially seeing an index out of bounds
+        # exception.
+        raise exceptions.InternalError('Invariant failure')
+
+      yield {
+          'backend': request[2].resourceGroupReference.group,
+          'status': resource
+      }
 
     if errors:
       utils.RaiseToolException(

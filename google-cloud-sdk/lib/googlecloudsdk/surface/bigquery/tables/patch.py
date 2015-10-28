@@ -3,11 +3,11 @@
 """Implementation of gcloud bigquery tables patch.
 """
 
+from googlecloudsdk.api_lib.bigquery import bigquery
+from googlecloudsdk.api_lib.bigquery import bigquery_schemas
+from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.shared.bigquery import bigquery
-from googlecloudsdk.shared.bigquery import bigquery_schemas
-from googlecloudsdk.shared.bigquery import message_conversions
 from googlecloudsdk.surface import bigquery as commands
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 

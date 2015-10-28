@@ -1064,6 +1064,13 @@ class AppVersionUploader(object):
 
       raise
 
+    if self.module_yaml.pagespeed:
+      log.warn('This application contains PageSpeed related configurations, '
+               'which is deprecated! Those configurations will stop working '
+               'after December 1, 2015. Read '
+               'https://cloud.google.com/appengine/docs/adminconsole/pagespeed#disabling-pagespeed'
+               ' to learn how to disable PageSpeed.')
+
     log.info('Done!')
     return app_summary
 

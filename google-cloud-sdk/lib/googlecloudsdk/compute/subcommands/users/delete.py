@@ -1,10 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for deleting users."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import lister
-from googlecloudsdk.shared.compute import request_helper
-from googlecloudsdk.shared.compute import user_utils
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import lister
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import user_utils
+from googlecloudsdk.api_lib.compute import utils
 
 
 class Delete(base_classes.BaseAsyncMutator):

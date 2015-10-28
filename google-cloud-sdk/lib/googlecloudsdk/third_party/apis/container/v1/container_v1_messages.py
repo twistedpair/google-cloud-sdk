@@ -62,9 +62,9 @@ class Cluster(_messages.Message):
       project and zone, and can be up to 40 characters with the following
       restrictions:  * Lowercase letters, numbers, and hyphens only. * Must
       start with a letter. * Must end with a number or a letter.
-    network: The name of the Google Compute Engine
-      [network](/compute/docs/networking#networks_1) to which the cluster is
-      connected. If left unspecified, the `default` network will be used.
+    network: The name of the Google Compute Engine [network](/compute/docs
+      /networks-and-firewalls#networks) to which the cluster is connected. If
+      left unspecified, the `default` network will be used.
     nodeConfig: Parameters used in creating the cluster's nodes. See the
       descriptions of the child properties of `nodeConfig`.  If unspecified,
       the defaults for all child properties are used.
@@ -500,6 +500,7 @@ class Operation(_messages.Message):
     StatusValueValuesEnum: The current status of the operation.
 
   Fields:
+    detail: Detailed operation progress, if available.
     name: The server-assigned ID for the operation.
     operationType: The operation type.
     selfLink: Server-defined URL for the resource.
@@ -546,13 +547,14 @@ class Operation(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  name = _messages.StringField(1)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 2)
-  selfLink = _messages.StringField(3)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
-  statusMessage = _messages.StringField(5)
-  targetLink = _messages.StringField(6)
-  zone = _messages.StringField(7)
+  detail = _messages.StringField(1)
+  name = _messages.StringField(2)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
+  selfLink = _messages.StringField(4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  statusMessage = _messages.StringField(6)
+  targetLink = _messages.StringField(7)
+  zone = _messages.StringField(8)
 
 
 class ServerConfig(_messages.Message):

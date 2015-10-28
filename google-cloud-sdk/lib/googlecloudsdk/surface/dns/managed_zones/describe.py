@@ -2,8 +2,8 @@
 
 """gcloud dns managed-zone describe command."""
 
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.dns import util
 
 
 class Describe(base.Command):

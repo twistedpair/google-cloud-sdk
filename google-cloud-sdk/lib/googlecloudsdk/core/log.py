@@ -117,6 +117,10 @@ class _ConsoleWriter(object):
     message = ' '.join(msg)
     self.write(message + '\n')
 
+  def GetConsoleWriterStream(self):
+    """Returns the console writer output stream."""
+    return self.__stream_wrapper.stream
+
   # pylint: disable=g-bad-name, This must match file-like objects
   @property
   def encoding(self):

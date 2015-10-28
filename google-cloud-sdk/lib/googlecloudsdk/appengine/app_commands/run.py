@@ -31,7 +31,10 @@ _WARNING_RUNTIMES = {
 
 
 class Run(base.Command):
-  """Run one or more modules in the local development application server.
+  """(DEPRECATED) Run one or more modules in the local development application server.
+
+  This comamand is deprecated, and will soon be removed. Please use
+  `dev_appserver.py` (in the same directory as the `gcloud` command) instead.
 
   This command is used to run one or more of your modules in the local
   development application server.  This allows you to test and debug your app

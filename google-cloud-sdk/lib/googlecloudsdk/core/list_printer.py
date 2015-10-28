@@ -149,6 +149,12 @@ COLLECTION_COLUMNS = {
         ('IS_DEFAULT', _Select('is_default', _Boolean)),
     ),
 
+    'app.versions': (
+        ('SERVICE', _Select('service')),
+        ('VERSION', _Select('version')),
+        ('TRAFFIC_SPLIT', _Select('traffic_split')),
+    ),
+
     # AUTOSCALER
     'autoscaler.instances': (
         ('NAME', _Select('name')),
@@ -330,6 +336,10 @@ COLLECTION_COLUMNS = {
         ('END', _Select('end')),
         ('REFERENCE_BASES', _Select('referenceBases')),
         ('ALTERNATE_BASES', _Select('alternateBases')),
+    ),
+
+    'genomics.variantsets': (
+        ('ID', _Select('id')),
     ),
 
     # SQL

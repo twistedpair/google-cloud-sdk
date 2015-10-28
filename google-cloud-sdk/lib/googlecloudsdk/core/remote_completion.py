@@ -59,7 +59,7 @@ class CompletionProgressTracker(object):
       '\\',
   ]
 
-  def __init__(self, ofile, timeout=1.0, autotick=True):
+  def __init__(self, ofile, timeout=3.0, autotick=True):
     self._ticks = 0
     self._autotick = autotick
     self._done = False
@@ -291,6 +291,8 @@ class RemoteCompletion(object):
     Returns:
       None
     """
+    if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+      return None
     paths = {}
     collection = None
     for ref in self_links:
@@ -383,6 +385,10 @@ class RemoteCompletion(object):
     return os.fdopen(9, 'w')
 
   @staticmethod
+  def RunListCommand(cli, command):
+    return list(cli().Execute(command, call_arg_complete=False))
+
+  @staticmethod
   def GetCompleterForResource(ro_resource, cli, ro_command_line=None):
     """Returns a completer function for the given ro_resource.
 
@@ -448,7 +454,7 @@ class RemoteCompletion(object):
           ofile = RemoteCompletion.GetTickerStream()
           tracker = CompletionProgressTracker(ofile)
           with tracker:
-            items = list(cli().Execute(command, call_arg_complete=False))
+            items = RemoteCompletion.RunListCommand(cli, command)
           options = []
           # the following is true if tracker forked and this is the parent
           if tracker.has_forked and os.getpid() == pid:

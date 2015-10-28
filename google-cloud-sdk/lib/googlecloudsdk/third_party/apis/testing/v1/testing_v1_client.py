@@ -302,11 +302,13 @@ May return any of the following canonical error codes:
     def Create(self, request, global_params=None):
       """Request to run a matrix of tests according to the given specifications.
 Unsupported environments will be returned in the state UNSUPPORTED.
+Matrices are limited to at most 200 supported executions.
 
 May return any of the following canonical error codes:
 
 - PERMISSION_DENIED - if the user is not authorized to write to project
-- INVALID_ARGUMENT - if the request is malformed
+- INVALID_ARGUMENT - if the request is malformed or if the matrix expands
+                     to more than 200 supported executions
 
       Args:
         request: (TestingProjectsTestMatricesCreateRequest) input message

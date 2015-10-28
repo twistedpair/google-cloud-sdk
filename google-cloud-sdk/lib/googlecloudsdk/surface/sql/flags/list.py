@@ -2,9 +2,9 @@
 
 """Lists customizable MySQL flags for Google Cloud SQL instances."""
 
+from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.shared.sql import errors
 
 
 class _BaseList(object):

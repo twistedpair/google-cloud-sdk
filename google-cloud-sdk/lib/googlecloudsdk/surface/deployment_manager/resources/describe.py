@@ -2,12 +2,12 @@
 
 """resources describe command."""
 
+from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.shared.deployment_manager import dm_v2_util
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 

@@ -1,7 +1,7 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for removing health checks from target pools."""
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import utils
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import utils
 
 
 class RemoveHealthChecks(base_classes.NoOutputAsyncMutator):

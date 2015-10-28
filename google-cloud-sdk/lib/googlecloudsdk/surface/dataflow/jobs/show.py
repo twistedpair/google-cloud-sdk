@@ -2,10 +2,10 @@
 
 """Implementation of gcloud dataflow jobs show command.
 """
+from googlecloudsdk.api_lib.dataflow import job_display
+from googlecloudsdk.api_lib.dataflow import job_utils
+from googlecloudsdk.api_lib.dataflow import step_json
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.dataflow import job_display
-from googlecloudsdk.shared.dataflow import job_utils
-from googlecloudsdk.shared.dataflow import step_json
 from googlecloudsdk.surface import dataflow as commands
 
 

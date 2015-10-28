@@ -1,10 +1,11 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for listing operations."""
+
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.shared.compute import base_classes
-from googlecloudsdk.shared.compute import constants
-from googlecloudsdk.shared.compute import request_helper
 
 
 def AddFlags(parser, is_ga):
