@@ -717,9 +717,8 @@ class Settings(_messages.Message):
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
       are enabled.
-    dataDiskSizeGb: The size of data disk for the performance instance,
-      specified in GB. Setting this value for non-performance instances will
-      result in an error.
+    dataDiskSizeGb: The size of data disk, in GB. Only supported for 2nd
+      Generation instances. The data disk size minimum is 10GB.
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.

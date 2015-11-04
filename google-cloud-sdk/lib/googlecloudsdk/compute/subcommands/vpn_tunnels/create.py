@@ -3,8 +3,10 @@
 
 import argparse
 import re
+
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -171,6 +173,7 @@ class CreateGA(_BaseCreate, base_classes.BaseAsyncCreator):
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
 class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
+  """Create a VPN tunnel."""
 
   @staticmethod
   def Args(parser):
@@ -178,6 +181,12 @@ class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
     parser.add_argument(
         '--router',
         help='The Router to use for dynamic routing.')
+
+    parser.add_argument(
+        '--ike-networks',
+        type=arg_parsers.ArgList(min_length=1),
+        action=arg_parsers.FloatingListValuesCatcher(),
+        help='List of CIDR prefixes to use during IKE negotiation.')
 
   def CreateRequests(self, args):
     """Builds API requests to construct VPN Tunnels.
@@ -229,6 +238,7 @@ class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
         vpnTunnel=self.messages.VpnTunnel(
             description=args.description,
             router=router_link,
+            ikeNetworks=args.ike_networks or [],
             ikeVersion=args.ike_version,
             name=vpn_tunnel_ref.Name(),
             peerIp=args.peer_address,

@@ -71,6 +71,37 @@ class Alias(_messages.Message):
   workspaceNames = _messages.StringField(4, repeated=True)
 
 
+class AliasContext(_messages.Message):
+  """An alias to a repo revision.
+
+  Enums:
+    KindValueValuesEnum: The alias kind.
+
+  Fields:
+    kind: The alias kind.
+    name: The alias name.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: Do not use.
+      FIXED: Git tag
+      MOVABLE: Git branch
+      OTHER: OTHER is used to specify non-standard aliases, those not of the
+        kinds above. For example, if a Git repo has a ref named
+        "refs/foo/bar", it is considered to be of kind OTHER.
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class ChangedFileInfo(_messages.Message):
   """Represents file information.
 
@@ -144,14 +175,16 @@ class CloudRepoSourceContext(_messages.Message):
   repo hosted by the Google Cloud Platform).
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     repoId: The ID of the repo.
     revisionId: A revision ID.
   """
 
-  aliasName = _messages.StringField(1)
-  repoId = _messages.MessageField('RepoId', 2)
-  revisionId = _messages.StringField(3)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  repoId = _messages.MessageField('RepoId', 3)
+  revisionId = _messages.StringField(4)
 
 
 class CloudWorkspaceId(_messages.Message):
@@ -363,6 +396,7 @@ class GerritSourceContext(_messages.Message):
   """A SourceContext referring to a Gerrit project.
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     gerritProject: The full project name within the host. Projects may be
       nested, so "project/subproject" is a valid project name. The "repo name"
@@ -371,10 +405,11 @@ class GerritSourceContext(_messages.Message):
     revisionId: A revision (commit) ID.
   """
 
-  aliasName = _messages.StringField(1)
-  gerritProject = _messages.StringField(2)
-  hostUri = _messages.StringField(3)
-  revisionId = _messages.StringField(4)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  gerritProject = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
 
 
 class GetRevisionsResponse(_messages.Message):
@@ -1091,6 +1126,10 @@ class SourceProjectsReposAliasesDeleteRequest(_messages.Message):
 class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
   """A SourceProjectsReposAliasesFilesGetRequest object.
 
+  Enums:
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+    KindValueValuesEnum: The alias kind.
+
   Fields:
     aliasName: The name of an alias (branch, tag, etc.).
     citc_branchName: See PiperDepotSourceContext.branch_name for
@@ -1117,6 +1156,8 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
       repo. Leave empty for the default repo.
     cloudWorkspace_workspaceId_repoId_uid: A server-assigned, globally unique
       identifier.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
     gerrit_aliasName: The name of an alias (branch, tag, etc.).
     gerrit_gerritProject: The full project name within the host. Projects may
       be nested, so "project/subproject" is a valid project name. The "repo
@@ -1125,6 +1166,8 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
     gerrit_revisionId: A revision (commit) ID.
     git_revisionId: Git commit hash. required.
     git_url: Git repository URL.
+    kind: The alias kind.
+    name: The alias name.
     pageSize: The maximum number of values to return.
     pageToken: The value of next_page_token from the previous call. Omit for
       the first page, or if using start_index.
@@ -1154,7 +1197,35 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
     uid: A server-assigned, globally unique identifier.
   """
 
-  aliasName = _messages.StringField(1, required=True)
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  aliasName = _messages.StringField(1)
   citc_branchName = _messages.StringField(2)
   citc_isBaseline = _messages.BooleanField(3)
   citc_snapshotVersion = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
@@ -1164,24 +1235,28 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
   cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(8)
   cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(9)
   cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(10)
-  gerrit_aliasName = _messages.StringField(11)
-  gerrit_gerritProject = _messages.StringField(12)
-  gerrit_hostUri = _messages.StringField(13)
-  gerrit_revisionId = _messages.StringField(14)
-  git_revisionId = _messages.StringField(15)
-  git_url = _messages.StringField(16)
-  pageSize = _messages.IntegerField(17)
-  pageToken = _messages.StringField(18)
-  path = _messages.StringField(19, required=True)
-  piper_branchName = _messages.StringField(20)
-  piper_changeNumber = _messages.IntegerField(21)
-  piper_disableComponents = _messages.BooleanField(22)
-  piper_versionMap = _messages.BytesField(23)
-  projectId = _messages.StringField(24, required=True)
-  repoName = _messages.StringField(25, required=True)
-  revisionId = _messages.StringField(26)
-  startPosition = _messages.IntegerField(27)
-  uid = _messages.StringField(28)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 11)
+  gerrit_aliasContext_name = _messages.StringField(12)
+  gerrit_aliasName = _messages.StringField(13)
+  gerrit_gerritProject = _messages.StringField(14)
+  gerrit_hostUri = _messages.StringField(15)
+  gerrit_revisionId = _messages.StringField(16)
+  git_revisionId = _messages.StringField(17)
+  git_url = _messages.StringField(18)
+  kind = _messages.EnumField('KindValueValuesEnum', 19, required=True)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21)
+  pageToken = _messages.StringField(22)
+  path = _messages.StringField(23, required=True)
+  piper_branchName = _messages.StringField(24)
+  piper_changeNumber = _messages.IntegerField(25)
+  piper_disableComponents = _messages.BooleanField(26)
+  piper_versionMap = _messages.BytesField(27)
+  projectId = _messages.StringField(28, required=True)
+  repoName = _messages.StringField(29, required=True)
+  revisionId = _messages.StringField(30)
+  startPosition = _messages.IntegerField(31)
+  uid = _messages.StringField(32)
 
 
 class SourceProjectsReposAliasesGetRequest(_messages.Message):
@@ -1221,6 +1296,134 @@ class SourceProjectsReposAliasesGetRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
   repoName = _messages.StringField(4, required=True)
   uid = _messages.StringField(5)
+
+
+class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
+  """A SourceProjectsReposAliasesListFilesRequest object.
+
+  Enums:
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+    KindValueValuesEnum: The alias kind.
+
+  Fields:
+    aliasName: The name of an alias (branch, tag, etc.).
+    citc_branchName: See PiperDepotSourceContext.branch_name for
+      documentation.
+    citc_isBaseline: If true, ignore local workspace changes and use the
+      baseline of the workspace instead.
+    citc_snapshotVersion: The snapshot within the workspace. If zero, refers
+      to the moving head of the workspace.  Clients which use zero should be
+      robust against remote changes made to a workspace.  If non-zero, refers
+      to an immutable CitC snapshot.  The current snapshot_version for USER's
+      CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/snapshot_version
+    citc_workspaceId: A unique identifier for a citc workspace. The
+      workspace_id for USER's CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/workspace_id
+    cloudWorkspace_snapshotId: The ID of the snapshot. An empty snapshot_id
+      refers to the most recent snapshot.
+    cloudWorkspace_workspaceId_name: The unique name of the workspace within
+      the repo.  This is the name chosen by the client in the Source API's
+      CreateWorkspace method.
+    cloudWorkspace_workspaceId_repoId_projectRepoId_projectId: The ID of the
+      project.
+    cloudWorkspace_workspaceId_repoId_projectRepoId_repoName: The name of the
+      repo. Leave empty for the default repo.
+    cloudWorkspace_workspaceId_repoId_uid: A server-assigned, globally unique
+      identifier.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
+    gerrit_aliasName: The name of an alias (branch, tag, etc.).
+    gerrit_gerritProject: The full project name within the host. Projects may
+      be nested, so "project/subproject" is a valid project name. The "repo
+      name" is hostURI/project.
+    gerrit_hostUri: The URI of a running Gerrit instance.
+    gerrit_revisionId: A revision (commit) ID.
+    git_revisionId: Git commit hash. required.
+    git_url: Git repository URL.
+    kind: The alias kind.
+    name: The alias name.
+    pageSize: The maximum number of values to return.
+    pageToken: The value of next_page_token from the previous call. Omit for
+      the first page.
+    piper_branchName: Specifies that the source context refers to a branch,
+      rather than the depot root.  For example, if the branch files live under
+      //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
+    piper_changeNumber: CL number. If zero, represents depot head.
+    piper_disableComponents: If false, use the released components as of the
+      CL. If true, use true head.
+    piper_versionMap: The complete components state description. If present,
+      disable_components is ignored.  Not all services accept arbitrary
+      version map.  Services not supporting arbitrary version maps must emit
+      an error if this field is set, instead of silently falling back on
+      disable_components.  This is a serialized VersionMap from
+      //devtools/components/proto/version_map.proto. We use bytes instead of
+      the actual type to avoid having a file under //google depend on one
+      outside of //google.
+    projectId: The ID of the project.
+    repoName: The name of the repo. Leave empty for the default repo.
+    revisionId: A revision ID.
+    uid: A server-assigned, globally unique identifier.
+  """
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  aliasName = _messages.StringField(1)
+  citc_branchName = _messages.StringField(2)
+  citc_isBaseline = _messages.BooleanField(3)
+  citc_snapshotVersion = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  citc_workspaceId = _messages.StringField(5)
+  cloudWorkspace_snapshotId = _messages.StringField(6)
+  cloudWorkspace_workspaceId_name = _messages.StringField(7)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(8)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(9)
+  cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(10)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 11)
+  gerrit_aliasContext_name = _messages.StringField(12)
+  gerrit_aliasName = _messages.StringField(13)
+  gerrit_gerritProject = _messages.StringField(14)
+  gerrit_hostUri = _messages.StringField(15)
+  gerrit_revisionId = _messages.StringField(16)
+  git_revisionId = _messages.StringField(17)
+  git_url = _messages.StringField(18)
+  kind = _messages.EnumField('KindValueValuesEnum', 19, required=True)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(22)
+  piper_branchName = _messages.StringField(23)
+  piper_changeNumber = _messages.IntegerField(24)
+  piper_disableComponents = _messages.BooleanField(25)
+  piper_versionMap = _messages.BytesField(26)
+  projectId = _messages.StringField(27, required=True)
+  repoName = _messages.StringField(28, required=True)
+  revisionId = _messages.StringField(29)
+  uid = _messages.StringField(30)
 
 
 class SourceProjectsReposAliasesListRequest(_messages.Message):
@@ -1319,7 +1522,7 @@ class SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest(_messages.Message)
   """A SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest object.
 
   Fields:
-    alias: Alias to read from (if the workspace doesn't exist).
+    alias: MOVABLE alias to read from, if the workspace doesn't exist.
     pageSize: The maximum number of values to return.
     pageToken: The value of next_page_token from the previous call. Omit for
       the first page.
@@ -1332,7 +1535,7 @@ class SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest(_messages.Message)
       the first entry in the listing. If page_token is specified, this field
       is ignored.
     uid: A server-assigned, globally unique identifier.
-    workspaceName: Workspace to read from (if it exists).
+    workspaceName: Workspace to read from, if it exists.
   """
 
   alias = _messages.StringField(1)
@@ -1387,7 +1590,13 @@ class SourceProjectsReposMergeRequest(_messages.Message):
 class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
   """A SourceProjectsReposRevisionsFilesGetRequest object.
 
+  Enums:
+    AliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
   Fields:
+    aliasContext_kind: The alias kind.
+    aliasContext_name: The alias name.
     aliasName: The name of an alias (branch, tag, etc.).
     citc_branchName: See PiperDepotSourceContext.branch_name for
       documentation.
@@ -1413,6 +1622,8 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
       repo. Leave empty for the default repo.
     cloudWorkspace_workspaceId_repoId_uid: A server-assigned, globally unique
       identifier.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
     gerrit_aliasName: The name of an alias (branch, tag, etc.).
     gerrit_gerritProject: The full project name within the host. Projects may
       be nested, so "project/subproject" is a valid project name. The "repo
@@ -1450,34 +1661,66 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
     uid: A server-assigned, globally unique identifier.
   """
 
-  aliasName = _messages.StringField(1)
-  citc_branchName = _messages.StringField(2)
-  citc_isBaseline = _messages.BooleanField(3)
-  citc_snapshotVersion = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  citc_workspaceId = _messages.StringField(5)
-  cloudWorkspace_snapshotId = _messages.StringField(6)
-  cloudWorkspace_workspaceId_name = _messages.StringField(7)
-  cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(8)
-  cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(9)
-  cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(10)
-  gerrit_aliasName = _messages.StringField(11)
-  gerrit_gerritProject = _messages.StringField(12)
-  gerrit_hostUri = _messages.StringField(13)
-  gerrit_revisionId = _messages.StringField(14)
-  git_revisionId = _messages.StringField(15)
-  git_url = _messages.StringField(16)
-  pageSize = _messages.IntegerField(17)
-  pageToken = _messages.StringField(18)
-  path = _messages.StringField(19, required=True)
-  piper_branchName = _messages.StringField(20)
-  piper_changeNumber = _messages.IntegerField(21)
-  piper_disableComponents = _messages.BooleanField(22)
-  piper_versionMap = _messages.BytesField(23)
-  projectId = _messages.StringField(24, required=True)
-  repoName = _messages.StringField(25, required=True)
-  revisionId = _messages.StringField(26, required=True)
-  startPosition = _messages.IntegerField(27)
-  uid = _messages.StringField(28)
+  class AliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  aliasContext_kind = _messages.EnumField('AliasContextKindValueValuesEnum', 1)
+  aliasContext_name = _messages.StringField(2)
+  aliasName = _messages.StringField(3)
+  citc_branchName = _messages.StringField(4)
+  citc_isBaseline = _messages.BooleanField(5)
+  citc_snapshotVersion = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  citc_workspaceId = _messages.StringField(7)
+  cloudWorkspace_snapshotId = _messages.StringField(8)
+  cloudWorkspace_workspaceId_name = _messages.StringField(9)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(10)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(11)
+  cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(12)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 13)
+  gerrit_aliasContext_name = _messages.StringField(14)
+  gerrit_aliasName = _messages.StringField(15)
+  gerrit_gerritProject = _messages.StringField(16)
+  gerrit_hostUri = _messages.StringField(17)
+  gerrit_revisionId = _messages.StringField(18)
+  git_revisionId = _messages.StringField(19)
+  git_url = _messages.StringField(20)
+  pageSize = _messages.IntegerField(21)
+  pageToken = _messages.StringField(22)
+  path = _messages.StringField(23, required=True)
+  piper_branchName = _messages.StringField(24)
+  piper_changeNumber = _messages.IntegerField(25)
+  piper_disableComponents = _messages.BooleanField(26)
+  piper_versionMap = _messages.BytesField(27)
+  projectId = _messages.StringField(28, required=True)
+  repoName = _messages.StringField(29, required=True)
+  revisionId = _messages.StringField(30, required=True)
+  startPosition = _messages.IntegerField(31)
+  uid = _messages.StringField(32)
 
 
 class SourceProjectsReposRevisionsGetBatchGetRequest(_messages.Message):
@@ -1515,7 +1758,13 @@ class SourceProjectsReposRevisionsGetRequest(_messages.Message):
 class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
   """A SourceProjectsReposRevisionsListFilesRequest object.
 
+  Enums:
+    AliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
   Fields:
+    aliasContext_kind: The alias kind.
+    aliasContext_name: The alias name.
     aliasName: The name of an alias (branch, tag, etc.).
     citc_branchName: See PiperDepotSourceContext.branch_name for
       documentation.
@@ -1541,6 +1790,8 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
       repo. Leave empty for the default repo.
     cloudWorkspace_workspaceId_repoId_uid: A server-assigned, globally unique
       identifier.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
     gerrit_aliasName: The name of an alias (branch, tag, etc.).
     gerrit_gerritProject: The full project name within the host. Projects may
       be nested, so "project/subproject" is a valid project name. The "repo
@@ -1572,32 +1823,64 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
     uid: A server-assigned, globally unique identifier.
   """
 
-  aliasName = _messages.StringField(1)
-  citc_branchName = _messages.StringField(2)
-  citc_isBaseline = _messages.BooleanField(3)
-  citc_snapshotVersion = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  citc_workspaceId = _messages.StringField(5)
-  cloudWorkspace_snapshotId = _messages.StringField(6)
-  cloudWorkspace_workspaceId_name = _messages.StringField(7)
-  cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(8)
-  cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(9)
-  cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(10)
-  gerrit_aliasName = _messages.StringField(11)
-  gerrit_gerritProject = _messages.StringField(12)
-  gerrit_hostUri = _messages.StringField(13)
-  gerrit_revisionId = _messages.StringField(14)
-  git_revisionId = _messages.StringField(15)
-  git_url = _messages.StringField(16)
-  pageSize = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(18)
-  piper_branchName = _messages.StringField(19)
-  piper_changeNumber = _messages.IntegerField(20)
-  piper_disableComponents = _messages.BooleanField(21)
-  piper_versionMap = _messages.BytesField(22)
-  projectId = _messages.StringField(23, required=True)
-  repoName = _messages.StringField(24, required=True)
-  revisionId = _messages.StringField(25, required=True)
-  uid = _messages.StringField(26)
+  class AliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  aliasContext_kind = _messages.EnumField('AliasContextKindValueValuesEnum', 1)
+  aliasContext_name = _messages.StringField(2)
+  aliasName = _messages.StringField(3)
+  citc_branchName = _messages.StringField(4)
+  citc_isBaseline = _messages.BooleanField(5)
+  citc_snapshotVersion = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  citc_workspaceId = _messages.StringField(7)
+  cloudWorkspace_snapshotId = _messages.StringField(8)
+  cloudWorkspace_workspaceId_name = _messages.StringField(9)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_projectId = _messages.StringField(10)
+  cloudWorkspace_workspaceId_repoId_projectRepoId_repoName = _messages.StringField(11)
+  cloudWorkspace_workspaceId_repoId_uid = _messages.StringField(12)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 13)
+  gerrit_aliasContext_name = _messages.StringField(14)
+  gerrit_aliasName = _messages.StringField(15)
+  gerrit_gerritProject = _messages.StringField(16)
+  gerrit_hostUri = _messages.StringField(17)
+  gerrit_revisionId = _messages.StringField(18)
+  git_revisionId = _messages.StringField(19)
+  git_url = _messages.StringField(20)
+  pageSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(22)
+  piper_branchName = _messages.StringField(23)
+  piper_changeNumber = _messages.IntegerField(24)
+  piper_disableComponents = _messages.BooleanField(25)
+  piper_versionMap = _messages.BytesField(26)
+  projectId = _messages.StringField(27, required=True)
+  repoName = _messages.StringField(28, required=True)
+  revisionId = _messages.StringField(29, required=True)
+  uid = _messages.StringField(30)
 
 
 class SourceProjectsReposRevisionsListRequest(_messages.Message):
@@ -1728,6 +2011,10 @@ class SourceProjectsReposWorkspacesDeleteRequest(_messages.Message):
 class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
   """A SourceProjectsReposWorkspacesFilesGetRequest object.
 
+  Enums:
+    CloudRepoAliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
   Fields:
     citc_branchName: See PiperDepotSourceContext.branch_name for
       documentation.
@@ -1742,12 +2029,16 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
     citc_workspaceId: A unique identifier for a citc workspace. The
       workspace_id for USER's CLIENT can be found in
       /google/src/cloud/USER/CLIENT/.citc/workspace_id
+    cloudRepo_aliasContext_kind: The alias kind.
+    cloudRepo_aliasContext_name: The alias name.
     cloudRepo_aliasName: The name of an alias (branch, tag, etc.).
     cloudRepo_repoId_projectRepoId_projectId: The ID of the project.
     cloudRepo_repoId_projectRepoId_repoName: The name of the repo. Leave empty
       for the default repo.
     cloudRepo_repoId_uid: A server-assigned, globally unique identifier.
     cloudRepo_revisionId: A revision ID.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
     gerrit_aliasName: The name of an alias (branch, tag, etc.).
     gerrit_gerritProject: The full project name within the host. Projects may
       be nested, so "project/subproject" is a valid project name. The "repo
@@ -1788,34 +2079,66 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
     uid: A server-assigned, globally unique identifier.
   """
 
+  class CloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
   citc_branchName = _messages.StringField(1)
   citc_isBaseline = _messages.BooleanField(2)
   citc_snapshotVersion = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   citc_workspaceId = _messages.StringField(4)
-  cloudRepo_aliasName = _messages.StringField(5)
-  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(6)
-  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(7)
-  cloudRepo_repoId_uid = _messages.StringField(8)
-  cloudRepo_revisionId = _messages.StringField(9)
-  gerrit_aliasName = _messages.StringField(10)
-  gerrit_gerritProject = _messages.StringField(11)
-  gerrit_hostUri = _messages.StringField(12)
-  gerrit_revisionId = _messages.StringField(13)
-  git_revisionId = _messages.StringField(14)
-  git_url = _messages.StringField(15)
-  name = _messages.StringField(16, required=True)
-  pageSize = _messages.IntegerField(17)
-  pageToken = _messages.StringField(18)
-  path = _messages.StringField(19, required=True)
-  piper_branchName = _messages.StringField(20)
-  piper_changeNumber = _messages.IntegerField(21)
-  piper_disableComponents = _messages.BooleanField(22)
-  piper_versionMap = _messages.BytesField(23)
-  projectId = _messages.StringField(24, required=True)
-  repoName = _messages.StringField(25, required=True)
-  snapshotId = _messages.StringField(26)
-  startPosition = _messages.IntegerField(27)
-  uid = _messages.StringField(28)
+  cloudRepo_aliasContext_kind = _messages.EnumField('CloudRepoAliasContextKindValueValuesEnum', 5)
+  cloudRepo_aliasContext_name = _messages.StringField(6)
+  cloudRepo_aliasName = _messages.StringField(7)
+  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(8)
+  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(9)
+  cloudRepo_repoId_uid = _messages.StringField(10)
+  cloudRepo_revisionId = _messages.StringField(11)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 12)
+  gerrit_aliasContext_name = _messages.StringField(13)
+  gerrit_aliasName = _messages.StringField(14)
+  gerrit_gerritProject = _messages.StringField(15)
+  gerrit_hostUri = _messages.StringField(16)
+  gerrit_revisionId = _messages.StringField(17)
+  git_revisionId = _messages.StringField(18)
+  git_url = _messages.StringField(19)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21)
+  pageToken = _messages.StringField(22)
+  path = _messages.StringField(23, required=True)
+  piper_branchName = _messages.StringField(24)
+  piper_changeNumber = _messages.IntegerField(25)
+  piper_disableComponents = _messages.BooleanField(26)
+  piper_versionMap = _messages.BytesField(27)
+  projectId = _messages.StringField(28, required=True)
+  repoName = _messages.StringField(29, required=True)
+  snapshotId = _messages.StringField(30)
+  startPosition = _messages.IntegerField(31)
+  uid = _messages.StringField(32)
 
 
 class SourceProjectsReposWorkspacesGetRequest(_messages.Message):
@@ -1833,6 +2156,131 @@ class SourceProjectsReposWorkspacesGetRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
   repoName = _messages.StringField(3, required=True)
   uid = _messages.StringField(4)
+
+
+class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
+  """A SourceProjectsReposWorkspacesListFilesRequest object.
+
+  Enums:
+    CloudRepoAliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
+  Fields:
+    citc_branchName: See PiperDepotSourceContext.branch_name for
+      documentation.
+    citc_isBaseline: If true, ignore local workspace changes and use the
+      baseline of the workspace instead.
+    citc_snapshotVersion: The snapshot within the workspace. If zero, refers
+      to the moving head of the workspace.  Clients which use zero should be
+      robust against remote changes made to a workspace.  If non-zero, refers
+      to an immutable CitC snapshot.  The current snapshot_version for USER's
+      CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/snapshot_version
+    citc_workspaceId: A unique identifier for a citc workspace. The
+      workspace_id for USER's CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/workspace_id
+    cloudRepo_aliasContext_kind: The alias kind.
+    cloudRepo_aliasContext_name: The alias name.
+    cloudRepo_aliasName: The name of an alias (branch, tag, etc.).
+    cloudRepo_repoId_projectRepoId_projectId: The ID of the project.
+    cloudRepo_repoId_projectRepoId_repoName: The name of the repo. Leave empty
+      for the default repo.
+    cloudRepo_repoId_uid: A server-assigned, globally unique identifier.
+    cloudRepo_revisionId: A revision ID.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
+    gerrit_aliasName: The name of an alias (branch, tag, etc.).
+    gerrit_gerritProject: The full project name within the host. Projects may
+      be nested, so "project/subproject" is a valid project name. The "repo
+      name" is hostURI/project.
+    gerrit_hostUri: The URI of a running Gerrit instance.
+    gerrit_revisionId: A revision (commit) ID.
+    git_revisionId: Git commit hash. required.
+    git_url: Git repository URL.
+    name: The unique name of the workspace within the repo.  This is the name
+      chosen by the client in the Source API's CreateWorkspace method.
+    pageSize: The maximum number of values to return.
+    pageToken: The value of next_page_token from the previous call. Omit for
+      the first page.
+    piper_branchName: Specifies that the source context refers to a branch,
+      rather than the depot root.  For example, if the branch files live under
+      //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
+    piper_changeNumber: CL number. If zero, represents depot head.
+    piper_disableComponents: If false, use the released components as of the
+      CL. If true, use true head.
+    piper_versionMap: The complete components state description. If present,
+      disable_components is ignored.  Not all services accept arbitrary
+      version map.  Services not supporting arbitrary version maps must emit
+      an error if this field is set, instead of silently falling back on
+      disable_components.  This is a serialized VersionMap from
+      //devtools/components/proto/version_map.proto. We use bytes instead of
+      the actual type to avoid having a file under //google depend on one
+      outside of //google.
+    projectId: The ID of the project.
+    repoName: The name of the repo. Leave empty for the default repo.
+    snapshotId: The ID of the snapshot. An empty snapshot_id refers to the
+      most recent snapshot.
+    uid: A server-assigned, globally unique identifier.
+  """
+
+  class CloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  citc_branchName = _messages.StringField(1)
+  citc_isBaseline = _messages.BooleanField(2)
+  citc_snapshotVersion = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  citc_workspaceId = _messages.StringField(4)
+  cloudRepo_aliasContext_kind = _messages.EnumField('CloudRepoAliasContextKindValueValuesEnum', 5)
+  cloudRepo_aliasContext_name = _messages.StringField(6)
+  cloudRepo_aliasName = _messages.StringField(7)
+  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(8)
+  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(9)
+  cloudRepo_repoId_uid = _messages.StringField(10)
+  cloudRepo_revisionId = _messages.StringField(11)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 12)
+  gerrit_aliasContext_name = _messages.StringField(13)
+  gerrit_aliasName = _messages.StringField(14)
+  gerrit_gerritProject = _messages.StringField(15)
+  gerrit_hostUri = _messages.StringField(16)
+  gerrit_revisionId = _messages.StringField(17)
+  git_revisionId = _messages.StringField(18)
+  git_url = _messages.StringField(19)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(22)
+  piper_branchName = _messages.StringField(23)
+  piper_changeNumber = _messages.IntegerField(24)
+  piper_disableComponents = _messages.BooleanField(25)
+  piper_versionMap = _messages.BytesField(26)
+  projectId = _messages.StringField(27, required=True)
+  repoName = _messages.StringField(28, required=True)
+  snapshotId = _messages.StringField(29)
+  uid = _messages.StringField(30)
 
 
 class SourceProjectsReposWorkspacesListRequest(_messages.Message):
@@ -1944,6 +2392,10 @@ class SourceProjectsReposWorkspacesRevertRefreshRequest(_messages.Message):
 class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
   """A SourceProjectsReposWorkspacesSnapshotsFilesGetRequest object.
 
+  Enums:
+    CloudRepoAliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
   Fields:
     citc_branchName: See PiperDepotSourceContext.branch_name for
       documentation.
@@ -1958,12 +2410,16 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
     citc_workspaceId: A unique identifier for a citc workspace. The
       workspace_id for USER's CLIENT can be found in
       /google/src/cloud/USER/CLIENT/.citc/workspace_id
+    cloudRepo_aliasContext_kind: The alias kind.
+    cloudRepo_aliasContext_name: The alias name.
     cloudRepo_aliasName: The name of an alias (branch, tag, etc.).
     cloudRepo_repoId_projectRepoId_projectId: The ID of the project.
     cloudRepo_repoId_projectRepoId_repoName: The name of the repo. Leave empty
       for the default repo.
     cloudRepo_repoId_uid: A server-assigned, globally unique identifier.
     cloudRepo_revisionId: A revision ID.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
     gerrit_aliasName: The name of an alias (branch, tag, etc.).
     gerrit_gerritProject: The full project name within the host. Projects may
       be nested, so "project/subproject" is a valid project name. The "repo
@@ -2004,34 +2460,66 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
     uid: A server-assigned, globally unique identifier.
   """
 
+  class CloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
   citc_branchName = _messages.StringField(1)
   citc_isBaseline = _messages.BooleanField(2)
   citc_snapshotVersion = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   citc_workspaceId = _messages.StringField(4)
-  cloudRepo_aliasName = _messages.StringField(5)
-  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(6)
-  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(7)
-  cloudRepo_repoId_uid = _messages.StringField(8)
-  cloudRepo_revisionId = _messages.StringField(9)
-  gerrit_aliasName = _messages.StringField(10)
-  gerrit_gerritProject = _messages.StringField(11)
-  gerrit_hostUri = _messages.StringField(12)
-  gerrit_revisionId = _messages.StringField(13)
-  git_revisionId = _messages.StringField(14)
-  git_url = _messages.StringField(15)
-  name = _messages.StringField(16, required=True)
-  pageSize = _messages.IntegerField(17)
-  pageToken = _messages.StringField(18)
-  path = _messages.StringField(19, required=True)
-  piper_branchName = _messages.StringField(20)
-  piper_changeNumber = _messages.IntegerField(21)
-  piper_disableComponents = _messages.BooleanField(22)
-  piper_versionMap = _messages.BytesField(23)
-  projectId = _messages.StringField(24, required=True)
-  repoName = _messages.StringField(25, required=True)
-  snapshotId = _messages.StringField(26, required=True)
-  startPosition = _messages.IntegerField(27)
-  uid = _messages.StringField(28)
+  cloudRepo_aliasContext_kind = _messages.EnumField('CloudRepoAliasContextKindValueValuesEnum', 5)
+  cloudRepo_aliasContext_name = _messages.StringField(6)
+  cloudRepo_aliasName = _messages.StringField(7)
+  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(8)
+  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(9)
+  cloudRepo_repoId_uid = _messages.StringField(10)
+  cloudRepo_revisionId = _messages.StringField(11)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 12)
+  gerrit_aliasContext_name = _messages.StringField(13)
+  gerrit_aliasName = _messages.StringField(14)
+  gerrit_gerritProject = _messages.StringField(15)
+  gerrit_hostUri = _messages.StringField(16)
+  gerrit_revisionId = _messages.StringField(17)
+  git_revisionId = _messages.StringField(18)
+  git_url = _messages.StringField(19)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21)
+  pageToken = _messages.StringField(22)
+  path = _messages.StringField(23, required=True)
+  piper_branchName = _messages.StringField(24)
+  piper_changeNumber = _messages.IntegerField(25)
+  piper_disableComponents = _messages.BooleanField(26)
+  piper_versionMap = _messages.BytesField(27)
+  projectId = _messages.StringField(28, required=True)
+  repoName = _messages.StringField(29, required=True)
+  snapshotId = _messages.StringField(30, required=True)
+  startPosition = _messages.IntegerField(31)
+  uid = _messages.StringField(32)
 
 
 class SourceProjectsReposWorkspacesSnapshotsGetRequest(_messages.Message):
@@ -2052,6 +2540,131 @@ class SourceProjectsReposWorkspacesSnapshotsGetRequest(_messages.Message):
   repoName = _messages.StringField(3, required=True)
   snapshotId = _messages.StringField(4, required=True)
   uid = _messages.StringField(5)
+
+
+class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
+  """A SourceProjectsReposWorkspacesSnapshotsListFilesRequest object.
+
+  Enums:
+    CloudRepoAliasContextKindValueValuesEnum: The alias kind.
+    GerritAliasContextKindValueValuesEnum: The alias kind.
+
+  Fields:
+    citc_branchName: See PiperDepotSourceContext.branch_name for
+      documentation.
+    citc_isBaseline: If true, ignore local workspace changes and use the
+      baseline of the workspace instead.
+    citc_snapshotVersion: The snapshot within the workspace. If zero, refers
+      to the moving head of the workspace.  Clients which use zero should be
+      robust against remote changes made to a workspace.  If non-zero, refers
+      to an immutable CitC snapshot.  The current snapshot_version for USER's
+      CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/snapshot_version
+    citc_workspaceId: A unique identifier for a citc workspace. The
+      workspace_id for USER's CLIENT can be found in
+      /google/src/cloud/USER/CLIENT/.citc/workspace_id
+    cloudRepo_aliasContext_kind: The alias kind.
+    cloudRepo_aliasContext_name: The alias name.
+    cloudRepo_aliasName: The name of an alias (branch, tag, etc.).
+    cloudRepo_repoId_projectRepoId_projectId: The ID of the project.
+    cloudRepo_repoId_projectRepoId_repoName: The name of the repo. Leave empty
+      for the default repo.
+    cloudRepo_repoId_uid: A server-assigned, globally unique identifier.
+    cloudRepo_revisionId: A revision ID.
+    gerrit_aliasContext_kind: The alias kind.
+    gerrit_aliasContext_name: The alias name.
+    gerrit_aliasName: The name of an alias (branch, tag, etc.).
+    gerrit_gerritProject: The full project name within the host. Projects may
+      be nested, so "project/subproject" is a valid project name. The "repo
+      name" is hostURI/project.
+    gerrit_hostUri: The URI of a running Gerrit instance.
+    gerrit_revisionId: A revision (commit) ID.
+    git_revisionId: Git commit hash. required.
+    git_url: Git repository URL.
+    name: The unique name of the workspace within the repo.  This is the name
+      chosen by the client in the Source API's CreateWorkspace method.
+    pageSize: The maximum number of values to return.
+    pageToken: The value of next_page_token from the previous call. Omit for
+      the first page.
+    piper_branchName: Specifies that the source context refers to a branch,
+      rather than the depot root.  For example, if the branch files live under
+      //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
+    piper_changeNumber: CL number. If zero, represents depot head.
+    piper_disableComponents: If false, use the released components as of the
+      CL. If true, use true head.
+    piper_versionMap: The complete components state description. If present,
+      disable_components is ignored.  Not all services accept arbitrary
+      version map.  Services not supporting arbitrary version maps must emit
+      an error if this field is set, instead of silently falling back on
+      disable_components.  This is a serialized VersionMap from
+      //devtools/components/proto/version_map.proto. We use bytes instead of
+      the actual type to avoid having a file under //google depend on one
+      outside of //google.
+    projectId: The ID of the project.
+    repoName: The name of the repo. Leave empty for the default repo.
+    snapshotId: The ID of the snapshot. An empty snapshot_id refers to the
+      most recent snapshot.
+    uid: A server-assigned, globally unique identifier.
+  """
+
+  class CloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  class GerritAliasContextKindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: <no description>
+      FIXED: <no description>
+      MOVABLE: <no description>
+      OTHER: <no description>
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  citc_branchName = _messages.StringField(1)
+  citc_isBaseline = _messages.BooleanField(2)
+  citc_snapshotVersion = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  citc_workspaceId = _messages.StringField(4)
+  cloudRepo_aliasContext_kind = _messages.EnumField('CloudRepoAliasContextKindValueValuesEnum', 5)
+  cloudRepo_aliasContext_name = _messages.StringField(6)
+  cloudRepo_aliasName = _messages.StringField(7)
+  cloudRepo_repoId_projectRepoId_projectId = _messages.StringField(8)
+  cloudRepo_repoId_projectRepoId_repoName = _messages.StringField(9)
+  cloudRepo_repoId_uid = _messages.StringField(10)
+  cloudRepo_revisionId = _messages.StringField(11)
+  gerrit_aliasContext_kind = _messages.EnumField('GerritAliasContextKindValueValuesEnum', 12)
+  gerrit_aliasContext_name = _messages.StringField(13)
+  gerrit_aliasName = _messages.StringField(14)
+  gerrit_gerritProject = _messages.StringField(15)
+  gerrit_hostUri = _messages.StringField(16)
+  gerrit_revisionId = _messages.StringField(17)
+  git_revisionId = _messages.StringField(18)
+  git_url = _messages.StringField(19)
+  name = _messages.StringField(20, required=True)
+  pageSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(22)
+  piper_branchName = _messages.StringField(23)
+  piper_changeNumber = _messages.IntegerField(24)
+  piper_disableComponents = _messages.BooleanField(25)
+  piper_versionMap = _messages.BytesField(26)
+  projectId = _messages.StringField(27, required=True)
+  repoName = _messages.StringField(28, required=True)
+  snapshotId = _messages.StringField(29, required=True)
+  uid = _messages.StringField(30)
 
 
 class SourceProjectsReposWorkspacesSnapshotsListRequest(_messages.Message):

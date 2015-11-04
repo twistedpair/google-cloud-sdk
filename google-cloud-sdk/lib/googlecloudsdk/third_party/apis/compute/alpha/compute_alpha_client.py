@@ -62,6 +62,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.routes = self.RoutesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
+    self.subnetworks = self.SubnetworksService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
     self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
     self.targetInstances = self.TargetInstancesService(self)
@@ -116,18 +117,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Address',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.addresses.getIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/addresses/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeAddressesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.addresses.insert',
@@ -150,18 +139,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field='',
               request_type_name=u'ComputeAddressesListRequest',
               response_type_name=u'AddressList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.addresses.setIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/addresses/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeAddressesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -220,19 +197,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeAddressesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an address resource in the specified project using the data included in the request.
 
@@ -256,19 +220,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (AddressList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeAddressesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -329,18 +280,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Autoscaler',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.autoscalers.getIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/autoscalers/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeAutoscalersGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.autoscalers.insert',
@@ -375,18 +314,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'autoscalerResource',
               request_type_name=u'ComputeAutoscalersPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.autoscalers.setIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/autoscalers/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeAutoscalersSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -457,19 +384,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeAutoscalersGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an autoscaler resource in the specified project using the data included in the request.
 
@@ -506,19 +420,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeAutoscalersSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -755,18 +656,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'BackendServiceGroupHealth',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.backendServices.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/backendServices/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeBackendServicesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.backendServices.insert',
@@ -801,18 +690,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'backendServiceResource',
               request_type_name=u'ComputeBackendServicesPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.backendServices.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/backendServices/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeBackendServicesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -883,19 +760,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeBackendServicesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a BackendService resource in the specified project using the data included in the request.
 
@@ -932,19 +796,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeBackendServicesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1118,18 +969,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Disk',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.disks.getIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeDisksGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.disks.insert',
@@ -1164,18 +1003,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'disksResizeRequest',
               request_type_name=u'ComputeDisksResizeRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.disks.setIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeDisksSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -1247,19 +1074,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeDisksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a persistent disk in the specified project using the data included in the request.
 
@@ -1296,19 +1110,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Resize')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeDisksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1357,18 +1158,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Firewall',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.firewalls.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/firewalls/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeFirewallsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.firewalls.insert',
@@ -1403,18 +1192,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'firewallResource',
               request_type_name=u'ComputeFirewallsPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.firewalls.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/firewalls/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeFirewallsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -1472,19 +1249,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeFirewallsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a firewall resource in the specified project using the data included in the request.
 
@@ -1521,19 +1285,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeFirewallsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1607,18 +1358,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'ForwardingRule',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.forwardingRules.getIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/forwardingRules/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeForwardingRulesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.forwardingRules.insert',
@@ -1641,18 +1380,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field='',
               request_type_name=u'ComputeForwardingRulesListRequest',
               response_type_name=u'ForwardingRuleList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.forwardingRules.setIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/forwardingRules/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeForwardingRulesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetTarget': base_api.ApiMethodInfo(
@@ -1723,19 +1450,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeForwardingRulesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a ForwardingRule resource in the specified project and region using the data included in the request.
 
@@ -1762,21 +1476,8 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeForwardingRulesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule.
+      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -1833,18 +1534,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Address',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.globalAddresses.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/addresses/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeGlobalAddressesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.globalAddresses.insert',
@@ -1867,18 +1556,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field='',
               request_type_name=u'ComputeGlobalAddressesListRequest',
               response_type_name=u'AddressList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.globalAddresses.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/addresses/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeGlobalAddressesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -1924,19 +1601,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeGlobalAddressesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an address resource in the specified project using the data included in the request.
 
@@ -1960,19 +1624,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (AddressList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeGlobalAddressesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2021,18 +1672,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'ForwardingRule',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.globalForwardingRules.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/forwardingRules/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeGlobalForwardingRulesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.globalForwardingRules.insert',
@@ -2055,18 +1694,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field='',
               request_type_name=u'ComputeGlobalForwardingRulesListRequest',
               response_type_name=u'ForwardingRuleList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.globalForwardingRules.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/forwardingRules/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeGlobalForwardingRulesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetTarget': base_api.ApiMethodInfo(
@@ -2124,19 +1751,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeGlobalForwardingRulesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a ForwardingRule resource in the specified project and region using the data included in the request.
 
@@ -2163,21 +1777,8 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeGlobalForwardingRulesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule.
+      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -2347,18 +1948,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'HealthCheck',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.healthChecks.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/healthChecks/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeHealthChecksGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.healthChecks.insert',
@@ -2393,18 +1982,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'healthCheckResource',
               request_type_name=u'ComputeHealthChecksPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.healthChecks.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/healthChecks/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeHealthChecksSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -2462,19 +2039,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeHealthChecksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a HealthCheck resource in the specified project using the data included in the request.
 
@@ -2511,19 +2075,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeHealthChecksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2585,18 +2136,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'HttpHealthCheck',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.httpHealthChecks.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/httpHealthChecks/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeHttpHealthChecksGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.httpHealthChecks.insert',
@@ -2631,18 +2170,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'httpHealthCheckResource',
               request_type_name=u'ComputeHttpHealthChecksPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.httpHealthChecks.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/httpHealthChecks/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeHttpHealthChecksSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -2700,19 +2227,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeHttpHealthChecksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a HttpHealthCheck resource in the specified project using the data included in the request.
 
@@ -2749,19 +2263,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeHttpHealthChecksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2823,18 +2324,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'HttpsHealthCheck',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.httpsHealthChecks.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/httpsHealthChecks/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeHttpsHealthChecksGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.httpsHealthChecks.insert',
@@ -2869,18 +2358,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'httpsHealthCheckResource',
               request_type_name=u'ComputeHttpsHealthChecksPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.httpsHealthChecks.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/httpsHealthChecks/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeHttpsHealthChecksSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -2938,19 +2415,6 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeHttpsHealthChecksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a HttpsHealthCheck resource in the specified project using the data included in the request.
 
@@ -2987,19 +2451,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeHttpsHealthChecksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3073,18 +2524,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Image',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.images.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/images/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeImagesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.images.insert',
@@ -3107,18 +2546,6 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field='',
               request_type_name=u'ComputeImagesListRequest',
               response_type_name=u'ImageList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.images.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/images/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeImagesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -3179,19 +2606,6 @@ If an empty request body is given, clears the deprecation status instead.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeImagesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an image resource in the specified project using the data included in the request.
 
@@ -3217,19 +2631,6 @@ See Accessing images for more information.
         (ImageList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeImagesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3314,18 +2715,6 @@ See Accessing images for more information.
               response_type_name=u'InstanceGroupManager',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.instanceGroupManagers.getIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeInstanceGroupManagersGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instanceGroupManagers.insert',
@@ -3396,18 +2785,6 @@ See Accessing images for more information.
               request_field=u'instanceGroupManagersSetAutoHealingRequest',
               request_type_name=u'ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.instanceGroupManagers.setIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeInstanceGroupManagersSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetInstanceTemplate': base_api.ApiMethodInfo(
@@ -3516,19 +2893,6 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeInstanceGroupManagersGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
@@ -3604,19 +2968,6 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetAutoHealingPolicies')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeInstanceGroupManagersSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3715,18 +3066,6 @@ See Accessing images for more information.
               response_type_name=u'InstanceGroup',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.instanceGroups.getIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeInstanceGroupsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instanceGroups.insert',
@@ -3773,18 +3112,6 @@ See Accessing images for more information.
               request_field=u'instanceGroupsRemoveInstancesRequest',
               request_type_name=u'ComputeInstanceGroupsRemoveInstancesRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.instanceGroups.setIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeInstanceGroupsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetNamedPorts': base_api.ApiMethodInfo(
@@ -3868,19 +3195,6 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeInstanceGroupsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an instance group in the specified project using the parameters that are included in the request.
 
@@ -3930,19 +3244,6 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('RemoveInstances')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeInstanceGroupsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4004,18 +3305,6 @@ See Accessing images for more information.
               response_type_name=u'InstanceTemplate',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.instanceTemplates.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/instanceTemplates/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeInstanceTemplatesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instanceTemplates.insert',
@@ -4038,18 +3327,6 @@ See Accessing images for more information.
               request_field='',
               request_type_name=u'ComputeInstanceTemplatesListRequest',
               response_type_name=u'InstanceTemplateList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.instanceTemplates.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/instanceTemplates/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeInstanceTemplatesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -4095,19 +3372,6 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeInstanceTemplatesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates an instance template in the specified project using the data that is included in the request.
 
@@ -4131,19 +3395,6 @@ See Accessing images for more information.
         (InstanceTemplateList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeInstanceTemplatesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4881,18 +4132,6 @@ See Accessing images for more information.
               response_type_name=u'Network',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.networks.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/networks/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeNetworksGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.networks.insert',
@@ -4915,18 +4154,6 @@ See Accessing images for more information.
               request_field='',
               request_type_name=u'ComputeNetworksListRequest',
               response_type_name=u'NetworkList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.networks.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/networks/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeNetworksSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -4972,19 +4199,6 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeNetworksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a network resource in the specified project using the data included in the request.
 
@@ -5008,19 +4222,6 @@ See Accessing images for more information.
         (NetworkList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeNetworksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5393,6 +4594,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routers.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRoutersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'compute.routers.update',
@@ -5501,6 +4714,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRoutersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Update the entire content of the Router resource.
 
@@ -5546,18 +4772,6 @@ See Accessing images for more information.
               response_type_name=u'Route',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.routes.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/routes/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeRoutesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.routes.insert',
@@ -5580,18 +4794,6 @@ See Accessing images for more information.
               request_field='',
               request_type_name=u'ComputeRoutesListRequest',
               response_type_name=u'RouteList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.routes.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/routes/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeRoutesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -5637,19 +4839,6 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeRoutesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a route resource in the specified project using the data included in the request.
 
@@ -5673,19 +4862,6 @@ See Accessing images for more information.
         (RouteList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeRoutesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5734,18 +4910,6 @@ See Accessing images for more information.
               response_type_name=u'Snapshot',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.snapshots.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/snapshots/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeSnapshotsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'compute.snapshots.list',
@@ -5756,18 +4920,6 @@ See Accessing images for more information.
               request_field='',
               request_type_name=u'ComputeSnapshotsListRequest',
               response_type_name=u'SnapshotList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.snapshots.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/snapshots/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeSnapshotsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -5815,19 +4967,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeSnapshotsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def List(self, request, global_params=None):
       """Retrieves the list of Snapshot resources contained within the specified project.
 
@@ -5838,19 +4977,6 @@ For more information, see Deleting snaphots.
         (SnapshotList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeSnapshotsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5899,18 +5025,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'SslCertificate',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.sslCertificates.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/sslCertificates/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeSslCertificatesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.sslCertificates.insert',
@@ -5933,18 +5047,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeSslCertificatesListRequest',
               response_type_name=u'SslCertificateList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.sslCertificates.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/sslCertificates/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeSslCertificatesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -5990,19 +5092,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeSslCertificatesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a SslCertificate resource in the specified project using the data included in the request.
 
@@ -6029,16 +5118,166 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
 
       Args:
-        request: (ComputeSslCertificatesSetIamPolicyRequest) input message
+        request: (ComputeSslCertificatesTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (TestPermissionsResponse) The response message.
       """
-      config = self.GetMethodConfig('SetIamPolicy')
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class SubnetworksService(base_api.BaseApiService):
+    """Service class for the subnetworks resource."""
+
+    _NAME = u'subnetworks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.SubnetworksService, self).__init__(client)
+      self._method_configs = {
+          'AggregatedList': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.aggregatedList',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/aggregated/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksAggregatedListRequest',
+              response_type_name=u'SubnetworkAggregatedList',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.subnetworks.delete',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.get',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksGetRequest',
+              response_type_name=u'Subnetwork',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field=u'subnetwork',
+              request_type_name=u'ComputeSubnetworksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksListRequest',
+              response_type_name=u'SubnetworkList',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeSubnetworksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of Subnetworks grouped by scope.
+
+      Args:
+        request: (ComputeSubnetworksAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified Subnetwork resource.
+
+      Args:
+        request: (ComputeSubnetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified Subnetwork resource.
+
+      Args:
+        request: (ComputeSubnetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Subnetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a Subnetwork resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSubnetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of Subnetwork resources available to the specified project.
+
+      Args:
+        request: (ComputeSubnetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6046,7 +5285,7 @@ For more information, see Deleting snaphots.
       """Returns permissions that a caller has on the specified resource.
 
       Args:
-        request: (ComputeSslCertificatesTestIamPermissionsRequest) input message
+        request: (ComputeSubnetworksTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (TestPermissionsResponse) The response message.
@@ -6087,18 +5326,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'TargetHttpProxy',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.targetHttpProxies.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/targetHttpProxies/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeTargetHttpProxiesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetHttpProxies.insert',
@@ -6121,18 +5348,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetHttpProxiesListRequest',
               response_type_name=u'TargetHttpProxyList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.targetHttpProxies.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/targetHttpProxies/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeTargetHttpProxiesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetUrlMap': base_api.ApiMethodInfo(
@@ -6190,19 +5405,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeTargetHttpProxiesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a TargetHttpProxy resource in the specified project using the data included in the request.
 
@@ -6226,19 +5428,6 @@ For more information, see Deleting snaphots.
         (TargetHttpProxyList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeTargetHttpProxiesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6300,18 +5489,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'TargetHttpsProxy',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.targetHttpsProxies.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/targetHttpsProxies/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeTargetHttpsProxiesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetHttpsProxies.insert',
@@ -6334,18 +5511,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetHttpsProxiesListRequest',
               response_type_name=u'TargetHttpsProxyList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.targetHttpsProxies.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/targetHttpsProxies/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeTargetHttpsProxiesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'SetSslCertificates': base_api.ApiMethodInfo(
@@ -6415,19 +5580,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeTargetHttpsProxiesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a TargetHttpsProxy resource in the specified project using the data included in the request.
 
@@ -6451,19 +5603,6 @@ For more information, see Deleting snaphots.
         (TargetHttpsProxyList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeTargetHttpsProxiesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6550,18 +5689,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'TargetInstance',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.targetInstances.getIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/targetInstances/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeTargetInstancesGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetInstances.insert',
@@ -6584,18 +5711,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetInstancesListRequest',
               response_type_name=u'TargetInstanceList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.targetInstances.setIamPolicy',
-              ordered_params=[u'project', u'zone', u'resource'],
-              path_params=[u'project', u'resource', u'zone'],
-              query_params=[],
-              relative_path=u'projects/{project}/zones/{zone}/targetInstances/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeTargetInstancesSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -6654,19 +5769,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeTargetInstancesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a TargetInstance resource in the specified project and zone using the data included in the request.
 
@@ -6690,19 +5792,6 @@ For more information, see Deleting snaphots.
         (TargetInstanceList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeTargetInstancesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6799,18 +5888,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'TargetPoolInstanceHealth',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.targetPools.getIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/targetPools/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeTargetPoolsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetPools.insert',
@@ -6869,18 +5946,6 @@ For more information, see Deleting snaphots.
               request_field=u'targetReference',
               request_type_name=u'ComputeTargetPoolsSetBackupRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.targetPools.setIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/targetPools/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeTargetPoolsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -6978,19 +6043,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeTargetPoolsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a TargetPool resource in the specified project and region using the data included in the request.
 
@@ -7056,19 +6108,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeTargetPoolsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -7126,18 +6165,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'TargetVpnGateway',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.targetVpnGateways.getIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeTargetVpnGatewaysGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetVpnGateways.insert',
@@ -7160,18 +6187,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetVpnGatewaysListRequest',
               response_type_name=u'TargetVpnGatewayList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.targetVpnGateways.setIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeTargetVpnGatewaysSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -7230,19 +6245,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeTargetVpnGatewaysGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a TargetVpnGateway resource in the specified project and region using the data included in the request.
 
@@ -7266,19 +6268,6 @@ For more information, see Deleting snaphots.
         (TargetVpnGatewayList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeTargetVpnGatewaysSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -7327,18 +6316,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'UrlMap',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.urlMaps.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/urlMaps/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeUrlMapsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.urlMaps.insert',
@@ -7385,18 +6362,6 @@ For more information, see Deleting snaphots.
               request_field=u'urlMapResource',
               request_type_name=u'ComputeUrlMapsPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.urlMaps.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/urlMaps/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeUrlMapsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -7466,19 +6431,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeUrlMapsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a UrlMap resource in the specified project using the data included in the request.
 
@@ -7528,19 +6480,6 @@ For more information, see Deleting snaphots.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeUrlMapsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -7627,18 +6566,6 @@ For more information, see Deleting snaphots.
               response_type_name=u'VpnTunnel',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.vpnTunnels.getIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ComputeVpnTunnelsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.vpnTunnels.insert',
@@ -7661,18 +6588,6 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeVpnTunnelsListRequest',
               response_type_name=u'VpnTunnelList',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.vpnTunnels.setIamPolicy',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ComputeVpnTunnelsSetIamPolicyRequest',
-              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -7731,19 +6646,6 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeVpnTunnelsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Insert(self, request, global_params=None):
       """Creates a VpnTunnel resource in the specified project and region using the data included in the request.
 
@@ -7767,19 +6669,6 @@ For more information, see Deleting snaphots.
         (VpnTunnelList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeVpnTunnelsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 

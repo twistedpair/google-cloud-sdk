@@ -221,7 +221,8 @@ class LogEntry(_messages.Message):
       that belong to a set of approved types.
     structPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
-    textPayload: The log entry payload, represented as a text string.
+    textPayload: The log entry payload, represented as a Unicode string
+      (UTF-8).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1012,7 +1013,7 @@ class RequestLog(_messages.Message):
     referrer: Referrer URL of request.
     requestId: Globally unique identifier for a request, based on request
       start time. Request IDs for requests which started later will compare
-      greater as binary strings than those for requests which started earlier.
+      greater as strings than those for requests which started earlier.
     resource: Contains the path and query portion of the URL that was
       requested. For example, if the URL was
       "http://example.com/app?name=val", the resource would be
@@ -1042,7 +1043,7 @@ class RequestLog(_messages.Message):
   finished = _messages.BooleanField(5)
   host = _messages.StringField(6)
   httpVersion = _messages.StringField(7)
-  instanceId = _messages.BytesField(8)
+  instanceId = _messages.StringField(8)
   instanceIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   ip = _messages.StringField(10)
   latency = _messages.StringField(11)
@@ -1053,7 +1054,7 @@ class RequestLog(_messages.Message):
   nickname = _messages.StringField(16)
   pendingTime = _messages.StringField(17)
   referrer = _messages.StringField(18)
-  requestId = _messages.BytesField(19)
+  requestId = _messages.StringField(19)
   resource = _messages.StringField(20)
   responseSize = _messages.IntegerField(21)
   sourceReference = _messages.MessageField('SourceReference', 22, repeated=True)

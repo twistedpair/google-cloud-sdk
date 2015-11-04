@@ -9,8 +9,7 @@ class Delete(base_classes.RegionalDeleter):
 
   @staticmethod
   def Args(parser):
-    cli = Delete.GetCLIGenerator()
-    base_classes.RegionalDeleter.Args(parser, 'compute.routers', cli)
+    base_classes.RegionalDeleter.Args(parser, 'compute.routers')
 
   @property
   def service(self):

@@ -348,3 +348,43 @@ def BuildAutoscaler(args, messages, autoscaler_ref, igm_ref):
       target=igm_ref.SelfLink(),
       zone=autoscaler_ref.zone,
   )
+
+
+def AddAutohealingArgs(parser, help_hidden=False):
+  """Adds autohealing-related commandline arguments to parser."""
+  health_check_group = parser.add_mutually_exclusive_group()
+  if not help_hidden:
+    health_check_group.add_argument(
+        '--http-health-check',
+        help=('Specifies the HTTP health check object used for autohealing '
+              'instances in this group.'))
+    health_check_group.add_argument(
+        '--https-health-check',
+        help=('Specifies the HTTPS health check object used for autohealing '
+              'instances in this group.'))
+  else:
+    # TODO(witek, b/22996767): Remove this branch after autohealing beta launch.
+    health_check_group.add_argument(
+        '--http-health-check',
+        help=argparse.SUPPRESS)
+    health_check_group.add_argument(
+        '--https-health-check',
+        help=argparse.SUPPRESS)
+
+
+def CreateAutohealingPolicies(cmd, args):
+  """Creates autohealing policy list from args."""
+  if hasattr(args, 'http_health_check'):  # alpha or beta
+    if args.http_health_check or args.https_health_check:
+      if args.http_health_check:
+        health_check_ref = cmd.CreateGlobalReference(
+            args.http_health_check,
+            resource_type='httpHealthChecks')
+      else:
+        health_check_ref = cmd.CreateGlobalReference(
+            args.https_health_check,
+            resource_type='httpsHealthChecks')
+      return [
+          cmd.messages.InstanceGroupManagerAutoHealingPolicy(
+              healthCheck=health_check_ref.SelfLink())]
+  return []

@@ -1459,8 +1459,7 @@ class Version(_messages.Message):
       an error to explicitly set this field to `SERVING_STATUS_UNSPECIFIED`.
     threadsafe: If true, multiple requests can be dispatched to the app at
       once.
-    vm: Whether to deploy this app in a VM container (deprecated, use
-      "env":"2").
+    vm: Whether to deploy this app in a VM container.
   """
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):

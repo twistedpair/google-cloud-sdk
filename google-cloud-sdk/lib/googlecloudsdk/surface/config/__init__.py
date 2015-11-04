@@ -2,6 +2,8 @@
 
 """config command group."""
 
+import argparse
+
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.core import config
@@ -26,21 +28,7 @@ class Config(base.Group):
       '--scope',
       required=False,
       choices=properties.Scope.AllScopeNames(),
-      help='Deprecated. the configuration location in which to update the '
-      'property. ({scopes})'.format(
-          scopes=', '.join(properties.Scope.AllScopeNames())),
-      detailed_help="""\
-          Deprecated.  Gcloud will be removing support for the workspaces and
-          the global user configuration.  See `gcloud help topic
-          configurations` for more information.  Use the `--installation` flag
-          to set installation-wide properties.
-
-          The scope flag determines which configuration file is modified by
-          this operation.  The files are read (and take precedence) in the
-          following order:
-
-          {scope_help}""".format(scope_help=properties.Scope.GetHelpString())
-  )
+      help=argparse.SUPPRESS)
 
   @staticmethod
   def RequestedScope(args):

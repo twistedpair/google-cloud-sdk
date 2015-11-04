@@ -14,7 +14,6 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 
@@ -292,10 +291,6 @@ class ResetWindowsPassword(base_classes.ReadWriteCommand):
     encrypted_password = encrypted_password_data['encryptedPassword']
     return encrypted_password
 
-  def Display(self, *args):
-    # We don't want Display to do anything
-    pass
-
   def Run(self, args):
     start = time_utils.CurrentTimeSec()
 
@@ -367,15 +362,16 @@ class ResetWindowsPassword(base_classes.ReadWriteCommand):
     log.info('Total Elapsed Time: {0}'
              .format(time_utils.CurrentTimeSec() - start))
 
-    # Display the connection info.
+    # The connection info resource.
     connection_info = {'username': user,
                        'password': password,
                        'ip_address': external_ip_address}
-    # We call resource_printer directly here instead of just returning
-    # connection_info because we want to prevent this information from being
-    # logged.
-    # TODO(user): b/24267426
-    resource_printer.Print(connection_info, args.format or 'text', out=None)
+    return connection_info
+
+  def Format(self, unused_args):
+    # The private attribute prevents this information from being logged.
+    return '[private]text'
+
 
 # TODO(user) remove the guest image version info into beta/GA.
 ResetWindowsPassword.detailed_help = {

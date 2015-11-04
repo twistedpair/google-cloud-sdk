@@ -85,11 +85,11 @@ class ReleaseNotes(object):
     Returns:
       ReleaseNotes, the parsed release notes.
     """
-    self._text = text
+    self._text = text.replace('\r\n', '\n')
 
     versions = []
 
-    for m in re.finditer(ReleaseNotes._VERSION_SPLIT_REGEX, text):
+    for m in re.finditer(ReleaseNotes._VERSION_SPLIT_REGEX, self._text):
       versions.append((m.group('version'), m.group().strip()))
 
     # [(version string, full version text including header), ...]

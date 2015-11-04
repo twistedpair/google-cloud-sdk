@@ -2,8 +2,6 @@
 
 """manifests list command."""
 
-import types
-
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -78,9 +76,6 @@ class List(base.Command):
     Raises:
       ValueError: if result is None or not a generator
     """
-    if not isinstance(result, types.GeneratorType):
-      raise ValueError('result must be a generator')
-
     empty_generator = True
     for manifest in result:
       empty_generator = False

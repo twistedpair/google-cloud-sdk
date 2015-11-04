@@ -4,6 +4,7 @@
 import logging
 import os
 import subprocess
+
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import gaia_utils
@@ -26,6 +27,11 @@ from googlecloudsdk.core.util import platforms
 _SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
 
 
+# `ssh` exits with this exit code in the event of an SSH error (as opposed to a
+# successful `ssh` execution where the *command* errored).
+_SSH_ERROR_EXIT_CODE = 255
+
+
 class SshLikeCmdFailed(core_exceptions.Error):
   """Raise for a failure when invoking ssh, scp, or similar."""
 
@@ -34,18 +40,17 @@ class SshLikeCmdFailed(core_exceptions.Error):
       raise ValueError('One of message and return_code is required.')
 
     self.cmd = cmd
-    self.return_code = return_code
-    self.message = message
 
-    message_text = '[{0}]'.format(self.message) if self.message else None
-    return_code_text = ('return code [{0}]'.format(self.return_code)
-                        if self.return_code else None)
+    message_text = '[{0}]'.format(message) if message else None
+    return_code_text = ('return code [{0}]'.format(return_code)
+                        if return_code else None)
     why_failed = ' and '.join(filter(None, [message_text, return_code_text]))
 
     super(SshLikeCmdFailed, self).__init__(
         '[{0}] exited with {1}. See '
         'https://cloud.google.com/compute/docs/troubleshooting#ssherrors '
-        'for troubleshooting hints.'.format(self.cmd, why_failed))
+        'for troubleshooting hints.'.format(self.cmd, why_failed),
+        exit_code=return_code)
 
 
 def UserHost(user, host):
@@ -95,7 +100,21 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
               path_simplifier.Name(instance_resource.zone)))
 
 
-def _RunExecutable(cmd_args, interactive_ssh=False):
+def _RunExecutable(cmd_args, strict_error_checking=True):
+  """Run the given command, handling errors appropriately.
+
+  Args:
+    cmd_args: list of str, the arguments (including executable path) to run
+    strict_error_checking: bool, whether a non-zero, non-255 exit code should be
+      considered a failure.
+
+  Returns:
+    int, the return code of the command
+
+  Raises:
+    SshLikeCmdFailed: if the command failed (based on the command exit code and
+      the strict_error_checking flag)
+  """
   with open(os.devnull, 'w') as devnull:
     if log.IsUserOutputEnabled():
       stdout, stderr = None, None
@@ -106,10 +125,10 @@ def _RunExecutable(cmd_args, interactive_ssh=False):
     except OSError as e:
       raise SshLikeCmdFailed(cmd_args[0], message=e.strerror)
     except subprocess.CalledProcessError as e:
-      # Interactive ssh exits with the exit status of the last command executed.
-      # This is traditionally not interpreted as an error.
-      if not interactive_ssh or e.returncode == 255:
+      if strict_error_checking or e.returncode == _SSH_ERROR_EXIT_CODE:
         raise SshLikeCmdFailed(cmd_args[0], return_code=e.returncode)
+      return e.returncode
+    return 0
 
 
 def _GetSSHKeysFromMetadata(metadata):
@@ -457,16 +476,23 @@ class BaseSSHCLICommand(BaseSSHCommand):
       time_utils.Sleep(5)
 
   def ActuallyRun(self, args, cmd_args, user, external_ip_address,
-                  interactive_ssh=False, use_account_service=False):
+                  strict_error_checking=True, use_account_service=False):
     """Runs the scp/ssh command specified in cmd_args.
+
+    If the scp/ssh command exits non-zero, this command will exit with the same
+    exit code.
 
     Args:
       args: argparse.Namespace, The calling command invocation args.
       cmd_args: [str], The argv for the command to execute.
       user: str, The user name.
       external_ip_address: str, The external IP address.
-      interactive_ssh: bool, True is cmd_args is an interactive ssh session.
+      strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
+        code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
+
+    Returns:
+      int, the exit code of the command that was run
     """
     if args.dry_run:
       log.out.Print(' '.join(cmd_args))
@@ -482,4 +508,4 @@ class BaseSSHCLICommand(BaseSSHCommand):
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 
-    _RunExecutable(cmd_args, interactive_ssh=interactive_ssh)
+    return _RunExecutable(cmd_args, strict_error_checking=strict_error_checking)

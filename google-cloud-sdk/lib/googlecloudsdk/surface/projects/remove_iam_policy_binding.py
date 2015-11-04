@@ -31,7 +31,7 @@ class RemoveIamPolicyBinding(base.Command):
   @staticmethod
   def Args(parser):
     parser.add_argument('id', help='Project ID')
-    iam_util.AddArgsForAddIamPolicyBinding(parser)
+    iam_util.AddArgsForRemoveIamPolicyBinding(parser)
 
   @util.HandleHttpError
   def Run(self, args):

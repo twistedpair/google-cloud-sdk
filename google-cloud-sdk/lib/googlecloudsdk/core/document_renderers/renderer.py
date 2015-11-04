@@ -84,4 +84,11 @@ class Renderer(object):
     Returns:
       The rendered link anchor and text.
     """
-    return text or target
+    if text:
+      if target and '://' in target:
+        # Show non-local targets.
+        return '{0} ({1})'.format(text, target)
+      return text
+    if target:
+      return target
+    return '[]()'

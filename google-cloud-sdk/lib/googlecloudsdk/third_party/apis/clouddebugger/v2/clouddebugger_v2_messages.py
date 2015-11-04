@@ -13,6 +13,37 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'clouddebugger'
 
 
+class AliasContext(_messages.Message):
+  """An alias to a repo revision.
+
+  Enums:
+    KindValueValuesEnum: The alias kind.
+
+  Fields:
+    kind: The alias kind.
+    name: The alias name.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: Do not use.
+      FIXED: Git tag
+      MOVABLE: Git branch
+      OTHER: OTHER is used to specify non-standard aliases, those not of the
+        kinds above. For example, if a Git repo has a ref named
+        "refs/foo/bar", it is considered to be of kind OTHER.
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class Breakpoint(_messages.Message):
   """Represents the breakpoint specification, status and results.
 
@@ -122,14 +153,16 @@ class CloudRepoSourceContext(_messages.Message):
   repo hosted by the Google Cloud Platform).
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     repoId: The ID of the repo.
     revisionId: A revision ID.
   """
 
-  aliasName = _messages.StringField(1)
-  repoId = _messages.MessageField('RepoId', 2)
-  revisionId = _messages.StringField(3)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  repoId = _messages.MessageField('RepoId', 3)
+  revisionId = _messages.StringField(4)
 
 
 class CloudWorkspaceId(_messages.Message):
@@ -443,6 +476,7 @@ class GerritSourceContext(_messages.Message):
   """A SourceContext referring to a Gerrit project.
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     gerritProject: The full project name within the host. Projects may be
       nested, so "project/subproject" is a valid project name. The "repo name"
@@ -451,10 +485,11 @@ class GerritSourceContext(_messages.Message):
     revisionId: A revision (commit) ID.
   """
 
-  aliasName = _messages.StringField(1)
-  gerritProject = _messages.StringField(2)
-  hostUri = _messages.StringField(3)
-  revisionId = _messages.StringField(4)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  gerritProject = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
 
 
 class GetBreakpointResponse(_messages.Message):

@@ -184,8 +184,9 @@ def AddCsekKeyArgs(parser, flags_about_creation=True):
       help='Path to a csek key file',
       metavar='FILE')
   csek_key_file.detailed_help = (
-      'Path to a csek key file, mapping GCE resources to user managed '
-      'keys to be used when creating, mounting, or snapshotting disks. ')
+      'Path to a csek key file, mapping Google Compute Engine resources to '
+      'user managed keys to be used when creating, mounting, or snapshotting '
+      'disks. ')
   # TODO(jeffvaughan)
   # Argument - indicates the key file should be read from stdin.'
 

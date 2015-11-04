@@ -5,6 +5,7 @@
 import argparse
 import os
 import sys
+import types
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
@@ -33,8 +34,15 @@ class Init(base.Command):
           Most users will run {command} to get started with gcloud. Subsequent
           {command} invocations can be use to create new gcloud configurations
           or to reinitialize existing configurations.  See `gcloud topic
-          configurations` for additional information.
-      """,
+          configurations` for additional information about configurations.
+
+          Properties set by `gcloud init` are local and persistent. They are
+          not affected by remote changes to your project. For instance, your
+          configuration's default Compute Engine zone will remain stable, even
+          if you or another user changes the project default zone in the
+          Developer Console website.  You can resync your configuration at any
+          time by rerunning `gcloud init`.
+          """,
   }
 
   @staticmethod
@@ -370,7 +378,14 @@ class Init(base.Command):
         # Unless user explicitly set verbosity, suppress from subcommands.
         args.append('--verbosity=none')
 
-      return self.cli.Execute(args)
+      result = self.cli.Execute(args)
+      # Best effort to force result of Execute eagerly.  Don't just check
+      # that result is iterable to avoid category errors (e.g., accidently
+      # converting a string or dict to a list).
+      if type(result) is types.GeneratorType:
+        return list(result)
+      return result
+
     except SystemExit as exc:
       log.status.write('[{0}] has failed\n'.format(' '.join(cmd + params)))
       raise c_exc.FailedSubCommand(cmd + params, exc.code)

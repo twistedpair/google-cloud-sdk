@@ -364,7 +364,7 @@ class MarkdownGenerator(object):
     self._doc = usage_text.ExpandHelpText(self._command, self._buf.getvalue())
 
     # Split long $ ... example lines.
-    pat = re.compile(r'(\$ .{%d,})$' % (
+    pat = re.compile(r'^ *(\$ .{%d,})$' % (
         self.SPLIT - self.FIRST_INDENT - self.SECTION_INDENT), re.M)
     pos = 0
     rep = ''
@@ -384,9 +384,11 @@ class MarkdownGenerator(object):
     # This pattern matches "$ {top} {arg}*" where each arg is lower case and
     # does not start with example-, my-, or sample-. This follows the style
     # guide rule that user-supplied args to example commands contain upper case
-    # chars or start with example-, my-, or sample-.
+    # chars or start with example-, my-, or sample-. The trailing .? allows for
+    # an optional punctuation character before end of line. This handles cases
+    # like ``... run $ gcloud foo bar.'' at the end of a sentence.
     pat = re.compile(r'\$ (' + top +
-                     '((?: (?!(example|my|sample)-)[a-z][-a-z]*)*))[ `\n]')
+                     '((?: (?!(example|my|sample)-)[a-z][-a-z0-9]*)*)).?[ `\n]')
     pos = 0
     rep = ''
     while True:

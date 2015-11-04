@@ -568,7 +568,10 @@ class _SectionAuth(_Section):
     self.client_secret = self._Add(
         'client_secret', hidden=True,
         callbacks=[lambda: config.CLOUDSDK_CLIENT_NOTSOSECRET])
-    self.authority_selector = self._Add('authority_selector', hidden=True)
+    self.authority_selector = self._Add(
+        'authority_selector', hidden=True)
+    self.authorization_token_file = self._Add(
+        'authorization_token_file', hidden=True)
 
 
 class _SectionMetrics(_Section):

@@ -2,6 +2,7 @@
 """Command for setting autohealing policy of managed instance group."""
 
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
 
@@ -14,10 +15,7 @@ class SetAutohealing(base_classes.BaseAsyncMutator):
   @staticmethod
   def Args(parser):
     parser.add_argument('name', help='Managed instance group name.')
-    parser.add_argument(
-        '--http-health-check',
-        help=('Specifies the HTTP health check object used for autohealing '
-              'instances in this group.'))
+    managed_instance_groups_utils.AddAutohealingArgs(parser)
     utils.AddZoneFlag(
         parser,
         resource_type='instance group manager',
@@ -37,14 +35,8 @@ class SetAutohealing(base_classes.BaseAsyncMutator):
 
   def CreateRequests(self, args):
     ref = self.CreateZonalReference(args.name, args.zone)
-    auto_healing_policies = []
-    if args.http_health_check:
-      health_check_ref = self.CreateGlobalReference(
-          args.http_health_check,
-          resource_type='httpHealthChecks')
-      auto_healing_policies.append(
-          self.messages.InstanceGroupManagerAutoHealingPolicy(
-              healthCheck=health_check_ref.SelfLink()))
+    auto_healing_policies = (
+        managed_instance_groups_utils.CreateAutohealingPolicies(self, args))
     request = (
         self.messages.ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(
             project=self.project,
@@ -63,12 +55,12 @@ SetAutohealing.detailed_help = {
         *{command}* updates the autohealing policy for an existing managed
 instance group.
 
-If --http-health-check is specified, the resulting autohealing policy will be
-triggered by the health-check i.e. the autohealing action (RECREATE) on an
-instance will be performed if the health-check signals that the instance is
-UNHEALTHY. If --http-health-check is not specified, the resulting autohealing
-policy will be triggered by instance's status i.e. the autohealing action
-(RECREATE) on an instance will be performed if the instance.status is not
-RUNNING.
+If --http-health-check or --https-health-check is specified, the resulting
+autohealing policy will be triggered by the health-check i.e. the autohealing
+action (RECREATE) on an instance will be performed if the health-check signals
+that the instance is UNHEALTHY. If neither --http-health-check nor
+--https-health-check is specified, the resulting autohealing policy will be
+triggered by instance's status i.e. the autohealing action (RECREATE) on an
+instance will be performed if the instance.status is not RUNNING.
 """,
 }

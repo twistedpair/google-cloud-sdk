@@ -45,7 +45,7 @@ class DatasetsList(base.Command):
     return list_pager.YieldFromList(
         apitools_client.datasets,
         bigquery_messages.BigqueryDatasetsListRequest(projectId=project_id),
-        args.limit,
+        limit=args.limit,
         batch_size=None,  # Use server default.
         field='datasets')
 

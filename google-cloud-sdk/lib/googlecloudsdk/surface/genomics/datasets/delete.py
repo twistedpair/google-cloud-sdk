@@ -18,8 +18,7 @@ class DatasetsDelete(base.Command):
   @staticmethod
   def Args(parser):
     """Register flags for this command."""
-    parser.add_argument('id',
-                        type=int,
+    parser.add_argument('id', type=str,
                         help='The ID of the dataset to be deleted.')
 
   @genomics_util.ReraiseHttpException

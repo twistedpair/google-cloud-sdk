@@ -83,6 +83,17 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'app.instances': ResourceInfo(
+        list_format="""
+          table(
+            service:sort=1,
+            version:sort=2,
+            id:sort=3,
+            instance.status
+          )
+        """,
+    ),
+
     # autoscaler
 
     'autoscaler.instances': ResourceInfo(

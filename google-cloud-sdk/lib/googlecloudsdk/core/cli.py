@@ -69,7 +69,7 @@ def GetDefaultTimeout():
 
 def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
          auth=True, creds=None, timeout='unset', log_http=False,
-         authority_selector=None):
+         authority_selector=None, authorization_token_file=None):
   """Get an httplib2.Http object for working with the Google API.
 
   Args:
@@ -118,8 +118,9 @@ def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
                                             trace_log,
                                             gcloud_ua)
 
-  if authority_selector:
-    http = _WrapRequestForIAMAuthoritySelector(http, authority_selector)
+  if authority_selector or authorization_token_file:
+    http = _WrapRequestForIAMAuth(http, authority_selector,
+                                  authorization_token_file)
 
   if auth:
     if not creds:
@@ -152,18 +153,27 @@ def _RequestArgsSetHeader(args, kwargs, header, value):
 
 
 # TODO(b/25115137): Refactor the wrapper functions to be more clear.
-def _WrapRequestForIAMAuthoritySelector(http, authority_selector):
+def _WrapRequestForIAMAuth(http, authority_selector, authorization_token_file):
   """Wrap request with IAM authority seelctor.
 
   Args:
     http: The original http object.
     authority_selector: str, The authority selector string we want to use for
         the request.
+    authorization_token_file: str, The file that contains the authorization
+        token we want to use for the request.
 
   Returns:
     http: The same http object but with the request method wrapped.
   """
   orig_request = http.request
+
+  authorization_token = None
+  if authorization_token_file:
+    try:
+      authorization_token = open(authorization_token_file, 'r').read()
+    except IOError as e:
+      raise Error(e)
 
   def RequestWithIAMAuthoritySelector(*args, **kwargs):
     """Wrap request with IAM authority selector.
@@ -176,8 +186,14 @@ def _WrapRequestForIAMAuthoritySelector(http, authority_selector):
       Wrapped request with IAM authority selector.
     """
     modified_args = list(args)
-    _RequestArgsSetHeader(modified_args, kwargs,
-                          'x-goog-iam-authority-selector', authority_selector)
+    if authority_selector:
+      _RequestArgsSetHeader(
+          modified_args, kwargs,
+          'x-goog-iam-authority-selector', authority_selector)
+    if authorization_token:
+      _RequestArgsSetHeader(
+          modified_args, kwargs,
+          'x-goog-iam-authorization-token', authorization_token)
     return orig_request(*modified_args, **kwargs)
 
   http.request = RequestWithIAMAuthoritySelector

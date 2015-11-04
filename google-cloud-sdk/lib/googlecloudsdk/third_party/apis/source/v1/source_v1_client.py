@@ -57,10 +57,10 @@ class SourceV1(base_api.BaseApiClient):
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'source.projects.repos.aliases.files.get',
-              ordered_params=[u'projectId', u'repoName', u'aliasName', u'path'],
-              path_params=[u'aliasName', u'path', u'projectId', u'repoName'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'revisionId', u'startPosition', u'uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{aliasName}/files/{+path}',
+              ordered_params=[u'projectId', u'repoName', u'kind', u'name', u'path'],
+              path_params=[u'kind', u'name', u'path', u'projectId', u'repoName'],
+              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'revisionId', u'startPosition', u'uid'],
+              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposAliasesFilesGetRequest',
               response_type_name=u'ReadResponse',
@@ -72,8 +72,8 @@ class SourceV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """ReadAlias is given a SourceContext denoting an alias in a repo, as well.
-as a path, and returns file or directory information about that path.
+      """Read is given a SourceContext and path, and returns.
+file or directory information about that path.
 
       Args:
         request: (SourceProjectsReposAliasesFilesGetRequest) input message
@@ -139,6 +139,18 @@ as a path, and returns file or directory information about that path.
               request_field='',
               request_type_name=u'SourceProjectsReposAliasesListRequest',
               response_type_name=u'ListAliasesResponse',
+              supports_download=False,
+          ),
+          'ListFiles': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'source.projects.repos.aliases.listFiles',
+              ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
+              path_params=[u'kind', u'name', u'projectId', u'repoName'],
+              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'revisionId', u'uid'],
+              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}:listFiles',
+              request_field='',
+              request_type_name=u'SourceProjectsReposAliasesListFilesRequest',
+              response_type_name=u'ListFilesResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -216,6 +228,21 @@ in the repo. The order in which the aliases are returned is undefined.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def ListFiles(self, request, global_params=None):
+      """ListFiles returns a list of all files in a SourceContext. The.
+information about each file includes its path and its hash.
+The result is ordered by path. Pagination is supported.
+
+      Args:
+        request: (SourceProjectsReposAliasesListFilesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFiles')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Updates the alias with the given name and kind. Kind cannot be ANY.  If.
 the alias does not exist, NOT_FOUND is returned. If the request provides
@@ -285,7 +312,7 @@ revision referred to by the given alias if the workspace does not exist.
               method_id=u'source.projects.repos.revisions.files.get',
               ordered_params=[u'projectId', u'repoName', u'revisionId', u'path'],
               path_params=[u'path', u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
+              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposRevisionsFilesGetRequest',
@@ -360,7 +387,7 @@ file or directory information about that path.
               method_id=u'source.projects.repos.revisions.listFiles',
               ordered_params=[u'projectId', u'repoName', u'revisionId'],
               path_params=[u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'uid'],
+              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}:listFiles',
               request_field='',
               request_type_name=u'SourceProjectsReposRevisionsListFilesRequest',
@@ -442,7 +469,7 @@ The result is ordered by path. Pagination is supported.
               method_id=u'source.projects.repos.workspaces.files.get',
               ordered_params=[u'projectId', u'repoName', u'name', u'path'],
               path_params=[u'name', u'path', u'projectId', u'repoName'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'snapshotId', u'startPosition', u'uid'],
+              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'snapshotId', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesFilesGetRequest',
@@ -455,8 +482,8 @@ The result is ordered by path. Pagination is supported.
           }
 
     def Get(self, request, global_params=None):
-      """ReadWorkspace is given a SourceContext denoting a workspace, as well as a.
-path, and returns file or directory information about that path.
+      """Read is given a SourceContext and path, and returns.
+file or directory information about that path.
 
       Args:
         request: (SourceProjectsReposWorkspacesFilesGetRequest) input message
@@ -481,7 +508,7 @@ path, and returns file or directory information about that path.
               method_id=u'source.projects.repos.workspaces.snapshots.files.get',
               ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
               path_params=[u'name', u'path', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
+              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',
@@ -494,9 +521,8 @@ path, and returns file or directory information about that path.
           }
 
     def Get(self, request, global_params=None):
-      """ReadSnapshot is given a SourceContext denoting a workspace and a.
-snapshot, as well as a path, and returns file or directory information
-about that path.
+      """Read is given a SourceContext and path, and returns.
+file or directory information about that path.
 
       Args:
         request: (SourceProjectsReposWorkspacesSnapshotsFilesGetRequest) input message
@@ -540,6 +566,18 @@ about that path.
               response_type_name=u'ListSnapshotsResponse',
               supports_download=False,
           ),
+          'ListFiles': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'source.projects.repos.workspaces.snapshots.listFiles',
+              ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
+              path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
+              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'uid'],
+              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}:listFiles',
+              request_field='',
+              request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListFilesRequest',
+              response_type_name=u'ListFilesResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -569,6 +607,21 @@ least recent.
         (ListSnapshotsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def ListFiles(self, request, global_params=None):
+      """ListFiles returns a list of all files in a SourceContext. The.
+information about each file includes its path and its hash.
+The result is ordered by path. Pagination is supported.
+
+      Args:
+        request: (SourceProjectsReposWorkspacesSnapshotsListFilesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFiles')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -638,6 +691,18 @@ least recent.
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesListRequest',
               response_type_name=u'ListWorkspacesResponse',
+              supports_download=False,
+          ),
+          'ListFiles': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'source.projects.repos.workspaces.listFiles',
+              ordered_params=[u'projectId', u'repoName', u'name'],
+              path_params=[u'name', u'projectId', u'repoName'],
+              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'snapshotId', u'uid'],
+              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:listFiles',
+              request_field='',
+              request_type_name=u'SourceProjectsReposWorkspacesListFilesRequest',
+              response_type_name=u'ListFilesResponse',
               supports_download=False,
           ),
           'ModifyWorkspace': base_api.ApiMethodInfo(
@@ -761,6 +826,21 @@ simultaneously modified by another client.
         (ListWorkspacesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def ListFiles(self, request, global_params=None):
+      """ListFiles returns a list of all files in a SourceContext. The.
+information about each file includes its path and its hash.
+The result is ordered by path. Pagination is supported.
+
+      Args:
+        request: (SourceProjectsReposWorkspacesListFilesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFiles')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -966,9 +1046,8 @@ Operation.
 
     def Create(self, request, global_params=None):
       """Creates a repo in the given project. The provided repo message should have.
-its vcs field set to GIT and its name field set to the desired repo name.
-No other repo fields should be set. Omitting the name is the same as
-specifying "default"
+its name field set to the desired repo name. No other repo fields should
+be set. Omitting the name is the same as specifying "default"
 
 Repo names must satisfy the regular expression
 `a-z{1,61}[a-z0-9]`. (Note that repo names must contain at

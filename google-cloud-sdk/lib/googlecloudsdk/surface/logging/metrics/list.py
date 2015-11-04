@@ -18,7 +18,7 @@ class List(base.Command):
   def Args(parser):
     """Register flags for this command."""
     parser.add_argument(
-        '--limit', required=False, type=int, default=0,
+        '--limit', required=False, type=int, default=None,
         help='If greater than zero, the maximum number of results.')
 
   def Run(self, args):

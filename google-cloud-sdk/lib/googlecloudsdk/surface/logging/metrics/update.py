@@ -62,6 +62,8 @@ class Update(base.Command):
       metric_description = metric.description
     if args.filter:
       metric_filter = args.filter
+      # This prevents a clash with the Cloud SDK --filter flag.
+      args.filter = None
     else:
       metric_filter = metric.filter
 

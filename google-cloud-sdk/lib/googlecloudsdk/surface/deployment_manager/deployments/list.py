@@ -2,8 +2,6 @@
 
 """deployments list command."""
 
-import types
-
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
@@ -85,9 +83,6 @@ class List(base.Command):
     Raises:
       ValueError: if result is None or not a generator
     """
-    if not isinstance(result, types.GeneratorType):
-      raise ValueError('result must be a generator')
-
     if args.simple_list:
       empty_generator = True
       for deployment in result:

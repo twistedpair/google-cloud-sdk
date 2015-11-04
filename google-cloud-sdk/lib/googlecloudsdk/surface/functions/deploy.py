@@ -59,9 +59,10 @@ class Deploy(base.Command):
               '--source parameter.'))
     source_group.add_argument(
         '--bucket',
-        help=('Name of GCS bucket in which source code will be stored. '
-              'Required if the --source parameter refers to a local directory. '
-              'Must not be given if it refers to a Cloud Repository.'),
+        help=('Name of Google Cloud Storage bucket in which source code will '
+              'be stored. Required if the --source parameter refers to a '
+              'local directory.  Must not be given if it refers to a Cloud '
+              'Repository.'),
         type=util.ValidateAndStandarizeBucketUriOrRaise)
     parser.add_argument(
         '--entry-point',
@@ -77,8 +78,8 @@ class Deploy(base.Command):
         type=util.ValidateAndStandarizePubsubTopicNameOrRaise)
     trigger_group.add_argument(
         '--trigger-gs-uri',
-        help=('GCS bucket name. Every change in files in this bucket will '
-              'trigger function execution.'),
+        help=('Google Cloud Storage bucket name. Every change in files in this '
+              'bucket will trigger function execution.'),
         type=util.ValidateAndStandarizeBucketUriOrRaise)
 
   @util.CatchHTTPErrorRaiseHTTPException

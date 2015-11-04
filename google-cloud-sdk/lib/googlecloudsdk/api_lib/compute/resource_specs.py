@@ -753,6 +753,32 @@ _SPECS_ALPHA['routers'] = _InternalSpec(
         ],
     editables=None,
     )
+_SPECS_ALPHA['subnetworks'] = _InternalSpec(
+    message_class_name='Subnetwork',
+    table_cols=[
+        ('NAME', 'name'),
+        ('REGION', 'region'),
+        ('NETWORK', 'network'),
+        ('RANGE', 'ipCidrRange')
+        ],
+    transformations=[
+        ('network', path_simplifier.Name),
+        ('region', path_simplifier.Name),
+        ],
+    editables=None,
+    )
+_SPECS_ALPHA['networks'] = _InternalSpec(
+    message_class_name='Network',
+    table_cols=[
+        ('NAME', 'name'),
+        ('MODE', 'x_gcloud_mode'),
+        ('IPV4_RANGE', 'IPv4Range'),
+        ('GATEWAY_IPV4', 'gatewayIPv4'),
+    ],
+    transformations=[
+        ],
+    editables=None,
+    )
 
 
 def _GetSpecsForVersion(api_version):

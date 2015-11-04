@@ -790,9 +790,9 @@ class BackendService(_messages.Message):
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
       fingerprint must be provided in order to update the BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck resource for health
-      checking this BackendService. Currently at most one health check can be
-      specified, and a health check is required.
+    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
+      resource for health checking this BackendService. Currently at most one
+      health check can be specified, and a health check is required.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -6468,34 +6468,28 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   Enums:
     ActionTypeValueValuesEnum: The action to perform when an instance in this
-      group becomes unhealthy. Possible values are RECREATE or RESTART.
-      RECREATE replaces an unhealthy instance using the same name and instance
-      template as the unhealthy instance. RESTART performs a soft restart on
-      an instance. If the instance cannot reboot, the instance performs a hard
-      restart.
+      group becomes unhealthy. The only possible value is RECREATE. RECREATE
+      replaces an unhealthy instance using the same name and instance template
+      as the unhealthy instance.
 
   Fields:
     actionType: The action to perform when an instance in this group becomes
-      unhealthy. Possible values are RECREATE or RESTART. RECREATE replaces an
+      unhealthy. The only possible value is RECREATE. RECREATE replaces an
       unhealthy instance using the same name and instance template as the
-      unhealthy instance. RESTART performs a soft restart on an instance. If
-      the instance cannot reboot, the instance performs a hard restart.
+      unhealthy instance.
     healthCheck: The URL for the HealthCheck that signals autohealing.
   """
 
   class ActionTypeValueValuesEnum(_messages.Enum):
     """The action to perform when an instance in this group becomes unhealthy.
-    Possible values are RECREATE or RESTART. RECREATE replaces an unhealthy
+    The only possible value is RECREATE. RECREATE replaces an unhealthy
     instance using the same name and instance template as the unhealthy
-    instance. RESTART performs a soft restart on an instance. If the instance
-    cannot reboot, the instance performs a hard restart.
+    instance.
 
     Values:
       RECREATE: <no description>
-      RESTART: <no description>
     """
     RECREATE = 0
-    RESTART = 1
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   healthCheck = _messages.StringField(2)
@@ -8117,7 +8111,9 @@ class Quota(_messages.Message):
       ROUTES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
+      SSL_CERTIFICATES: <no description>
       STATIC_ADDRESSES: <no description>
+      TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
@@ -8142,13 +8138,15 @@ class Quota(_messages.Message):
     ROUTES = 14
     SNAPSHOTS = 15
     SSD_TOTAL_GB = 16
-    STATIC_ADDRESSES = 17
-    TARGET_HTTP_PROXIES = 18
-    TARGET_INSTANCES = 19
-    TARGET_POOLS = 20
-    TARGET_VPN_GATEWAYS = 21
-    URL_MAPS = 22
-    VPN_TUNNELS = 23
+    SSL_CERTIFICATES = 17
+    STATIC_ADDRESSES = 18
+    TARGET_HTTPS_PROXIES = 19
+    TARGET_HTTP_PROXIES = 20
+    TARGET_INSTANCES = 21
+    TARGET_POOLS = 22
+    TARGET_VPN_GATEWAYS = 23
+    URL_MAPS = 24
+    VPN_TUNNELS = 25
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

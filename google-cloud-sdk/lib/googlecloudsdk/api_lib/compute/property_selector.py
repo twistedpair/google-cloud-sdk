@@ -42,6 +42,7 @@ There are three operators in the language of properties:
 import collections
 import copy
 
+from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.core.util import tokenizer
 
 

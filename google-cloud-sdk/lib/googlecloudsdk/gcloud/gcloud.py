@@ -134,30 +134,15 @@ def CreateCLI():
   loader.AddModule('compute',
                    os.path.join(pkg_root, 'compute', 'subcommands'),
                    component='gcloud')
-  loader.AddModule('dataproc',
-                   os.path.join(pkg_root, 'dataproc', 'commands'),
-                   component='gcloud')
   loader.AddModule('deployment_manager',
                    os.path.join(pkg_root, 'deployment_manager', 'commands'),
                    component='gcloud')
   loader.AddModule('internal',
                    os.path.join(pkg_root, 'internal', 'commands'),
                    component=None)
-  loader.AddModule('preview',
-                   os.path.join(pkg_root, 'appengine', 'preview'),
-                   component='app')
-  loader.AddModule('preview.app',
-                   os.path.join(pkg_root, 'appengine', 'app_commands'),
-                   component='app')
-  loader.AddModule('preview.datastore',
-                   os.path.join(pkg_root, 'appengine', 'datastore_commands'),
-                   component='app')
   loader.AddModule('services',
                    os.path.join(pkg_root, 'service_management', 'subcommands'),
                    component=None)
-  loader.AddModule('test',
-                   os.path.join(pkg_root, 'test', 'commands'),
-                   component='gcloud')
 
   # Check for updates on shutdown but not for any of the updater commands.
   loader.RegisterPostRunHook(UpdateCheck,

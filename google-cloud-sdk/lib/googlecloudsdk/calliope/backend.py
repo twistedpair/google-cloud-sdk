@@ -1208,6 +1208,8 @@ class Command(CommandCommon):
           trace_log=args.trace_log,
           log_http=properties.VALUES.core.log_http.GetBool(),
           authority_selector=properties.VALUES.auth.authority_selector.Get(),
+          authorization_token_file=(
+              properties.VALUES.auth.authorization_token_file.Get()),
           **kwargs)
 
     tool_context = self._config_hooks.load_context()

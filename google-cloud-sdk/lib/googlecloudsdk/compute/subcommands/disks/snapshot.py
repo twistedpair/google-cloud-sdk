@@ -35,7 +35,7 @@ class SnapshotDisks(base_classes.NoOutputAsyncMutator):
         hexadecimal number that starts with a letter. The values of
         this option run parallel to the disks specified. For example,
 
-          $ {command} my-disk-1 my-disk-2 my-disk-3 --snapshot-name snapshot-1 snapshot-2 snapshot-3
+          $ {command} my-disk-1 my-disk-2 my-disk-3 --snapshot-names snapshot-1,snapshot-2,snapshot-3
 
         will result in ``my-disk-1'' being snapshotted as
         ``snapshot-1'', ``my-disk-2'' as ``snapshot-2'', and so on.

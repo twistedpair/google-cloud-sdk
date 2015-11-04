@@ -7,7 +7,7 @@ from protorpc.messages import DecodeError
 
 
 def AddArgsForAddIamPolicyBinding(parser):
-  """Adds the IAM policy binding arguments for the known roles.
+  """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
@@ -16,11 +16,27 @@ def AddArgsForAddIamPolicyBinding(parser):
     ArgumentError if one of the arguments is already defined in the parser.
   """
   parser.add_argument(
-      '--role',
+      '--role', required=True,
       help='Define the role of the member')
   parser.add_argument(
-      '--member',
-      help='The member to add or remove from the binding.')
+      '--member', required=True,
+      help='The member to add to the binding.')
+
+def AddArgsForRemoveIamPolicyBinding(parser):
+  """Adds the IAM policy binding arguments for role and members.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the argss.
+
+  Raises:
+    ArgumentError if one of the arguments is already defined in the parser.
+  """
+  parser.add_argument(
+      '--role', required=True,
+      help='The role to remove the member from')
+  parser.add_argument(
+      '--member', required=True,
+      help='The member to remove from the binding.')
 
 
 def AddBindingToIamPolicy(messages, policy, args):
@@ -101,3 +117,79 @@ def ParseJsonPolicyFile(policy_file_path, policy_message_type):
         'Policy file {0} is not a properly formatted JSON policy file. {1}'
         .format(policy_file_path, str(e)))
   return policy
+
+def GetDetailedHelpForSetIamPolicy(collection, example_id):
+  """Returns a detailed_help for a set-iam-policy command
+
+  Args:
+    collection: Name of the command collection (ex: "project", "dataset")
+    example_id: Collection identifier to display in a sample command
+        (ex: "my-project", '1234')
+  Returns:
+    a dict with boilerplate help text for the set-iam-policy command
+  """
+  return {
+      'brief': 'Set IAM policy for a {0}.'.format(collection),
+      'DESCRIPTION': '{description}',
+      'EXAMPLES': """\
+          The following command will read an IAM policy defined in a JSON file
+          'policy.json' and set it for a {0} with identifier '{1}'
+
+            $ {{command}} {1} policy.json
+
+          See https://cloud.google.com/iam/docs/managing-policies for details
+          of the policy file format and contents.
+          """.format(collection, example_id)
+  }
+
+
+def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
+  """Returns a detailed_help for an add-iam-policy-binding command
+
+  Args:
+    collection: Name of the command collection (ex: "project", "dataset")
+    example_id: Collection identifier to display in a sample command
+        (ex: "my-project", '1234')
+  Returns:
+    a dict with boilerplate help text for the add-iam-policy-binding command
+  """
+  return {
+      'brief': 'Add IAM policy binding for a {0}.'.format(collection),
+      'DESCRIPTION': '{description}',
+      'EXAMPLES': """\
+          The following command will add an IAM policy binding for the role
+          of 'editor' for the user 'test-user@gmail.com' on a {0} with
+          identifier '{1}'
+
+            $ {{command}} {1} --editor='user:test-user@gmail.com'
+
+          See https://cloud.google.com/iam/docs/managing-policies for details
+          of policy role and member types.
+          """.format(collection, example_id)
+  }
+
+def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
+  """Returns a detailed_help for a remove-iam-policy-binding command
+
+  Args:
+    collection: Name of the command collection (ex: "project", "dataset")
+    example_id: Collection identifier to display in a sample command
+        (ex: "my-project", '1234')
+  Returns:
+    a dict with boilerplate help text for the remove-iam-policy-binding command
+  """
+  return {
+      'brief': 'Remove IAM policy binding for a {0}.'.format(collection),
+      'DESCRIPTION': '{description}',
+      'EXAMPLES': """\
+          The following command will remove a IAM policy binding for the role
+          of 'editor' for the user 'test-user@gmail.com' on {0} with
+          identifier '{1}'
+
+            $ {{command}} {1} --editor='user:test-user@gmail.com'
+
+          See https://cloud.google.com/iam/docs/managing-policies for details
+          of policy role and member types.
+          """.format(collection, example_id)
+  }
+

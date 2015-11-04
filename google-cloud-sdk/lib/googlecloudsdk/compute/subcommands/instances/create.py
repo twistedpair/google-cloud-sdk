@@ -57,7 +57,6 @@ def _CommonArgs(parser):
   instance_utils.AddAddressArgs(parser, instances=True)
   instance_utils.AddMachineTypeArgs(parser)
   instance_utils.AddMaintenancePolicyArgs(parser)
-  instance_utils.AddNetworkArgs(parser)
   instance_utils.AddNoRestartOnFailureArgs(parser)
   instance_utils.AddPreemptibleVmArgs(parser)
   instance_utils.AddScopeArgs(parser)
@@ -168,6 +167,7 @@ class CreateGA(base_classes.BaseAsyncCreator,
   @staticmethod
   def Args(parser):
     _CommonArgs(parser)
+    instance_utils.AddNetworkArgs(parser)
 
   @property
   def service(self):
@@ -328,10 +328,20 @@ class CreateGA(base_classes.BaseAsyncCreator,
 
   def CreateNetworkInterfaceMessage(self, args, instance_refs):
     """Returns a new NetworkInterface message."""
-    network_ref = self.CreateGlobalReference(
-        args.network, resource_type='networks')
-    network_interface = self.messages.NetworkInterface(
-        network=network_ref.SelfLink())
+    region = utils.ZoneNameToRegionName(instance_refs[0].zone)
+
+    network_interface = None
+    # TODO(user) drop hasattr after subnets goes GA
+    if hasattr(args, 'subnet') and args.subnet is not None:
+      subnet_ref = self.CreateRegionalReference(
+          args.subnet, region, resource_type='subnetworks')
+      network_interface = self.messages.NetworkInterface(
+          subnetwork=subnet_ref.SelfLink())
+    else:
+      network_ref = self.CreateGlobalReference(
+          args.network, resource_type='networks')
+      network_interface = self.messages.NetworkInterface(
+          network=network_ref.SelfLink())
 
     if not args.no_address:
       access_config = self.messages.AccessConfig(
@@ -340,8 +350,8 @@ class CreateGA(base_classes.BaseAsyncCreator,
 
       # If the user provided an external IP, populate the access
       # config with it.
+      # TODO(b/25278937): plays poorly when creating multiple instances
       if len(instance_refs) == 1:
-        region = utils.ZoneNameToRegionName(instance_refs[0].zone)
         address = self.ExpandAddressFlag(args, region)
         if address:
           access_config.natIP = address
@@ -475,14 +485,28 @@ class CreateGA(base_classes.BaseAsyncCreator,
     return requests
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
-class CreateAlphaBeta(CreateGA):
+@base.ReleaseTracks(base.ReleaseTrack.BETA)
+class CreateBeta(CreateGA):
   """Create Compute Engine virtual machine instances."""
 
   @staticmethod
   def Args(parser):
     _CommonArgs(parser)
     csek_utils.AddCsekKeyArgs(parser)
+    instance_utils.AddNetworkArgs(parser)
 
-CreateAlphaBeta.detailed_help = DETAILED_HELP
+
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+class CreateAlpha(CreateGA):
+  """Create Compute Engine virtual machine instances."""
+
+  @staticmethod
+  def Args(parser):
+    _CommonArgs(parser)
+    csek_utils.AddCsekKeyArgs(parser)
+    instance_utils.AddNetworkArgsAlpha(parser)
+
+
+CreateAlpha.detailed_help = DETAILED_HELP
+CreateBeta.detailed_help = DETAILED_HELP
 CreateGA.detailed_help = DETAILED_HELP

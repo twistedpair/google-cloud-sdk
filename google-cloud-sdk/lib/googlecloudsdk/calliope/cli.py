@@ -473,6 +473,13 @@ class CLILoader(object):
         action=actions.StoreProperty(properties.VALUES.auth.authority_selector),
         help=argparse.SUPPRESS)
 
+    top_element.ai.add_argument(
+        '--authorization-token-file',
+        default=None,
+        action=actions.StoreProperty(
+            properties.VALUES.auth.authorization_token_file),
+        help=argparse.SUPPRESS)
+
     # Timeout value for HTTP requests.
     top_element.ai.add_argument(
         '--http-timeout',

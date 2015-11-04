@@ -137,3 +137,6 @@ class ActivateServiceAccount(base.Command):
     log.status.Print('Activated service account credentials for: [{0}]'
                      .format(account))
     return cred
+
+  def Format(self, unused_args):
+    return 'none'

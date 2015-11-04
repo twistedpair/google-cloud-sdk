@@ -75,14 +75,51 @@ def CalculateExtendedSourceContexts(source_directory):
   # If source context is still None or ambiguous, we have no context to go by.
   if not source_contexts:
     raise GenerateSourceContextError(
-        'Could not find a Google Cloud Repository in the '
-        'remote URLs for source directory: %s' % source_directory)
-  elif len(source_contexts) != 1:
-    raise GenerateSourceContextError(
-        'No unambiguous Google Cloud Repository in the '
-        'remote URLs for source directory: %s' % source_directory)
-
+        'Could not find any repository in the remote URLs for source '
+        'directory: %s' % source_directory)
   return source_contexts
+
+
+def BestSourceContext(source_contexts, source_directory):
+  """Returns the "best" source context from a list of contexts.
+
+  "Best" here means:
+
+  * The Cloud Repo context, if there is exactly one such.
+  * The Git Repo context, if there is no Cloud Repo context.
+  * If the above conditions are not met, raise an error.
+
+  Args:
+    source_contexts: An array of source contexts.
+    source_directory: The source location (for error messages).
+  Returns:
+    A single source context.
+  Raises:
+    GenerateSourceContextError: if source context could not be generated.
+  """
+  source_context = None
+  must_be_cloud = False
+  for ext_ctx in source_contexts:
+    candidate = ext_ctx['context']
+    if not source_context:
+      source_context = candidate
+      continue
+    if 'cloudRepo' in candidate.keys():
+      if 'cloudRepo' in source_context.keys():
+        raise GenerateSourceContextError(
+            'Found multiple Google Cloud Repositories in the remote URLs for '
+            'source directory: %s' % source_directory)
+      source_context = candidate
+    else:
+      # This is a Git context, and we've seen at least one other context.
+      # If there's a cloud repo context as well, we'll return that, but if
+      # not, we need to fail.
+      must_be_cloud = True
+  if must_be_cloud and 'cloudRepo' not in source_context.keys():
+    raise GenerateSourceContextError(
+        'Found multiple Git Repositories (and no Google Cloud Repository) in '
+        'the remote URLs for source directory: %s' % source_directory)
+  return source_context
 
 
 def GenerateSourceContext(source_directory, output_file):
@@ -99,7 +136,7 @@ def GenerateSourceContext(source_directory, output_file):
   """
 
   source_contexts = CalculateExtendedSourceContexts(source_directory)
-  source_context = source_contexts[0]['context']
+  source_context = BestSourceContext(source_contexts, source_directory)
 
   # Spit out the JSON source context blob.
   output_file = os.path.abspath(output_file)

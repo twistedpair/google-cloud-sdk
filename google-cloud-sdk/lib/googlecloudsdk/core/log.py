@@ -12,6 +12,7 @@ import time
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.core.util import version
 
 
 DEFAULT_VERBOSITY = logging.WARNING
@@ -234,6 +235,10 @@ class _LogManager(object):
   def Reset(self):
     """Resets all logging functionality to its default state."""
     # Clears any existing logging handlers.
+    if version.IS_ON_PYTHON26:
+      # Plug log file descriptor leaks.
+      for handler in self.logger.handlers:
+        handler.close()
     self.logger.handlers[:] = []
 
     # Refresh the streams for the console writers.

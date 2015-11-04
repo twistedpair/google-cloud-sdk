@@ -6,7 +6,6 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import base
 
 
-@base.Hidden
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
 class InvalidateCache(base_classes.NoOutputAsyncMutator):
   """Invalidate specified cached objects for a URL map."""

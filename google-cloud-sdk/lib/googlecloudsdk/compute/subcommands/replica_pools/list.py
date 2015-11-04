@@ -94,13 +94,7 @@ class List(base.Command):
       args: The same as the args in Run.
       result: a list of dicts, where each dict has information about one
           replica pool
-
-    Raises:
-      ValueError: if result is None or not a list
     """
-    if not isinstance(result, list):
-      raise ValueError
-
     if not result:
       log.Print('No replica pools were found!')
       return

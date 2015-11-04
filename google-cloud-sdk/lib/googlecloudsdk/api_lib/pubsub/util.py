@@ -8,6 +8,9 @@ from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_ex
 
+# Maximum number of results that can be passed in pageSize to list operations.
+MAX_LIST_RESULTS = 10000
+
 
 def RaiseErrorIfArgIsAPath(f):
   """Verifies that the first argument to the function, is not a path."""

@@ -66,7 +66,7 @@ class Project(Bigquery):
     return apitools_base.list_pager.YieldFromList(
         self._client.jobs,
         request,
-        max_results,
+        limit=max_results,
         batch_size=None,  # Use server default.
         field='jobs')
 
@@ -132,9 +132,9 @@ class Job(Bigquery):
         self.schema = []
         self._client = thisclient
 
-      def WrappedGetQueryResults(self, request):
+      def WrappedGetQueryResults(self, request, *args, **kwargs):
         # Make actual bigquery API call.
-        response = self._client.jobs.GetQueryResults(request)
+        response = self._client.jobs.GetQueryResults(request, *args, **kwargs)
         if not self.schema:
           self.schema = response.schema.fields
         return response
@@ -145,7 +145,7 @@ class Job(Bigquery):
     rows = apitools_base.list_pager.YieldFromList(
         service,
         request,
-        max_rows,
+        limit=max_rows,
         batch_size=None,   # Use server default.,
         method='WrappedGetQueryResults',
         field='rows',

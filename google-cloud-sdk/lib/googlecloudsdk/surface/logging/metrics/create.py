@@ -33,9 +33,13 @@ class Create(base.Command):
     """
     client = self.context['logging_client']
     messages = self.context['logging_messages']
+    metric_filter = args.filter
+    # This prevents a clash with the Cloud SDK --filter flag.
+    args.filter = None
     project = properties.VALUES.core.project.Get(required=True)
-    new_metric = messages.LogMetric(
-        name=args.metric_name, description=args.description, filter=args.filter)
+    new_metric = messages.LogMetric(name=args.metric_name,
+                                    description=args.description,
+                                    filter=metric_filter)
     try:
       result = client.projects_metrics.Create(
           messages.LoggingProjectsMetricsCreateRequest(

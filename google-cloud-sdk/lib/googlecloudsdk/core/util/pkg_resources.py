@@ -35,7 +35,7 @@ def IsImportable(name, path):
 
   if os.path.isdir(path):
     if not os.path.isfile(os.path.join(path, '__init__.py')):
-      return False
+      return path in sys.path
     name_path = os.path.join(path, name)
     if os.path.isdir(name_path):
       # Subdirectory is considered subpackage if it has __init__.py file.

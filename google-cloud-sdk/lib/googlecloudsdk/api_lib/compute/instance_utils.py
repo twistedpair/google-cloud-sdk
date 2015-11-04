@@ -238,6 +238,30 @@ def AddNetworkArgs(parser):
       """
 
 
+def AddNetworkArgsAlpha(parser):
+  """Set arguments for choosing the network/subnetwork."""
+  netparser = parser.add_mutually_exclusive_group()
+
+  network = netparser.add_argument(
+      '--network',
+      default=constants.DEFAULT_NETWORK,
+      help='Specifies the network that the instances will be part of.')
+
+  network.detailed_help = """\
+      Specifies the network that the instances will be part of. This is mutually
+      exclusive with --subnet. If neither is specified, this defaults to the
+      "default" network.
+      """
+
+  subnet = netparser.add_argument(
+      '--subnet',
+      help='Specifies the subnet that the instances will be part of.')
+  subnet.detailed_help = """\
+      Specifies the subnet that the instances will be part of. This is mutally
+      exclusive with --network.
+      """
+
+
 def AddScopeArgs(parser):
   """Adds scope arguments for instances and instance-templates."""
   scopes_group = parser.add_mutually_exclusive_group()

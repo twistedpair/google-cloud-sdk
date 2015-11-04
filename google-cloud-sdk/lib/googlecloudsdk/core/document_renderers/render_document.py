@@ -181,10 +181,10 @@ class _MarkdownConverter(object):
     """Checks for [text](target) hyperlink anchor markdown.
 
     Hyperlink anchors are of the form:
-      '(' <text> ']' '[' <target> ']'
+      '[' <text> ']' '(' <target> ')'
     For example:
-      (Google Search)[http://www.google.com]
-      ()[http://www.show.the.link]
+      [Google Search](http://www.google.com)
+      [](http://www.show.the.link)
     The underlying renderer determines how the parts are displayed.
 
     Args:
@@ -198,11 +198,11 @@ class _MarkdownConverter(object):
         text: The link text.
     """
     text_beg = i + 1
-    text_end = _GetNestedGroup(buf, i, '(', ')')
-    if not text_end or text_end >= len(buf) - 1 or buf[text_end + 1] != '[':
+    text_end = _GetNestedGroup(buf, i, '[', ']')
+    if not text_end or text_end >= len(buf) - 1 or buf[text_end + 1] != '(':
       return 0, None, None
     target_beg = text_end + 2
-    target_end = _GetNestedGroup(buf, target_beg - 1, '[', ']')
+    target_end = _GetNestedGroup(buf, target_beg - 1, '(', ')')
     if not target_end or target_end <= target_beg:
       return 0, None, None
     return (target_end + 1, buf[target_beg:target_end], buf[text_beg:text_end])
@@ -228,7 +228,7 @@ class _MarkdownConverter(object):
             ret = ret[:-back]
             i = index_after_anchor - 1
             c = self._renderer.Link(target, text)
-        elif c == '(':
+        elif c == '[':
           index_after_anchor, target, text = self._AnchorStyle2(buf, i)
           if index_after_anchor and _IsValidTarget(target):
             i = index_after_anchor - 1

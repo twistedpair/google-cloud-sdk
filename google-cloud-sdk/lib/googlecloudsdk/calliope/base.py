@@ -7,7 +7,11 @@ import abc
 
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.resource import resource_registry
+
+
+ADD_TO_URI_CACHE, DELETE_FROM_URI_CACHE, REPLACE_URI_CACHE = range(1, 4)
 
 
 class LayoutException(Exception):
@@ -279,68 +283,6 @@ class _Common(object):
     return self._http_func(auth=auth, creds=creds, **kwargs)
 
 
-class Command(_Common):
-  """Command is a base class for commands to implement.
-
-  Attributes:
-    cli: calliope.cli.CLI, The CLI object representing this command line tool.
-    context: {str:object}, A set of key-value pairs that can be used for
-        common initialization among commands.
-    group: base.Group, The instance of the group class above this command.  You
-        can use this to access common methods within a group.
-    format: func(obj), A function that prints objects to stdout using the
-        user-chosen formatting option.
-    http_func: function that returns an http object that can be used during
-        service requests.
-  """
-
-  __metaclass__ = abc.ABCMeta
-
-  def __init__(self, cli, context, group, http_func, format_string):
-    super(Command, self).__init__(http_func)
-    self.cli = cli
-    self.context = context
-    self.group = group
-    self.__format_string = format_string
-
-  def ExecuteCommand(self, args):
-    self.cli.Execute(args, call_arg_complete=False)
-
-  @abc.abstractmethod
-  def Run(self, args):
-    """Run the command.
-
-    Args:
-      args: argparse.Namespace, An object that contains the values for the
-          arguments specified in the .Args() method.
-    Returns:
-      A python object that is given back to the python caller, or sent to the
-      .Display() method in CLI mode.
-    """
-    raise NotImplementedError('CommandBase.Run is not overridden')
-
-  def Display(self, args, result):
-    """Print the result for a human to read from the terminal.
-
-    Args:
-      args: argparse.Namespace: The same namespace given to the corresponding
-          .Run() invocation.
-      result: object, The object return by the corresponding .Run() invocation.
-    """
-    pass
-
-  # TODO(markpell): When the formatting revamp goes in, this should be renamed.
-  # pylint: disable=invalid-name
-  def format(self, obj):
-    """Prints out the given object using the format decided by the format flag.
-
-    Args:
-      obj: Object, The object to print.
-    """
-    if obj:
-      resource_printer.Print(obj, self.__format_string, out=log.out)
-
-
 class Group(_Common):
   """Group is a base class for groups to implement.
 
@@ -362,6 +304,148 @@ class Group(_Common):
           .Run() invocation.
     """
     pass
+
+
+class Command(_Common):
+  """Command is a base class for commands to implement.
+
+  Attributes:
+    cli: calliope.cli.CLI, The CLI object representing this command line tool.
+    context: {str:object}, A set of key-value pairs that can be used for
+        common initialization among commands.
+    group: base.Group, The instance of the group class above this command.  You
+        can use this to access common methods within a group.
+    http_func: function that returns an http object that can be used during
+        service requests.
+    __format_string: str, The default resource printer format string.
+    __uri_cache_enabled: bool, The URI cache enabled state.
+  """
+
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, cli, context, group, http_func, format_string):
+    super(Command, self).__init__(http_func)
+    self.cli = cli
+    self.context = context
+    self.group = group
+    self.__format_string = format_string
+    self.__uri_cache_enabled = False
+
+  def ExecuteCommand(self, args):
+    self.cli.Execute(args, call_arg_complete=False)
+
+  @abc.abstractmethod
+  def Run(self, args):
+    """Runs the command.
+
+    Args:
+      args: argparse.Namespace, An object that contains the values for the
+          arguments specified in the .Args() method.
+
+    Returns:
+      A python object that is given back to the python caller, or sent to the
+      .Display() method in CLI mode.
+    """
+    pass
+
+  def Collection(self, unused_args):
+    """Returns the default collection path string."""
+    return None
+
+  def ResourceInfo(self, args):
+    """Returns the command resource ResourceInfo object."""
+    collection = self.Collection(args)
+    return resource_registry.Get(collection) if collection else None
+
+  def Format(self, unused_args):
+    """Returns the default format string."""
+    return 'default'
+
+  def GetUriCacheUpdateOp(self):
+    """Returns the URI cache update OP."""
+    return None
+
+  def DisableUriCache(self):
+    """Disables URI caching for this command."""
+    self.__uri_cache_enabled = False
+
+  def IsUriCacheEnabled(self):
+    """Returns True if URI caching is enabled for this command."""
+    return self.__uri_cache_enabled
+
+  # TODO(gsfowler): Drop format, __format_string after all use resource_printer.
+  # pylint: disable=invalid-name
+  def format(self, obj):
+    """Prints out the given object using the format decided by the format flag.
+
+    Args:
+      obj: Object, The object to print.
+    """
+    if obj:
+      resource_printer.Print(obj, self.__format_string, out=log.out)
+
+
+class SilentCommand(Command):
+  """A command that produces no output."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def Format(self, unused_args):
+    return 'none'
+
+
+class DescribeCommand(Command):
+  """A command that prints one resource in the 'default' format."""
+
+  __metaclass__ = abc.ABCMeta
+
+
+class CacheCommand(Command):
+  """A command that affects the resource URI cache."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, *args, **kwargs):
+    super(CacheCommand, self).__init__(*args, **kwargs)
+    self.__uri_cache_enabled = True
+
+  @abc.abstractmethod
+  def GetUriCacheUpdateOp(self):
+    """Returns the URI cache update OP."""
+    pass
+
+
+class ListCommand(CacheCommand):
+  """A command that pretty-prints all resources."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def Format(self, args):
+    info = self.ResourceInfo(args)
+    if getattr(args, 'simple_list', False) and info.simple_format:
+      return info.simple_format
+    return info.list_format or 'default'
+
+  def GetUriCacheUpdateOp(self):
+    return REPLACE_URI_CACHE
+
+
+class CreateCommand(CacheCommand):
+  """A command that creates resources."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def GetUriCacheUpdateOp(self):
+    return ADD_TO_URI_CACHE
+
+
+class DeleteCommand(CacheCommand):
+  """A command that deletes resources."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def GetUriCacheUpdateOp(self):
+    return DELETE_FROM_URI_CACHE
 
 
 class Argument(object):

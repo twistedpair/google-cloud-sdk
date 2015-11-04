@@ -364,21 +364,26 @@ class SourceRepository(_messages.Message):
       deployed from a branch, it will be the revision id of the latest change
       on this branch at that time. If user deployed from revision then this
       value will be always equal to the revision specified by the user.
+    repositoryUrl: URL to the hosted repository where the function is defined.
+      Only paths in https://source.developers.google.com domain are supported.
+      The path should contain the name of the repository.
     revision: The id of the revision that captures the state of the repository
       from which the function should be fetched.
-    sourceUrl: URL to the hosted repository where the function is defined. The
-      URL should include the path to the directory within the repository where
-      the function is located. Only paths in
-      https://source.developers.google.com domain are supported.
+    sourcePath: The path within the repository where the function is defined.
+      The path should point to the directory where cloud functions files are
+      located.
+    sourceUrl: A string attribute.
     tag: The name of the tag that captures the state of the repository from
       which the function should be fetched.
   """
 
   branch = _messages.StringField(1)
   deployedRevision = _messages.StringField(2)
-  revision = _messages.StringField(3)
-  sourceUrl = _messages.StringField(4)
-  tag = _messages.StringField(5)
+  repositoryUrl = _messages.StringField(3)
+  revision = _messages.StringField(4)
+  sourcePath = _messages.StringField(5)
+  sourceUrl = _messages.StringField(6)
+  tag = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):

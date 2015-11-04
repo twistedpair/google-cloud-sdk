@@ -1,6 +1,7 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
-"""datasets list command."""
+"""Implementation of gcloud genomics datasets list.
+"""
 
 from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util

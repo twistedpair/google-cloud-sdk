@@ -103,7 +103,7 @@ def _GetSchemaAndRows(service, method, schema, request_for_rows, max_rows):
   rows = list_pager.YieldFromList(
       service,
       request_for_rows,
-      max_rows,
+      limit=max_rows,
       batch_size=_REQUESTED_PAGE_SIZE,
       method=method,
       field='rows',

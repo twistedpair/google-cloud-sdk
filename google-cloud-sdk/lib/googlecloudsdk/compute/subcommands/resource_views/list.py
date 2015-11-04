@@ -103,11 +103,6 @@ class List(base.Command):
     Args:
       unused_args: The same as the args in Run.
       results: The results of the Run() method.
-    Raises:
-      ValueError: if result is None or not a list
     """
-    if not isinstance(results, list):
-      raise ValueError('results must be a list')
-
     for resource_view in results:
       log.Print(resource_view['selfLink'])

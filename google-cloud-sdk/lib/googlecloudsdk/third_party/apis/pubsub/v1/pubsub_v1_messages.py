@@ -314,10 +314,14 @@ class PubsubMessage(_messages.Message):
     attributes: Optional attributes for this message.
     data: The message payload. For JSON requests, the value of this field must
       be base64-encoded.
-    messageId: ID of this message assigned by the server at publication time.
-      Guaranteed to be unique within the topic. This value may be read by a
-      subscriber that receives a `PubsubMessage` via a `Pull` call or a push
-      delivery. It must not be populated by a publisher in a `Publish` call.
+    messageId: ID of this message, assigned by the server when the message is
+      published. Guaranteed to be unique within the topic. This value may be
+      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
+      or a push delivery. It must not be populated by the publisher in a
+      `Publish` call.
+    publishTime: The time at which the message was published, populated by the
+      server when it receives the `Publish` call. It must not be populated by
+      the publisher in a `Publish` call.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -347,6 +351,7 @@ class PubsubMessage(_messages.Message):
   attributes = _messages.MessageField('AttributesValue', 1)
   data = _messages.BytesField(2)
   messageId = _messages.StringField(3)
+  publishTime = _messages.StringField(4)
 
 
 class PubsubProjectsSubscriptionsAcknowledgeRequest(_messages.Message):
@@ -377,7 +382,10 @@ class PubsubProjectsSubscriptionsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which policy is being requested.
-      Resource is usually specified as a path, such as, `projects/{project}`.
+      `resource` is usually specified as a path, such as,
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective GetIamPolicy rpc.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -453,7 +461,9 @@ class PubsubProjectsSubscriptionsSetIamPolicyRequest(_messages.Message):
   Fields:
     resource: REQUIRED: The resource for which policy is being specified.
       `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective SetIamPolicy rpc.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -468,7 +478,9 @@ class PubsubProjectsSubscriptionsTestIamPermissionsRequest(_messages.Message):
   Fields:
     resource: REQUIRED: The resource for which policy detail is being
       requested. `resource` is usually specified as a path, such as,
-      `projects/{project}`.
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective TestIamPermissions rpc.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -492,7 +504,10 @@ class PubsubProjectsTopicsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which policy is being requested.
-      Resource is usually specified as a path, such as, `projects/{project}`.
+      `resource` is usually specified as a path, such as,
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective GetIamPolicy rpc.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -543,7 +558,9 @@ class PubsubProjectsTopicsSetIamPolicyRequest(_messages.Message):
   Fields:
     resource: REQUIRED: The resource for which policy is being specified.
       `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective SetIamPolicy rpc.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -575,7 +592,9 @@ class PubsubProjectsTopicsTestIamPermissionsRequest(_messages.Message):
   Fields:
     resource: REQUIRED: The resource for which policy detail is being
       requested. `resource` is usually specified as a path, such as,
-      `projects/{project}`.
+      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      documentation for the respective TestIamPermissions rpc.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """

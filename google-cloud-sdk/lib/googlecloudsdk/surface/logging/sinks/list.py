@@ -22,7 +22,7 @@ class List(base.Command):
         '--only-project-sinks', required=False, action='store_true',
         help='Display only project sinks.')
     parser.add_argument(
-        '--limit', required=False, type=int, default=0,
+        '--limit', required=False, type=int, default=None,
         help='If greater than zero, limit the number of results.')
 
   def ListLogSinks(self, project, log_name):
@@ -116,6 +116,7 @@ class List(base.Command):
     """
     project = properties.VALUES.core.project.Get(required=True)
 
+    limit = args.limit or 0
     try:
       if args.log:
         results = self.ListLogSinks(project, args.log)
@@ -124,9 +125,9 @@ class List(base.Command):
       elif args.only_project_sinks:
         results = self.ListProjectSinks(project)
       else:
-        return self.YieldAllSinks(project, args.limit)
-      if args.limit > 0:
-        return results.sinks[:args.limit]
+        return self.YieldAllSinks(project, limit)
+      if limit > 0:
+        return results.sinks[:limit]
       else:
         return list(results.sinks)
     except apitools_base.HttpError as error:

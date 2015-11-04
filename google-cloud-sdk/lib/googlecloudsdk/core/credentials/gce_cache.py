@@ -3,6 +3,7 @@
 """Caching logic for checking if we're on GCE."""
 
 import os
+import socket
 from threading import Lock
 import time
 import urllib2
@@ -77,7 +78,7 @@ class _OnGCECache(object):
     try:
       numeric_project_id = gce_read.ReadNoProxy(
           gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib2.HTTPError, urllib2.URLError):
+    except (urllib2.HTTPError, urllib2.URLError, socket.timeout):
       return False
     else:
       return numeric_project_id.isdigit()

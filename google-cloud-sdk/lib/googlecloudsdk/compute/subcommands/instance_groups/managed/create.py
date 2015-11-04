@@ -1,9 +1,8 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for creating managed instance group."""
-import argparse
-
 
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import arg_parsers
@@ -80,16 +79,6 @@ class CreateGA(base_classes.BaseAsyncCreator, zone_utils.ZoneResourceFetcher):
     else:
       pools = []
 
-    if hasattr(args, 'http_health_check'):
-      health_check_ref = self.CreateGlobalReference(
-          args.http_health_check,
-          resource_type='httpHealthChecks')
-      auto_healing_policies = [
-          self.messages.InstanceGroupManagerAutoHealingPolicy(
-              healthCheck=health_check_ref.SelfLink())]
-    else:
-      auto_healing_policies = []
-
     instance_group_manager = self.messages.InstanceGroupManager(
         name=group_ref.Name(),
         zone=group_ref.zone,
@@ -98,13 +87,14 @@ class CreateGA(base_classes.BaseAsyncCreator, zone_utils.ZoneResourceFetcher):
         instanceTemplate=template_ref.SelfLink(),
         targetPools=pools,
         targetSize=int(args.size))
+    auto_healing_policies = (
+        managed_instance_groups_utils.CreateAutohealingPolicies(self, args))
     if auto_healing_policies:
       instance_group_manager.autoHealingPolicies = auto_healing_policies
     request = self.messages.ComputeInstanceGroupManagersInsertRequest(
         instanceGroupManager=instance_group_manager,
         project=self.project,
-        zone=group_ref.zone,
-    )
+        zone=group_ref.zone)
 
     return [request]
 
@@ -116,12 +106,9 @@ class CreateAlphaBeta(CreateGA):
   @staticmethod
   def Args(parser):
     CreateGA.Args(parser)
-    parser.add_argument(
-        '--http-health-check',
-        # Specifies the HTTP health check object used for autohealing
-        # instances in this group.
-        # TODO(user, b/22996767): Change after beta launch to the text above.
-        help=argparse.SUPPRESS)
+    # TODO(user, b/22996767): Change "help_hidden" to False after beta launch.
+    managed_instance_groups_utils.AddAutohealingArgs(parser, help_hidden=True)
+
 
 DETAILED_HELP = {
     'brief': 'Create a Compute Engine managed instance group',

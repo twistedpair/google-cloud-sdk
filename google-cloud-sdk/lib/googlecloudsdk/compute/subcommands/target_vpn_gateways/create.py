@@ -61,12 +61,14 @@ class Create(base_classes.BaseAsyncCreator):
       by the compute API.
     """
 
-    target_vpn_gateway_ref = self.CreateGlobalReference(
-        args.name, resource_type='targetVpnGateways')
+    target_vpn_gateway_ref = self.CreateRegionalReference(
+        args.name, args.region, resource_type='targetVpnGateways')
     network_ref = self.CreateGlobalReference(
         args.network, resource_type='networks')
+    # Get a reference to the region name in the gateway. N.B. This could have
+    # been passed as part of args.region or resolved via a prompt.
     region_ref = self.CreateGlobalReference(
-        args.region, resource_type='regions')
+        target_vpn_gateway_ref.region, resource_type='regions')
 
     request = self.messages.ComputeTargetVpnGatewaysInsertRequest(
         project=self.project,

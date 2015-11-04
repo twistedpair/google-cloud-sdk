@@ -130,9 +130,9 @@ SET CLOUDSDK_ROOT_DIR=%~dp0..
 SET PATH=%CLOUDSDK_ROOT_DIR%\bin\sdk;%PATH%
 
 IF "%CLOUDSDK_PYTHON%"=="" (
-  SET PORTABLE_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\portablepython\python.exe
-  IF EXIST !PORTABLE_PYTHON! (
-    SET CLOUDSDK_PYTHON=!PORTABLE_PYTHON!
+  SET BUNDLED_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\bundledpython\python.exe
+  IF EXIST !BUNDLED_PYTHON! (
+    SET CLOUDSDK_PYTHON=!BUNDLED_PYTHON!
   ) ELSE (
     SET CLOUDSDK_PYTHON=python.exe
   )
@@ -197,9 +197,9 @@ if (!$cloudsdk_python) {
   $cloudsdk_python = $env:CLOUDSDK_PYTHON
 }
 if (!$cloudsdk_python) {
-  $portable_python = Join-Path $cloudsdk_root_dir 'platform\portablepython\python.exe'
-  if (Test-Path $portable_python) {
-    $cloudsdk_python = $portable_python
+  $bundled_python = Join-Path $cloudsdk_root_dir 'platform\bundledpython\python.exe'
+  if (Test-Path $bundled_python) {
+    $cloudsdk_python = $bundled_python
   } else {
     $cloudsdk_python = 'python.exe'
   }

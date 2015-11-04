@@ -53,3 +53,6 @@ class ActivateRefreshToken(base.Command):
     log.status.Print('Activated refresh token credentials: [{0}]'
                      .format(account))
     return creds
+
+  def Format(self, unused_args):
+    return 'none'

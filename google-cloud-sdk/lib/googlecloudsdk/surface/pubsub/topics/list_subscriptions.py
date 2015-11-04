@@ -4,10 +4,7 @@ import re
 from googlecloudsdk.api_lib.pubsub import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as sdk_ex
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io as io
-
-MAX_SUBSCRIPTIONS_RESULTS = 5000
 
 
 class ListSubscriptions(base.Command):
@@ -29,10 +26,10 @@ class ListSubscriptions(base.Command):
         help=('A regular expression that will limit which subscriptions are'
               ' returned by matching on subscription name.'))
     parser.add_argument(
-        '--max-results', type=int, default=500,
-        help=('The maximum number of subscriptions that this command may'
-              ' return. The upper limit for this argument is {0}'.format(
-                  MAX_SUBSCRIPTIONS_RESULTS)))
+        '--max-results', type=int, default=0,
+        help=('The maximum number of subscriptions that this'
+              ' command may return.'
+              'This option is ignored if --name-filter is set.'))
 
   @util.MapHttpError
   def Run(self, args):
@@ -48,19 +45,40 @@ class ListSubscriptions(base.Command):
     msgs = self.context['pubsub_msgs']
     pubsub = self.context['pubsub']
 
-    try:
-      list_subscriptions_result = pubsub.projects_topics_subscriptions.List(
-          msgs.PubsubProjectsTopicsSubscriptionsListRequest(
-              topic=util.TopicFormat(args.topic),
-              pageSize=min(args.max_results, MAX_SUBSCRIPTIONS_RESULTS)))
+    page_token = None
+    subscriptions_listed = 0
+    should_truncate_res = args.max_results and not args.name_filter
 
-      for subscription in list_subscriptions_result.subscriptions:
-        if util.SubscriptionMatches(subscription, args.name_filter):
+    try:
+      while True:
+        list_subscriptions_req = (
+            msgs.PubsubProjectsTopicsSubscriptionsListRequest(
+                topic=util.TopicFormat(args.topic),
+                pageToken=page_token))
+
+        if should_truncate_res:
+          list_subscriptions_req.pageSize = min(args.max_results,
+                                                util.MAX_LIST_RESULTS)
+
+        list_subscriptions_result = pubsub.projects_topics_subscriptions.List(
+            list_subscriptions_req)
+
+        for subscription in list_subscriptions_result.subscriptions:
+          if not util.SubscriptionMatches(subscription, args.name_filter):
+            continue
+
+          # If max_results > 0 and we have already sent that
+          # amount of subscriptions, just raise (StopIteration) iff name_filter
+          # is not set, else this limit wouldn't make sense.
+          if should_truncate_res and subscriptions_listed >= args.max_results:
+            raise StopIteration()
+
+          subscriptions_listed += 1
           yield subscription
 
-      if list_subscriptions_result.nextPageToken:
-        log.err.Print(
-            'More subscriptions exist, but the result was truncated.')
+        page_token = list_subscriptions_result.nextPageToken
+        if not page_token:
+          break
 
     except re.error as e:
       raise sdk_ex.HttpException(str(e))

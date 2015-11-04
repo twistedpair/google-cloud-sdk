@@ -28,7 +28,8 @@ def ResourceDescription(name):
   description = """\
   Most *gcloud* commands return a list of resources on success. By default they
   are pretty-printed on the standard output. The
-  *--format=*_NAME_[_ATTRIBUTES_](_PROJECTION_) flag changes the default output:
+  *--format=*_NAME_[_ATTRIBUTES_]*(*_PROJECTION_*)* flag changes the default
+  output:
 
   _NAME_:: The format name.
 

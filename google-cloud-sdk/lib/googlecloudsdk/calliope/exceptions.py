@@ -107,18 +107,6 @@ def RaiseToolExceptionInsteadOf(*error_types):
   return Wrap
 
 
-class InvalidArgumentException(ToolException):
-  """InvalidArgumentException is for malformed arguments."""
-
-  def __init__(self, parameter_name, message):
-    self.parameter_name = parameter_name
-    self.message = message
-    super(InvalidArgumentException, self).__init__(
-        'Invalid value for [{0}]: {1}'.format(
-            self.parameter_name,
-            self.message))
-
-
 def _TruncateToLineWidth(string, align, width, fill=''):
   """Truncate string to line width, right aligning at align.
 
@@ -279,20 +267,22 @@ class HttpException(ToolException):
     self.error = error
 
 
+class InvalidArgumentException(ToolException):
+  """InvalidArgumentException is for malformed arguments."""
+
+  def __init__(self, parameter_name, message):
+    super(InvalidArgumentException, self).__init__(
+        'Invalid value for [{0}]: {1}'.format(parameter_name, message))
+    self.parameter_name = parameter_name
+
+
 class UnknownArgumentException(ToolException):
   """UnknownArgumentException is for arguments with unexpected values."""
 
   def __init__(self, parameter_name, message):
-    self.parameter_name = parameter_name
-    self.message = message
     super(UnknownArgumentException, self).__init__(
-        'Unknown value for [{0}]: {1}'.format(
-            self.parameter_name,
-            self.message))
-
-
-class BadFileException(ToolException):
-  """BadFileException is for problems reading or writing a file."""
+        'Unknown value for [{0}]: {1}'.format(parameter_name, message))
+    self.parameter_name = parameter_name
 
 
 class RequiredArgumentException(ToolException):
@@ -300,9 +290,10 @@ class RequiredArgumentException(ToolException):
   """
 
   def __init__(self, parameter_name, message):
-    self.parameter_name = parameter_name
-    self.message = message
     super(RequiredArgumentException, self).__init__(
-        'Missing required argument [{0}]: {1}'.format(
-            self.parameter_name,
-            self.message))
+        'Missing required argument [{0}]: {1}'.format(parameter_name, message))
+    self.parameter_name = parameter_name
+
+
+class BadFileException(ToolException):
+  """BadFileException is for problems reading or writing a file."""

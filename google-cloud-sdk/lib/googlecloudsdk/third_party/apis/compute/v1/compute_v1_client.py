@@ -1148,7 +1148,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule.
+      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -1399,7 +1399,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule.
+      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message

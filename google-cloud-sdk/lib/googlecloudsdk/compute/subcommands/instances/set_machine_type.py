@@ -18,14 +18,14 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
         'name',
         metavar='NAME',
         completion_resource='compute.instances',
-        help='The name of the instance for which to change machine type.')
+        help='The name of the instance to change the machine type for.')
 
     instance_utils.AddMachineTypeArgs(parser, required=True)
 
     utils.AddZoneFlag(
         parser,
         resource_type='instance',
-        operation_type='set machine type for')
+        operation_type='change the machine type for')
 
   @property
   def service(self):
@@ -61,20 +61,20 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
 SetMachineType.detailed_help = {
     'brief': 'Set machine type for Google Compute Engine virtual machines',
     'DESCRIPTION': """\
-        *{command}* allows you to change the machine type of a virtual machine
-        in the TERMINATED state (that is, a virtual machine instance that has
-        been stopped).
+        ``{command}'' allows you to change the machine type of a virtual machine
+        in the *TERMINATED* state (that is, a virtual machine instance that
+        has been stopped).
 
-        For example, if 'example-instance' is a 'g1-small' virtual machine
-        currently in the TERMINATED state, running:
+        For example, if ``example-instance'' is a ``g1-small'' virtual machine
+        currently in the *TERMINATED* state, running:
 
           $ {command} example-instance --zone us-central1-b --machine-type n1-standard-4
 
-        will change the machine type to 'n1-standard-4', so that when you
-        next start 'example-instance', it will be provisioned as an
-        'n1-standard-4' instead of a 'g1-small'.
+        will change the machine type to ``n1-standard-4'', so that when you
+        next start ``example-instance'', it will be provisioned as an
+        ``n1-standard-4'' instead of a ``g1-small''.
 
-        See https://cloud.google.com/compute/docs/machine-types for more
+        See <https://cloud.google.com/compute/docs/machine-types> for more
         information on machine types.
         """,
 }

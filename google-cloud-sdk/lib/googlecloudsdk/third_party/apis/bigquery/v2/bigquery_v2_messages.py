@@ -1678,8 +1678,11 @@ class ViewDefinition(_messages.Message):
   Fields:
     query: [Required] A query that BigQuery executes when the view is
       referenced.
+    userDefinedFunctionResources: [Experimental] Describes user-defined
+      function resources used in the query.
   """
 
   query = _messages.StringField(1)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 2, repeated=True)
 
 

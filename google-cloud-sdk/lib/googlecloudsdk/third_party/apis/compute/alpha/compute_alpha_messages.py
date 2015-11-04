@@ -879,9 +879,9 @@ class BackendService(_messages.Message):
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
       fingerprint must be provided in order to update the BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck resource for health
-      checking this BackendService. Currently at most one health check can be
-      specified, and a health check is required.
+    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
+      resource for health checking this BackendService. Currently at most one
+      health check can be specified, and a health check is required.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -1049,20 +1049,6 @@ class ComputeAddressesDeleteRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
-class ComputeAddressesGetIamPolicyRequest(_messages.Message):
-  """A ComputeAddressesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeAddressesGetRequest(_messages.Message):
   """A ComputeAddressesGetRequest object.
 
@@ -1130,22 +1116,6 @@ class ComputeAddressesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
-class ComputeAddressesSetIamPolicyRequest(_messages.Message):
-  """A ComputeAddressesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
 class ComputeAddressesTestIamPermissionsRequest(_messages.Message):
   """A ComputeAddressesTestIamPermissionsRequest object.
 
@@ -1211,20 +1181,6 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
 
   autoscaler = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeAutoscalersGetIamPolicyRequest(_messages.Message):
-  """A ComputeAutoscalersGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
 
 
@@ -1309,22 +1265,6 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   autoscaler = _messages.StringField(1, required=True)
   autoscalerResource = _messages.MessageField('Autoscaler', 2)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeAutoscalersSetIamPolicyRequest(_messages.Message):
-  """A ComputeAutoscalersSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
 
 
@@ -1493,18 +1433,6 @@ class ComputeBackendServicesGetHealthRequest(_messages.Message):
   resourceGroupReference = _messages.MessageField('ResourceGroupReference', 3)
 
 
-class ComputeBackendServicesGetIamPolicyRequest(_messages.Message):
-  """A ComputeBackendServicesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-
-
 class ComputeBackendServicesGetRequest(_messages.Message):
   """A ComputeBackendServicesGetRequest object.
 
@@ -1580,20 +1508,6 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
-
-
-class ComputeBackendServicesSetIamPolicyRequest(_messages.Message):
-  """A ComputeBackendServicesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -1783,20 +1697,6 @@ class ComputeDisksDeleteRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
-class ComputeDisksGetIamPolicyRequest(_messages.Message):
-  """A ComputeDisksGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
 class ComputeDisksGetRequest(_messages.Message):
   """A ComputeDisksGetRequest object.
 
@@ -1883,22 +1783,6 @@ class ComputeDisksResizeRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
-class ComputeDisksSetIamPolicyRequest(_messages.Message):
-  """A ComputeDisksSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeDisksTestIamPermissionsRequest(_messages.Message):
   """A ComputeDisksTestIamPermissionsRequest object.
 
@@ -1926,18 +1810,6 @@ class ComputeFirewallsDeleteRequest(_messages.Message):
 
   firewall = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeFirewallsGetIamPolicyRequest(_messages.Message):
-  """A ComputeFirewallsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeFirewallsGetRequest(_messages.Message):
@@ -2013,20 +1885,6 @@ class ComputeFirewallsPatchRequest(_messages.Message):
   firewall = _messages.StringField(1, required=True)
   firewallResource = _messages.MessageField('Firewall', 2)
   project = _messages.StringField(3, required=True)
-
-
-class ComputeFirewallsSetIamPolicyRequest(_messages.Message):
-  """A ComputeFirewallsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeFirewallsTestIamPermissionsRequest(_messages.Message):
@@ -2109,20 +1967,6 @@ class ComputeForwardingRulesDeleteRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
-class ComputeForwardingRulesGetIamPolicyRequest(_messages.Message):
-  """A ComputeForwardingRulesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeForwardingRulesGetRequest(_messages.Message):
   """A ComputeForwardingRulesGetRequest object.
 
@@ -2191,22 +2035,6 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
-class ComputeForwardingRulesSetIamPolicyRequest(_messages.Message):
-  """A ComputeForwardingRulesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
 class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   """A ComputeForwardingRulesSetTargetRequest object.
 
@@ -2252,18 +2080,6 @@ class ComputeGlobalAddressesDeleteRequest(_messages.Message):
 
   address = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeGlobalAddressesGetIamPolicyRequest(_messages.Message):
-  """A ComputeGlobalAddressesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeGlobalAddressesGetRequest(_messages.Message):
@@ -2327,20 +2143,6 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
-class ComputeGlobalAddressesSetIamPolicyRequest(_messages.Message):
-  """A ComputeGlobalAddressesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeGlobalAddressesTestIamPermissionsRequest(_messages.Message):
   """A ComputeGlobalAddressesTestIamPermissionsRequest object.
 
@@ -2366,18 +2168,6 @@ class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
 
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeGlobalForwardingRulesGetIamPolicyRequest(_messages.Message):
-  """A ComputeGlobalForwardingRulesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeGlobalForwardingRulesGetRequest(_messages.Message):
@@ -2440,20 +2230,6 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeGlobalForwardingRulesSetIamPolicyRequest(_messages.Message):
-  """A ComputeGlobalForwardingRulesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
@@ -2601,18 +2377,6 @@ class ComputeHealthChecksDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
-class ComputeHealthChecksGetIamPolicyRequest(_messages.Message):
-  """A ComputeHealthChecksGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-
-
 class ComputeHealthChecksGetRequest(_messages.Message):
   """A ComputeHealthChecksGetRequest object.
 
@@ -2689,20 +2453,6 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
-class ComputeHealthChecksSetIamPolicyRequest(_messages.Message):
-  """A ComputeHealthChecksSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeHealthChecksTestIamPermissionsRequest(_messages.Message):
   """A ComputeHealthChecksTestIamPermissionsRequest object.
 
@@ -2743,18 +2493,6 @@ class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
 
   httpHealthCheck = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeHttpHealthChecksGetIamPolicyRequest(_messages.Message):
-  """A ComputeHttpHealthChecksGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeHttpHealthChecksGetRequest(_messages.Message):
@@ -2834,20 +2572,6 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
-class ComputeHttpHealthChecksSetIamPolicyRequest(_messages.Message):
-  """A ComputeHttpHealthChecksSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeHttpHealthChecksTestIamPermissionsRequest(_messages.Message):
   """A ComputeHttpHealthChecksTestIamPermissionsRequest object.
 
@@ -2888,18 +2612,6 @@ class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
 
   httpsHealthCheck = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeHttpsHealthChecksGetIamPolicyRequest(_messages.Message):
-  """A ComputeHttpsHealthChecksGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeHttpsHealthChecksGetRequest(_messages.Message):
@@ -2979,20 +2691,6 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
-class ComputeHttpsHealthChecksSetIamPolicyRequest(_messages.Message):
-  """A ComputeHttpsHealthChecksSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeHttpsHealthChecksTestIamPermissionsRequest(_messages.Message):
   """A ComputeHttpsHealthChecksTestIamPermissionsRequest object.
 
@@ -3048,18 +2746,6 @@ class ComputeImagesDeprecateRequest(_messages.Message):
   deprecationStatus = _messages.MessageField('DeprecationStatus', 1)
   image = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-
-
-class ComputeImagesGetIamPolicyRequest(_messages.Message):
-  """A ComputeImagesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeImagesGetRequest(_messages.Message):
@@ -3121,20 +2807,6 @@ class ComputeImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeImagesSetIamPolicyRequest(_messages.Message):
-  """A ComputeImagesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeImagesTestIamPermissionsRequest(_messages.Message):
@@ -3236,20 +2908,6 @@ class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
 
   instanceGroupManager = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeInstanceGroupManagersGetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceGroupManagersGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
 
 
@@ -3391,22 +3049,6 @@ class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Messag
   zone = _messages.StringField(4, required=True)
 
 
-class ComputeInstanceGroupManagersSetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceGroupManagersSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   """A ComputeInstanceGroupManagersSetInstanceTemplateRequest object.
 
@@ -3526,20 +3168,6 @@ class ComputeInstanceGroupsDeleteRequest(_messages.Message):
 
   instanceGroup = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeInstanceGroupsGetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceGroupsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
 
 
@@ -3674,22 +3302,6 @@ class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
-class ComputeInstanceGroupsSetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceGroupsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
   """A ComputeInstanceGroupsSetNamedPortsRequest object.
 
@@ -3735,18 +3347,6 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
 
   instanceTemplate = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-
-
-class ComputeInstanceTemplatesGetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceTemplatesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeInstanceTemplatesGetRequest(_messages.Message):
@@ -3809,20 +3409,6 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeInstanceTemplatesSetIamPolicyRequest(_messages.Message):
-  """A ComputeInstanceTemplatesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceTemplatesTestIamPermissionsRequest(_messages.Message):
@@ -4346,18 +3932,6 @@ class ComputeNetworksDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
-class ComputeNetworksGetIamPolicyRequest(_messages.Message):
-  """A ComputeNetworksGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-
-
 class ComputeNetworksGetRequest(_messages.Message):
   """A ComputeNetworksGetRequest object.
 
@@ -4417,20 +3991,6 @@ class ComputeNetworksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeNetworksSetIamPolicyRequest(_messages.Message):
-  """A ComputeNetworksSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
@@ -4764,6 +4324,23 @@ class ComputeRoutersPatchRequest(_messages.Message):
   routerResource = _messages.MessageField('Router', 4)
 
 
+class ComputeRoutersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRoutersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRoutersUpdateRequest(_messages.Message):
   """A ComputeRoutersUpdateRequest object.
 
@@ -4790,18 +4367,6 @@ class ComputeRoutesDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   route = _messages.StringField(2, required=True)
-
-
-class ComputeRoutesGetIamPolicyRequest(_messages.Message):
-  """A ComputeRoutesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeRoutesGetRequest(_messages.Message):
@@ -4865,20 +4430,6 @@ class ComputeRoutesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
-class ComputeRoutesSetIamPolicyRequest(_messages.Message):
-  """A ComputeRoutesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
   """A ComputeRoutesTestIamPermissionsRequest object.
 
@@ -4904,18 +4455,6 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   snapshot = _messages.StringField(2, required=True)
-
-
-class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
-  """A ComputeSnapshotsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeSnapshotsGetRequest(_messages.Message):
@@ -4967,20 +4506,6 @@ class ComputeSnapshotsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
-class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
-  """A ComputeSnapshotsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeSnapshotsTestIamPermissionsRequest(_messages.Message):
   """A ComputeSnapshotsTestIamPermissionsRequest object.
 
@@ -5006,18 +4531,6 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   sslCertificate = _messages.StringField(2, required=True)
-
-
-class ComputeSslCertificatesGetIamPolicyRequest(_messages.Message):
-  """A ComputeSslCertificatesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeSslCertificatesGetRequest(_messages.Message):
@@ -5082,20 +4595,6 @@ class ComputeSslCertificatesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
-class ComputeSslCertificatesSetIamPolicyRequest(_messages.Message):
-  """A ComputeSslCertificatesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
   """A ComputeSslCertificatesTestIamPermissionsRequest object.
 
@@ -5111,6 +4610,141 @@ class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeSubnetworksAggregatedListRequest(_messages.Message):
+  """A ComputeSubnetworksAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      FIELD_NAME COMPARISON_STRING LITERAL_STRING.  The FIELD_NAME is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The COMPARISON_STRING must be either eq
+      (equals) or ne (not equals). The LITERAL_STRING is the string value to
+      filter to. The literal value must be valid for the type of field
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, filter=name ne example-
+      instance.
+    maxResults: Maximum count of results to be returned.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Use this parameter if you want
+      to list the next page of results. Set pageToken to the nextPageToken
+      returned by a previous list request.
+    project: Name of the project scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSubnetworksDeleteRequest(_messages.Message):
+  """A ComputeSubnetworksDeleteRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksGetRequest(_messages.Message):
+  """A ComputeSubnetworksGetRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksInsertRequest(_messages.Message):
+  """A ComputeSubnetworksInsertRequest object.
+
+  Fields:
+    project: Name of the project scoping this request.
+    region: Name of the region scoping this request.
+    subnetwork: A Subnetwork resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.MessageField('Subnetwork', 3)
+
+
+class ComputeSubnetworksListRequest(_messages.Message):
+  """A ComputeSubnetworksListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      FIELD_NAME COMPARISON_STRING LITERAL_STRING.  The FIELD_NAME is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The COMPARISON_STRING must be either eq
+      (equals) or ne (not equals). The LITERAL_STRING is the string value to
+      filter to. The literal value must be valid for the type of field
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, filter=name ne example-
+      instance.
+    maxResults: Maximum count of results to be returned.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Use this parameter if you want
+      to list the next page of results. Set pageToken to the nextPageToken
+      returned by a previous list request.
+    project: Name of the project scoping this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSubnetworksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
   """A ComputeTargetHttpProxiesDeleteRequest object.
 
@@ -5121,18 +4755,6 @@ class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   targetHttpProxy = _messages.StringField(2, required=True)
-
-
-class ComputeTargetHttpProxiesGetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetHttpProxiesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeTargetHttpProxiesGetRequest(_messages.Message):
@@ -5197,20 +4819,6 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
-class ComputeTargetHttpProxiesSetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetHttpProxiesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
   """A ComputeTargetHttpProxiesSetUrlMapRequest object.
 
@@ -5252,18 +4860,6 @@ class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   targetHttpsProxy = _messages.StringField(2, required=True)
-
-
-class ComputeTargetHttpsProxiesGetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetHttpsProxiesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeTargetHttpsProxiesGetRequest(_messages.Message):
@@ -5326,20 +4922,6 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-
-
-class ComputeTargetHttpsProxiesSetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetHttpsProxiesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
@@ -5441,20 +5023,6 @@ class ComputeTargetInstancesDeleteRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
-class ComputeTargetInstancesGetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetInstancesGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
 class ComputeTargetInstancesGetRequest(_messages.Message):
   """A ComputeTargetInstancesGetRequest object.
 
@@ -5521,22 +5089,6 @@ class ComputeTargetInstancesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
-
-
-class ComputeTargetInstancesSetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetInstancesSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
 
 
 class ComputeTargetInstancesTestIamPermissionsRequest(_messages.Message):
@@ -5659,20 +5211,6 @@ class ComputeTargetPoolsGetHealthRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   targetPool = _messages.StringField(4, required=True)
-
-
-class ComputeTargetPoolsGetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetPoolsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeTargetPoolsGetRequest(_messages.Message):
@@ -5798,22 +5336,6 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
   targetReference = _messages.MessageField('TargetReference', 5)
 
 
-class ComputeTargetPoolsSetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetPoolsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
 class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
   """A ComputeTargetPoolsTestIamPermissionsRequest object.
 
@@ -5880,20 +5402,6 @@ class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   targetVpnGateway = _messages.StringField(3, required=True)
-
-
-class ComputeTargetVpnGatewaysGetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetVpnGatewaysGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeTargetVpnGatewaysGetRequest(_messages.Message):
@@ -5964,22 +5472,6 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
-class ComputeTargetVpnGatewaysSetIamPolicyRequest(_messages.Message):
-  """A ComputeTargetVpnGatewaysSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
 class ComputeTargetVpnGatewaysTestIamPermissionsRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysTestIamPermissionsRequest object.
 
@@ -6007,18 +5499,6 @@ class ComputeUrlMapsDeleteRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   urlMap = _messages.StringField(2, required=True)
-
-
-class ComputeUrlMapsGetIamPolicyRequest(_messages.Message):
-  """A ComputeUrlMapsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
 
 
 class ComputeUrlMapsGetRequest(_messages.Message):
@@ -6109,20 +5589,6 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   urlMap = _messages.StringField(2, required=True)
   urlMapResource = _messages.MessageField('UrlMap', 3)
-
-
-class ComputeUrlMapsSetIamPolicyRequest(_messages.Message):
-  """A ComputeUrlMapsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
 
 
 class ComputeUrlMapsTestIamPermissionsRequest(_messages.Message):
@@ -6220,20 +5686,6 @@ class ComputeVpnTunnelsDeleteRequest(_messages.Message):
   vpnTunnel = _messages.StringField(3, required=True)
 
 
-class ComputeVpnTunnelsGetIamPolicyRequest(_messages.Message):
-  """A ComputeVpnTunnelsGetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-
-
 class ComputeVpnTunnelsGetRequest(_messages.Message):
   """A ComputeVpnTunnelsGetRequest object.
 
@@ -6299,22 +5751,6 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
-
-
-class ComputeVpnTunnelsSetIamPolicyRequest(_messages.Message):
-  """A ComputeVpnTunnelsSetIamPolicyRequest object.
-
-  Fields:
-    policy: A Policy resource to be passed as the request body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name of the resource for this request.
-  """
-
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
 
 
 class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
@@ -8538,34 +7974,28 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
 
   Enums:
     ActionTypeValueValuesEnum: The action to perform when an instance in this
-      group becomes unhealthy. Possible values are RECREATE or RESTART.
-      RECREATE replaces an unhealthy instance using the same name and instance
-      template as the unhealthy instance. RESTART performs a soft restart on
-      an instance. If the instance cannot reboot, the instance performs a hard
-      restart.
+      group becomes unhealthy. The only possible value is RECREATE. RECREATE
+      replaces an unhealthy instance using the same name and instance template
+      as the unhealthy instance.
 
   Fields:
     actionType: The action to perform when an instance in this group becomes
-      unhealthy. Possible values are RECREATE or RESTART. RECREATE replaces an
+      unhealthy. The only possible value is RECREATE. RECREATE replaces an
       unhealthy instance using the same name and instance template as the
-      unhealthy instance. RESTART performs a soft restart on an instance. If
-      the instance cannot reboot, the instance performs a hard restart.
+      unhealthy instance.
     healthCheck: The URL for the HealthCheck that signals autohealing.
   """
 
   class ActionTypeValueValuesEnum(_messages.Enum):
     """The action to perform when an instance in this group becomes unhealthy.
-    Possible values are RECREATE or RESTART. RECREATE replaces an unhealthy
+    The only possible value is RECREATE. RECREATE replaces an unhealthy
     instance using the same name and instance template as the unhealthy
-    instance. RESTART performs a soft restart on an instance. If the instance
-    cannot reboot, the instance performs a hard restart.
+    instance.
 
     Values:
       RECREATE: <no description>
-      RESTART: <no description>
     """
     RECREATE = 0
-    RESTART = 1
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   healthCheck = _messages.StringField(2)
@@ -10269,10 +9699,14 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
+      SSL_CERTIFICATES: <no description>
       STATIC_ADDRESSES: <no description>
+      SUBNETWORKS: <no description>
+      TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
@@ -10295,16 +9729,20 @@ class Quota(_messages.Message):
     IN_USE_ADDRESSES = 12
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
-    ROUTES = 15
-    SNAPSHOTS = 16
-    SSD_TOTAL_GB = 17
-    STATIC_ADDRESSES = 18
-    TARGET_HTTP_PROXIES = 19
-    TARGET_INSTANCES = 20
-    TARGET_POOLS = 21
-    TARGET_VPN_GATEWAYS = 22
-    URL_MAPS = 23
-    VPN_TUNNELS = 24
+    ROUTERS = 15
+    ROUTES = 16
+    SNAPSHOTS = 17
+    SSD_TOTAL_GB = 18
+    SSL_CERTIFICATES = 19
+    STATIC_ADDRESSES = 20
+    SUBNETWORKS = 21
+    TARGET_HTTPS_PROXIES = 22
+    TARGET_HTTP_PROXIES = 23
+    TARGET_INSTANCES = 24
+    TARGET_POOLS = 25
+    TARGET_VPN_GATEWAYS = 26
+    URL_MAPS = 27
+    VPN_TUNNELS = 28
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -11256,6 +10694,198 @@ class StandardQueryParameters(_messages.Message):
   quotaUser = _messages.StringField(6)
   trace = _messages.StringField(7)
   userIp = _messages.StringField(8)
+
+
+class Subnetwork(_messages.Message):
+  """A Subnetwork resource.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    gatewayAddress: [Output Only] Gateway address for default routes to
+      addresses outside this Subnetwork.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    ipCidrRange: The range of internal addresses that are owned by this
+      Subnetwork; provided by the client when the Subnetwork is created.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    network: URL of the network to which this Subnetwork belongs; provided by
+      the client when the Subnetwork is created. Only networks that are in the
+      distributed mode can have Subnetworks.
+    region: [Output Only] URL of the region where the Subnetwork resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gatewayAddress = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(5)
+  kind = _messages.StringField(6, default=u'compute#subnetwork')
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+
+
+class SubnetworkAggregatedList(_messages.Message):
+  """A SubnetworkAggregatedList object.
+
+  Messages:
+    ItemsValue: A map of scoped Subnetwork lists.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A map of scoped Subnetwork lists.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """A map of scoped Subnetwork lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of
+        Subnetworks.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SubnetworksScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SubnetworksScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#subnetworkAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class SubnetworkList(_messages.Message):
+  """Contains a list of Subnetwork resources.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource. Defined by the
+      server.
+    items: The Subnetwork resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Subnetwork', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#subnetworkList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class SubnetworksScopedList(_messages.Message):
+  """A SubnetworksScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of addresses
+      when the list is empty.
+
+  Fields:
+    subnetworks: List of Subnetworks contained in this scope.
+    warning: Informational warning which replaces the list of addresses when
+      the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """Informational warning which replaces the list of addresses when the
+    list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] The warning type identifier for this
+        warning.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] The warning type identifier for this warning.
+      data: [Output Only] Metadata for this warning in key: value format.
+      message: [Output Only] Optional human-readable details for this warning.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] The warning type identifier for this warning.
+
+      Values:
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      DEPRECATED_RESOURCE_USED = 0
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
+      INJECTED_KERNELS_DEPRECATED = 2
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
+      NEXT_HOP_CANNOT_IP_FORWARD = 4
+      NEXT_HOP_INSTANCE_NOT_FOUND = 5
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
+      NEXT_HOP_NOT_RUNNING = 7
+      NOT_CRITICAL_ERROR = 8
+      NO_RESULTS_ON_PAGE = 9
+      REQUIRED_TOS_AGREEMENT = 10
+      RESOURCE_NOT_DELETED = 11
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
+      UNREACHABLE = 13
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key for the warning data.
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class TCPHealthCheck(_messages.Message):
@@ -12355,6 +11985,9 @@ class VpnTunnel(_messages.Message):
     detailedStatus: [Output Only] Detailed status message for the VPN tunnel.
     id: [Output Only] Unique identifier for the resource. Defined by the
       server.
+    ikeNetworks: IKE networks to use when establishing the VPN tunnel with
+      peer VPN gateway. The value should be a CIDR formatted string, for
+      example: 192.168.0.0/16. The ranges should be disjoint.
     ikeVersion: IKE protocol version to use when establishing the VPN tunnel
       with peer VPN gateway. Acceptable IKE versions are 1 or 2. Default
       version is 2.
@@ -12411,17 +12044,18 @@ class VpnTunnel(_messages.Message):
   description = _messages.StringField(2)
   detailedStatus = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ikeVersion = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(6, default=u'compute#vpnTunnel')
-  name = _messages.StringField(7)
-  peerIp = _messages.StringField(8)
-  region = _messages.StringField(9)
-  router = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sharedSecret = _messages.StringField(12)
-  sharedSecretHash = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  targetVpnGateway = _messages.StringField(15)
+  ikeNetworks = _messages.StringField(5, repeated=True)
+  ikeVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(7, default=u'compute#vpnTunnel')
+  name = _messages.StringField(8)
+  peerIp = _messages.StringField(9)
+  region = _messages.StringField(10)
+  router = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  sharedSecret = _messages.StringField(13)
+  sharedSecretHash = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  targetVpnGateway = _messages.StringField(16)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

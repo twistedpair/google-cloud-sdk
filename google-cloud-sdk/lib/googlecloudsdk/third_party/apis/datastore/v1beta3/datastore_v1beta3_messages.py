@@ -17,7 +17,8 @@ class AllocateIdsRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.AllocateIds.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     keys: A list of keys with incomplete key paths for which to allocate IDs.
       No key may be reserved/read-only.
   """
@@ -52,7 +53,8 @@ class BeginTransactionRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.BeginTransaction.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     transactionOptions: Options for a new transaction.
   """
 
@@ -146,6 +148,20 @@ class ChangeBatch(_messages.Message):
   changes = _messages.MessageField('Change', 1, repeated=True)
 
 
+class Circle(_messages.Message):
+  """A "circle" on the surface of the Earth, defined as the area within a
+  certain geographical distance of a point.
+
+  Fields:
+    center: The center of the circle.
+    radiusMeters: The "radius" of the circle, in meters. Must be greater or
+      equal to zero.
+  """
+
+  center = _messages.MessageField('LatLng', 1)
+  radiusMeters = _messages.FloatField(2)
+
+
 class CommitRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.Commit.
 
@@ -154,29 +170,34 @@ class CommitRequest(_messages.Message):
       `TRANSACTIONAL`.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     mode: The type of commit to perform. Defaults to `TRANSACTIONAL`.
     mutations: The mutations to perform.  When mode is `TRANSACTIONAL`,
       mutations affecting a single entity are applied in order. The following
       sequences of mutations affecting a single entity are not permitted in a
-      single `Commit` request: - `insert` followed by `insert` - `update`
+      single `Commit` request:  - `insert` followed by `insert` - `update`
       followed by `insert` - `upsert` followed by `insert` - `delete` followed
       by `update`  When mode is `NON_TRANSACTIONAL`, no two mutations may
       affect a single entity.
     singleUseTransaction: Options for beginning a new transaction for this
       request. The transaction is committed when the request completes. If
       specified, google.datastore.v1beta3.TransactionOptions.mode must be
-      google.datastore.v1beta3.TransactionOptions.ReadWrite
-    transaction: The transaction in which to write.
+      google.datastore.v1beta3.TransactionOptions.ReadWrite.
+    transaction: The identifier of the transaction associated with the commit.
+      A transaction identifier is returned by a call to BeginTransaction.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
     """The type of commit to perform. Defaults to `TRANSACTIONAL`.
 
     Values:
-      MODE_UNSPECIFIED: Unspecified.
-      TRANSACTIONAL: Transactional.
-      NON_TRANSACTIONAL: Non-transactional.
+      MODE_UNSPECIFIED: Unspecified. This value must not be used.
+      TRANSACTIONAL: Transactional: The mutations are either all applied, or
+        none are applied. Learn about transactions
+        [here](https://cloud.google.com/datastore/docs/concepts/transactions).
+      NON_TRANSACTIONAL: Non-transactional: The mutations may not apply as all
+        or none.
     """
     MODE_UNSPECIFIED = 0
     TRANSACTIONAL = 1
@@ -193,7 +214,8 @@ class CommitResponse(_messages.Message):
   """The response for google.datastore.v1beta3.Datastore.Commit.
 
   Fields:
-    indexUpdates: The number of index entries updated during the commit.
+    indexUpdates: The number of index entries updated during the commit, or
+      zero if none were updated.
     mutationResults: The result of performing the mutations. The i-th mutation
       result corresponds to the i-th mutation in the request.
   """
@@ -277,7 +299,7 @@ class CommonMetadata(_messages.Message):
 
 
 class CompositeFilter(_messages.Message):
-  """A filter that merges the multiple other filters using the given operator.
+  """A filter that merges multiple other filters using the given operator.
 
   Enums:
     OpValueValuesEnum: The operator for combining multiple filters.
@@ -292,7 +314,7 @@ class CompositeFilter(_messages.Message):
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
-      AND: And.
+      AND: The results are required to satisfy each of the combined filters.
     """
     OPERATOR_UNSPECIFIED = 0
     AND = 1
@@ -307,7 +329,7 @@ class DatastoreProjectsAllocateIdsRequest(_messages.Message):
   Fields:
     allocateIdsRequest: A AllocateIdsRequest resource to be passed as the
       request body.
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
   """
 
   allocateIdsRequest = _messages.MessageField('AllocateIdsRequest', 1)
@@ -320,7 +342,7 @@ class DatastoreProjectsBeginTransactionRequest(_messages.Message):
   Fields:
     beginTransactionRequest: A BeginTransactionRequest resource to be passed
       as the request body.
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
   """
 
   beginTransactionRequest = _messages.MessageField('BeginTransactionRequest', 1)
@@ -332,7 +354,7 @@ class DatastoreProjectsCommitRequest(_messages.Message):
 
   Fields:
     commitRequest: A CommitRequest resource to be passed as the request body.
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
   """
 
   commitRequest = _messages.MessageField('CommitRequest', 1)
@@ -415,7 +437,7 @@ class DatastoreProjectsLookupRequest(_messages.Message):
 
   Fields:
     lookupRequest: A LookupRequest resource to be passed as the request body.
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
   """
 
   lookupRequest = _messages.MessageField('LookupRequest', 1)
@@ -485,7 +507,7 @@ class DatastoreProjectsRollbackRequest(_messages.Message):
   """A DatastoreProjectsRollbackRequest object.
 
   Fields:
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
     rollbackRequest: A RollbackRequest resource to be passed as the request
       body.
   """
@@ -498,7 +520,7 @@ class DatastoreProjectsRunQueryRequest(_messages.Message):
   """A DatastoreProjectsRunQueryRequest object.
 
   Fields:
-    projectId: Project ID against which to make the request.
+    projectId: The ID of the project against which to make the request.
     runQueryRequest: A RunQueryRequest resource to be passed as the request
       body.
   """
@@ -530,9 +552,9 @@ class Empty(_messages.Message):
 
 
 class Entity(_messages.Message):
-  """An entity.  An entity is limited to 1 megabyte when stored. That
-  _roughly_ corresponds to a limit of 1 megabyte for the serialized form of
-  this message.
+  """A Datastore data object.  An entity is limited to 1 megabyte when stored.
+  That _roughly_ corresponds to a limit of 1 megabyte for the serialized form
+  of this message.
 
   Messages:
     PropertiesValue: The entity's properties. The map's keys are property
@@ -543,8 +565,8 @@ class Entity(_messages.Message):
   Fields:
     key: The entity's key.  An entity must have a key, unless otherwise
       documented (for example, an entity in `Value.entity_value` may have no
-      key). An entity's kind is its key's path's last element's kind, or null
-      if it has no key.
+      key). An entity's kind is its key path's last element's kind, or null if
+      it has no key.
     properties: The entity's properties. The map's keys are property names. A
       property name matching regex `__.*__` is reserved. A reserved property
       name is forbidden in certain documented contexts. The name must not
@@ -607,7 +629,7 @@ class EntityFilter(_messages.Message):
 
 
 class EntityResult(_messages.Message):
-  """The result of fetching an entity from the datastore.
+  """The result of fetching an entity from Datastore.
 
   Fields:
     cursor: A cursor that points to the position after the result entity. Set
@@ -759,14 +781,29 @@ class Filter(_messages.Message):
   Fields:
     compositeFilter: A composite filter.
     propertyFilter: A filter on a property.
+    stContainsFilter: A filter that selects geo points within a region.
   """
 
   compositeFilter = _messages.MessageField('CompositeFilter', 1)
   propertyFilter = _messages.MessageField('PropertyFilter', 2)
+  stContainsFilter = _messages.MessageField('StContainsFilter', 3)
+
+
+class GeoRegion(_messages.Message):
+  """A region on the surface of the Earth.
+
+  Fields:
+    circle: A circular region.
+    rectangle: A rectangular region.
+  """
+
+  circle = _messages.MessageField('Circle', 1)
+  rectangle = _messages.MessageField('Rectangle', 2)
 
 
 class GqlQuery(_messages.Message):
-  """A GQL query.
+  """A [GQL
+  query](https://cloud.google.com/datastore/docs/apis/gql/gql_reference).
 
   Messages:
     NamedBindingsValue: For each non-reserved named binding site in the query
@@ -788,7 +825,7 @@ class GqlQuery(_messages.Message):
       For each binding site numbered i in `query_string`, there must be an
       i-th numbered parameter. The inverse must also be true.
     queryString: A string of the format described
-      [here](https://developers.google.com/datastore/docs/concepts/gql).
+      [here](https://cloud.google.com/datastore/docs/apis/gql/gql_reference).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -829,12 +866,15 @@ class GqlQueryParameter(_messages.Message):
   """A binding parameter for a GQL query.
 
   Fields:
-    cursor: Cursor.
-    value: Value.
+    cursor: A query cursor. Query cursors are returned in query result
+      batches.
+    geoRegion: Geographical region.
+    value: A value parameter.
   """
 
   cursor = _messages.BytesField(1)
-  value = _messages.MessageField('Value', 2)
+  geoRegion = _messages.MessageField('GeoRegion', 2)
+  value = _messages.MessageField('Value', 3)
 
 
 class ImportMetadata(_messages.Message):
@@ -914,11 +954,12 @@ class Index(_messages.Message):
     StateValueValuesEnum: Required.
 
   Fields:
-    databaseId: The database id.
+    databaseId: If not empty, the ID of the database to which the index
+      belongs.
     indexDefinition: The definition of the index.  No two indexes have the
       same definition.
-    indexId: The index's id within the indexes collection resource.
-    projectId: The project id.
+    indexId: The index's ID within the indexes collection resource.
+    projectId: The ID of the project to which the index belongs.
     state: Required.
   """
 
@@ -996,7 +1037,7 @@ class IndexedPropertyDefinition(_messages.Message):
         supporting query by key ancestry relationship. Currently supported
         only for property "__key__". For example, for an entity with key path
         /Blog:7/Post:11/Comment:5 the indexed ancestor key paths are /Blog:7,
-        /Blog:7/Post:11, and /Blog:7/Post:11/Comment:5. (The partition id of
+        /Blog:7/Post:11, and /Blog:7/Post:11/Comment:5. (The partition ID of
         all the ancestor keys are the same.)
       GEO: The property's values are indexed by geographic location,
         supporting query by location. (Only geo point values are indexed;
@@ -1014,7 +1055,7 @@ class IndexedPropertyDefinition(_messages.Message):
 
 
 class Key(_messages.Message):
-  """A unique identifier for an entity. If a key's partition id or any of its
+  """A unique identifier for an entity. If a key's partition ID or any of its
   path kinds or names are reserved/read-only, the key is reserved/read-only. A
   reserved/read-only key is forbidden in certain documented contexts.
 
@@ -1025,14 +1066,15 @@ class Key(_messages.Message):
     path: The entity path. An entity path consists of one or more elements
       composed of a kind and a string or numerical identifier, which identify
       entities. The first element identifies a _root entity_, the second
-      element identifies a _child_ of the root entity, the third element a
-      child of the second entity, and so forth. The entities identified by all
-      prefixes of the path are called the element's _ancestors_. An entity
-      path is always fully complete: *all* of the entity's ancestors are
-      required to be in the path along with the entity identifier itself. The
-      only exception is that in some documented cases, the identifier in the
-      last path element (for the entity) itself may be omitted. A path can
-      never be empty. The path can have at most 100 elements.
+      element identifies a _child_ of the root entity, the third element
+      identifies a child of the second entity, and so forth. The entities
+      identified by all prefixes of the path are called the element's
+      _ancestors_.  An entity path is always fully complete: *all* of the
+      entity's ancestors are required to be in the path along with the entity
+      identifier itself. The only exception is that in some documented cases,
+      the identifier in the last path element (for the entity) itself may be
+      omitted. For example, an entity in `Value.entity_value` may have no key.
+      A path can never be empty, and a path can have at most 100 elements.
   """
 
   partitionId = _messages.MessageField('PartitionId', 1)
@@ -1056,7 +1098,7 @@ class LatLng(_messages.Message):
   href="http://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf">WGS84
   standard</a>. Values must be within normalized ranges.  Example of
   normalization code in Python:      def NormalizeLongitude(longitude):
-  " " "Wrapsdecimal degrees longitude to [-180.0, 180.0]." " "       q, r =
+  " " "Wraps decimal degrees longitude to [-180.0, 180.0]." " "       q, r =
   divmod(longitude, 360.0)       if r > 180.0 or (r == 180.0 and q <= -1.0):
   return r - 360.0       return r      def NormalizeLatLng(latitude,
   longitude):       " " "Wraps decimal degrees latitude and longitude to
@@ -1128,9 +1170,10 @@ class LookupRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.Lookup.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     keys: Keys of entities to look up.
-    readOptions: Options for this lookup request.
+    readOptions: The options for this lookup request.
   """
 
   databaseId = _messages.StringField(1)
@@ -1189,11 +1232,11 @@ class Mutation(_messages.Message):
     delete: The key of the entity to delete. The entity may or may not already
       exist. Must have a complete key path and must not be reserved/read-only.
     insert: The entity to insert. The entity must not already exist. The
-      entity's key's final path element may be incomplete.
+      entity key's final path element may be incomplete.
     update: The entity to update. The entity must already exist. Must have a
       complete key path.
     upsert: The entity to upsert. The entity may or may not already exist. The
-      entity's key's final path element may be incomplete.
+      entity key's final path element may be incomplete.
   """
 
   baseVersion = _messages.IntegerField(1)
@@ -1335,18 +1378,20 @@ class PartitionId(_messages.Message):
   """A partition ID identifies a grouping of entities. The grouping is always
   by project and namespace, however the namespace ID may be empty.  A
   partition ID contains several dimensions: project ID and namespace ID.
-  Partition dimensions: - A dimension may be `""`. - A dimension must be valid
-  UTF-8 bytes. - A dimension's value must match regex `[A-Za-z\d\.\-_]{1,100}`
-  If the value of any dimension matches regex `__.*__`, the partition is
-  reserved/read-only. A reserved/read-only partition ID is forbidden in
-  certain documented contexts.  Foreign partition IDs (in which the project ID
-  does not match the context project ID ) are discouraged. Reads and writes of
-  foreign partition IDs may fail if the project is not in an active state.
+  Partition dimensions:  - May be `""`. - Must be valid UTF-8 bytes. - Must
+  have values that match regex `[A-Za-z\d\.\-_]{1,100}` If the value of any
+  dimension matches regex `__.*__`, the partition is reserved/read-only. A
+  reserved/read-only partition ID is forbidden in certain documented contexts.
+  Foreign partition IDs (in which the project ID does not match the context
+  project ID ) are discouraged. Reads and writes of foreign partition IDs may
+  fail if the project is not in an active state.
 
   Fields:
-    databaseId: Database ID.
-    namespaceId: Namespace ID.
-    projectId: Project ID.
+    databaseId: If not empty, the ID of the database to which the entities
+      belong.
+    namespaceId: If not empty, the ID of the namespace to which the entities
+      belong.
+    projectId: The ID of the project to which the entities belong.
   """
 
   databaseId = _messages.StringField(1)
@@ -1355,12 +1400,12 @@ class PartitionId(_messages.Message):
 
 
 class PathElement(_messages.Message):
-  """A (kind, ID/name) pair used to construct a key path.  If either name nor
+  """A (kind, ID/name) pair used to construct a key path.  If either name or
   ID is set, the element is complete. If neither is set, the element is
   incomplete.
 
   Fields:
-    id: The auto allocated ID of the entity. Never equal to zero. Values less
+    id: The auto-allocated ID of the entity. Never equal to zero. Values less
       than zero are discouraged and may not be supported in the future.
     kind: The kind of the entity. A kind matching regex `__.*__` is reserved
       /read-only. A kind must not contain more than 1500 bytes when UTF-8
@@ -1451,7 +1496,7 @@ class PropertyOrder(_messages.Message):
     """The direction to order by. Defaults to `ASCENDING`.
 
     Values:
-      DIRECTION_UNSPECIFIED: Unspecified.
+      DIRECTION_UNSPECIFIED: Unspecified. This value must not be used.
       ASCENDING: Ascending.
       DESCENDING: Descending.
     """
@@ -1474,7 +1519,7 @@ class PropertyReference(_messages.Message):
 
 
 class Query(_messages.Message):
-  """A query.
+  """A query for entities.
 
   Fields:
     distinctOn: The properties to make distinct. The query results will
@@ -1486,9 +1531,10 @@ class Query(_messages.Message):
     kind: The kinds to query (if empty, returns entities of all kinds).
       Currently at most 1 kind may be specified.
     limit: The maximum number of results to return. Applies after all other
-      constraints. Unspecified is interpreted as no limit. Must be >= 0.
+      constraints. Optional. Unspecified is interpreted as no limit. Must be
+      >= 0 if specified.
     offset: The number of results to skip. Applies before limit, but after all
-      other constraints. Must be >= 0.
+      other constraints. Optional. Must be >= 0 if specified.
     order: The order to apply to the query results (if empty, order is
       unspecified).
     projection: The projection to return. Defaults to returning all
@@ -1533,10 +1579,10 @@ class QueryResultBatch(_messages.Message):
     """The result type for every entity in `entity_results`.
 
     Values:
-      RESULT_TYPE_UNSPECIFIED: Unspecified.
+      RESULT_TYPE_UNSPECIFIED: Unspecified. This value is never used.
       FULL: The entire entity.
       PROJECTION: A projected subset of properties. The entity may have no
-        key. A property value may have meaning 18.
+        key.
       KEY_ONLY: Only the key.
     """
     RESULT_TYPE_UNSPECIFIED = 0
@@ -1575,7 +1621,7 @@ class ReadOnly(_messages.Message):
 
 
 class ReadOptions(_messages.Message):
-  """Options shared by read requests.
+  """The options shared by read requests.
 
   Enums:
     ReadConsistencyValueValuesEnum: The non-transactional read consistency to
@@ -1596,7 +1642,7 @@ class ReadOptions(_messages.Message):
     `STRONG` for global queries.
 
     Values:
-      READ_CONSISTENCY_UNSPECIFIED: Unspecified.
+      READ_CONSISTENCY_UNSPECIFIED: Unspecified. This value must not be used.
       STRONG: Strong consistency.
       EVENTUAL: Eventual consistency.
     """
@@ -1613,11 +1659,26 @@ class ReadWrite(_messages.Message):
   """Options specific to read / write transactions."""
 
 
+class Rectangle(_messages.Message):
+  """A "rectangle" on the surface of the Earth, defined as the area between
+  two meridians and two parallels.
+
+  Fields:
+    northeast: The northeast point of the rectangle. Its latitude must be not
+      less than that of the southwest point.
+    southwest: The southwest point of the rectangle.
+  """
+
+  northeast = _messages.MessageField('LatLng', 1)
+  southwest = _messages.MessageField('LatLng', 2)
+
+
 class RollbackRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.Rollback.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     transaction: The transaction identifier, returned by a call to
       google.datastore.v1beta3.Datastore.BeginTransaction.
   """
@@ -1637,7 +1698,8 @@ class RunQueryRequest(_messages.Message):
   """The request for google.datastore.v1beta3.Datastore.RunQuery.
 
   Fields:
-    databaseId: Database ID against which to make the request.
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
     gqlQuery: The GQL query to run.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
@@ -1668,6 +1730,19 @@ class RunQueryResponse(_messages.Message):
   batch = _messages.MessageField('QueryResultBatch', 1)
   query = _messages.MessageField('Query', 2)
   transaction = _messages.BytesField(3)
+
+
+class StContainsFilter(_messages.Message):
+  """A filter that selects geo point values that are within a given region.
+
+  Fields:
+    containedIn: A region within which the property's value should be
+      contained.
+    property: The property to filter by.
+  """
+
+  containedIn = _messages.MessageField('GeoRegion', 1)
+  property = _messages.MessageField('PropertyReference', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1860,8 +1935,8 @@ class Value(_messages.Message):
       requests, must be base64-encoded.
     booleanValue: A boolean value.
     doubleValue: A double value.
-    entityValue: An entity value. May have no key. May have a key with an
-      incomplete key path. May have a reserved/read-only key.
+    entityValue: An entity value.  - May have no key. - May have a key with an
+      incomplete key path. - May have a reserved/read-only key.
     excludeFromIndexes: If the value should be excluded from all indexes
       including those defined explicitly.
     geoPointValue: A geo point value representing a point on the surface of
@@ -1872,9 +1947,8 @@ class Value(_messages.Message):
       compatibility.
     nullValue: A null value.
     stringValue: A UTF-8 encoded string value. When `exclude_from_indexes` is
-      false (it is indexed) and meaning is not 2, may have at most 1500 bytes.
-      When meaning is 2, may have at most 2083 bytes. Otherwise, may be set to
-      at least 1,000,000 bytes
+      false (it is indexed) , may have at most 1500 bytes. Otherwise, may be
+      set to at least 1,000,000 bytes.
     timestampValue: A timestamp value. When stored in the Datastore, precise
       only to microseconds; any additional precision is rounded down.
   """

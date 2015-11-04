@@ -2,6 +2,7 @@
 
 """Utilities for accessing python 2.7 functionality from 2.6."""
 
+import collections
 import subprocess as _subprocess
 
 from googlecloudsdk.core.util import version
@@ -48,3 +49,33 @@ class subprocess(object):
         super(subprocess.CalledProcessError, self).__init__(returncode, cmd,
                                                             output)
 
+
+if not hasattr(collections, 'OrderedDict'):
+
+  class OrderedDict(dict):
+    """Quick and dirty OrderedDict, just enough for Cloud SDK.
+
+    - No test failures.
+    - Compute only uses it to keep the same order when presenting editable
+      resource lists to the user.
+    - Tests only use it for stability when comparing captured output containing
+      dicts.
+    """
+
+    def iteritems(self):
+      # pylint: disable=bad-super-call
+      return sorted(super(OrderedDict, self).iteritems())
+
+    def items(self):
+      # pylint: disable=bad-super-call
+      return sorted(super(OrderedDict, self).items())
+
+    def iterkeys(self):
+      # pylint: disable=bad-super-call
+      return sorted(super(OrderedDict, self).iterkeys())
+
+    def keys(self):
+      # pylint: disable=bad-super-call
+      return sorted(super(OrderedDict, self).keys())
+
+  collections.OrderedDict = OrderedDict

@@ -6,6 +6,7 @@ import difflib
 import json
 import sys
 
+from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from protorpc import messages
 

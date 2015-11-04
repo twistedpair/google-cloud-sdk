@@ -13,6 +13,37 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'cloudbuild'
 
 
+class AliasContext(_messages.Message):
+  """An alias to a repo revision.
+
+  Enums:
+    KindValueValuesEnum: The alias kind.
+
+  Fields:
+    kind: The alias kind.
+    name: The alias name.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """The alias kind.
+
+    Values:
+      ANY: Do not use.
+      FIXED: Git tag
+      MOVABLE: Git branch
+      OTHER: OTHER is used to specify non-standard aliases, those not of the
+        kinds above. For example, if a Git repo has a ref named
+        "refs/foo/bar", it is considered to be of kind OTHER.
+    """
+    ANY = 0
+    FIXED = 1
+    MOVABLE = 2
+    OTHER = 3
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
 class Build(_messages.Message):
   """A build resource in the CloudBuild API.  At a high level, a Build
   describes where to find source, how to build the source (i.e., the builder
@@ -23,6 +54,7 @@ class Build(_messages.Message):
     StatusValueValuesEnum: The status of the build. @OutputOnly
 
   Fields:
+    buildReceipt: Details of build processing.
     createTime: The time that the build was created. @OutputOnly
     finishTime: The time that execution of the build was finished. @OutputOnly
     foremanId: The ID for the foreman that is running this build.
@@ -67,21 +99,36 @@ class Build(_messages.Message):
     TIMEOUT = 6
     CANCELLED = 7
 
-  createTime = _messages.StringField(1)
-  finishTime = _messages.StringField(2)
-  foremanId = _messages.StringField(3)
-  id = _messages.StringField(4)
-  images = _messages.StringField(5, repeated=True)
-  projectId = _messages.StringField(6)
-  projectNum = _messages.IntegerField(7)
-  results = _messages.MessageField('Results', 8)
-  source = _messages.MessageField('Source', 9)
-  startTime = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  steps = _messages.MessageField('BuildStep', 12, repeated=True)
-  timeout = _messages.StringField(13)
-  userId = _messages.IntegerField(14)
-  workerId = _messages.StringField(15)
+  buildReceipt = _messages.MessageField('BuildReceipt', 1)
+  createTime = _messages.StringField(2)
+  finishTime = _messages.StringField(3)
+  foremanId = _messages.StringField(4)
+  id = _messages.StringField(5)
+  images = _messages.StringField(6, repeated=True)
+  projectId = _messages.StringField(7)
+  projectNum = _messages.IntegerField(8)
+  results = _messages.MessageField('Results', 9)
+  source = _messages.MessageField('Source', 10)
+  startTime = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  steps = _messages.MessageField('BuildStep', 13, repeated=True)
+  timeout = _messages.StringField(14)
+  userId = _messages.IntegerField(15)
+  workerId = _messages.StringField(16)
+
+
+class BuildReceipt(_messages.Message):
+  """Details of build processing.
+
+  Fields:
+    foremanId: The ID for the foreman that is running this build.
+    workerId: The ID for the worker that is running this build.
+    workerIpAddress: The IP address for the worker that is running this build.
+  """
+
+  foremanId = _messages.StringField(1)
+  workerId = _messages.StringField(2)
+  workerIpAddress = _messages.StringField(3)
 
 
 class BuildStep(_messages.Message):
@@ -149,14 +196,16 @@ class CloudRepoSourceContext(_messages.Message):
   repo hosted by the Google Cloud Platform).
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     repoId: The ID of the repo.
     revisionId: A revision ID.
   """
 
-  aliasName = _messages.StringField(1)
-  repoId = _messages.MessageField('RepoId', 2)
-  revisionId = _messages.StringField(3)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  repoId = _messages.MessageField('RepoId', 3)
+  revisionId = _messages.StringField(4)
 
 
 class CloudWorkspaceId(_messages.Message):
@@ -312,6 +361,7 @@ class GerritSourceContext(_messages.Message):
   """A SourceContext referring to a Gerrit project.
 
   Fields:
+    aliasContext: An alias, which may be a branch or tag.
     aliasName: The name of an alias (branch, tag, etc.).
     gerritProject: The full project name within the host. Projects may be
       nested, so "project/subproject" is a valid project name. The "repo name"
@@ -320,10 +370,11 @@ class GerritSourceContext(_messages.Message):
     revisionId: A revision (commit) ID.
   """
 
-  aliasName = _messages.StringField(1)
-  gerritProject = _messages.StringField(2)
-  hostUri = _messages.StringField(3)
-  revisionId = _messages.StringField(4)
+  aliasContext = _messages.MessageField('AliasContext', 1)
+  aliasName = _messages.StringField(2)
+  gerritProject = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
 
 
 class GitSourceContext(_messages.Message):

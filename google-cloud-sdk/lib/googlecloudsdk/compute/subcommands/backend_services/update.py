@@ -7,7 +7,6 @@
    https load balancing.
 """
 
-import argparse
 import copy
 
 
@@ -123,13 +122,12 @@ class UpdateAlpha(UpdateGA):
         '--enable-cdn',
         action='store_true',
         default=None,  # Tri-valued, None => don't change the setting.
-        help=argparse.SUPPRESS)
-    # TODO(user): Uncomment when un-suppressing help text
-    # enable_cdn.detailed_help = """\
-    #     Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
-    #     responses from a backend service at the edge of the network, close to
-    #     users.
-    #     """
+        help='Enable cloud CDN.')
+    enable_cdn.detailed_help = """\
+        Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
+        responses from a backend service at the edge of the network, close to
+        users.
+        """
 
   def Modify(self, args, existing):
     replacement = super(UpdateAlpha, self).Modify(args, existing)

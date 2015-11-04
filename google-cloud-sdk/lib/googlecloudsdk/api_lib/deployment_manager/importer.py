@@ -190,7 +190,7 @@ def _GetYamlImports(import_object):
     return imports
   except yaml.YAMLError as e:
     raise exceptions.BadFileException('Invalid yaml file %s. %s'
-                                      % (import_object.full_path, e.message))
+                                      % (import_object.full_path, str(e)))
 
 
 def _GetImportObjects(parent_object):

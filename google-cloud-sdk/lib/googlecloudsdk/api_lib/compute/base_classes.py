@@ -9,6 +9,7 @@ import json
 import sets
 import sys
 import textwrap
+
 from enum import Enum
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
@@ -28,6 +29,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
@@ -128,13 +130,8 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     """Specifies the API message classes."""
     return self.compute.MESSAGES_MODULE
 
-  def Display(self, args, resources):
-    """Prints the given resources."""
-    if resources:
-      resource_printer.Print(
-          resources=resources,
-          print_format='yaml',
-          out=log.out)
+  def Format(self, args):
+    return 'default'
 
 
 class BaseLister(BaseCommand):
@@ -893,19 +890,15 @@ class BaseAsyncMutator(BaseCommand):
 
     return resources
 
-  def Display(self, _, resources):
-    """Prints the given resources."""
-    if resources:
-      resource_printer.Print(resources=resources,
-                             print_format='yaml',
-                             out=log.out)
+  def Format(self, args):
+    return 'default'
 
 
 class NoOutputAsyncMutator(BaseAsyncMutator):
   """Base class for mutating subcommands that don't display resources."""
 
-  def Display(self, _, resources):
-    pass
+  def Format(self, args):
+    return 'none'
 
 
 class InstanceGroupFilteringMode(Enum):
@@ -1003,8 +996,14 @@ class InstanceGroupDynamicProperiesMixin(object):
 class ListOutputMixin(object):
   """Mixin class to display a list by default."""
 
-  def Display(self, _, resources):
-    PrintTable(resources, self._resource_spec.table_cols)
+  def ComputeDynamicProperties(self, args, items):
+    """Computes dynamic properties, which are not returned by GCE API."""
+    _ = args
+    return items
+
+  def Display(self, args, resources):
+    PrintTable(self.ComputeDynamicProperties(args, resources),
+               self._resource_spec.table_cols)
 
 
 class BaseAsyncCreator(ListOutputMixin, BaseAsyncMutator):
@@ -1015,7 +1014,7 @@ class BaseDeleter(BaseAsyncMutator):
   """Base class for deleting resources."""
 
   @staticmethod
-  def AddArgs(parser, resource, command):
+  def AddArgs(parser, resource, command=None):
     parser.add_argument(
         'names',
         metavar='NAME',
@@ -1202,10 +1201,9 @@ class ReadWriteCommand(BaseCommand):
           errors,
           error_message='There was a problem modifying the resource:')
 
-  def Display(self, _, resources):
-    # We want to consume the generator here, but don't want to actully display
-    # the resources unless --format is called (which skips this method).
-    list(resources)
+  def Format(self, unused_args):
+    # The none format does not print but it consumes the resource.
+    return 'none'
 
 
 class BaseMetadataAdder(ReadWriteCommand):
@@ -1635,9 +1633,5 @@ class BaseEdit(BaseCommand):
     for resource in resources:
       yield resource
 
-  def Display(self, _, resources):
-    resource_printer.Print(
-        resources=resources,
-        print_format='yaml',
-        out=log.out)
-
+  def Format(self, args):
+    return 'default'

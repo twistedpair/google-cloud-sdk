@@ -2,6 +2,7 @@
 
 """Implements the command for SSHing into an instance."""
 import getpass
+import sys
 
 
 from googlecloudsdk.api_lib.compute import gaia_utils
@@ -128,7 +129,6 @@ class SshGA(ssh_utils.BaseSSHCLICommand):
 
     ssh_args.append(ssh_utils.UserHost(user, external_ip_address))
 
-    interactive_ssh = False
     if args.implementation_args:
       ssh_args.extend(args.implementation_args)
     if args.container:
@@ -146,12 +146,16 @@ class SshGA(ssh_utils.BaseSSHCLICommand):
       ssh_args.append('--')
       ssh_args.append(args.command)
 
-    else:
-      interactive_ssh = True
-
-    self.ActuallyRun(args, ssh_args, user, external_ip_address,
-                     interactive_ssh=interactive_ssh,
-                     use_account_service=self._use_accounts_service)
+    # Don't use strict error checking for ssh: if the executed command fails, we
+    # don't want to consider it an error. We do, however, want to propagate its
+    # return code.
+    return_code = self.ActuallyRun(
+        args, ssh_args, user, external_ip_address, strict_error_checking=False,
+        use_account_service=self._use_accounts_service)
+    if return_code:
+      # Can't raise an exception because we don't want any "ERROR" message
+      # printed; the output from `ssh` will be enough.
+      sys.exit(return_code)
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)

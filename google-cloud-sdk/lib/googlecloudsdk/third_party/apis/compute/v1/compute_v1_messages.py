@@ -757,9 +757,9 @@ class BackendService(_messages.Message):
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
       fingerprint must be provided in order to update the BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck resource for health
-      checking this BackendService. Currently at most one health check can be
-      specified, and a health check is required.
+    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
+      resource for health checking this BackendService. Currently at most one
+      health check can be specified, and a health check is required.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -7455,7 +7455,9 @@ class Quota(_messages.Message):
       ROUTES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
+      SSL_CERTIFICATES: <no description>
       STATIC_ADDRESSES: <no description>
+      TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
@@ -7480,13 +7482,15 @@ class Quota(_messages.Message):
     ROUTES = 14
     SNAPSHOTS = 15
     SSD_TOTAL_GB = 16
-    STATIC_ADDRESSES = 17
-    TARGET_HTTP_PROXIES = 18
-    TARGET_INSTANCES = 19
-    TARGET_POOLS = 20
-    TARGET_VPN_GATEWAYS = 21
-    URL_MAPS = 22
-    VPN_TUNNELS = 23
+    SSL_CERTIFICATES = 17
+    STATIC_ADDRESSES = 18
+    TARGET_HTTPS_PROXIES = 19
+    TARGET_HTTP_PROXIES = 20
+    TARGET_INSTANCES = 21
+    TARGET_POOLS = 22
+    TARGET_VPN_GATEWAYS = 23
+    URL_MAPS = 24
+    VPN_TUNNELS = 25
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

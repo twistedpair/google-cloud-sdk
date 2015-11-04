@@ -429,8 +429,8 @@ to use different resource name schemes, such as `users/*/operations`.
           }
 
     def AllocateIds(self, request, global_params=None):
-      """Allocate IDs for the given keys (useful for referencing an entity before.
-it is inserted).
+      """Allocates IDs for the given keys, which is useful for referencing an entity.
+before it is inserted.
 
       Args:
         request: (DatastoreProjectsAllocateIdsRequest) input message
@@ -443,7 +443,7 @@ it is inserted).
           config, request, global_params=global_params)
 
     def BeginTransaction(self, request, global_params=None):
-      """Begin a new transaction.
+      """Begins a new transaction.
 
       Args:
         request: (DatastoreProjectsBeginTransactionRequest) input message
@@ -456,7 +456,7 @@ it is inserted).
           config, request, global_params=global_params)
 
     def Commit(self, request, global_params=None):
-      """Commit a transaction, optionally creating, deleting or modifying some.
+      """Commits a transaction, optionally creating, deleting or modifying some.
 entities.
 
       Args:
@@ -507,7 +507,7 @@ subset of the data has already been imported to the Datastore.
           config, request, global_params=global_params)
 
     def Lookup(self, request, global_params=None):
-      """Look up entities by key.
+      """Looks up entities by key.
 
       Args:
         request: (DatastoreProjectsLookupRequest) input message
@@ -533,7 +533,7 @@ subset of the data has already been imported to the Datastore.
           config, request, global_params=global_params)
 
     def Rollback(self, request, global_params=None):
-      """Roll back a transaction.
+      """Rolls back a transaction.
 
       Args:
         request: (DatastoreProjectsRollbackRequest) input message
@@ -546,7 +546,7 @@ subset of the data has already been imported to the Datastore.
           config, request, global_params=global_params)
 
     def RunQuery(self, request, global_params=None):
-      """Query for entities.
+      """Queries for entities.
 
       Args:
         request: (DatastoreProjectsRunQueryRequest) input message
