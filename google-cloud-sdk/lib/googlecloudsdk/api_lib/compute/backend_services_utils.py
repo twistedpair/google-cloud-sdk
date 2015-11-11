@@ -3,6 +3,7 @@
 
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 
 
 def BalancingModes(backend):
@@ -183,5 +184,14 @@ def GetHealthChecks(args, resource_parser):
   if getattr(args, 'https_health_checks', None):
     health_check_refs.extend(resource_parser.CreateGlobalReferences(
         args.https_health_checks, resource_type='httpsHealthChecks'))
+
+  if getattr(args, 'health_checks', None):
+    if health_check_refs:
+      raise exceptions.ToolException(
+          'Mixing --health-checks with --http-health-checks or with '
+          '--https-health-checks is not supported.')
+    else:
+      health_check_refs.extend(resource_parser.CreateGlobalReferences(
+          args.health_checks, resource_type='healthChecks'))
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]

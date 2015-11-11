@@ -289,7 +289,10 @@ class Projector(object):
       An object containing only the key:values selected by projection, or obj if
       the projection is None or empty.
     """
-    if obj in self._been_here_done_that:
+    # ``obj in self._been_here_done_that'' does not work here because __eq__
+    # for some types raises exceptions on type mismatch. == or != raising
+    # exceptions is not a good plan. `is' avoids __eq__.
+    if any([obj is x for x in self._been_here_done_that]):
       obj = None
     elif obj is None:
       pass

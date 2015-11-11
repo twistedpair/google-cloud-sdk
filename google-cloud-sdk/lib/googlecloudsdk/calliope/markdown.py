@@ -406,11 +406,8 @@ class MarkdownGenerator(object):
         cmd = cmd[0:i]
       else:
         rem = ''
-      ref = match.group(2)
-      if ref:
-        ref = ref[1:]
       ref = '/'.join(['..'] * (len(self._command_path) - self._relative_offset)
-                     + ref.split(' '))
+                     + cmd.split(' ')[1:])
       lnk = 'link:' + ref + '[' + cmd + ']' + rem
       rep += self._doc[pos:match.start(1)] + lnk
       pos = match.end(1)

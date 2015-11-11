@@ -435,21 +435,6 @@ COLLECTION_COLUMNS = {
     ),
 
     # TEST
-    'test.android.devices': (
-        ('DEVICE_ID', _Select('id')),
-        ('MAKE', _Select('manufacturer')),
-        ('MODEL', _Select('name')),
-        ('FORM', _Select('form')),
-        ('SCREEN_RES', _ScreenResolution),
-        ('OS_VERSION_IDS', _Select('supportedVersionIds', _CommaList('none'))),
-        ('TAGS', _Select('tags', _CommaList('')))
-    ),
-    'test.run.outcomes': (
-        ('OUTCOME', _Select('outcome')),
-        ('STEP', _Select('step_name')),
-        ('TEST_AXIS_VALUE', _Select('axis_value')),
-        ('TEST_DETAILS', _Select('test_details')),
-    ),
     'test.web.browsers': (
         ('BROWSER_ID', _Select('id')),
         ('NAME', _Select('name')),

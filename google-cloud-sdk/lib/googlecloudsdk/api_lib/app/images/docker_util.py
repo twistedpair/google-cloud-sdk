@@ -122,7 +122,7 @@ class _Vm(object):
     self._teardown_thread = None
     # We have to do relpath here because SCP doesn't handle "c:\" paths
     # correctly on Windows.
-    self.cert_dir = os.path.relpath(tempfile.mkdtemp())
+    self.cert_dir = os.path.relpath(tempfile.mkdtemp(dir=os.getcwd()))
     self._ip = vm_info['networkInterfaces'][0]['accessConfigs'][0]['natIP']
     self._name = vm_info['name']
     self._zone = vm_info['zone']

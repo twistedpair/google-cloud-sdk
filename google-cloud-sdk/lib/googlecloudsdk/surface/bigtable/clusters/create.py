@@ -32,7 +32,7 @@ class CreateCluster(base.Command):
         name=util.ZoneUrl(args),
         clusterId=args.cluster,
         cluster=self.context['clusteradmin-msgs'].Cluster(
-            displayName=args.name,
+            displayName=args.description,
             serveNodes=args.nodes))
     result = cli.projects_zones_clusters.Create(msg)
     if not args.async:

@@ -12,6 +12,8 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import util
 from googlecloudsdk.core import log
 
+NAME ='Node.js'
+ALLOWED_RUNTIME_NAMES = ['nodejs', 'custom']
 NODEJS_RUNTIME_NAME = 'nodejs'
 
 # TODO(mmuller): move these into the node_app directory.
@@ -114,7 +116,6 @@ class NodeJSConfigurator(fingerprinting.Configurator):
   """Generates configuration for a node.js class."""
 
   def __init__(self, path, params, got_package_json, got_npm_start,
-               got_shrinkwrap,
                nodejs_version):
     """Constructor.
 
@@ -128,8 +129,6 @@ class NodeJSConfigurator(fingerprinting.Configurator):
         the package.json and we should do "npm start" to start the package.
         If false, we assume there is a server.js file and we do "node
         server.js" instead.
-      got_shrinkwrap: (bool) True if the user provided an
-        "npm-shrinkwrap.json" file.
       nodejs_version: (str or None) Required version of node.js (extracted
         from the engines.node field of package.json)
     """
@@ -137,7 +136,6 @@ class NodeJSConfigurator(fingerprinting.Configurator):
     self.root = path
     self.got_package_json = got_package_json
     self.got_npm_start = got_npm_start
-    self.got_shrinkwrap = got_shrinkwrap
     self.params = params
     self.nodejs_version = nodejs_version
 
@@ -168,19 +166,20 @@ class NodeJSConfigurator(fingerprinting.Configurator):
         util.FindOrCopyDockerfile(NODEJS_RUNTIME_NAME, self.root,
                                   cleanup=self.params.deploy)
         cleaner.Add(dockerfile)
-
         # Customize the dockerfile.
         os.chmod(dockerfile, os.stat(dockerfile).st_mode | 0200)
         with open(dockerfile, 'a') as out:
+          if self.nodejs_version:
+            # Let node check to see if it satisfies the version constraint and
+            # try to install the correct version if not.
+            out.write(INSTALL_NODE_TEMPLATE %
+                      {'version_spec': self.nodejs_version})
 
-          # Generate copy for shrinkwrap file.
-          if self.got_shrinkwrap:
-            out.write('COPY npm-shrinkwrap.json /app/\n')
+          out.write('COPY . /app/\n')
 
           # Generate npm install if there is a package.json.
           if self.got_package_json:
             out.write(textwrap.dedent("""\
-                COPY package.json /app/
                 # You have to specify "--unsafe-perm" with npm install
                 # when running as root.  Failing to do this can cause
                 # install to appear to succeed even if a preinstall
@@ -188,14 +187,6 @@ class NodeJSConfigurator(fingerprinting.Configurator):
                 # as well.
                 RUN npm --unsafe-perm install
                 """))
-
-          out.write('COPY . /app/\n')
-
-          if self.nodejs_version:
-            # Let node check to see if it satisfies the version constraint and
-            # try to install the correct version if not.
-            out.write(INSTALL_NODE_TEMPLATE %
-                      {'version_spec': self.nodejs_version})
 
           # Generate the appropriate start command.
           if self.got_npm_start:
@@ -235,7 +226,6 @@ def Fingerprint(path, params):
   """
   log.info('Checking for Node.js.')
   package_json = os.path.join(path, 'package.json')
-  got_shrinkwrap = False
 
   if not os.path.isfile(package_json):
     log.debug('node.js checker: No package.json file.')
@@ -258,10 +248,6 @@ def Fingerprint(path, params):
     # See if we've got a scripts.start field.
     got_npm_start = bool(contents.get('scripts', {}).get('start'))
 
-    # See if we've got a shrinkwrap file.
-    if os.path.isfile(os.path.join(path, 'npm-shrinkwrap.json')):
-      got_shrinkwrap = True
-
     # See if a version of node is specified.
     try:
       node_version = contents.get('engines', {}).get('node', None)
@@ -278,7 +264,7 @@ def Fingerprint(path, params):
 
   if got_npm_start or os.path.exists(os.path.join(path, 'server.js')):
     return NodeJSConfigurator(path, params, got_package_json, got_npm_start,
-                              got_shrinkwrap, node_version)
+                              node_version)
   else:
     log.debug('nodejs. checker: No npm start and no server.js')
     return None

@@ -8,6 +8,7 @@ import os
 import re
 import sys
 
+from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import properties
@@ -39,9 +40,6 @@ _BUCKET_URI_ERROR = (
     'characters . _ -. It must start and end with a letter or digit '
     'and be from 3 to 232 characters long. You may optionally prepend the '
     'bucket name with gs:// and append / at the end.')
-
-# keep it lowercase - we make the user string lowercase before we compare
-_CLOUD_REPO_PREFIX = 'https://source.developers.google.com/'
 
 
 def GetHttpErrorMessage(error):
@@ -165,34 +163,27 @@ def ValidateAndStandarizePubsubTopicNameOrRaise(topic):
   return 'projects/{0}/topics/{1}'.format(project, topic)
 
 
-def ValidateDirectoryOrCloudRepoPathOrRaise(directory_or_cloud_repo_path):
-  """Checks if a source directory or cloud repo path provided by user is valid.
+def ValidateDirectoryExistsOrRaiseFunctionError(directory):
+  """Checks if a source directory exists.
 
   Args:
-    directory_or_cloud_repo_path: A string: a local path to directory provided
-                                  by user, or a path to a Cloud Repository.
+    directory: A string: a local path to directory provided by user.
   Returns:
     The argument provided, if found valid.
   Raises:
     ArgumentTypeError: If the user provided a directory which is not valid.
   """
-  if IsCloudRepoPath(directory_or_cloud_repo_path):
-    return directory_or_cloud_repo_path
-
-  directory = directory_or_cloud_repo_path
   if not os.path.exists(directory):
-    raise arg_parsers.ArgumentTypeError(
-        'Provided directory does not exist. If you intended to provide a path '
-        'to Google Cloud Repository, it must start with "{0}"'
-        .format(_CLOUD_REPO_PREFIX))
+    raise exceptions.FunctionsError(
+        'argument --source: Provided directory does not exist. If '
+        'you intended to provide a path to Google Cloud Repository, you must '
+        'specify the --source-url argument')
   if not os.path.isdir(directory):
-    raise arg_parsers.ArgumentTypeError(
-        'Provided path does not point to a directory.')
+    raise exceptions.FunctionsError(
+        'argument --source: Provided path does not point to a directory. If '
+        'you intended to provide a path to Google Cloud Repository, you must '
+        'specify the --source-url argument')
   return directory
-
-
-def IsCloudRepoPath(source_path):
-  return source_path.lower().startswith(_CLOUD_REPO_PREFIX)
 
 
 def _GetViolationsFromError(error_info):

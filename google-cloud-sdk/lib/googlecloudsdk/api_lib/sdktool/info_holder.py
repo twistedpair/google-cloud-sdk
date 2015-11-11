@@ -55,11 +55,13 @@ class BasicInfo(object):
 
         Platform: [{os}, {arch}]
         Python Version: [{python_version}]
+        Python Location: [{python_location}]
         Site Packages: [{site_packages}]
         """.format(
             version=self.version,
             os=self.operating_system.name,
             arch=self.architecture.name,
+            python_location=sys.executable,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))
 

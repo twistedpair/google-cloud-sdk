@@ -15,6 +15,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
 GSUTIL_BUCKET_REGEX = r'^gs://.*$'
@@ -54,9 +55,14 @@ def _GetGsutilPath():
   """Determines the path to the gsutil binary."""
   sdk_bin_path = config.Paths().sdk_bin_path
   if not sdk_bin_path:
-    raise exceptions.ToolException(('A SDK root could not be found. Please '
-                                    'check your installation.'))
-
+    # Check if gsutil is located on the PATH.
+    gsutil_path = file_utils.FindExecutableOnPath('gsutil')
+    if gsutil_path:
+      log.debug('Using gsutil found at [{path}]'.format(path=gsutil_path))
+      return gsutil_path
+    else:
+      raise exceptions.ToolException(('A SDK root could not be found. Please '
+                                      'check your installation.'))
   return os.path.join(sdk_bin_path, 'gsutil')
 
 

@@ -21,15 +21,14 @@ def AddClusterIdArgs(parser):
       # choices=['europe-west1-c', 'us-central1-b'],
       required=True)
   parser.add_argument(
-      '--cluster',
-      help='Unique ID of the cluster.',
-      required=True)
+      'cluster',
+      help='Unique ID of the cluster.')
 
 
 def AddClusterInfoArgs(parser):
   """Adds --name and --nodes args to the parser."""
   parser.add_argument(
-      '--name',
+      '--description',
       help='Friendly name of the cluster.',
       required=True)
   parser.add_argument(
@@ -59,8 +58,8 @@ def ClusterUrl(args):
 def MakeCluster(args):
   """Creates a dict representing a Cluster proto from user-specified args."""
   cluster = {}
-  if args.name:
-    cluster['display_name'] = args.name
+  if args.description:
+    cluster['display_name'] = args.description
   if args.nodes:
     cluster['serve_nodes'] = args.nodes
   return cluster

@@ -322,6 +322,19 @@ def IsInteractive(output=False, error=False, heuristic=False):
   return True
 
 
+def CanPrompt():
+  """Returns true if we can prompt the user for information.
+
+  This combines all checks (IsInteractive(), disable_prompts is False) to
+  verify that we can prompt the user for information.
+
+  Returns:
+    bool, True if we can prompt the user for information.
+  """
+  return (IsInteractive(error=True) and
+          not properties.VALUES.core.disable_prompts.GetBool())
+
+
 def PromptContinue(message=None, prompt_string=None, default=True,
                    throw_if_unattended=False, cancel_on_no=False):
   """Prompts the user a yes or no question and asks if they want to continue.

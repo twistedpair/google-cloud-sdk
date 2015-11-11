@@ -7703,6 +7703,8 @@ class InstanceGroup(_messages.Message):
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
+    subnetwork: [Output Only] The URL of the subnetwork to which all instances
+      in the instance group belong.
     zone: [Output Only] The URL of the zone where the instance group is
       located.
   """
@@ -7718,7 +7720,8 @@ class InstanceGroup(_messages.Message):
   region = _messages.StringField(9)
   selfLink = _messages.StringField(10)
   size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(12)
+  subnetwork = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class InstanceGroupAggregatedList(_messages.Message):

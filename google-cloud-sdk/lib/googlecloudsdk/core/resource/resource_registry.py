@@ -992,14 +992,14 @@ RESOURCE_REGISTRY = {
 
     'test.android.devices': ResourceInfo(
         list_format="""
-          table(
+          table[box](
             id:label=DEVICE_ID,
             manufacturer:label=MAKE,
-            name:label=MODEL,
-            form,
-            resolution(transpose=True):label=SCREEN_RES,
+            name:label=MODEL_NAME,
+            form.color(blue=VIRTUAL,yellow=PHYSICAL),
+            format("{0:4} x {1}", screenY, screenX):label=RESOLUTION,
             supportedVersionIds.list("none"):label=OS_VERSION_IDS,
-            tags.list()
+            tags.list().color(green=default,red=deprecated,yellow=preview)
           )
         """,
     ),

@@ -34,9 +34,9 @@ class Export(base.Command):
         help='The format in which the exported data is to be written')
     parser.add_argument(
         '--field-delimiter',
-        default=',',
         help='The character that indicates the boundary between columns in '
-        'CSV output. "\t" and "tab" are accepted names for tab.')
+        'CSV output. "\t" and "tab" are accepted names for tab. Delimiter '
+        'is "," when flag is not specified.')
     parser.add_argument(
         '--job-id',
         help='A unique job_id to use for the request. If this flag is not '

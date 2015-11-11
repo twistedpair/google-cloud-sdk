@@ -174,6 +174,11 @@ class RemoteCompletion(object):
       self.project = 0
     self.cache_dir = config.Paths().completion_cache_dir
     self.flags = ''
+    self.index_offset = 0
+    self.account = properties.VALUES.core.account.Get(required=False)
+    if self.account:
+      self.index_offset = 1
+      self.cache_dir = os.path.join(self.cache_dir, self.account)
 
   @staticmethod
   def CachePath(self_link):
@@ -240,7 +245,9 @@ class RemoteCompletion(object):
       #   look at all resources with that type
       if not os.path.isdir(lst[0]):
         return None
-      index = items.index('completion_cache')
+      index = items.index('completion_cache') + self.index_offset
+      if index < 0 or index >= len(items):
+        return options
       flagname = _RESOURCE_FLAGS[items[index+2] + '.' + items[-2]]
       for name in listdir(lst[0]):
         self.flags = flagname + name

@@ -13,6 +13,8 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import util
 from googlecloudsdk.core import log
 
+NAME ='go'
+ALLOWED_RUNTIME_NAMES = ('go', 'custom')
 GO_RUNTIME_NAME = 'go'
 
 GO_APP_YAML = textwrap.dedent("""\

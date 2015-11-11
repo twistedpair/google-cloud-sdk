@@ -216,6 +216,7 @@ class LogEntry(_messages.Message):
     log: The log to which this entry belongs. When a log entry is ingested,
       the value of this field is set by the logging system.
     metadata: Information about the log entry.
+    operation: A LogEntryOperation attribute.
     protoPayload: The log entry payload, represented as a protocol buffer that
       is expressed as a JSON object. You can only pass `protoPayload` values
       that belong to a set of approved types.
@@ -283,9 +284,10 @@ class LogEntry(_messages.Message):
   insertId = _messages.StringField(2)
   log = _messages.StringField(3)
   metadata = _messages.MessageField('LogEntryMetadata', 4)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 5)
-  structPayload = _messages.MessageField('StructPayloadValue', 6)
-  textPayload = _messages.StringField(7)
+  operation = _messages.MessageField('LogEntryOperation', 5)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 6)
+  structPayload = _messages.MessageField('StructPayloadValue', 7)
+  textPayload = _messages.StringField(8)
 
 
 class LogEntryMetadata(_messages.Message):
@@ -408,6 +410,27 @@ class LogEntryMetadata(_messages.Message):
   timestamp = _messages.StringField(7)
   userId = _messages.StringField(8)
   zone = _messages.StringField(9)
+
+
+class LogEntryOperation(_messages.Message):
+  """Additional information about a potentially long running operation with
+  which a log entry is associated.
+
+  Fields:
+    first: True for the first entry associated with `id`.
+    id: An opaque identifier. A producer of log entries should ensure that
+      `id` is only reused for entries related to one operation.
+    last: True for the last entry associated with `id`.
+    producer: Ensures the operation can be uniquely identified. The
+      combination of `id` and `producer` should be made globally unique by
+      filling `producer` with a value that disambiguates the service that
+      created `id`.
+  """
+
+  first = _messages.BooleanField(1)
+  id = _messages.StringField(2)
+  last = _messages.BooleanField(3)
+  producer = _messages.StringField(4)
 
 
 class LogError(_messages.Message):

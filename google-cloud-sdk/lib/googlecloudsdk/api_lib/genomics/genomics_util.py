@@ -85,6 +85,25 @@ def GetErrorMessage(error):
   return content_obj.get('error', {}).get('message', '')
 
 
+def ReraiseHttpExceptionPager(pager):
+  """Wraps an HTTP paginator and converts errors to be gcloud-friendly.
+
+  Args:
+    pager: A list or generator of a response type.
+
+  Returns:
+    A generator which raises gcloud-friendly errors, if any.
+  """
+
+  try:
+    for result in pager:
+      yield result
+  except apitools_base.HttpError as error:
+    msg = GetErrorMessage(error)
+    unused_type, unused_value, traceback = sys.exc_info()
+    raise exceptions.HttpException, msg, traceback
+
+
 def ReraiseHttpException(foo):
   def Func(*args, **kwargs):
     try:

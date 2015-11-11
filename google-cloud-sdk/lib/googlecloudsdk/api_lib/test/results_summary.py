@@ -9,6 +9,11 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
+_NATIVE_CRASH = 'Native crash'
+_NATIVE_CRASH_DETAILED_FORMAT = '''\
+For test execution [{0}], a native process crashed on the device. This could \
+be caused by your app, by an app dependency, or by an unrelated cause.'''
+
 
 class TestOutcome(collections.namedtuple(
     'TestOutcome', ['outcome', 'axis_value', 'test_details'])):
@@ -129,12 +134,13 @@ class ToolResultsSummaryFetcher(object):
         log.warning('Step for [{0}] had no outcome value.'.format(axis_value))
       else:
         details = self._GetStepOutcomeDetails(step)
-        if details is not None:
-          outcome_str = self._GetOutcomeSummaryDisplayName(step.outcome.summary)
-          outcomes.append(
-              TestOutcome(outcome=outcome_str,
-                          axis_value=axis_value,
-                          test_details=details))
+        if _NATIVE_CRASH in details:
+          log.warning(_NATIVE_CRASH_DETAILED_FORMAT.format(axis_value))
+        outcome_str = self._GetOutcomeSummaryDisplayName(step.outcome.summary)
+        outcomes.append(
+            TestOutcome(outcome=outcome_str,
+                        axis_value=axis_value,
+                        test_details=details))
 
     return sorted(outcomes, key=_TestOutcomeSortKey)
 
@@ -195,38 +201,48 @@ class ToolResultsSummaryFetcher(object):
   def _GetStepOutcomeDetails(self, step):
     """Turn test outcome counts and details into something human readable."""
     outcome = step.outcome
-    summary = outcome.summary
+    summary_enum = self._messages.Outcome.SummaryValueValuesEnum
 
-    if summary == self._messages.Outcome.SummaryValueValuesEnum.success:
+    if outcome.summary == summary_enum.success:
       total = 0
       for overview in step.testExecutionStep.testSuiteOverviews:
         total += overview.totalCount or 0
-      if total:
-        return '{t} test cases passed'.format(t=total)
-      else:
-        return '--'
+      details = '{t} test cases passed'.format(t=total) if total else '--'
 
-    elif summary == self._messages.Outcome.SummaryValueValuesEnum.failure:
+      if outcome.successDetail and outcome.successDetail.otherNativeCrash:
+        return '{d} ({c})'.format(d=details, c=_NATIVE_CRASH)
+      else:
+        return details
+
+    elif outcome.summary == summary_enum.failure:
       if outcome.failureDetail:
+        details = ''
+        # Note: crashed/timedOut/notInstalled flags are mutually exclusive
         if outcome.failureDetail.crashed:
-          return 'Application crashed'
-        if outcome.failureDetail.timedOut:
-          return 'Test timed out'
-        if outcome.failureDetail.notInstalled:
-          return 'App failed to install'
+          details = 'Application crashed'
+        elif outcome.failureDetail.timedOut:
+          details = 'Test timed out'
+        elif outcome.failureDetail.notInstalled:
+          details = 'App failed to install'
+        # otherNativeCrash is not mutually exclusive to other failureDetails
+        crash = _NATIVE_CRASH if outcome.failureDetail.otherNativeCrash else ''
+        if details and crash:
+          return '{d} ({c})'.format(d=details, c=crash)
+        elif details:
+          return details
+        elif crash:
+          return crash
       return _GetFailedCountDetails(step)
 
-    elif summary == self._messages.Outcome.SummaryValueValuesEnum.inconclusive:
+    elif outcome.summary == summary_enum.inconclusive:
       if outcome.inconclusiveDetail:
         if outcome.inconclusiveDetail.infrastructureFailure:
           return 'Infrastructure failure'
         if outcome.inconclusiveDetail.abortedByUser:
           return 'Test run aborted by user'
-        if outcome.inconclusiveDetail.nativeCrash:
-          return 'A native process crashed on the device'
       return 'Unknown reason'
 
-    elif summary == self._messages.Outcome.SummaryValueValuesEnum.skipped:
+    elif outcome.summary == summary_enum.skipped:
       if outcome.skippedDetail:
         if outcome.skippedDetail.incompatibleDevice:
           return 'Incompatible device/OS combination'

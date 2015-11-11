@@ -14,7 +14,7 @@ class List(base.Command):
       'DESCRIPTION': """\
           {description}
 
-          See `gcloud topic configurations` for an overview of named
+          Run `$ gcloud topic configurations` for an overview of named
           configurations.
           """,
       'EXAMPLES': """\

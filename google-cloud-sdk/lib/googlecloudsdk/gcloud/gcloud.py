@@ -128,18 +128,6 @@ def CreateCLI():
                          os.path.join(pkg_root, 'surface', 'beta'),
                          component='beta')
 
-  loader.AddModule('bigquery',
-                   os.path.join(pkg_root, 'bigquery', 'commands'),
-                   component='gcloud')
-  loader.AddModule('compute',
-                   os.path.join(pkg_root, 'compute', 'subcommands'),
-                   component='gcloud')
-  loader.AddModule('deployment_manager',
-                   os.path.join(pkg_root, 'deployment_manager', 'commands'),
-                   component='gcloud')
-  loader.AddModule('internal',
-                   os.path.join(pkg_root, 'internal', 'commands'),
-                   component=None)
   loader.AddModule('services',
                    os.path.join(pkg_root, 'service_management', 'subcommands'),
                    component=None)

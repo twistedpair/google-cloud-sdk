@@ -111,10 +111,13 @@ class FunctionTrigger(_messages.Message):
       Currently, it must have the form gs://<bucket>/ (that is, it must refer
       to a bucket, rather than an object).
     pubsubTopic: A pub/sub type of source.
+    webTrigger: A web endpoint (e.g. HTTP) type of source that can be trigger
+      via URL.
   """
 
   gsUri = _messages.StringField(1)
   pubsubTopic = _messages.StringField(2)
+  webTrigger = _messages.MessageField('WebTrigger', 3)
 
 
 class HostedFunction(_messages.Message):
@@ -371,7 +374,8 @@ class SourceRepository(_messages.Message):
       from which the function should be fetched.
     sourcePath: The path within the repository where the function is defined.
       The path should point to the directory where cloud functions files are
-      located.
+      located. Use '/' if the function is defined directly in the root
+      directory of a repository.
     sourceUrl: A string attribute.
     tag: The name of the tag that captures the state of the repository from
       which the function should be fetched.
@@ -529,6 +533,29 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class WebTrigger(_messages.Message):
+  """Describes WebTrigger, could be used to connect web hooks to function.
+
+  Enums:
+    ProtocolValueValuesEnum: Protocol accepted by WebTrigger.
+
+  Fields:
+    protocol: Protocol accepted by WebTrigger.
+    url: [Output only] The deployed url for the function.
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    """Protocol accepted by WebTrigger.
+
+    Values:
+      HTTP: HTTP protocol
+    """
+    HTTP = 0
+
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 1)
+  url = _messages.StringField(2)
 
 
 encoding.AddCustomJsonEnumMapping(

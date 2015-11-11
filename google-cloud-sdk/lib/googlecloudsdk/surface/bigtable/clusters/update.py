@@ -30,7 +30,7 @@ class UpdateCluster(base.Command):
     cli = self.context['clusteradmin']
     msg = self.context['clusteradmin-msgs'].Cluster(
         name=util.ClusterUrl(args),
-        displayName=args.name,
+        displayName=args.description,
         serveNodes=args.nodes)
     result = cli.projects_zones_clusters.Update(msg)
     if not args.async:

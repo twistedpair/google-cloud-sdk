@@ -2,6 +2,21 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 0.9.86 (2015/11/11)
+
+### App Engine
+
+* Generated node.js Dockerfiles now add the full application context before
+  running install hooks.
+
+* For Google App Engine Node.js runtimes, install requested version of node
+  prior to doing an npm install.
+
+### Compute
+
+* `gcloud beta compute instances set-machine-type` has been promoted from alpha
+  to beta,
+
 ## 0.9.85 (2015/11/04)
 
 ### Breaking Changes

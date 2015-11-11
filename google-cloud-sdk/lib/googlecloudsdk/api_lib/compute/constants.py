@@ -48,6 +48,8 @@ IMAGE_ALIASES = {
         project='ubuntu-os-cloud', name_prefix='ubuntu-1404-trusty'),
     'ubuntu-15-04': ImageAlias(
         project='ubuntu-os-cloud', name_prefix='ubuntu-1504-vivid'),
+    'ubuntu-15-10': ImageAlias(
+        project='ubuntu-os-cloud', name_prefix='ubuntu-1510-wily'),
     'windows-2008-r2': ImageAlias(
         project='windows-cloud', name_prefix='windows-server-2008-r2'),
     'windows-2012-r2': ImageAlias(

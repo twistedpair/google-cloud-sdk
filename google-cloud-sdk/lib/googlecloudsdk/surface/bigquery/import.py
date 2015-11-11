@@ -67,7 +67,6 @@ class Import(base.Command):
         help='The character encoding used for the source data.')
     parser.add_argument(
         '--field-delimiter',
-        default=',',
         help='The character that indicates the boundary between columns in '
         'CSV source data. "\t" and "tab" are accepted names for tab.')
     parser.add_argument(

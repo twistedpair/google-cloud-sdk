@@ -1,7 +1,6 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
 """'functions deploy' command."""
-
 import httplib
 import os
 import random
@@ -27,43 +26,51 @@ class Deploy(base.Command):
         'name', help='Intended name of the new function.',
         type=util.ValidateFunctionNameOrRaise)
     parser.add_argument(
-        '--source', default='.',
+        '--source',
         help=('Path to directory with source code, either local or in Cloud '
-              'Repositories. The latter must be of the form: '
-              'https://source.developers.google.com/p/{project_id}/'
-              'repo/{repo_name}/{path_inside_repo}, where you should '
-              'substitute your data for values inside the curly brackets. '
-              'At most one of the parameters --source-revision, '
-              '--source-branch or --source-tag must be given if the '
-              '--source parameter refers to a Cloud Repository. If none of '
-              'them are provided, the last revision from the master branch '
-              'is used. None of them is allowed when the --source parameter '
-              'refers to a local directory; instead, --bucket is required.'
-              ''),
-        type=util.ValidateDirectoryOrCloudRepoPathOrRaise)
+              'Source Repositories. If the code is being deployed from Cloud '
+              'Source Repositories, this parameter is required and also you '
+              'have to specify the parameter --source-url. If the code is in '
+              'a local directory, this parameter is optional and defaults to '
+              'the current directory. In this case you have to specify the '
+              '--bucket parameter.'))
     source_group = parser.add_mutually_exclusive_group()
-    source_group.add_argument(
-        '--source-revision',
-        help=('The revision ID (for instance, git tag) that will be used to '
-              'get the source code of the function. See also the documentation '
-              'for --source parameter.'))
-    source_group.add_argument(
-        '--source-branch',
-        help=('The branch that will be used to get the source code of the '
-              'function.  The most recent revision on this branch will be '
-              'used.  See also the documentation for --source parameter.'))
-    source_group.add_argument(
-        '--source-tag',
-        help=('The revision tag for the source that will be used as the source '
-              'code of the function. See also the documentation for '
-              '--source parameter.'))
     source_group.add_argument(
         '--bucket',
         help=('Name of Google Cloud Storage bucket in which source code will '
-              'be stored. Required if the --source parameter refers to a '
-              'local directory.  Must not be given if it refers to a Cloud '
-              'Repository.'),
+              'be stored. Required if a function is deployed from a local '
+              'directory.'),
         type=util.ValidateAndStandarizeBucketUriOrRaise)
+    source_group.add_argument(
+        '--source-url',
+        help=('The Url of a remote repository that holds the function being '
+              'deployed. Must be of the form: '
+              'https://source.developers.google.com/p/{project_id}/'
+              'r/{repo_name}/, where you should substitute your data for '
+              'values inside the curly brackets. '
+              'One of the parameters --source-revision, --source-branch, '
+              'or --source-tag can be given to specify the version in the '
+              'repository. If none of them are provided, the last revision '
+              'from the master branch is used. If this parameter is given, '
+              'the parameter --source is required and describes the path '
+              'inside the repository.'))
+    source_version_group = parser.add_mutually_exclusive_group()
+    source_version_group.add_argument(
+        '--source-revision',
+        help=('The revision ID (for instance, git tag) that will be used to '
+              'get the source code of the function. Can be specified only '
+              'together with --source-url parameter.'))
+    source_version_group.add_argument(
+        '--source-branch',
+        help=('The branch that will be used to get the source code of the '
+              'function.  The most recent revision on this branch will be '
+              'used. Can be specified only together with --source-url '
+              'parameter.'))
+    source_version_group.add_argument(
+        '--source-tag',
+        help=('The revision tag for the source that will be used as the source '
+              'code of the function. Can be specified only together with '
+              '--source-url parameter.'))
     parser.add_argument(
         '--entry-point',
         help=('The name of the function (as defined in source code) that will '
@@ -135,13 +142,14 @@ class Deploy(base.Command):
 
   def _DeployFunction(self, name, location, args, deploy_method):
     function = self._PrepareFunctionWithoutSources(name, args)
-    if util.IsCloudRepoPath(args.source):
+    if args.source_url:
       messages = self.context['functions_messages']
       # At most one of [args.source_tag, args.source_branch,
       # args.source_revision] is set: enforced by the arg parser.
       function.sourceRepository = messages.SourceRepository(
           tag=args.source_tag, branch=args.source_branch,
-          revision=args.source_revision, sourceUrl=args.source)
+          revision=args.source_revision, repositoryUrl=args.source_url,
+          sourcePath=args.source)
     else:
       function.gcsUrl = self._PrepareSourcesOnGcs(args)
     return deploy_method(location, function)
@@ -183,16 +191,27 @@ class Deploy(base.Command):
     #    to be reused here.
     # 2. _CheckArgs() is invoked from Run() and ArgumentParsingError thrown
     #    from Run are not caught.
-    if util.IsCloudRepoPath(args.source):
-      if args.bucket is not None:
+    if args.source_url is None:
+      if args.source_revision is not None:
         raise exceptions.FunctionsError(
-            'argument --bucket: not allowed when argument --source points '
-            'to a repository')
-    elif args.bucket is None:
-      raise exceptions.FunctionsError(
-          'argument --bucket: required when argument --source points '
-          'to a local directory')
-
+            'argument --source-revision: can be given only if argument '
+            '--source-url is provided')
+      if args.source_branch is not None:
+        raise exceptions.FunctionsError(
+            'argument --source-branch: can be given only if argument '
+            '--source-url is provided')
+      if args.source_tag is not None:
+        raise exceptions.FunctionsError(
+            'argument --source-tag: can be given only if argument '
+            '--source-url is provided')
+      if args.source is None:
+        args.source = '.'
+      util.ValidateDirectoryExistsOrRaiseFunctionError(args.source)
+    else:
+      if args.source is None:
+        raise exceptions.FunctionsError(
+            'argument --source: required when argument --source-url is '
+            'provided')
   def Run(self, args):
     """This is what gets called when the user runs this command.
 

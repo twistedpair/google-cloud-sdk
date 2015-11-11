@@ -4,10 +4,9 @@
 
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import list_printer
 
 
-class List(base.Command):
+class List(base.ListCommand):
   """List all Android device environments available for testing."""
 
   @staticmethod
@@ -33,11 +32,11 @@ class List(base.Command):
     catalog = util.GetAndroidCatalog(self.context)
     return catalog.models
 
-  def Display(self, args, result):
-    """Method called by Calliope to print the result of the Run() method.
+  def Collection(self, unused_args):
+    """Choose the resource collection key used to list devices by default.
 
-    Args:
-      args: The arguments that the command was run with.
-      result: The Run() method's result, which is a list of AndroidModels.
+    Returns:
+      A collection string used as a key to select the default ResourceInfo
+      from core.resources.resource_registry.RESOURCE_REGISTRY.
     """
-    list_printer.PrintResourceList('test.android.devices', result)
+    return 'test.android.devices'

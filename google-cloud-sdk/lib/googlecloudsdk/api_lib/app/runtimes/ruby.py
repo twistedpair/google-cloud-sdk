@@ -13,6 +13,14 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
+
+NAME ='Ruby'
+ALLOWED_RUNTIME_NAMES = ('ruby', 'custom')
+
+# This should be kept in sync with the default Ruby version specified in
+# the base docker image.
+PREFERRED_RUBY_VERSION = '2.2.3'
+
 # Keep these up to date. You can find the latest versions by visiting
 # rubygems.org and searching for "bundler" and for "foreman".
 # Checking about once every month or two should be sufficient.
@@ -73,7 +81,7 @@ DOCKERFILE_DEFAULT_INTERPRETER = textwrap.dedent("""\
     # specified by the base image.
     # If you want to use a specific ruby interpreter, provide a
     # .ruby-version file, then delete this Dockerfile and re-run
-    # "gcloud app gen-config" to recreate it.
+    # "gcloud app gen-config --custom" to recreate it.
     """)
 DOCKERFILE_CUSTOM_INTERPRETER = textwrap.dedent("""\
     # Install ruby {{0}} if not already preinstalled by the base image
@@ -112,6 +120,26 @@ ENTRYPOINT_UNICORN = 'bundle exec unicorn -p 8080 -E production'
 ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E production /app/config.ru'
 
 
+class RubyConfigError(exceptions.Error):
+  """Error during Ruby application configuration."""
+
+
+class MissingGemfileError(RubyConfigError):
+  """Gemfile is missing."""
+
+
+class MissingGemfileLockError(RubyConfigError):
+  """Gemfile.lock is missing."""
+
+
+class MissingBundlerError(RubyConfigError):
+  """Bundler is missing."""
+
+
+class StaleBundleError(RubyConfigError):
+  """Bundle is stale and needs a bundle install."""
+
+
 class RubyConfigurator(fingerprinting.Configurator):
   """Generates configuration for a Ruby app."""
 
@@ -146,6 +174,7 @@ class RubyConfigurator(fingerprinting.Configurator):
     Returns:
       (fingerprinting.Cleaner) A cleaner populated with the generated files
     """
+    self.notify('')
 
     cleaner = fingerprinting.Cleaner()
 
@@ -156,7 +185,7 @@ class RubyConfigurator(fingerprinting.Configurator):
       self._GenerateDockerignore(cleaner)
 
     if not cleaner.HasFiles():
-      self.notify('All config files already exist, not generating anything.')
+      self.notify('All config files already exist. No files generated.')
 
     return cleaner
 
@@ -168,11 +197,11 @@ class RubyConfigurator(fingerprinting.Configurator):
     """
     app_yaml = os.path.join(self.root, 'app.yaml')
     if not os.path.exists(app_yaml):
-      self.notify('Saving [app.yaml] to [{0}].'.format(self.root))
       runtime = 'custom' if self.params.custom else 'ruby'
       with open(app_yaml, 'w') as f:
         f.write(APP_YAML_CONTENTS.format(runtime=runtime,
                                          entrypoint=self.entrypoint))
+      self.notify('Created app.yaml in {0}'.format(self.root))
       cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
@@ -183,8 +212,6 @@ class RubyConfigurator(fingerprinting.Configurator):
     """
     dockerfile = os.path.join(self.root, config.DOCKERFILE)
     if not os.path.exists(dockerfile):
-      self.notify('Saving [{0}] to [{0}].'.format(config.DOCKERFILE, self.root))
-
       dockerfile_content = [DOCKERFILE_HEADER]
       if self.ruby_version:
         dockerfile_content.append(
@@ -202,6 +229,7 @@ class RubyConfigurator(fingerprinting.Configurator):
 
       with open(dockerfile, 'a') as f:
         f.write('\n'.join(dockerfile_content))
+      self.notify('Created Dockerfile in {0}'.format(self.root))
 
       cleaner.Add(dockerfile)
 
@@ -213,9 +241,9 @@ class RubyConfigurator(fingerprinting.Configurator):
     """
     dockerignore = os.path.join(self.root, '.dockerignore')
     if not os.path.exists(dockerignore):
-      self.notify('Saving [.dockerignore] to [{0}].'.format(self.root))
       with open(dockerignore, 'w') as f:
         f.write(DOCKERIGNORE_CONTENTS)
+      self.notify('Created .dockerignore in {0}'.format(self.root))
       cleaner.Add(dockerignore)
 
 
@@ -232,57 +260,74 @@ def Fingerprint(path, params):
     Ruby app, or None if not.
   """
   appinfo = params.appinfo
-  entrypoint = None
-  is_explicit_runtime = False
-  if appinfo:
-    if appinfo.GetEffectiveRuntime() != 'ruby':
-      return None
-    is_explicit_runtime = True
 
-    if appinfo.entrypoint:
-      entrypoint = appinfo.entrypoint
+  if not _CheckForRubyRuntime(path, appinfo):
+    return None
 
-  log.info('Checking for Ruby.')
-
-  gemfile_path = os.path.join(path, 'Gemfile')
-  if not os.path.isfile(gemfile_path):
-    if is_explicit_runtime:
-      raise exceptions.Error('Gemfile required for Ruby runtime')
-    else:
-      return None
-
-  _CheckFiles(path)
+  _SanityCheck(path)
 
   gems = _DetectGems()
   ruby_version = _DetectRubyInterpreter(path)
   packages = _DetectNeededPackages(gems)
 
-  if not entrypoint:
+  if appinfo and appinfo.entrypoint:
+    entrypoint = appinfo.entrypoint
+  else:
     default_entrypoint = _DetectDefaultEntrypoint(path, gems)
     entrypoint = _ChooseEntrypoint(default_entrypoint, appinfo)
-    if not entrypoint:
-      return None
 
-  return RubyConfigurator(path, params, ruby_version, entrypoint,
-                          packages)
+  return RubyConfigurator(path, params, ruby_version, entrypoint, packages)
 
 
-def _CheckFiles(path):
+def _CheckForRubyRuntime(path, appinfo):
+  """Determines whether to treat this application as runtime:ruby.
+
+  Honors the appinfo runtime setting; otherwise looks at the contents of the
+  current directory and confirms with the user.
+
+  Args:
+    path: (str) Application path.
+    appinfo: (apphosting.api.appinfo.AppInfoExternal or None) The parsed
+      app.yaml file for the module if it exists.
+
+  Returns:
+    (bool) Whether this app should be treated as runtime:ruby.
+  """
+  log.info('Checking for Ruby.')
+
+  gemfile_path = os.path.join(path, 'Gemfile')
+  if not os.path.isfile(gemfile_path):
+    return False
+
+  return console_io.PromptContinue(
+      message='This looks like a Ruby application.',
+      prompt_string='Proceed to configure deployment for Ruby?')
+
+
+def _SanityCheck(path):
   """Runs some sanity checks on the application.
 
   Args:
     path: (str) Application path.
 
   Raises:
-    exceptions.Error: The application is recognized as a Ruby app but
+    RubyConfigError: The application is recognized as a Ruby app but
     malformed in some way.
   """
+  gemfile_path = os.path.join(path, 'Gemfile')
+  if not os.path.isfile(gemfile_path):
+    raise MissingGemfileError('Gemfile is required for Ruby runtime.')
+
   gemfile_lock_path = os.path.join(path, 'Gemfile.lock')
   if not os.path.isfile(gemfile_lock_path):
-    raise exceptions.Error('Gemfile present but Gemfile.lock not found.')
+    raise MissingGemfileLockError('Gemfile present but Gemfile.lock not found.')
+
+  if not _SubprocessSucceeds('bundle version'):
+    raise MissingBundlerError('Bundler does not seem to be installed. '
+                              "Install bundler with 'gem install bundler'.")
 
   if not _SubprocessSucceeds('bundle check'):
-    raise exceptions.Error('Your bundle is not up-to-date. '
+    raise StaleBundleError('Your bundle is not up-to-date. '
                            "Install missing gems with 'bundle install'.")
 
   # TODO(dazuma): Check that the Gemfile.lock is up to date
@@ -295,7 +340,8 @@ def _DetectRubyInterpreter(path):
     path: (str) Application path.
 
   Returns:
-    (str) The interpreter version in rbenv (.ruby-version) format
+    (str or None) The interpreter version in rbenv (.ruby-version) format, or
+    None to use the base image default.
   """
   ruby_info = _RunSubprocess('bundle platform --ruby')
   if not re.match('^No ', ruby_info):
@@ -303,24 +349,27 @@ def _DetectRubyInterpreter(path):
     if match:
       ruby_version = match.group(1)
       ruby_version = RUBY_VERSION_MAP.get(ruby_version, ruby_version)
-      log.info(
-          'Using MRI {0} as requested in the Gemfile.'.format(ruby_version))
+      msg = '\nUsing Ruby {0} as requested in the Gemfile.'.format(ruby_version)
+      log.status.Print(msg)
       return ruby_version
     # TODO(dazuma): Identify other interpreters
-    log.warning('Unrecognized platform in Gemfile: [{0}]'.format(ruby_info))
+    msg = 'Unrecognized platform in Gemfile: [{0}]'.format(ruby_info)
+    log.status.Print(msg)
 
   ruby_version = _ReadFile(path, '.ruby-version')
   if ruby_version:
     ruby_version = ruby_version.strip()
-    log.info(
-        'Using ruby {0} as requested in the .ruby-version'.format(ruby_version))
+    msg = ('\nUsing Ruby {0} as requested in the .ruby-version file'.
+           format(ruby_version))
+    log.status.Print(msg)
     return ruby_version
 
-  # Default to the latest MRI.
-  log.warning('No ruby version specified. Using a default. '
-              'We recommend that you specify a ruby interpreter to use, '
-              'either by creating a .ruby-version file or by adding a '
-              '"ruby" declaration to your Gemfile.')
+  msg = ('\nNOTICE: We will deploy your application using a recent version of '
+         'the standard "MRI" Ruby runtime by default. If you want to use a '
+         'specific Ruby runtime, you can create a ".ruby-version" file in this '
+         'directory. (For best performance, we recommend MRI version {0}.)'.
+         format(PREFERRED_RUBY_VERSION))
+  log.status.Print(msg)
   return None
 
 
@@ -370,10 +419,13 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
 
   Returns:
     (str) The actual entrypoint to use.
+
+  Raises:
+    RubyConfigError: Unable to get entrypoint from the user.
   """
-  if console_io.IsInteractive():
-    prompt = ('Please enter the command to run this ruby app in production:\n'
-              '[ {0} ] ')
+  if console_io.CanPrompt():
+    prompt = ('\nPlease enter the command to run this Ruby app in production, '
+              'or leave blank to accept the default:\n[{0}] ')
     entrypoint = console_io.PromptResponse(prompt.format(default_entrypoint))
     entrypoint = entrypoint.strip()
     if not entrypoint:
@@ -382,17 +434,17 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
       # We've got an entrypoint and the user had an app.yaml that didn't
       # specify it.
       # TODO(mmuller): Offer to edit the user's app.yaml
-      msg = ('To avoid being asked for an entrypoint in the future, please '
-             'add it to your app.yaml. e.g.\n'
-             '  entrypoint: {0}')
-      log.status.Print(msg.format(entrypoint))
+      msg = ('\nTo avoid being asked for an entrypoint in the future, please '
+             'add it to your app.yaml. e.g.\n  entrypoint: {0}'.
+             format(entrypoint))
+      log.status.Print(msg)
     return entrypoint
   else:
-    msg = ('Using a default entrypoint of [{0}]. If this is incorrect, please '
-           'create an app.yaml file with an "entrypoint" field specifying the '
-           'command to run the app in production.')
-    log.info(msg.format(default_entrypoint))
-    return default_entrypoint
+    msg = ("This appears to be a Ruby app. You'll need to provide the "
+           'command to run the app in production. Please either run this '
+           'interactively or create an app.yaml with "runtime: python" and '
+           'an "entrypoint" field defining the full command.')
+    raise RubyConfigError(msg)
 
 
 def _DetectNeededPackages(gems):
@@ -416,7 +468,7 @@ def _DetectNeededPackages(gems):
 def _RunSubprocess(cmd):
   p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
   if p.wait() != 0:
-    raise exceptions.Error('Unable to run script: [{0}]'.format(cmd))
+    raise RubyConfigError('Unable to run script: [{0}]'.format(cmd))
   return p.stdout.read()
 
 
@@ -429,9 +481,8 @@ def _ReadFile(root, filename, required=False):
   path = os.path.join(root, filename)
   if not os.path.isfile(path):
     if required:
-      raise exceptions.Error(
+      raise RubyConfigError(
           'Could not find required file: [{0}]'.format(filename))
     return None
   with open(path) as f:
     return f.read()
-

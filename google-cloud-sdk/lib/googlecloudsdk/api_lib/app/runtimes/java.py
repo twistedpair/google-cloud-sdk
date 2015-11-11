@@ -9,6 +9,8 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 
+NAME ='java'
+ALLOWED_RUNTIME_NAMES = ('java', 'custom')
 JAVA_RUNTIME_NAME = 'java'
 
 # TODO(ludo): We'll move these into directories once we externalize
@@ -32,6 +34,7 @@ DOCKERFILE_COMPAT_PREAMBLE = 'FROM gcr.io/google_appengine/jetty9-compat\n'
 DOCKEFILE_CMD = 'CMD {0}\n'
 DOCKERFILE_JAVA8_ENTRYPOINT = 'ENTRYPOINT ["java", "-jar", "/app/{0}"]\n'
 DOCKERFILE_INSTALL_APP = 'ADD {0} /app/\n'
+DOCKERFILE_INSTALL_WAR = 'ADD {0} $JETTY_BASE/webapps/root.war\n'
 
 
 class JavaConfigError(exceptions.Error):
@@ -133,18 +136,19 @@ class JavaConfigurator(fingerprinting.Configurator):
       with open(dockerfile, 'w') as out:
         if self.artifact_to_deploy.endswith('.war'):
           out.write(DOCKERFILE_JETTY9_PREAMBLE)
+          out.write(DOCKERFILE_INSTALL_WAR.format(self.artifact_to_deploy))
         if self.artifact_to_deploy.endswith('.jar'):
           if self.server is not None:
             raise JavaConfigError('Cannot use server %s '
-                                  'for jar deployment' % self.server)
+                                  'for jar deployment.' % self.server)
           out.write(DOCKERFILE_JAVA8_PREAMBLE)
+          out.write(DOCKERFILE_INSTALL_APP.format(self.artifact_to_deploy))
         if self.artifact_to_deploy == '.':
           if env2:
             out.write(DOCKERFILE_COMPAT_PREAMBLE)
           else:
             out.write(DOCKERFILE_LEGACY_PREAMBLE)
-
-        out.write(DOCKERFILE_INSTALL_APP.format(self.artifact_to_deploy))
+          out.write(DOCKERFILE_INSTALL_APP.format(self.artifact_to_deploy))
 
         # Generate the appropriate start command.
         if self.entrypoint:
@@ -187,13 +191,8 @@ def Fingerprint(path, params):
   entrypoint = None
   server = None
   appinfo = params.appinfo
-  if appinfo:
-    # We only want to do fingerprinting for 'java'.
-    if appinfo.GetEffectiveRuntime() != 'java':
-      return None
-
-    if appinfo.entrypoint:
-      entrypoint = appinfo.entrypoint
+  if appinfo and appinfo.entrypoint:
+    entrypoint = appinfo.entrypoint
 
   log.info('Checking for Java.')
   if appinfo:

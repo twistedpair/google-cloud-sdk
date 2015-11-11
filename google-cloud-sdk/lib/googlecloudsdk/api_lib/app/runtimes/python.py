@@ -10,6 +10,8 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
+NAME ='Python'
+ALLOWED_RUNTIME_NAMES = ('python', 'custom')
 PYTHON_RUNTIME_NAME = 'python'
 DEFAULT_PYTHON_INTERPRETER_VERSION = '2'
 VALID_PYTHON_INTERPRETER_VERSIONS = ['2', '3']
@@ -140,13 +142,7 @@ def Fingerprint(path, params):
   """
   entrypoint = None
   appinfo = params.appinfo
-  if appinfo:
-    # We only want to do fingerprinting for 'python', for 'python-compat' we
-    # want to fall through to plain dockerfiles.
-    if appinfo.GetEffectiveRuntime() != 'python':
-      return None
-
-    if appinfo.entrypoint:
+  if appinfo and appinfo.entrypoint:
       entrypoint = appinfo.entrypoint
 
   log.info('Checking for Python.')
@@ -167,7 +163,7 @@ def Fingerprint(path, params):
 
   # Query the user for the WSGI entrypoint:
   if not entrypoint:
-    if console_io.IsInteractive():
+    if console_io.CanPrompt():
       entrypoint = console_io.PromptResponse(
           'This looks like a Python app.  If so, please enter the command to '
           "run to run the app in production (enter nothing if it's not a "

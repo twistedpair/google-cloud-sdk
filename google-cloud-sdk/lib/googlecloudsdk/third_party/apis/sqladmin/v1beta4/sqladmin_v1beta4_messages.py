@@ -518,6 +518,23 @@ class LocationPreference(_messages.Message):
   zone = _messages.StringField(3)
 
 
+class MaintenanceWindow(_messages.Message):
+  """Maintenance window. This specifies when a v2 Cloud SQL instance should
+  preferably be restarted for system maintenance puruposes.
+
+  Fields:
+    day: day of week (1-7), starting on Monday.
+    hour: hour of day - 0 to 23.
+    kind: This is always sql#maintenanceWindow.
+    updateTrack: A string attribute.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  hour = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(3, default=u'sql#maintenanceWindow')
+  updateTrack = _messages.StringField(4)
+
+
 class MySqlReplicaConfiguration(_messages.Message):
   """Read-replica configuration specific to MySQL databases.
 
@@ -729,6 +746,8 @@ class Settings(_messages.Message):
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or GCE zone for better performance.
+    maintenanceWindow: The maintenance window for this instance. This
+      specifies when the instance may be restarted for maintenance purposes.
     pricingPlan: The pricing plan for this instance. This can be either
       PER_USE or PACKAGE.
     replicationType: The type of replication this instance uses. This can be
@@ -751,10 +770,11 @@ class Settings(_messages.Message):
   ipConfiguration = _messages.MessageField('IpConfiguration', 8)
   kind = _messages.StringField(9, default=u'sql#settings')
   locationPreference = _messages.MessageField('LocationPreference', 10)
-  pricingPlan = _messages.StringField(11)
-  replicationType = _messages.StringField(12)
-  settingsVersion = _messages.IntegerField(13)
-  tier = _messages.StringField(14)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 11)
+  pricingPlan = _messages.StringField(12)
+  replicationType = _messages.StringField(13)
+  settingsVersion = _messages.IntegerField(14)
+  tier = _messages.StringField(15)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):

@@ -77,10 +77,20 @@ class Command(object):
     self.flags = {}
     self.positionals = []
     self.sections = {}
-    self.release, self.capsule = self.__Release(
+    parent_command = parent.name.replace('_', '-') if parent else ''
+    self.release, capsule = self.__Release(
         command, self.release, getattr(command, 'short_help', ''))
-    self.release, self.description = self.__Release(
+    self.capsule = console_io.LazyFormat(
+        self.__NormalizeDescription(capsule),
+        command=self.name,
+        parent_command=parent_command)
+    self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
+    self.description = console_io.LazyFormat(
+        self.__NormalizeDescription(description),
+        command=self.name,
+        index=self.capsule,
+        parent_command=parent_command)
     sections = getattr(command, 'detailed_help', None)
     if sections:
       for s in sections:
@@ -93,7 +103,7 @@ class Command(object):
               command=self.name,
               index=self.capsule,
               description=self.description,
-              parent_command=parent.name.replace('_', '-'))
+              parent_command=parent_command)
     self.commands = {}
     # _parent is explicitly private so it won't appear in serialized output.
     self._parent = parent

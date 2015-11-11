@@ -1111,7 +1111,8 @@ Please remove the following to avoid accidentally invoking these old tools:
     self.__Write(log.status, msg, word_wrap=True)
 
     # Need to install the component.
-    if not self.Update(components, throw_if_unattended=True):
+    if not self.Install(components, throw_if_unattended=True):
+      # TODO(markpell): Update the error text to point to install once public.
       raise MissingRequiredComponentsError("""\
 The following components are required to run this command, but are not
 currently installed:

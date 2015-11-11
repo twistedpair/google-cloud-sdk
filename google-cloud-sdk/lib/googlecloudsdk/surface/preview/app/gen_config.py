@@ -12,6 +12,12 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
+RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
+                        'for your application.  To use this Dockerfile, '
+                        'please change the runtime field in [%s] to '
+                        'custom.')
+
+
 class GenConfig(base.Command):
   """Generate missing configuration files for a source directory.
 
@@ -83,3 +89,8 @@ class GenConfig(base.Command):
     fingerprinter.GenerateConfigs(
         args.source_dir,
         fingerprinting.Params(appinfo=config, custom=args.custom))
+
+    # If the user has a config file, make sure that they're using a custom
+    # runtime.
+    if config and args.custom and config.GetEffectiveRuntime() != 'custom':
+      log.status.Print(RUNTIME_MISMATCH_MSG % config_filename)
