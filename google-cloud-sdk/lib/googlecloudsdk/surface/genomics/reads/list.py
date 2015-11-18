@@ -3,7 +3,6 @@
 """Implementation of gcloud genomics reads list.
 """
 
-import collections
 import sys
 
 from googlecloudsdk.calliope import base
@@ -14,15 +13,15 @@ from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
-_COLUMNS = collections.OrderedDict([
+_COLUMNS = [
     ('REFERENCE_NAME', 'alignment.position.referenceName'),
     ('POSITION', 'alignment.position.position'),
     ('REVERSE_STRAND', 'alignment.position.reverseStrand'),
     ('FRAGMENT_NAME', 'fragmentName'),
     ('SEQUENCE', 'alignedSequence'),
-])
+]
 _PROJECTIONS = [
-    '{0}:label={1}'.format(field, col) for col, field in _COLUMNS.iteritems()
+    '{0}:label={1}'.format(field, col) for col, field in _COLUMNS
 ]
 
 class List(base.Command):

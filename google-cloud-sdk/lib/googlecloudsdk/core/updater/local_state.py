@@ -8,12 +8,10 @@ tracking when we check for updates.
 """
 
 import errno
-import json
 import logging
 import os
 import shutil
 import sys
-import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -178,9 +176,11 @@ class InstallationState(object):
     self.__sdk_staging_root = (os.path.normpath(self.__sdk_root) +
                                InstallationState.STAGING_ROOT_SUFFIX)
 
-    for d in [self._state_directory]:
-      if not os.path.isdir(d):
-        file_utils.MakeDir(d)
+  @_RaisesPermissionsError
+  def _CreateStateDir(self):
+    """Creates the state directory if it does not exist."""
+    if not os.path.isdir(self._state_directory):
+      file_utils.MakeDir(self._state_directory)
 
   @property
   def sdk_root(self):
@@ -200,6 +200,9 @@ class InstallationState(object):
     Returns:
       list of str, The file names that match.
     """
+    if not os.path.isdir(self._state_directory):
+      return []
+
     files = os.listdir(self._state_directory)
     matching = [f for f in files
                 if os.path.isfile(os.path.join(self._state_directory, f))
@@ -226,10 +229,6 @@ class InstallationState(object):
   def Snapshot(self):
     """Generates a ComponentSnapshot from the currently installed components."""
     return snapshots.ComponentSnapshot.FromInstallState(self)
-
-  def LastUpdateCheck(self):
-    """Gets a LastUpdateCheck object to check update status."""
-    return LastUpdateCheck(self)
 
   def DiffCurrentState(self, latest_snapshot, platform_filter=None):
     """Generates a ComponentSnapshotDiff from current state and the given state.
@@ -262,6 +261,7 @@ class InstallationState(object):
     Returns:
       An InstallationState object for the cloned install.
     """
+    self._CreateStateDir()
     (rm_staging_cb, rm_backup_cb, rm_trash_cb, copy_cb) = (
         console_io.ProgressBar.SplitProgressBar(progress_callback,
                                                 [1, 1, 1, 7]))
@@ -301,7 +301,10 @@ class InstallationState(object):
 
     shutil.copytree(self.__sdk_root, self.__sdk_staging_root, symlinks=True,
                     ignore=ticker)
-    return InstallationState(self.__sdk_staging_root)
+    staging_state = InstallationState(self.__sdk_staging_root)
+    # pylint: disable=protected-access, This is an instance of InstallationState
+    staging_state._CreateStateDir()
+    return staging_state
 
   @_RaisesPermissionsError
   def CreateStagingFromDownload(self, url, progress_callback=None):
@@ -334,6 +337,8 @@ class InstallationState(object):
       file_utils.MoveDir(sdk_root, self.__sdk_staging_root)
 
     staging_sdk = InstallationState(self.__sdk_staging_root)
+    # pylint: disable=protected-access, This is an instance of InstallationState
+    staging_sdk._CreateStateDir()
     self.CopyMachinePropertiesTo(staging_sdk)
     return staging_sdk
 
@@ -353,8 +358,11 @@ class InstallationState(object):
       progress_callback: f(float), A function to call with the fraction of
         completeness.
     """
+    self._CreateStateDir()
     self.ClearBackup()
     self.ClearTrash()
+    # pylint: disable=protected-access, This is an instance of InstallationState
+    other_install_state._CreateStateDir()
     other_install_state.ClearBackup()
     # pylint: disable=protected-access, This is an instance of InstallationState
     file_utils.MoveDir(self.__sdk_root, other_install_state.__backup_directory)
@@ -385,6 +393,8 @@ class InstallationState(object):
 
     file_utils.MoveDir(self.__backup_directory, self.__sdk_staging_root)
     staging_state = InstallationState(self.__sdk_staging_root)
+    # pylint: disable=protected-access, This is an instance of InstallationState
+    staging_state._CreateStateDir()
     staging_state.ClearTrash()
     # pylint: disable=protected-access, This is an instance of InstallationState
     file_utils.MoveDir(self.__sdk_root, staging_state.__trash_directory)
@@ -480,6 +490,8 @@ class InstallationState(object):
       installers.URLFetchError: If the component associated with the provided
         component ID has a URL that is not fetched correctly.
     """
+    self._CreateStateDir()
+
     files = self._GetInstaller(snapshot).Install(
         component_id, progress_callback=progress_callback,
         command_path=command_path)
@@ -642,147 +654,3 @@ class InstallationManifest(object):
         if fixed.endswith('/'):
           dirs.add(fixed)
     return dirs
-
-
-class LastUpdateCheck(object):
-  """A class to encapsulate information on when we last checked for updates."""
-
-  DATE = 'date'
-  LAST_NAG_DATE = 'last_nag_date'
-  REVISION = 'revision'
-  UPDATES_AVAILABLE = 'updates_available'
-
-  def __init__(self, install_state):
-    self.__install_state = install_state
-    self.__last_update_check_file = config.Paths().update_check_cache_path
-    self._LoadData()
-
-  def _LoadData(self):
-    """Deserializes data from the json file."""
-    self.__dirty = False
-    if not os.path.isfile(self.__last_update_check_file):
-      data = {}
-    else:
-      with open(self.__last_update_check_file) as fp:
-        data = json.loads(fp.read())
-    self.__last_update_check_date = data.get(LastUpdateCheck.DATE, 0)
-    self.__last_nag_date = data.get(LastUpdateCheck.LAST_NAG_DATE, 0)
-    self.__last_update_check_revision = data.get(LastUpdateCheck.REVISION, 0)
-    self.__updates_available = data.get(LastUpdateCheck.UPDATES_AVAILABLE,
-                                        False)
-
-  def _SaveData(self):
-    """Serializes data to the json file."""
-    if not self.__dirty:
-      return
-    data = {LastUpdateCheck.DATE: self.__last_update_check_date,
-            LastUpdateCheck.LAST_NAG_DATE: self.__last_nag_date,
-            LastUpdateCheck.REVISION: self.__last_update_check_revision,
-            LastUpdateCheck.UPDATES_AVAILABLE: self.__updates_available}
-    with open(self.__last_update_check_file, 'w') as fp:
-      fp.write(json.dumps(data))
-    self.__dirty = False
-
-  def __enter__(self):
-    return self
-
-  def __exit__(self, *args):
-    self._SaveData()
-
-  def UpdatesAvailable(self):
-    """Returns whether we already know about updates that are available.
-
-    Returns:
-      bool, True if we know about updates, False otherwise.
-    """
-    return self.__updates_available
-
-  def LastUpdateCheckRevision(self):
-    """Gets the revision of the snapshot from the last update check.
-
-    Returns:
-      int, The revision of the last checked snapshot.
-    """
-    return self.__last_update_check_revision
-
-  def LastUpdateCheckDate(self):
-    """Gets the time of the last update check as seconds since the epoch.
-
-    Returns:
-      int, The time of the last update check.
-    """
-    return self.__last_update_check_date
-
-  def LastNagDate(self):
-    """Gets the time when the last nag was printed as seconds since the epoch.
-
-    Returns:
-      int, The time of the last nag.
-    """
-    return self.__last_nag_date
-
-  def SecondsSinceLastUpdateCheck(self):
-    """Gets the number of seconds since we last did an update check.
-
-    Returns:
-      int, The amount of time in seconds.
-    """
-    return time.time() - self.__last_update_check_date
-
-  def SecondsSinceLastNag(self):
-    """Gets the number of seconds since we last printed that there were updates.
-
-    Returns:
-      int, The amount of time in seconds.
-    """
-    return time.time() - self.__last_nag_date
-
-  @_RaisesPermissionsError
-  def SetFromSnapshot(self, snapshot, force=False, platform_filter=None):
-    """Sets that we just did an update check and found the given snapshot.
-
-    If the given snapshot is different that the last one we saw, this will also
-    diff the new snapshot with the current install state to refresh whether
-    there are components available for update.
-
-    You must call Save() to persist these changes.
-
-    Args:
-      snapshot: snapshots.ComponentSnapshot, The snapshot pulled from the
-        server.
-      force: bool, True to force a recalculation of whether there are available
-        updates, even if the snapshot revision has not changed.
-      platform_filter: platforms.Platform, A platform that components must
-        match in order to be considered for any operations.
-
-    Returns:
-      bool, True if there are now components to update, False otherwise.
-    """
-    if force or self.__last_update_check_revision != snapshot.revision:
-      diff = self.__install_state.DiffCurrentState(
-          snapshot, platform_filter=platform_filter)
-      self.__updates_available = bool(diff.AvailableUpdates())
-      self.__last_update_check_revision = snapshot.revision
-
-    self.__last_update_check_date = time.time()
-    self.__dirty = True
-    return self.__updates_available
-
-  def SetFromIncompatibleSchema(self):
-    """Sets that we just did an update check and found a new schema version.
-
-    You must call Save() to persist these changes.
-    """
-    self.__updates_available = True
-    self.__last_update_check_revision = 0  # Doesn't matter
-    self.__last_update_check_date = time.time()
-    self.__dirty = True
-
-  def SetNagged(self):
-    """Sets that we printed the update nag."""
-    self.__last_nag_date = time.time()
-    self.__dirty = True
-
-  def Save(self):
-    """Saves the changes we made to this object."""
-    self._SaveData()

@@ -3,12 +3,12 @@
 """Help document markdown helpers."""
 
 import argparse
-import collections
 import re
 import StringIO
 import textwrap
 
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.third_party.py27 import collections
 
 
 def FilterOutSuppressed(args):

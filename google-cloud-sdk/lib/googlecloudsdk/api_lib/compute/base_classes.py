@@ -2,8 +2,6 @@
 """Base classes for abstracting away common logic."""
 import abc
 import argparse
-import collections
-import copy
 import cStringIO
 import json
 import sets
@@ -29,10 +27,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import copy
 import protorpc.messages
 import yaml
 

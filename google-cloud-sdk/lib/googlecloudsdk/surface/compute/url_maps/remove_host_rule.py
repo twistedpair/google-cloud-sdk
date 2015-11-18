@@ -1,9 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for removing a host rule from a URL map."""
-import copy
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import copy
 
 
 class RemoveHostRule(base_classes.ReadWriteCommand):

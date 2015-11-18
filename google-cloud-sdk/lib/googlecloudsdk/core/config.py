@@ -4,6 +4,7 @@
 
 import json
 import os
+import time
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
@@ -79,9 +80,23 @@ _cloudsdk_root_dir() {
 }
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
-# if CLOUDSDK_PYTHON is not empty
-[ -z "$CLOUDSDK_PYTHON" ] &&
-  CLOUDSDK_PYTHON=python
+# Cloud SDK requires python 2 (2.6 or 2.7)
+case $CLOUDSDK_PYTHON in
+*python2*)
+  ;;
+*python[0-9]*)
+  CLOUDSDK_PYTHON=
+  ;;
+esac
+# if CLOUDSDK_PYTHON is empty
+if [ -z "$CLOUDSDK_PYTHON" ]; then
+  # if python2 exists then plain python may point to a version != 2
+  if which python2 >/dev/null; then
+    CLOUDSDK_PYTHON=python2
+  else
+    CLOUDSDK_PYTHON=python
+  fi
+fi
 
 # if CLOUDSDK_PYTHON_SITEPACKAGES and VIRTUAL_ENV are empty
 case :$CLOUDSDK_PYTHON_SITEPACKAGES:$VIRTUAL_ENV: in
@@ -243,6 +258,9 @@ class InstallationConfig(object):
 
   Attributes:
     version: str, The version of the core component.
+    revision: long, A revision number from a component snapshot.  This is a
+      long int but formatted as an actual date in seconds (i.e 20151009132504).
+      It is *NOT* seconds since the epoch.
     user_agent: str, The base string of the user agent to use when making API
       calls.
     documentation_url: str, The URL where we can redirect people when they need
@@ -262,6 +280,8 @@ class InstallationConfig(object):
       config.
   """
 
+  REVISION_FORMAT_STRING = '%Y%m%d%H%M%S'
+
   @staticmethod
   def Load():
     """Initializes the object with values from the config file.
@@ -278,12 +298,57 @@ class InstallationConfig(object):
     non_unicode_data = dict([(str(k), v) for k, v in data.iteritems()])
     return InstallationConfig(**non_unicode_data)
 
-  def __init__(self, version, user_agent, documentation_url, snapshot_url,
-               disable_updater, disable_usage_reporting,
+  @staticmethod
+  def FormatRevision(time_struct):
+    """Formats a given time as a revision string for a component snapshot.
+
+    Args:
+      time_struct: time.struct_time, The time you want to format.
+
+    Returns:
+      long, A revision number from a component snapshot.  This is a long int but
+      formatted as an actual date in seconds (i.e 20151009132504).  It is *NOT*
+      seconds since the epoch.
+    """
+    return long(time.strftime(InstallationConfig.REVISION_FORMAT_STRING,
+                              time_struct))
+
+  @staticmethod
+  def ParseRevision(revision):
+    """Parse the given revision into a time.struct_time.
+
+    Args:
+      revision: long, A revision number from a component snapshot.  This is a
+        long int but formatted as an actual date in seconds
+        (i.e 20151009132504). It is *NOT* seconds since the epoch.
+
+    Returns:
+      time.struct_time, The parsed time.
+    """
+    return time.strptime(str(revision),
+                         InstallationConfig.REVISION_FORMAT_STRING)
+
+  @staticmethod
+  def ParseRevisionAsSeconds(revision):
+    """Parse the given revision into seconds since the epoch.
+
+    Args:
+      revision: long, A revision number from a component snapshot.  This is a
+        long int but formatted as an actual date in seconds
+        (i.e 20151009132504). It is *NOT* seconds since the epoch.
+
+    Returns:
+      int, The number of seconds since the epoch that this revision represents.
+    """
+    return time.mktime(InstallationConfig.ParseRevision(revision))
+
+  def __init__(self, version, revision, user_agent, documentation_url,
+               snapshot_url, disable_updater, disable_usage_reporting,
                snapshot_schema_version, release_channel, config_suffix):
     # JSON returns all unicode.  We know these are regular strings and using
     # unicode in environment variables on Windows doesn't work.
     self.version = str(version)
+    self.revision = revision
     self.user_agent = str(user_agent)
     self.documentation_url = str(documentation_url)
     self.snapshot_url = str(snapshot_url)

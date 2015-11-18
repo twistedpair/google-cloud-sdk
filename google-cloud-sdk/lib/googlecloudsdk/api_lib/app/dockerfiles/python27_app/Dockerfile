@@ -5,6 +5,6 @@
 # refers to a version of the runtime separate from the 'runtime: python-compat'
 # image.
 
-FROM beta.gcr.io/google_appengine/python-compat
+FROM gcr.io/google_appengine/python-compat
 
 ADD . /app

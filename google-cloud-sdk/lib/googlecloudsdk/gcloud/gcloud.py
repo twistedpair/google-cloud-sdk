@@ -100,13 +100,13 @@ if not config.Paths().sdk_root:
   properties.VALUES.component_manager.disable_update_check.Set(True)
 
 
-def UpdateCheck():
+def UpdateCheck(command_path, **unused_kwargs):
   try:
-    update_manager.UpdateManager.PerformUpdateCheck()
+    update_manager.UpdateManager.PerformUpdateCheck(command_path=command_path)
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.
   except Exception:
-    pass
+    log.debug('Failed to perform update check.', exc_info=True)
 
 
 def VersionFunc():

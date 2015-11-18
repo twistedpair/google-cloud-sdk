@@ -5,10 +5,10 @@ Based on list_pager.py from //cloud/bigscience/apitools/base/py/list_pager.py,
 but modified to use pageSize rather than maxResults.
 """
 
-import copy
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.py27 import copy
 
 
 def YieldFromList(

@@ -3,6 +3,6 @@
 # THIS FILE HAS BEEN SUPERSEDED BY FINGERPRINTING and should not appear in
 # normal operation.
 
-FROM beta.gcr.io/google_appengine/python
+FROM gcr.io/google_appengine/python
 
 ADD . /app

@@ -1,7 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 
 """Implements the command for copying files from and to virtual machines."""
-import collections
 import getpass
 import logging
 
@@ -9,6 +8,7 @@ from googlecloudsdk.api_lib.compute import ssh_utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.third_party.py27 import collections
 
 
 RemoteFile = collections.namedtuple(

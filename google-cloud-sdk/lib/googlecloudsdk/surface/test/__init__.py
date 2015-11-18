@@ -16,7 +16,7 @@ from googlecloudsdk.third_party.apis.testing import v1 as testing_v1
 from googlecloudsdk.third_party.apis.toolresults import v1beta3 as toolresults_v1beta3
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class Test(base.Group):
   """Interact with Google Cloud Test Lab.
 

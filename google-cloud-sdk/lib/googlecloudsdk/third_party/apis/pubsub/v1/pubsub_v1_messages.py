@@ -270,15 +270,22 @@ class Policy(_messages.Message):
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
-    etag: Can be used to perform a read-modify-write.
+    etag: The etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions.  If no etag is provided in the call to SetIamPolicy, then
+      the existing policy is overwritten blindly.
+    iamOwned: A boolean attribute.
     rules: A Rule attribute.
     version: Version of the `Policy`. The default version is 0.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
-  rules = _messages.MessageField('Rule', 3, repeated=True)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  iamOwned = _messages.BooleanField(3)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PublishRequest(_messages.Message):
@@ -869,13 +876,13 @@ class Subscription(_messages.Message):
       After message delivery but before the ack deadline expires and before
       the message is acknowledged, it is an outstanding message and will not
       be delivered again during that time (on a best-effort basis).  For pull
-      delivery this value is used as the initial value for the ack deadline.
-      To override this value for a given message, call `ModifyAckDeadline`
-      with the corresponding `ack_id`.  For push delivery, this value is also
-      used to set the request timeout for the call to the push endpoint.  If
-      the subscriber never acknowledges the message, the Pub/Sub system will
-      eventually redeliver the message.  If this parameter is not set, the
-      default value of 10 seconds is used.
+      subscriptions, this value is used as the initial value for the ack
+      deadline. To override this value for a given message, call
+      `ModifyAckDeadline` with the corresponding `ack_id` if using pull.  For
+      push delivery, this value is also used to set the request timeout for
+      the call to the push endpoint.  If the subscriber never acknowledges the
+      message, the Pub/Sub system will eventually redeliver the message.  If
+      this parameter is not set, the default value of 10 seconds is used.
     name: The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers

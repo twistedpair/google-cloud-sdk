@@ -526,7 +526,8 @@ class FileInfo(_messages.Message):
       Cloud Storage will be used.
     sha1Sum: The SHA1 (160 bits) hash of the file in hex.
     sourceUrl: The URL source to use to fetch this file. Must be a URL to a
-      resource in Google Cloud Storage.
+      resource in Google Cloud Storage in the form
+      'http(s)://storage.googleapis.com/\<bucket\>/\<object\>'.
   """
 
   mimeType = _messages.StringField(1)

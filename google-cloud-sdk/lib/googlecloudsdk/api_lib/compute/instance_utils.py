@@ -2,8 +2,12 @@
 """Convenience functions for dealing with instances and instance templates."""
 
 import argparse
+import re
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
@@ -175,6 +179,151 @@ def AddDiskArgs(parser):
       """
 
 
+def AddCustomMachineTypeArgs(parser):
+  """Adds arguments related to custom machine types for instances."""
+  custom_cpu = parser.add_argument(
+      '--custom-cpu',
+      type=int,
+      help='Number of CPUs desired in the instance for a custom machine type.')
+  custom_cpu.detailed_help = """\
+      A whole number value indicating how many cores are desired in the custom
+      machine type. Both --custom-cpu and --custom-memory must be specified if
+      a custom machine type is desired, and the --machine-type flag must be
+      omitted.
+      """
+  custom_memory = parser.add_argument(
+      '--custom-memory',
+      type=arg_parsers.BinarySize(),
+      help='Amount of memory desired in the instance for a custom machine type '
+      '(set units, default GiB).')
+  custom_memory.detailed_help = """\
+      A whole number value indicating how much memory is desired in the custom
+      machine type. A size unit should be provided (eg. 3072MiB or 9GiB) - if
+      no units are specified, GiB is assumed. Both --custom-cpu and
+      --custom-memory must be specified if a custom machine type is desired,
+      and the --machine-type flag must be omitted.
+      """
+
+
+def GetCpuRamFromCustomName(name):
+  """Gets the CPU and memory specs from the custom machine type name.
+
+  Args:
+    name: the custom machine type name for the 'instance create' call
+
+  Returns:
+    A two-tuple with the number of cpu and amount of memory for the custom
+    machine type
+
+    custom_cpu, the number of cpu desired for the custom machine type instance
+    custom_memory_mib, the amount of ram desired in MiB for the custom machine
+      type instance
+    None for both variables otherwise
+  """
+  check_custom = re.search('custom-([0-9]+)-([0-9]+)', name)
+  if check_custom:
+    custom_cpu = check_custom.group(1)
+    custom_memory_mib = check_custom.group(2)
+    return custom_cpu, custom_memory_mib
+  return None, None
+
+
+def GetNameForCustom(custom_cpu, custom_memory_mib):
+  """Creates a custom machine type name from the desired CPU and memory specs.
+
+  Args:
+    custom_cpu: the number of cpu desired for the custom machine type
+    custom_memory_mib: the amount of ram desired in MiB for the custom machine
+      type instance
+
+  Returns:
+    The custom machine type name for the 'instance create' call
+  """
+  return 'custom-{0}-{1}'.format(custom_cpu, custom_memory_mib)
+
+
+def InterpretMachineType(args):
+  """Interprets the machine type for the instance.
+
+  Args:
+    args: command line arguments from the parser.
+
+  Returns:
+    A string representing the URL naming a machine-type.
+
+  Raises:
+    exceptions.RequiredArgumentException when only one of the two custom
+      machine type flags are used.
+    exceptions.InvalidArgumentException when both the machine type and
+      custom machine type flags are used to generate a new instance.
+  """
+  # Setting the machine type
+  machine_type_name = constants.DEFAULT_MACHINE_TYPE
+  if args.machine_type:
+    machine_type_name = args.machine_type
+
+  # Setting the specs for the custom machine.
+  if ('custom_cpu' in args) or ('custom_memory' in args):
+    if args.custom_cpu or args.custom_memory:
+      if args.machine_type:
+        raise exceptions.InvalidArgumentException(
+            '--machine-type', 'Cannot set both [--machine-type] and '
+            '[--custom-cpu]/[--custom-memory] for the same instance.')
+      if not args.custom_cpu:
+        raise exceptions.RequiredArgumentException(
+            '--custom-cpu', 'Both [--custom-cpu] and [--custom-memory] must be '
+            'set to create a custom machine type instance.')
+      if not args.custom_memory:
+        raise exceptions.RequiredArgumentException(
+            '--custom-memory', 'Both [--custom-cpu] and [--custom-memory] must '
+            'be set to create a custom machine type instance.')
+      custom_cpu = args.custom_cpu
+      # converting from B to MiB.
+      custom_memory = int(args.custom_memory / (2 ** 20))
+      custom_type_string = GetNameForCustom(custom_cpu, custom_memory)
+
+      # Updating the machine type that is set for the URIs
+      machine_type_name = custom_type_string
+  return machine_type_name
+
+
+def CheckCustomCpuRamRatio(self, zone, machine_type_name):
+  """Checks that the CPU and memory ratio is a supported custom instance type.
+
+  Args:
+    self: the CreateGA 'instances create' calling class
+    zone: the zone of the instance(s) being created
+    machine_type_name: The machine type of the instance being created.
+
+  Returns:
+    Nothing. Function acts as a bound checker, and will raise an exception from
+      within the function if needed.
+
+  Raises:
+    utils.RaiseToolException if a custom machine type ratio is out of bounds.
+  """
+  if 'custom' in machine_type_name:
+    mt_get_pb = self.messages.ComputeMachineTypesGetRequest(
+        machineType=machine_type_name,
+        project=self.project,
+        zone=zone)
+    mt_get_reqs = [(self.compute.machineTypes, 'Get', mt_get_pb)]
+    errors = []
+
+    # Makes a 'machine-types describe' request to check the bounds
+    _ = list(request_helper.MakeRequests(
+        requests=mt_get_reqs,
+        http=self.http,
+        batch_url=self.batch_url,
+        errors=errors,
+        custom_get_requests=None))
+
+    if errors:
+      utils.RaiseToolException(
+          errors,
+          error_message='Could not fetch machine type:')
+
+
 def AddAddressArgs(parser, instances=True):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
@@ -205,11 +354,11 @@ def AddMachineTypeArgs(parser, required=False):
       '--machine-type',
       completion_resource='compute.machineTypes',
       help='Specifies the machine type used for the instances.',
-      default=constants.DEFAULT_MACHINE_TYPE, required=required)
+      required=required)
   machine_type.detailed_help = """\
       Specifies the machine type used for the instances. To get a
       list of available machine types, run 'gcloud compute
-      machine-types list'.
+      machine-types list'. If unspecified, the default type is n1-standard-1.
       """
 
 

@@ -2,8 +2,9 @@
 
 """A class that creates resource projection specification."""
 
-import copy
 import sys
+
+from googlecloudsdk.third_party.py27 import copy
 
 
 ALIGN_DEFAULT = 'left'

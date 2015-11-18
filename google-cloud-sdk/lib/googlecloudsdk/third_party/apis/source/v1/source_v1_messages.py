@@ -723,7 +723,11 @@ class PiperDepotSourceContext(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     changeNumber: CL number. If zero, represents depot head.
     disableComponents: If false, use the released components as of the CL. If
-      true, use true head.
+      true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -1178,7 +1182,11 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -1351,7 +1359,11 @@ class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -1642,7 +1654,11 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -1808,7 +1824,11 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -2059,7 +2079,11 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -2207,7 +2231,11 @@ class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -2440,7 +2468,11 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit
@@ -2591,7 +2623,11 @@ class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
       //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
     piper_changeNumber: CL number. If zero, represents depot head.
     piper_disableComponents: If false, use the released components as of the
-      CL. If true, use true head.
+      CL. If true, use true head. If branch_name is present, this field is
+      meaningless since the branch relies on the .srcfs_workspace file checked
+      in under e.g. depot/branches/mybranch/25 in order to be consistent.
+      That file contains all the information that 'disable_components' does,
+      and more.
     piper_versionMap: The complete components state description. If present,
       disable_components is ignored.  Not all services accept arbitrary
       version map.  Services not supporting arbitrary version maps must emit

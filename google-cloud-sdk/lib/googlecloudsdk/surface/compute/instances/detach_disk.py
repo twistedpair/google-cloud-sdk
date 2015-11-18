@@ -1,10 +1,9 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for detaching a disk from an instance."""
-import copy
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import copy
 
 
 class DetachDisk(base_classes.ReadWriteCommand):

@@ -43,8 +43,10 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
     """Returns a list of request necessary for setting scheduling options."""
     instance_ref = self.CreateZonalReference(args.name, args.zone)
 
+    machine_type = instance_utils.InterpretMachineType(args)
+
     machine_type_uri = self.CreateZonalReference(
-        args.machine_type, instance_ref.zone,
+        machine_type, instance_ref.zone,
         resource_type='machineTypes').SelfLink()
 
     set_machine_type_request = self.messages.InstancesSetMachineTypeRequest(

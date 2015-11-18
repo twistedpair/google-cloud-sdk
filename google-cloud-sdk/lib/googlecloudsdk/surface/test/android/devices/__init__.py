@@ -15,11 +15,6 @@ class Devices(base.Group):
           their basic characteristics and supported Android OS versions, run:
 
             $ {command} list
-
-          To display more detailed information about a specific Android device,
-          run:
-
-            $ {command} describe DEVICE_ID
           """,
   }
 

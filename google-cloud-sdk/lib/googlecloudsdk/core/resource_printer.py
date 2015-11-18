@@ -1,13 +1,12 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Facilities for printing Python objects."""
-import collections
 import cStringIO
 import difflib
 import json
 import sys
 
-from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.py27 import collections
 from protorpc import messages
 
 

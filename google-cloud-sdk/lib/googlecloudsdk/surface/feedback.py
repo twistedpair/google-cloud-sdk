@@ -266,14 +266,15 @@ def _OpenNewIssueInBrowser(info, log_data):
   if len(url) > MAX_URL_LENGTH:
     max_info_len = MAX_URL_LENGTH - len(_FormatNewIssueUrl(''))
     truncated, remaining = _UrlTruncateLines(comment, max_info_len)
-    log.warn('The output of gcloud info is too long to pre-populate the '
-             'new issue form.')
     log.warn('Truncating included information. '
              'Please consider including the remainder:')
-    log.status.Print(
-        _GetDivider('TRUNCATED INFORMATION (PLEASE CONSIDER INCLUDING)'))
+    divider_text = 'TRUNCATED INFORMATION (PLEASE CONSIDER INCLUDING)'
+    log.status.Print(_GetDivider(divider_text))
     log.status.Print(remaining.strip())
-    log.status.Print(_GetDivider())
+    log.status.Print(_GetDivider('END ' + divider_text))
+    log.warn('The output of gcloud info is too long to pre-populate the '
+             'new issue form.')
+    log.warn('Please consider including the remainder (above).')
     url = _FormatNewIssueUrl(truncated)
   OpenInBrowser(url)
   log.status.Print('Opening your browser to a new Google Cloud SDK issue.')

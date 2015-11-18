@@ -324,6 +324,19 @@ class DataflowProjectsJobsWorkItemsReportStatusRequest(_messages.Message):
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 3)
 
 
+class DataflowProjectsWorkerMessagesRequest(_messages.Message):
+  """A DataflowProjectsWorkerMessagesRequest object.
+
+  Fields:
+    projectId: The project to send the WorkerMessages to.
+    sendWorkerMessagesRequest: A SendWorkerMessagesRequest resource to be
+      passed as the request body.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  sendWorkerMessagesRequest = _messages.MessageField('SendWorkerMessagesRequest', 2)
+
+
 class DerivedSource(_messages.Message):
   """Specification of one of the bundles produced as a result of splitting a
   Source (e.g. when executing a SourceSplitRequest, or when splitting an
@@ -1469,6 +1482,26 @@ class ReportWorkItemStatusResponse(_messages.Message):
   workItemServiceStates = _messages.MessageField('WorkItemServiceState', 1, repeated=True)
 
 
+class SendWorkerMessagesRequest(_messages.Message):
+  """A request for sending worker messages to the service.
+
+  Fields:
+    workerMessages: The WorkerMessages to send.
+  """
+
+  workerMessages = _messages.MessageField('WorkerMessage', 1, repeated=True)
+
+
+class SendWorkerMessagesResponse(_messages.Message):
+  """The response to the worker messages.
+
+  Fields:
+    workerMessageResponses: The servers response to the worker messages.
+  """
+
+  workerMessageResponses = _messages.MessageField('WorkerMessageResponse', 1, repeated=True)
+
+
 class SeqMapTask(_messages.Message):
   """Describes a particular function to invoke.
 
@@ -2558,6 +2591,99 @@ class WorkItemStatus(_messages.Message):
   workItemId = _messages.StringField(11)
 
 
+class WorkerHealthReport(_messages.Message):
+  """WorkerHealthReport contains information about the health of a worker.
+  The VM should be identified by the labels attached to the WorkerMessage that
+  this health ping belongs to.
+
+  Fields:
+    reportInterval: The interval at which the worker is sending health
+      reports. The default value of 0 should be interpreted as the field is
+      not being explicitly set by the worker.
+    vmIsHealthy: Whether the VM is healthy.
+    vmStartupTime: The time the VM was booted.
+  """
+
+  reportInterval = _messages.StringField(1)
+  vmIsHealthy = _messages.BooleanField(2)
+  vmStartupTime = _messages.StringField(3)
+
+
+class WorkerHealthReportResponse(_messages.Message):
+  """WorkerHealthReportResponse contains information returned to the worker in
+  response to a health ping.
+
+  Fields:
+    reportInterval: A positive value indicates the worker should change its
+      reporting interval to the specified value.  The default value of zero
+      means no change in report rate is requested by the server.
+  """
+
+  reportInterval = _messages.StringField(1)
+
+
+class WorkerMessage(_messages.Message):
+  """WorkerMessage provides information to the backend about a worker.
+
+  Messages:
+    LabelsValue: Labels are used to group WorkerMessages. For example, a
+      worker_message about a particular container might have the labels: {
+      "job_id": "2015-04-22",   "container_type": "worker",   "vm":
+      "wordcount-vm-2015\u2026"   "container_id": "ac1234def"}
+
+  Fields:
+    labels: Labels are used to group WorkerMessages. For example, a
+      worker_message about a particular container might have the labels: {
+      "job_id": "2015-04-22",   "container_type": "worker",   "vm":
+      "wordcount-vm-2015\u2026"   "container_id": "ac1234def"}
+    time: The timestamp of the worker_message.
+    workerHealthReport: The health of a worker.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels are used to group WorkerMessages. For example, a worker_message
+    about a particular container might have the labels: { "job_id":
+    "2015-04-22",   "container_type": "worker",   "vm": "wordcount-vm-2015\u2026"
+    "container_id": "ac1234def"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  time = _messages.StringField(2)
+  workerHealthReport = _messages.MessageField('WorkerHealthReport', 3)
+
+
+class WorkerMessageResponse(_messages.Message):
+  """A worker_message response allows the server to pass information to the
+  sender.
+
+  Fields:
+    workerHealthReportResponse: The service's response to a worker's health
+      report.
+  """
+
+  workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 1)
+
+
 class WorkerPool(_messages.Message):
   """Describes one particular pool of Dataflow workers to be instantiated by
   the Dataflow service in order to perform the computations required by a job.
@@ -2624,7 +2750,7 @@ class WorkerPool(_messages.Message):
       the user. Because of this, Google recommends using the TEARDOWN_ALWAYS
       policy except for small, manually supervised test jobs.  If unknown or
       unspecified, the service will attempt to choose a reasonable default.
-    zone: Zone to run the worker pools in (e.g. "us-central1-b").  If empty or
+    zone: Zone to run the worker pools in (e.g. "us-central1-a").  If empty or
       unspecified, the service will attempt to choose a reasonable default.
   """
 

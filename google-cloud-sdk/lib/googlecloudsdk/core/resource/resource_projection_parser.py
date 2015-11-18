@@ -2,12 +2,12 @@
 
 """A class for parsing a resource projection expression."""
 
-import copy
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.third_party.py27 import copy
 
 
 class Parser(object):
@@ -439,8 +439,8 @@ class Parser(object):
       self._lex = resource_lex.Lexer(expression,
                                      aliases=self._projection.aliases)
       defaults = False
+      self.__key_attributes_only = False
       while self._lex.SkipSpace():
-        self.__key_attributes_only = self._lex.IsCharacter(':')
         if self._lex.IsCharacter('('):
           if not self.__key_attributes_only:
             defaults = False
@@ -449,12 +449,15 @@ class Parser(object):
           self._ParseKeys()
         elif self._lex.IsCharacter('['):
           self._ParseAttributes()
+        elif self._lex.IsCharacter(':'):
+          self.__key_attributes_only = True
         else:
+          self.__key_attributes_only = False
           here = self._lex.GetPosition()
-          name = self._lex.Token('([')
+          name = self._lex.Token(':([')
           if not name.isalpha():
             raise resource_exceptions.ExpressionSyntaxError(
-                'Unexpected tokens [{0}].'.format(self._lex.Annotate(here)))
+                'Name expected [{0}].'.format(self._lex.Annotate(here)))
           self._projection.SetName(name)
           defaults = True
       self._lex = None

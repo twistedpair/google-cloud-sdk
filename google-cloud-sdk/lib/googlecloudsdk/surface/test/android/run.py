@@ -6,7 +6,6 @@ import datetime
 import os
 import random
 import string
-import types
 
 from googlecloudsdk.api_lib.test import arg_util
 from googlecloudsdk.api_lib.test import ctrl_c_handler
@@ -22,10 +21,10 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.resource import resource_printer
 
 
-class Run(base.Command):
+@base.ReleaseTracks(base.ReleaseTrack.BETA)
+class Run(base.ListCommand):
   """Invoke an Android test in Google Cloud Test Lab and view test results."""
 
   detailed_help = {
@@ -171,9 +170,10 @@ class Run(base.Command):
       tr_ids = tool_results.GetToolResultsIds(matrix, monitor)
 
       url = tool_results.CreateToolResultsUiUrl(project, tr_ids)
+      log.status.Print('')
       if args.async:
         return url
-      log.status.Print('\nTest results will be streamed to [{0}].'.format(url))
+      log.status.Print('Test results will be streamed to [{0}].'.format(url))
 
       # If we have exactly one testExecution, show detailed progress info.
       if len(supported_executions) == 1:
@@ -191,23 +191,18 @@ class Run(base.Command):
         tr_messages.Outcome.SummaryValueValuesEnum)
     return summary_fetcher.CreateMatrixOutcomeSummary()
 
-  def Display(self, args, result):
-    """Method called by Calliope to print the result of the Run() method.
+  def Collection(self, args):
+    """Choose the default resource collection key used to format test outcomes.
 
     Args:
       args: The arguments that command was run with.
-      result: one of:
-        - a list of TestOutcome tuples (if ToolResults are available).
-        - a URL string pointing to the user's raw results in GCS.
+
+    Returns:
+      A collection string used as a key to select the default ResourceInfo
+      from core.resources.resource_registry.RESOURCE_REGISTRY.
     """
-    log.debug('gcloud test exit_code is: {0}'.format(self.exit_code))
-    if type(result) == types.ListType:
-      resource_printer.Print(result, results_summary.TEST_OUTCOME_FORMAT)
-    elif type(result) == types.StringType:
-      log.out.Print(
-          '\nMore detailed test results are available at [{0}].'.format(result))
-    elif result is not None:
-      log.out.Print(result)
+    log.debug('gcloud test command exit_code is: {0}'.format(self.exit_code))
+    return 'test.android.run.url' if args.async else 'test.android.run.outcomes'
 
 
 def _EnsureUserAcceptsTermsOfService():

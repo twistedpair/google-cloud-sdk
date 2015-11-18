@@ -1,6 +1,5 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Implements the command for resetting a password in a Windows instance."""
-import copy
 import json
 import textwrap
 
@@ -15,6 +14,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
+from googlecloudsdk.third_party.py27 import copy
 
 # This will only succeed on Windows machines.
 try:

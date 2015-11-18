@@ -2,12 +2,11 @@
 
 """A library to build a test results summary."""
 
-import collections
-
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.py27 import collections
 
 _NATIVE_CRASH = 'Native crash'
 _NATIVE_CRASH_DETAILED_FORMAT = '''\
@@ -44,12 +43,6 @@ _OUTCOME_SORTING = {
 def _TestOutcomeSortKey(x):
   """Transform a TestOutcome to a tuple yielding the desired sort order."""
   return tuple([_OUTCOME_SORTING[x.outcome], x.test_details, x.axis_value])
-
-
-TEST_OUTCOME_FORMAT = """\
-table[box](outcome.color(red=Fail, green=Pass, yellow=Inconclusive), \
-axis_value:label=TEST_AXIS_VALUE, \
-test_details:label=TEST_DETAILS)"""
 
 
 class ToolResultsSummaryFetcher(object):

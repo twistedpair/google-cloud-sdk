@@ -928,15 +928,22 @@ class Policy(_messages.Message):
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
-    etag: Can be used to perform a read-modify-write.
+    etag: The etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions.  If no etag is provided in the call to SetIamPolicy, then
+      the existing policy is overwritten blindly.
+    iamOwned:
     rules:
     version: Version of the `Policy`. The default version is 0.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
-  rules = _messages.MessageField('Rule', 3, repeated=True)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  iamOwned = _messages.BooleanField(3)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PublicKey(_messages.Message):

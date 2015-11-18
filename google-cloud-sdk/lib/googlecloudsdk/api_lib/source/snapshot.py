@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import uuid
 import zipfile
-from googlecloudsdk.api_lib.source import generate_source_context as contexts
+from googlecloudsdk.api_lib.source import context_util as contexts
 from googlecloudsdk.api_lib.source import source
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties

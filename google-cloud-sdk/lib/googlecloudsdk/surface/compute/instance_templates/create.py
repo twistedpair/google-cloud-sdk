@@ -1,8 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating instance templates."""
 
-import collections
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import image_utils
@@ -11,6 +9,7 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import collections
 
 
 DISK_METAVAR = (
@@ -32,6 +31,7 @@ def _CommonArgs(parser):
   instance_utils.AddPreemptibleVmArgs(parser)
   instance_utils.AddScopeArgs(parser)
   instance_utils.AddTagsArgs(parser)
+  instance_utils.AddCustomMachineTypeArgs(parser)
 
   parser.add_argument(
       '--description',
@@ -379,10 +379,12 @@ class Create(base_classes.BaseAsyncCreator, image_utils.ImageExpander):
 
     disks = boot_disk_list + persistent_disks + local_ssds
 
+    machine_type = instance_utils.InterpretMachineType(args)
+
     request = self.messages.ComputeInstanceTemplatesInsertRequest(
         instanceTemplate=self.messages.InstanceTemplate(
             properties=self.messages.InstanceProperties(
-                machineType=args.machine_type,
+                machineType=machine_type,
                 disks=disks,
                 canIpForward=args.can_ip_forward,
                 metadata=metadata,

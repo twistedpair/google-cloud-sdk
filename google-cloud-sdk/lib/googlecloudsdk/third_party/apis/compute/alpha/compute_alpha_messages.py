@@ -7798,7 +7798,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """InstanceGroupManagers  Next available tag: 19
+  """InstanceGroupManagers  Next available tag: 20
 
   Enums:
     RegionalStatusValueValuesEnum: Instance group manager status (set only for
@@ -7975,33 +7975,17 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
 class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
-  Enums:
-    ActionTypeValueValuesEnum: The action to perform when an instance in this
-      group becomes unhealthy. The only possible value is RECREATE. RECREATE
-      replaces an unhealthy instance using the same name and instance template
-      as the unhealthy instance.
-
   Fields:
-    actionType: The action to perform when an instance in this group becomes
-      unhealthy. The only possible value is RECREATE. RECREATE replaces an
-      unhealthy instance using the same name and instance template as the
-      unhealthy instance.
     healthCheck: The URL for the HealthCheck that signals autohealing.
+    initialDelaySec: Length of the period during which IGM will refrain from
+      autohealing the instance even if the instance is reported as UNHEALTHY.
+      The period starts every time the instance is (re-)created. You should
+      define a period that is at least as long as the initialization time of
+      the instance.
   """
 
-  class ActionTypeValueValuesEnum(_messages.Enum):
-    """The action to perform when an instance in this group becomes unhealthy.
-    The only possible value is RECREATE. RECREATE replaces an unhealthy
-    instance using the same name and instance template as the unhealthy
-    instance.
-
-    Values:
-      RECREATE: <no description>
-    """
-    RECREATE = 0
-
-  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
-  healthCheck = _messages.StringField(2)
+  healthCheck = _messages.StringField(1)
+  initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerList(_messages.Message):
@@ -9624,15 +9608,22 @@ class Policy(_messages.Message):
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
-    etag: Can be used to perform a read-modify-write.
+    etag: The etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions.  If no etag is provided in the call to SetIamPolicy, then
+      the existing policy is overwritten blindly.
+    iamOwned:
     rules:
     version: Version of the `Policy`. The default version is 0.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
-  rules = _messages.MessageField('Rule', 3, repeated=True)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  iamOwned = _messages.BooleanField(3)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class Project(_messages.Message):

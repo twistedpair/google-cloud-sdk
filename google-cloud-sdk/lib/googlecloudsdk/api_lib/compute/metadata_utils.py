@@ -1,9 +1,9 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Convenience functions for dealing with metadata."""
-import copy
 from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import copy
 
 
 def _DictToMetadataMessage(message_classes, metadata_dict):

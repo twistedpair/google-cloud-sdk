@@ -1,11 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for adding a path matcher to a URL map."""
-import collections
-import copy
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import copy
 
 
 class AddPathMatcher(base_classes.ReadWriteCommand):

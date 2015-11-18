@@ -1,10 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
 """Command for adding a BGP peer to a router."""
-import copy
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import copy
 
 
 class AddBgpPeer(base_classes.ReadWriteCommand):

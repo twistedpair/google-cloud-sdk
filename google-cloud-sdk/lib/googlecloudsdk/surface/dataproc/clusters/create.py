@@ -48,6 +48,11 @@ class Create(base.Command):
         'server-specified.')
     parser.add_argument('--image', help=argparse.SUPPRESS)
     parser.add_argument(
+        '--image-version',
+        metavar='VERSION',
+        help='The image version to use for the cluster. Defaults to the '
+        'lastest version.')
+    parser.add_argument(
         '--bucket',
         help='The Google Cloud Storage bucket to use with the Google Cloud '
         'Storage connector. A bucket is auto created when this parameter is '
@@ -185,6 +190,8 @@ Alias,URI
             ),
         ),
         initializationActions=init_actions,
+        softwareConfiguration=messages.SoftwareConfiguration(
+            imageVersion=args.image_version),
     )
 
     # Secondary worker group is optional.

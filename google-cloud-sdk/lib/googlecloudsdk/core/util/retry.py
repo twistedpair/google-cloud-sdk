@@ -2,12 +2,13 @@
 
 """Implementation of retrying logic."""
 
-import collections
 import functools
 import itertools
 import random
 import sys
 import time
+
+from googlecloudsdk.third_party.py27 import collections
 
 
 _DEFAULT_JITTER_MS = 1000

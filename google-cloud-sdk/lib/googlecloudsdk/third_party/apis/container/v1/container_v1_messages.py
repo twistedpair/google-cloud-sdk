@@ -136,6 +136,9 @@ class ClusterUpdate(_messages.Message):
   provided.
 
   Fields:
+    desiredMasterMachineType: The name of a Google Compute Engine [machine
+      type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
+      master to.
     desiredMasterVersion: The Kubernetes version to change the master to
       (typically an upgrade). Use "-" to upgrade to the latest version
       supported by the server.
@@ -148,9 +151,10 @@ class ClusterUpdate(_messages.Message):
       supported by the server.
   """
 
-  desiredMasterVersion = _messages.StringField(1)
-  desiredMonitoringService = _messages.StringField(2)
-  desiredNodeVersion = _messages.StringField(3)
+  desiredMasterMachineType = _messages.StringField(1)
+  desiredMasterVersion = _messages.StringField(2)
+  desiredMonitoringService = _messages.StringField(3)
+  desiredNodeVersion = _messages.StringField(4)
 
 
 class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):

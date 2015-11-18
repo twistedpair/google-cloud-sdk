@@ -18,7 +18,7 @@ class Start(base.Command):
       'EXAMPLES': """\
           To start a local datastore emulator, run:
 
-            $ {command} DATA-DIR
+            $ {command} --data-dir DATA-DIR
           """,
   }
 

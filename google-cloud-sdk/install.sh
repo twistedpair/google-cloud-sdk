@@ -73,9 +73,23 @@ _cloudsdk_root_dir() {
 }
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
-# if CLOUDSDK_PYTHON is not empty
-[ -z "$CLOUDSDK_PYTHON" ] &&
-  CLOUDSDK_PYTHON=python
+# Cloud SDK requires python 2 (2.6 or 2.7)
+case $CLOUDSDK_PYTHON in
+*python2*)
+  ;;
+*python[0-9]*)
+  CLOUDSDK_PYTHON=
+  ;;
+esac
+# if CLOUDSDK_PYTHON is empty
+if [ -z "$CLOUDSDK_PYTHON" ]; then
+  # if python2 exists then plain python may point to a version != 2
+  if which python2 >/dev/null; then
+    CLOUDSDK_PYTHON=python2
+  else
+    CLOUDSDK_PYTHON=python
+  fi
+fi
 
 # if CLOUDSDK_PYTHON_SITEPACKAGES and VIRTUAL_ENV are empty
 case :$CLOUDSDK_PYTHON_SITEPACKAGES:$VIRTUAL_ENV: in

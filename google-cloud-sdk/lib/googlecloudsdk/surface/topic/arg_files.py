@@ -95,7 +95,7 @@ class TestingArgFiles(base.Command):
 
           To invoke this test, run:
 
-            $ gcloud alpha test android run excelsior_args.yaml:quick-robo-test
+            $ gcloud beta test android run excelsior_args.yaml:quick-robo-test
 
           Here is a slightly more complicated example which demonstrates
           composition of argument groups. Assume the following YAML text
@@ -120,13 +120,13 @@ class TestingArgFiles(base.Command):
 
           To invoke this test matrix, run:
 
-            $ gcloud alpha test android run excelsior_args.yaml:unit-tests
+            $ gcloud beta test android run excelsior_args.yaml:unit-tests
 
           To run these unit tests with the same locales and os-version-ids,
           but substituting a sampling of three physical Android devices
           instead of the single virtual Nexus6 device, run:
 
-            $ gcloud alpha test android run excelsior2.args:unit-tests\
+            $ gcloud beta test android run excelsior2.args:unit-tests\
  --device-ids shamu,m7,g3
 
           In the last example, the --device-ids argument on the

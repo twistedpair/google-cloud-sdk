@@ -2,6 +2,7 @@
 """The gcloud datastore emulator group."""
 
 from googlecloudsdk.api_lib.emulators import datastore_util
+from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.calliope import base
 
 
@@ -29,8 +30,9 @@ class Datastore(base.Group):
         ' emulator run.')
 
   def Filter(self, context, args):
-    datastore_util.CheckIfJava7IsInstalled()
-    datastore_util.EnsureGCDComponentIsInstalled()
+    util.CheckIfJava7IsInstalled(datastore_util.DATASTORE_TITLE)
+    util.EnsureComponentIsInstalled('gcd-emulator',
+                                    datastore_util.DATASTORE_TITLE)
 
     if not args.data_dir:
       args.data_dir = datastore_util.GetDataDir()

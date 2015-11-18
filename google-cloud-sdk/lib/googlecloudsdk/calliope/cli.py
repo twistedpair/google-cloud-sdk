@@ -34,13 +34,17 @@ _COMMAND_SUFFIX = '.py'
 
 
 class RunHook(object):
-  """Encapsulates a function to be run before or after command execution."""
+  """Encapsulates a function to be run before or after command execution.
+
+  The function should take **kwargs so that more things can be passed to the
+  functions in the future.
+  """
 
   def __init__(self, func, include_commands=None, exclude_commands=None):
     """Constructs the hook.
 
     Args:
-      func: function, The no args function to run.
+      func: function, The function to run.
       include_commands: str, A regex for the command paths to run.  If not
         provided, the hook will be run for all commands.
       exclude_commands: str, A regex for the command paths to exclude.  If not
@@ -64,7 +68,7 @@ class RunHook(object):
     if self.__exclude_commands and re.match(self.__exclude_commands,
                                             command_path):
       return False
-    self.__func()
+    self.__func(command_path=command_path)
     return True
 
 
@@ -159,7 +163,7 @@ class CLILoader(object):
     """Register a function to be run before command execution.
 
     Args:
-      func: function, The no args function to run.
+      func: function, The function to run.  See RunHook for more details.
       include_commands: str, A regex for the command paths to run.  If not
         provided, the hook will be run for all commands.
       exclude_commands: str, A regex for the command paths to exclude.  If not
@@ -173,7 +177,7 @@ class CLILoader(object):
     """Register a function to be run after command execution.
 
     Args:
-      func: function, The no args function to run.
+      func: function, The function to run.  See RunHook for more details.
       include_commands: str, A regex for the command paths to run.  If not
         provided, the hook will be run for all commands.
       exclude_commands: str, A regex for the command paths to exclude.  If not
@@ -656,12 +660,8 @@ class CLI(object):
       print_error: bool, True to print an error message, False to just exit with
         the given error code.
     """
-    # Prefer exc.message when it exists. This handles non-ASCII messages,
-    # whereas str(exc) cannot.
-    exc_message = getattr(exc, 'message', None)
-    if not exc_message:
-      exc_message = str(exc)
-    msg = u'({0}) {1}'.format(command_path_string, exc.message)
+    msg = u'({0}) {1}'.format(command_path_string,
+                              unicode(exc))
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)

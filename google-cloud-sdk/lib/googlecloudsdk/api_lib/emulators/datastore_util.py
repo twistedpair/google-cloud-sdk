@@ -3,21 +3,12 @@
 """Utility functions for gcloud datastore emulator."""
 
 import os
-import re
 from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import compat26
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-
-
-class Java7Error(exceptions.Error):
-
-  def __init__(self, msg):
-    super(Java7Error, self).__init__(msg)
 
 
 class NoGCDError(exceptions.Error):
@@ -32,41 +23,6 @@ class UnableToPrepareDataDir(exceptions.Error):
   def __init__(self):
     super(UnableToPrepareDataDir, self).__init__(
         'Unable to prepare the data directory for the emualtor')
-
-
-def CheckIfJava7IsInstalled():
-  """Checks if Java 7+ is installed.
-
-  Raises:
-    Java7Error: if Java 7+ is not found on the path or is not executable.
-  """
-  java_path = files.FindExecutableOnPath('java')
-  if not java_path:
-    raise Java7Error('To use the Google Cloud Datastore emulator to need to'
-                     ' have a Java 7+ JRE installed and on your system PATH')
-  try:
-    output = compat26.subprocess.check_output([java_path, '-version'],
-                                              stderr=compat26.subprocess.STDOUT)
-  except compat26.subprocess.CalledProcessError:
-    raise Java7Error('Unable to execute the java that was found on your PATH.'
-                     ' The Google Cloud Datastore emulator requires a Java 7+'
-                     ' JRE installed and on your system PATH')
-
-  match = re.search('version "1.([0-9]).', output)
-  if not match or int(match.group(1)) < 7:
-    raise Java7Error('The java executable on your PATH is not a Java 7+ JRE.'
-                     ' The Google Cloud Datastore emulator requires a Java 7+'
-                     ' JRE installed and on your system PATH')
-
-
-def EnsureGCDComponentIsInstalled():
-  """Ensures that the GCD emulator is installed.
-
-  Raises:
-    NoCloudSDKError: If a Cloud SDK installation is not found.
-  """
-  util.EnsureComponentIsInstalled('gcd-emulator',
-                                  'Google Cloud Datastore emulator')
 
 
 def GetGCDRoot():
@@ -105,6 +61,7 @@ def ArgsForGCDEmulator(*args):
 
 
 DATASTORE = 'datastore'
+DATASTORE_TITLE = 'Google Cloud Datastore emulator'
 
 
 def PrepareGCDDataDir(data_dir):

@@ -13,8 +13,8 @@ from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 GCS_PREFIX = 'gs://'
-ERROR_NOTFOUND = 404
-FORBIDDEN = 403
+HTTP_FORBIDDEN = 403
+HTTP_NOT_FOUND = 404
 
 
 class ResultsBucketOps(object):
@@ -67,7 +67,7 @@ class ResultsBucketOps(object):
       return response.defaultBucket.decode('utf8')
     except apitools_base.HttpError as error:
       code, err_msg = util.GetErrorCodeAndMessage(error)
-      if code == FORBIDDEN:
+      if code == HTTP_FORBIDDEN:
         msg = ('Permission denied while fetching the default results bucket. '
                'Is billing enabled for project: [{0}]?'
                .format(self._project))
@@ -93,7 +93,7 @@ class ResultsBucketOps(object):
       return  # The bucket exists and the user can access it.
     except apitools_base.HttpError as err:
       code, err_msg = util.GetErrorCodeAndMessage(err)
-      if code != ERROR_NOTFOUND:
+      if code != HTTP_NOT_FOUND:
         raise exceptions.BadFileException(
             'Could not access bucket [{b}]. Response error {c}: {e}. '
             'Please supply a valid bucket name or use the default bucket '
@@ -119,7 +119,7 @@ class ResultsBucketOps(object):
     except apitools_base.HttpError as err:
 
       code, err_msg = util.GetErrorCodeAndMessage(err)
-      if code == FORBIDDEN:
+      if code == HTTP_FORBIDDEN:
         msg = ('Permission denied while creating bucket [{b}]. '
                'Is billing enabled for project: [{p}]?'
                .format(b=bucket_name, p=self._project))
@@ -154,21 +154,25 @@ class ResultsBucketOps(object):
         # Perform a GCS insert of a file which is not in GCS
         try:
           file_size = os.path.getsize(path)
-          file_stream = open(path, 'r')
         except os.error:
           raise exceptions.BadFileException('[{0}] not found or not accessible'
                                             .format(path))
         src_obj = storage_v1.Object(size=file_size)
-        upload = apitools_base.Upload.FromStream(
-            file_stream,
-            mime_type='application/vnd.android.package-archive',
-            total_size=file_size)
+        upload = apitools_base.Upload.FromFile(
+            path,
+            mime_type='application/vnd.android.package-archive')
         insert_req = storage_v1.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
             name='{obj}/{name}'.format(obj=self._gcs_object_name,
                                        name=os.path.basename(path)),
             object=src_obj)
-        self._storage_client.objects.Insert(insert_req, upload=upload)
+        response = self._storage_client.objects.Insert(insert_req,
+                                                       upload=upload)
+        if response.size != file_size:
+          raise exceptions.BadFileException(
+              'Cloud storage upload failure: Insert response.size={0} bytes '
+              'but [{1}] contains {2} bytes.\nInsert response: {3}'
+              .format(response.size, path, file_size, repr(response)))
     except apitools_base.HttpError as err:
       raise exceptions.BadFileException(
           'Could not copy [{f}] to [{gcs}] {e}.'

@@ -6320,7 +6320,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """InstanceGroupManagers  Next available tag: 19
+  """InstanceGroupManagers  Next available tag: 20
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -6348,6 +6348,8 @@ class InstanceGroupManager(_messages.Message):
       compute#instanceGroupManager for managed instance groups.
     name: The name of the managed instance group. The name must be 1-63
       characters long, and comply with RFC1035.
+    namedPorts: Named ports configured for the Instance Groups complementary
+      to this Instance Group Manager.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -6370,10 +6372,11 @@ class InstanceGroupManager(_messages.Message):
   instanceTemplate = _messages.StringField(9)
   kind = _messages.StringField(10, default=u'compute#instanceGroupManager')
   name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  targetPools = _messages.StringField(13, repeated=True)
-  targetSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(15)
+  namedPorts = _messages.MessageField('NamedPort', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  targetPools = _messages.StringField(14, repeated=True)
+  targetSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(16)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -6466,33 +6469,17 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
 class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   """A InstanceGroupManagerAutoHealingPolicy object.
 
-  Enums:
-    ActionTypeValueValuesEnum: The action to perform when an instance in this
-      group becomes unhealthy. The only possible value is RECREATE. RECREATE
-      replaces an unhealthy instance using the same name and instance template
-      as the unhealthy instance.
-
   Fields:
-    actionType: The action to perform when an instance in this group becomes
-      unhealthy. The only possible value is RECREATE. RECREATE replaces an
-      unhealthy instance using the same name and instance template as the
-      unhealthy instance.
     healthCheck: The URL for the HealthCheck that signals autohealing.
+    initialDelaySec: Length of the period during which IGM will refrain from
+      autohealing the instance even if the instance is reported as UNHEALTHY.
+      The period starts every time the instance is (re-)created. You should
+      define a period that is at least as long as the initialization time of
+      the instance.
   """
 
-  class ActionTypeValueValuesEnum(_messages.Enum):
-    """The action to perform when an instance in this group becomes unhealthy.
-    The only possible value is RECREATE. RECREATE replaces an unhealthy
-    instance using the same name and instance template as the unhealthy
-    instance.
-
-    Values:
-      RECREATE: <no description>
-    """
-    RECREATE = 0
-
-  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
-  healthCheck = _messages.StringField(2)
+  healthCheck = _messages.StringField(1)
+  initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerList(_messages.Message):

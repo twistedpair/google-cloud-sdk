@@ -5,6 +5,7 @@ import atexit
 import errno
 import os
 import random
+import re
 import subprocess
 
 from googlecloudsdk.core import config
@@ -14,6 +15,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import compat26
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import yaml
@@ -36,12 +38,19 @@ class NoEnvYamlError(exceptions.Error):
         ' started the appropriate emulator.'.format(data_dir))
 
 
+class Java7Error(exceptions.Error):
+
+  def __init__(self, msg):
+    super(Java7Error, self).__init__(msg)
+
+
 def EnsureComponentIsInstalled(component_id, for_text):
   """Ensures that the specified component is installed.
 
   Args:
     component_id: str, the name of the component
     for_text: str, the text explaining what the component is necessary for
+
   Raises:
     NoCloudSDKError: If a Cloud SDK installation is not found.
   """
@@ -68,6 +77,34 @@ def GetCloudSDKRoot():
     raise NoCloudSDKError()
   log.debug('Found Cloud SDK root: %s', sdk_root)
   return sdk_root
+
+
+def CheckIfJava7IsInstalled(for_text):
+  """Checks if Java 7+ is installed.
+
+  Args:
+    for_text: str, the text explaining what Java 7 is necessary for
+
+  Raises:
+    Java7Error: if Java 7+ is not found on the path or is not executable.
+  """
+  java_path = files.FindExecutableOnPath('java')
+  if not java_path:
+    raise Java7Error('To use the {for_text}, a Java 7+ JRE must be installed '
+                     'and on your system PATH'.format(for_text=for_text))
+  try:
+    output = compat26.subprocess.check_output([java_path, '-version'],
+                                              stderr=compat26.subprocess.STDOUT)
+  except compat26.subprocess.CalledProcessError:
+    raise Java7Error('Unable to execute the java that was found on your PATH.'
+                     ' The {for_text} requires a Java 7+ JRE installed and on '
+                     'your system PATH'.format(for_text=for_text))
+
+  match = re.search('version "1.([0-9]).', output)
+  if not match or int(match.group(1)) < 7:
+    raise Java7Error('The java executable on your PATH is not a Java 7+ JRE.'
+                     ' The {for_text} requires a Java 7+ JRE installed and on '
+                     'your system PATH'.format(for_text=for_text))
 
 
 def WriteEnvYaml(env, output_dir):

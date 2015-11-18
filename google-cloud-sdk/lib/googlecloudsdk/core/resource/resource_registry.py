@@ -377,7 +377,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceTemplates': ResourceInfo(
-        cache_command='compute templates list',
+        cache_command='compute instance-templates list',
         list_format="""
           table(
             name,
@@ -1004,12 +1004,20 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'test.run.outcomes': ResourceInfo(
+    'test.android.run.outcomes': ResourceInfo(
         list_format="""
-          table(
-            outcome,
-            step_name:label=STEP,
-            axis_value:label=TEST_AXIS_VALUE
+          table[box](
+            outcome.color(red=Fail, green=Pass, yellow=Inconclusive),
+            axis_value:label=TEST_AXIS_VALUE,
+            test_details:label=TEST_DETAILS
+          )
+        """,
+    ),
+
+    'test.android.run.url': ResourceInfo(
+        list_format="""
+          value(format(
+            'Final test results will be available at [{0}].', [])
           )
         """,
     ),

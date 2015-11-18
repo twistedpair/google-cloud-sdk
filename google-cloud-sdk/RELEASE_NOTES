@@ -2,6 +2,22 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 0.9.87 (2015/11/18)
+
+### Compute
+
+* `gcloud alpha compute instances create` now supports --custom-cpu and
+   --custom-memory flags to specify custom machine types.
+
+### Dataproc
+
+* Added `gcloud beta dataproc clusters diagnose` command. See
+  <https://cloud.google.com/dataproc/support/diagnose-command> for more info.
+
+### Google Container Engine
+
+* Updated kubectl to version 1.1.1.
+
 ## 0.9.86 (2015/11/11)
 
 ### App Engine
@@ -65,7 +81,7 @@ Copyright 2014-2015 Google Inc. All rights reserved.
 
 ### Compute
 
-* GA support for https load balancing features.
+* GA support for HTTPS load balancing features.
 
 * Deprecated --clear-target-pool flag from compute instance-groups managed
   set-target-pools command.
@@ -496,7 +512,7 @@ Copyright 2014-2015 Google Inc. All rights reserved.
     *   `gcloud alpha genomics` commands (on datasets).
     *   `gcloud alpha source list` to lists project repositories.
 *   kubectl will no longer be installed by default.
-*   Bug fixes for https load balancing.
+*   Bug fixes for HTTPS load balancing.
 *   The help pager is $PAGER or less(1) if available, otherwise a builtin pager.
 *   Update of gsutil component to version 4.13.
 
@@ -973,7 +989,7 @@ Copyright 2014-2015 Google Inc. All rights reserved.
 *   Upgraded gsutil to 3.31 (3.30 was never released)
 *   More improvements to gauth experience
     *   gauth now provides links to the new Cloud Console (for obtaining your
-        project id), as opposed to the API console
+        project ID), as opposed to the API console
     *   Suppression of spurious error related to the Windows Registry
 
 

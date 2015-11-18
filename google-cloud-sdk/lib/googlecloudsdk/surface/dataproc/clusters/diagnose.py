@@ -10,9 +10,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
-@base.Hidden
 class Diagnose(base.Command):
-  """Run a detailed diagnostic of a cluster."""
+  """Run a detailed diagnostic on a cluster."""
 
   @staticmethod
   def Args(parser):

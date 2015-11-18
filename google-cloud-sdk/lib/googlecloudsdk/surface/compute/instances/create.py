@@ -1,7 +1,5 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for creating instances."""
-import collections
-
 from googlecloudsdk.api_lib.compute import addresses_utils
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
@@ -13,6 +11,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.third_party.py27 import collections
 
 DISK_METAVAR = (
     'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
@@ -60,6 +59,7 @@ def _CommonArgs(parser):
   instance_utils.AddPreemptibleVmArgs(parser)
   instance_utils.AddScopeArgs(parser)
   instance_utils.AddTagsArgs(parser)
+  instance_utils.AddCustomMachineTypeArgs(parser)
 
   parser.add_argument(
       '--description',
@@ -425,9 +425,16 @@ class CreateGA(base_classes.BaseAsyncCreator,
     # mistake instead of delaying the user by making API calls whose
     # purpose has already been rendered moot by the spelling mistake.
     machine_type_uris = []
+
+    # Setting the machine type
+    machine_type_name = instance_utils.InterpretMachineType(args)
+
     for instance_ref in instance_refs:
+      # Check to see if the custom machine type ratio is supported
+      instance_utils.CheckCustomCpuRamRatio(self, instance_ref.zone,
+                                            machine_type_name)
       machine_type_uris.append(self.CreateZonalReference(
-          args.machine_type, instance_ref.zone,
+          machine_type_name, instance_ref.zone,
           resource_type='machineTypes').SelfLink())
 
     create_boot_disk = not _UseExistingBootDisk(args)

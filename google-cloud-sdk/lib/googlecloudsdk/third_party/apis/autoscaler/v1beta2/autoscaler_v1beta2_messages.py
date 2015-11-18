@@ -226,8 +226,7 @@ class AutoscalingPolicy(_messages.Message):
       should define an interval that is at least as long as the initialization
       time of a virtual machine and the time it may take for replica pool to
       create the virtual machine. The default is 60 seconds.
-    cpuUtilization: Exactly one utilization policy should be provided.
-      Configuration parameters of CPU based autoscaling policy.
+    cpuUtilization: Configuration parameters of CPU based autoscaling policy.
     customMetricUtilizations: Configuration parameters of autoscaling based on
       custom metric.
     loadBalancingUtilization: Configuration parameters of autoscaling based on

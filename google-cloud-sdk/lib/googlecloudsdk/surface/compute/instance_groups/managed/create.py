@@ -106,8 +106,7 @@ class CreateAlphaBeta(CreateGA):
   @staticmethod
   def Args(parser):
     CreateGA.Args(parser)
-    # TODO(witek, b/22996767): Change "help_hidden" to False after beta launch.
-    managed_instance_groups_utils.AddAutohealingArgs(parser, help_hidden=True)
+    managed_instance_groups_utils.AddAutohealingArgs(parser)
 
 
 DETAILED_HELP = {

@@ -2,7 +2,6 @@
 
 """Common test matrix operations used by Cloud Test Lab commands."""
 
-import collections
 import os
 import time
 
@@ -13,6 +12,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.py27 import collections
 
 
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0
@@ -346,7 +346,7 @@ class MatrixMonitor(object):
 
       if status.state == states.UNSUPPORTED_ENVIRONMENT:
         msg = ('Device dimensions are not compatible: {d}. '
-               'Please use "gcloud alpha test android devices list" to '
+               'Please use "gcloud beta test android devices list" to '
                'determine which device dimensions are compatible.'
                .format(d=_FormatInvalidDimension(status.environment)))
         raise exceptions.ToolException(msg, exit_code=exit_code.UNSUPPORTED_ENV)

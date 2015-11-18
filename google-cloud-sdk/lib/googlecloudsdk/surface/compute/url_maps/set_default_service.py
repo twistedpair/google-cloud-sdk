@@ -1,8 +1,7 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for changing the default service of a URL map."""
-import copy
-
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.third_party.py27 import copy
 
 
 class SetDefaultService(base_classes.ReadWriteCommand):

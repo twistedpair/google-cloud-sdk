@@ -1,11 +1,12 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Annotates the resource types with extra information."""
-import collections
 import httplib
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
+from googlecloudsdk.third_party.py27 import collections
 import protorpc
 
 
@@ -108,6 +109,83 @@ def _MachineTypeMemoryToCell(machine_type):
     return '{0:5.2f}'.format(memory / 2.0 ** 10)
   else:
     return ''
+
+
+def _FormatCustomMachineTypeName(mt):
+  """Checks for custom machine type and modifies output.
+
+  Args:
+    mt: machine type to be formatted
+
+  Returns:
+    If mt was a custom type, then it will be formatted into the desired custom
+      machine type output. Otherwise, it is returned unchanged.
+
+  Helper function for _MachineTypeNameToCell
+  """
+  custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(mt)
+  if custom_cpu and custom_ram:
+    # Restricting output to 2 decimal places
+    custom_ram_gb = '{:.2f}'.format(float(custom_ram) / (2 ** 10))
+    mt = 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
+  return mt
+
+
+def _MachineTypeNameToCell(machine_type):
+  """Returns the formatted name of the given machine type.
+
+  Most machine types will be untouched, with the exception of the custom machine
+  type. This modifies the 'custom-N-M' custom machine types with
+  'custom (N vCPU, M GiB)'.
+
+  For example, given the following custom machine_type:
+
+    custom-2-3500
+
+  This function will return:
+
+    custom (2 vCPU, 3.41 GiB)
+
+  in the MACHINE_TYPE field when listing out the current instances.
+
+  Args:
+    machine_type: The machine type of the given instance
+
+  Returns:
+    A formatted version of the given custom machine type (as shown in example
+    in docstring above).
+  """
+  mt = machine_type.get('properties', machine_type).get('machineType')
+  if mt:
+    return _FormatCustomMachineTypeName(mt)
+  return mt
+
+
+def FormatDescribeMachineTypeName(resources, com_path):
+  """Formats a custom machine type when 'instances describe' is called.
+
+  Args:
+    resources: list of resources available for the instance in question
+    com_path: command path of the calling command
+
+  Returns:
+    If input is a custom type, returns the formatted custom machine type.
+      Otherwise, returns None.
+  """
+  if ('instances' in com_path) and ('describe' in com_path):
+    if not resources:
+      return None
+    if 'machineType' not in resources[0]:
+      return None
+    mt_splitlist = resources[0]['machineType'].split('/')
+    mt = mt_splitlist[-1]
+    if 'custom' not in mt:
+      return None
+    formatted_mt = _FormatCustomMachineTypeName(mt)
+    mt_splitlist[-1] = formatted_mt
+    return '/'.join(mt_splitlist)
+  else:
+    return None
 
 
 def _OperationHttpStatusToCell(operation):
@@ -434,7 +512,7 @@ _SPECS_V1 = {
         table_cols=[
             ('NAME', 'name'),
             ('ZONE', 'zone'),
-            ('MACHINE_TYPE', 'machineType'),
+            ('MACHINE_TYPE', _MachineTypeNameToCell),
             ('PREEMPTIBLE', 'scheduling.preemptible'),
             ('INTERNAL_IP', 'networkInterfaces[0].networkIP'),
             ('EXTERNAL_IP', 'networkInterfaces[0].accessConfigs[0].natIP'),
@@ -453,7 +531,7 @@ _SPECS_V1 = {
         message_class_name='InstanceTemplate',
         table_cols=[
             ('NAME', 'name'),
-            ('MACHINE_TYPE', 'properties.machineType'),
+            ('MACHINE_TYPE', _MachineTypeNameToCell),
             ('PREEMPTIBLE', 'properties.scheduling.preemptible'),
             ('CREATION_TIMESTAMP', 'creationTimestamp'),
         ],

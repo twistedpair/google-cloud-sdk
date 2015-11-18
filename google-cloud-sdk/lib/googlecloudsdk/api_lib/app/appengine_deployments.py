@@ -5,7 +5,6 @@
 
 from __future__ import with_statement
 
-import copy
 import hashlib
 import mimetypes
 import os
@@ -18,6 +17,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import yaml_object
+from googlecloudsdk.third_party.py27 import copy
 import yaml
 
 # App readable static file path prefix.

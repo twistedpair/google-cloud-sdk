@@ -14,7 +14,7 @@ class EnvInit(base.Command):
       'EXAMPLES': """\
           To print the env variables exports for a datastore emulator, run:
 
-            $ {command} DATA-DIR
+            $ {command} --data-dir DATA-DIR
           """,
   }
 

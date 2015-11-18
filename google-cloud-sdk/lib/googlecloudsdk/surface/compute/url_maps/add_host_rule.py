@@ -1,9 +1,8 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Command for adding a host rule to a URL map."""
-import copy
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.third_party.py27 import copy
 
 
 class AddHostRule(base_classes.ReadWriteCommand):

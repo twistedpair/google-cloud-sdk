@@ -1,6 +1,6 @@
 # Dockerfile for the python-compat runtime when user chooses env:2
 
-FROM beta.gcr.io/google_appengine/python-compat-multicore
+FROM gcr.io/google_appengine/python-compat-multicore
 
 ADD . /app
 

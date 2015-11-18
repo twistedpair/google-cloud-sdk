@@ -21,6 +21,7 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import release_notes
 from googlecloudsdk.core.updater import snapshots
+from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
@@ -122,8 +123,6 @@ class MismatchedFixedVersionsError(Error):
 class UpdateManager(object):
   """Main class for performing updates for the Cloud SDK."""
 
-  UPDATE_CHECK_FREQUENCY_IN_SECONDS = 86400  # once a day.
-  UPDATE_CHECK_NAG_FREQUENCY_IN_SECONDS = 86400  # once a day.
   BIN_DIR_NAME = 'bin'
   VERSIONED_SNAPSHOT_FORMAT = 'components-v{0}.json'
 
@@ -163,7 +162,7 @@ class UpdateManager(object):
     return manager._EnsureInstalledAndRestart(components, msg, command)
 
   @staticmethod
-  def PerformUpdateCheck(force=False):
+  def PerformUpdateCheck(command_path, force=False):
     """Checks to see if a new snapshot has been released periodically.
 
     This method can be called as often as you'd like.  It will only actually
@@ -172,6 +171,8 @@ class UpdateManager(object):
     installed components, it will print a notification message.
 
     Args:
+      command_path: str, The '.' separated path of the command that is currently
+        being run (i.e. gcloud.foo.bar).
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
 
@@ -181,7 +182,7 @@ class UpdateManager(object):
     platform = platforms.Platform.Current()
     manager = UpdateManager(platform_filter=platform, warn=False)
     # pylint: disable=protected-access
-    return manager._PerformUpdateCheck(force=force)
+    return manager._PerformUpdateCheck(command_path, force=force)
 
   def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True):
     """Creates a new UpdateManager.
@@ -324,7 +325,6 @@ class UpdateManager(object):
       self.__Write(log.err, message, word_wrap=True)
       raise UpdaterDisableError(
           'The component manager is disabled for this installation')
-    config.EnsureSDKWriteAccess(self.__sdk_root)
 
   def _GetInstallState(self):
     return local_state.InstallationState(self.__sdk_root)
@@ -428,7 +428,7 @@ version [{1}].  To clear your fixed version setting, run:
       versions[component_id] = component.VersionString()
     return versions
 
-  def _PerformUpdateCheck(self, force=False):
+  def _PerformUpdateCheck(self, command_path, force=False):
     """Checks to see if a new snapshot has been released periodically.
 
     This method can be called as often as you'd like.  It will only actually
@@ -437,57 +437,34 @@ version [{1}].  To clear your fixed version setting, run:
     installed components, it will print a notification message.
 
     Args:
+      command_path: str, The '.' separated path of the command that is currently
+        being run (i.e. gcloud.foo.bar).
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
 
     Returns:
       bool, True if updates are available, False otherwise.
     """
-    def PrintUpdates(last_update_check):
-      """Print the update message but only if it's time to nag again."""
-      log.debug('Updates are available.')
-      if (log.out.isatty() and
-          last_update_check.SecondsSinceLastNag()
-          >= UpdateManager.UPDATE_CHECK_NAG_FREQUENCY_IN_SECONDS):
-        self.__Write(
-            log.status,
-            '\nUpdates are available for some Cloud SDK components.  To '
-            'install them, please run:', word_wrap=True)
-        self.__Write(
-            log.status, ' $ gcloud components update\n', word_wrap=False)
-        last_update_check.SetNagged()
-      return True
-
+    # Component manager is disabled, never check for updates.
     if (config.INSTALLATION_CONFIG.disable_updater or
         properties.VALUES.component_manager.disable_update_check.GetBool()):
+      log.debug('SDK update checks are disabled.')
       return False
 
-    install_state = self._GetInstallState()
+    with update_check.UpdateCheckData() as last_update_check:
+      if force or last_update_check.ShouldDoUpdateCheck():
+        log.debug('Checking for updates...')
+        # It's time to do an update check and refresh the notification cache.
+        try:
+          (_, diff) = self._GetStateAndDiff(command_path='UPDATE_MANAGER')
+          last_update_check.SetFromSnapshot(
+              diff.latest, bool(diff.AvailableUpdates()), force=force)
+        except snapshots.IncompatibleSchemaVersionError:
+          last_update_check.SetFromIncompatibleSchema()
 
-    with install_state.LastUpdateCheck() as last_update_check:
-      # We already know there are updates, no need to check again.
-      if last_update_check.UpdatesAvailable():
-        return PrintUpdates(last_update_check)
-
-      # Not time to check again
-      if not force and (last_update_check.SecondsSinceLastUpdateCheck()
-                        < UpdateManager.UPDATE_CHECK_FREQUENCY_IN_SECONDS):
-        return False
-
-      # Check for updates.
-      try:
-        latest_snapshot = self._GetLatestSnapshot(
-            command_path='UPDATE_MANAGER')
-      except snapshots.IncompatibleSchemaVersionError:
-        # The schema version of the snapshot is newer than what we know about,
-        # it is definitely a newer version.
-        last_update_check.SetFromIncompatibleSchema()
-        return PrintUpdates(last_update_check)
-      updates_available = last_update_check.SetFromSnapshot(
-          latest_snapshot, platform_filter=self.__platform_filter)
-      if not updates_available:
-        return False
-      return PrintUpdates(last_update_check)
+      # Possibly print any notifications that should be triggered right now.
+      last_update_check.Notify(command_path)
+      return last_update_check.UpdatesAvailable()
 
   def List(self, show_versions=False):
     """Lists all of the components and their current state.
@@ -756,10 +733,14 @@ version [{1}].  To clear your fixed version setting, run:
     self.__Write(log.status)
     if not to_remove and not to_install:
       self.__Write(log.status, 'All components are up to date.')
-      with install_state.LastUpdateCheck() as update_check:
-        update_check.SetFromSnapshot(diff.latest, force=True,
-                                     platform_filter=self.__platform_filter)
+      with update_check.UpdateCheckData() as last_update_check:
+        last_update_check.SetFromSnapshot(
+            diff.latest, bool(diff.AvailableUpdates()), force=True)
       return True
+
+    # Ensure we have the rights to update the SDK now that we know an update is
+    # necessary.
+    config.EnsureSDKWriteAccess(self.__sdk_root)
 
     current_os = platforms.OperatingSystem.Current()
     if (current_os is platforms.OperatingSystem.WINDOWS and
@@ -834,9 +815,14 @@ version [{1}].  To clear your fixed version setting, run:
           stream=log.status, first=False) as pb:
         install_state.ReplaceWith(staging_state, pb.SetProgress)
 
-    with install_state.LastUpdateCheck() as update_check:
-      update_check.SetFromSnapshot(diff.latest, force=True,
-                                   platform_filter=self.__platform_filter)
+    with update_check.UpdateCheckData() as last_update_check:
+      # Need to create a new diff because we just updated the SDK and we need
+      # to reflect the components we just installed.
+      new_diff = install_state.DiffCurrentState(
+          diff.latest, platform_filter=self.__platform_filter)
+      last_update_check.SetFromSnapshot(
+          new_diff.latest, bool(new_diff.AvailableUpdates()), force=True)
+
     md5dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if md5dict1 != md5dict2:
       self.__Write(log.status,
@@ -931,6 +917,10 @@ Please remove the following to avoid accidentally invoking these old tools:
     self._PrintPendingAction(components_to_remove, 'removed')
     self.__Write(log.status)
 
+    # Ensure we have the rights to update the SDK now that we know an update is
+    # necessary.
+    config.EnsureSDKWriteAccess(self.__sdk_root)
+
     message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(message):
       return
@@ -968,6 +958,9 @@ Please remove the following to avoid accidentally invoking these old tools:
       raise NoBackupError('There is currently no backup to restore.')
 
     self._ShouldDoFastUpdate(allow_no_backup=False, fast_mode_impossible=True)
+    # Ensure we have the rights to update the SDK now that we know an update is
+    # necessary.
+    config.EnsureSDKWriteAccess(self.__sdk_root)
 
     if not console_io.PromptContinue(
         message='Your Cloud SDK installation will be restored to its previous '
@@ -1032,6 +1025,10 @@ Please remove the following to avoid accidentally invoking these old tools:
     # version of the schema.
     if no_update:
       return False
+
+    # Ensure we have the rights to update the SDK now that we know an update is
+    # necessary.
+    config.EnsureSDKWriteAccess(self.__sdk_root)
 
     answer = console_io.PromptContinue(
         message='\nThe component manager must perform a self update before you '

@@ -29,28 +29,28 @@ def AddCommonTestRunArgs(parser):
   argspec_arg.completer = arg_file.ArgSpecCompleter
 
   parser.add_argument(
-      '--type', '-y', choices=['instrumentation', 'monkey', 'robo'],
+      '--type', choices=['instrumentation', 'monkey', 'robo'],
       help='The type of test to run '
       '(_TYPE_ may be one of: instrumentation, robo, monkey).')
   parser.add_argument(
-      '--app', '-a',
+      '--app',
       help='The path to the application binary file. The path may be in the '
       'local filesystem or in Google Cloud Storage using gs:// notation.')
   parser.add_argument(
-      '--app-package', '-A',
+      '--app-package',
       help='The Java package of the application under test (default: extracted '
       'from the APK manifest).')
   parser.add_argument(
       '--async', action='store_true',
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
-      '--auto-google-login', '-L', action='store_true',
+      '--auto-google-login', action='store_true',
       help=argparse.SUPPRESS)
       # TODO(pauldavis): add this help text when ready for this to be exposed:
       # help='Automatically log into the test device using a preconfigured '
       # 'Google account before beginning the test.')
   parser.add_argument(
-      '--obb-files', '-O',
+      '--obb-files',
       type=arg_parsers.ArgList(min_length=1, max_length=2),
       metavar='OBB_FILE',
       action=arg_parsers.FloatingListValuesCatcher(),
@@ -71,11 +71,11 @@ def AddSharedCommandArgs(parser):
         in the CLI.
   """
   parser.add_argument(
-      '--results-bucket', '-b',
+      '--results-bucket',
       help='The name of a Google Cloud Storage bucket where test results will '
       'be stored (default: "cloud-test-<PROJECT-ID>").')
   parser.add_argument(
-      '--results-history-name', '-H',
+      '--results-history-name',
       help='The history name for your test results (an arbitrary string label; '
       'default: the application\'s label from the APK manifest). All tests '
       'which use the same history name will have their results grouped '
@@ -84,8 +84,9 @@ def AddSharedCommandArgs(parser):
   parser.add_argument(
       '--timeout', type=arg_validate.TIMEOUT_PARSER,
       help='The max time this test execution can run before it is cancelled '
-      '(default: 15m). The _TIMEOUT_ units can be h, m, or s. If no unit is '
-      'given, seconds are assumed. Examples:\n'
+      '(default: 15m). It does not include any time necessary to prepare and '
+      'clean up the target device. The _TIMEOUT_ units can be h, m, or s. If '
+      'no unit is given, seconds are assumed. Examples:\n'
       '- *--timeout 1h* is 1 hour\n'
       '- *--timeout 5m* is 5 minutes\n'
       '- *--timeout 200s* is 200 seconds\n'
@@ -144,15 +145,15 @@ def AddInstrumentationTestArgs(parser):
         in the CLI.
   """
   parser.add_argument(
-      '--test', '-t',
+      '--test',
       help='The path to the test binary file. The given path may be in the '
       'local filesystem or in Google Cloud Storage using gs:// notation.')
   parser.add_argument(
-      '--test-package', '-T',
+      '--test-package',
       help='The Java package name of the test (default: extracted from the '
       'APK manifest).')
   parser.add_argument(
-      '--test-runner-class', '-r',
+      '--test-runner-class',
       help='The fully-qualified Java class name of the instrumentation test '
       'runner (default: the last name extracted from the APK manifest).')
   parser.add_argument(

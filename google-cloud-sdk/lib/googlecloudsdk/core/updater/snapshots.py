@@ -8,7 +8,6 @@ module lets you do operations on snapshots like getting dependency closures,
 as well as diff'ing snapshots.
 """
 
-import collections
 import json
 import os
 import re
@@ -20,6 +19,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
+from googlecloudsdk.third_party.py27 import collections
 
 
 class Error(exceptions.Error):
@@ -209,7 +209,7 @@ class ComponentSnapshot(object):
                   for manifest in installed.values()]
     sdk_definition = schemas.SDKDefinition(
         revision=-1, schema_version=None, release_notes_url=None, version=None,
-        components=components)
+        components=components, notifications={})
     return ComponentSnapshot(sdk_definition)
 
   @staticmethod

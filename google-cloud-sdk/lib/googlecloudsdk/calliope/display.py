@@ -319,7 +319,7 @@ class Displayer(object):
             reverse = True
         orders.append('{name}:sort={order}{reverse}'.format(
             name=name, order=order + 1,
-            reverse=':reverse=1' if reverse else ''))
+            reverse=':reverse' if reverse else ''))
       fmt += ':({orders})'.format(orders=','.join(orders))
 
     return fmt

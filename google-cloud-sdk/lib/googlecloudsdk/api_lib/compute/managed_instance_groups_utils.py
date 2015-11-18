@@ -350,41 +350,47 @@ def BuildAutoscaler(args, messages, autoscaler_ref, igm_ref):
   )
 
 
-def AddAutohealingArgs(parser, help_hidden=False):
+def AddAutohealingArgs(parser):
   """Adds autohealing-related commandline arguments to parser."""
   health_check_group = parser.add_mutually_exclusive_group()
-  if not help_hidden:
-    health_check_group.add_argument(
-        '--http-health-check',
-        help=('Specifies the HTTP health check object used for autohealing '
-              'instances in this group.'))
-    health_check_group.add_argument(
-        '--https-health-check',
-        help=('Specifies the HTTPS health check object used for autohealing '
-              'instances in this group.'))
-  else:
-    # TODO(witek, b/22996767): Remove this branch after autohealing beta launch.
-    health_check_group.add_argument(
-        '--http-health-check',
-        help=argparse.SUPPRESS)
-    health_check_group.add_argument(
-        '--https-health-check',
-        help=argparse.SUPPRESS)
+  health_check_group.add_argument(
+      '--http-health-check',
+      help=('Specifies the HTTP health check object used for autohealing '
+            'instances in this group.'))
+  health_check_group.add_argument(
+      '--https-health-check',
+      help=('Specifies the HTTPS health check object used for autohealing '
+            'instances in this group.'))
+  initial_delay = parser.add_argument(
+      '--initial-delay',
+      type=arg_parsers.Duration(),
+      help=('Specifies the length of the period during which the instance '
+            'is known to be initializing and should not be autohealed even '
+            'if unhealthy.'))
+  initial_delay.detailed_help = """\
+      Specifies the length of the period during which the instance is known to
+      be initializing and should not be autohealed even if unhealthy.
+      Valid units for this flag are ``s'' for seconds, ``m'' for minutes, ``h''
+      for hours and ``d'' for days. If no unit is specified, seconds is assumed.
+      """
 
 
 def CreateAutohealingPolicies(cmd, args):
   """Creates autohealing policy list from args."""
   if hasattr(args, 'http_health_check'):  # alpha or beta
-    if args.http_health_check or args.https_health_check:
+    if args.http_health_check or args.https_health_check or args.initial_delay:
+      policy = cmd.messages.InstanceGroupManagerAutoHealingPolicy()
       if args.http_health_check:
         health_check_ref = cmd.CreateGlobalReference(
             args.http_health_check,
             resource_type='httpHealthChecks')
-      else:
+        policy.healthCheck = health_check_ref.SelfLink()
+      elif args.https_health_check:
         health_check_ref = cmd.CreateGlobalReference(
             args.https_health_check,
             resource_type='httpsHealthChecks')
-      return [
-          cmd.messages.InstanceGroupManagerAutoHealingPolicy(
-              healthCheck=health_check_ref.SelfLink())]
+        policy.healthCheck = health_check_ref.SelfLink()
+      if args.initial_delay:
+        policy.initialDelaySec = args.initial_delay
+      return [policy]
   return []

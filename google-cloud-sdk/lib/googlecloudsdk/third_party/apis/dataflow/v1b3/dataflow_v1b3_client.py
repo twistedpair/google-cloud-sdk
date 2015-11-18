@@ -285,7 +285,32 @@ class DataflowV1b3(base_api.BaseApiClient):
     def __init__(self, client):
       super(DataflowV1b3.ProjectsService, self).__init__(client)
       self._method_configs = {
+          'WorkerMessages': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'dataflow.projects.workerMessages',
+              ordered_params=[u'projectId'],
+              path_params=[u'projectId'],
+              query_params=[],
+              relative_path=u'v1b3/projects/{projectId}/WorkerMessages',
+              request_field=u'sendWorkerMessagesRequest',
+              request_type_name=u'DataflowProjectsWorkerMessagesRequest',
+              response_type_name=u'SendWorkerMessagesResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
           }
+
+    def WorkerMessages(self, request, global_params=None):
+      """Send a worker_message to the service.
+
+      Args:
+        request: (DataflowProjectsWorkerMessagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SendWorkerMessagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('WorkerMessages')
+      return self._RunMethod(
+          config, request, global_params=global_params)

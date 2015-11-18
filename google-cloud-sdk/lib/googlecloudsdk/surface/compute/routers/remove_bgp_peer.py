@@ -1,10 +1,10 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 
 """Command for removing a BGP peer from a router."""
-import copy
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.third_party.py27 import copy
 
 
 class PeerNotFoundError(exceptions.Error):

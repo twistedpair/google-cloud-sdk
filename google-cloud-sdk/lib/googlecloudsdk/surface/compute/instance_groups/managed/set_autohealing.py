@@ -7,7 +7,6 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import base
 
 
-@base.Hidden
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class SetAutohealing(base_classes.BaseAsyncMutator):
   """Set autohealing policy of instance group manager."""
@@ -62,5 +61,8 @@ that the instance is UNHEALTHY. If neither --http-health-check nor
 --https-health-check is specified, the resulting autohealing policy will be
 triggered by instance's status i.e. the autohealing action (RECREATE) on an
 instance will be performed if the instance.status is not RUNNING.
+--initial-delay specifies the length of the period during which IGM will
+refrain from autohealing the instance even if the instance is reported as not
+RUNNING or UNHEALTHY.
 """,
 }

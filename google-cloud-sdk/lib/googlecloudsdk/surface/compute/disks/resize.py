@@ -1,10 +1,17 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for setting size of instance group manager."""
 
+import textwrap
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core.console import console_io
+
+CONTINUE_WITH_RESIZE_PROMPT = textwrap.dedent("""
+    This command increases disk size. This change is not reversible.
+    For more information, see:
+    https://cloud.google.com/sdk/gcloud/reference/alpha/compute/disks/resize""")
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
@@ -57,6 +64,10 @@ class Resize(base_classes.BaseAsyncMutator):
 
     disk_refs = self.CreateZonalReferences(
         args.disk_names, args.zone, resource_type='disks')
+
+    console_io.PromptContinue(
+        message=CONTINUE_WITH_RESIZE_PROMPT,
+        cancel_on_no=True)
 
     requests = []
 

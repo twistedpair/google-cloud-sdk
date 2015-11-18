@@ -211,29 +211,34 @@ class RemoteCompletion(object):
       return True
     return False
 
-  def GetFromCache(self, self_link, prefix):
+  def GetFromCache(self, self_link, prefix, increment_counters=True):
     """Return a list of names for the specified self_link.
 
     Args:
       self_link: A selflink for the desired resource.
       prefix: completion word prefix
+      increment_counters: If True and found in cache, CACHE_TRIES is
+      incremented.
 
     Returns:
       Returns a list of names if in the cache.
     """
     options = None
-    RemoteCompletion.CACHE_TRIES += 1
+    if increment_counters:
+      RemoteCompletion.CACHE_TRIES += 1
     path = RemoteCompletion.CachePath(self_link)[0]
     fpath = os.path.join(self.cache_dir, path)
-    return self.GetAllMatchesFromCache(prefix, fpath, options)
+    return self._GetAllMatchesFromCache(prefix, fpath, options,
+                                        increment_counters)
 
-  def GetAllMatchesFromCache(self, prefix, fpath, options):
+  def _GetAllMatchesFromCache(self, prefix, fpath, options, increment_counters):
     """Return a list of names matching fpath.
 
     Args:
       prefix: completion word prefix
       fpath: A selflink for the desired resource.
       options: list of names in the cache.
+      increment_counters: If True and found in cache, CACHE_HITS is incremented.
 
     Returns:
       Returns a list of names if in the cache.
@@ -254,7 +259,8 @@ class RemoteCompletion(object):
         fpath = lst[0] + name + lst[1]
         # make sure that the data in this path is still valid
         if os.path.isfile(fpath) and os.path.getmtime(fpath) > time.time():
-          options = self.GetAllMatchesFromCache(prefix, fpath, options)
+          options = self._GetAllMatchesFromCache(prefix, fpath, options,
+                                                 increment_counters)
         else:
           # if not valid than the cache can't be used so return no matches
           size = 0
@@ -268,7 +274,8 @@ class RemoteCompletion(object):
         fpath = lst0[:-len('regions/')] + 'global' + lst[1]
         if os.path.isfile(fpath) and os.path.getmtime(fpath) > time.time():
           self.flags = ' --global'
-          options = self.GetAllMatchesFromCache(prefix, fpath, options)
+          options = self. GetAllMatchesFromCache(prefix, fpath, options,
+                                                 increment_counters)
       return options
     if not fpath:
       return None
@@ -284,7 +291,8 @@ class RemoteCompletion(object):
           if not prefix or item.startswith(prefix):
             options.append(item + self.flags)
       self.flags = ''
-      RemoteCompletion.CACHE_HITS += 1
+      if increment_counters:
+        RemoteCompletion.CACHE_HITS += 1
       return options
     except IOError:
       return None
@@ -493,11 +501,8 @@ class RemoteCompletion(object):
               # the parent already exited, so exit the child
               os.exit(0)
             if resource_missing:
-              options = ccache.GetFromCache(resource_link, prefix)
-              if options:
-                RemoteCompletion.CACHE_HITS -= 1
-              else:
-                options = []
+              options = ccache.GetFromCache(resource_link, prefix,
+                                            increment_counters=False) or []
       except Exception:  # pylint:disable=broad-except
         logging.error(resource + 'completion command failed', exc_info=True)
         return []

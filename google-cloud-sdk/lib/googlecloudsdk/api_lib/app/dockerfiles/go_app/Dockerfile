@@ -1,6 +1,6 @@
 # Dockerfile extending the generic Go image with application files for a
 # single application.
-FROM beta.gcr.io/google_appengine/golang
+FROM gcr.io/google_appengine/golang
 
 # To enable Go 1.5 vendoring, uncomment the following line.
 # For Go 1.5 vendoring details, see the documentation for the go command:

@@ -5,7 +5,7 @@
 import json
 import os
 
-from googlecloudsdk.api_lib.source import generate_source_context
+from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
@@ -73,7 +73,7 @@ class GenRepoInfoFile(base.Command):
             'includes a directory path.'))
 
   def Run(self, args):
-    contexts = generate_source_context.CalculateExtendedSourceContexts(
+    contexts = context_util.CalculateExtendedSourceContexts(
         args.source_directory)
 
     # First create the old-style source-context.json file
@@ -93,8 +93,8 @@ class GenRepoInfoFile(base.Command):
       else:
         output_directory = '.'
 
-    best_context = generate_source_context.BestSourceContext(
-        contexts, args.source_directory)
+    best_context = context_util.BestSourceContext(contexts,
+                                                  args.source_directory)
     files.MakeDir(output_directory)
     with open(output_file, 'w') as f:
       json.dump(best_context, f, indent=2, sort_keys=True)

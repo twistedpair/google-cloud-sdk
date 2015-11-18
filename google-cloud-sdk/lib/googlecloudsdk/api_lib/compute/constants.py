@@ -1,6 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Defines tool-wide constants."""
-import collections
+from googlecloudsdk.third_party.py27 import collections
 
 BYTES_IN_ONE_GB = 2 ** 30
 

@@ -1,10 +1,10 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 """Module for making API requests."""
-import copy
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import waiters
 from googlecloudsdk.core import log
+from googlecloudsdk.third_party.py27 import copy
 
 
 def _RequestsAreListRequests(requests):

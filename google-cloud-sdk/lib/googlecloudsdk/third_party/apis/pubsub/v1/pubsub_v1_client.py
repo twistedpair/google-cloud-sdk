@@ -296,11 +296,10 @@ processing was interrupted.
     def ModifyPushConfig(self, request, global_params=None):
       """Modifies the `PushConfig` for a specified subscription.
 
-This may be used to change a push subscription to a pull one (signified
-by an empty `PushConfig`) or vice versa, or change the endpoint URL and
-other attributes of a push subscription. Messages will accumulate for
-delivery continuously through the call regardless of changes to the
-`PushConfig`.
+This may be used to change a push subscription to a pull one (signified by
+an empty `PushConfig`) or vice versa, or change the endpoint URL and other
+attributes of a push subscription. Messages will accumulate for delivery
+continuously through the call regardless of changes to the `PushConfig`.
 
       Args:
         request: (PubsubProjectsSubscriptionsModifyPushConfigRequest) input message
@@ -573,9 +572,9 @@ policy or the resource does not exist.
           config, request, global_params=global_params)
 
     def Publish(self, request, global_params=None):
-      """Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic does.
-not exist. The message payload must not be empty; it must contain either a
-non-empty data field, or at least one attribute.
+      """Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
+does not exist. The message payload must not be empty; it must contain
+ either a non-empty data field, or at least one attribute.
 
       Args:
         request: (PubsubProjectsTopicsPublishRequest) input message

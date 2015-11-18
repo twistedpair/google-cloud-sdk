@@ -369,15 +369,17 @@ class ClientInfo(_messages.Message):
 
 class ConnectionInfo(_messages.Message):
   """Information needed to connect to services running on the virtual device.
-  All of the fields in this message are provided by the backend. Absence of a
-  field means that the corresponding service is not provided.
+  The ssh_port is used to connect to the device, and then the adb_port and
+  vnc_port on the device can be forwarded to two local ports, to which adb and
+  vnc can connect, respectively.  All of the fields in this message are
+  provided by the backend.
 
   Fields:
-    adbPort: Port for ADB (e.g. 5555) NOT user-specified
-    ipAddress: IP address of the device. NOT user-specified
-    sshPort: Port for SSH (e.g. 22) NOT user-specified
-    vncPassword: Password for VNC NOT user-specified
-    vncPort: Port for VNC (e.g. 6444) NOT user-specified
+    adbPort: Port for ADB (e.g. 5555) NOT user-specified Required
+    ipAddress: IP address of the device. NOT user-specified Required
+    sshPort: Port for SSH (e.g. 22) NOT user-specified Required
+    vncPassword: Password for VNC NOT user-specified Required
+    vncPort: Port for VNC (e.g. 6444) NOT user-specified Required
   """
 
   adbPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -398,9 +400,9 @@ class Date(_messages.Message):
 
   Fields:
     day: Day of month. Must be from 1 to 31 and valid for the year and month,
-      or 0 if specifying a year/month where the day is not sigificant.
-    month: Month of year of date. Must be from 1 to 12.
-    year: Year of date. Must be from 1 to 9,999, or 0 if specifying a date
+      or 0 if specifying a year/month where the day is not significant.
+    month: Month of year. Must be from 1 to 12.
+    year: Year of date. Must be from 1 to 9999, or 0 if specifying a date
       without a year.
   """
 
@@ -416,12 +418,13 @@ class Device(_messages.Message):
     StateValueValuesEnum: State of the device. NOT user-specified
 
   Fields:
-    androidDevice: The Android device configuration. user-specified
-    creationTime: The time this device was initially created. NOT user-
-      specified
+    androidDevice: The Android device configuration. User-specified Required
+    creationTime: The time the request to create this device was received. NOT
+      user-specified
     deviceDetails: Information about the backing GCE instance and connection.
       NOT user-specified
     id: Unique id set by the backend. NOT user-specified
+    projectId: Project id set by the backend. NOT user-specified
     state: State of the device. NOT user-specified
     stateDetails: Details about the state of the device. NOT user-specified
   """
@@ -446,8 +449,9 @@ class Device(_messages.Message):
   creationTime = _messages.StringField(2)
   deviceDetails = _messages.MessageField('DeviceDetails', 3)
   id = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  stateDetails = _messages.MessageField('DeviceStateDetails', 6)
+  projectId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateDetails = _messages.MessageField('DeviceStateDetails', 7)
 
 
 class DeviceDetails(_messages.Message):

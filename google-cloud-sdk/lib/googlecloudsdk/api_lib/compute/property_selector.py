@@ -39,11 +39,9 @@ There are three operators in the language of properties:
     '[INDEX]': List access which allows one to select an element of
         a list.
 """
-import collections
-import copy
-
-from googlecloudsdk.core.util import compat26  # pylint: disable=unused-import
 from googlecloudsdk.core.util import tokenizer
+from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import copy
 
 
 class Error(Exception):
