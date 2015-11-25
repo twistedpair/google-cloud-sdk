@@ -18,6 +18,15 @@ from googlecloudsdk.third_party.appengine.api import yaml_errors
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
 
+HINT_PROJECT = ('Project name should instead be specified either by '
+                '`gcloud config set project MY_PROJECT` or by setting the '
+                '`--project` flag on individual command executions.')
+
+HINT_VERSION = ('Versions are generated automatically by default but can also '
+                'be manually specified by setting the `--version` flag on '
+                'individual command executions.')
+
+
 class Error(exceptions.Error):
   """A base error for this module."""
   pass
@@ -68,7 +77,6 @@ class _YamlInfo(object):
     """
     self.file = file_path
     self.parsed = parsed
-    self.project = parsed.application
 
   @staticmethod
   def _ParseYaml(file_path, parser):
@@ -114,12 +122,11 @@ class ConfigYamlInfo(_YamlInfo):
     self.config = config
 
   @staticmethod
-  def FromFile(file_path, project):
+  def FromFile(file_path):
     """Parses the given config file.
 
     Args:
       file_path: str, The full path to the config file.
-      project: str, The project being using by gcloud.
 
     Raises:
       YamlParseError: If the file is not valid.
@@ -138,14 +145,12 @@ class ConfigYamlInfo(_YamlInfo):
     except (yaml_errors.Error, validation.Error) as e:
       raise YamlParseError(file_path, e)
 
-    parsed.application = _CheckAttribute(
+    _CheckIllegalAttribute(
         name='application',
-        gcloud_name='project',
-        warn_remove=True,
         yaml_info=parsed,
         extractor_func=lambda yaml: yaml.application,
         file_path=file_path,
-        current_value=project)
+        msg=HINT_PROJECT)
 
     return ConfigYamlInfo(file_path, config=base, parsed=parsed)
 
@@ -162,7 +167,6 @@ class ModuleYamlInfo(_YamlInfo):
       parsed: appinfo.AppInfoExternal, parsed Application Configuration.
     """
     super(ModuleYamlInfo, self).__init__(file_path, parsed)
-    self.version = parsed.version
     self.module = parsed.module
     self.is_hermetic = bool(parsed.env == '2')
     self.is_vm = parsed.runtime == 'vm' or self.is_hermetic
@@ -172,17 +176,14 @@ class ModuleYamlInfo(_YamlInfo):
       self._UpdateManagedVMConfig()
 
   @staticmethod
-  def FromFile(file_path, project, version, check_version):
+  def FromFile(file_path):
     """Parses the given module file.
 
     Args:
       file_path: str, The full path to the module file.
-      project: str, The project being using by gcloud.
-      version: str, The version being used by gcloud
-      check_version: bool, Whether the version info should be validated.
 
     Raises:
-      YamlParseError: If the file is not valid.
+      YamlParseError: If the file is not a valid Yaml-file.
       YamlValidationError: If validation of parsed info fails.
 
     Returns:
@@ -216,24 +217,19 @@ class ModuleYamlInfo(_YamlInfo):
     if not parsed.module:
       parsed.module = ModuleYamlInfo.DEFAULT_MODULE_NAME
 
-    parsed.application = _CheckAttribute(
+    _CheckIllegalAttribute(
         name='application',
-        gcloud_name='project',
-        warn_remove=True,
         yaml_info=parsed,
         extractor_func=lambda yaml: yaml.application,
         file_path=file_path,
-        current_value=project)
+        msg=HINT_PROJECT)
 
-    if check_version:
-      parsed.version = _CheckAttribute(
-          name='version',
-          gcloud_name='version',
-          warn_remove=True,
-          yaml_info=parsed,
-          extractor_func=lambda yaml: yaml.version,
-          file_path=file_path,
-          current_value=version)
+    _CheckIllegalAttribute(
+        name='version',
+        yaml_info=parsed,
+        extractor_func=lambda yaml: yaml.version,
+        file_path=file_path,
+        msg=HINT_VERSION)
 
     return ModuleYamlInfo(file_path, parsed)
 
@@ -262,50 +258,27 @@ class ModuleYamlInfo(_YamlInfo):
     self.parsed.vm_settings['module_yaml_path'] = os.path.basename(self.file)
 
 
-def _CheckAttribute(name, gcloud_name, warn_remove, yaml_info, extractor_func,
-                    file_path, current_value):
-  """Validates a single attribute against its parsed value.
+def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):
+  """Validates that an illegal attribute is not set.
 
   Args:
     name: str, The name of the attribute in the yaml files.
-    gcloud_name: str, The name of the attribute as gcloud refers to it.
-    warn_remove: bool, True to warn the user to remove the attribute if it is
-      present.
     yaml_info: AppInfoExternal, The yaml to validate.
     extractor_func: func(AppInfoExternal)->str, A function to extract the
       value of the attribute from a _YamlInfo object.
     file_path: str, The path of file from which yaml_info was parsed.
-    current_value: str, The value that gcloud is using for this attribute.  If
-      given, the files must all declare the same value or not declare
-      anything.
+    msg: str, Message to couple with the error
 
   Raises:
-      YamlValidationError: If validation of attribute fails.
+      YamlValidationError: If illegal attribute is set.
 
-  Returns:
-    str, The value for the attribute.  This will always be the current_value
-      if given.  If not given, then it will be the value of the parsed
-      attribute if it exists.
   """
   attribute = extractor_func(yaml_info)
   if attribute is not None:
-    # Make sure it matches the current value if provided.
-    if current_value is not None and attribute != current_value:
-      raise YamlValidationError(
-          'The {0} [{1}] declared in [{2}] does not match the current '
-          'gcloud {3} [{4}].'.format(name, attribute, file_path, gcloud_name,
-                                     current_value))
-
-    if warn_remove:
-      # Recommend to not use the given attribute.
-      log.warning('The [{0}] field is specified in file [{1}].  This field '
-                  'is not used by gcloud and should be removed.'.format(
-                      name, file_path))
-
-    # If no current value, use the value we parsed.
-    current_value = current_value or attribute
-
-  return current_value
+    # Disallow use of the given attribute.
+    raise YamlValidationError(
+        'The [{0}] field is specified in file [{1}]. This field is not used '
+        'by gcloud and must be removed. '.format(name, file_path) + msg)
 
 
 class AppConfigSet(object):
@@ -313,7 +286,7 @@ class AppConfigSet(object):
   YAML_EXTS = ['.yaml', '.yml']
   IGNORED_YAMLS = ['backends']
 
-  def __init__(self, files, project, version=None, check_version=True):
+  def __init__(self, files):
     """Creates a new AppConfigSet.
 
     This will scan all files and directories in items, parse them, and
@@ -321,20 +294,13 @@ class AppConfigSet(object):
 
     Args:
       files: str, The files to load into the config set.
-      project: str, The current gcloud project.
-      version: str, The app engine version that is being operated on.
-      check_version: bool, True if version verification has to be enabled
-        (deployment).
 
     Raises:
       AppConfigSetLoadError: If validation fails on the given files.
       YamlParserError: If a file fails to parse.
     """
-    self.__project = project
-    self.__version = version
     self.__config_yamls = {}
     self.__module_yamls = {}
-    self.__check_version = check_version
     self.__error = False
 
     for f in files:
@@ -392,19 +358,6 @@ class AppConfigSet(object):
     """
     return dict(self.__config_yamls)
 
-  def Version(self):
-    """Gets the app version.
-
-    Returns:
-      str, The version that we are acting on.  This can either come from the
-        parsed files, or the value that was given during initialization.  All
-        given values must match.
-    """
-    yaml_version = None
-    if self.__module_yamls:
-      yaml_version = self.__module_yamls.values()[0].version
-    return yaml_version or self.__version
-
   def __IsInterestingFile(self, f):
     """Determines if the given file is something we should try to parse.
 
@@ -438,7 +391,7 @@ class AppConfigSet(object):
     if not self.__IsInterestingFile(file_path):
       return False
 
-    yaml = ConfigYamlInfo.FromFile(file_path, self.__project)
+    yaml = ConfigYamlInfo.FromFile(file_path)
     if yaml:
       existing_config = self.__config_yamls.get(yaml.config)
       if existing_config:
@@ -448,10 +401,7 @@ class AppConfigSet(object):
       else:
         self.__config_yamls[yaml.config] = yaml
     else:
-      yaml = ModuleYamlInfo.FromFile(file_path,
-                                     self.__project,
-                                     self.__version,
-                                     self.__check_version)
+      yaml = ModuleYamlInfo.FromFile(file_path)
       existing_module = self.__module_yamls.get(yaml.module)
       if existing_module:
         self.__Error('Found multiple files declaring module [%s]: [%s, %s]',

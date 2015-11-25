@@ -3,6 +3,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -12,6 +13,8 @@ from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import schema
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 class PluginInvocationFailed(exceptions.Error):
@@ -23,17 +26,23 @@ class PluginInvocationFailed(exceptions.Error):
   pass
 
 
+class InvalidRuntimeDefinition(exceptions.Error):
+  """Raised when an inconsistency is found in the runtime definition."""
+  pass
+
+
 class ExternalRuntimeConfigurator(fingerprinting.Configurator):
   """Configurator for general externalized runtimes.
 
   Attributes:
     runtime: (ExternalizedRuntime) The runtime that produced this.
     params: (fingerprinting.Params) Runtime parameters.
-      data: ({str: object, ...} or None) Optional dictionary of runtime data
-        passed back through a runtime_parameters message.
+    data: ({str: object, ...} or None) Optional dictionary of runtime data
+      passed back through a runtime_parameters message.
+    path: (str) Path to the user's source directory.
   """
 
-  def __init__(self, runtime, params, data):
+  def __init__(self, runtime, params, data, path):
     """Constructor.
 
     Args:
@@ -41,15 +50,46 @@ class ExternalRuntimeConfigurator(fingerprinting.Configurator):
       params: (fingerprinting.Params) Runtime parameters.
       data: ({str: object, ...} or None) Optional dictionary of runtime data
         passed back through a runtime_parameters message.
+      path: (str) Path to the user's source directory.
     """
     self.runtime = runtime
     self.params = params
     self.data = data
+    self.path = path
 
   def GenerateConfigs(self):
-    # TODO(mmuller): implement GenerateConfigs() (We only define it so lint
-    # doesn't give us an error)
-    pass
+    return self.runtime.GenerateConfigs(self)
+
+
+def _NormalizePath(basedir, pathname):
+  """Get the absolute path from a unix-style relative path.
+
+  Args:
+    basedir: (str) Platform-specific encoding of the base directory.
+    pathname: (str) A unix-style (forward slash separated) path relative to
+      the runtime definition root directory.
+
+  Returns:
+    (str) An absolute path conforming to the conventions of the operating
+    system.  Note: in order for this to work, 'pathname' must not contain
+    any characters with special meaning in any of the targeted operating
+    systems.  Keep those names simple.
+  """
+  components = pathname.split('/')
+  return os.path.join(basedir, *components)
+
+
+class GeneratedFile(object):
+
+  def __init__(self, filename, contents):
+    self.filename = filename
+    self.contents = contents
+
+  def WriteTo(self, dest_dir):
+    path = _NormalizePath(dest_dir, self.filename)
+    with open(path, 'w') as f:
+      f.write(self.contents)
+    return path
 
 
 class PluginResult(object):
@@ -76,13 +116,36 @@ _LOG_FUNCS = {
     'debug': log.debug
 }
 
+# A section consisting only of scripts.
+_EXEC_SECTION = schema.Message(
+    python=schema.Value(converter=str))
+
+_RUNTIME_SCHEMA = schema.Message(
+    name=schema.Value(converter=str),
+    description=schema.Value(converter=str),
+    author=schema.Value(converter=str),
+    api_version=schema.Value(converter=str),
+    generate_configs=schema.Message(
+        python=schema.Value(converter=str),
+        files_to_copy=schema.RepeatedField(element=schema.Value(converter=str)),
+        ),
+    detect=_EXEC_SECTION,
+    pre_build=_EXEC_SECTION,
+    post_build=_EXEC_SECTION)
+
 
 class ExternalizedRuntime(object):
   """Encapsulates an externalized runtime."""
 
   def __init__(self, path, config):
     self.root = path
-    self.config = config
+    try:
+      # Do validation up front, after this we can assume all of the types are
+      # correct.
+      self.config = _RUNTIME_SCHEMA.ConvertValue(config)
+    except ValueError as ex:
+      raise InvalidRuntimeDefinition(
+          'Invalid runtime definition: {0}'.format(ex.message))
 
   @staticmethod
   def Load(path):
@@ -125,6 +188,14 @@ class ExternalizedRuntime(object):
         result.runtime_data = message['runtime_data']
       except KeyError:
         log.error('Missing [runtime_data] field in runtime_parameters message.')
+    elif msg_type == 'gen_file':
+      try:
+        # TODO(mmuller): deal with 'encoding'
+        filename = message['filename']
+        contents = message['contents']
+        result.files.append(GeneratedFile(filename, contents))
+      except KeyError as ex:
+        log.error('Missing [%s] field in gen_file message', ex.message)
     # TODO(mmuller): implement remaining message types.
     else:
       log.error('Unknown message type %s' % msg_type)
@@ -143,22 +214,6 @@ class ExternalizedRuntime(object):
       except ValueError:
         # Unstructured lines get logged as "info".
         log.info('%s: %s' % (section_name, line.rstrip()))
-
-  def _NormalizePath(self, pathname):
-    """Get the absolute path from a unix-style relative path.
-
-    Args:
-      pathname: (str) A unix-style (forward slash separated) path relative to
-        the runtime definition root directory.
-
-    Returns:
-      (str) An absolute path conforming to the conventions of the operating
-      system.  Note: in order for this to work, 'pathname' must not contain
-      any characters with special meaning in any of the targeted operating
-      systems.  Keep those names simple.
-    """
-    components = pathname.split('/')
-    return os.path.join(self.root, *components)
 
   def RunPlugin(self, section_name, plugin_spec, args=None,
                 valid_exit_codes=(0,)):
@@ -181,7 +236,7 @@ class ExternalizedRuntime(object):
     """
     # TODO(mmuller): Support other script types.
     if plugin_spec.has_key('python'):
-      normalized_path = self._NormalizePath(plugin_spec['python'])
+      normalized_path = _NormalizePath(self.root, plugin_spec['python'])
 
       # We're sharing 'result' with the output collection thread, we can get
       # away with this without locking because we pass it into the thread at
@@ -228,12 +283,65 @@ class ExternalizedRuntime(object):
       (fingerprinting.Configurator) An object containing parameters inferred
         from source inspection.
     """
-    if self.config.has_key('detect'):
-      result = self.RunPlugin('detect', self.config['detect'], [path], (0, 1))
+    detect = self.config.get('detect')
+    if detect:
+      result = self.RunPlugin('detect', detect, [path], (0, 1))
       if result.exit_code:
         return None
       else:
-        return ExternalRuntimeConfigurator(self, params, result.runtime_data)
+        return ExternalRuntimeConfigurator(self, params, result.runtime_data,
+                                           path)
 
     else:
       return None
+
+  def GenerateConfigs(self, configurator):
+    """Do config generation on the runtime.
+
+    This should generally be called from the configurator's GenerateConfigs()
+    method.
+
+    Args:
+      configurator: (ExternalRuntimeConfigurator) The configurator retuned by
+        Detect().
+
+    Returns:
+      (fingerprinting.Cleaner) The cleaner for the generated files.
+
+    Raises:
+      InvalidRuntimeDefinition: For a variety of problems with the runtime
+        definition.
+    """
+    generate_configs = self.config.get('generateConfigs')
+    if generate_configs:
+      cleaner = fingerprinting.Cleaner()
+      files_to_copy = generate_configs.get('filesToCopy')
+      if files_to_copy:
+
+        # Make sure there's nothing else.
+        if len(generate_configs) != 1:
+          raise InvalidRuntimeDefinition('If "files_to_copy" is specified, '
+                                         'it must be the only field in '
+                                         'generate_configs.')
+
+        for filename in files_to_copy:
+          full_name = _NormalizePath(self.root, filename)
+          if not os.path.isfile(full_name):
+            raise InvalidRuntimeDefinition('File [%s] specified in '
+                                           'files_to_copy, but is not in '
+                                           'the runtime definition.' %
+                                           filename)
+
+          dest_path = _NormalizePath(configurator.path, filename)
+          cleaner.Add(dest_path)
+          shutil.copy(full_name, dest_path)
+      else:
+        result = self.RunPlugin('generate_configs', generate_configs)
+        for file_info in result.files:
+          cleaner.Add(file_info.WriteTo(configurator.path))
+
+      return cleaner
+    else:
+      raise InvalidRuntimeDefinition('Runtime definition contains no '
+                                     'generate_configs section.')
+

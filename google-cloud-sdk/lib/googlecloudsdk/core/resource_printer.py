@@ -6,7 +6,7 @@ import json
 import sys
 
 from googlecloudsdk.third_party.apitools.base.py import encoding
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 from protorpc import messages
 
 

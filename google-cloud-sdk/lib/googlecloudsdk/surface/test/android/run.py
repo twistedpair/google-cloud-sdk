@@ -23,7 +23,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-@base.ReleaseTracks(base.ReleaseTrack.BETA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class Run(base.ListCommand):
   """Invoke an Android test in Google Cloud Test Lab and view test results."""
 
@@ -72,7 +72,8 @@ class Run(base.ListCommand):
 
           To run the same test as above using short flags, run:
 
-            $ {command} -a APP_APK -t TEST_APK -d mako -v 18 -l fr -o portrait
+            $ {command} --app APP_APK --test TEST_APK -d mako -v 18 -l fr\
+ -o portrait
 
           To run a series of 5-minute robo tests against a comprehensive matrix
           of virtual and physical devices, OS versions and locales, run:
@@ -86,7 +87,7 @@ class Run(base.ListCommand):
           results and specifying the name under which the history of your tests
           will be collected and displayed in the Google Developers Console, run:
 
-            $ {command} -a APP_APK -t TEST_APK\
+            $ {command} --app APP_APK --test TEST_APK\
  --results-bucket excelsior-app-results-bucket\
  --results-history-name 'Excelsior App Test History'
 

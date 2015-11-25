@@ -3,64 +3,79 @@
 """The command to install/update gcloud components."""
 
 import argparse
-import textwrap
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core.console import console_io
 
 
 class Update(base.Command):
-  """Update or install one or more Cloud SDK components or packages.
+  """Update all of your installed components to the latest version.
 
-  Ensure that the latest version of each specified component, and the latest
-  version of all components upon which the specified components directly or
-  indirectly depend, is installed on the local workstation. If the command
-  includes one or more names of components or packages, the specified components
-  are the named components and the components contained in the named packages;
-  if the command does not name any components or packages, the specified
-  components are all installed components.
+  Ensure that the latest version of all installed components is installed on the
+  local workstation.
   """
   detailed_help = {
-      'DESCRIPTION': textwrap.dedent("""\
+      'DESCRIPTION': """\
           {description}
 
-          The items may be individual components or preconfigured packages. If a
-          downloaded component was not previously installed, the downloaded
-          version is installed. If an earlier version of the component was
-          previously installed, that version is replaced by the downloaded
-          version.
+          The command lists all components it is about to update, and asks for
+          confirmation before proceeding.
 
-          If, for example, the component ``UNICORN-FACTORY'' depends on the
-          component ``HORN-FACTORY'', installing the latest version of
-          ``UNICORN-FACTORY'' will cause the version of ``HORN-FACTORY'' upon
-          which it depends to be installed as well, if it is not already
-          installed. The command lists all components it is about to install,
-          and asks for confirmation before proceeding.
-      """),
-      'EXAMPLES': textwrap.dedent("""\
-          The following command ensures that the latest version is installed for
-          ``COMPONENT-1'', ``COMPONENT-2'', and all components that depend,
-          directly or indirectly, on either ``COMPONENT-1'' or ``COMPONENT-2'':
+          By default, this command will update all components to their latest
+          version.  This can be configured by using the --version flag to choose
+          a specific version to update to.  This version may also be a version
+          older than the one that is currently installed.
 
-            $ gcloud components update COMPONENT-1 COMPONENT-2
-      """),
+          You can see your current Cloud SDK version by running:
+
+            $ {top_command} version
+      """,
+      'EXAMPLES': """\
+          To update all installed components to the latest version:
+
+            $ {command}
+
+          To update all installed components to version 1.2.3:
+
+            $ {command} --version 1.2.3
+      """,
   }
 
   @staticmethod
   def Args(parser):
     parser.add_argument(
+        '--version',
+        help='An optional Cloud SDK version to update your components to.  By '
+        'default, components are updated to the latest available version.')
+    parser.add_argument(
         'component_ids',
         metavar='COMPONENT-IDS',
         nargs='*',
-        help='The IDs of the components to be updated or installed.')
+        help=argparse.SUPPRESS)
     parser.add_argument(
         '--allow-no-backup',
         required=False,
         action='store_true',
         help=argparse.SUPPRESS)
-    parser.add_argument('--version', help=argparse.SUPPRESS)
 
   def Run(self, args):
     """Runs the list command."""
+
+    if args.component_ids and not args.version:
+      install = console_io.PromptContinue(
+          message='You have specified individual components to update.  If you '
+          'are trying to install new components, use:\n  $ gcloud '
+          'components install {components}'.format(
+              components=' '.join(args.component_ids)),
+          prompt_string='Do you want to run install instead',
+          default=False,
+          throw_if_unattended=False,
+          cancel_on_no=False)
+      if install:
+        self.group.update_manager.Install(
+            args.component_ids, allow_no_backup=args.allow_no_backup)
+        return
+
     self.group.update_manager.Update(
         args.component_ids, allow_no_backup=args.allow_no_backup,
         version=args.version)

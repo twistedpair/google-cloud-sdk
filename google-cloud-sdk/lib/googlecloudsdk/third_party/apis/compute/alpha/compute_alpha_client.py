@@ -1005,6 +1005,18 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'SetLabels': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.disks.setLabels',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setLabels',
+              request_field=u'zoneSetLabelsRequest',
+              request_type_name=u'ComputeDisksSetLabelsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.disks.testIamPermissions',
@@ -1110,6 +1122,19 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on the target disk.
+
+      Args:
+        request: (ComputeDisksSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2548,6 +2573,18 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'ImageList',
               supports_download=False,
           ),
+          'SetLabels': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.images.setLabels',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/images/{resource}/setLabels',
+              request_field=u'globalSetLabelsRequest',
+              request_type_name=u'ComputeImagesSetLabelsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.images.testIamPermissions',
@@ -2631,6 +2668,19 @@ See Accessing images for more information.
         (ImageList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on the target image.
+
+      Args:
+        request: (ComputeImagesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4922,6 +4972,18 @@ See Accessing images for more information.
               response_type_name=u'SnapshotList',
               supports_download=False,
           ),
+          'SetLabels': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.snapshots.setLabels',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/snapshots/{resource}/setLabels',
+              request_field=u'globalSetLabelsRequest',
+              request_type_name=u'ComputeSnapshotsSetLabelsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.snapshots.testIamPermissions',
@@ -4977,6 +5039,19 @@ For more information, see Deleting snaphots.
         (SnapshotList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on the target snapshot.
+
+      Args:
+        request: (ComputeSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
       return self._RunMethod(
           config, request, global_params=global_params)
 

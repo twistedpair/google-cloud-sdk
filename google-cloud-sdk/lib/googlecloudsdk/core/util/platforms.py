@@ -268,11 +268,22 @@ class Platform(object):
 
 
 class PythonVersion(object):
-  """Class to validate the Python version we are using."""
-  MIN_REQUIRED_VERSION = (2, 6)
+  """Class to validate the Python version we are using.
 
-  def __init__(self):
-    if hasattr(sys, 'version_info'):
+  The Cloud SDK officially supports Python 2.7.
+
+  However, many commands do work with Python 2.6, so we don't error out when
+  users are using this (we consider it "compatible" but not "supported").
+  """
+
+  # See class docstring for descriptions of what these mean
+  MIN_REQUIRED_VERSION = (2, 6)
+  MIN_SUPPORTED_VERSION = (2, 7)
+
+  def __init__(self, version=None):
+    if version:
+      self.version = version
+    elif hasattr(sys, 'version_info'):
       self.version = sys.version_info[:2]
     else:
       self.version = None
@@ -281,37 +292,59 @@ class PythonVersion(object):
     return '%s.%s' % (str(PythonVersion.MIN_REQUIRED_VERSION[0]),
                       str(PythonVersion.MIN_REQUIRED_VERSION[1]))
 
+  def MinSupportedVersionString(self):
+    return '%s.%s' % (str(PythonVersion.MIN_SUPPORTED_VERSION[0]),
+                      str(PythonVersion.MIN_SUPPORTED_VERSION[1]))
+
   def __PrintEnvVarMessage(self):
     """Prints how to set CLOUDSDK_PYTHON."""
     sys.stderr.write('\nIf you have a compatible Python interpreter installed, '
                      'you can use it by setting the CLOUDSDK_PYTHON '
                      'environment variable to point to it.\n')
 
-  def IsSupported(self):
+  def IsCompatible(self, print_errors=True):
     """Ensure that the Python version we are using is compatible.
 
-    This will print an error message if not supported.
+    This will print an error message if not compatible.
+
+    Compatible versions are 2.6 and 2.7.
+
+    Args:
+      print_errors: bool, if False disable the error messages about not being
+          compatible..
 
     Returns:
       bool, True if the version is valid, False otherwise.
     """
+    error = None
     if not self.version:
-      sys.stderr.write('ERROR: Your current version of Python is not supported '
-                       'by the Google Cloud SDK.  Please upgrade to Python '
-                       '%s or greater.\n' % (self.__MinVersionString()))
-      self.__PrintEnvVarMessage()
-      return False
-    if self.version[0] == 3:
-      sys.stderr.write('ERROR: Python 3 is not supported by the Google Cloud '
-                       'SDK.  Please use a Python 2.x version that is %s or '
-                       'greater.\n' % (self.__MinVersionString()))
-      self.__PrintEnvVarMessage()
-      return False
+      error = ('ERROR: Your current version of Python is not compatible with '
+               'the Google Cloud SDK. Please upgrade to Python %s or greater.\n'
+               % (self.__MinVersionString()))
+    if self.version[0] >= 3:
+      error = ('ERROR: Python 3 and later is not compatible with by the Google '
+               'Cloud SDK. Please use a Python 2.x version that is %s or '
+               'greater.\n' % (self.__MinVersionString()))
     if self.version < PythonVersion.MIN_REQUIRED_VERSION:
-      sys.stderr.write('ERROR: Python %s.%s is not supported by the Google '
-                       'Cloud SDK. Please upgrade to version %s or greater.\n'
-                       % (str(self.version[0]), str(self.version[1]),
-                          self.__MinVersionString()))
-      self.__PrintEnvVarMessage()
+      error = ('ERROR: Python %s.%s is not compatible with the Google Cloud '
+               'SDK. Please upgrade to version %s or greater.\n'
+               % (str(self.version[0]), str(self.version[1]),
+                  self.__MinVersionString()))
+
+    if error:
+      if print_errors:
+        sys.stderr.write(error)
+        self.__PrintEnvVarMessage()
       return False
     return True
+
+  def IsSupported(self):
+    """Return whether this Python version is recommended.
+
+    Only version 2.7 is compatible.
+
+    Returns:
+      bool, True if the Python version is recommended
+    """
+    return (self.IsCompatible(print_errors=False) and
+            self.version >= self.MIN_SUPPORTED_VERSION)

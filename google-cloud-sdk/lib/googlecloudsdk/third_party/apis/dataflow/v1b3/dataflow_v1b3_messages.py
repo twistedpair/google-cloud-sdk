@@ -2628,14 +2628,20 @@ class WorkerMessage(_messages.Message):
   Messages:
     LabelsValue: Labels are used to group WorkerMessages. For example, a
       worker_message about a particular container might have the labels: {
-      "job_id": "2015-04-22",   "container_type": "worker",   "vm":
-      "wordcount-vm-2015\u2026"   "container_id": "ac1234def"}
+      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"
+      "CONTAINER_TYPE": "worker",   "CONTAINER_ID": "ac1234def"} Label tags
+      typically correspond to Label enum values. However, for ease of
+      development other strings can be used as tags. LABEL_UNSPECIFIED should
+      not be used here.
 
   Fields:
     labels: Labels are used to group WorkerMessages. For example, a
       worker_message about a particular container might have the labels: {
-      "job_id": "2015-04-22",   "container_type": "worker",   "vm":
-      "wordcount-vm-2015\u2026"   "container_id": "ac1234def"}
+      "JOB_ID": "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"
+      "CONTAINER_TYPE": "worker",   "CONTAINER_ID": "ac1234def"} Label tags
+      typically correspond to Label enum values. However, for ease of
+      development other strings can be used as tags. LABEL_UNSPECIFIED should
+      not be used here.
     time: The timestamp of the worker_message.
     workerHealthReport: The health of a worker.
   """
@@ -2643,9 +2649,11 @@ class WorkerMessage(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels are used to group WorkerMessages. For example, a worker_message
-    about a particular container might have the labels: { "job_id":
-    "2015-04-22",   "container_type": "worker",   "vm": "wordcount-vm-2015\u2026"
-    "container_id": "ac1234def"}
+    about a particular container might have the labels: { "JOB_ID":
+    "2015-04-22",   "WORKER_ID": "wordcount-vm-2015\u2026"   "CONTAINER_TYPE":
+    "worker",   "CONTAINER_ID": "ac1234def"} Label tags typically correspond
+    to Label enum values. However, for ease of development other strings can
+    be used as tags. LABEL_UNSPECIFIED should not be used here.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

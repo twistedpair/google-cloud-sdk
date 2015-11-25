@@ -3,7 +3,6 @@
 """The command to remove gcloud components."""
 
 import argparse
-import textwrap
 
 from googlecloudsdk.calliope import base
 
@@ -16,21 +15,20 @@ class Remove(base.Command):
   """
 
   detailed_help = {
-      'DESCRIPTION': textwrap.dedent("""\
+      'DESCRIPTION': """\
           Uninstall all listed components, as well as all components that
-          directly or indirectly depend on them. For example, if the component
-          `unicorn-factory` depends on the component `horn-factory`, removing
-          `horn-factory` will cause `unicorn-factory` to be removed as well.
+          directly or indirectly depend on them.
+
           The command lists all components it is about to remove, and asks for
           confirmation before proceeding.
-      """),
-      'EXAMPLES': textwrap.dedent("""\
+      """,
+      'EXAMPLES': """\
           To remove ``COMPONENT-1'', ``COMPONENT-2'', and all components that
           directly or indirectly depend on ``COMPONENT-1'' or ``COMPONENT-2'',
           type the following:
 
-            $ gcloud components remove COMPONENT-1 COMPONENT-2
-      """),
+            $ {command} COMPONENT-1 COMPONENT-2
+      """,
   }
 
   @staticmethod

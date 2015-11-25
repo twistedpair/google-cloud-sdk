@@ -5,6 +5,7 @@
 from googlecloudsdk.api_lib.sdktool import info_holder
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import platforms
 
 
 @base.ReleaseTracks(base.ReleaseTrack.GA)
@@ -22,7 +23,13 @@ class Info(base.Command):
         help='Print the contents of the last log file.')
 
   def Run(self, args):
-    return info_holder.InfoHolder()
+    holder = info_holder.InfoHolder()
+    python_version = platforms.PythonVersion()
+    if not python_version.IsSupported():
+      log.warn(('Only Python version {0} is supported for the Cloud SDK. Many '
+                'commands will work with a previous version, but not all.'
+               ).format(python_version.MinSupportedVersionString()))
+    return holder
 
   def Display(self, args, info):
     log.Print(info)

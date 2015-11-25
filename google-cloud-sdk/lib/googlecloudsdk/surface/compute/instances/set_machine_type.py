@@ -20,7 +20,8 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
         completion_resource='compute.instances',
         help='The name of the instance to change the machine type for.')
 
-    instance_utils.AddMachineTypeArgs(parser, required=True)
+    instance_utils.AddMachineTypeArgs(parser)
+    instance_utils.AddCustomMachineTypeArgs(parser)
 
     utils.AddZoneFlag(
         parser,
@@ -44,6 +45,8 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
     instance_ref = self.CreateZonalReference(args.name, args.zone)
 
     machine_type = instance_utils.InterpretMachineType(args)
+
+    instance_utils.CheckCustomCpuRamRatio(self, args.zone, machine_type)
 
     machine_type_uri = self.CreateZonalReference(
         machine_type, instance_ref.zone,

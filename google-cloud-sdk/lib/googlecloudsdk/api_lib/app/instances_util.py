@@ -2,11 +2,6 @@
 """Utilities for manipulating GCE instances running an App Engine project."""
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import properties
-
-
-class ProjectMismatchError(exceptions.Error):
-  pass
 
 
 class InvalidInstanceSpecificationError(exceptions.Error):
@@ -20,6 +15,8 @@ def _GetInstanceMetadata(instance):
 
 class AppEngineInstance(object):
   """Value class for instances running the current App Engine project."""
+
+  _NUM_PATH_PARTS = 3
 
   def __init__(self, service, version, id_, instance=None):
     self.service = service
@@ -76,23 +73,12 @@ class AppEngineInstance(object):
   def FromResourcePath(cls, path, service=None, version=None):
     """Convert a resource path into an AppEngineInstance.
 
-    A resource path is of the form '<project>/<service>/<version>/<instance>'.
-    '<project>' can always be omitted; '<service>' and '<version>' can be
-    omitted if they are provided as flags (though if service is specified as a
-    flag, version must be as well).
+    A resource path is of the form '<service>/<version>/<instance>'.
+    '<service>' and '<version>' can be omitted, in which case they are None in
+    the resulting instance.
 
     >>> (AppEngineInstance.FromResourcePath('a/b/c') ==
          ...  AppEngineInstance('a', 'b', 'c'))
-    True
-    >>> (AppEngineInstance.FromResourcePath('project/a/b/c') ==
-    ...  AppEngineInstance('a', 'b', 'c'))
-    True
-    >>> try:
-    ...   AppEngineInstance.FromResourcePath('wrong-project/a/b/c')
-    ...   print False
-    ... except ProjectMismatchError:
-    ...   print True
-    ...
     True
     >>> (AppEngineInstance.FromResourcePath('b/c', service='a') ==
     ...  AppEngineInstance('a', 'b', 'c'))
@@ -112,40 +98,36 @@ class AppEngineInstance(object):
       AppEngineInstance, an AppEngineInstance representing the path
 
     Raises:
-      ProjectMismatchError: if the resource path includes a project that doesn't
-        match the current one.
       InvalidInstanceSpecificationError: if the instance is over- or
         under-specified
     """
     parts = path.split('/')
-    if len(parts) == 4:
-      # Project was specified. Validate, then ignore it.
-      current_project = properties.VALUES.core.project.Get(required=True)
-      specified_project = parts[0]
-      if specified_project != current_project:
-        raise ProjectMismatchError(
-            'Specified instance [{0}] does not belong to the current '
-            'project [{1}].'.format(path, current_project))
-      parts = parts[1:]
-    if version and not service:
-      raise InvalidInstanceSpecificationError(
-          'If a version is specified, a service must be, too.')
-    if version:
-      parts.insert(0, version)
-    if service:
-      parts.insert(0, service)
-    if len([p for p in parts if p]) != 3:
-      provided_parts = 'Path: [{0}]'.format(path)
-      if service:
-        provided_parts += '\nService: [{0}]'.format(service)
-      if version:
-        provided_parts += '\nVersion: [{0}]'.format(version)
+    if len(parts) == 1:
+      path_service, path_version, instance = None, None, parts[0]
+    elif len(parts) == 2:
+      path_service, path_version, instance = None, parts[0], parts[1]
+    elif len(parts) == 3:
+      path_service, path_version, instance = parts
+    else:
       raise InvalidInstanceSpecificationError(
           'Instance resource path is incorrectly specified. '
-          'Please provide exactly one service, version, and instance id, '
-          'and optionally one project.\n\n'
-          'You provided:\n' + provided_parts)
-    return cls(*parts)
+          'Please provide at most one service, version, and instance id, '
+          '.\n\n'
+          'You provided:\n' + path)
+
+    if path_service and service and path_service != service:
+      raise InvalidInstanceSpecificationError(
+          'Service [{0}] is inconsistent with specified instance [{1}].'.format(
+              service, path))
+    service = service or path_service
+
+    if path_version and version and path_version != version:
+      raise InvalidInstanceSpecificationError(
+          'Version [{0}] is inconsistent with specified instance [{1}].'.format(
+              version, path))
+    version = version or path_version
+
+    return cls(service, version, instance)
 
   def __eq__(self, other):
     return (type(self) is type(other) and
@@ -160,5 +142,53 @@ class AppEngineInstance(object):
   def __hash__(self):
     return hash((self.service, self.version, self.id))
 
-  def __repr__(self):
-    return '/'.join([self.service, self.version, self.id])
+  def __str__(self):
+    return '/'.join(filter(bool, [self.service, self.version, self.id]))
+
+
+def FilterInstances(instances, service=None, version=None, instance_path=None):
+  """Filter a list of App Engine instances.
+
+  Args:
+    instances: list of AppEngineInstance, all App Engine instances
+    service: str, the name of the service to filter by or None to match all
+      services
+    version: str, the name of the version to filter by or None to match all
+      versions
+    instance_path: str, the name of the instance to filter by or None to match
+      all versions. Can be a resource path, in which case it is parsed and the
+      components used to filter.
+
+  Returns:
+    list of instances matching the given filters
+
+  Raises:
+    InvalidInstanceSpecificationError: if an inconsistent instance specification
+      was given (ex. service='service1' and instance='service2/v1/abcd').
+  """
+  if instance_path and '/' in instance_path:
+    parsed_instance = AppEngineInstance.FromResourcePath(instance_path,
+                                                         service=service,
+                                                         version=version)
+    if (parsed_instance.service and service and
+        parsed_instance.service != service):
+      raise InvalidInstanceSpecificationError(
+          'Service [{0}] is inconsistent with specified instance '
+          '[{1}].'.format(service, instance_path))
+    if (parsed_instance.version and version and
+        parsed_instance.version != version):
+      raise InvalidInstanceSpecificationError(
+          'Version [{0}] is inconsistent with specified instance '
+          '[{1}].'.format(version, instance_path))
+    service = service or parsed_instance.service
+    version = version or parsed_instance.version
+    instance_id = parsed_instance.id
+  else:
+    instance_id = instance_path
+  matching_instances = []
+  for provided_instance in instances:
+    if ((not service or provided_instance.service == service) and
+        (not version or provided_instance.version == version) and
+        (not instance_id or provided_instance.id == instance_id)):
+      matching_instances.append(provided_instance)
+  return matching_instances

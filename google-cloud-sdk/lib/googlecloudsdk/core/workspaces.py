@@ -11,15 +11,14 @@ import errno
 import os
 import os.path
 import re
-import subprocess
 import textwrap
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import compat26
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 import uritemplate
 
 
@@ -141,7 +140,7 @@ def CheckGitVersion(version_lower_bound):
     True if version >= min_version.
   """
   try:
-    output = compat26.subprocess.check_output(['git', 'version'])
+    output = subprocess.check_output(['git', 'version'])
     if not output:
       raise InvalidGitException('The git version string is empty.')
     if not output.startswith('git version '):
@@ -390,8 +389,7 @@ class Workspace(object):
       # First check if it's already the repository we're looking for.
       with files.ChDir(abs_repository_path) as _:
         try:
-          output = compat26.subprocess.check_output(
-              ['git', 'remote', 'show', 'origin'])
+          output = subprocess.check_output(['git', 'remote', 'show', 'origin'])
         except subprocess.CalledProcessError:
           raise CannotFetchRepositoryException(
               'Repository in [{path}] is misconfigured.'.format(

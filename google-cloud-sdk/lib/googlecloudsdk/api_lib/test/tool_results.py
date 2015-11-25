@@ -9,7 +9,7 @@ import urlparse
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 _STATUS_INTERVAL_SECS = 3

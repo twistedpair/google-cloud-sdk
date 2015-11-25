@@ -5,7 +5,6 @@
 import hashlib
 import os
 import shutil
-import subprocess
 import sys
 import textwrap
 
@@ -24,6 +23,7 @@ from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 # These are components that used to exist, but we removed.  In order to prevent
@@ -38,6 +38,7 @@ App Engine download page here:
     https://cloud.google.com/appengine/downloads
 """)
 _IGNORED_MISSING_COMPONENTS = {
+    'app': None,
     'app-engine-go-linux-x86': None,
     'app-engine-go-linux-x86_64': None,
     'app-engine-go-darwin-x86': None,
@@ -487,7 +488,8 @@ version [{1}].  To clear your fixed version setting, run:
     # Only show the latest version if we are not pinned.
     latest_msg = ('The latest available version is: '
                   if not self.__fixed_version else None)
-    self._PrintVersions(diff, latest_msg=latest_msg)
+    current_version, latest_version = self._PrintVersions(
+        diff, latest_msg=latest_msg)
     to_print = [diff.AvailableUpdates(), diff.Removed(),
                 diff.AvailableToInstall(), diff.UpToDate()]
 
@@ -497,10 +499,16 @@ version [{1}].  To clear your fixed version setting, run:
                      to_print=to_print, func=lambda x: not x.is_configuration,
                      ignore_if_empty=False)
 
-    self.__Write(log.status,
-                 'To install new components or update existing ones, run:',
-                 word_wrap=True)
-    self.__Write(log.status, ' $ gcloud components update COMPONENT_ID')
+    self.__Write(
+        log.status,
+        """\
+To install or remove components at your current SDK version [{current}], run:
+  $ gcloud components install COMPONENT_ID
+  $ gcloud components remove COMPONENT_ID
+
+To update your SDK installation to the latest version [{latest}], run:
+  $ gcloud components update
+""".format(current=current_version, latest=latest_version), word_wrap=False)
     return diff.AllDiffs()
 
   def _PrintTable(self, title, show_versions, to_print, func, ignore_if_empty):
@@ -556,6 +564,9 @@ version [{1}].  To clear your fixed version setting, run:
         with.
       latest_msg: str, The message to print when displaying the latest version.
         If None, nothing about the latest version is printed.
+
+    Returns:
+      (str, str), The current and latest version strings.
     """
     current_version = config.INSTALLATION_CONFIG.version
     latest_version = diff.latest.version
@@ -565,6 +576,7 @@ version [{1}].  To clear your fixed version setting, run:
     if latest_version and latest_msg:
       self.__Write(log.status, latest_msg + latest_version)
     self.__Write(log.status)
+    return (current_version, latest_version)
 
   def _HashRcfiles(self, shell_rc_files):
     """Creates the md5 checksums of files.
@@ -761,7 +773,8 @@ version [{1}].  To clear your fixed version setting, run:
       latest_msg = 'Installing components from version: '
     else:
       latest_msg = 'You will be upgraded to version: '
-    self._PrintVersions(diff, latest_msg=latest_msg)
+    current_version, _ = self._PrintVersions(
+        diff, latest_msg=latest_msg)
 
     disable_backup = self._ShouldDoFastUpdate(allow_no_backup=allow_no_backup)
     self._PrintPendingAction(diff.DetailsForCurrent(to_remove - to_install),
@@ -828,6 +841,16 @@ version [{1}].  To clear your fixed version setting, run:
       self.__Write(log.status,
                    '\nStart a new shell for the changes to take effect.\n')
     self.__Write(log.status, '\nUpdate done!\n')
+
+    if not original_update_seed:
+      # Only print this if individual components are not given (we are doing
+      # an update).
+      self.__Write(
+          log.status,
+          """\
+To revert your SDK to the previously installed version, you may run:
+  $ gcloud components update --version [{current}]
+""".format(current=current_version), word_wrap=False)
 
     if self.__warn:
       bad_commands = self.FindAllOldToolsOnPath()
@@ -1109,7 +1132,6 @@ Please remove the following to avoid accidentally invoking these old tools:
 
     # Need to install the component.
     if not self.Install(components, throw_if_unattended=True):
-      # TODO(markpell): Update the error text to point to install once public.
       raise MissingRequiredComponentsError("""\
 The following components are required to run this command, but are not
 currently installed:
@@ -1117,7 +1139,7 @@ currently installed:
 
 To install them, re-run the command and choose 'yes' at the installation
 prompt, or run:
-  $ gcloud components update {components}
+  $ gcloud components install {components}
 
 """.format(components_list=missing_components_list_str,
            components=' '.join(missing_components)))
@@ -1148,7 +1170,7 @@ def RestartCommand(command=None, python=None, block=True):
       terminate before continuing.
   """
   command = command or os.path.join(
-      os.path.dirname(googlecloudsdk.__file__), 'gcloud', 'gcloud.py')
+      os.path.dirname(os.path.dirname(googlecloudsdk.__file__)), 'gcloud.py')
   command_args = sys.argv[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)

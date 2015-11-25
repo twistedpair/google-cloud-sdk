@@ -31,8 +31,6 @@ __all__ = ['AbstractAdapter',
 # TODO(user): Consider implementing __eq__ for all immutable classes.
 
 # Python imports.
-import collections
-import copy
 import functools
 import logging
 import os
@@ -52,6 +50,8 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_pbs
 from googlecloudsdk.third_party.appengine.datastore import datastore_v4_pb
 from googlecloudsdk.third_party.appengine.runtime import apiproxy_errors
+from googlecloudsdk.third_party.py27 import py27_collections as collections
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 _CLOUD_DATASTORE_ENABLED = datastore_pbs._CLOUD_DATASTORE_ENABLED  # pylint: disable=protected-access
 if _CLOUD_DATASTORE_ENABLED:

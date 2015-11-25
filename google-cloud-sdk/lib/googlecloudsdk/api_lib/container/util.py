@@ -74,7 +74,7 @@ def IsVersionOlderThan(first, second):
 MISSING_KUBECTL_MSG = """\
 Accessing a Container Engine cluster requires the kubernetes commandline
 client [kubectl]. To install, run
-  $ gcloud components update kubectl
+  $ gcloud components install kubectl
 """
 
 

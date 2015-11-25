@@ -10,7 +10,7 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
-NAME ='Python'
+NAME = 'Python'
 ALLOWED_RUNTIME_NAMES = ('python', 'custom')
 PYTHON_RUNTIME_NAME = 'python'
 DEFAULT_PYTHON_INTERPRETER_VERSION = '2'
@@ -180,8 +180,9 @@ def Fingerprint(path, params):
     else:
       log.warn("This appears to be a python app.  You'll need to provide the "
                'command to run the app in production.  Please either run this '
-               'interactively or create an app.yaml with "runtime: python" and '
-               'an "entrypoint" field defining the full command.')
+               'interactively%s or create an app.yaml with "runtime: python" '
+               'and an "entrypoint" field defining the full command.' %
+               fingerprinting.GetNonInteractiveErrorMessage())
       return None
 
   try:

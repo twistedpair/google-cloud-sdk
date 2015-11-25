@@ -42,7 +42,6 @@ indexes:
 
 import yaml
 
-import copy
 import itertools
 
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3 import entity_pb
@@ -53,6 +52,7 @@ from googlecloudsdk.third_party.appengine.api import validation
 from googlecloudsdk.third_party.appengine.api import yaml_errors
 from googlecloudsdk.third_party.appengine.api import yaml_object
 from googlecloudsdk.third_party.appengine.datastore import datastore_pb
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 # CAUTION: this is one of several files that implement parsing and
 # validation of the index definition schema; they all must be kept in

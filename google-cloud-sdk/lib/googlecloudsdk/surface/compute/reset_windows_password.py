@@ -14,7 +14,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 # This will only succeed on Windows machines.
 try:

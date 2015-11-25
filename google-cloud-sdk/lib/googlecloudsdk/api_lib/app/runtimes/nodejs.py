@@ -26,6 +26,7 @@ DOCKERIGNORE = textwrap.dedent("""\
     node_modules
     .dockerignore
     Dockerfile
+    npm-debug.log
     .git
     .hg
     .svn
@@ -185,7 +186,12 @@ class NodeJSConfigurator(fingerprinting.Configurator):
                 # install to appear to succeed even if a preinstall
                 # script fails, and may have other adverse consequences
                 # as well.
-                RUN npm --unsafe-perm install
+                # This command will also cat the npm-debug.log file after the
+                # build, if it exists.
+                RUN npm install --unsafe-perm || \\
+                  ((if [ -f npm-debug.log ]; then \\
+                      cat npm-debug.log; \\
+                    fi) && false)
                 """))
 
           # Generate the appropriate start command.

@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 import protorpc
 
 
@@ -126,7 +126,7 @@ def _FormatCustomMachineTypeName(mt):
   custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(mt)
   if custom_cpu and custom_ram:
     # Restricting output to 2 decimal places
-    custom_ram_gb = '{:.2f}'.format(float(custom_ram) / (2 ** 10))
+    custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2 ** 10))
     mt = 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
   return mt
 

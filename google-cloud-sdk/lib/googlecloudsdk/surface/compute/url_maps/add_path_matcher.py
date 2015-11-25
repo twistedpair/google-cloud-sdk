@@ -3,8 +3,8 @@
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.py27 import collections
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_collections as collections
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class AddPathMatcher(base_classes.ReadWriteCommand):

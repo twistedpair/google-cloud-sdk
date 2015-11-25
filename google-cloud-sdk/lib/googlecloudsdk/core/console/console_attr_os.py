@@ -103,7 +103,7 @@ def _GetTermSizeEnvironment():
 def _GetTermSizeTput():
   """Returns the terminal x and y dimemsions from tput(1)."""
   # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.core.util.compat26 import subprocess
+  from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
   output = subprocess.check_output(['tput', 'cols'], stderr=subprocess.STDOUT)
   cols = int(output)
   output = subprocess.check_output(['tput', 'lines'], stderr=subprocess.STDOUT)

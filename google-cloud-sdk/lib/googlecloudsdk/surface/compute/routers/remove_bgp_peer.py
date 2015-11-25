@@ -4,7 +4,7 @@
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class PeerNotFoundError(exceptions.Error):

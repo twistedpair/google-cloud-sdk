@@ -10,27 +10,6 @@ from googlecloudsdk.calliope import base
 AppEngineInstance = instances_util.AppEngineInstance
 
 
-def _FilterInstances(instances, service=None, version=None):
-  """Filter a list of App Engine instances.
-
-  Args:
-    instances: list of AppEngineInstance, all App Engine instances
-    service: str, the name of the service to filter by or None to match all
-      services
-    version: str, the name of the version to filter by or None to match all
-      versions
-
-  Returns:
-    instances matching the given filters
-  """
-  matching_instances = []
-  for instance in instances:
-    if ((not service or instance.service == service) and
-        (not version or instance.version == version)):
-      matching_instances.append(instance)
-  return matching_instances
-
-
 class List(base.Command):
   """List the instances affiliated with the current App Engine project."""
 
@@ -75,4 +54,5 @@ class List(base.Command):
       if AppEngineInstance.IsInstance(instance):
         gae_instance = AppEngineInstance.FromComputeEngineInstance(instance)
         app_engine_instances.append(gae_instance)
-    return _FilterInstances(app_engine_instances, args.service, args.version)
+    return instances_util.FilterInstances(app_engine_instances, args.service,
+                                          args.version)

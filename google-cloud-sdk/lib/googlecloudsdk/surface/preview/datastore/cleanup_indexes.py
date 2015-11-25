@@ -6,7 +6,6 @@ from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import properties
 
 
 class CleanupIndexes(base.Command):
@@ -36,8 +35,7 @@ class CleanupIndexes(base.Command):
                         help='The path to your index.yaml file.')
 
   def Run(self, args):
-    project = properties.VALUES.core.project.Get(required=True)
-    app_config = yaml_parsing.AppConfigSet([args.index_file], project)
+    app_config = yaml_parsing.AppConfigSet([args.index_file])
 
     if yaml_parsing.ConfigYamlInfo.INDEX not in app_config.Configs():
       raise exceptions.InvalidArgumentException(

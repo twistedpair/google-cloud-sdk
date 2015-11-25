@@ -5,6 +5,7 @@
 import json
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
@@ -127,4 +128,10 @@ def _GetCatalog(context, environment_type):
   try:
     return client.testEnvironmentCatalog.Get(request)
   except apitools_base.HttpError as error:
-    raise exceptions.HttpException(GetError(error))
+    raise exceptions.HttpException(
+        'Unable to access the test environment catalog: ' + GetError(error))
+  except:
+    # Give the user some explanation in case we get a vague/unexpected error,
+    # such as a socket.error from httplib2.
+    log.error('Unable to access the test environment catalog.')
+    raise  # Re-raise the error in case Calliope can do something with it.

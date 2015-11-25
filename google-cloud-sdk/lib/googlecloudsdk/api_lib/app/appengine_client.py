@@ -10,6 +10,7 @@ import urllib2
 from googlecloudsdk.api_lib.app import appengine_deployments
 from googlecloudsdk.api_lib.app import logs_requestor
 from googlecloudsdk.api_lib.app import module_downloader
+from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
@@ -28,7 +29,8 @@ from oauth2client import gce as oauth2client_gce
 import yaml
 
 
-APPCFG_SCOPES = ('https://www.googleapis.com/auth/appengine.admin',)
+APPCFG_SCOPES = ('https://www.googleapis.com/auth/appengine.admin',
+                 'https://www.googleapis.com/auth/cloud-platform')
 
 # Parameters for reading from the GCE metadata service.
 METADATA_BASE = 'http://metadata.google.internal'
@@ -229,18 +231,35 @@ class AppengineClient(object):
     """List all versions for an app.
 
     Returns:
-      generator of (service, version) tuples
+      list of version_util.Version
     """
     all_versions = []
     for service, versions in self.ListModules().items():
       # The first version from the API is the default
-      all_versions.append(version_util.Version(self.project, service,
-                                               versions[0],
-                                               traffic_allocation=100))
-      for version in versions[1:]:
+      if versions:
         all_versions.append(version_util.Version(self.project, service,
-                                                 version, traffic_allocation=0))
+                                                 versions[0],
+                                                 traffic_allocation=100))
+        for version in versions[1:]:
+          all_versions.append(version_util.Version(self.project, service,
+                                                   version,
+                                                   traffic_allocation=0))
     return all_versions
+
+  def ListServices(self):
+    """List all services for an app.
+
+    Returns:
+      list of service_util.Service
+    """
+    all_services = {}
+    for version in self.ListVersions():
+      if version.service in all_services:
+        all_services[version.service].append(version)
+      else:
+        all_services[version.service] = [version]
+    return [service_util.Service(self.project, service_id, versions) for
+            service_id, versions in all_services.items()]
 
   def DeployModule(self, module, version, module_yaml, module_yaml_path):
     """Updates and deploys new app versions based on given config.

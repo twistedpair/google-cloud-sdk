@@ -12,7 +12,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0

@@ -40,8 +40,8 @@ There are three operators in the language of properties:
         a list.
 """
 from googlecloudsdk.core.util import tokenizer
-from googlecloudsdk.third_party.py27 import collections
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_collections as collections
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class Error(Exception):

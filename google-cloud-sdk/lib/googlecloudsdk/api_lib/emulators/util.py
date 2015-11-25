@@ -6,7 +6,6 @@ import errno
 import os
 import random
 import re
-import subprocess
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -15,9 +14,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
-from googlecloudsdk.core.util import compat26
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 import yaml
 
 
@@ -93,9 +92,9 @@ def CheckIfJava7IsInstalled(for_text):
     raise Java7Error('To use the {for_text}, a Java 7+ JRE must be installed '
                      'and on your system PATH'.format(for_text=for_text))
   try:
-    output = compat26.subprocess.check_output([java_path, '-version'],
-                                              stderr=compat26.subprocess.STDOUT)
-  except compat26.subprocess.CalledProcessError:
+    output = subprocess.check_output([java_path, '-version'],
+                                     stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError:
     raise Java7Error('Unable to execute the java that was found on your PATH.'
                      ' The {for_text} requires a Java 7+ JRE installed and on '
                      'your system PATH'.format(for_text=for_text))

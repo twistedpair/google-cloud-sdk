@@ -736,6 +736,8 @@ class Settings(_messages.Message):
       are enabled.
     dataDiskSizeGb: The size of data disk, in GB. Only supported for 2nd
       Generation instances. The data disk size minimum is 10GB.
+    dataDiskType: The type of data disk. Only supported for 2nd Generation
+      instances. The default type is SSD.
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.
@@ -765,16 +767,17 @@ class Settings(_messages.Message):
   backupConfiguration = _messages.MessageField('BackupConfiguration', 3)
   crashSafeReplicationEnabled = _messages.BooleanField(4)
   dataDiskSizeGb = _messages.IntegerField(5)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 6, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(7)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 8)
-  kind = _messages.StringField(9, default=u'sql#settings')
-  locationPreference = _messages.MessageField('LocationPreference', 10)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 11)
-  pricingPlan = _messages.StringField(12)
-  replicationType = _messages.StringField(13)
-  settingsVersion = _messages.IntegerField(14)
-  tier = _messages.StringField(15)
+  dataDiskType = _messages.StringField(6)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 7, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(8)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 9)
+  kind = _messages.StringField(10, default=u'sql#settings')
+  locationPreference = _messages.MessageField('LocationPreference', 11)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 12)
+  pricingPlan = _messages.StringField(13)
+  replicationType = _messages.StringField(14)
+  settingsVersion = _messages.IntegerField(15)
+  tier = _messages.StringField(16)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):

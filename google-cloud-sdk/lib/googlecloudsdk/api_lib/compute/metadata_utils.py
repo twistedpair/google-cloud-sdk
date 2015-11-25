@@ -3,7 +3,7 @@
 from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 def _DictToMetadataMessage(message_classes, metadata_dict):

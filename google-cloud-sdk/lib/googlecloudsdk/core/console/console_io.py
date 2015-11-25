@@ -5,7 +5,6 @@
 import logging
 import os
 import re
-import subprocess
 import sys
 import textwrap
 import threading
@@ -17,6 +16,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.util import files
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 FLOAT_COMPARE_EPSILON = 1e-6
 

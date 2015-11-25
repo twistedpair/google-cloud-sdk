@@ -36,7 +36,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
     self.operations = self.OperationsService(self)
     self.projects_aggregated_clusters = self.ProjectsAggregatedClustersService(self)
     self.projects_aggregated = self.ProjectsAggregatedService(self)
-    self.projects_instances = self.ProjectsInstancesService(self)
     self.projects_zones_clusters = self.ProjectsZonesClustersService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
@@ -204,69 +203,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
       self._upload_configs = {
           }
-
-  class ProjectsInstancesService(base_api.BaseApiService):
-    """Service class for the projects_instances resource."""
-
-    _NAME = u'projects_instances'
-
-    def __init__(self, client):
-      super(BigtableclusteradminV1.ProjectsInstancesService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'bigtableclusteradmin.projects.instances.create',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}/instances',
-              request_field=u'createInstanceRequest',
-              request_type_name=u'BigtableclusteradminProjectsInstancesCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'bigtableclusteradmin.projects.instances.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsInstancesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      """Create an instance.
-
-      Args:
-        request: (BigtableclusteradminProjectsInstancesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Delete(self, request, global_params=None):
-      """Delete an instance.
-
-      Args:
-        request: (BigtableclusteradminProjectsInstancesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
 
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""
@@ -477,32 +413,7 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsService, self).__init__(client)
       self._method_configs = {
-          'CheckZoneStates': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.projects.checkZoneStates',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}:checkZoneStates',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsCheckZoneStatesRequest',
-              response_type_name=u'CheckZoneStatesResponse',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
           }
-
-    def CheckZoneStates(self, request, global_params=None):
-      """Check the state of all zones supported for a project.
-
-      Args:
-        request: (BigtableclusteradminProjectsCheckZoneStatesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CheckZoneStatesResponse) The response message.
-      """
-      config = self.GetMethodConfig('CheckZoneStates')
-      return self._RunMethod(
-          config, request, global_params=global_params)

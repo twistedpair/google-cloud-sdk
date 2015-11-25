@@ -1,6 +1,5 @@
 """Library for handling batch HTTP requests for apitools."""
 
-import collections
 import email.generator as generator
 import email.mime.multipart as mime_multipart
 import email.mime.nonmultipart as mime_nonmultipart
@@ -16,6 +15,7 @@ from six.moves import http_client
 
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import http_wrapper
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 __all__ = [
     'BatchApiRequest',

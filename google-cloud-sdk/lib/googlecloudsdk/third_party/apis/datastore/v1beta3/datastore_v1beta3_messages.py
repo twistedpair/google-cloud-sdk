@@ -1173,12 +1173,24 @@ class LookupRequest(_messages.Message):
     databaseId: If not empty, the ID of the database against which to make the
       request.
     keys: Keys of entities to look up.
+    propertyMask: The properties to return. Defaults to returning all
+      properties. If this field is set and an entity has a property not
+      referenced in the mask, it will not be included in
+      google.datastore.v1beta3.LookupResponse.found.entity.properties. The
+      entity's key is always returned. If an
+      google.datastore.v1beta3.Value.entity_value is returned, its key is
+      returned as well.  The paths in the mask are property paths: dot (`.`)
+      separated property names that can be used to reference properties nested
+      in google.datastore.v1beta3.Value.entity_value. A property must not
+      reference a value inside an google.datastore.v1beta3.Value.array_value.
+      None of these property paths may contain the `__key__` property name.
     readOptions: The options for this lookup request.
   """
 
   databaseId = _messages.StringField(1)
   keys = _messages.MessageField('Key', 2, repeated=True)
-  readOptions = _messages.MessageField('ReadOptions', 3)
+  propertyMask = _messages.StringField(3)
+  readOptions = _messages.MessageField('ReadOptions', 4)
 
 
 class LookupResponse(_messages.Message):
@@ -1233,6 +1245,15 @@ class Mutation(_messages.Message):
       exist. Must have a complete key path and must not be reserved/read-only.
     insert: The entity to insert. The entity must not already exist. The
       entity key's final path element may be incomplete.
+    propertyMask: The properties to write in this mutation. This field is
+      ignored for `delete`.  If the entity already exists, only properties
+      referenced in the mask are updated, others are left untouched.
+      Properties referenced in the mask but not in the entity are deleted.
+      Properties not referenced in the mask may not be set in the entity.  The
+      paths in the mask follow the same rules as specified in
+      google.datastore.v1beta3.LookupRequest.property_mask. Additionally, none
+      of these property paths may contain a
+      google.datastore.v1beta3.Entity.properties.
     update: The entity to update. The entity must already exist. Must have a
       complete key path.
     upsert: The entity to upsert. The entity may or may not already exist. The
@@ -1242,8 +1263,9 @@ class Mutation(_messages.Message):
   baseVersion = _messages.IntegerField(1)
   delete = _messages.MessageField('Key', 2)
   insert = _messages.MessageField('Entity', 3)
-  update = _messages.MessageField('Entity', 4)
-  upsert = _messages.MessageField('Entity', 5)
+  propertyMask = _messages.StringField(4)
+  update = _messages.MessageField('Entity', 5)
+  upsert = _messages.MessageField('Entity', 6)
 
 
 class MutationResult(_messages.Message):
@@ -1580,7 +1602,7 @@ class QueryResultBatch(_messages.Message):
 
     Values:
       RESULT_TYPE_UNSPECIFIED: Unspecified. This value is never used.
-      FULL: The entire entity.
+      FULL: The key and properties.
       PROJECTION: A projected subset of properties. The entity may have no
         key.
       KEY_ONLY: Only the key.
@@ -1704,6 +1726,9 @@ class RunQueryRequest(_messages.Message):
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
       ID is normalized with the standard default context partition ID.
+    propertyMask: The properties to return. This field must not be set for a
+      projection query.  See
+      google.datastore.v1beta3.LookupRequest.property_mask.
     query: The query to run.
     readOptions: The options for this query.
   """
@@ -1711,8 +1736,9 @@ class RunQueryRequest(_messages.Message):
   databaseId = _messages.StringField(1)
   gqlQuery = _messages.MessageField('GqlQuery', 2)
   partitionId = _messages.MessageField('PartitionId', 3)
-  query = _messages.MessageField('Query', 4)
-  readOptions = _messages.MessageField('ReadOptions', 5)
+  propertyMask = _messages.StringField(4)
+  query = _messages.MessageField('Query', 5)
+  readOptions = _messages.MessageField('ReadOptions', 6)
 
 
 class RunQueryResponse(_messages.Message):

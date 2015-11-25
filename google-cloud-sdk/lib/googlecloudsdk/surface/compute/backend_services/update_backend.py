@@ -5,7 +5,7 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class UpdateBackend(base_classes.ReadWriteCommand):

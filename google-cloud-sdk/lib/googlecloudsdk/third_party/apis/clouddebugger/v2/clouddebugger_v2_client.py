@@ -78,16 +78,17 @@ class ClouddebuggerV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Returns the list of all active breakpoints for the specified debuggee.
+      """Returns the list of all active breakpoints for the debuggee.
 
 The breakpoint specification (location, condition, and expression
 fields) is semantically immutable, although the field values may
 change. For example, an agent may update the location line number
-to reflect the actual line the breakpoint was set to, but that
+to reflect the actual line where the breakpoint was set, but this
 doesn't change the breakpoint semantics.
-Thus, an agent does not need to check if a breakpoint has changed
+
+This means that an agent does not need to check if a breakpoint has changed
 when it encounters the same breakpoint on a successive call.
-Moreover, an agent should remember breakpoints that are complete
+Moreover, an agent should remember the breakpoints that are completed
 until the controller removes them from the active list to avoid
 setting those breakpoints again.
 
@@ -103,12 +104,13 @@ setting those breakpoints again.
 
     def Update(self, request, global_params=None):
       """Updates the breakpoint state or mutable fields.
-The entire Breakpoint protobuf must be sent back to the controller.
+The entire Breakpoint message must be sent back to the controller
+service.
 
 Updates to active breakpoint fields are only allowed if the new value
-does not change the breakpoint specification. Updates to the 'location',
-'condition' and 'expression' fields should not alter the breakpoint
-semantics. They are restricted to changes such as canonicalizing a value
+does not change the breakpoint specification. Updates to the `location`,
+`condition` and `expression` fields should not alter the breakpoint
+semantics. These may only make changes such as canonicalizing a value
 or snapping the location to the correct line of code.
 
       Args:
@@ -147,14 +149,16 @@ or snapping the location to the correct line of code.
           }
 
     def Register(self, request, global_params=None):
-      """Registers the debuggee with the controller.
+      """Registers the debuggee with the controller service.
 
-All agents should call this API with the same request content to get back
-the same stable 'debuggee_id'. Agents should call this API again whenever
-ListActiveBreakpoints or UpdateActiveBreakpoint return the error
-google.rpc.Code.NOT_FOUND. It allows the server to disable the agent or
-recover from any registration loss. If the debuggee is disabled server,
-the response will have is_disabled' set to true.
+All agents attached to the same application should call this method with
+the same request content to get back the same stable `debuggee_id`. Agents
+should call this method again whenever `google.rpc.Code.NOT_FOUND` is
+returned from any controller method.
+
+This allows the controller service to disable the agent or recover from any
+data loss. If the debuggee is disabled by the server, the response will
+have `is_disabled` set to `true`.
 
       Args:
         request: (RegisterDebuggeeRequest) input message
@@ -267,7 +271,7 @@ the response will have is_disabled' set to true.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists all breakpoints of the debuggee that the user has access to.
+      """Lists all breakpoints for the debuggee.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesBreakpointsListRequest) input message

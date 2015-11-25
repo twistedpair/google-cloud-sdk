@@ -3,12 +3,10 @@
 """The command to install/update gcloud components."""
 
 import argparse
-import textwrap
 
 from googlecloudsdk.calliope import base
 
 
-@base.Hidden
 class Install(base.Command):
   """Install one or more Cloud SDK components.
 
@@ -17,10 +15,8 @@ class Install(base.Command):
   without performing any upgrades to your existing SDK installation.  All
   components are installed at the current version of your SDK.
   """
-  # TODO(markpell): Stop using dedent across all these commands. This happens
-  # automatically.
   detailed_help = {
-      'DESCRIPTION': textwrap.dedent("""\
+      'DESCRIPTION': """\
           {description}
 
           Components that are available for installation can be viewed by
@@ -42,13 +38,13 @@ class Install(base.Command):
           available version, use:
 
             $ {parent_command} update
-      """),
-      'EXAMPLES': textwrap.dedent("""\
+      """,
+      'EXAMPLES': """\
           The following command installs ``COMPONENT-1'', ``COMPONENT-2'',
           and all components that they depend on:
 
             $ {command} COMPONENT-1 COMPONENT-2
-      """),
+      """,
   }
 
   @staticmethod

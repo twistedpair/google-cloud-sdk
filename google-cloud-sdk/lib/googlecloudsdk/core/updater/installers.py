@@ -14,6 +14,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import urlopen_with_cacerts
 
 
 TIMEOUT_IN_SEC = 60
@@ -261,7 +262,7 @@ class ComponentInstaller(object):
                           ComponentInstaller.GCS_API_DL_URL,
                           1)
       req = urllib2.Request(url, headers=headers)
-      return urllib2.urlopen(req, timeout=TIMEOUT_IN_SEC)
+      return urlopen_with_cacerts.urlopen(req, timeout=TIMEOUT_IN_SEC)
     except urllib2.HTTPError as e:
       if e.code != 403 or not url.startswith(ComponentInstaller.GCS_API_DL_URL):
         raise e
@@ -277,7 +278,7 @@ class ComponentInstaller(object):
       try:
         # Retry the download using the credentials.
         req = urllib2.Request(url, headers=headers)
-        return urllib2.urlopen(req, timeout=TIMEOUT_IN_SEC)
+        return urlopen_with_cacerts.urlopen(req, timeout=TIMEOUT_IN_SEC)
       except urllib2.HTTPError as e:
         if e.code != 403:
           raise e

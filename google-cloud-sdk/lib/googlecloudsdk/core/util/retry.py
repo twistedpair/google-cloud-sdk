@@ -8,7 +8,7 @@ import random
 import sys
 import time
 
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 _DEFAULT_JITTER_MS = 1000

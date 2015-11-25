@@ -39,7 +39,7 @@ class CreateIndexes(base.Command):
 
   def Run(self, args):
     project = properties.VALUES.core.project.Get(required=True)
-    app_config = yaml_parsing.AppConfigSet([args.index_file], project)
+    app_config = yaml_parsing.AppConfigSet([args.index_file])
 
     if yaml_parsing.ConfigYamlInfo.INDEX not in app_config.Configs():
       raise exceptions.InvalidArgumentException(

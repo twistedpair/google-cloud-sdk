@@ -16,7 +16,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_messages
 from googlecloudsdk.third_party.apis.compute.beta import compute_beta_messages
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 def _Args(parser, messages):

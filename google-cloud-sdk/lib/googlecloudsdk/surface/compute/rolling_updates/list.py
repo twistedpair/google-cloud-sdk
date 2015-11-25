@@ -54,7 +54,8 @@ class List(base.Command):
     limit = updater_util.SanitizeLimitFlag(args.limit)
 
     try:
-      return apitools_base.YieldFromList(client.rollingUpdates, request, limit)
+      return apitools_base.YieldFromList(
+          client.rollingUpdates, request, limit=limit)
     except apitools_base.HttpError as error:
       raise exceptions.HttpException(updater_util.GetError(error))
 

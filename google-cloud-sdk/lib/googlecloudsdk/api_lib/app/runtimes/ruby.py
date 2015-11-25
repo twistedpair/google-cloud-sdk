@@ -4,7 +4,6 @@
 
 import os
 import re
-import subprocess
 import textwrap
 
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
@@ -12,9 +11,10 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
-NAME ='Ruby'
+NAME = 'Ruby'
 ALLOWED_RUNTIME_NAMES = ('ruby', 'custom')
 
 # This should be kept in sync with the default Ruby version specified in
@@ -54,7 +54,6 @@ GEM_PACKAGES = {
 APP_YAML_CONTENTS = textwrap.dedent("""\
     runtime: {runtime}
     vm: true
-    api_version: 1
     entrypoint: {entrypoint}
     """)
 DOCKERIGNORE_CONTENTS = textwrap.dedent("""\
@@ -126,14 +125,6 @@ class RubyConfigError(exceptions.Error):
 
 class MissingGemfileError(RubyConfigError):
   """Gemfile is missing."""
-
-
-class MissingGemfileLockError(RubyConfigError):
-  """Gemfile.lock is missing."""
-
-
-class MissingBundlerError(RubyConfigError):
-  """Bundler is missing."""
 
 
 class StaleBundleError(RubyConfigError):
@@ -264,10 +255,9 @@ def Fingerprint(path, params):
   if not _CheckForRubyRuntime(path, appinfo):
     return None
 
-  _SanityCheck(path)
-
-  gems = _DetectGems()
-  ruby_version = _DetectRubyInterpreter(path)
+  bundler_available = _CheckEnvironment(path)
+  gems = _DetectGems(bundler_available)
+  ruby_version = _DetectRubyInterpreter(path, bundler_available)
   packages = _DetectNeededPackages(gems)
 
   if appinfo and appinfo.entrypoint:
@@ -293,6 +283,10 @@ def _CheckForRubyRuntime(path, appinfo):
   Returns:
     (bool) Whether this app should be treated as runtime:ruby.
   """
+  if (appinfo and appinfo.vm_settings and
+      appinfo.vm_settings['vm_runtime'] == 'ruby'):
+    return True
+
   log.info('Checking for Ruby.')
 
   gemfile_path = os.path.join(path, 'Gemfile')
@@ -304,57 +298,74 @@ def _CheckForRubyRuntime(path, appinfo):
       prompt_string='Proceed to configure deployment for Ruby?')
 
 
-def _SanityCheck(path):
-  """Runs some sanity checks on the application.
-
-  Args:
-    path: (str) Application path.
-
-  Raises:
-    RubyConfigError: The application is recognized as a Ruby app but
-    malformed in some way.
-  """
-  gemfile_path = os.path.join(path, 'Gemfile')
-  if not os.path.isfile(gemfile_path):
-    raise MissingGemfileError('Gemfile is required for Ruby runtime.')
-
-  gemfile_lock_path = os.path.join(path, 'Gemfile.lock')
-  if not os.path.isfile(gemfile_lock_path):
-    raise MissingGemfileLockError('Gemfile present but Gemfile.lock not found.')
-
-  if not _SubprocessSucceeds('bundle version'):
-    raise MissingBundlerError('Bundler does not seem to be installed. '
-                              "Install bundler with 'gem install bundler'.")
-
-  if not _SubprocessSucceeds('bundle check'):
-    raise StaleBundleError('Your bundle is not up-to-date. '
-                           "Install missing gems with 'bundle install'.")
-
-  # TODO(dazuma): Check that the Gemfile.lock is up to date
-
-
-def _DetectRubyInterpreter(path):
-  """Determines the ruby interpreter and version expected by this application.
+def _CheckEnvironment(path):
+  """Gathers information about the local environment, and performs some checks.
 
   Args:
     path: (str) Application path.
 
   Returns:
+    (bool) Whether bundler is available in the environment.
+
+  Raises:
+    RubyConfigError: The application is recognized as a Ruby app but
+    malformed in some way.
+  """
+  if not os.path.isfile(os.path.join(path, 'Gemfile')):
+    raise MissingGemfileError('Gemfile is required for Ruby runtime.')
+
+  gemfile_lock_present = os.path.isfile(os.path.join(path, 'Gemfile.lock'))
+  bundler_available = _SubprocessSucceeds('bundle version')
+
+  if bundler_available:
+    if not _SubprocessSucceeds('bundle check'):
+      raise StaleBundleError('Your bundle is not up-to-date. '
+                             "Install missing gems with 'bundle install'.")
+    if not gemfile_lock_present:
+      msg = ('\nNOTICE: We could not find a Gemfile.lock, which suggests this '
+             'application has not been tested locally, or the Gemfile.lock has '
+             'not been committed to source control. We have created a '
+             'Gemfile.lock for you, but it is recommended that you verify it '
+             'yourself (by installing your bundle and testing locally) to '
+             'ensure that the gems we deploy are the same as those you tested.')
+      log.status.Print(msg)
+  else:
+    msg = ('\nNOTICE: gcloud could not run bundler in your local environment, '
+           "and so its ability to determine your application's requirements "
+           'will be limited. We will still attempt to deploy your application, '
+           'but if your application has trouble starting up due to missing '
+           'requirements, we recommend installing bundler by running '
+           '[gem install bundler]')
+    log.status.Print(msg)
+
+  return bundler_available
+
+
+def _DetectRubyInterpreter(path, bundler_available):
+  """Determines the ruby interpreter and version expected by this application.
+
+  Args:
+    path: (str) Application path.
+    bundler_available: (bool) Whether bundler is available in the environment.
+
+  Returns:
     (str or None) The interpreter version in rbenv (.ruby-version) format, or
     None to use the base image default.
   """
-  ruby_info = _RunSubprocess('bundle platform --ruby')
-  if not re.match('^No ', ruby_info):
-    match = re.match(r'^ruby (\d+\.\d+(\.\d+)?)', ruby_info)
-    if match:
-      ruby_version = match.group(1)
-      ruby_version = RUBY_VERSION_MAP.get(ruby_version, ruby_version)
-      msg = '\nUsing Ruby {0} as requested in the Gemfile.'.format(ruby_version)
+  if bundler_available:
+    ruby_info = _RunSubprocess('bundle platform --ruby')
+    if not re.match('^No ', ruby_info):
+      match = re.match(r'^ruby (\d+\.\d+(\.\d+)?)', ruby_info)
+      if match:
+        ruby_version = match.group(1)
+        ruby_version = RUBY_VERSION_MAP.get(ruby_version, ruby_version)
+        msg = ('\nUsing Ruby {0} as requested in the Gemfile.'.
+               format(ruby_version))
+        log.status.Print(msg)
+        return ruby_version
+      # TODO(dazuma): Identify other interpreters
+      msg = 'Unrecognized platform in Gemfile: [{0}]'.format(ruby_info)
       log.status.Print(msg)
-      return ruby_version
-    # TODO(dazuma): Identify other interpreters
-    msg = 'Unrecognized platform in Gemfile: [{0}]'.format(ruby_info)
-    log.status.Print(msg)
 
   ruby_version = _ReadFile(path, '.ruby-version')
   if ruby_version:
@@ -373,17 +384,21 @@ def _DetectRubyInterpreter(path):
   return None
 
 
-def _DetectGems():
+def _DetectGems(bundler_available):
   """Returns a list of gems requested by this application.
+
+  Args:
+    bundler_available: (bool) Whether bundler is available in the environment.
 
   Returns:
     ([str, ...]) A list of gem names.
   """
   gems = []
-  for line in _RunSubprocess('bundle list').splitlines():
-    match = re.match(r'\s*\*\s+(\S+)\s+\(', line)
-    if match:
-      gems.append(match.group(1))
+  if bundler_available:
+    for line in _RunSubprocess('bundle list').splitlines():
+      match = re.match(r'\s*\*\s+(\S+)\s+\(', line)
+      if match:
+        gems.append(match.group(1))
   return gems
 
 
@@ -440,10 +455,12 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
       log.status.Print(msg)
     return entrypoint
   else:
-    msg = ("This appears to be a Ruby app. You'll need to provide the "
-           'command to run the app in production. Please either run this '
-           'interactively or create an app.yaml with "runtime: python" and '
-           'an "entrypoint" field defining the full command.')
+    msg = ("This appears to be a Ruby app. You'll need to provide the full "
+           'command to run the app in production, but gcloud is not running '
+           'interactively and cannot ask for the entrypoint{0}. Please either '
+           'run gcloud interactively, or create an app.yaml with '
+           '"runtime:ruby" and an "entrypoint" field.'.
+           format(fingerprinting.GetNonInteractiveErrorMessage()))
     raise RubyConfigError(msg)
 
 

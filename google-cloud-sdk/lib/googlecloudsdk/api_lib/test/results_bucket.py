@@ -68,9 +68,9 @@ class ResultsBucketOps(object):
     except apitools_base.HttpError as error:
       code, err_msg = util.GetErrorCodeAndMessage(error)
       if code == HTTP_FORBIDDEN:
-        msg = ('Permission denied while fetching the default results bucket. '
-               'Is billing enabled for project: [{0}]?'
-               .format(self._project))
+        msg = ('Permission denied while fetching the default results bucket '
+               '(Error {0}: {1}). Is billing enabled for project: [{2}]?'
+               .format(code, err_msg, self._project))
       else:
         msg = ('Http error while trying to fetch the default results bucket:\n'
                'ResponseError {0}: {1}'

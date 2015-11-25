@@ -7,7 +7,6 @@ import os
 import pickle
 import platform
 import socket
-import subprocess
 import sys
 import tempfile
 import time
@@ -21,6 +20,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 _GA_ENDPOINT = 'https://ssl.google-analytics.com/collect'

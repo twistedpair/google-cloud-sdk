@@ -1489,6 +1489,10 @@ class TableDataInsertAllRequest(_messages.Message):
     skipInvalidRows: [Optional] Insert all valid rows of a request, even if
       invalid rows exist. The default value is false, which causes the entire
       request to fail if any invalid rows exist.
+    templateSuffix: [Experimental] If specified, treats the destination table
+      as a base template, and inserts the rows into an instance table named
+      "". BigQuery will manage creation of the instance table, using the
+      schema of the base template table.
   """
 
   class RowsValueListEntry(_messages.Message):
@@ -1509,6 +1513,7 @@ class TableDataInsertAllRequest(_messages.Message):
   kind = _messages.StringField(2, default=u'bigquery#tableDataInsertAllRequest')
   rows = _messages.MessageField('RowsValueListEntry', 3, repeated=True)
   skipInvalidRows = _messages.BooleanField(4)
+  templateSuffix = _messages.StringField(5)
 
 
 class TableDataInsertAllResponse(_messages.Message):

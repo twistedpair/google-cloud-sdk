@@ -31,7 +31,8 @@ class Version(object):
     return cls(*parts)
 
   def __eq__(self, other):
-    return (self.project == other.project and
+    return (type(other) is Version and
+            self.project == other.project and
             self.service == other.service and
             self.version == other.version)
 

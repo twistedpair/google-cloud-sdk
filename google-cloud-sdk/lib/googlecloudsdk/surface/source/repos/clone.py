@@ -43,7 +43,7 @@ class Clone(base.Command):
         'src',
         metavar='REPOSITORY_NAME',
         help=('Name of the repository. '
-              'Note: GCP projects generally have (if created) repository '
+              'Note: GCP projects generally have (if created) a repository '
               'named "default"'))
     parser.add_argument(
         'dst',

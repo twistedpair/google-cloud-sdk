@@ -9,8 +9,8 @@ import subprocess
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.util import compat26
 from googlecloudsdk.core.util import files
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
 _REMOTE_URL_PATTERN = r'remote\.(.*)\.url'
@@ -176,7 +176,7 @@ def _CallGit(cwd, *args):
     The raw output of the command, or None if the command failed.
   """
   try:
-    return compat26.subprocess.check_output(['git'] + list(args), cwd=cwd)
+    return subprocess.check_output(['git'] + list(args), cwd=cwd)
   except (OSError, subprocess.CalledProcessError) as e:
     log.debug('Could not call git with args %s: %s', args, e)
     return None

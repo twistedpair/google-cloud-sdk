@@ -70,17 +70,24 @@ def _GetDockerfileCreator(info):
         '[runtime: custom]. To continue using the [{1}] runtime, please omit '
         'the Dockerfile from this directory.'.format(info.file, info.runtime))
 
+  # If we're "custom" there needs to be a Dockerfile.
+  if info.runtime == 'custom':
+    if os.path.exists(dockerfile):
+      log.info('Using %s found in %s', config.DOCKERFILE, dockerfile_dir)
+      def NullGenerator():
+        return lambda: None
+      return NullGenerator
+    else:
+      raise images_util.NoDockerfileError(
+          'You must provide your own Dockerfile when using a custom runtime.  '
+          'Otherwise provide a "runtime" field with one of the supported '
+          'runtimes.')
+
   # First try the new fingerprinting based code.
   params = fingerprinting.Params(appinfo=info.parsed, deploy=True)
   configurator = fingerprinter.IdentifyDirectory(dockerfile_dir, params)
   if configurator:
     return configurator.GenerateConfigs
-  # Then check if the app is runtime: custom
-  elif info.runtime == 'custom' and not os.path.exists(dockerfile):
-    raise images_util.NoDockerfileError(
-        'You must provide your own Dockerfile when using a custom runtime.  '
-        'Otherwise provide a "runtime" field with one of the supported '
-        'runtimes.')
   # Then check that we can generate a Dockerfile for a non-custom runtime.
   elif info.runtime != 'custom':
     supported_runtimes = images_util.GetAllManagedVMsRuntimes()

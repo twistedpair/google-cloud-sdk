@@ -2,9 +2,17 @@
 
 """The gcloud app group."""
 
+import sys
+
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import platforms
+
+
+class UnsupportedPythonVersionError(exceptions.Error):
+  pass
 
 
 # TODO(b/24169312): remove
@@ -56,3 +64,11 @@ class Appengine(base.Group):
       log.warn(CHANGE_WARNING)
     properties.PersistProperty(properties.VALUES.app.suppress_change_warning,
                                'true')
+    if not platforms.PythonVersion().IsSupported():
+      raise UnsupportedPythonVersionError(
+          ('Python 2.7 or greater is required for App Engine commands in '
+           'gcloud.\n\n'
+           'Your Python location: [{0}]\n\n'
+           'Please set the CLOUDSDK_PYTHON environment variable to point to a '
+           'supported version in order to use this command.'
+          ).format(sys.executable))

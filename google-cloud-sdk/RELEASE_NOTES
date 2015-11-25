@@ -2,6 +2,41 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 0.9.88 (2015/11/25)
+
+### Breaking Changes
+
+* The `gcloud preview app run` command has now been removed. Please use the
+  bundled `dev_appserver.py` script directly instead.
+
+* App Engine: The 'version' and 'application' fields in module and configuration
+  files are now illegal. Project name should instead be specified either by
+  `gcloud config set project MY_PROJECT` or by setting the `--project` flag on
+  individual command executions. Versions are generated automatically by default
+  but can also be manually specified by setting the `--version` flag on
+  individual command executions.
+
+### App Engine
+
+* Don't do runtime identification for custom runtimes during deploy. This fixes
+  issue [#387](https://code.google.com/p/google-cloud-sdk/issues/detail?id=387).
+
+* The `dev_appserver.py` script no longer requires the installation of all App
+  Engine components. It will install only the necessary ones at run time.
+  Fixes [#273](https://code.google.com/p/google-cloud-sdk/issues/detail?id=273)
+
+### Core
+
+* Added the `gcloud components install` command.  This allows you to install
+  missing components at the version of the SDK you currently have (it does not
+  update your SDK installation).  `gcloud components update` should now only be
+  used to update your SDK to the latest version.
+
+* Fixes [#293](https://code.google.com/p/google-cloud-sdk/issues/detail?id=293)
+  related SSL certificate validation issues.
+
+* Use zsh builtins in path.zsh.inc for faster/cleaner shell startup.
+
 ## 0.9.87 (2015/11/18)
 
 ### Compute

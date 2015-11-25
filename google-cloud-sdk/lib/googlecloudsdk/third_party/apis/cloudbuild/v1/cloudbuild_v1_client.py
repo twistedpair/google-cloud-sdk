@@ -214,7 +214,7 @@ to use different resource name schemes, such as `users/*/operations`.
               method_id=u'cloudbuild.projects.builds.list',
               ordered_params=[u'projectId'],
               path_params=[u'projectId'],
-              query_params=[u'foremanId', u'pageSize', u'pageToken', u'repoName', u'revisionId'],
+              query_params=[u'pageSize', u'pageToken', u'repoName', u'revisionId'],
               relative_path=u'v1/projects/{projectId}/builds',
               request_field='',
               request_type_name=u'CloudbuildProjectsBuildsListRequest',

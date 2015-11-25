@@ -182,7 +182,7 @@ def _GetRcPaths(command_completion, path_update, rc_path, sdk_root, host_os):
     rc_path = None
   elif not rc_path:
     file_name = _GetShellRcFileName(preferred_shell, host_os)
-    rc_path = os.path.expanduser(os.path.join('~', file_name))
+    rc_path = os.path.join(platforms.GetHomePath(), file_name)
 
     rc_path_update = console_io.PromptResponse((
         'The Google Cloud SDK installer will now prompt you to update an rc '

@@ -17,7 +17,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import yaml_object
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 import yaml
 
 # App readable static file path prefix.

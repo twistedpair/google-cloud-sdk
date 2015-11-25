@@ -25,6 +25,13 @@ NO_SUCH_CLUSTER_ERROR_MSG = """\
 No cluster named '{name}' in {project}."""
 
 
+def CheckResponse(response):
+  """Wrap http_wrapper.CheckResponse to skip retry on 503."""
+  if response.status_code == 503:
+    raise apitools_base.HttpError.FromResponse(response)
+  return apitools_base.http_wrapper.CheckResponse(response)
+
+
 def NewAPIAdapter(api_version, endpoint_url, http):
   """Initialize an api adapter for the given api_version.
 
@@ -47,6 +54,7 @@ def NewAPIAdapter(api_version, endpoint_url, http):
         '{0} is not a valid api version'.format(api_version))
 
   api_client = api_client(url=endpoint_url, get_credentials=False, http=http)
+  api_client.check_response_func = CheckResponse
   messages = api
   registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(api_client)
   registry.SetParamDefault(

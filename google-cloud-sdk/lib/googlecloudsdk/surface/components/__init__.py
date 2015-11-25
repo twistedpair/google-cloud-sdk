@@ -4,7 +4,6 @@
 
 import argparse
 import os
-import textwrap
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -16,11 +15,10 @@ from googlecloudsdk.core.util import platforms
 
 @base.ReleaseTracks(base.ReleaseTrack.GA)
 class Components(base.Group):
-  """List, install, update, or remove Google Cloud SDK components or packages.
-  """
+  """List, install, update, or remove Google Cloud SDK components."""
 
   detailed_help = {
-      'DESCRIPTION': textwrap.dedent("""\
+      'DESCRIPTION': """\
           {description}
 
           Because you might need only some of the tools in the Cloud SDK to do
@@ -31,18 +29,30 @@ class Components(base.Group):
           the tools you already have installed, and gives you the opportunity
           to upgrade to the latest version.
 
-          Tools can be installed as individual components or as preconfigured
-          _packages_ of components that are typically all used together to
-          perform a particular task (such as developing a PHP application on
-          App Engine).
-
           Certain components _depend_ on other components. When you install a
           component that you need, all components upon which it directly or
           indirectly depends, and that are not already present on your
           workstation, are installed automatically. When you remove a
           component, all components that depend on the removed component are
           also removed.
-      """),
+      """,
+      'EXAMPLES': """\
+          To see all available components:
+
+            $ {command} list
+
+          To install a component you don't have:
+
+            $ {command} install COMPONENT
+
+          To remove a component you no longer need:
+
+            $ {command} remove COMPONENT
+
+          To update all components you have to their latest version:
+
+            $ {command} update
+      """,
   }
 
   @staticmethod

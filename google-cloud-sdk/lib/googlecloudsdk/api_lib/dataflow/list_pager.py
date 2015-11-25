@@ -8,7 +8,7 @@ but modified to use pageSize rather than maxResults.
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 def YieldFromList(

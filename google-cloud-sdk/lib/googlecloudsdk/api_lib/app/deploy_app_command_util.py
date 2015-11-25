@@ -12,6 +12,7 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import retry
 
 
 def CopyFilesToCodeBucket(modules, bucket):
@@ -43,12 +44,26 @@ def CopyFilesToCodeBucket(modules, bucket):
       log.status.Print('Synchronizing files to [{b}].'.format(b=bucket))
       try:
         log.SetUserOutputEnabled(False)
-        exit_code = cloud_storage.Rsync(staging_directory, bucket)
-        if exit_code:
+
+        def _StatusUpdate(result, unused_retry_state):
+          log.info('Error synchronizing files. Return code: {0}. '
+                   'Retrying.'.format(result))
+
+        retryer = retry.Retryer(max_retrials=3,
+                                status_update_func=_StatusUpdate)
+        def _ShouldRetry(return_code, unused_retry_state):
+          return return_code != 0
+
+        try:
+          retryer.RetryOnResult(
+              cloud_storage.Rsync,
+              (staging_directory, bucket),
+              should_retry_if=_ShouldRetry)
+        except retry.RetryException as e:
           raise exceptions.ToolException(
               ('Could not synchronize files. The gsutil command exited with '
                'status [{s}]. Command output is available in [{l}].').format(
-                   s=exit_code, l=log.GetLogFilePath()))
+                   s=e.last_result, l=log.GetLogFilePath()))
       finally:
         # Reset to the standard log level.
         log.SetUserOutputEnabled(None)
@@ -117,9 +132,7 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket, excluded_regexes):
     dest_path = '/'.join([bucket_url.rstrip('/'), target_filename])
     manifest[relative_path] = {
         'sourceUrl': dest_path,
-        # TODO(clouser) Actually send SHA1 hash in payload. Currently
-        # the server doesn't provide enough information to debug this.
-        # 'sha1Sum': sha1_hash,
+        'sha1Sum': sha1_hash,
     }
 
   log.debug('Generated deployment manifest: "{0}"'.format(

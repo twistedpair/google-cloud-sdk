@@ -9,7 +9,6 @@ from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 
 
 RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
@@ -74,11 +73,7 @@ class GenConfig(base.Command):
     # directory, load it.
     if config_filename:
       try:
-        project = properties.VALUES.core.project.Get(required=True)
-        myi = yaml_parsing.ModuleYamlInfo.FromFile(config_filename,
-                                                   project,
-                                                   version=None,
-                                                   check_version=False)
+        myi = yaml_parsing.ModuleYamlInfo.FromFile(config_filename)
         config = myi.parsed
       except IOError as ex:
         log.error('Unable to open %s: %s', config_filename, ex)

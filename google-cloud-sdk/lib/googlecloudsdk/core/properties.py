@@ -15,7 +15,7 @@ from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 named_configs.FLAG_OVERRIDE_STACK.Push(named_configs.AdhocConfigFlagParse())
 

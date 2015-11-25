@@ -2,7 +2,7 @@
 """Command for adding a host rule to a URL map."""
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class AddHostRule(base_classes.ReadWriteCommand):

@@ -143,7 +143,7 @@ class Start(base.Command):
 
     if args.action == 'RECREATE':
       group_ref = resources.Parse(
-          args.group, collection='replicapool.instanceGroupManagers')
+          args.group, collection='compute.instanceGroupManagers')
 
       template_ref = resources.Parse(
           args.template, collection='compute.instanceTemplates')

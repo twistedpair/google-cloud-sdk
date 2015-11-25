@@ -4,7 +4,7 @@
 
 import sys
 
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 ALIGN_DEFAULT = 'left'

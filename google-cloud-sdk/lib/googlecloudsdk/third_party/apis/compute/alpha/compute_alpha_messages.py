@@ -1783,6 +1783,23 @@ class ComputeDisksResizeRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeDisksSetLabelsRequest(_messages.Message):
+  """A ComputeDisksSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 4)
+
+
 class ComputeDisksTestIamPermissionsRequest(_messages.Message):
   """A ComputeDisksTestIamPermissionsRequest object.
 
@@ -2807,6 +2824,21 @@ class ComputeImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeImagesSetLabelsRequest(_messages.Message):
+  """A ComputeImagesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeImagesTestIamPermissionsRequest(_messages.Message):
@@ -4504,6 +4536,21 @@ class ComputeSnapshotsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeSnapshotsSetLabelsRequest(_messages.Message):
+  """A ComputeSnapshotsSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeSnapshotsTestIamPermissionsRequest(_messages.Message):
@@ -6902,6 +6949,46 @@ class ForwardingRulesScopedList(_messages.Message):
 
   forwardingRules = _messages.MessageField('ForwardingRule', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class GlobalSetLabelsRequest(_messages.Message):
+  """A GlobalSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: The new labels for the resource.
+
+  Fields:
+    labelFingerprint: Fingerprint of the previous set of labels for this
+      resource, used to detect conflicts.
+    labels: The new labels for the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The new labels for the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class HTTP2HealthCheck(_messages.Message):
@@ -12294,5 +12381,45 @@ class ZoneList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#zoneList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class ZoneSetLabelsRequest(_messages.Message):
+  """A ZoneSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: The new labels for the resource.
+
+  Fields:
+    labelFingerprint: Fingerprint of the previous set of labels for this
+      resource, used to detect conflicts.
+    labels: The new labels for the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The new labels for the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
 
 

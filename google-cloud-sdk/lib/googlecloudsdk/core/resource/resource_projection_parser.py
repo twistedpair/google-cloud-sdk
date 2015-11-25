@@ -7,7 +7,7 @@ import re
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
-from googlecloudsdk.third_party.py27 import copy
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 class Parser(object):

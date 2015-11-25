@@ -3,7 +3,6 @@
 """Utilities for subcommands that need to SSH into virtual machine guests."""
 import logging
 import os
-import subprocess
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
@@ -21,6 +20,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.

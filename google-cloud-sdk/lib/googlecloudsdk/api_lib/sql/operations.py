@@ -12,6 +12,12 @@ from googlecloudsdk.third_party.apitools.base.py import exceptions
 class _BaseOperations(object):
   """Common utility functions for sql operations."""
 
+  _PRE_START_SLEEP_SEC = 1
+  _INITIAL_SLEEP_MS = 2000
+  _MAX_WAIT_MS = 180000
+  _WAIT_CEILING_MS = 20000
+  _HTTP_MAX_RETRY_MS = 2000
+
   @classmethod
   def WaitForOperation(cls, sql_client, operation_ref, message):
     """Wait for a Cloud SQL operation to complete.
@@ -36,9 +42,9 @@ class _BaseOperations(object):
     """
 
     def ShouldRetryFunc(result, state):
-      # In case of HttpError, retry for up to 2s at most.
+      # In case of HttpError, retry for up to _HTTP_MAX_RETRY_MS at most.
       if isinstance(result, exceptions.HttpError):
-        if state.time_passed_ms > 2000:
+        if state.time_passed_ms > _BaseOperations._HTTP_MAX_RETRY_MS:
           raise result
         return True
       # In case of other Exceptions, raise them immediately.
@@ -48,16 +54,16 @@ class _BaseOperations(object):
       return not result
 
     with console_io.ProgressTracker(message, autotick=False) as pt:
-      time.sleep(1)
+      time.sleep(_BaseOperations._PRE_START_SLEEP_SEC)
       retryer = retry.Retryer(exponential_sleep_multiplier=2,
-                              max_wait_ms=180000,
-                              wait_ceiling_ms=20000)
+                              max_wait_ms=_BaseOperations._MAX_WAIT_MS,
+                              wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
       try:
         retryer.RetryOnResult(cls.GetOperationStatus,
                               [sql_client, operation_ref],
                               {'progress_tracker': pt},
                               should_retry_if=ShouldRetryFunc,
-                              sleep_ms=2000)
+                              sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
       except retry.WaitException:
         raise errors.OperationError(
             ('Operation {0} is taking longer than expected. You can continue '

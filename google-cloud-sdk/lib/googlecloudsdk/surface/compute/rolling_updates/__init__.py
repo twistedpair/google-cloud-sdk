@@ -50,19 +50,10 @@ class Updater(base.Group):
         http=cli.Http())
     context['updater_messages'] = replicapoolupdater_v1beta1_messages
     resources.SetParamDefault(
-        api='compute', collection='instanceTemplates', param='project',
+        api='compute', collection=None, param='project',
         resolver=resolvers.FromProperty(properties.VALUES.core.project))
     resources.SetParamDefault(
-        api='replicapool', collection=None, param='project',
-        resolver=resolvers.FromProperty(properties.VALUES.core.project))
-    resources.SetParamDefault(
-        api='replicapool', collection=None, param='zone',
-        resolver=resolvers.FromProperty(properties.VALUES.compute.zone))
-    resources.SetParamDefault(
-        api='resourceviews', collection=None, param='projectName',
-        resolver=resolvers.FromProperty(properties.VALUES.core.project))
-    resources.SetParamDefault(
-        api='resourceviews', collection=None, param='zone',
+        api='compute', collection=None, param='zone',
         resolver=resolvers.FromProperty(properties.VALUES.compute.zone))
     resources.SetParamDefault(
         api='replicapoolupdater', collection=None, param='project',

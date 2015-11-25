@@ -54,10 +54,8 @@ class Build(_messages.Message):
     StatusValueValuesEnum: The status of the build. @OutputOnly
 
   Fields:
-    buildReceipt: Details of build processing.
     createTime: The time that the build was created. @OutputOnly
     finishTime: The time that execution of the build was finished. @OutputOnly
-    foremanId: The ID for the foreman that is running this build.
     id: The unique identifier of the build. @OutputOnly
     images: The list of images expected to be built and pushed to GCR. If an
       image is listed here, the build will fail if that image is not produced
@@ -65,7 +63,6 @@ class Build(_messages.Message):
       steps are complete, they will all be pushed and recorded in the build's
       results.
     projectId: The ID of the project. @OutputOnly.
-    projectNum: A string attribute.
     results: The results of this build. @OutputOnly
     source: Describes where to find source files to build.
     startTime: The time that execution of the build was started. @OutputOnly
@@ -73,8 +70,6 @@ class Build(_messages.Message):
     steps: Describes the operations to be performed on the workspace.
     timeout: The amount of time that this build should be allowed to run, to
       second granularity. By default, this will be ten minutes.
-    userId: The end user who initiated this build.
-    workerId: The ID for the worker that is running this build.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -99,36 +94,17 @@ class Build(_messages.Message):
     TIMEOUT = 6
     CANCELLED = 7
 
-  buildReceipt = _messages.MessageField('BuildReceipt', 1)
-  createTime = _messages.StringField(2)
-  finishTime = _messages.StringField(3)
-  foremanId = _messages.StringField(4)
-  id = _messages.StringField(5)
-  images = _messages.StringField(6, repeated=True)
-  projectId = _messages.StringField(7)
-  projectNum = _messages.IntegerField(8)
-  results = _messages.MessageField('Results', 9)
-  source = _messages.MessageField('Source', 10)
-  startTime = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  steps = _messages.MessageField('BuildStep', 13, repeated=True)
-  timeout = _messages.StringField(14)
-  userId = _messages.IntegerField(15)
-  workerId = _messages.StringField(16)
-
-
-class BuildReceipt(_messages.Message):
-  """Details of build processing.
-
-  Fields:
-    foremanId: The ID for the foreman that is running this build.
-    workerId: The ID for the worker that is running this build.
-    workerIpAddress: The IP address for the worker that is running this build.
-  """
-
-  foremanId = _messages.StringField(1)
-  workerId = _messages.StringField(2)
-  workerIpAddress = _messages.StringField(3)
+  createTime = _messages.StringField(1)
+  finishTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  images = _messages.StringField(4, repeated=True)
+  projectId = _messages.StringField(5)
+  results = _messages.MessageField('Results', 6)
+  source = _messages.MessageField('Source', 7)
+  startTime = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  steps = _messages.MessageField('BuildStep', 10, repeated=True)
+  timeout = _messages.StringField(11)
 
 
 class BuildStep(_messages.Message):
@@ -166,29 +142,6 @@ class BuiltImage(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   """The request message for Operations.CancelOperation."""
-
-
-class CitcWorkspaceSourceContext(_messages.Message):
-  """A CitC workspace as represented by its ID and snapshot.
-
-  Fields:
-    branchName: See PiperDepotSourceContext.branch_name for documentation.
-    isBaseline: If true, ignore local workspace changes and use the baseline
-      of the workspace instead.
-    snapshotVersion: The snapshot within the workspace. If zero, refers to the
-      moving head of the workspace.  Clients which use zero should be robust
-      against remote changes made to a workspace.  If non-zero, refers to an
-      immutable CitC snapshot.  The current snapshot_version for USER's CLIENT
-      can be found in /google/src/cloud/USER/CLIENT/.citc/snapshot_version
-    workspaceId: A unique identifier for a citc workspace. The workspace_id
-      for USER's CLIENT can be found in
-      /google/src/cloud/USER/CLIENT/.citc/workspace_id
-  """
-
-  branchName = _messages.StringField(1)
-  isBaseline = _messages.BooleanField(2)
-  snapshotVersion = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  workspaceId = _messages.StringField(4)
 
 
 class CloudRepoSourceContext(_messages.Message):
@@ -326,8 +279,6 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   """A CloudbuildProjectsBuildsListRequest object.
 
   Fields:
-    foremanId: If present only builds with the provided foreman id will be
-      returned
     pageSize: Number of results to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
     projectId: The ID of the project.
@@ -339,12 +290,11 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
       repo_name must also be specified.
   """
 
-  foremanId = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
-  repoName = _messages.StringField(5)
-  revisionId = _messages.StringField(6)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  repoName = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -522,36 +472,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class PiperDepotSourceContext(_messages.Message):
-  """Source code in the Piper depot as of a certain change.
-
-  Fields:
-    branchName: Specifies that the source context refers to a branch, rather
-      than the depot root.  For example, if the branch files live under
-      //depot/branches/mybranch/25, then branch_name should be "mybranch/25".
-    changeNumber: CL number. If zero, represents depot head.
-    disableComponents: If false, use the released components as of the CL. If
-      true, use true head. If branch_name is present, this field is
-      meaningless since the branch relies on the .srcfs_workspace file checked
-      in under e.g. depot/branches/mybranch/25 in order to be consistent.
-      That file contains all the information that 'disable_components' does,
-      and more.
-    versionMap: The complete components state description. If present,
-      disable_components is ignored.  Not all services accept arbitrary
-      version map.  Services not supporting arbitrary version maps must emit
-      an error if this field is set, instead of silently falling back on
-      disable_components.  This is a serialized VersionMap from
-      //devtools/components/proto/version_map.proto. We use bytes instead of
-      the actual type to avoid having a file under //google depend on one
-      outside of //google.
-  """
-
-  branchName = _messages.StringField(1)
-  changeNumber = _messages.IntegerField(2)
-  disableComponents = _messages.BooleanField(3)
-  versionMap = _messages.BytesField(4)
-
-
 class ProjectRepoId(_messages.Message):
   """Selects a repo using a Google Cloud Platform project ID (e.g. winged-
   cargo-31) and a repo name within that project.
@@ -609,21 +529,17 @@ class SourceContext(_messages.Message):
   directory.
 
   Fields:
-    citc: A SourceContext referring to a Citc client.
     cloudRepo: A SourceContext referring to a revision in a cloud repo.
     cloudWorkspace: A SourceContext referring to a snapshot in a cloud
       workspace.
     gerrit: A SourceContext referring to a Gerrit project.
     git: A SourceContext referring to any third party Git repo (e.g. GitHub).
-    piper: A SourceContext referring to a CL in Piper.
   """
 
-  citc = _messages.MessageField('CitcWorkspaceSourceContext', 1)
-  cloudRepo = _messages.MessageField('CloudRepoSourceContext', 2)
-  cloudWorkspace = _messages.MessageField('CloudWorkspaceSourceContext', 3)
-  gerrit = _messages.MessageField('GerritSourceContext', 4)
-  git = _messages.MessageField('GitSourceContext', 5)
-  piper = _messages.MessageField('PiperDepotSourceContext', 6)
+  cloudRepo = _messages.MessageField('CloudRepoSourceContext', 1)
+  cloudWorkspace = _messages.MessageField('CloudWorkspaceSourceContext', 2)
+  gerrit = _messages.MessageField('GerritSourceContext', 3)
+  git = _messages.MessageField('GitSourceContext', 4)
 
 
 class StandardQueryParameters(_messages.Message):

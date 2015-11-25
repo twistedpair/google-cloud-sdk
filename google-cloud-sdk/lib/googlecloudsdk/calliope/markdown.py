@@ -8,7 +8,7 @@ import StringIO
 import textwrap
 
 from googlecloudsdk.calliope import usage_text
-from googlecloudsdk.third_party.py27 import collections
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 def FilterOutSuppressed(args):

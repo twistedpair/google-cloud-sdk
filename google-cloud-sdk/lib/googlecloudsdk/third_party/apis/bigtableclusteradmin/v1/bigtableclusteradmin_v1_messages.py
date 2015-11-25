@@ -71,39 +71,6 @@ class BigtableclusteradminProjectsAggregatedClustersListRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
-class BigtableclusteradminProjectsCheckZoneStatesRequest(_messages.Message):
-  """A BigtableclusteradminProjectsCheckZoneStatesRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableclusteradminProjectsInstancesCreateRequest(_messages.Message):
-  """A BigtableclusteradminProjectsInstancesCreateRequest object.
-
-  Fields:
-    createInstanceRequest: A CreateInstanceRequest resource to be passed as
-      the request body.
-    name: A string attribute.
-  """
-
-  createInstanceRequest = _messages.MessageField('CreateInstanceRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class BigtableclusteradminProjectsInstancesDeleteRequest(_messages.Message):
-  """A BigtableclusteradminProjectsInstancesDeleteRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BigtableclusteradminProjectsZonesClustersDeleteRequest(_messages.Message):
   """A BigtableclusteradminProjectsZonesClustersDeleteRequest object.
 
@@ -148,60 +115,6 @@ class CancelOperationRequest(_messages.Message):
   """A CancelOperationRequest object."""
 
 
-class CheckZoneStatesResponse(_messages.Message):
-  """A CheckZoneStatesResponse object.
-
-  Messages:
-    StatesValue: A StatesValue object.
-
-  Fields:
-    states: A StatesValue attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatesValue(_messages.Message):
-    """A StatesValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a StatesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type StatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a StatesValue object.
-
-      Enums:
-        ValueValueValuesEnum:
-
-      Fields:
-        key: Name of the additional property.
-        value: A ValueValueValuesEnum attribute.
-      """
-
-      class ValueValueValuesEnum(_messages.Enum):
-        """ValueValueValuesEnum enum type.
-
-        Values:
-          EMERGENCY_MAINTENANCE: <no description>
-          LIVE: <no description>
-          PLANNED_MAINTENANCE: <no description>
-          STATE_NOT_KNOWN: <no description>
-        """
-        EMERGENCY_MAINTENANCE = 0
-        LIVE = 1
-        PLANNED_MAINTENANCE = 2
-        STATE_NOT_KNOWN = 3
-
-      key = _messages.StringField(1)
-      value = _messages.EnumField('ValueValueValuesEnum', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  states = _messages.MessageField('StatesValue', 1)
-
-
 class Cluster(_messages.Message):
   """A Cluster object.
 
@@ -239,50 +152,6 @@ class Cluster(_messages.Message):
   ssdBytes = _messages.IntegerField(7)
 
 
-class Cluster1(_messages.Message):
-  """A Cluster1 object.
-
-  Enums:
-    DefaultStorageTypeValueValuesEnum:
-    StateValueValuesEnum:
-
-  Fields:
-    defaultStorageType: A DefaultStorageTypeValueValuesEnum attribute.
-    serveNodes: A integer attribute.
-    state: A StateValueValuesEnum attribute.
-    zone: A string attribute.
-  """
-
-  class DefaultStorageTypeValueValuesEnum(_messages.Enum):
-    """DefaultStorageTypeValueValuesEnum enum type.
-
-    Values:
-      HDD: <no description>
-      SSD: <no description>
-      STORAGE_TYPE_UNSPECIFIED: <no description>
-    """
-    HDD = 0
-    SSD = 1
-    STORAGE_TYPE_UNSPECIFIED = 2
-
-  class StateValueValuesEnum(_messages.Enum):
-    """StateValueValuesEnum enum type.
-
-    Values:
-      CREATING: <no description>
-      LIVE: <no description>
-      STATE_NOT_KNOWN: <no description>
-    """
-    CREATING = 0
-    LIVE = 1
-    STATE_NOT_KNOWN = 2
-
-  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 1)
-  serveNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  zone = _messages.StringField(4)
-
-
 class CreateClusterRequest(_messages.Message):
   """A CreateClusterRequest object.
 
@@ -297,61 +166,8 @@ class CreateClusterRequest(_messages.Message):
   name = _messages.StringField(3)
 
 
-class CreateInstanceRequest(_messages.Message):
-  """A CreateInstanceRequest object.
-
-  Fields:
-    instance: A Instance attribute.
-    instanceId: A string attribute.
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  instanceId = _messages.StringField(2)
-
-
 class Empty(_messages.Message):
   """A Empty object."""
-
-
-class Instance(_messages.Message):
-  """A Instance object.
-
-  Messages:
-    ClustersValue: A ClustersValue object.
-
-  Fields:
-    clusters: A ClustersValue attribute.
-    displayName: A string attribute.
-    name: A string attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ClustersValue(_messages.Message):
-    """A ClustersValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a ClustersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ClustersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ClustersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Cluster1 attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Cluster1', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusters = _messages.MessageField('ClustersValue', 1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
 
 
 class ListClustersResponse(_messages.Message):

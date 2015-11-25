@@ -335,7 +335,12 @@ class _LogManager(object):
         raise
 
     # A handler to write DEBUG and above to log files in the given directory
-    log_file = self._SetupLogsDir(logs_dir)
+    try:
+      log_file = self._SetupLogsDir(logs_dir)
+    except (OSError, files.Error) as exp:
+      warn('Could not setup log file {0}, ({1})'.format(logs_dir, exp))
+      return
+
     self.current_log_file = log_file
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.NOTSET)

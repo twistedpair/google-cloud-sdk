@@ -38,11 +38,6 @@ PROMOTE_MESSAGE = """\
      [{default_url}])
 """
 
-MULTIPLE_MODULES_MESSAGE = """\
-In a future release, the `gcloud preview app deploy` command will no longer
-support deploying multiple modules in the same invocation. Instead, please
-deploy each module individually.
-"""
 
 def _DisplayProposedDeployment(project, app_config, version, promote):
   """Prints the details of the proposed deployment.
@@ -66,8 +61,6 @@ def _DisplayProposedDeployment(project, app_config, version, promote):
   # it is weird to override those values in the yaml parsing code (because
   # it does not carry through to the actual file contents).
   deployed_urls = {}
-  if len(app_config.Modules()) > 1:
-    log.warn(MULTIPLE_MODULES_MESSAGE)
   if app_config.Modules():
     printer = console_io.ListPrinter(
         'You are about to deploy the following modules:')
@@ -200,10 +193,10 @@ class Deploy(base.Command):
     promote = deploy_command_util.GetPromoteFromArgs(args)
 
     project = properties.VALUES.core.project.Get(required=True)
+    version = args.version or util.GenerateVersionId()
     use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool()
 
-    app_config = yaml_parsing.AppConfigSet(
-        args.deployables, project, args.version or util.GenerateVersionId())
+    app_config = yaml_parsing.AppConfigSet(args.deployables)
 
     remote_build = True
     docker_build_property = properties.VALUES.app.docker_build.Get()
@@ -211,10 +204,6 @@ class Deploy(base.Command):
       remote_build = args.docker_build == 'remote'
     elif docker_build_property:
       remote_build = docker_build_property == 'remote'
-
-    # This will either be args.version or a generated version.  Either way, if
-    # any yaml file has a version in it, it must match that version.
-    version = app_config.Version()
 
     gae_client = appengine_client.AppengineClient(args.server)
     api_client = appengine_api_client.GetApiClient(self.Http(timeout=None))
