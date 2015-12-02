@@ -38,6 +38,7 @@ __all__ = ['Batch',
            'inject_results']
 
 import base64
+import collections
 import pickle
 
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
@@ -50,7 +51,6 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_pbs
 from googlecloudsdk.third_party.appengine.datastore import datastore_rpc
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 if datastore_pbs._CLOUD_DATASTORE_ENABLED:
   from googlecloudsdk.third_party.appengine.datastore.datastore_pbs import googledatastore

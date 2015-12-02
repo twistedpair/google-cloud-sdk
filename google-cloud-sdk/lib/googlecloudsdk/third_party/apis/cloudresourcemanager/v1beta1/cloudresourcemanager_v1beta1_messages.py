@@ -344,9 +344,14 @@ class Policy(_messages.Message):
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
       modify-write cycle to perform policy updates in order to avoid race
-      conditions.  If no etag is provided in the call to SetIamPolicy, then
-      the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+      conditions: Etags are returned in the response to GetIamPolicy, and
+      systems are expected to put that etag in the request to SetIamPolicy to
+      ensure that their change will be applied to the same version of the
+      policy.  If no etag is provided in the call to SetIamPolicy, then the
+      existing policy is overwritten blindly.
+    version: Version of the `Policy`. The default version is 0. 0 =
+      resourcemanager_projects only support legacy roles. 1 = supports non-
+      legacy roles 2 = supports AuditConfig
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)

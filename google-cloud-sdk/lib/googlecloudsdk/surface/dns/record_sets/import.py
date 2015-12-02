@@ -58,6 +58,12 @@ class Import(base.Command):
         action='store_true',
         help='Indicates that all existing record-sets should be deleted before'
         ' importing the record-sets in the records-file.')
+    parser.add_argument(
+        '--replace-origin-ns',
+        required=False,
+        action='store_true',
+        help='Indicates that NS records for the origin of a zone should be'
+        ' imported if defined')
 
   @util.HandleHttpError
   def Run(self, args):
@@ -102,7 +108,8 @@ class Import(base.Command):
 
     # Get the change resulting from the imported record-sets.
     change = import_util.ComputeChange(current, imported,
-                                       args.delete_all_existing)
+                                       args.delete_all_existing,
+                                       zone.dnsName, args.replace_origin_ns)
     if not change:
       msg = 'Nothing to do, all the records in [{0}] already exist.'.format(
           args.records_file)

@@ -224,6 +224,7 @@ class LogEntry(_messages.Message):
       expressed as a JSON object.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
+    writerEmailAddress: A string attribute.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -288,6 +289,7 @@ class LogEntry(_messages.Message):
   protoPayload = _messages.MessageField('ProtoPayloadValue', 6)
   structPayload = _messages.MessageField('StructPayloadValue', 7)
   textPayload = _messages.StringField(8)
+  writerEmailAddress = _messages.StringField(9)
 
 
 class LogEntryMetadata(_messages.Message):

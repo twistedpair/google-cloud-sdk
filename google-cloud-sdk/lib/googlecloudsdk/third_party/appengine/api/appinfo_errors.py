@@ -87,8 +87,8 @@ class MissingApiConfig(Error):
   """Raised if an api_endpoint handler is configured but no api_config."""
 
 
-class LibrariesNotSupported(Error):
-  """Raised if libraries are used outside of classic python27."""
+class RuntimeDoesNotSupportLibraries(Error):
+  """Raised when 'libraries' is used in a runtime that does not support it."""
 
 
 class DuplicateLibrary(Error):

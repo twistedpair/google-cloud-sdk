@@ -139,7 +139,29 @@ RDATA_TRANSLATIONS = {
     rdatatype.SPF: _QuotedTextTranslation,
     rdatatype.SRV: _SRVTranslation,
     rdatatype.TXT: _QuotedTextTranslation,
+    rdatatype.NS: _TargetTranslation,
 }
+
+
+def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
+  """Returns whether the given record should be filtered out.
+
+  Args:
+    name: string, The name of the resord set we are considering
+    rdtype: RDataType, type of Record we are considering approving.
+    origin: Name, The origin domain of the zone we are considering
+    replace_origin_ns: Bool, Whether origin NS records should be imported
+
+  Returns:
+    True if the given record should be filtered out, false otherwise.
+  """
+
+  if replace_origin_ns:
+    return False
+  elif name == origin and rdtype == rdatatype.NS:
+    return True
+  else:
+    return False
 
 
 def _RecordSetFromZoneRecord(name, rdset, origin):
@@ -149,7 +171,6 @@ def _RecordSetFromZoneRecord(name, rdset, origin):
     name: Name, Domain name of the zone record.
     rdset: Rdataset, The zone record object.
     origin: Name, The origin domain of the zone file.
-
   Returns:
     The ResourceRecordSet equivalent for the given zone record, or None for
     unsupported record types.
@@ -301,6 +322,7 @@ _RDATA_REPLACEMENTS = {
     rdatatype.SPF: _RDataReplacement,
     rdatatype.SRV: _RDataReplacement,
     rdatatype.TXT: _RDataReplacement,
+    rdatatype.NS: _RDataReplacement,
 }
 
 
@@ -339,7 +361,8 @@ def _NameAndType(record):
   return '{0} {1}'.format(record.name, record.type)
 
 
-def ComputeChange(current, to_be_imported, replace_all=False):
+def ComputeChange(current, to_be_imported, replace_all=False,
+                  origin=None, replace_origin_ns=False):
   """Returns a change for importing the given record-sets.
 
   Args:
@@ -347,6 +370,8 @@ def ComputeChange(current, to_be_imported, replace_all=False):
     to_be_imported: dict, (name, type) keyed dict of record-sets to be imported.
     replace_all: bool, Whether the record-sets to be imported should replace the
       current record-sets.
+    origin: string, the name of the apex zone ex. "foo.com"
+    replace_origin_ns: bool, Whether origin NS records should be imported.
 
   Raises:
     ToolException: If conflicting CNAME records are found.
@@ -372,11 +397,15 @@ def ComputeChange(current, to_be_imported, replace_all=False):
     current_record = current[key]
     record_to_be_imported = to_be_imported[key]
     rdtype = rdatatype.from_text(key[1])
-    replacement = _RDATA_REPLACEMENTS[rdtype](
-        current_record, record_to_be_imported)
-    if replacement:
-      change.deletions.append(current_record)
-      change.additions.append(replacement)
+    if not _FilterOutRecord(current_record.name,
+                            rdtype,
+                            origin,
+                            replace_origin_ns):
+      replacement = _RDATA_REPLACEMENTS[rdtype](
+          current_record, record_to_be_imported)
+      if replacement:
+        change.deletions.append(current_record)
+        change.additions.append(replacement)
 
   for key in keys_to_be_imported.difference(current_keys):
     change.additions.append(to_be_imported[key])
@@ -387,7 +416,10 @@ def ComputeChange(current, to_be_imported, replace_all=False):
     if rdtype is rdatatype.SOA:
       change.deletions.append(current_record)
       change.additions.append(NextSOARecordSet(current_record))
-    elif replace_all and rdtype is not rdatatype.NS:
+    elif replace_all and not _FilterOutRecord(current_record.name,
+                                              rdtype,
+                                              origin,
+                                              replace_origin_ns):
       change.deletions.append(current_record)
 
   # If the only change is an SOA increment, there is nothing to be done.

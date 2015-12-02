@@ -24,8 +24,6 @@ import googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.snapshot_pb import *
 import googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.snapshot_pb
 class Transaction(ProtocolBuffer.ProtocolMessage):
-  has_a_field_that_should_never_be_used_ = 0
-  a_field_that_should_never_be_used_ = ""
   has_handle_ = 0
   handle_ = 0
   has_app_ = 0
@@ -38,19 +36,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
   def __init__(self, contents=None):
     self.composite_index_ = []
     if contents is not None: self.MergeFromString(contents)
-
-  def a_field_that_should_never_be_used(self): return self.a_field_that_should_never_be_used_
-
-  def set_a_field_that_should_never_be_used(self, x):
-    self.has_a_field_that_should_never_be_used_ = 1
-    self.a_field_that_should_never_be_used_ = x
-
-  def clear_a_field_that_should_never_be_used(self):
-    if self.has_a_field_that_should_never_be_used_:
-      self.has_a_field_that_should_never_be_used_ = 0
-      self.a_field_that_should_never_be_used_ = ""
-
-  def has_a_field_that_should_never_be_used(self): return self.has_a_field_that_should_never_be_used_
 
   def handle(self): return self.handle_
 
@@ -123,7 +108,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def MergeFrom(self, x):
     assert x is not self
-    if (x.has_a_field_that_should_never_be_used()): self.set_a_field_that_should_never_be_used(x.a_field_that_should_never_be_used())
     if (x.has_handle()): self.set_handle(x.handle())
     if (x.has_app()): self.set_app(x.app())
     if (x.has_database()): self.set_database(x.database())
@@ -132,8 +116,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def Equals(self, x):
     if x is self: return 1
-    if self.has_a_field_that_should_never_be_used_ != x.has_a_field_that_should_never_be_used_: return 0
-    if self.has_a_field_that_should_never_be_used_ and self.a_field_that_should_never_be_used_ != x.a_field_that_should_never_be_used_: return 0
     if self.has_handle_ != x.has_handle_: return 0
     if self.has_handle_ and self.handle_ != x.handle_: return 0
     if self.has_app_ != x.has_app_: return 0
@@ -163,7 +145,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def ByteSize(self):
     n = 0
-    if (self.has_a_field_that_should_never_be_used_): n += 1 + self.lengthString(len(self.a_field_that_should_never_be_used_))
     n += self.lengthString(len(self.app_))
     if (self.has_database_): n += 1 + self.lengthString(len(self.database_))
     if (self.has_mark_changes_): n += 2
@@ -173,7 +154,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def ByteSizePartial(self):
     n = 0
-    if (self.has_a_field_that_should_never_be_used_): n += 1 + self.lengthString(len(self.a_field_that_should_never_be_used_))
     if (self.has_handle_):
       n += 9
     if (self.has_app_):
@@ -186,7 +166,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     return n
 
   def Clear(self):
-    self.clear_a_field_that_should_never_be_used()
     self.clear_handle()
     self.clear_app()
     self.clear_database()
@@ -201,9 +180,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     if (self.has_mark_changes_):
       out.putVarInt32(24)
       out.putBoolean(self.mark_changes_)
-    if (self.has_a_field_that_should_never_be_used_):
-      out.putVarInt32(34)
-      out.putPrefixedString(self.a_field_that_should_never_be_used_)
     for i in xrange(len(self.composite_index_)):
       out.putVarInt32(42)
       out.putVarInt32(self.composite_index_[i].ByteSize())
@@ -222,9 +198,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     if (self.has_mark_changes_):
       out.putVarInt32(24)
       out.putBoolean(self.mark_changes_)
-    if (self.has_a_field_that_should_never_be_used_):
-      out.putVarInt32(34)
-      out.putPrefixedString(self.a_field_that_should_never_be_used_)
     for i in xrange(len(self.composite_index_)):
       out.putVarInt32(42)
       out.putVarInt32(self.composite_index_[i].ByteSizePartial())
@@ -245,9 +218,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
       if tt == 24:
         self.set_mark_changes(d.getBoolean())
         continue
-      if tt == 34:
-        self.set_a_field_that_should_never_be_used(d.getPrefixedString())
-        continue
       if tt == 42:
         length = d.getVarInt32()
         tmp = ProtocolBuffer.Decoder(d.buffer(), d.pos(), d.pos() + length)
@@ -265,7 +235,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 
   def __str__(self, prefix="", printElemNumber=0):
     res=""
-    if self.has_a_field_that_should_never_be_used_: res+=prefix+("a_field_that_should_never_be_used: %s\n" % self.DebugFormatString(self.a_field_that_should_never_be_used_))
     if self.has_handle_: res+=prefix+("handle: %s\n" % self.DebugFormatFixed64(self.handle_))
     if self.has_app_: res+=prefix+("app: %s\n" % self.DebugFormatString(self.app_))
     if self.has_database_: res+=prefix+("database: %s\n" % self.DebugFormatString(self.database_))
@@ -284,7 +253,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
   def _BuildTagLookupTable(sparse, maxtag, default=None):
     return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
 
-  ka_field_that_should_never_be_used = 4
   khandle = 1
   kapp = 2
   kdatabase = 6
@@ -296,7 +264,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     1: "handle",
     2: "app",
     3: "mark_changes",
-    4: "a_field_that_should_never_be_used",
     5: "composite_index",
     6: "database",
   }, 6)
@@ -306,7 +273,6 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     1: ProtocolBuffer.Encoder.DOUBLE,
     2: ProtocolBuffer.Encoder.STRING,
     3: ProtocolBuffer.Encoder.NUMERIC,
-    4: ProtocolBuffer.Encoder.STRING,
     5: ProtocolBuffer.Encoder.STRING,
     6: ProtocolBuffer.Encoder.STRING,
   }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
@@ -9066,7 +9032,143 @@ class CommitResponse(ProtocolBuffer.ProtocolMessage):
   _STYLE_CONTENT_TYPE = \
    """"""
   _PROTO_DESCRIPTOR_NAME = 'apphosting_datastore_v3.CommitResponse'
+class GetIndicesRequest(ProtocolBuffer.ProtocolMessage):
+  has_app_id_ = 0
+  app_id_ = ""
+  has_database_id_ = 0
+  database_id_ = ""
+
+  def __init__(self, contents=None):
+    if contents is not None: self.MergeFromString(contents)
+
+  def app_id(self): return self.app_id_
+
+  def set_app_id(self, x):
+    self.has_app_id_ = 1
+    self.app_id_ = x
+
+  def clear_app_id(self):
+    if self.has_app_id_:
+      self.has_app_id_ = 0
+      self.app_id_ = ""
+
+  def has_app_id(self): return self.has_app_id_
+
+  def database_id(self): return self.database_id_
+
+  def set_database_id(self, x):
+    self.has_database_id_ = 1
+    self.database_id_ = x
+
+  def clear_database_id(self):
+    if self.has_database_id_:
+      self.has_database_id_ = 0
+      self.database_id_ = ""
+
+  def has_database_id(self): return self.has_database_id_
+
+
+  def MergeFrom(self, x):
+    assert x is not self
+    if (x.has_app_id()): self.set_app_id(x.app_id())
+    if (x.has_database_id()): self.set_database_id(x.database_id())
+
+  def Equals(self, x):
+    if x is self: return 1
+    if self.has_app_id_ != x.has_app_id_: return 0
+    if self.has_app_id_ and self.app_id_ != x.app_id_: return 0
+    if self.has_database_id_ != x.has_database_id_: return 0
+    if self.has_database_id_ and self.database_id_ != x.database_id_: return 0
+    return 1
+
+  def IsInitialized(self, debug_strs=None):
+    initialized = 1
+    if (not self.has_app_id_):
+      initialized = 0
+      if debug_strs is not None:
+        debug_strs.append('Required field: app_id not set.')
+    return initialized
+
+  def ByteSize(self):
+    n = 0
+    n += self.lengthString(len(self.app_id_))
+    if (self.has_database_id_): n += 1 + self.lengthString(len(self.database_id_))
+    return n + 1
+
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_app_id_):
+      n += 1
+      n += self.lengthString(len(self.app_id_))
+    if (self.has_database_id_): n += 1 + self.lengthString(len(self.database_id_))
+    return n
+
+  def Clear(self):
+    self.clear_app_id()
+    self.clear_database_id()
+
+  def OutputUnchecked(self, out):
+    out.putVarInt32(10)
+    out.putPrefixedString(self.app_id_)
+    if (self.has_database_id_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.database_id_)
+
+  def OutputPartial(self, out):
+    if (self.has_app_id_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.app_id_)
+    if (self.has_database_id_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.database_id_)
+
+  def TryMerge(self, d):
+    while d.avail() > 0:
+      tt = d.getVarInt32()
+      if tt == 10:
+        self.set_app_id(d.getPrefixedString())
+        continue
+      if tt == 18:
+        self.set_database_id(d.getPrefixedString())
+        continue
+      # tag 0 is special: it's used to indicate an error.
+      # so if we see it we raise an exception.
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      d.skipData(tt)
+
+
+  def __str__(self, prefix="", printElemNumber=0):
+    res=""
+    if self.has_app_id_: res+=prefix+("app_id: %s\n" % self.DebugFormatString(self.app_id_))
+    if self.has_database_id_: res+=prefix+("database_id: %s\n" % self.DebugFormatString(self.database_id_))
+    return res
+
+
+  def _BuildTagLookupTable(sparse, maxtag, default=None):
+    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+
+  kapp_id = 1
+  kdatabase_id = 2
+
+  _TEXT = _BuildTagLookupTable({
+    0: "ErrorCode",
+    1: "app_id",
+    2: "database_id",
+  }, 2)
+
+  _TYPES = _BuildTagLookupTable({
+    0: ProtocolBuffer.Encoder.NUMERIC,
+    1: ProtocolBuffer.Encoder.STRING,
+    2: ProtocolBuffer.Encoder.STRING,
+  }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
+
+  # stylesheet for XML output
+  _STYLE = \
+   """"""
+  _STYLE_CONTENT_TYPE = \
+   """"""
+  _PROTO_DESCRIPTOR_NAME = 'apphosting_datastore_v3.GetIndicesRequest'
 if _extension_runtime:
   pass
 
-__all__ = ['Transaction','Query','Query_Filter','Query_Order','RegionPoint','CircleRegion','RectangleRegion','GeoRegion','CompiledQuery','CompiledQuery_PrimaryScan','CompiledQuery_MergeJoinScan','CompiledQuery_EntityFilter','CompiledCursor','CompiledCursor_PositionIndexValue','CompiledCursor_Position','Cursor','Error','Cost','Cost_CommitCost','GetRequest','GetResponse','GetResponse_Entity','PutRequest','PutResponse','TouchRequest','TouchResponse','DeleteRequest','DeleteResponse','NextRequest','QueryResult','AllocateIdsRequest','AllocateIdsResponse','CompositeIndices','AddActionsRequest','AddActionsResponse','BeginTransactionRequest','CommitResponse','CommitResponse_Version']
+__all__ = ['Transaction','Query','Query_Filter','Query_Order','RegionPoint','CircleRegion','RectangleRegion','GeoRegion','CompiledQuery','CompiledQuery_PrimaryScan','CompiledQuery_MergeJoinScan','CompiledQuery_EntityFilter','CompiledCursor','CompiledCursor_PositionIndexValue','CompiledCursor_Position','Cursor','Error','Cost','Cost_CommitCost','GetRequest','GetResponse','GetResponse_Entity','PutRequest','PutResponse','TouchRequest','TouchResponse','DeleteRequest','DeleteResponse','NextRequest','QueryResult','AllocateIdsRequest','AllocateIdsResponse','CompositeIndices','AddActionsRequest','AddActionsResponse','BeginTransactionRequest','CommitResponse','CommitResponse_Version','GetIndicesRequest']

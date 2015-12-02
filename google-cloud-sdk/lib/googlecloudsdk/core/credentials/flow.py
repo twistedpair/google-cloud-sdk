@@ -4,6 +4,8 @@
 
 """
 
+from httplib import ResponseNotReady
+
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import pkg_resources
 
@@ -156,5 +158,12 @@ def Run(flow, launch_browser=True, http=None,
     credential = flow.step2_exchange(code, http=http)
   except client.FlowExchangeError as e:
     raise AuthRequestFailedException(e)
+  except ResponseNotReady:
+    raise AuthRequestFailedException(
+        'Could not reach the login server. A potential cause of this could be '
+        'because you are behind a proxy. Please set the environment variables '
+        'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
+        '"protocol://address:port" (without quotes) and try again.\n'
+        'Example: HTTPS_PROXY=https://192.168.0.1:8080')
 
   return credential

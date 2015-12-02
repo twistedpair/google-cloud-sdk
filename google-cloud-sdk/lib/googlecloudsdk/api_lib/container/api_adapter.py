@@ -262,7 +262,8 @@ class CreateClusterOptions(object):
                network=None,
                cluster_ipv4_cidr=None,
                enable_cloud_logging=None,
-               enable_cloud_monitoring=None):
+               enable_cloud_monitoring=None,
+               subnetwork=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -275,6 +276,7 @@ class CreateClusterOptions(object):
     self.cluster_ipv4_cidr = cluster_ipv4_cidr
     self.enable_cloud_logging = enable_cloud_logging
     self.enable_cloud_monitoring = enable_cloud_monitoring
+    self.subnetwork = subnetwork
 
 
 class UpdateClusterOptions(object):
@@ -337,6 +339,8 @@ class V1Adapter(APIAdapter):
       cluster.loggingService = 'none'
     if not options.enable_cloud_monitoring:
       cluster.monitoringService = 'none'
+    if options.subnetwork:
+      cluster.subnetwork = options.subnetwork
 
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 

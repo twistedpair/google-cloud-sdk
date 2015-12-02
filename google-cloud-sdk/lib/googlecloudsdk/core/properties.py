@@ -451,7 +451,8 @@ class _SectionApp(_Section):
         hidden=True)
     self.use_appengine_api = self._Add(
         'use_appengine_api',
-        callbacks=[lambda: True])
+        callbacks=[lambda: True],
+        hidden=True)
     self.suppress_change_warning = self._Add(
         'suppress_change_warning',
         hidden=True)

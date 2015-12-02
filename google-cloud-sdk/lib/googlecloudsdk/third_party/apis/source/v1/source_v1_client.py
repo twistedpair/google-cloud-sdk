@@ -59,7 +59,7 @@ class SourceV1(base_api.BaseApiClient):
               method_id=u'source.projects.repos.aliases.files.get',
               ordered_params=[u'projectId', u'repoName', u'kind', u'name', u'path'],
               path_params=[u'kind', u'name', u'path', u'projectId', u'repoName'],
-              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'revisionId', u'startPosition', u'uid'],
+              query_params=[u'aliasName', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'revisionId', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposAliasesFilesGetRequest',
@@ -146,7 +146,7 @@ file or directory information about that path.
               method_id=u'source.projects.repos.aliases.listFiles',
               ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
               path_params=[u'kind', u'name', u'projectId', u'repoName'],
-              query_params=[u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'revisionId', u'uid'],
+              query_params=[u'aliasName', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'revisionId', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}:listFiles',
               request_field='',
               request_type_name=u'SourceProjectsReposAliasesListFilesRequest',
@@ -312,7 +312,7 @@ revision referred to by the given alias if the workspace does not exist.
               method_id=u'source.projects.repos.revisions.files.get',
               ordered_params=[u'projectId', u'repoName', u'revisionId', u'path'],
               path_params=[u'path', u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
+              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposRevisionsFilesGetRequest',
@@ -387,7 +387,7 @@ file or directory information about that path.
               method_id=u'source.projects.repos.revisions.listFiles',
               ordered_params=[u'projectId', u'repoName', u'revisionId'],
               path_params=[u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'uid'],
+              query_params=[u'aliasContext_kind', u'aliasContext_name', u'aliasName', u'cloudWorkspace_snapshotId', u'cloudWorkspace_workspaceId_name', u'cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'cloudWorkspace_workspaceId_repoId_uid', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}:listFiles',
               request_field='',
               request_type_name=u'SourceProjectsReposRevisionsListFilesRequest',
@@ -469,7 +469,7 @@ The result is ordered by path. Pagination is supported.
               method_id=u'source.projects.repos.workspaces.files.get',
               ordered_params=[u'projectId', u'repoName', u'name', u'path'],
               path_params=[u'name', u'path', u'projectId', u'repoName'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'snapshotId', u'startPosition', u'uid'],
+              query_params=[u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'snapshotId', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesFilesGetRequest',
@@ -508,7 +508,7 @@ file or directory information about that path.
               method_id=u'source.projects.repos.workspaces.snapshots.files.get',
               ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
               path_params=[u'name', u'path', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'startPosition', u'uid'],
+              query_params=[u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'startPosition', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{+path}',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',
@@ -571,7 +571,7 @@ file or directory information about that path.
               method_id=u'source.projects.repos.workspaces.snapshots.listFiles',
               ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
               path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'uid'],
+              query_params=[u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}:listFiles',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListFilesRequest',
@@ -698,7 +698,7 @@ The result is ordered by path. Pagination is supported.
               method_id=u'source.projects.repos.workspaces.listFiles',
               ordered_params=[u'projectId', u'repoName', u'name'],
               path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[u'citc_branchName', u'citc_isBaseline', u'citc_snapshotVersion', u'citc_workspaceId', u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'piper_branchName', u'piper_changeNumber', u'piper_disableComponents', u'piper_versionMap', u'snapshotId', u'uid'],
+              query_params=[u'cloudRepo_aliasContext_kind', u'cloudRepo_aliasContext_name', u'cloudRepo_aliasName', u'cloudRepo_repoId_projectRepoId_projectId', u'cloudRepo_repoId_projectRepoId_repoName', u'cloudRepo_repoId_uid', u'cloudRepo_revisionId', u'gerrit_aliasContext_kind', u'gerrit_aliasContext_name', u'gerrit_aliasName', u'gerrit_gerritProject', u'gerrit_hostUri', u'gerrit_revisionId', u'git_revisionId', u'git_url', u'pageSize', u'pageToken', u'snapshotId', u'uid'],
               relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:listFiles',
               request_field='',
               request_type_name=u'SourceProjectsReposWorkspacesListFilesRequest',
@@ -923,18 +923,6 @@ workspace is simultaneously modified by another client.
     def __init__(self, client):
       super(SourceV1.ProjectsReposService, self).__init__(client)
       self._method_configs = {
-          'Connect': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.connect',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}:connect',
-              request_field=u'connectRepoRequest',
-              request_type_name=u'SourceProjectsReposConnectRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
           'Create': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'source.projects.repos.create',
@@ -995,54 +983,10 @@ workspace is simultaneously modified by another client.
               response_type_name=u'Workspace',
               supports_download=False,
           ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'source.projects.repos.update',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoSyncConfig_deployKeyId', u'repoSyncConfig_externalRepoEncryptedCredentials', u'repoSyncConfig_externalRepoEncryptedSshKey', u'repoSyncConfig_externalRepoUrl', u'repoSyncConfig_status', u'repoSyncConfig_webhookId', u'uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposUpdateRequest',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
           }
-
-    def Connect(self, request, global_params=None):
-      """Connects a Cloud Repository to an external repo, returning an Operation.
-that can be queried for progress. The Operation can be queried via the
-google.longrunning.Operations service using the server-generated resource
-name returned in its name field. The metadata field of the Operation will
-contain a floating-point number (google.protobuf.Double) indicating the
-progess of the RepoSync, with 0 meaning "no progress" and 1 meaning
-"complete". Completion can also be determined by consulting the done field
-of the Operation. On completion, the result.error field of the Operation
-will be empty on success, and the result.response field will be populated
-with a Repo.
-
-If ConnectRepo is called for a repo and there is a connect Operation
-already in progress for that repo, the call fails with AlreadyExists. If a
-previous connect Operation completed, either successfully or with an
-error, then ConnectRepo will proceed as if there had been no previous
-operation.
-
-Despite the last sentence, it is the responsibility of clients to call
-Operations.Delete when they are no longer interested in the result of an
-Operation.
-
-      Args:
-        request: (SourceProjectsReposConnectRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Connect')
-      return self._RunMethod(
-          config, request, global_params=global_params)
 
     def Create(self, request, global_params=None):
       """Creates a repo in the given project. The provided repo message should have.
@@ -1125,21 +1069,6 @@ workspace is simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def Update(self, request, global_params=None):
-      """Updates an existing repo. The only things you can change about a repo are.
-its repo_sync_config (and then only to add one that is not present) and its
-last-updated time.
-
-      Args:
-        request: (SourceProjectsReposUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Repo) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -1148,36 +1077,10 @@ last-updated time.
     def __init__(self, client):
       super(SourceV1.ProjectsService, self).__init__(client)
       self._method_configs = {
-          'CloneRepo': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.cloneRepo',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'external_credentials', u'external_url', u'external_vcs', u'repoId_projectRepoId_projectId', u'repoId_projectRepoId_repoName', u'repoId_uid', u'repoName'],
-              relative_path=u'v1/projects/{projectId}:cloneRepo',
-              request_field='',
-              request_type_name=u'SourceProjectsCloneRepoRequest',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
           }
-
-    def CloneRepo(self, request, global_params=None):
-      """Create a new repo and copy the contents of another repo into it.
-No association is kept between the two repos.
-
-      Args:
-        request: (SourceProjectsCloneRepoRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Repo) The response message.
-      """
-      config = self.GetMethodConfig('CloneRepo')
-      return self._RunMethod(
-          config, request, global_params=global_params)
 
   class V1Service(base_api.BaseApiService):
     """Service class for the v1 resource."""

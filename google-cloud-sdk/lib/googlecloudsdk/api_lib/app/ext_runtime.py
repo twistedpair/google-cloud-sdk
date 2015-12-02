@@ -269,15 +269,15 @@ class ExternalizedRuntime(object):
     else:
       log.error('No usable plugin type found for %s' % section_name)
 
-  def Detect(self, params, path):
+  def Detect(self, path, params):
     """Determine if 'path' contains an instance of the runtime type.
 
     Checks to see if the 'path' directory looks like an instance of the
     runtime type.
 
     Args:
-      params: (fingerprinting.Params) Parameters used by the framework.
       path: (str) The path name.
+      params: (fingerprinting.Params) Parameters used by the framework.
 
     Returns:
       (fingerprinting.Configurator) An object containing parameters inferred
@@ -294,6 +294,11 @@ class ExternalizedRuntime(object):
 
     else:
       return None
+
+  # The legacy runtimes use "Fingerprint" for this function, the externalized
+  # runtime code uses "Detect" to mirror the name in runtime.yaml, so alias it.
+  # b/25117700
+  Fingerprint = Detect
 
   def GenerateConfigs(self, configurator):
     """Do config generation on the runtime.
@@ -344,4 +349,3 @@ class ExternalizedRuntime(object):
     else:
       raise InvalidRuntimeDefinition('Runtime definition contains no '
                                      'generate_configs section.')
-

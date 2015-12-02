@@ -65,7 +65,16 @@ class ClouduseraccountsGlobalAccountsOperationsListRequest(_messages.Message):
       (string, number, boolean). For string fields, the literal value is
       interpreted as a regular expression using RE2 syntax. The literal value
       must match the entire field.  For example, filter=name ne example-
-      instance.
+      instance.  Compute Engine Beta API Only: If you use filtering in the
+      Beta API, you can also filter on nested fields. For example, you could
+      filter on instances whose scheduling.automaticRestart eq true. In
+      particular, use filtering on nested fields to take advantage of instance
+      labels to organize and filter results based on label values.  The Beta
+      API also supports filtering on multiple expressions by providing each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions meaning that resources must
+      match all expressions to pass the filters.
     maxResults: Maximum count of results to be returned.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
@@ -153,7 +162,16 @@ class ClouduseraccountsGroupsListRequest(_messages.Message):
       (string, number, boolean). For string fields, the literal value is
       interpreted as a regular expression using RE2 syntax. The literal value
       must match the entire field.  For example, filter=name ne example-
-      instance.
+      instance.  Compute Engine Beta API Only: If you use filtering in the
+      Beta API, you can also filter on nested fields. For example, you could
+      filter on instances whose scheduling.automaticRestart eq true. In
+      particular, use filtering on nested fields to take advantage of instance
+      labels to organize and filter results based on label values.  The Beta
+      API also supports filtering on multiple expressions by providing each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions meaning that resources must
+      match all expressions to pass the filters.
     maxResults: Maximum count of results to be returned.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
@@ -225,7 +243,16 @@ class ClouduseraccountsLinuxGetLinuxAccountViewsRequest(_messages.Message):
       (string, number, boolean). For string fields, the literal value is
       interpreted as a regular expression using RE2 syntax. The literal value
       must match the entire field.  For example, filter=name ne example-
-      instance.
+      instance.  Compute Engine Beta API Only: If you use filtering in the
+      Beta API, you can also filter on nested fields. For example, you could
+      filter on instances whose scheduling.automaticRestart eq true. In
+      particular, use filtering on nested fields to take advantage of instance
+      labels to organize and filter results based on label values.  The Beta
+      API also supports filtering on multiple expressions by providing each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions meaning that resources must
+      match all expressions to pass the filters.
     instance: The fully-qualified URL of the virtual machine requesting the
       views.
     maxResults: Maximum count of results to be returned.
@@ -317,7 +344,16 @@ class ClouduseraccountsUsersListRequest(_messages.Message):
       (string, number, boolean). For string fields, the literal value is
       interpreted as a regular expression using RE2 syntax. The literal value
       must match the entire field.  For example, filter=name ne example-
-      instance.
+      instance.  Compute Engine Beta API Only: If you use filtering in the
+      Beta API, you can also filter on nested fields. For example, you could
+      filter on instances whose scheduling.automaticRestart eq true. In
+      particular, use filtering on nested fields to take advantage of instance
+      labels to organize and filter results based on label values.  The Beta
+      API also supports filtering on multiple expressions by providing each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions meaning that resources must
+      match all expressions to pass the filters.
     maxResults: Maximum count of results to be returned.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
@@ -502,8 +538,8 @@ class Operation(_messages.Message):
   """An Operation resource, used to manage asynchronous API requests.
 
   Enums:
-    StatusValueValuesEnum: [Output Only] Status of the operation. Can be one
-      of the following: PENDING, RUNNING, or DONE.
+    StatusValueValuesEnum: [Output Only] The status of the operation, which
+      can be one of the following: PENDING, RUNNING, or DONE.
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the
@@ -516,23 +552,25 @@ class Operation(_messages.Message):
       resources in the project.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    endTime: [Output Only] The time that this operation was completed. This is
-      in RFC3339 text format.
+    description: [Output Only] An optional textual description of the
+      operation; set when the operation is created.
+    endTime: [Output Only] The time that this operation was completed. This
+      value is in RFC3339 text format.
     error: [Output Only] If errors are generated during processing of the
       operation, this field will be populated.
     httpErrorMessage: [Output Only] If the operation fails, this field
       contains the HTTP error message that was returned, such as NOT FOUND.
     httpErrorStatusCode: [Output Only] If the operation fails, this field
       contains the HTTP error message that was returned, such as 404.
-    id: [Output Only] Unique identifier for the resource; defined by the
-      server.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
     insertTime: [Output Only] The time that this operation was requested. This
-      is in RFC3339 text format.
+      value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
       Operation resources.
     name: [Output Only] Name of the resource.
-    operationType: [Output Only] Type of the operation, such as insert,
-      compute.instanceGroups.update, or compute.instanceGroups.delete.
+    operationType: [Output Only] Type of the operation, which can be insert,
+      update, or delete.
     progress: [Output Only] An optional progress indicator that ranges from 0
       to 100. There is no requirement that this be linear or support any
       granularity of operations. This should not be used to guess at when the
@@ -542,14 +580,15 @@ class Operation(_messages.Message):
       applicable for regional resources.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
-      server. This is in RFC3339 text format.
-    status: [Output Only] Status of the operation. Can be one of the
+      server. This value is in RFC3339 text format.
+    status: [Output Only] The status of the operation, which can be one of the
       following: PENDING, RUNNING, or DONE.
     statusMessage: [Output Only] An optional textual description of the
       current status of the operation.
-    targetId: [Output Only] Unique target ID which identifies a particular
-      incarnation of the target.
-    targetLink: [Output Only] URL of the resource the operation is mutating.
+    targetId: [Output Only] The unique target ID, which identifies a specific
+      incarnation of the target resource.
+    targetLink: [Output Only] The URL of the resource that the operation is
+      modifying.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during
@@ -558,8 +597,8 @@ class Operation(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output Only] Status of the operation. Can be one of the following:
-    PENDING, RUNNING, or DONE.
+    """[Output Only] The status of the operation, which can be one of the
+    following: PENDING, RUNNING, or DONE.
 
     Values:
       DONE: <no description>
@@ -665,34 +704,35 @@ class Operation(_messages.Message):
 
   clientOperationId = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('ErrorValue', 4)
-  httpErrorMessage = _messages.StringField(5)
-  httpErrorStatusCode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'clouduseraccounts#operation')
-  name = _messages.StringField(10)
-  operationType = _messages.StringField(11)
-  progress = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  startTime = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  targetId = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(19)
-  user = _messages.StringField(20)
-  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
-  zone = _messages.StringField(22)
+  description = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('ErrorValue', 5)
+  httpErrorMessage = _messages.StringField(6)
+  httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'clouduseraccounts#operation')
+  name = _messages.StringField(11)
+  operationType = _messages.StringField(12)
+  progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  startTime = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  targetId = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(20)
+  user = _messages.StringField(21)
+  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
+  zone = _messages.StringField(23)
 
 
 class OperationList(_messages.Message):
   """Contains a list of Operation resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource; defined by the
-      server.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
     items: [Output Only] The Operation resources.
     kind: [Output Only] Type of resource. Always compute#operations for
       Operations resource.

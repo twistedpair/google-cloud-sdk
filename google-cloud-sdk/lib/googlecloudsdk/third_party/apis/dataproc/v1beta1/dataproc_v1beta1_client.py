@@ -504,8 +504,8 @@ call.
 
     def Diagnose(self, request, global_params=None):
       """Gets cluster diagnostic information.
-Once the operation completes, the Operation.response field
-contains DiagnoseClusterOutputLocation.
+After the operation completes, the Operation.response field
+contains `DiagnoseClusterOutputLocation`.
 
       Args:
         request: (DataprocProjectsClustersDiagnoseRequest) input message

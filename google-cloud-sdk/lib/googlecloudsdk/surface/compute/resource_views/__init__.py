@@ -12,7 +12,11 @@ from googlecloudsdk.core.credentials import store
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
 class ResourceViews(base.Group):
-  """Manage Cloud Resource Views."""
+  """Manage Cloud Resource Views.
+
+  This command group will be soon removed. Please consider using
+  `gcloud compute instance-groups unmanaged` commands instead.
+  """
 
   @staticmethod
   def Args(parser):
@@ -49,6 +53,9 @@ class ResourceViews(base.Group):
     Returns:
       The updated context.
     """
+    log.warn('This command will be soon removed.')
+    log.warn('Please consider using '
+             '`gcloud compute instance-groups unmanaged` commands instead.')
     # pylint:disable=g-import-not-at-top, Delaying import for performance.
     import apiclient.discovery as discovery
 

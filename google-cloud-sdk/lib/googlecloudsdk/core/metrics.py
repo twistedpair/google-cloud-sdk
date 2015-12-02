@@ -49,22 +49,22 @@ class _GAEvent(object):
     self.value = value
 
 
-def _GetTimeMillis(time_secs):
-  return int(round(time_secs * 1000))
+def _GetTimeMillis(time_secs=None):
+  return int(round((time_secs or time.time()) * 1000))
 
 
 class _TimedEvent(object):
 
   def __init__(self, name):
     self.name = name
-    self.time_millis = _GetTimeMillis(time.time())
+    self.time_millis = _GetTimeMillis()
 
 
 class _CommandTimer(object):
   """A class for timing the execution of a command."""
 
-  def __init__(self, start_time):
-    self.__start = _GetTimeMillis(start_time)
+  def __init__(self, start_time_ms):
+    self.__start = start_time_ms
     self.__events = []
     self.__category = 'unknown'
     self.__action = 'unknown'
@@ -202,7 +202,7 @@ class _MetricsCollector(object):
                         ('c', cid)]
     self._csi_params.extend([(param[1], param[2]) for param in common_params])
 
-    self.StartTimer(time.time())
+    self.StartTimer(_GetTimeMillis())
     self._metrics = []
 
     # Tracking the level so we can only report metrics for the top level action
@@ -239,8 +239,8 @@ class _MetricsCollector(object):
   def DecrementActionLevel(self):
     self._action_level -= 1
 
-  def StartTimer(self, start_time):
-    self._timer = _CommandTimer(start_time)
+  def StartTimer(self, start_time_ms):
+    self._timer = _CommandTimer(start_time_ms)
 
   def RecordTimedEvent(self, name, record_only_on_top_level=False):
     """Records the time when a particular event happened.
@@ -455,7 +455,7 @@ def Started(start_time):
   """Record the time when the command was started."""
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.StartTimer(start_time)
+    collector.StartTimer(_GetTimeMillis(start_time))
 
 
 @CaptureAndLogException

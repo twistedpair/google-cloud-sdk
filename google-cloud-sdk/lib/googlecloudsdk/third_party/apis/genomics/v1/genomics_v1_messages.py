@@ -40,7 +40,9 @@ class Binding(_messages.Message):
 
 class CallSet(_messages.Message):
   """A call set is a collection of variant calls, typically for one sample. It
-  belongs to a variant set.
+  belongs to a variant set.  For more genomics resource definitions, see
+  [Fundamentals of Google Genomics](https://cloud.google.com/genomics
+  /fundamentals-of-google-genomics)
 
   Messages:
     InfoValue: A map of additional call set information. This must be of the
@@ -188,7 +190,9 @@ class CoverageBucket(_messages.Message):
 
 
 class Dataset(_messages.Message):
-  """A Dataset is a collection of genomic data.
+  """A Dataset is a collection of genomic data.  For more genomics resource
+  definitions, see [Fundamentals of Google
+  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
   Fields:
     createTime: The time this dataset was created, in seconds from the epoch.
@@ -702,9 +706,9 @@ class GenomicsVariantsetsPatchRequest(_messages.Message):
   """A GenomicsVariantsetsPatchRequest object.
 
   Fields:
-    updateMask: An optional mask specifying which fields to update. At this
-      time, the only mutable field is metadata. The only acceptable value is
-      "metadata". If unspecified, all mutable fields will be updated.
+    updateMask: An optional mask specifying which fields to update. Supported
+      fields:  * metadata.  Leaving `updateMask` unset is equivalent to
+      specifying all mutable fields.
     variantSet: A VariantSet resource to be passed as the request body.
     variantSetId: The ID of the variant to be updated (must already exist).
   """
@@ -1095,9 +1099,14 @@ class Policy(_messages.Message):
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
       modify-write cycle to perform policy updates in order to avoid race
-      conditions.  If no etag is provided in the call to SetIamPolicy, then
-      the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+      conditions: Etags are returned in the response to GetIamPolicy, and
+      systems are expected to put that etag in the request to SetIamPolicy to
+      ensure that their change will be applied to the same version of the
+      policy.  If no etag is provided in the call to SetIamPolicy, then the
+      existing policy is overwritten blindly.
+    version: Version of the `Policy`. The default version is 0. 0 =
+      resourcemanager_projects only support legacy roles. 1 = supports non-
+      legacy roles 2 = supports AuditConfig
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -1165,13 +1174,15 @@ class Read(_messages.Message):
   reference sequence, in addition to metadata about the fragment (the molecule
   of DNA sequenced) and the read (the bases which were read by the sequencer).
   A read is equivalent to a line in a SAM file. A read belongs to exactly one
-  read group and exactly one read group set.  ### Generating a reference-
-  aligned sequence string  When interacting with mapped reads, it's often
-  useful to produce a string representing the local alignment of the read to
-  reference. The following pseudocode demonstrates one way of doing this:
-  out = ""     offset = 0     for c in read.alignment.cigar {       switch
-  c.operation {       case "ALIGNMENT_MATCH", "SEQUENCE_MATCH",
-  "SEQUENCE_MISMATCH":         out +=
+  read group and exactly one read group set.  For more genomics resource
+  definitions, see [Fundamentals of Google
+  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+  ### Generating a reference-aligned sequence string  When interacting with
+  mapped reads, it's often useful to produce a string representing the local
+  alignment of the read to reference. The following pseudocode demonstrates
+  one way of doing this:      out = ""     offset = 0     for c in
+  read.alignment.cigar {       switch c.operation {       case
+  "ALIGNMENT_MATCH", "SEQUENCE_MATCH", "SEQUENCE_MISMATCH":         out +=
   read.alignedSequence[offset:offset+c.operationLength]         offset +=
   c.operationLength         break       case "CLIP_SOFT", "INSERT":
   offset += c.operationLength         break       case "PAD":         out +=
@@ -1374,7 +1385,9 @@ class ReadGroupSet(_messages.Message):
   collections of reads produced by a sequencer. A read group set typically
   models reads corresponding to one sample, sequenced one way, and aligned one
   way.  * A read group set belongs to one dataset. * A read group belongs to
-  one read group set. * A read belongs to one read group.
+  one read group set. * A read belongs to one read group.  For more genomics
+  resource definitions, see [Fundamentals of Google
+  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
   Messages:
     InfoValue: A map of additional read group set information.
@@ -1431,7 +1444,9 @@ class Reference(_messages.Message):
   """A reference is a canonical assembled DNA sequence, intended to act as a
   reference coordinate space for other genomic annotations. A single reference
   might represent the human chromosome 1 or mitochandrial DNA, for instance. A
-  reference belongs to one or more reference sets.
+  reference belongs to one or more reference sets.  For more genomics resource
+  definitions, see [Fundamentals of Google
+  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
   Fields:
     id: The server-generated reference ID, unique across all references.
@@ -1477,7 +1492,9 @@ class ReferenceSet(_messages.Message):
   reference assembly for a species, such as `GRCh38` which is representative
   of the human genome. A reference set defines a common coordinate space for
   comparing reference-aligned experimental data. A reference set contains 1 or
-  more references.
+  more references.  For more genomics resource definitions, see [Fundamentals
+  of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-
+  google-genomics)
 
   Fields:
     assemblyId: Public id of this reference set, such as `GRCh37`.
@@ -1997,11 +2014,13 @@ class UndeleteDatasetRequest(_messages.Message):
 class Variant(_messages.Message):
   """A variant represents a change in DNA sequence relative to a reference
   sequence. For example, a variant could represent a SNP or an insertion.
-  Variants belong to a variant set. Each of the calls on a variant represent a
-  determination of genotype with respect to that variant. For example, a call
-  might assign probability of 0.32 to the occurrence of a SNP named rs1234 in
-  a sample named NA12345. A call belongs to a call set, which contains related
-  calls typically from one sample.
+  Variants belong to a variant set.  For more genomics resource definitions,
+  see [Fundamentals of Google Genomics](https://cloud.google.com/genomics
+  /fundamentals-of-google-genomics)  Each of the calls on a variant represent
+  a determination of genotype with respect to that variant. For example, a
+  call might assign probability of 0.32 to the occurrence of a SNP named
+  rs1234 in a sample named NA12345. A call belongs to a call set, which
+  contains related calls typically from one sample.
 
   Messages:
     InfoValue: A map of additional variant information. This must be of the
@@ -2150,6 +2169,8 @@ class VariantCall(_messages.Message):
 class VariantSet(_messages.Message):
   """A variant set is a collection of call sets and variants. It contains
   summary statistics of those contents. A variant set belongs to a dataset.
+  For more genomics resource definitions, see [Fundamentals of Google
+  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
   Fields:
     datasetId: The dataset to which this variant set belongs.
@@ -2157,12 +2178,22 @@ class VariantSet(_messages.Message):
     metadata: The metadata associated with this variant set.
     referenceBounds: A list of all references used by the variants in a
       variant set with associated coordinate upper bounds for each one.
+    referenceSetId: The reference set to which the variant set is mapped. The
+      reference set describes the alignment provenance of the variant set,
+      while the `referenceBounds` describe the shape of the actual variant
+      data. The reference set's reference names are a superset of those found
+      in the `referenceBounds`.  For example, given a variant set that is
+      mapped to the GRCh38 reference set and contains a single variant on
+      reference 'X', `referenceBounds` would contain only an entry for 'X',
+      while the associated reference set enumerates all possible references:
+      '1', '2', 'X', 'Y', 'MT', etc.
   """
 
   datasetId = _messages.StringField(1)
   id = _messages.StringField(2)
   metadata = _messages.MessageField('VariantSetMetadata', 3, repeated=True)
   referenceBounds = _messages.MessageField('ReferenceBound', 4, repeated=True)
+  referenceSetId = _messages.StringField(5)
 
 
 class VariantSetMetadata(_messages.Message):

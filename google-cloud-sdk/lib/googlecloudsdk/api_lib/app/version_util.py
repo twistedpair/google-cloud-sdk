@@ -148,12 +148,13 @@ def GetMatchingVersions(all_versions, args_versions, args_service, project):
   # versions based on the given service/version specifiers.
   versions = None
   if any('/' in version for version in args_versions):
-    if args_service:
-      raise VersionValidationError('If you provide a resource path as an '
-                                   'argument, you must not specify a service.')
     versions = _ParseVersionResourcePaths(args_versions, project)
     _ValidateServicesAreSubset(versions, all_versions)
     for version in versions:
+      if args_service and version.service != args_service:
+        raise VersionValidationError(
+            'If you provide a resource path as an argument, it must match the '
+            'specified service.')
       version_from_api = all_versions[all_versions.index(version)]
       version.traffic_allocation = version_from_api.traffic_allocation
   else:

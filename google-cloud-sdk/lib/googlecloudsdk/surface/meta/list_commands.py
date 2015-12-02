@@ -1,6 +1,6 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
 
-"""A command that lists all possible gcloud commands excluding flags."""
+"""A command that lists all possible gcloud commands, optionally with flags."""
 
 import sys
 
@@ -28,7 +28,11 @@ def PrintFlattenedCommandTree(command, out=None):
     """
     if '_name_' in command:
       args_next = args + [command['_name_']]
-      commands.append(' '.join(args_next))
+      if commands:
+        commands.append(' '.join(args_next))
+      else:
+        # List the global flags with the root command.
+        commands.append(' '.join(args_next + command.get('_flags_', [])))
     else:
       args_next = args + [command['_root_']]
     if 'commands' in command:
@@ -56,6 +60,16 @@ class ListCommands(base.Command):
         '--flags',
         action='store_true',
         help='Include the non-global flags for each command/group.')
+    flag_values = parser.add_argument(
+        '--flag-values',
+        action='store_true',
+        help=('Include the non-global flags and flag values/types for each '
+              'command/group.'))
+    flag_values.detailed_help = (
+        'Include the non-global flags and flag values/types for each '
+        'command/group. Flags with fixed choice values will be listed as '
+        '--flag=choice1,..., and flags with typed values will be listed '
+        'as --flag=<type>.')
     parser.add_argument(
         '--hidden',
         action='store_true',
@@ -68,7 +82,8 @@ class ListCommands(base.Command):
 
   def Run(self, args):
     return walker_util.CommandTreeGenerator(
-        self.cli, flags=args.flags).Walk(args.hidden, args.restrict)
+        self.cli, with_flags=args.flags,
+        with_flag_values=args.flag_values).Walk(args.hidden, args.restrict)
 
   def Display(self, args, result):
     return PrintFlattenedCommandTree(result)

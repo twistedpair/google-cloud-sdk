@@ -4,9 +4,9 @@
   "disable_usage_reporting": false, 
   "documentation_url": "https://developers.google.com/cloud/sdk/", 
   "release_channel": "rapid", 
-  "revision": 20151125174152, 
+  "revision": 20151130121107, 
   "snapshot_schema_version": 3, 
   "snapshot_url": "https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json", 
   "user_agent": "Cloud SDK Command Line Tool", 
-  "version": "0.9.88"
+  "version": "0.9.89"
 }

@@ -8,9 +8,17 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 
 
 _PRINTABLE_CHARS_PATTERN = r'[ -~]+'
+
+
+class DeprecatedArgumentException(exceptions.ToolException):
+
+  def __init__(self, arg, msg):
+    super(DeprecatedArgumentException, self).__init__(
+        u'{0} is deprecated. {1}'.format(arg, msg))
 
 
 def ValidateSimpleSharedSecret(possible_secret):
@@ -186,18 +194,27 @@ class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
         '--ike-networks',
         type=arg_parsers.ArgList(min_length=1),
         action=arg_parsers.FloatingListValuesCatcher(),
-        help='List of CIDR prefixes to use during IKE negotiation.')
+        help=argparse.SUPPRESS)
+
+    parser.add_argument(
+        '--local-traffic-selector',
+        type=arg_parsers.ArgList(min_length=1),
+        action=arg_parsers.FloatingListValuesCatcher(),
+        metavar='CIDR',
+        help=('Traffic selector is an agreement between IKE peers to permit '
+              'traffic through a tunnel if the traffic matches a specified pair'
+              ' of local and remote addresses.\n\n'
+              'local_traffic_selector allows to configure the local addresses '
+              'that are permitted. The value should be a comma separate list of'
+              ' CIDR formatted strings. Example: 192.168.0.0/16,10.0.0.0/24.'))
 
   def CreateRequests(self, args):
-    """Builds API requests to construct VPN Tunnels.
+    """Builds API requests to construct VPN Tunnels."""
 
-    Args:
-      args: argparse.Namespace, The arguments received by this command.
-
-    Returns:
-      [protorpc.messages.Message], A list of requests to be executed
-      by the compute API.
-    """
+    if args.ike_networks is not None:
+      raise DeprecatedArgumentException(
+          '--ike-networks',
+          'It has been renamed to --local-traffic-selector.')
 
     vpn_tunnel_ref = self.CreateRegionalReference(
         args.name, args.region, resource_type='vpnTunnels')
@@ -238,7 +255,7 @@ class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
         vpnTunnel=self.messages.VpnTunnel(
             description=args.description,
             router=router_link,
-            ikeNetworks=args.ike_networks or [],
+            localTrafficSelector=args.local_traffic_selector or [],
             ikeVersion=args.ike_version,
             name=vpn_tunnel_ref.Name(),
             peerIp=args.peer_address,

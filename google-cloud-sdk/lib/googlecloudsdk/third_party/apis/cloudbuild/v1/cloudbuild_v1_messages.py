@@ -58,18 +58,18 @@ class Build(_messages.Message):
     finishTime: The time that execution of the build was finished. @OutputOnly
     id: The unique identifier of the build. @OutputOnly
     images: The list of images expected to be built and pushed to GCR. If an
-      image is listed here, the build will fail if that image is not produced
-      by one of the build steps. If all the images are present when the build
-      steps are complete, they will all be pushed and recorded in the build's
-      results.
+      image is listed here, and if the image is not produced by one of the
+      build steps, the build will fail. If all the images are present when the
+      build steps are complete, they will all be pushed.
     projectId: The ID of the project. @OutputOnly.
-    results: The results of this build. @OutputOnly
     source: Describes where to find source files to build.
     startTime: The time that execution of the build was started. @OutputOnly
     status: The status of the build. @OutputOnly
     steps: Describes the operations to be performed on the workspace.
     timeout: The amount of time that this build should be allowed to run, to
-      second granularity. By default, this will be ten minutes.
+      second granularity. If this amount of time elapses, work on the build
+      will cease and the build status will be TIMEOUT.  By default, this will
+      be ten minutes.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -99,24 +99,21 @@ class Build(_messages.Message):
   id = _messages.StringField(3)
   images = _messages.StringField(4, repeated=True)
   projectId = _messages.StringField(5)
-  results = _messages.MessageField('Results', 6)
-  source = _messages.MessageField('Source', 7)
-  startTime = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  steps = _messages.MessageField('BuildStep', 10, repeated=True)
-  timeout = _messages.StringField(11)
+  source = _messages.MessageField('Source', 6)
+  startTime = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  steps = _messages.MessageField('BuildStep', 9, repeated=True)
+  timeout = _messages.StringField(10)
 
 
 class BuildStep(_messages.Message):
   """BuildStep describes a step to perform in the build pipeline.
 
   Fields:
-    args: Command-line arguments to use when running this operation's
-      container.
+    args: Command-line arguments to use when running this step's container.
     dir: Working directory (relative to project source root) to use when
       running this operation's container.
-    env: Additional environment variables to set for this operation's
-      container.
+    env: Additional environment variables to set for this step's container.
     name: The name of the container image to use for creating this stage in
       the pipeline, as presented to 'docker pull'.
   """
@@ -125,19 +122,6 @@ class BuildStep(_messages.Message):
   dir = _messages.StringField(2)
   env = _messages.StringField(3, repeated=True)
   name = _messages.StringField(4)
-
-
-class BuiltImage(_messages.Message):
-  """BuiltImage describes an image built by the pipeline.
-
-  Fields:
-    imageId: The image ID of the image pushed.
-    name: The name used to push the container image to GCR, as presented to
-      'docker push'.
-  """
-
-  imageId = _messages.StringField(1)
-  name = _messages.StringField(2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -286,8 +270,8 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
       will be returned.
     revisionId: If present, only builds from source repos, from the given
       revision ID will be returned. A revision ID may be either a branch/tag
-      name (e.g., "master") or a commit SHA.  If a revision ID is specified, a
-      repo_name must also be specified.
+      name (e.g., "master") or a Git commit SHA.  If a revision ID is
+      specified, a repo_name must also be specified.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -495,18 +479,6 @@ class RepoId(_messages.Message):
 
   projectRepoId = _messages.MessageField('ProjectRepoId', 1)
   uid = _messages.StringField(2)
-
-
-class Results(_messages.Message):
-  """Results describes the artifacts created by the build pipeline.
-
-  Fields:
-    images: The container images created by this build.
-    revision: The revision of the source used for the workspace, if available.
-  """
-
-  images = _messages.MessageField('BuiltImage', 1, repeated=True)
-  revision = _messages.StringField(2)
 
 
 class Source(_messages.Message):

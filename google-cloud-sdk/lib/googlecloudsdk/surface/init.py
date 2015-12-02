@@ -12,6 +12,7 @@ from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 
 
 class Init(base.Command):
@@ -326,21 +327,30 @@ class Init(base.Command):
 
   def _CloneRepo(self, repo_name):
     """Queries user for output path and clones selected repo to it."""
+    default_clone_path = os.path.join(os.getcwd(), repo_name)
     while True:
-      clone_path = os.getcwd()
       clone_path = console_io.PromptResponse(
           'Where would you like to clone [{0}] repository to [{1}]:'
-          .format(repo_name, clone_path))
+          .format(repo_name, default_clone_path))
       if not clone_path:
-        clone_path = os.getcwd()
-      if os.path.isdir(clone_path):
+        clone_path = default_clone_path
+      if os.path.exists(clone_path):
+        log.status.write('Directory [{0}] already exists\n'.format(clone_path))
+        continue
+      parent_dir = os.path.dirname(clone_path)
+      if not os.path.isdir(parent_dir):
+        log.status.write('No such directory [{0}]\n'.format(parent_dir))
+        answer = console_io.PromptContinue(
+            prompt_string='Would you like to create it')
+        if answer:
+          files.MakeDir(parent_dir)
+          break
+      else:
         break
-      log.status.write('No such directory [{0}]\n'.format(clone_path))
 
-    target_dir = os.path.join(clone_path, repo_name)
-    self._RunCmd(['source', 'repos', 'clone'], [repo_name, target_dir])
+    self._RunCmd(['source', 'repos', 'clone'], [repo_name, clone_path])
     log.status.write('\nGit repository has been cloned to [{0}]\n'
-                     .format(target_dir))
+                     .format(clone_path))
 
   def _CreateConfiguration(self):
     configuration_name = console_io.PromptResponse(

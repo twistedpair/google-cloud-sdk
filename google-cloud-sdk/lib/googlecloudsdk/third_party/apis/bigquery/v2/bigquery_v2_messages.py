@@ -575,6 +575,61 @@ class ErrorProto(_messages.Message):
   reason = _messages.StringField(4)
 
 
+class ExplainQueryStage(_messages.Message):
+  """A ExplainQueryStage object.
+
+  Fields:
+    computeRatioAvg: Relative amount of time the average shard spent on CPU-
+      bound tasks.
+    computeRatioMax: Relative amount of time the slowest shard spent on CPU-
+      bound tasks.
+    id: Unique ID for stage within plan.
+    name: Human-readable name for stage.
+    readRatioAvg: Relative amount of time the average shard spent reading
+      input.
+    readRatioMax: Relative amount of time the slowest shard spent reading
+      input.
+    recordsRead: Number of records read into the stage.
+    recordsWritten: Number of records written by the stage.
+    steps: List of operations within the stage in dependency order
+      (approximately chronological).
+    waitRatioAvg: Relative amount of time the average shard spent waiting to
+      be scheduled.
+    waitRatioMax: Relative amount of time the slowest shard spent waiting to
+      be scheduled.
+    writeRatioAvg: Relative amount of time the average shard spent on writing
+      output.
+    writeRatioMax: Relative amount of time the slowest shard spent on writing
+      output.
+  """
+
+  computeRatioAvg = _messages.FloatField(1)
+  computeRatioMax = _messages.FloatField(2)
+  id = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+  readRatioAvg = _messages.FloatField(5)
+  readRatioMax = _messages.FloatField(6)
+  recordsRead = _messages.IntegerField(7)
+  recordsWritten = _messages.IntegerField(8)
+  steps = _messages.MessageField('ExplainQueryStep', 9, repeated=True)
+  waitRatioAvg = _messages.FloatField(10)
+  waitRatioMax = _messages.FloatField(11)
+  writeRatioAvg = _messages.FloatField(12)
+  writeRatioMax = _messages.FloatField(13)
+
+
+class ExplainQueryStep(_messages.Message):
+  """A ExplainQueryStep object.
+
+  Fields:
+    kind: Machine-readable operation type.
+    substeps: Human-readable stage descriptions.
+  """
+
+  kind = _messages.StringField(1)
+  substeps = _messages.StringField(2, repeated=True)
+
+
 class ExternalDataConfiguration(_messages.Message):
   """A ExternalDataConfiguration object.
 
@@ -1117,14 +1172,17 @@ class JobStatistics2(_messages.Message):
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
+    queryPlan: [Output-only, Experimental] Describes execution plan for the
+      query as a list of stages.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
   """
 
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
-  totalBytesBilled = _messages.IntegerField(3)
-  totalBytesProcessed = _messages.IntegerField(4)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 3, repeated=True)
+  totalBytesBilled = _messages.IntegerField(4)
+  totalBytesProcessed = _messages.IntegerField(5)
 
 
 class JobStatistics3(_messages.Message):

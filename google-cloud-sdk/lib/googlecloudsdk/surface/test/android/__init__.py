@@ -2,7 +2,6 @@
 
 """The 'gcloud test android' sub-group."""
 
-from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import base
 
 

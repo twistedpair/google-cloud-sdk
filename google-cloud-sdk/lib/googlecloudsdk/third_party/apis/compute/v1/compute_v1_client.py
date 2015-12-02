@@ -1148,7 +1148,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -1399,7 +1399,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -2913,7 +2913,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified Instance resource. For more information, see Shutting down an instance.
+      """Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -4536,7 +4536,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def AddInstance(self, request, global_params=None):
-      """Adds instance url to targetPool.
+      """Adds instance URL to targetPool.
 
       Args:
         request: (ComputeTargetPoolsAddInstanceRequest) input message

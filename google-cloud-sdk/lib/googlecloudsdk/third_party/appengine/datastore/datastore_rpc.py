@@ -31,6 +31,8 @@ __all__ = ['AbstractAdapter',
 # TODO(user): Consider implementing __eq__ for all immutable classes.
 
 # Python imports.
+import collections
+import copy
 import functools
 import logging
 import os
@@ -50,8 +52,6 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_pbs
 from googlecloudsdk.third_party.appengine.datastore import datastore_v4_pb
 from googlecloudsdk.third_party.appengine.runtime import apiproxy_errors
-from googlecloudsdk.third_party.py27 import py27_collections as collections
-from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 _CLOUD_DATASTORE_ENABLED = datastore_pbs._CLOUD_DATASTORE_ENABLED  # pylint: disable=protected-access
 if _CLOUD_DATASTORE_ENABLED:
@@ -1746,8 +1746,8 @@ class BaseConnection(object):
     Returns:
       A MultiRpc object.
     """
-    req = api_base_pb.StringProto()
-    req.set_value(datastore_types.ResolveAppId(_app))
+    req = datastore_pb.GetIndicesRequest()
+    req.set_app_id(datastore_types.ResolveAppId(_app))
     resp = datastore_pb.CompositeIndices()
     return self._make_rpc_call(config, 'GetIndices', req, resp,
                                get_result_hook=self.__get_indexes_hook,
@@ -2661,36 +2661,28 @@ def _ToDatastoreError(err):
 
 _DATASTORE_EXCEPTION_CLASSES = {
     datastore_pb.Error.BAD_REQUEST: datastore_errors.BadRequestError,
-    datastore_pb.Error.CONCURRENT_TRANSACTION:
-        datastore_errors.TransactionFailedError,
+    datastore_pb.Error.CONCURRENT_TRANSACTION: datastore_errors.TransactionFailedError,
     datastore_pb.Error.INTERNAL_ERROR: datastore_errors.InternalError,
     datastore_pb.Error.NEED_INDEX: datastore_errors.NeedIndexError,
     datastore_pb.Error.TIMEOUT: datastore_errors.Timeout,
     datastore_pb.Error.BIGTABLE_ERROR: datastore_errors.Timeout,
-    datastore_pb.Error.COMMITTED_BUT_STILL_APPLYING:
-        datastore_errors.CommittedButStillApplying,
-    datastore_pb.Error.CAPABILITY_DISABLED:
-        apiproxy_errors.CapabilityDisabledError,
+    datastore_pb.Error.COMMITTED_BUT_STILL_APPLYING: datastore_errors.CommittedButStillApplying,
+    datastore_pb.Error.CAPABILITY_DISABLED: apiproxy_errors.CapabilityDisabledError,
 }
 
 _CLOUD_DATASTORE_EXCEPTION_CLASSES = {}
 
 if _CLOUD_DATASTORE_ENABLED:
   _CLOUD_DATASTORE_EXCEPTION_CLASSES = {
-      googledatastore.code_pb2.INVALID_ARGUMENT:
-          datastore_errors.BadRequestError,
-      googledatastore.code_pb2.ABORTED:
-          datastore_errors.TransactionFailedError,
+      googledatastore.code_pb2.INVALID_ARGUMENT: datastore_errors.BadRequestError,
+      googledatastore.code_pb2.ABORTED: datastore_errors.TransactionFailedError,
       googledatastore.code_pb2.FAILED_PRECONDITION:
           # Could also indicate SAFE_TIME_TOO_OLD.
           datastore_errors.NeedIndexError,
       googledatastore.code_pb2.DEADLINE_EXCEEDED: datastore_errors.Timeout,
-      googledatastore.code_pb2.PERMISSION_DENIED:
-          datastore_errors.BadRequestError,
-      googledatastore.code_pb2.UNAVAILABLE:
-          apiproxy_errors.RPCFailedError,
-      googledatastore.code_pb2.RESOURCE_EXHAUSTED:
-          apiproxy_errors.OverQuotaError,
+      googledatastore.code_pb2.PERMISSION_DENIED: datastore_errors.BadRequestError,
+      googledatastore.code_pb2.UNAVAILABLE: apiproxy_errors.RPCFailedError,
+      googledatastore.code_pb2.RESOURCE_EXHAUSTED: apiproxy_errors.OverQuotaError,
       googledatastore.code_pb2.INTERNAL:
           # Could also indicate COMMITTED_BUT_STILL_APPLYING
           datastore_errors.InternalError,

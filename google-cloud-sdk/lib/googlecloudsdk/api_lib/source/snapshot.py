@@ -241,7 +241,8 @@ class SnapshotManager(object):
       snapshot = self._FindSnapshot(snapshot_name)
       if snapshot:
         workspace = source.Workspace(
-            self._project_id, self._repo_name, snapshot.workspace_name,
+            self._project_id, snapshot.workspace_name,
+            repo_name=self._repo_name,
             state=self.GetSnapshotRepo().GetWorkspace(snapshot.workspace_name))
     else:
       snapshot_name = (

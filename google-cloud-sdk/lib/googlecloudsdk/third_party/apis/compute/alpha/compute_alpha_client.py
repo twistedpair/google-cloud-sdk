@@ -56,6 +56,9 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.machineTypes = self.MachineTypesService(self)
     self.networks = self.NetworksService(self)
     self.projects = self.ProjectsService(self)
+    self.regionAutoscalers = self.RegionAutoscalersService(self)
+    self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
+    self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regions = self.RegionsService(self)
     self.routers = self.RoutersService(self)
@@ -1502,7 +1505,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -1803,7 +1806,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -3009,7 +3012,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      """Modifies the autohealing policy.
+      """Modifies the autohealing policies.
 
       Args:
         request: (ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -3570,7 +3573,7 @@ See Accessing images for more information.
               method_id=u'compute.instances.getSerialPortOutput',
               ordered_params=[u'project', u'zone', u'instance'],
               path_params=[u'instance', u'project', u'zone'],
-              query_params=[u'port'],
+              query_params=[u'port', u'start'],
               relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/serialPort',
               request_field='',
               request_type_name=u'ComputeInstancesGetSerialPortOutputRequest',
@@ -3778,7 +3781,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified Instance resource. For more information, see Shutting down an instance.
+      """Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -3934,7 +3937,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetMachineType(self, request, global_params=None):
-      """Sets machine type for the specified instances to the data included in the request.
+      """Changes the machine type for a stopped instance to the machine type specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineTypeRequest) input message
@@ -4398,6 +4401,595 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetUsageExportCloudStorageBucket')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionAutoscalersService(base_api.BaseApiService):
+    """Service class for the regionAutoscalers resource."""
+
+    _NAME = u'regionAutoscalers'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionAutoscalersService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.regionAutoscalers.delete',
+              ordered_params=[u'project', u'region', u'autoscaler'],
+              path_params=[u'autoscaler', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
+              request_field='',
+              request_type_name=u'ComputeRegionAutoscalersDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionAutoscalers.get',
+              ordered_params=[u'project', u'region', u'autoscaler'],
+              path_params=[u'autoscaler', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
+              request_field='',
+              request_type_name=u'ComputeRegionAutoscalersGetRequest',
+              response_type_name=u'Autoscaler',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionAutoscalers.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers',
+              request_field=u'autoscaler',
+              request_type_name=u'ComputeRegionAutoscalersInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionAutoscalers.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers',
+              request_field='',
+              request_type_name=u'ComputeRegionAutoscalersListRequest',
+              response_type_name=u'RegionAutoscalerList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.regionAutoscalers.patch',
+              ordered_params=[u'project', u'region', u'autoscaler'],
+              path_params=[u'project', u'region'],
+              query_params=[u'autoscaler'],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers',
+              request_field=u'autoscalerResource',
+              request_type_name=u'ComputeRegionAutoscalersPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.regionAutoscalers.update',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'autoscaler'],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers',
+              request_field=u'autoscalerResource',
+              request_type_name=u'ComputeRegionAutoscalersUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified autoscaler resource.
+
+      Args:
+        request: (ComputeRegionAutoscalersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified autoscaler resource.
+
+      Args:
+        request: (ComputeRegionAutoscalersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Autoscaler) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a autoscaler resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionAutoscalersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of autoscaler resources contained within the specified region.
+
+      Args:
+        request: (ComputeRegionAutoscalersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionAutoscalerList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Updates a autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionAutoscalersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates a autoscaler resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionAutoscalersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionInstanceGroupManagersService(base_api.BaseApiService):
+    """Service class for the regionInstanceGroupManagers resource."""
+
+    _NAME = u'regionInstanceGroupManagers'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInstanceGroupManagersService, self).__init__(client)
+      self._method_configs = {
+          'AbandonInstances': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.abandonInstances',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
+              request_field=u'regionInstanceGroupManagersAbandonInstancesRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersAbandonInstancesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.regionInstanceGroupManagers.delete',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupManagersDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'DeleteInstances': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.deleteInstances',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances',
+              request_field=u'regionInstanceGroupManagersDeleteInstancesRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersDeleteInstancesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionInstanceGroupManagers.get',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupManagersGetRequest',
+              response_type_name=u'InstanceGroupManager',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
+              request_field=u'instanceGroupManager',
+              request_type_name=u'ComputeRegionInstanceGroupManagersInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionInstanceGroupManagers.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupManagersListRequest',
+              response_type_name=u'RegionInstanceGroupManagerList',
+              supports_download=False,
+          ),
+          'ListManagedInstances': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',
+              response_type_name=u'RegionInstanceGroupManagersListInstancesResponse',
+              supports_download=False,
+          ),
+          'RecreateInstances': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.recreateInstances',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances',
+              request_field=u'regionInstanceGroupManagersRecreateRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersRecreateInstancesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Resize': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.resize',
+              ordered_params=[u'project', u'region', u'instanceGroupManager', u'size'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[u'size'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resize',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupManagersResizeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetAutoHealingPolicies': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.setAutoHealingPolicies',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies',
+              request_field=u'regionInstanceGroupManagersSetAutoHealingRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetInstanceTemplate': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.setInstanceTemplate',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate',
+              request_field=u'regionInstanceGroupManagersSetTemplateRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetTargetPools': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.setTargetPools',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
+              request_field=u'regionInstanceGroupManagersSetTargetPoolsRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersSetTargetPoolsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def AbandonInstances(self, request, global_params=None):
+      """Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AbandonInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified managed instance group and all of the instances in that group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def DeleteInstances(self, request, global_params=None):
+      """Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns all of the details for the specified managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManager) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of managed instance groups that are contained within the specified region.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagerList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def ListManagedInstances(self, request, global_params=None):
+      """Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupManagersListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListManagedInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def RecreateInstances(self, request, global_params=None):
+      """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RecreateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Resize(self, request, global_params=None):
+      """Changes the intended size for the managed instance group. If you increase the size, the group schedules actions to create new instances using the current instance template. If you decrease the size, the group schedules delete actions on one or more instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetAutoHealingPolicies(self, request, global_params=None):
+      """Modifies the autohealing policy for the instances in this managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAutoHealingPolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetInstanceTemplate(self, request, global_params=None):
+      """Sets the instance template to use when creating new instances in this group. Existing instances are not affected.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetInstanceTemplate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetTargetPools(self, request, global_params=None):
+      """Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersSetTargetPoolsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetTargetPools')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionInstanceGroupsService(base_api.BaseApiService):
+    """Service class for the regionInstanceGroups resource."""
+
+    _NAME = u'regionInstanceGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInstanceGroupsService, self).__init__(client)
+      self._method_configs = {
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionInstanceGroups.get',
+              ordered_params=[u'project', u'region', u'instanceGroup'],
+              path_params=[u'instanceGroup', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupsGetRequest',
+              response_type_name=u'InstanceGroup',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionInstanceGroups.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroups',
+              request_field='',
+              request_type_name=u'ComputeRegionInstanceGroupsListRequest',
+              response_type_name=u'RegionInstanceGroupList',
+              supports_download=False,
+          ),
+          'ListInstances': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroups.listInstances',
+              ordered_params=[u'project', u'region', u'instanceGroup'],
+              path_params=[u'instanceGroup', u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/listInstances',
+              request_field=u'regionInstanceGroupsListInstancesRequest',
+              request_type_name=u'ComputeRegionInstanceGroupsListInstancesRequest',
+              response_type_name=u'RegionInstanceGroupsListInstances',
+              supports_download=False,
+          ),
+          'SetNamedPorts': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroups.setNamedPorts',
+              ordered_params=[u'project', u'region', u'instanceGroup'],
+              path_params=[u'instanceGroup', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}/setNamedPorts',
+              request_field=u'regionInstanceGroupsSetNamedPortsRequest',
+              request_type_name=u'ComputeRegionInstanceGroupsSetNamedPortsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Returns the specified instance group resource.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of instance group resources contained within the specified region.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def ListInstances(self, request, global_params=None):
+      """Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsListInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstanceGroupsListInstances) The response message.
+      """
+      config = self.GetMethodConfig('ListInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetNamedPorts(self, request, global_params=None):
+      """Sets the named ports for the specified regional instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsSetNamedPortsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetNamedPorts')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6054,7 +6646,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def AddInstance(self, request, global_params=None):
-      """Adds instance url to targetPool.
+      """Adds instance URL to targetPool.
 
       Args:
         request: (ComputeTargetPoolsAddInstanceRequest) input message
@@ -6520,7 +7112,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def InvalidateCache(self, request, global_params=None):
-      """Initiate a cache invalidation operation, invalidating the specified path, scoped to the specified urlmap.
+      """Initiate a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
 
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message

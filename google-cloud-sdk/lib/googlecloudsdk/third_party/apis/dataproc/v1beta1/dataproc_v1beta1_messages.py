@@ -25,6 +25,8 @@ class Agent(_messages.Message):
       running.
     agentVersion: The version of this agent in HTTP User-Agent Header value
       format (RFC 2616 section 14.43), e.g., "Dataproc-Agent/1.2".
+    diagnostic: [Optional] The list of diagnostic records since last agent
+      updage.
     lastAgentUpdateTime: [Out] the last time this agent checked-in with
       Dataproc.
     status: Agent status.
@@ -50,8 +52,9 @@ class Agent(_messages.Message):
 
   agentId = _messages.StringField(1)
   agentVersion = _messages.StringField(2)
-  lastAgentUpdateTime = _messages.StringField(3)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  diagnostic = _messages.MessageField('DiagnosticRecord', 3, repeated=True)
+  lastAgentUpdateTime = _messages.StringField(4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
 
 
 class CancelJobRequest(_messages.Message):
@@ -513,6 +516,17 @@ class DiagnoseClusterOutputLocation(_messages.Message):
 
 class DiagnoseClusterRequest(_messages.Message):
   """A request to collect cluster diagnostic information."""
+
+
+class DiagnosticRecord(_messages.Message):
+  """A record that can be used for diagnosing agent state.
+
+  Fields:
+    errorSample: A complete stack trace serialized to string from an exception
+      encountered by the agent.
+  """
+
+  errorSample = _messages.StringField(1)
 
 
 class DiskConfiguration(_messages.Message):
@@ -1406,7 +1420,8 @@ class SoftwareConfiguration(_messages.Message):
   Fields:
     imageVersion: [Optional] The version of software inside the cluster. It
       must match the regular expression `[0-9]+\.[0-9]+`. If unspecified, it
-      will default to the latest version.
+      defaults to the latest version (see [Cloud Dataproc
+      Versioning](/dataproc/versioning)).
   """
 
   imageVersion = _messages.StringField(1)

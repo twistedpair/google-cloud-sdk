@@ -674,11 +674,18 @@ To update your SDK installation to the latest version [{latest}], run:
     """
     if not components:
       raise InvalidComponentError('You must specify components to install')
+
+    version = config.INSTALLATION_CONFIG.version
+    if properties.VALUES.component_manager.additional_repositories.Get():
+      log.warning('Additional component repositories are currently active.  '
+                  'Running `update` instead of `install`.')
+      version = None
+
     return self.Update(
         components,
         allow_no_backup=allow_no_backup,
         throw_if_unattended=throw_if_unattended,
-        version=config.INSTALLATION_CONFIG.version)
+        version=version)
 
   def Update(self, update_seed=None, allow_no_backup=False,
              throw_if_unattended=False, version=None):

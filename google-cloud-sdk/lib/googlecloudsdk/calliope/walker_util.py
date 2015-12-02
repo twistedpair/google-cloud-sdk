@@ -5,6 +5,7 @@
 import cStringIO
 import os
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import walker
@@ -224,17 +225,24 @@ class CommandTreeGenerator(walker.Walker):
   """Constructs a CLI command dict tree.
 
   This implements the resource generator for gcloud meta list-commands.
+
+  Attributes:
+    _with_flags: Include the non-global flags for each command/group if True.
+    _with_flag_values: Include flag value choices or <type> if True.
+    _global_flags: The set of global flags, only listed for the root command.
   """
 
-  def __init__(self, cli, flags=False):
+  def __init__(self, cli, with_flags=False, with_flag_values=False):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
-      flags: Include the non-global flags for each command/group if True.
+      with_flags: Include the non-global flags for each command/group if True.
+      with_flag_values: Include flags and flag value choices or <type> if True.
     """
     super(CommandTreeGenerator, self).__init__(cli)
-    self._flags = flags
+    self._with_flags = with_flags or with_flag_values
+    self._with_flag_values = with_flag_values
     self._global_flags = set()
 
   def Visit(self, node, parent, is_group):
@@ -250,11 +258,31 @@ class CommandTreeGenerator(walker.Walker):
     """
     name = node.name.replace('_', '-')
     info = {'_name_': name}
-    if self._flags:
+    if self._with_flags:
+      all_flags = []
+      for arg in node.GetAllAvailableFlags():
+        value = None
+        if self._with_flag_values:
+          if arg.choices:
+            choices = sorted(arg.choices)
+            if choices != ['false', 'true']:
+              value = ','.join([str(choice) for choice in choices])
+          elif isinstance(arg.type, int):
+            value = '<int>'
+          elif isinstance(arg.type, float):
+            value = '<float>'
+          elif isinstance(arg.type, arg_parsers.ArgDict):
+            value = '<dict>'
+          elif isinstance(arg.type, arg_parsers.ArgList):
+            value = '<list>'
+          elif arg.nargs:
+            value = '<string>'
+        for f in arg.option_strings:
+          if value:
+            f += '=' + value
+          all_flags.append(f)
       no_prefix = '--no-'
       flags = []
-      all_flags = [f for x in node.GetAllAvailableFlags()
-                   for f in x.option_strings]
       for flag in all_flags:
         if flag in self._global_flags:
           continue

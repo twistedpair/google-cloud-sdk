@@ -636,13 +636,10 @@ class EntityResult(_messages.Message):
       only when the `EntityResult` is part of a `QueryResultBatch` message.
     entity: The resulting entity.
     version: The version of the entity, a strictly positive number that
-      monotonically increases with changes to the entity. For missing entities
-      in `LookupResponse`, this is a version strictly greater than any
-      previous entity, and strictly less than any possible future entity with
-      the same key.  This field is not set for missing entities in an
-      eventually consistent lookup.  It is also not set for the results of
-      metadata queries, or for queries that return `KEY_ONLY` or `PROJECTION`
-      results.
+      monotonically increases with changes to the entity.  This field is set
+      for `FULL` entity results. For missing entities in `LookupResponse`,
+      this is the version of the snapshot that was used to look up the entity,
+      and it is always set except for eventually consistent reads.
   """
 
   cursor = _messages.BytesField(1)
@@ -1595,6 +1592,13 @@ class QueryResultBatch(_messages.Message):
       result. Will be set when `skipped_results` != 0.
     skippedResults: The number of results skipped, typically because of an
       offset.
+    snapshotVersion: The version number of the snapshot this batch was
+      returned from. This applies to the range of results from the query's
+      `start_cursor` (or the beginning of the query if no cursor was given) to
+      this batch's `end_cursor` (not the query's `end_cursor`).  In a single
+      transaction, subsequent query result batches for the same query can have
+      a greater snapshot version number. Each batch's snapshot version is
+      valid for all preceding batches.
   """
 
   class EntityResultTypeValueValuesEnum(_messages.Enum):
@@ -1636,6 +1640,7 @@ class QueryResultBatch(_messages.Message):
   moreResults = _messages.EnumField('MoreResultsValueValuesEnum', 4)
   skippedCursor = _messages.BytesField(5)
   skippedResults = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  snapshotVersion = _messages.IntegerField(7)
 
 
 class ReadOnly(_messages.Message):

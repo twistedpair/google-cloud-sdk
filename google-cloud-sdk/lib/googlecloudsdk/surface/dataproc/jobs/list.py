@@ -72,10 +72,12 @@ class List(base.Command):
     if args.state_filter:
       if args.state_filter == 'active':
         request.jobStateMatcher = (
-            messages.DataprocProjectsJobsListRequest.JobStateMatcher.ACTIVE)
+            messages.DataprocProjectsJobsListRequest
+            .JobStateMatcherValueValuesEnum.ACTIVE)
       elif args.state_filter == 'inactive':
         request.jobStateMatcher = (
-            messages.DataprocProjectsJobsListRequest.JobStateMatcher.NON_ACTIVE)
+            messages.DataprocProjectsJobsListRequest
+            .JobStateMatcherValueValuesEnum.NON_ACTIVE)
       else:
         raise exceptions.ToolException(
             'Invalid state-filter; [{0}].'.format(args.state_filter))

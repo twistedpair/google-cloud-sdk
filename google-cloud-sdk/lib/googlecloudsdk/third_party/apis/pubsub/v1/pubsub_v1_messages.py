@@ -24,6 +24,23 @@ class AcknowledgeRequest(_messages.Message):
   ackIds = _messages.StringField(1, repeated=True)
 
 
+class AuditConfig(_messages.Message):
+  """Enables "data access" audit logging for a service and specifies a list of
+  members that are log-exempted.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services.
+  """
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  service = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -267,6 +284,10 @@ class Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
     bindings: Associates a list of `members` to a `role`. Multiple `bindings`
       must not be specified for the same `role`. `bindings` with no members
       will result in an error.
@@ -274,18 +295,24 @@ class Policy(_messages.Message):
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
       modify-write cycle to perform policy updates in order to avoid race
-      conditions.  If no etag is provided in the call to SetIamPolicy, then
-      the existing policy is overwritten blindly.
+      conditions: Etags are returned in the response to GetIamPolicy, and
+      systems are expected to put that etag in the request to SetIamPolicy to
+      ensure that their change will be applied to the same version of the
+      policy.  If no etag is provided in the call to SetIamPolicy, then the
+      existing policy is overwritten blindly.
     iamOwned: A boolean attribute.
     rules: A Rule attribute.
-    version: Version of the `Policy`. The default version is 0.
+    version: Version of the `Policy`. The default version is 0. 0 =
+      resourcemanager_projects only support legacy roles. 1 = supports non-
+      legacy roles 2 = supports AuditConfig
   """
 
-  bindings = _messages.MessageField('Binding', 1, repeated=True)
-  etag = _messages.BytesField(2)
-  iamOwned = _messages.BooleanField(3)
-  rules = _messages.MessageField('Rule', 4, repeated=True)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class PublishRequest(_messages.Message):

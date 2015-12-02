@@ -99,8 +99,11 @@ DOCKERFILE_MORE_PACKAGES = textwrap.dedent("""\
         && apt-get clean && rm /var/lib/apt/lists/*_*
     """)
 DOCKERFILE_NO_MORE_PACKAGES = textwrap.dedent("""\
-    # If you need to install any additional packages needed by your gems,
-    # insert an "apt-get update" and "apt-get install" here.
+    # To install additional packages needed by your gems, uncomment
+    # the "RUN apt-get update" and "RUN apt-get install" lines below
+    # and specify your packages.
+    # RUN apt-get update
+    # RUN apt-get install -y -q (your packages here)
     """)
 DOCKERFILE_GEM_INSTALL = textwrap.dedent("""\
     # Install required gems.
@@ -116,7 +119,7 @@ DOCKERFILE_ENTRYPOINT = textwrap.dedent("""\
 ENTRYPOINT_FOREMAN = 'foreman start web -p 8080'
 ENTRYPOINT_PUMA = 'bundle exec puma -p 8080 -e production'
 ENTRYPOINT_UNICORN = 'bundle exec unicorn -p 8080 -E production'
-ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E production /app/config.ru'
+ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E production config.ru'
 
 
 class RubyConfigError(exceptions.Error):
@@ -283,8 +286,7 @@ def _CheckForRubyRuntime(path, appinfo):
   Returns:
     (bool) Whether this app should be treated as runtime:ruby.
   """
-  if (appinfo and appinfo.vm_settings and
-      appinfo.vm_settings['vm_runtime'] == 'ruby'):
+  if appinfo and appinfo.GetEffectiveRuntime() == 'ruby':
     return True
 
   log.info('Checking for Ruby.')

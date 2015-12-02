@@ -39,6 +39,11 @@ class Bigquery(object):
   def SetResourceParser(cls, parser):
     cls._resource_parser = parser
 
+  @classmethod
+  def Clear(cls):
+    cls._client = None
+    cls._resource_parser = None
+
 
 class Project(Bigquery):
   """Abstracts bigquery project."""

@@ -179,12 +179,18 @@ class DatabaseFlags(_messages.Message):
 class DatabaseInstance(_messages.Message):
   """A Cloud SQL instance resource.
 
+  Messages:
+    FailoverReplicaValue: The name and status of the failover replica. Only
+      applies to Second Generation instances.
+
   Fields:
     currentDiskSize: The current disk usage of the instance in bytes.
     databaseVersion: The database engine type and version. Can be MYSQL_5_5 or
       MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion can not be changed
       after instance creation.
     etag: HTTP 1.1 Entity tag for the resource.
+    failoverReplica: The name and status of the failover replica. Only applies
+      to Second Generation instances.
     instanceType: The instance type. This can be one of the following.
       CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
       master. ON_PREMISES_INSTANCE: An instance running on the customer's
@@ -221,26 +227,39 @@ class DatabaseInstance(_messages.Message):
       unknown.
   """
 
+  class FailoverReplicaValue(_messages.Message):
+    """The name and status of the failover replica. Only applies to Second
+    Generation instances.
+
+    Fields:
+      available: A boolean attribute.
+      name: A string attribute.
+    """
+
+    available = _messages.BooleanField(1)
+    name = _messages.StringField(2)
+
   currentDiskSize = _messages.IntegerField(1)
   databaseVersion = _messages.StringField(2)
   etag = _messages.StringField(3)
-  instanceType = _messages.StringField(4)
-  ipAddresses = _messages.MessageField('IpMapping', 5, repeated=True)
-  ipv6Address = _messages.StringField(6)
-  kind = _messages.StringField(7, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(8)
-  maxDiskSize = _messages.IntegerField(9)
-  name = _messages.StringField(10)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 11)
-  project = _messages.StringField(12)
-  region = _messages.StringField(13)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 14)
-  replicaNames = _messages.StringField(15, repeated=True)
-  selfLink = _messages.StringField(16)
-  serverCaCert = _messages.MessageField('SslCert', 17)
-  serviceAccountEmailAddress = _messages.StringField(18)
-  settings = _messages.MessageField('Settings', 19)
-  state = _messages.StringField(20)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 4)
+  instanceType = _messages.StringField(5)
+  ipAddresses = _messages.MessageField('IpMapping', 6, repeated=True)
+  ipv6Address = _messages.StringField(7)
+  kind = _messages.StringField(8, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(9)
+  maxDiskSize = _messages.IntegerField(10)
+  name = _messages.StringField(11)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 12)
+  project = _messages.StringField(13)
+  region = _messages.StringField(14)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 15)
+  replicaNames = _messages.StringField(16, repeated=True)
+  selfLink = _messages.StringField(17)
+  serverCaCert = _messages.MessageField('SslCert', 18)
+  serviceAccountEmailAddress = _messages.StringField(19)
+  settings = _messages.MessageField('Settings', 20)
+  state = _messages.StringField(21)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -335,6 +354,8 @@ class Flag(_messages.Message):
     minValue: For INTEGER flags, the minimum allowed value.
     name: This is the name of the flag. Flag names always use underscores, not
       hyphens, e.g. max_allowed_packet
+    requiresRestart: Indicates whether changing this flag will trigger a
+      database restart. Only applicable to Second Generation instances.
     type: The type of the flag. Flags are typed to being BOOLEAN, STRING,
       INTEGER or NONE. NONE is used for flags which do not take a value, such
       as skip_grant_tables.
@@ -346,7 +367,8 @@ class Flag(_messages.Message):
   maxValue = _messages.IntegerField(4)
   minValue = _messages.IntegerField(5)
   name = _messages.StringField(6)
-  type = _messages.StringField(7)
+  requiresRestart = _messages.BooleanField(7)
+  type = _messages.StringField(8)
 
 
 class FlagsListResponse(_messages.Message):

@@ -1921,8 +1921,8 @@ class AppInfoExternal(validation.Validated):
           and CGI handlers are specified.
       TooManyScalingSettingsError: if more than one scaling settings block is
           present.
-      LibrariesNotSupported: if application configuration does not allow for
-          libraries.  e.g. python25 or vm: true or env == 2
+      RuntimeDoesNotSupportLibraries: if libraries clause is used for a runtime
+          that does not support it (e.g. python25).
       ModuleAndServiceDefined: if both 'module' and 'service' keywords are used.
     """
     super(AppInfoExternal, self).CheckInitialized()
@@ -1947,15 +1947,17 @@ class AppInfoExternal(validation.Validated):
 
     vm_runtime_python27 = (
         self.runtime == 'vm' and
-        (self.vm_settings and
+        (hasattr(self, 'vm_settings') and
+         self.vm_settings and
          self.vm_settings.get('vm_runtime') == 'python27') or
-        (self.beta_settings and
+        (hasattr(self, 'beta_settings') and
+         self.beta_settings and
          self.beta_settings.get('vm_runtime') == 'python27'))
 
     if (self.threadsafe is None and
         (self.runtime == 'python27' or vm_runtime_python27)):
       raise appinfo_errors.MissingThreadsafe(
-          'threadsafe must be present and set to true or false in python27')
+          'threadsafe must be present and set to a true or false YAML value')
 
     if self.auto_id_policy == DATASTORE_ID_POLICY_LEGACY:
       datastore_auto_ids_url = ('http://developers.google.com/'
@@ -1977,15 +1979,8 @@ class AppInfoExternal(validation.Validated):
           self.beta_settings.get('source_reference'))
 
     if self.libraries:
-      if self.vm or self.env == '2':
-        raise appinfo_errors.LibrariesNotSupported(
-            'The "libraries:" directive has been deprecated for Managed VMs. '
-            'Please delete this section from your app.yaml, use pip '
-            '(https://pip.pypa.io/) to install your dependencies, and save '
-            'them to a requirements.txt.  For more information, please visit '
-            'http://cloud.google.com/python.')
-      elif self.runtime != 'python27':
-        raise appinfo_errors.LibrariesNotSupported(
+      if not (vm_runtime_python27 or self.runtime == 'python27'):
+        raise appinfo_errors.RuntimeDoesNotSupportLibraries(
             'libraries entries are only supported by the "python27" runtime')
 
       library_names = [library.name for library in self.libraries]
@@ -2064,10 +2059,6 @@ class AppInfoExternal(validation.Validated):
       if library.default_version and library.name not in enabled_libraries:
         libraries.append(Library(name=library.name,
                                  version=library.default_version))
-    for library in libraries:
-      if library.version == 'latest':
-        library.version = _NAME_TO_SUPPORTED_LIBRARY[
-            library.name].supported_versions[-1]
     return libraries
 
   def ApplyBackendSettings(self, backend_name):

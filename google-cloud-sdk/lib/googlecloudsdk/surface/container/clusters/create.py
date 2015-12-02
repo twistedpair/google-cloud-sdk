@@ -28,7 +28,7 @@ def _Args(parser):
   parser.add_argument(
       '--timeout',
       type=int,
-      default=1200,
+      default=1800,
       help=argparse.SUPPRESS)
   parser.add_argument(
       '--wait',
@@ -45,6 +45,14 @@ def _Args(parser):
       help='The type of machine to use for workers. Defaults to '
       'server-specified')
   parser.add_argument(
+      '--subnetwork',
+      help='The name of the Google Compute Engine subnetwork'
+      '(https://cloud.google.com/compute/docs/subnetworks) to which the '
+      'cluster is connected. If specified, the cluster\'s network must be a '
+      '"custom subnet" network. Specification of subnetworks is an '
+      'alpha feature, and requires that the '
+      'Google Compute Engine alpha API be enabled.')
+  parser.add_argument(
       '--network',
       help='The Compute Engine Network that the cluster will connect to. '
       'Google Container Engine will use this network when creating routes '
@@ -53,11 +61,6 @@ def _Args(parser):
       '--cluster-ipv4-cidr',
       help='The IP address range for the pods in this cluster in CIDR '
       'notation (e.g. 10.0.0.0/14). Defaults to server-specified')
-  parser.add_argument(
-      '--container-ipv4-cidr',
-      help='The IP address range for the pods in this cluster in CIDR '
-      'notation (e.g. 10.0.0.0/14). Defaults to server-specified '
-      '(deprecated; use --cluster-ipv4-cidr instead)')
   parser.add_argument(
       '--password',
       help='The password to use for cluster auth. Defaults to a '
@@ -99,8 +102,9 @@ Alias,URI
       '--enable-cloud-monitoring',
       action='store_true',
       default=True,
-      help='Automatically send metrics from the cluster to the '
-      'Google Cloud Monitoring API.')
+      help='Automatically send metrics from pods in the cluster to the '
+      'Google Cloud Monitoring API. VM metrics will be collected by GCE '
+      'regardless of this setting.')
   parser.set_defaults(enable_cloud_monitoring=True)
   parser.add_argument(
       '--disk-size',
@@ -134,10 +138,6 @@ class Create(base.Command):
     if not args.scopes:
       args.scopes = []
     cluster_ipv4_cidr = args.cluster_ipv4_cidr
-    if args.container_ipv4_cidr:
-      log.warn('The `--container-ipv4-cidr` flag is deprecated. Please use the '
-               '`--cluster-ipv4-cidr` flag instead.')
-      cluster_ipv4_cidr = args.container_ipv4_cidr
     return api_adapter.CreateClusterOptions(
         node_machine_type=args.machine_type,
         scopes=args.scopes,
@@ -146,6 +146,7 @@ class Create(base.Command):
         password=args.password,
         cluster_version=args.cluster_version,
         network=args.network,
+        subnetwork=args.subnetwork,
         cluster_ipv4_cidr=cluster_ipv4_cidr,
         node_disk_size_gb=args.disk_size,
         enable_cloud_logging=args.enable_cloud_logging,

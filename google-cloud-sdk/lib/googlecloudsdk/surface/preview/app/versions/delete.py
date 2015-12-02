@@ -68,12 +68,13 @@ class Delete(base.Command):
     for version in versions:
       if version.traffic_allocation:
         # TODO(zjn): mention `set-traffic` after b/24008284 is fixed.
+        # TODO(zjn): mention `migrate` it's implemented.
         # TODO(zjn): mention `services delete` after it's implemented.
         raise VersionsDeleteError(
             'Version [{version}] is currently serving {allocation}% of traffic '
             'for service [{service}].\n\n'
-            'Please move all traffic away by using the `migrate` command or by '
-            'deploying a new version with the `--promote` argument.'.format(
+            'Please move all traffic away by using the by deploying a new '
+            'version with the `--promote` argument.'.format(
                 version=version.version,
                 allocation=version.traffic_allocation,
                 service=version.service))

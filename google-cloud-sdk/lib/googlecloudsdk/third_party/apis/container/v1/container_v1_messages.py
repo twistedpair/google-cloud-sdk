@@ -13,6 +13,24 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'container'
 
 
+class AddonsConfig(_messages.Message):
+  """Configuration for the addons that can be automatically spun up in the
+  cluster, enabling additional functionality.
+
+  Fields:
+    horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
+      feature, which increases or decreases the number of replicas a
+      replication controller has based on the resource usage of the existing
+      replicas.
+    httpLoadBalancing: Configuration for the HTTP (L7) load balancing
+      controller addon, which makes it easy to set up HTTP load balancers for
+      services in a cluster.
+  """
+
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
+
+
 class Cluster(_messages.Message):
   """A Google Container Engine cluster.
 
@@ -20,6 +38,8 @@ class Cluster(_messages.Message):
     StatusValueValuesEnum: [Output only] The current status of this cluster.
 
   Fields:
+    addonsConfig: Configurations for the various addons available to run in
+      the cluster.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
@@ -79,6 +99,11 @@ class Cluster(_messages.Message):
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
       status of this cluster, if available.
+    subnetwork: The name of the Google Compute Engine
+      [subnetwork](/compute/docs/subnetworks) to which the cluster is
+      connected. If specified, the cluster's network must be a "custom subnet"
+      network. Specification of subnetworks is an alpha feature, and require
+      that the Google Compute Engine alpha API be enabled.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """
@@ -106,28 +131,30 @@ class Cluster(_messages.Message):
     STOPPING = 4
     ERROR = 5
 
-  clusterIpv4Cidr = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  currentMasterVersion = _messages.StringField(3)
-  currentNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(5)
-  description = _messages.StringField(6)
-  endpoint = _messages.StringField(7)
-  initialClusterVersion = _messages.StringField(8)
-  initialNodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(10, repeated=True)
-  loggingService = _messages.StringField(11)
-  masterAuth = _messages.MessageField('MasterAuth', 12)
-  monitoringService = _messages.StringField(13)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  nodeConfig = _messages.MessageField('NodeConfig', 16)
-  nodeIpv4CidrSize = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(18)
-  servicesIpv4Cidr = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  zone = _messages.StringField(22)
+  addonsConfig = _messages.MessageField('AddonsConfig', 1)
+  clusterIpv4Cidr = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  currentMasterVersion = _messages.StringField(4)
+  currentNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(6)
+  description = _messages.StringField(7)
+  endpoint = _messages.StringField(8)
+  initialClusterVersion = _messages.StringField(9)
+  initialNodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(11, repeated=True)
+  loggingService = _messages.StringField(12)
+  masterAuth = _messages.MessageField('MasterAuth', 13)
+  monitoringService = _messages.StringField(14)
+  name = _messages.StringField(15)
+  network = _messages.StringField(16)
+  nodeConfig = _messages.MessageField('NodeConfig', 17)
+  nodeIpv4CidrSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(19)
+  servicesIpv4Cidr = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  subnetwork = _messages.StringField(23)
+  zone = _messages.StringField(24)
 
 
 class ClusterUpdate(_messages.Message):
@@ -136,6 +163,8 @@ class ClusterUpdate(_messages.Message):
   provided.
 
   Fields:
+    desiredAddonsConfig: Configurations for the various addons available to
+      run in the cluster.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -151,10 +180,11 @@ class ClusterUpdate(_messages.Message):
       supported by the server.
   """
 
-  desiredMasterMachineType = _messages.StringField(1)
-  desiredMasterVersion = _messages.StringField(2)
-  desiredMonitoringService = _messages.StringField(3)
-  desiredNodeVersion = _messages.StringField(4)
+  desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
+  desiredMasterMachineType = _messages.StringField(2)
+  desiredMasterVersion = _messages.StringField(3)
+  desiredMonitoringService = _messages.StringField(4)
+  desiredNodeVersion = _messages.StringField(5)
 
 
 class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):
@@ -364,6 +394,33 @@ class CreateTokenRequest(_messages.Message):
 
   clusterId = _messages.StringField(1)
   projectNumber = _messages.IntegerField(2)
+
+
+class HorizontalPodAutoscaling(_messages.Message):
+  """Configuration options for the horizontal pod autoscaling feature, which
+  increases or decreases the number of replicas a replication controller has
+  based on the resource usage of the existing replicas.
+
+  Fields:
+    disabled: Whether the Horizontal Pod Autoscaling feature is enabled in the
+      cluster. When enabled, it ensures that a Heapster pod is running in the
+      cluster, which is also used by the Cloud Monitoring service.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
+class HttpLoadBalancing(_messages.Message):
+  """Configuration options for the HTTP (L7) load balancing controller addon,
+  which makes it easy to set up HTTP load balancers for services in a cluster.
+
+  Fields:
+    disabled: Whether the HTTP Load Balancing controller is enabled in the
+      cluster. When enabled, it runs a small pod in the cluster that manages
+      the load balancers.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class ListClustersResponse(_messages.Message):

@@ -24,7 +24,7 @@ _FIREWALL_RULE_ALLOW = 'tcp:2376'
 _INSTANCE_TAG = 'gae-builder'
 
 
-def Provision(cli, name, zone):
+def Provision(cli, name, zone, project):
   """Provisions a GCE VM to act as a remote Docker host.
 
   This is the main entrypoint of this module. This function configures a
@@ -34,59 +34,65 @@ def Provision(cli, name, zone):
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     name: The name of the GCE instance.
     zone: The zone to place the instance in.
+    project: The project id.
   Returns:
     A _Vm instance.
   Raises:
     ToolException: If there is an error provisioning the instance.
   """
   log.status.Print('Provisioning remote build service.')
-  if _ShouldConfigureNetwork(cli):
+  if _ShouldConfigureNetwork(cli, project):
     log.info('Adding firewall rule [{name}] for remote '
              'builds.'.format(name=name))
-    _ConfigureNetwork(cli)
+    _ConfigureNetwork(cli, project)
   else:
     log.info('Network already configured.')
 
   log.info('Creating remote build VM [{name}]'.format(name=name))
-  vm = _CreateVm(cli, name, zone)
+  vm = _CreateVm(cli, name, zone, project)
   log.status.Print('Copying certificates for secure access. You may be '
                    'prompted to create an SSH keypair.')
   vm.CopyCerts()
   return vm
 
 
-def _ShouldConfigureNetwork(cli):
+def _ShouldConfigureNetwork(cli, project):
   """Determines whether or not the project's network needs to be configured.
 
   Args:
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
+    project: The project id.
   Returns:
     A bool indicating whether or not to configure the network.
   """
-  rules = cli.Execute(['compute', 'firewall-rules', 'list',
-                       '--no-user-output-enabled'])
+  rules = cli.Execute(
+      ['compute', 'firewall-rules', 'list', '--no-user-output-enabled',
+       '--project={project}'.format(project=project)])
   return not any(r for r in rules if r['name'] == _FIREWALL_RULE_NAME)
 
 
-def _ConfigureNetwork(cli):
+def _ConfigureNetwork(cli, project):
   """Configures the project's network.
 
   Args:
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
+    project: The project ID.
   """
   cli.Execute(
       ['compute', 'firewall-rules', 'create', _FIREWALL_RULE_NAME,
        '--allow={allow}'.format(allow=_FIREWALL_RULE_ALLOW),
-       '--target-tags={tag}'.format(tag=_INSTANCE_TAG)])
+       '--target-tags={tag}'.format(tag=_INSTANCE_TAG),
+       '--project={project}'.format(project=project)])
 
 
-def _CreateVm(cli, name, zone):
+def _CreateVm(cli, name, zone, project):
   """Creates a VM.
 
   Args:
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     name: The name of the VM.
     zone: The zone to create the VM in.
+    project: The project id.
   Returns:
     A VM instance.
   """
@@ -100,10 +106,11 @@ def _CreateVm(cli, name, zone):
        properties.VALUES.app.hosted_build_boot_disk_size.Get(),
        '--zone', zone,
        '--no-restart-on-failure',
-       '--no-user-output-enabled'])
+       '--no-user-output-enabled',
+       '--project', project])
   # Exhaust the generator.
   vm_info = list(output)
-  return _Vm(cli, vm_info[0])
+  return _Vm(cli, vm_info[0], project)
 
 
 class _Vm(object):
@@ -117,7 +124,7 @@ class _Vm(object):
   calling _CreateVm.
   """
 
-  def __init__(self, cli, vm_info):
+  def __init__(self, cli, vm_info, project):
     self._cli = cli
     self._teardown_thread = None
     # We have to do relpath here because SCP doesn't handle "c:\" paths
@@ -126,6 +133,7 @@ class _Vm(object):
     self._ip = vm_info['networkInterfaces'][0]['accessConfigs'][0]['natIP']
     self._name = vm_info['name']
     self._zone = vm_info['zone']
+    self._project = project
 
   @property
   def host(self):
@@ -146,6 +154,7 @@ class _Vm(object):
         self._cli.Execute(
             ['compute', 'copy-files', '--zone', self._zone,
              '--verbosity', 'none', '--no-user-output-enabled', '--quiet',
+             '--project', self._project,
              _REMOTE_CERT_FORMAT.format(name=self._name), self.cert_dir])
         break
       except (SystemExit, exceptions.ToolException):
@@ -166,13 +175,18 @@ class _Vm(object):
   def _Teardown(self):
     """Does the actual teardown. Deletes the tmpdir and the VM."""
     try:
+      # Let users know, because this can take a while and the command appears
+      # hung. Don't use a progress tracker because there's other output
+      # occurring at the same time.
+      log.status.Print('Beginning teardown of remote build environment (this '
+                       'may take a few seconds).')
       # It looks like the --verbosity parameter is not threadsafe, and this
       # runs in parallel. Any verbosity options we pass to this command can
       # override the rest of the command and mask errors. See b/22725326 for
       # more context.
       self._cli.Execute(
           ['compute', 'instances', 'delete', self._name,
-           '--zone', self._zone, '-q'])
+           '--zone', self._zone, '--project', self._project, '-q'])
     except (SystemExit, exceptions.ToolException) as e:
       log.error('There was an error tearing down the remote build VM. Please '
                 'check that the VM was deleted.')
@@ -184,19 +198,21 @@ class _Vm(object):
 class DockerHost(object):
   """A context manager for provisioning and connecting to a Docker daemon."""
 
-  def __init__(self, cli, version, remote):
+  def __init__(self, cli, version, remote, project):
     """Initializes a DockerHost.
 
     Args:
       cli: calliope.cli.CLI, The CLI object representing this command line tool.
       version: The app version being deployed.
       remote: Whether the Docker host should be remote (On GCE).
+      project: The project id.
     """
     self._remote = remote
     self._name = 'gae-builder-vm-{version}'.format(version=version)
     self._zone = properties.VALUES.app.hosted_build_zone.Get()
     self._cli = cli
     self._vm = None
+    self._project = project
 
   def __enter__(self):
     """Sets up a docker host, if necessary.
@@ -205,7 +221,7 @@ class DockerHost(object):
       A docker.Client instance.
     """
     if self._remote:
-      self._vm = Provision(self._cli, self._name, self._zone)
+      self._vm = Provision(self._cli, self._name, self._zone, self._project)
       kwargs = containers.KwargsFromEnv(self._vm.host, self._vm.cert_dir, True)
     else:
       kwargs = containers.KwargsFromEnv(os.environ.get('DOCKER_HOST'),

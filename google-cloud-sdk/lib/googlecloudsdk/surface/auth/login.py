@@ -64,6 +64,9 @@ class Login(base.Command):
     parser.add_argument(
         'account', nargs='?', help='The account to log in as.')
 
+  def Format(self, unused_args):
+    return None
+
   @c_exc.RaiseToolExceptionInsteadOf(c_store.Error)
   def Run(self, args):
     """Run the authentication command."""

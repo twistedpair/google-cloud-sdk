@@ -5,6 +5,7 @@
 
 import gzip
 import os
+import shutil
 import tempfile
 
 from docker import docker
@@ -57,7 +58,14 @@ def UploadSource(source_dir, target_object):
       exclude = set(filter(bool, f.read().splitlines()))
       # Remove paths that shouldn't be excluded on the client.
       exclude -= set(BLACKLISTED_DOCKERIGNORE_PATHS)
-  with tempfile.NamedTemporaryFile() as f:
+  # We can't use tempfile.NamedTemporaryFile here because ... Windows.
+  # See https://bugs.python.org/issue14243. There are small cleanup races
+  # during process termination that will leave artifacts on the filesystem.
+  # eg, CTRL-C on windows leaves both the directory and the file. Unavoidable.
+  # On Posix, `kill -9` has similar behavior, but CTRL-C allows cleanup.
+  try:
+    temp_dir = tempfile.mkdtemp()
+    f = open(os.path.join(temp_dir, 'src.tgz'), 'w+b')
     # We are able to leverage the source archiving code from docker-py;
     # however, there are two wrinkles:
     # 1) The 3P code doesn't support gzip (it's expecting a local unix socket).
@@ -66,8 +74,10 @@ def UploadSource(source_dir, target_object):
     #    exception. So we use GzipFileIgnoreSeek as a workaround.
     with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
       docker.utils.tar(source_dir, exclude, fileobj=gz)
-    f.seek(0)
+    f.close()
     cloud_storage.Copy(f.name, target_object)
+  finally:
+    shutil.rmtree(temp_dir)
 
 
 def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):

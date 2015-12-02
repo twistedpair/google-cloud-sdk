@@ -59,6 +59,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.routes = self.RoutesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
+    self.subnetworks = self.SubnetworksService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
     self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
     self.targetInstances = self.TargetInstancesService(self)
@@ -751,6 +752,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'DiskList',
               supports_download=False,
           ),
+          'Resize': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.disks.resize',
+              ordered_params=[u'project', u'zone', u'disk'],
+              path_params=[u'disk', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/resize',
+              request_field=u'disksResizeRequest',
+              request_type_name=u'ComputeDisksResizeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -831,6 +844,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (DiskList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Resize(self, request, global_params=None):
+      """Resizes the specified persistent disk.
+
+      Args:
+        request: (ComputeDisksResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1148,7 +1174,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -1399,7 +1425,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetTarget(self, request, global_params=None):
-      """Changes target url for forwarding rule. The new target should be of the same type as the old target.
+      """Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -2292,7 +2318,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      """Modifies the autohealing policy.
+      """Modifies the autohealing policies.
 
       Args:
         request: (ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -2962,7 +2988,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified Instance resource. For more information, see Shutting down an instance.
+      """Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -3092,7 +3118,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetMachineType(self, request, global_params=None):
-      """Sets machine type for the specified instances to the data included in the request.
+      """Changes the machine type for a stopped instance to the machine type specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineTypeRequest) input message
@@ -3988,6 +4014,144 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class SubnetworksService(base_api.BaseApiService):
+    """Service class for the subnetworks resource."""
+
+    _NAME = u'subnetworks'
+
+    def __init__(self, client):
+      super(ComputeBeta.SubnetworksService, self).__init__(client)
+      self._method_configs = {
+          'AggregatedList': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.aggregatedList',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/aggregated/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksAggregatedListRequest',
+              response_type_name=u'SubnetworkAggregatedList',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.subnetworks.delete',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.get',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksGetRequest',
+              response_type_name=u'Subnetwork',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field=u'subnetwork',
+              request_type_name=u'ComputeSubnetworksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksListRequest',
+              response_type_name=u'SubnetworkList',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of Subnetworks grouped by scope.
+
+      Args:
+        request: (ComputeSubnetworksAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified Subnetwork resource.
+
+      Args:
+        request: (ComputeSubnetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified Subnetwork resource.
+
+      Args:
+        request: (ComputeSubnetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Subnetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a Subnetwork resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSubnetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of Subnetwork resources available to the specified project.
+
+      Args:
+        request: (ComputeSubnetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpProxies resource."""
 
@@ -4586,7 +4750,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def AddInstance(self, request, global_params=None):
-      """Adds instance url to targetPool.
+      """Adds instance URL to targetPool.
 
       Args:
         request: (ComputeTargetPoolsAddInstanceRequest) input message

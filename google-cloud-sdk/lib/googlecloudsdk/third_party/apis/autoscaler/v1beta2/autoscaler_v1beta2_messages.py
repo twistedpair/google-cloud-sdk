@@ -322,6 +322,7 @@ class Operation(_messages.Message):
   Fields:
     clientOperationId: A string attribute.
     creationTimestamp: A string attribute.
+    description: A string attribute.
     endTime: A string attribute.
     error: A ErrorValue attribute.
     httpErrorMessage: A string attribute.
@@ -399,26 +400,27 @@ class Operation(_messages.Message):
 
   clientOperationId = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('ErrorValue', 4)
-  httpErrorMessage = _messages.StringField(5)
-  httpErrorStatusCode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'autoscaler#operation')
-  name = _messages.StringField(10)
-  operationType = _messages.StringField(11)
-  progress = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  startTime = _messages.StringField(15)
-  status = _messages.StringField(16)
-  statusMessage = _messages.StringField(17)
-  targetId = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(19)
-  user = _messages.StringField(20)
-  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
-  zone = _messages.StringField(22)
+  description = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('ErrorValue', 5)
+  httpErrorMessage = _messages.StringField(6)
+  httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'autoscaler#operation')
+  name = _messages.StringField(11)
+  operationType = _messages.StringField(12)
+  progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  startTime = _messages.StringField(16)
+  status = _messages.StringField(17)
+  statusMessage = _messages.StringField(18)
+  targetId = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(20)
+  user = _messages.StringField(21)
+  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
+  zone = _messages.StringField(23)
 
 
 class OperationList(_messages.Message):

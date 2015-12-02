@@ -310,6 +310,16 @@ class Workspace(Source):
     self._workspace_state = state
     self._post_callback = None
 
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and str(self) == str(other)
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+  def __repr__(self):
+    return '<Workspace {0}, Project={1}, Repo={2}>'.format(
+        self._workspace_name, self._project_id, self._repo_name)
+
   @property
   def name(self):
     return self._workspace_name

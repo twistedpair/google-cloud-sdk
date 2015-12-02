@@ -2,6 +2,62 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 0.9.89 (2015/12/02)
+
+### Breaking Changes
+
+*   Removed flag `--container-ipv4-cidr` for `gcloud container clusters create`;
+    please use `--cluster-ipv4-cidr` instead.
+
+*   Renamed `gcloud alpha compute vpn-tunnels create --ike-networks` to
+    `--local-traffic-selector`.
+
+*   `gcloud alpha compute resource-views` commands will soon be removed. Please
+    use `gcloud compute instance-groups unmanaged` commands instead.
+
+*   `gcloud alpha compute replica-pools` commands will soon be removed. Please
+    use `gcloud compute instance-groups` commands instead.
+
+### `gcloud` Core
+
+*   Changed behavior of `gcloud init` git repository clone option. It now takes
+    as input a path to the destination directory for the repository,
+    rather than the parent directory of the repository destination.
+
+### BigQuery
+
+*   Fixed failure in `gcloud alpha biquery query "select * from ..."` command
+    while displaying query results.
+
+### Compute
+
+*   Fixed `gcloud alpha compute instances set-machine-type` failure when
+    supplying custom cpu/custom memory, but no zone.
+
+*   Added a new scope alias for Cloud Monitoring: `monitoring-write`. This scope
+    is on by default in all new VMs.
+
+### Google Cloud DNS
+
+*   Added `--replace-origin-ns` flag to `gcloud dns record-sets import` command
+    to allow importing NS records.
+
+### Google Cloud Storage
+
+*   Updated `gsutil` component to 4.16.
+
+### Google Container Engine
+
+*   Updated kubectl to version 1.1.2.
+
+*   Increased `gcloud container clusters create/delete` timeouts from 20m to
+    30m.
+
+*   Added `--subnetwork` flag to `gcloud container clusters create` to allow
+    creation of container clusters can now be created in a Google Compute Engine
+    subnetwork (https://cloud.google.com/compute/docs/subnetworks).
+
+
 ## 0.9.88 (2015/11/25)
 
 ### Breaking Changes

@@ -29,7 +29,7 @@ class Delete(base.Command):
     parser.add_argument(
         '--timeout',
         type=int,
-        default=1200,
+        default=1800,
         help=argparse.SUPPRESS)
     parser.add_argument(
         '--wait',

@@ -4,6 +4,7 @@
 
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import peek_iterable
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
@@ -126,6 +127,11 @@ def DisplaySchemaAndRows(schema_and_rows):
   # generator created by the call on list_pager.YieldFromList from
   # GetJobSchemaAndRows, so this is where we catch any exception from the API
   # call made by that generator.
+
+  # If schema_and_rows is wrapped in Tapper, remove the wrapper.
+  if type(schema_and_rows) is peek_iterable.Tapper:
+    schema_and_rows = schema_and_rows.next()
+
   try:
     rows = [[cell.v for cell in tr.f] for tr in schema_and_rows.rows]
   except apitools_base.HttpError as server_error:

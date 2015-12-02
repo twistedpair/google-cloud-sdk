@@ -86,9 +86,11 @@ PER_USER_SSH_CONFIG_FILE = '~/.ssh/config'
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
-_MONITORING_RW = 'https://www.googleapis.com/auth/monitoring'
+_MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
 
-DEFAULT_SCOPES = [_STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE]
+DEFAULT_SCOPES = [
+    _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE
+]
 
 SCOPES = {
     'bigquery': 'https://www.googleapis.com/auth/bigquery',
@@ -99,7 +101,8 @@ SCOPES = {
     'useraccounts-rw': 'https://www.googleapis.com/auth/cloud.useraccounts',
     'datastore': 'https://www.googleapis.com/auth/datastore',
     'logging-write': _LOGGING_WRITE,
-    'monitoring': _MONITORING_RW,
+    'monitoring': 'https://www.googleapis.com/auth/monitoring',
+    'monitoring-write': _MONITORING_WRITE,
     'sql': 'https://www.googleapis.com/auth/sqlservice',
     'sql-admin': 'https://www.googleapis.com/auth/sqlservice.admin',
     'storage-full': 'https://www.googleapis.com/auth/devstorage.full_control',

@@ -16,7 +16,8 @@ class Replicapool(base.Group):
 
   This command group manages cloud replica pools.
 
-  Replica pools have been replaced by instance groups; please use those instead.
+  Replica pools have been replaced by instance groups and will be soon removed;
+  please use those instead.
   """
 
   @staticmethod
@@ -43,6 +44,9 @@ class Replicapool(base.Group):
     Returns:
       The updated context.
     """
+    log.warn('This command will be soon removed.')
+    log.warn('Replica pools have been replaced by instance groups;'
+             'please use those instead.')
     # pylint:disable=g-import-not-at-top, Delaying import for performance.
     import apiclient.discovery as discovery
 

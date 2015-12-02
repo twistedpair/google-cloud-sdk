@@ -163,7 +163,8 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
 
   # Build docker images.
   images = {}
-  with docker_util.DockerHost(cli, version_id, remote) as docker_client:
+  with docker_util.DockerHost(
+      cli, version_id, remote, project) as docker_client:
     # Build and push all images.
     for module, info, ensure_dockerfile in modules:
       log.status.Print(

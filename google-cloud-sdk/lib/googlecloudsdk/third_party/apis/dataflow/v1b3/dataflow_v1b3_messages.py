@@ -13,19 +13,46 @@ package = 'dataflow'
 
 
 class ApproximateProgress(_messages.Message):
-  """A progress measurement of a WorkItem by a worker.
+  """Obsolete in favor of ApproximateReportedProgress and
+  ApproximateSplitRequest.
 
   Fields:
-    percentComplete: Completion as percentage of the work, from 0.0
-      (beginning, nothing complete), to 1.0 (end of the work range, entire
-      WorkItem complete).
-    position: A Position within the work to represent a progress.
-    remainingTime: Completion as an estimated time remaining.
+    percentComplete: Obsolete.
+    position: Obsolete.
+    remainingTime: Obsolete.
   """
 
   percentComplete = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   position = _messages.MessageField('Position', 2)
   remainingTime = _messages.StringField(3)
+
+
+class ApproximateReportedProgress(_messages.Message):
+  """A progress measurement of a WorkItem by a worker.
+
+  Fields:
+    fractionConsumed: Completion as fraction of the input consumed, from 0.0
+      (beginning, nothing consumed), to 1.0 (end of the input, entire input
+      consumed).
+    position: A Position within the work to represent a progress.
+  """
+
+  fractionConsumed = _messages.FloatField(1)
+  position = _messages.MessageField('Position', 2)
+
+
+class ApproximateSplitRequest(_messages.Message):
+  """A suggestion by the service to the worker to dynamically split the
+  WorkItem.
+
+  Fields:
+    fractionConsumed: A fraction at which to split the work item, from 0.0
+      (beginning of the input) to 1.0 (end of the input).
+    position: A Position at which to split the work item.
+  """
+
+  fractionConsumed = _messages.FloatField(1)
+  position = _messages.MessageField('Position', 2)
 
 
 class AutoscalingSettings(_messages.Message):
@@ -2485,8 +2512,9 @@ class WorkItemServiceState(_messages.Message):
       worker. Note: If the report call fails for whatever reason, the worker
       should reuse this index for subsequent report attempts.
     reportStatusInterval: New recommended reporting interval.
-    suggestedStopPoint: The progress point in the WorkItem where the Dataflow
+    splitRequest: The progress point in the WorkItem where the Dataflow
       service suggests that the worker truncate the task.
+    suggestedStopPoint: DEPRECATED in favor of split_request.
     suggestedStopPosition: Obsolete, always empty.
   """
 
@@ -2520,8 +2548,9 @@ class WorkItemServiceState(_messages.Message):
   leaseExpireTime = _messages.StringField(2)
   nextReportIndex = _messages.IntegerField(3)
   reportStatusInterval = _messages.StringField(4)
-  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 5)
-  suggestedStopPosition = _messages.MessageField('Position', 6)
+  splitRequest = _messages.MessageField('ApproximateSplitRequest', 5)
+  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 6)
+  suggestedStopPosition = _messages.MessageField('Position', 7)
 
 
 class WorkItemStatus(_messages.Message):
@@ -2535,7 +2564,7 @@ class WorkItemStatus(_messages.Message):
       provided, and completed = true, then the WorkItem is considered to have
       failed.
     metricUpdates: Worker output metrics (counters) for this WorkItem.
-    progress: The WorkItem's approximate progress.
+    progress: DEPRECATED in favor of reported_progress.
     reportIndex: The report index.  When a WorkItem is leased, the lease will
       contain an initial report index.  When a WorkItem's status is reported
       to the system, the report should be sent with that report index, and the
@@ -2546,6 +2575,7 @@ class WorkItemStatus(_messages.Message):
       report multiple times before getting back a response.  The worker should
       not submit a subsequent report until the response for the previous
       report had been received from the service.
+    reportedProgress: The worker's progress through this WorkItem.
     requestedLeaseDuration: Amount of time the worker requests for its lease.
     sourceFork: DEPRECATED in favor of dynamic_source_split.
     sourceOperationResponse: If the work item represented a
@@ -2584,11 +2614,12 @@ class WorkItemStatus(_messages.Message):
   metricUpdates = _messages.MessageField('MetricUpdate', 4, repeated=True)
   progress = _messages.MessageField('ApproximateProgress', 5)
   reportIndex = _messages.IntegerField(6)
-  requestedLeaseDuration = _messages.StringField(7)
-  sourceFork = _messages.MessageField('SourceFork', 8)
-  sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 9)
-  stopPosition = _messages.MessageField('Position', 10)
-  workItemId = _messages.StringField(11)
+  reportedProgress = _messages.MessageField('ApproximateReportedProgress', 7)
+  requestedLeaseDuration = _messages.StringField(8)
+  sourceFork = _messages.MessageField('SourceFork', 9)
+  sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 10)
+  stopPosition = _messages.MessageField('Position', 11)
+  workItemId = _messages.StringField(12)
 
 
 class WorkerHealthReport(_messages.Message):

@@ -46,7 +46,7 @@ class SetMachineType(base_classes.NoOutputAsyncMutator):
 
     machine_type = instance_utils.InterpretMachineType(args)
 
-    instance_utils.CheckCustomCpuRamRatio(self, args.zone, machine_type)
+    instance_utils.CheckCustomCpuRamRatio(self, instance_ref.zone, machine_type)
 
     machine_type_uri = self.CreateZonalReference(
         machine_type, instance_ref.zone,

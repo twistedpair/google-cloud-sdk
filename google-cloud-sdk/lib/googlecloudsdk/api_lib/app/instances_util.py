@@ -2,9 +2,16 @@
 """Utilities for manipulating GCE instances running an App Engine project."""
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 
 
 class InvalidInstanceSpecificationError(exceptions.Error):
+  pass
+
+
+class SelectInstanceError(exceptions.Error):
   pass
 
 
@@ -145,6 +152,10 @@ class AppEngineInstance(object):
   def __str__(self):
     return '/'.join(filter(bool, [self.service, self.version, self.id]))
 
+  def __cmp__(self, other):
+    return cmp((self.service, self.version, self.id),
+               (other.service, other.version, other.id))
+
 
 def FilterInstances(instances, service=None, version=None, instance_path=None):
   """Filter a list of App Engine instances.
@@ -192,3 +203,113 @@ def FilterInstances(instances, service=None, version=None, instance_path=None):
         (not instance_id or provided_instance.id == instance_id)):
       matching_instances.append(provided_instance)
   return matching_instances
+
+
+def GetMatchingInstance(instances, service=None, version=None, instance=None):
+  """Return exactly one matching instance.
+
+  If instance is given, filter down based on the given criteria (service,
+  version, instance) and return the matching instance (it is an error unless
+  exactly one instance matches).
+
+  Otherwise, prompt the user to select the instance interactively.
+
+  Args:
+    instances: list of AppEngineInstance, all instances to select from
+    service: str, a service to filter by or None to include all services
+    version: str, a version to filter by or None to include all versions
+    instance: str, an instance ID or instance resource path
+      (<project>/<service>/<version>/<instance>) to filter by. If not given,
+      the instance will be selected interactively.
+
+  Returns:
+    AppEngineInstance, an instance from the given list.
+
+  Raises:
+    InvalidInstanceSpecificationError: if no matching instances or more than one
+      matching instance were found.
+  """
+  if not instance:
+    return SelectInstanceInteractive(instances, service=service,
+                                     version=version)
+
+  matching = FilterInstances(instances, service, version, instance)
+  if len(matching) > 1:
+    raise InvalidInstanceSpecificationError(
+        'More than one instance matches the given specification.\n\n'
+        'Matching instances: {0}'.format(map(str, sorted(matching))))
+  elif not matching:
+    raise InvalidInstanceSpecificationError(
+        'No instances match the given specification.\n\n'
+        'All instances: {0}'.format(map(str, sorted(instances))))
+  return matching[0]
+
+
+def SelectInstanceInteractive(all_instances, service=None, version=None):
+  """Interactively choose an instance from a provided list.
+
+  Example interaction:
+
+      Which service?
+       [1] default
+       [2] service1
+      Please enter your numeric choice:  1
+
+      Which version?
+       [1] v1
+       [2] v2
+      Please enter your numeric choice:  1
+
+      Which instance?
+       [1] aaaa
+       [2] bbbb
+      Please enter your numeric choice:  1
+
+  Skips any prompts with only one option.
+
+  Args:
+    all_instances: list of AppEngineInstance, the list of instances to drill
+      down on.
+    service: str. If provided, skip the service prompt.
+    version: str. If provided, skip the version prompt.
+
+  Returns:
+    AppEngineInstance, the selected instance from the list.
+
+  Raises:
+    SelectInstanceError: if no versions matching the criteria can be found or
+      prompts are disabled.
+  """
+  if properties.VALUES.core.disable_prompts.GetBool():
+    raise SelectInstanceError(
+        'Cannot interactively select instances with prompts disabled.')
+
+  # Defined here to close over all_instances for the error message
+  def _PromptOptions(options, type_):
+    """Given an iterable options of type type_, prompt and return one."""
+    options = sorted(set(options))
+    if len(options) > 1:
+      idx = console_io.PromptChoice(options, message='Which {0}?'.format(type_))
+    elif len(options) == 1:
+      idx = 0
+      log.status.Print('Choosing [{0}] for {1}.\n'.format(options[0], type_))
+    else:
+      if all_instances:
+        msg = ('No instances could be found matching the given criteria.\n\n'
+               'All instances:\n' +
+               '\n'.join(map('* [{0}]'.format, sorted(all_instances))))
+      else:
+        msg = 'No instances were found for the current project [{0}].'.format(
+            properties.VALUES.core.project.Get(required=True))
+      raise SelectInstanceError(msg)
+    return options[idx]
+
+  matching_instances = FilterInstances(all_instances, service, version)
+
+  service = _PromptOptions((i.service for i in matching_instances), 'service')
+  matching_instances = FilterInstances(matching_instances, service=service)
+
+  version = _PromptOptions((i.version for i in matching_instances), 'version')
+  matching_instances = FilterInstances(matching_instances, version=version)
+
+  return _PromptOptions(matching_instances, 'instance')
