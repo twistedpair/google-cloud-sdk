@@ -42,7 +42,7 @@ class _BaseCreate(object):
     return 'networks'
 
 
-@base.ReleaseTracks(base.ReleaseTrack.GA, base.ReleaseTrack.BETA)
+@base.ReleaseTracks(base.ReleaseTrack.GA)
 class Create(_BaseCreate, base_classes.BaseAsyncCreator):
   """Create a Google Compute Engine network.
 
@@ -85,7 +85,7 @@ class Create(_BaseCreate, base_classes.BaseAsyncCreator):
     return [request]
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class CreateAlpha(_BaseCreate, base_classes.BaseAsyncCreator):
   """Create a Google Compute Engine network.
 

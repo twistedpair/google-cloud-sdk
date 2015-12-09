@@ -22,6 +22,16 @@ class Android(base.Group):
 
             $ {command} devices list
 
+          To view details about available Android OS versions, such as their
+          code names and release dates, run:
+
+            $ {command} versions list
+
+          To view the list of available Android locales which can be used for
+          testing internationalized applications, run:
+
+            $ {command} locales list
+
           To view all options available for running Android tests, run:
 
             $ {command} run --help

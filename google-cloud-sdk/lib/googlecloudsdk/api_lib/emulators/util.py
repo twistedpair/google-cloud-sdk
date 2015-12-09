@@ -106,6 +106,15 @@ def CheckIfJava7IsInstalled(for_text):
                      'your system PATH'.format(for_text=for_text))
 
 
+def IsJavaInstalledForTest():
+  """Use this to use Java 7+ as a boolean precondition."""
+  try:
+    CheckIfJava7IsInstalled('test')
+    return True
+  except Java7Error:
+    return False
+
+
 def WriteEnvYaml(env, output_dir):
   """Writes the given environment values into the output_dir/env.yaml file.
 

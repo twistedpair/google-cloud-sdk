@@ -1,13 +1,9 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 """Command for setting target pools of managed instance group."""
 
-import argparse
-
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import log
 
 
 class SetTargetPools(base_classes.BaseAsyncMutator):
@@ -16,13 +12,9 @@ class SetTargetPools(base_classes.BaseAsyncMutator):
   @staticmethod
   def Args(parser):
     parser.add_argument('name', help='Managed instance group name.')
-    mutually_exclusive_group = parser.add_mutually_exclusive_group()
-    mutually_exclusive_group.add_argument(
-        '--clear-target-pools',
-        action='store_true',
-        help=argparse.SUPPRESS)
-    mutually_exclusive_group.add_argument(
+    parser.add_argument(
         '--target-pools',
+        required=True,
         type=arg_parsers.ArgList(min_length=0),
         action=arg_parsers.FloatingListValuesCatcher(),
         metavar='TARGET_POOL',
@@ -46,24 +38,11 @@ class SetTargetPools(base_classes.BaseAsyncMutator):
   def resource_type(self):
     return 'instanceGroupManagers'
 
-  def _ValidateArgs(self, args):
-    if not args.clear_target_pools and args.target_pools is None:
-      raise exceptions.InvalidArgumentException(
-          '--target-pools', 'not passed but --clear-target-pools not present '
-          'either.')
-    if args.clear_target_pools:
-      log.warn('Flag --clear-target-pools is deprecated. Use --target-pools '
-               'with empty string ("") as the target pool list instead.')
-
   def CreateRequests(self, args):
-    self._ValidateArgs(args)
     ref = self.CreateZonalReference(args.name, args.zone)
     region = utils.ZoneNameToRegionName(ref.zone)
-    if args.clear_target_pools:
-      pool_refs = []
-    else:
-      pool_refs = self.CreateRegionalReferences(
-          args.target_pools, region, resource_type='targetPools')
+    pool_refs = self.CreateRegionalReferences(
+        args.target_pools, region, resource_type='targetPools')
     pools = [pool_ref.SelfLink() for pool_ref in pool_refs]
     request = (
         self.messages.ComputeInstanceGroupManagersSetTargetPoolsRequest(

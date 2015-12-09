@@ -198,10 +198,6 @@ class AndroidRoboTest(_messages.Message):
       app. Optional
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
-    bootstrapApk: The APK used for bootstrapping (e.g., passing the login
-      screen). Optional
-    bootstrapPackageId: The java package for the bootstrap. Optional
-    bootstrapRunnerClass: The runner class for the bootstrap. Optional
     maxDepth: The max depth of the traversal stack Robo can explore. Needs to
       be at least 2 to make Robo explore the app beyond the first activity.
       Default is 50. Optional
@@ -214,12 +210,9 @@ class AndroidRoboTest(_messages.Message):
   appApk = _messages.MessageField('FileReference', 1)
   appInitialActivity = _messages.StringField(2)
   appPackageId = _messages.StringField(3)
-  bootstrapApk = _messages.MessageField('FileReference', 4)
-  bootstrapPackageId = _messages.StringField(5)
-  bootstrapRunnerClass = _messages.StringField(6)
-  maxDepth = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxSteps = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  randomizeSteps = _messages.BooleanField(9)
+  maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  randomizeSteps = _messages.BooleanField(6)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):

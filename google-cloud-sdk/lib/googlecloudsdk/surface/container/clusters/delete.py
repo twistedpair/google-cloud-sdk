@@ -54,14 +54,14 @@ class Delete(base.Command):
     for name in args.names:
       cluster_refs.append(adapter.ParseCluster(name))
 
-    if not console_io.PromptContinue(
+    console_io.PromptContinue(
         message=util.ConstructList(
             'The following clusters will be deleted.',
             ['[{name}] in [{zone}]'.format(name=ref.clusterId,
                                            zone=adapter.Zone(ref))
              for ref in cluster_refs]),
-        throw_if_unattended=True):
-      raise util.Error('Deletion aborted by user.')
+        throw_if_unattended=True,
+        cancel_on_no=True)
 
     operations = []
     errors = []

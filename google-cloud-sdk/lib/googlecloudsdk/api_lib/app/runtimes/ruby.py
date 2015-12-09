@@ -295,9 +295,14 @@ def _CheckForRubyRuntime(path, appinfo):
   if not os.path.isfile(gemfile_path):
     return False
 
-  return console_io.PromptContinue(
-      message='This looks like a Ruby application.',
-      prompt_string='Proceed to configure deployment for Ruby?')
+  got_ruby_message = 'This looks like a Ruby application.'
+  if console_io.CanPrompt():
+    return console_io.PromptContinue(
+        message=got_ruby_message,
+        prompt_string='Proceed to configure deployment for Ruby?')
+  else:
+    log.info(got_ruby_message)
+    return True
 
 
 def _CheckEnvironment(path):

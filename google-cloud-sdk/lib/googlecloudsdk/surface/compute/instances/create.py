@@ -499,7 +499,7 @@ class CreateBeta(CreateGA):
   def Args(parser):
     _CommonArgs(parser)
     csek_utils.AddCsekKeyArgs(parser)
-    instance_utils.AddNetworkArgs(parser)
+    instance_utils.AddNetworkArgsAlpha(parser)
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)

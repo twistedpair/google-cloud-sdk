@@ -3,8 +3,6 @@
 """Facilities for fetching and displaying table rows and field names."""
 
 from googlecloudsdk.api_lib.bigquery import bigquery
-from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.util import peek_iterable
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
@@ -22,6 +20,31 @@ class SchemaAndRows(object):
   def __init__(self, schema, rows):
     self.schema = schema
     self.rows = rows
+
+  def PrepareForDisplay(self):
+    """Prepare for display by resource printer. Convert each row to a map.
+
+    Yields:
+      A map representing a row.
+    """
+    try:
+      for tr in self.rows:
+        row = [cell.v for cell in tr.f]
+        r_map = {}
+        for i, field_schema in enumerate(self.schema):
+          r_map[field_schema.name] = row[i].string_value if row[i] else None
+        yield r_map
+    except apitools_base.HttpError as server_error:
+      raise bigquery.Error.ForHttpError(server_error)
+
+  def GetDefaultFormat(self):
+    """Return the default format string for the schema.
+
+    Returns:
+      The default format string for the schema.
+    """
+    names = [x.name for x in self.schema]
+    return 'table(' + ','.join(names) + ')'
 
 
 def GetJobSchemaAndRows(
@@ -111,42 +134,3 @@ def _GetSchemaAndRows(service, method, schema, request_for_rows, max_rows):
       next_token_attribute='pageToken')
 
   return SchemaAndRows(schema.fields, rows)
-
-
-def DisplaySchemaAndRows(schema_and_rows):
-  """Display a SchemaAndRows object as a gcloud table.
-
-  The heading for each column is a field name.
-
-  Args:
-    schema_and_rows: The SchemaAndRows object.
-  """
-  # Convert the iterable over TableRow objects into a list of lists, where
-  # each inner list corresponds to a row, and contains JsonValue objects
-  # for the values in the row. This is the point at which we invoke the
-  # generator created by the call on list_pager.YieldFromList from
-  # GetJobSchemaAndRows, so this is where we catch any exception from the API
-  # call made by that generator.
-
-  # If schema_and_rows is wrapped in Tapper, remove the wrapper.
-  if type(schema_and_rows) is peek_iterable.Tapper:
-    schema_and_rows = schema_and_rows.next()
-
-  try:
-    rows = [[cell.v for cell in tr.f] for tr in schema_and_rows.rows]
-  except apitools_base.HttpError as server_error:
-    raise bigquery.Error.ForHttpError(server_error)
-
-  def CreateColumnFetcher(col_num):
-    def ColumnFetcher(row):
-      return row[col_num].string_value if row[col_num] else 'null'
-    return ColumnFetcher
-  col_fetchers = [(field_schema.name.upper(), CreateColumnFetcher(i))
-                  for i, field_schema in enumerate(schema_and_rows.schema)]
-  # The variable col_fetchers is a list of pairs. The first component of each
-  # pair is the name of a field, and the second component of each pair is a
-  # function to which a row is passed. Each row passed to such a function is a
-  # list of JsonValue objects, and each of these JsonValue objects has its
-  # string_value field set.
-
-  console_io.PrintExtendedList(rows, col_fetchers)

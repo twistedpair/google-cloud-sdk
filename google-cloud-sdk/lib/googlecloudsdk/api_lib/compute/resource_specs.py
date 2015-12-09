@@ -495,7 +495,6 @@ _SPECS_V1 = {
             ('BASE_INSTANCE_NAME', 'baseInstanceName'),
             ('SIZE', 'size'),
             ('TARGET_SIZE', 'targetSize'),
-            ('GROUP', 'instanceGroup'),
             ('INSTANCE_TEMPLATE', 'instanceTemplate'),
             ('AUTOSCALED', 'autoscaled'),
         ],
@@ -796,6 +795,33 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
+_SPECS_BETA['subnetworks'] = _InternalSpec(
+    message_class_name='Subnetwork',
+    table_cols=[
+        ('NAME', 'name'),
+        ('REGION', 'region'),
+        ('NETWORK', 'network'),
+        ('RANGE', 'ipCidrRange')
+        ],
+    transformations=[
+        ('network', path_simplifier.Name),
+        ('region', path_simplifier.Name),
+        ],
+    editables=None,
+    )
+_SPECS_BETA['networks'] = _InternalSpec(
+    message_class_name='Network',
+    table_cols=[
+        ('NAME', 'name'),
+        ('MODE', 'x_gcloud_mode'),
+        ('IPV4_RANGE', 'IPv4Range'),
+        ('GATEWAY_IPV4', 'gatewayIPv4'),
+    ],
+    transformations=[
+        ],
+    editables=None,
+    )
+
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
@@ -828,32 +854,6 @@ _SPECS_ALPHA['routers'] = _InternalSpec(
     transformations=[
         ('network', path_simplifier.Name),
         ('region', path_simplifier.Name),
-        ],
-    editables=None,
-    )
-_SPECS_ALPHA['subnetworks'] = _InternalSpec(
-    message_class_name='Subnetwork',
-    table_cols=[
-        ('NAME', 'name'),
-        ('REGION', 'region'),
-        ('NETWORK', 'network'),
-        ('RANGE', 'ipCidrRange')
-        ],
-    transformations=[
-        ('network', path_simplifier.Name),
-        ('region', path_simplifier.Name),
-        ],
-    editables=None,
-    )
-_SPECS_ALPHA['networks'] = _InternalSpec(
-    message_class_name='Network',
-    table_cols=[
-        ('NAME', 'name'),
-        ('MODE', 'x_gcloud_mode'),
-        ('IPV4_RANGE', 'IPv4Range'),
-        ('GATEWAY_IPV4', 'gatewayIPv4'),
-    ],
-    transformations=[
         ],
     editables=None,
     )

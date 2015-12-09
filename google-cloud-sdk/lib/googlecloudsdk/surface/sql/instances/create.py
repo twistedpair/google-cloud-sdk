@@ -2,7 +2,6 @@
 
 """Creates a new Cloud SQL instance."""
 import argparse
-import logging
 from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.api_lib.sql import instances
 from googlecloudsdk.api_lib.sql import operations
@@ -183,9 +182,6 @@ class Create(_BaseCreate, base.Command):
           command.
     """
 
-    # Added this temporarily for debugging SQL instance creation failures.
-    # See b/18936263 for details.
-    log.SetVerbosity(logging.DEBUG)
     sql_client = self.context['sql_client']
     sql_messages = self.context['sql_messages']
     resources = self.context['registry']
@@ -263,9 +259,6 @@ class CreateBeta(_BaseCreate, base.Command):
           command.
     """
 
-    # Added this temporarily for debugging SQL instance creation failures.
-    # See b/18936263 for details.
-    log.SetVerbosity(logging.DEBUG)
     sql_client = self.context['sql_client']
     sql_messages = self.context['sql_messages']
     resources = self.context['registry']

@@ -53,6 +53,10 @@ class Breakpoint(_messages.Message):
     LogLevelValueValuesEnum: Indicates the severity of the log. Only relevant
       when action is `LOG`.
 
+  Messages:
+    LabelsValue: A set of custom breakpoint properties, populated by the
+      agent, to be displayed to the user.
+
   Fields:
     action: Action that the agent should perform when the code at the
       breakpoint location is hit.
@@ -77,6 +81,8 @@ class Breakpoint(_messages.Message):
     id: Breakpoint identifier, unique in the scope of the debuggee.
     isFinalState: When true, indicates that this is a final result and the
       breakpoint state will not change from here on.
+    labels: A set of custom breakpoint properties, populated by the agent, to
+      be displayed to the user.
     location: Breakpoint source location.
     logLevel: Indicates the severity of the log. Only relevant when action is
       `LOG`.
@@ -135,6 +141,31 @@ class Breakpoint(_messages.Message):
     WARNING = 1
     ERROR = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """A set of custom breakpoint properties, populated by the agent, to be
+    displayed to the user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   condition = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -143,13 +174,14 @@ class Breakpoint(_messages.Message):
   finalTime = _messages.StringField(6)
   id = _messages.StringField(7)
   isFinalState = _messages.BooleanField(8)
-  location = _messages.MessageField('SourceLocation', 9)
-  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 10)
-  logMessageFormat = _messages.StringField(11)
-  stackFrames = _messages.MessageField('StackFrame', 12, repeated=True)
-  status = _messages.MessageField('StatusMessage', 13)
-  userEmail = _messages.StringField(14)
-  variableTable = _messages.MessageField('Variable', 15, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 9)
+  location = _messages.MessageField('SourceLocation', 10)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 11)
+  logMessageFormat = _messages.StringField(12)
+  stackFrames = _messages.MessageField('StackFrame', 13, repeated=True)
+  status = _messages.MessageField('StatusMessage', 14)
+  userEmail = _messages.StringField(15)
+  variableTable = _messages.MessageField('Variable', 16, repeated=True)
 
 
 class CloudRepoSourceContext(_messages.Message):

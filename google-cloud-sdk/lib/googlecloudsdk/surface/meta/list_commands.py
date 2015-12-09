@@ -78,7 +78,8 @@ class ListCommands(base.Command):
         'restrict',
         metavar='COMMAND/GROUP',
         nargs='*',
-        help='Restrict the listing to the specified command groups.')
+        help=('Restrict the listing to these dotted command paths. '
+              'For example: gcloud.alpha gcloud.beta.test'))
 
   def Run(self, args):
     return walker_util.CommandTreeGenerator(

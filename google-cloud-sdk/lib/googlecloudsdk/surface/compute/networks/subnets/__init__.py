@@ -4,7 +4,7 @@
 from googlecloudsdk.calliope import base
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class Routers(base.Group):
   """List, describe, and delete Google Compute Engine subnetworks."""
 

@@ -25,38 +25,42 @@ class Walker(object):
 
     Args:
       hidden: Include hidden groups and commands if True.
-      restrict: Restricts the walk to the top level command/group names in this
-        list. For example, restrict=['compute'] will list 'gcloud' and the
-        'gcloud compute *' commands/groups.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
 
     Returns:
       The return value of the top level Visit() call.
     """
-    def _Include(command, restrict):
+    def _Include(command, traverse=False):
       """Determines if command should be included in the walk.
 
       Args:
         command: CommandCommon command node.
-        restrict: Restricts the walk to the top level subcommand/subgroup names
-          in this list.
+        traverse: If True then check traversal through group to subcommands.
 
       Returns:
         True if command should be included in the walk.
       """
       if not hidden and command.IsHidden():
         return False
-      if restrict and command.name not in restrict:
-        return False
-      return True
+      if not restrict:
+        return True
+      path = '.'.join(command.GetPath())
+      for item in restrict:
+        if path.startswith(item):
+          return True
+        if traverse and item.startswith(path):
+          return True
+      return False
 
-    def _Walk(node, parent, restrict=None):
+    def _Walk(node, parent):
       """Walk() helper that calls self.Visit() on each node in the CLI tree.
 
       Args:
         node: CommandCommon tree node.
         parent: The parent Visit() return value, None at the top level.
-        restrict: Restricts the walk to the top level subcommand/subgroup names
-          in this list.
 
       Returns:
         The return value of the outer Visit() call.
@@ -64,17 +68,17 @@ class Walker(object):
       parent = self.Visit(node, parent, is_group=True)
       if node.commands:
         for _, command in sorted(node.commands.iteritems()):
-          if _Include(command, restrict):
+          if _Include(command):
             self.Visit(command, parent, is_group=False)
       if node.groups:
         for _, command in sorted(node.groups.iteritems()):
-          if _Include(command, restrict):
+          if _Include(command, traverse=True):
             _Walk(command, parent)
       return parent
 
     root = self._cli._TopElement()  # pylint: disable=protected-access
     root.LoadAllSubElements(recursive=True)
-    parent = _Walk(root, self.Init(), restrict=restrict)
+    parent = _Walk(root, self.Init())
     self.Done()
     return parent
 

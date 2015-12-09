@@ -11,10 +11,10 @@ from googlecloudsdk.core.console import console_io
 CONTINUE_WITH_RESIZE_PROMPT = textwrap.dedent("""
     This command increases disk size. This change is not reversible.
     For more information, see:
-    https://cloud.google.com/sdk/gcloud/reference/alpha/compute/disks/resize""")
+    https://cloud.google.com/sdk/gcloud/reference/beta/compute/disks/resize""")
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class Resize(base_classes.BaseAsyncMutator):
   """Set size of a persistent disk."""
 
@@ -85,13 +85,20 @@ Resize.detailed_help = {
     'brief': 'Resize a disk or disks',
     'DESCRIPTION': """\
         *{command}* resizes a Google Compute Engine disk(s).
-        Only increasing in disk size is supported. Disks can be resized
-        regardless or whether they are attached or not.
 
-        For example, running:
+        Only increasing disk size is supported. Disks can be resized
+        regardless of whether they are attached.
 
-        $ *{command}* example-disk-1,example-disk-2 --size=6TB
+    """,
+    'EXAMPLES': """\
+        To resize a disk called example-disk-1 to new size 6TB, run:
 
-        will resize the disk called example-disk-1 to new size 6TB,
-        this assumes that original size of example-disk-1 is 6TB or less.
-    """}
+           $ {command} example-disk-1 --size=6TB
+
+        To resize two disks called example-disk-2 and example-disk-3 to
+        new size 6TB, run:
+
+           $ {command} example-disk-2 example-disk-3 --size=6TB
+
+        This assumes that original size of each of these disks is 6TB or less.
+        """}

@@ -55,6 +55,9 @@ def _Args(parser):
       range will be forwarded. If not specified for regional forwarding
       rules, all ports are matched. This flag is required for global
       forwarding rules.
+
+      Either an individual port (`--port-range 80`) or a range of ports
+      (`--port-range 3000-3100`) may be specified.
       """
 
 

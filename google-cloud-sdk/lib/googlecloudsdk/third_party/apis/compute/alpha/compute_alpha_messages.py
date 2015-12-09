@@ -1204,7 +1204,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -1219,7 +1219,7 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
 
   Fields:
     autoscaler: Name of the persistent autoscaler resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1233,7 +1233,7 @@ class ComputeAutoscalersGetRequest(_messages.Message):
 
   Fields:
     autoscaler: Name of the persistent autoscaler resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1247,7 +1247,7 @@ class ComputeAutoscalersInsertRequest(_messages.Message):
 
   Fields:
     autoscaler: A Autoscaler resource to be passed as the request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1292,7 +1292,7 @@ class ComputeAutoscalersListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1311,7 +1311,7 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
     autoscaler: Name of the autoscaler resource to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1345,7 +1345,7 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
     autoscaler: Name of the autoscaler resource to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -1360,7 +1360,7 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
 
   Fields:
     backendBucket: Name of the BackendBucket resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -1372,7 +1372,7 @@ class ComputeBackendBucketsGetRequest(_messages.Message):
 
   Fields:
     backendBucket: Name of the BackendBucket resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -1384,7 +1384,7 @@ class ComputeBackendBucketsInsertRequest(_messages.Message):
 
   Fields:
     backendBucket: A BackendBucket resource to be passed as the request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendBucket = _messages.MessageField('BackendBucket', 1)
@@ -1427,7 +1427,7 @@ class ComputeBackendBucketsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -1444,7 +1444,7 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
     backendBucket: Name of the BackendBucket resource to update.
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -1459,7 +1459,7 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
     backendBucket: Name of the BackendBucket resource to update.
     backendBucketResource: A BackendBucket resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendBucket = _messages.StringField(1, required=True)
@@ -1472,7 +1472,7 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
 
   Fields:
     backendService: Name of the BackendService resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -1500,7 +1500,7 @@ class ComputeBackendServicesGetRequest(_messages.Message):
 
   Fields:
     backendService: Name of the BackendService resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -1513,7 +1513,7 @@ class ComputeBackendServicesInsertRequest(_messages.Message):
   Fields:
     backendService: A BackendService resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendService = _messages.MessageField('BackendService', 1)
@@ -1556,7 +1556,7 @@ class ComputeBackendServicesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -1573,7 +1573,7 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
     backendService: Name of the BackendService resource to update.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -1603,7 +1603,7 @@ class ComputeBackendServicesUpdateRequest(_messages.Message):
     backendService: Name of the BackendService resource to update.
     backendServiceResource: A BackendService resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   backendService = _messages.StringField(1, required=True)
@@ -1880,7 +1880,7 @@ class ComputeDisksResizeRequest(_messages.Message):
     disk: The name of the persistent disk.
     disksResizeRequest: A DisksResizeRequest resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone for this request.
   """
 
@@ -2085,7 +2085,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -2100,7 +2100,7 @@ class ComputeForwardingRulesDeleteRequest(_messages.Message):
 
   Fields:
     forwardingRule: Name of the ForwardingRule resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -2114,7 +2114,7 @@ class ComputeForwardingRulesGetRequest(_messages.Message):
 
   Fields:
     forwardingRule: Name of the ForwardingRule resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -2129,7 +2129,7 @@ class ComputeForwardingRulesInsertRequest(_messages.Message):
   Fields:
     forwardingRule: A ForwardingRule resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -2174,7 +2174,7 @@ class ComputeForwardingRulesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -2192,7 +2192,7 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   Fields:
     forwardingRule: Name of the ForwardingRule resource in which target is to
       be set.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     targetReference: A TargetReference resource to be passed as the request
       body.
@@ -2323,7 +2323,7 @@ class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
 
   Fields:
     forwardingRule: Name of the ForwardingRule resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -2335,7 +2335,7 @@ class ComputeGlobalForwardingRulesGetRequest(_messages.Message):
 
   Fields:
     forwardingRule: Name of the ForwardingRule resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   forwardingRule = _messages.StringField(1, required=True)
@@ -2348,7 +2348,7 @@ class ComputeGlobalForwardingRulesInsertRequest(_messages.Message):
   Fields:
     forwardingRule: A ForwardingRule resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   forwardingRule = _messages.MessageField('ForwardingRule', 1)
@@ -2391,7 +2391,7 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -2407,7 +2407,7 @@ class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
   Fields:
     forwardingRule: Name of the ForwardingRule resource in which target is to
       be set.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetReference: A TargetReference resource to be passed as the request
       body.
   """
@@ -2557,7 +2557,7 @@ class ComputeHealthChecksDeleteRequest(_messages.Message):
 
   Fields:
     healthCheck: Name of the HealthCheck resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -2569,7 +2569,7 @@ class ComputeHealthChecksGetRequest(_messages.Message):
 
   Fields:
     healthCheck: Name of the HealthCheck resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -2581,7 +2581,7 @@ class ComputeHealthChecksInsertRequest(_messages.Message):
 
   Fields:
     healthCheck: A HealthCheck resource to be passed as the request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   healthCheck = _messages.MessageField('HealthCheck', 1)
@@ -2624,7 +2624,7 @@ class ComputeHealthChecksListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -2641,7 +2641,7 @@ class ComputeHealthChecksPatchRequest(_messages.Message):
     healthCheck: Name of the HealthCheck resource to update.
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -2671,7 +2671,7 @@ class ComputeHealthChecksUpdateRequest(_messages.Message):
     healthCheck: Name of the HealthCheck resource to update.
     healthCheckResource: A HealthCheck resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   healthCheck = _messages.StringField(1, required=True)
@@ -2684,7 +2684,7 @@ class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
 
   Fields:
     httpHealthCheck: Name of the HttpHealthCheck resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -2696,7 +2696,7 @@ class ComputeHttpHealthChecksGetRequest(_messages.Message):
 
   Fields:
     httpHealthCheck: Name of the HttpHealthCheck resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -2709,7 +2709,7 @@ class ComputeHttpHealthChecksInsertRequest(_messages.Message):
   Fields:
     httpHealthCheck: A HttpHealthCheck resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpHealthCheck = _messages.MessageField('HttpHealthCheck', 1)
@@ -2752,7 +2752,7 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -2769,7 +2769,7 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
     httpHealthCheck: Name of the HttpHealthCheck resource to update.
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -2799,7 +2799,7 @@ class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
     httpHealthCheck: Name of the HttpHealthCheck resource to update.
     httpHealthCheckResource: A HttpHealthCheck resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpHealthCheck = _messages.StringField(1, required=True)
@@ -2812,7 +2812,7 @@ class ComputeHttpsHealthChecksDeleteRequest(_messages.Message):
 
   Fields:
     httpsHealthCheck: Name of the HttpsHealthCheck resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -2824,7 +2824,7 @@ class ComputeHttpsHealthChecksGetRequest(_messages.Message):
 
   Fields:
     httpsHealthCheck: Name of the HttpsHealthCheck resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -2837,7 +2837,7 @@ class ComputeHttpsHealthChecksInsertRequest(_messages.Message):
   Fields:
     httpsHealthCheck: A HttpsHealthCheck resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpsHealthCheck = _messages.MessageField('HttpsHealthCheck', 1)
@@ -2880,7 +2880,7 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -2897,7 +2897,7 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
     httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -2927,7 +2927,7 @@ class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
     httpsHealthCheck: Name of the HttpsHealthCheck resource to update.
     httpsHealthCheckResource: A HttpsHealthCheck resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   httpsHealthCheck = _messages.StringField(1, required=True)
@@ -3070,7 +3070,7 @@ class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
     instanceGroupManagersAbandonInstancesRequest: A
       InstanceGroupManagersAbandonInstancesRequest resource to be passed as
       the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3116,7 +3116,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -3134,7 +3134,7 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
     instanceGroupManagersDeleteInstancesRequest: A
       InstanceGroupManagersDeleteInstancesRequest resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3149,7 +3149,7 @@ class ComputeInstanceGroupManagersDeleteRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: The name of the managed instance group to delete.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3163,7 +3163,7 @@ class ComputeInstanceGroupManagersGetRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: The name of the managed instance group.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3178,7 +3178,7 @@ class ComputeInstanceGroupManagersInsertRequest(_messages.Message):
   Fields:
     instanceGroupManager: A InstanceGroupManager resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where you want to create the managed instance
       group.
   """
@@ -3193,7 +3193,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
 
   Fields:
     instanceGroupManager: The name of the managed instance group.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3238,7 +3238,7 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3258,7 +3258,7 @@ class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
     instanceGroupManagersRecreateInstancesRequest: A
       InstanceGroupManagersRecreateInstancesRequest resource to be passed as
       the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3273,7 +3273,7 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: The name of the managed instance group.
-    project: The project ID for this request.
+    project: Project ID for this request.
     size: The number of running instances that the managed instance group
       should maintain at any given time. The group automatically adds or
       removes instances to maintain the number of instances specified by this
@@ -3295,7 +3295,7 @@ class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Messag
     instanceGroupManagersSetAutoHealingRequest: A
       InstanceGroupManagersSetAutoHealingRequest resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The URL of the zone where the managed instance group is located.
   """
 
@@ -3313,7 +3313,7 @@ class ComputeInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
     instanceGroupManagersSetInstanceTemplateRequest: A
       InstanceGroupManagersSetInstanceTemplateRequest resource to be passed as
       the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3331,7 +3331,7 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
     instanceGroupManagersSetTargetPoolsRequest: A
       InstanceGroupManagersSetTargetPoolsRequest resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -3366,7 +3366,7 @@ class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
       instances.
     instanceGroupsAddInstancesRequest: A InstanceGroupsAddInstancesRequest
       resource to be passed as the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3412,7 +3412,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -3427,7 +3427,7 @@ class ComputeInstanceGroupsDeleteRequest(_messages.Message):
 
   Fields:
     instanceGroup: The name of the instance group to delete.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3441,7 +3441,7 @@ class ComputeInstanceGroupsGetRequest(_messages.Message):
 
   Fields:
     instanceGroup: The name of the instance group.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3455,7 +3455,7 @@ class ComputeInstanceGroupsInsertRequest(_messages.Message):
 
   Fields:
     instanceGroup: A InstanceGroup resource to be passed as the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where you want to create the instance group.
   """
 
@@ -3504,7 +3504,7 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3554,7 +3554,7 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3575,7 +3575,7 @@ class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
     instanceGroupsRemoveInstancesRequest: A
       InstanceGroupsRemoveInstancesRequest resource to be passed as the
       request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3593,7 +3593,7 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
       updated.
     instanceGroupsSetNamedPortsRequest: A InstanceGroupsSetNamedPortsRequest
       resource to be passed as the request body.
-    project: The project ID for this request.
+    project: Project ID for this request.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -3625,7 +3625,7 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
 
   Fields:
     instanceTemplate: The name of the instance template to delete.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   instanceTemplate = _messages.StringField(1, required=True)
@@ -3637,7 +3637,7 @@ class ComputeInstanceTemplatesGetRequest(_messages.Message):
 
   Fields:
     instanceTemplate: The name of the instance template.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   instanceTemplate = _messages.StringField(1, required=True)
@@ -3650,7 +3650,7 @@ class ComputeInstanceTemplatesInsertRequest(_messages.Message):
   Fields:
     instanceTemplate: A InstanceTemplate resource to be passed as the request
       body.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
@@ -3693,7 +3693,7 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: The project ID for this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -4400,7 +4400,7 @@ class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
 
   Fields:
     autoscaler: Name of the persistent autoscaler resource to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4414,7 +4414,7 @@ class ComputeRegionAutoscalersGetRequest(_messages.Message):
 
   Fields:
     autoscaler: Name of the persistent autoscaler resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4428,7 +4428,7 @@ class ComputeRegionAutoscalersInsertRequest(_messages.Message):
 
   Fields:
     autoscaler: A Autoscaler resource to be passed as the request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4473,7 +4473,7 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4492,7 +4492,7 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
     autoscaler: Name of the autoscaler resource to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4509,7 +4509,7 @@ class ComputeRegionAutoscalersUpdateRequest(_messages.Message):
     autoscaler: Name of the autoscaler resource to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4524,7 +4524,7 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersAbandonInstancesRequest: A
       RegionInstanceGroupManagersAbandonInstancesRequest resource to be passed
@@ -4542,7 +4542,7 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersDeleteInstancesRequest: A
       RegionInstanceGroupManagersDeleteInstancesRequest resource to be passed
@@ -4560,7 +4560,7 @@ class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: Name of the managed instance group to delete.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4574,7 +4574,7 @@ class ComputeRegionInstanceGroupManagersGetRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: Name of the managed instance group to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4589,7 +4589,7 @@ class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
   Fields:
     instanceGroupManager: A InstanceGroupManager resource to be passed as the
       request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4603,7 +4603,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
 
   Fields:
     instanceGroupManager: The name of the managed instance group.
-    project: The project ID for this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4648,7 +4648,7 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4665,7 +4665,7 @@ class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Messa
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersRecreateRequest: A
       RegionInstanceGroupManagersRecreateRequest resource to be passed as the
@@ -4683,7 +4683,7 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     size: Number of instances that should exist in this instance group
       manager.
@@ -4700,7 +4700,7 @@ class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersSetAutoHealingRequest: A
       RegionInstanceGroupManagersSetAutoHealingRequest resource to be passed
@@ -4718,7 +4718,7 @@ class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Mes
 
   Fields:
     instanceGroupManager: The name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersSetTemplateRequest: A
       RegionInstanceGroupManagersSetTemplateRequest resource to be passed as
@@ -4736,7 +4736,7 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
 
   Fields:
     instanceGroupManager: Name of the managed instance group.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupManagersSetTargetPoolsRequest: A
       RegionInstanceGroupManagersSetTargetPoolsRequest resource to be passed
@@ -4754,7 +4754,7 @@ class ComputeRegionInstanceGroupsGetRequest(_messages.Message):
 
   Fields:
     instanceGroup: Name of the instance group resource to return.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4801,7 +4801,7 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupsListInstancesRequest: A
       RegionInstanceGroupsListInstancesRequest resource to be passed as the
@@ -4854,7 +4854,7 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -4872,7 +4872,7 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
   Fields:
     instanceGroup: The name of the regional instance group where the named
       ports are updated.
-    project: The project ID for this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     regionInstanceGroupsSetNamedPortsRequest: A
       RegionInstanceGroupsSetNamedPortsRequest resource to be passed as the
@@ -5059,7 +5059,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5226,7 +5226,7 @@ class ComputeRoutesDeleteRequest(_messages.Message):
   """A ComputeRoutesDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     route: Name of the route resource to delete.
   """
 
@@ -5238,7 +5238,7 @@ class ComputeRoutesGetRequest(_messages.Message):
   """A ComputeRoutesGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     route: Name of the route resource to return.
   """
 
@@ -5250,7 +5250,7 @@ class ComputeRoutesInsertRequest(_messages.Message):
   """A ComputeRoutesInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     route: A Route resource to be passed as the request body.
   """
 
@@ -5294,7 +5294,7 @@ class ComputeRoutesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5323,7 +5323,7 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
   """A ComputeSnapshotsDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     snapshot: Name of the Snapshot resource to delete.
   """
 
@@ -5335,7 +5335,7 @@ class ComputeSnapshotsGetRequest(_messages.Message):
   """A ComputeSnapshotsGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     snapshot: Name of the Snapshot resource to return.
   """
 
@@ -5379,7 +5379,7 @@ class ComputeSnapshotsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5423,7 +5423,7 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
   """A ComputeSslCertificatesDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -5435,7 +5435,7 @@ class ComputeSslCertificatesGetRequest(_messages.Message):
   """A ComputeSslCertificatesGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     sslCertificate: Name of the SslCertificate resource to return.
   """
 
@@ -5447,7 +5447,7 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
   """A ComputeSslCertificatesInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -5492,7 +5492,7 @@ class ComputeSslCertificatesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5553,7 +5553,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5567,7 +5567,7 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   """A ComputeSubnetworksDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     subnetwork: Name of the Subnetwork resource to delete.
   """
@@ -5581,7 +5581,7 @@ class ComputeSubnetworksGetRequest(_messages.Message):
   """A ComputeSubnetworksGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     subnetwork: Name of the Subnetwork resource to return.
   """
@@ -5595,7 +5595,7 @@ class ComputeSubnetworksInsertRequest(_messages.Message):
   """A ComputeSubnetworksInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     subnetwork: A Subnetwork resource to be passed as the request body.
   """
@@ -5641,7 +5641,7 @@ class ComputeSubnetworksListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -5674,7 +5674,7 @@ class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
   """A ComputeTargetHttpProxiesDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpProxy: Name of the TargetHttpProxy resource to delete.
   """
 
@@ -5686,7 +5686,7 @@ class ComputeTargetHttpProxiesGetRequest(_messages.Message):
   """A ComputeTargetHttpProxiesGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpProxy: Name of the TargetHttpProxy resource to return.
   """
 
@@ -5698,7 +5698,7 @@ class ComputeTargetHttpProxiesInsertRequest(_messages.Message):
   """A ComputeTargetHttpProxiesInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpProxy: A TargetHttpProxy resource to be passed as the request
       body.
   """
@@ -5743,7 +5743,7 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5757,7 +5757,7 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
   """A ComputeTargetHttpProxiesSetUrlMapRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpProxy: Name of the TargetHttpProxy resource whose URL map is to
       be set.
     urlMapReference: A UrlMapReference resource to be passed as the request
@@ -5788,7 +5788,7 @@ class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
@@ -5800,7 +5800,7 @@ class ComputeTargetHttpsProxiesGetRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpsProxy: Name of the TargetHttpsProxy resource to return.
   """
 
@@ -5812,7 +5812,7 @@ class ComputeTargetHttpsProxiesInsertRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
@@ -5857,7 +5857,7 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5871,7 +5871,7 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesSetSslCertificatesRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpsProxiesSetSslCertificatesRequest: A
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
@@ -5888,7 +5888,7 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
   """A ComputeTargetHttpsProxiesSetUrlMapRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetHttpsProxy: Name of the TargetHttpsProxy resource whose URL map is
       to be set.
     urlMapReference: A UrlMapReference resource to be passed as the request
@@ -5951,7 +5951,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -5965,7 +5965,7 @@ class ComputeTargetInstancesDeleteRequest(_messages.Message):
   """A ComputeTargetInstancesDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetInstance: Name of the TargetInstance resource to delete.
     zone: Name of the zone scoping this request.
   """
@@ -5979,7 +5979,7 @@ class ComputeTargetInstancesGetRequest(_messages.Message):
   """A ComputeTargetInstancesGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetInstance: Name of the TargetInstance resource to return.
     zone: Name of the zone scoping this request.
   """
@@ -5993,7 +5993,7 @@ class ComputeTargetInstancesInsertRequest(_messages.Message):
   """A ComputeTargetInstancesInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     targetInstance: A TargetInstance resource to be passed as the request
       body.
     zone: Name of the zone scoping this request.
@@ -6040,7 +6040,7 @@ class ComputeTargetInstancesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     zone: Name of the zone scoping this request.
   """
 
@@ -6141,7 +6141,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -6155,7 +6155,7 @@ class ComputeTargetPoolsDeleteRequest(_messages.Message):
   """A ComputeTargetPoolsDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     targetPool: Name of the TargetPool resource to delete.
   """
@@ -6187,7 +6187,7 @@ class ComputeTargetPoolsGetRequest(_messages.Message):
   """A ComputeTargetPoolsGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     targetPool: Name of the TargetPool resource to return.
   """
@@ -6201,7 +6201,7 @@ class ComputeTargetPoolsInsertRequest(_messages.Message):
   """A ComputeTargetPoolsInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     targetPool: A TargetPool resource to be passed as the request body.
   """
@@ -6247,7 +6247,7 @@ class ComputeTargetPoolsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
@@ -6300,7 +6300,7 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
 
   Fields:
     failoverRatio: New failoverRatio value for the containing target pool.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     region: Name of the region scoping this request.
     targetPool: Name of the TargetPool resource for which the backup is to be
       set.
@@ -6490,7 +6490,7 @@ class ComputeUrlMapsDeleteRequest(_messages.Message):
   """A ComputeUrlMapsDeleteRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap resource to delete.
   """
 
@@ -6502,7 +6502,7 @@ class ComputeUrlMapsGetRequest(_messages.Message):
   """A ComputeUrlMapsGetRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap resource to return.
   """
 
@@ -6514,7 +6514,7 @@ class ComputeUrlMapsInsertRequest(_messages.Message):
   """A ComputeUrlMapsInsertRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: A UrlMap resource to be passed as the request body.
   """
 
@@ -6528,7 +6528,7 @@ class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
   Fields:
     cacheInvalidationRule: A CacheInvalidationRule resource to be passed as
       the request body.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap scoping this request.
   """
 
@@ -6573,7 +6573,7 @@ class ComputeUrlMapsListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Use this parameter if you want
       to list the next page of results. Set pageToken to the nextPageToken
       returned by a previous list request.
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
   """
 
   filter = _messages.StringField(1)
@@ -6587,7 +6587,7 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
   """A ComputeUrlMapsPatchRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -6616,7 +6616,7 @@ class ComputeUrlMapsUpdateRequest(_messages.Message):
   """A ComputeUrlMapsUpdateRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap resource to update.
     urlMapResource: A UrlMap resource to be passed as the request body.
   """
@@ -6630,7 +6630,7 @@ class ComputeUrlMapsValidateRequest(_messages.Message):
   """A ComputeUrlMapsValidateRequest object.
 
   Fields:
-    project: Name of the project scoping this request.
+    project: Project ID for this request.
     urlMap: Name of the UrlMap resource to be validated as.
     urlMapsValidateRequest: A UrlMapsValidateRequest resource to be passed as
       the request body.
@@ -8945,14 +8945,16 @@ class InstanceGroupManager(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      CREATING: <no description>
       DELETING: <no description>
       ERROR: <no description>
       PENDING: <no description>
     """
     ACTIVE = 0
-    DELETING = 1
-    ERROR = 2
-    PENDING = 3
+    CREATING = 1
+    DELETING = 2
+    ERROR = 3
+    PENDING = 4
 
   autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
   baseInstanceName = _messages.StringField(2)

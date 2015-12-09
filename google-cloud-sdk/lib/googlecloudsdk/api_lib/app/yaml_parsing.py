@@ -168,7 +168,21 @@ class ModuleYamlInfo(_YamlInfo):
     """
     super(ModuleYamlInfo, self).__init__(file_path, parsed)
     self.module = parsed.module
-    self.is_hermetic = bool(parsed.env == '2')
+
+    # All env: 2 apps are hermetic. All vm: false apps are not hermetic.
+    # vm: true apps are hermetic IFF they don't use static files.
+    if parsed.env == '2':
+      self.is_hermetic = True
+    elif parsed.vm:
+      for urlmap in parsed.handlers:
+        if urlmap.static_dir or urlmap.static_files:
+          self.is_hermetic = False
+          break
+      else:
+        self.is_hermetic = True
+    else:
+      self.is_hermetic = False
+
     self.is_vm = parsed.runtime == 'vm' or self.is_hermetic
     self.runtime = (parsed.GetEffectiveRuntime()
                     if self.is_vm else parsed.runtime)

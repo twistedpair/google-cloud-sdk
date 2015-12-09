@@ -22,7 +22,8 @@ class ListGCloud(base.Command):
         metavar='COMMAND/GROUP',
         nargs='*',
         default=None,
-        help='Restrict the tree to the specified command groups.')
+        help=('Restrict the tree to these dotted command paths. '
+              'For example: gcloud.alpha gcloud.beta.test'))
 
   def Run(self, args):
     return walker_util.GCloudTreeGenerator(self.cli).Walk(args.hidden,

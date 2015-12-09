@@ -364,13 +364,13 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
           config, request, global_params=global_params)
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for the dataset.
+      """Gets the access control policy for the dataset. This is empty if the.
+policy or resource does not exist.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
-
-Is empty if the policy or the resource does not exist.
 See <a href="/iam/docs/managing-policies#getting_a_policy">Getting a
 Policy</a> for more information.
+
+For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsGetIamPolicyRequest) input message
@@ -435,11 +435,10 @@ Policy</a> for more information.
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
-
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
-
 See <a href="/iam/docs/managing-policies#testing_permissions">Testing
 Permissions</a> for more information.
+
+For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsTestIamPermissionsRequest) input message

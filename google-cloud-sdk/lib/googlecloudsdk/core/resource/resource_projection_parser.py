@@ -149,7 +149,7 @@ class Parser(object):
       self._snake_re = re.compile('((?<=[a-z0-9])[A-Z]+|(?!^)[A-Z](?=[a-z]))')
     label = ''
     for index in reversed(key):
-      if isinstance(index, str):
+      if isinstance(index, basestring):
         key_snake = self._snake_re.sub(r'_\1', index).upper()
         if label:
           label = key_snake + '_' + label

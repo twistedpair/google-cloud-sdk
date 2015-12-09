@@ -19,7 +19,7 @@ DEFAULT_ACCESS_CONFIG_NAME = 'external-nat'
 DEFAULT_MACHINE_TYPE = 'n1-standard-1'
 DEFAULT_NETWORK = 'default'
 
-DEFAULT_IMAGE = 'debian-7-backports'
+DEFAULT_IMAGE = 'debian-8'
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix'])

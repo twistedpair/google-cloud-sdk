@@ -1038,7 +1038,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves the list of disks grouped by scope.
+      """Retrieves the list of persistent disks grouped by scope.
 
       Args:
         request: (ComputeDisksAggregatedListRequest) input message
@@ -1051,7 +1051,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def CreateSnapshot(self, request, global_params=None):
-      """Creates a snapshot of this disk.
+      """Creates a snapshot of a specified persistent disk.
 
       Args:
         request: (ComputeDisksCreateSnapshotRequest) input message

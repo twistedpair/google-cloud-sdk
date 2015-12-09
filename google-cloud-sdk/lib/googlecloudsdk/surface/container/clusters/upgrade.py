@@ -7,6 +7,7 @@ from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
@@ -76,12 +77,43 @@ class Upgrade(base.Command):
     cluster_ref = adapter.ParseCluster(args.name)
 
     # Make sure it exists (will raise appropriate error if not)
-    adapter.GetCluster(cluster_ref)
+    cluster = adapter.GetCluster(cluster_ref)
 
     options = api_adapter.UpdateClusterOptions(
         version=args.cluster_version,
         update_master=args.master,
         update_nodes=(not args.master))
+
+    if options.version:
+      new_version = options.version
+    else:
+      try:
+        cluster_config = adapter.GetServerConfig(cluster_ref.projectId,
+                                                 cluster_ref.zone)
+        new_version = cluster_config.defaultClusterVersion
+      except apitools_base.HttpError as error:
+        raise exceptions.HttpException(util.GetError(error))
+
+    if args.master:
+      node_message = 'Master'
+      current_version = cluster.currentMasterVersion
+    else:
+      node_message = 'All {node_count} nodes'.format(
+          node_count=cluster.currentNodeCount)
+      current_version = cluster.currentNodeVersion
+
+    console_io.PromptContinue(
+        message=
+        '{node_message} of cluster [{cluster_name}] will be upgraded '
+        'from version [{current_version}] to version [{new_version}]. '
+        'This operation is long-running and will block other operations '
+        'on the cluster (including delete) until it has run to completion.'
+        .format(node_message=node_message,
+                cluster_name=cluster.name,
+                current_version=current_version,
+                new_version=new_version),
+        throw_if_unattended=True,
+        cancel_on_no=True)
 
     try:
       op_ref = adapter.UpdateCluster(cluster_ref, options)

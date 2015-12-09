@@ -235,6 +235,7 @@ class Client(object):
     self.__real_client = real_client
 
     self._request_responses = []
+    self.__real_include_fields = None
 
   def __enter__(self):
     return self.Mock()
@@ -275,14 +276,20 @@ class Client(object):
     return True
 
   def Unmock(self):
+    """Undo Mock()."""
     for name, service_class in self.__real_service_classes.iteritems():
       setattr(self.__client_class, name, service_class)
+      # pylint:disable=protected-access
+      delattr(self, service_class._NAME)
+    self.__real_service_classes = {}
 
     if self._request_responses:
       raise ExpectedRequestsException(
           [(rq_rs.key, rq_rs.request) for rq_rs in self._request_responses])
+    self._request_responses = []
 
     self.__client_class.IncludeFields = self.__real_include_fields
+    self.__real_include_fields = None
 
   def IncludeFields(self, include_fields):
     if self.__real_client:

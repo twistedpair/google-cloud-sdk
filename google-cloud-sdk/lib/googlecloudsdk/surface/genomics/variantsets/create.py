@@ -20,6 +20,11 @@ class Create(base.Command):
         '--dataset-id',
         type=int, help='The ID of the dataset the variant set will belong to.',
         required=True)
+    parser.add_argument(
+        '--reference-set-id',
+        type=str, help='The reference set the variant set will be associated '
+        'with. When variants are later added to this variant set, the API '
+        'enforces consistency with this reference set.')
 
   @genomics_util.ReraiseHttpException
   def Run(self, args):
@@ -40,6 +45,7 @@ class Create(base.Command):
 
     variantset = genomics_messages.VariantSet(
         datasetId=str(args.dataset_id),
+        referenceSetId=args.reference_set_id,
     )
 
     return apitools_client.variantsets.Create(variantset)

@@ -43,7 +43,7 @@ def _CommonArgs(parser):
       help='The name of the instance template to create.')
 
 
-@base.ReleaseTracks(base.ReleaseTrack.GA, base.ReleaseTrack.BETA)
+@base.ReleaseTracks(base.ReleaseTrack.GA)
 class Create(base_classes.BaseAsyncCreator, image_utils.ImageExpander):
   """Create a Compute Engine virtual machine instance template.
 
@@ -401,7 +401,7 @@ class Create(base_classes.BaseAsyncCreator, image_utils.ImageExpander):
     return [request]
 
 
-@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
 class CreateAlpha(Create):
   """Create a Compute Engine virtual machine instance template.
 

@@ -2,6 +2,32 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 90.0.0 (2015/12/09)
+
+* Cloud SDK release version scheme has changed. Patch version is now treated as
+  a major release version which corresponds to SDK weekly releases.
+  Any updates/fixes to released version will increment minor/patch version
+  number going forward.
+
+### Breaking Changes
+
+* The deprecated flag --clear-target-pool has been removed from
+  `gcloud compute instance-groups managed set-target-pools` command.
+
+### Google App Engine
+
+* Components updated to 1.9.30.
+  Please visit the following release notes for details:
+  * Python - https://cloud.google.com/appengine/docs/python/release-notes
+  * Java - https://cloud.google.com/appengine/docs/java/release-notes
+* Fixed a bug caused by uploading invalid file names for vm: true applications.
+
+### Compute
+
+* Subnetwork support has been promoted from alpha to beta. For more information
+  see https://cloud.google.com/compute/docs/subnetworks.
+
+
 ## 0.9.89 (2015/12/02)
 
 ### Breaking Changes

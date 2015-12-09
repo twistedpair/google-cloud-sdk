@@ -6,8 +6,12 @@ import os
 import pickle
 import sys
 
-import httplib2
-
+try:
+  # pylint:disable=g-import-not-at-top
+  import httplib2
+except ImportError:
+  # Do nothing if we can't import the lib.
+  sys.exit(0)
 
 # If outgoing packets are getting dropped, httplib2 will hang forever waiting
 # for a response.

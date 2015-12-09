@@ -11,6 +11,32 @@ from protorpc import messages as _messages
 package = 'deploymentmanager'
 
 
+class BasicAuth(_messages.Message):
+  """Basic Auth used as a credential.
+
+  Fields:
+    password: A string attribute.
+    user: A string attribute.
+  """
+
+  password = _messages.StringField(1)
+  user = _messages.StringField(2)
+
+
+class CollectionOverride(_messages.Message):
+  """CollectionOverride allows resource handling overrides for specific
+  resources within a ConfigurableService
+
+  Fields:
+    collection: The collection that identifies this resource within its
+      service.
+    options: The options to apply to this resource-level override
+  """
+
+  collection = _messages.StringField(1)
+  options = _messages.MessageField('Options', 2)
+
+
 class ConfigFile(_messages.Message):
   """ConfigFile message type.
 
@@ -19,6 +45,33 @@ class ConfigFile(_messages.Message):
   """
 
   content = _messages.StringField(1)
+
+
+class ConfigurableService(_messages.Message):
+  """ConfigurableService that describes a service-backed Type.
+
+  Fields:
+    collectionOverrides: Allows resource handling overrides for specific
+      collections
+    credential: Credential used when interacting with this type.
+    descriptorUrl: Descriptor Url for the this type.
+    options: Options to apply when handling any resources in this service.
+  """
+
+  collectionOverrides = _messages.MessageField('CollectionOverride', 1, repeated=True)
+  credential = _messages.MessageField('Credential', 2)
+  descriptorUrl = _messages.StringField(3)
+  options = _messages.MessageField('Options', 4)
+
+
+class Credential(_messages.Message):
+  """Credential used by ConfigurableResourceTypes.
+
+  Fields:
+    basicAuth: Basic Auth Credentials for this Type.
+  """
+
+  basicAuth = _messages.MessageField('BasicAuth', 1)
 
 
 class Deployment(_messages.Message):
@@ -749,6 +802,18 @@ class OperationsListResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class Options(_messages.Message):
+  """Options allows customized resource handling by Deployment Manager.
+
+  Fields:
+    nameProperty: The json path to the field in the resource JSON body into
+      which the resource name should be mapped. Leaving this empty indicates
+      that there should be no mapping performed.
+  """
+
+  nameProperty = _messages.StringField(1)
+
+
 class Resource(_messages.Message):
   """Resource message type.
 
@@ -980,6 +1045,7 @@ class Type(_messages.Message):
   """A resource type supported by Deployment Manager.
 
   Fields:
+    configurableService: ConfigurableService that backs this Type.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     insertTime: [Output Only] Timestamp when the type was created, in RFC3339
@@ -988,10 +1054,11 @@ class Type(_messages.Message):
     selfLink: [Output Only] Self link for the type.
   """
 
-  id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  selfLink = _messages.StringField(4)
+  configurableService = _messages.MessageField('ConfigurableService', 1)
+  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class TypesListResponse(_messages.Message):

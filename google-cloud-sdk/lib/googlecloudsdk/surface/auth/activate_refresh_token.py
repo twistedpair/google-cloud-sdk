@@ -10,6 +10,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store as c_store
 
 
+@base.Hidden
 class ActivateRefreshToken(base.Command):
   """Get credentials via an existing refresh token.
 

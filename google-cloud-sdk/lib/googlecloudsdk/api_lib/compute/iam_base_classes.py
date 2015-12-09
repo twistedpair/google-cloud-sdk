@@ -4,7 +4,6 @@ import abc
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core.iam import iam_util
 
 
@@ -103,50 +102,6 @@ class ZonalGetIamPolicy(BaseGetIamPolicy):
 
   def ScopeRequest(self, ref, request):
     request.zone = ref.zone
-
-
-def GenerateGetIamPolicy(
-    command_type, resource_type, detailed_help,
-    parser_resource=None, parser_command=None):
-  """Function for generating GetIamPolicy commands."""
-
-  @base.Hidden
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  class GetIamPolicy(command_type):
-    """Command to get IAM policy for a resource."""
-
-    @staticmethod
-    def Args(parser):
-      command_type.Args(parser, parser_resource, parser_command)
-
-    @property
-    def service(self):
-      return getattr(self.compute, resource_type)
-
-    @property
-    def resource_type(self):
-      return resource_type
-
-  GetIamPolicy.detailed_help = GetIamPolicyHelp(detailed_help)
-  return GetIamPolicy
-
-
-class RegionalGetIamPolicy(BaseGetIamPolicy):
-  """Base class for regional iam_get_policy commands."""
-
-  @staticmethod
-  def Args(parser, resource=None, command=None):
-    BaseGetIamPolicy.AddArgs(parser, resource, command)
-    utils.AddRegionFlag(
-        parser,
-        resource_type='resource',
-        operation_type='fetch')
-
-  def CreateReference(self, args):
-    return self.CreateRegionalReference(args.name, args.region)
-
-  def ScopeRequest(self, ref, request):
-    request.region = ref.region
 
 
 class GlobalGetIamPolicy(BaseGetIamPolicy):
@@ -264,50 +219,6 @@ class ZonalSetIamPolicy(BaseSetIamPolicy):
 
   def ScopeRequest(self, ref, request):
     request.zone = ref.zone
-
-
-def GenerateSetIamPolicy(
-    command_type, resource_type, detailed_help,
-    parser_resource=None, parser_command=None):
-  """Function for generating SetIamPolicy commands."""
-
-  @base.Hidden
-  @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
-  class SetIamPolicy(command_type):
-    """Set the IAM Policy for a Google Compute Engine resource."""
-
-    @staticmethod
-    def Args(parser):
-      command_type.Args(parser, parser_resource, parser_command)
-
-    @property
-    def service(self):
-      return getattr(self.compute, resource_type)
-
-    @property
-    def resource_type(self):
-      return resource_type
-
-  SetIamPolicy.detailed_help = SetIamPolicyHelp(detailed_help)
-  return SetIamPolicy
-
-
-class RegionalSetIamPolicy(BaseSetIamPolicy):
-  """Base class for regional iam_get_policy commands."""
-
-  @staticmethod
-  def Args(parser, resource=None, command=None):
-    BaseSetIamPolicy.AddArgs(parser, resource)
-    utils.AddRegionFlag(
-        parser,
-        resource_type='resource',
-        operation_type='fetch')
-
-  def CreateReference(self, args):
-    return self.CreateRegionalReference(args.name, args.region)
-
-  def ScopeRequest(self, ref, request):
-    request.region = ref.region
 
 
 class GlobalSetIamPolicy(BaseSetIamPolicy):

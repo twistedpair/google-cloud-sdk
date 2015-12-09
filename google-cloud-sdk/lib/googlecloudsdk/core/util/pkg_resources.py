@@ -3,7 +3,6 @@
 """Utilities for accessing local pakage resources."""
 
 import imp
-import inspect
 import os
 import pkgutil
 import sys
@@ -166,8 +165,9 @@ def _IterModules(file_list, prefix=None):
     if len(file_path_parts) != 1:
       continue
 
-    modname = inspect.getmodulename(file_path_parts[0])
-    if modname == '__init__':
+    filename = os.path.basename(file_path_parts[0])
+    modname, ext = os.path.splitext(filename)
+    if modname == '__init__' or ext != '.py':
       continue
 
     if modname and '.' not in modname and modname not in yielded:

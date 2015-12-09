@@ -38,8 +38,8 @@ class GenerateHelpDocs(base.Command):
         metavar='COMMAND/GROUP',
         nargs='*',
         default=None,
-        help='Restrict the document generation to the specified commands '
-        'and/or groups.')
+        help=('Restrict document generation to these dotted command paths. '
+              'For example: gcloud.alpha gcloud.beta.test'))
 
   def Run(self, args):
     if args.devsite_dir:

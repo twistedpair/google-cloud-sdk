@@ -1013,6 +1013,30 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'test.android.versions': ResourceInfo(
+        list_format="""
+          table[box](
+            id:label=OS_VERSION_ID:align=center,
+            versionString:label=VERSION:align=center,
+            codeName,
+            apiLevel:align=center,
+            releaseDate.date(format='%Y-%m-%d'):align=center,
+            tags.list().color(green=default,red=deprecated,yellow=preview)
+          )
+        """,
+    ),
+
+    'test.android.locales': ResourceInfo(
+        list_format="""
+          table[box](
+            id:label=LOCALE,
+            name,
+            region,
+            tags.list().color(green=default,red=deprecated,yellow=preview)
+          )
+        """,
+    ),
+
     'test.android.run.outcomes': ResourceInfo(
         list_format="""
           table[box](
@@ -1027,6 +1051,20 @@ RESOURCE_REGISTRY = {
         list_format="""
           value(format(
             'Final test results will be available at [{0}].', [])
+          )
+        """,
+    ),
+
+    'test.web.browsers': ResourceInfo(
+        list_format="""
+          table[box](
+            id:label=BROWSER_ID,
+            name,
+            release,
+            versionString:label=VERSION,
+            androidCatalog.yesno("*", "-"),
+            linuxCatalog.yesno("*", "-"),
+            windowsCatalog.yesno("*", "-")
           )
         """,
     ),

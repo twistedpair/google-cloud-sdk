@@ -6,7 +6,6 @@
    inferring options to --balancing-mode, and to enable or disable support for
    https load balancing.
 """
-import argparse
 
 from googlecloudsdk.api_lib.compute import backend_services_utils
 from googlecloudsdk.api_lib.compute import base_classes
@@ -122,13 +121,12 @@ class UpdateAlpha(UpdateGA):
         '--enable-cdn',
         action='store_true',
         default=None,  # Tri-valued, None => don't change the setting.
-        help=argparse.SUPPRESS)
-    # TODO(anoyes) uncomment when unsuppressing help text
-    # enable_cdn.detailed_help = """\
-    #     Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
-    #     responses from a backend service at the edge of the network, close to
-    #     users.
-    #     """
+        help='Enable cloud CDN.')
+    enable_cdn.detailed_help = """\
+        Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
+        responses from a backend service at the edge of the network, close to
+        users.
+        """
 
     health_checks = parser.add_argument(
         '--health-checks',

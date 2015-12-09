@@ -17,12 +17,13 @@ class Import(base.Command):
   """Import record-sets into your managed-zone.
 
   This command imports record-sets contained within the specified record-sets
-  file into your managed-zone. Note that NS records and the SOA NS field are not
-  imported since name-servers are managed by Cloud DNS. By default, record-sets
-  cannot be imported if there are any conflicts. A conflict exists if an
-  existing record-set has the same name and type as a record-set that is being
-  imported. In contrast, if the --delete-all-existing flag is used, the imported
-  record-sets will replace all the records-sets currently in the managed-zone.
+  file into your managed-zone. Note that NS records for the origin of the zone,
+  and the SOA NS field, are not imported since name-servers are managed by
+  Cloud DNS. By default, record-sets cannot be imported if there are any
+  conflicts. A conflict exists if an existing record-set has the same name and
+  type as a record-set that is being imported. In contrast, if the
+  --delete-all-existing flag is used, the imported record-sets will replace all
+  the records-sets currently in the managed-zone.
   """
 
   detailed_help = {

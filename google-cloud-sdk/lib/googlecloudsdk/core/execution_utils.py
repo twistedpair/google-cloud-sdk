@@ -152,15 +152,16 @@ def ArgsForBinaryTool(executable_path, *args):
 
 
 class _ProcessHolder(object):
-  PROCESS = None
 
-  @staticmethod
+  def __init__(self):
+    self.process = None
+
   # pylint: disable=unused-argument
-  def Handler(signum, frame):
-    if _ProcessHolder.PROCESS:
-      _ProcessHolder.PROCESS.terminate()
-      ret_val = _ProcessHolder.PROCESS.wait()
-    sys.exit(ret_val)
+  def Handler(self, signum, frame):
+    if self.process:
+      self.process.terminate()
+      ret_val = self.process.wait()
+      sys.exit(ret_val)
 
 
 def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
@@ -187,14 +188,15 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
   env = _GetToolEnv(env=env)
-  signal.signal(signal.SIGTERM, _ProcessHolder.Handler)
+  process_holder = _ProcessHolder()
+  signal.signal(signal.SIGTERM, process_holder.Handler)
   extra_popen_kwargs = {}
   if pipe_output_through_logger:
     extra_popen_kwargs['stderr'] = subprocess.PIPE
     extra_popen_kwargs['stdout'] = subprocess.PIPE
 
   p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-  _ProcessHolder.PROCESS = p
+  process_holder.process = p
 
   if pipe_output_through_logger:
     ret_val = None

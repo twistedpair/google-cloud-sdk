@@ -103,8 +103,8 @@ Alias,URI
       action='store_true',
       default=True,
       help='Automatically send metrics from pods in the cluster to the '
-      'Google Cloud Monitoring API. VM metrics will be collected by GCE '
-      'regardless of this setting.')
+      'Google Cloud Monitoring API. VM metrics will be collected by Google '
+      'Compute Engine regardless of this setting.')
   parser.set_defaults(enable_cloud_monitoring=True)
   parser.add_argument(
       '--disk-size',

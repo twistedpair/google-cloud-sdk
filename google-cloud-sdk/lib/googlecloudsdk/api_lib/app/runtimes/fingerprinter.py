@@ -12,7 +12,6 @@ from googlecloudsdk.api_lib.app.runtimes import ruby
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 
-# TODO(mmuller): add some runtimes to this.
 RUNTIMES = [
     # Note that ordering of runtimes here is very important and changes to the
     # relative positions need to be tested carefully.
@@ -34,7 +33,7 @@ class UnidentifiedDirectoryError(exceptions.Error):
       path: (basestring) Directory we failed to identify.
     """
     super(UnidentifiedDirectoryError, self).__init__(
-        'Unrecognized directory type: [{}]'.format(path))
+        'Unrecognized directory type: [{0}]'.format(path))
     self.path = path
 
 

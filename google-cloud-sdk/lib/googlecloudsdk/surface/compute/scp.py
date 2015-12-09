@@ -4,6 +4,7 @@
 import getpass
 import logging
 
+from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import ssh_utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
@@ -62,8 +63,8 @@ class Scp(ssh_utils.BaseSSHCLICommand):
         help='The zone of the instance to copy files to/from.',
         action=actions.StoreProperty(properties.VALUES.compute.zone))
     zone.detailed_help = (
-        'The zone of the instance to copy files to/from. If omitted, '
-        'you will be prompted to select a zone.')
+        'The zone of the instance to copy files to/from.\n\n' +
+        constants.ZONE_PROPERTY_EXPLANATION)
 
   def Run(self, args):
     super(Scp, self).Run(args)

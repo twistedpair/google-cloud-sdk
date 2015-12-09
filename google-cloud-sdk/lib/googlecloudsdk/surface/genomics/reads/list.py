@@ -23,6 +23,9 @@ _COLUMNS = [
 _PROJECTIONS = [
     '{0}:label={1}'.format(field, col) for col, field in _COLUMNS
 ]
+_API_FIELDS = ','.join(['nextPageToken'] + [
+    'alignments.' + f for _, f in _COLUMNS
+    ])
 
 class List(base.Command):
   """Lists reads within a given read group set.
@@ -77,7 +80,12 @@ class List(base.Command):
     apitools_client = self.context[lib.GENOMICS_APITOOLS_CLIENT_KEY]
     messages = self.context[lib.GENOMICS_MESSAGES_MODULE_KEY]
 
-    # TODO(calbach): Apply a response field mask, if possible.
+    # Filter down to just the displayed fields, if we know we're using the
+    # default format. This appears to only be the case when --format is unset.
+    global_params = None
+    if not args.format:
+      global_params = messages.StandardQueryParameters(fields=_API_FIELDS)
+
     pager = apitools_base.list_pager.YieldFromList(
         apitools_client.reads,
         messages.SearchReadsRequest(
@@ -85,6 +93,7 @@ class List(base.Command):
             referenceName=args.reference_name,
             start=args.start,
             end=args.end),
+        global_params=global_params,
         limit=args.limit,
         method='Search',
         batch_size_attribute='pageSize',
@@ -94,7 +103,7 @@ class List(base.Command):
 
   def Format(self, unused_args):
     """Returns a paginated box table layout format string."""
-    # page_size allows us to incrementally show results as they stream in,
-    # thereby giving the user incremental feedback if they've queried a large
-    # set of results.
-    return 'table[box,page_size=512]({0})'.format(','.join(_PROJECTIONS))
+    # page allows us to incrementally show results as they stream in, thereby
+    # giving the user incremental feedback if they've queried a large set of
+    # results.
+    return 'table[box,page=512]({0})'.format(','.join(_PROJECTIONS))

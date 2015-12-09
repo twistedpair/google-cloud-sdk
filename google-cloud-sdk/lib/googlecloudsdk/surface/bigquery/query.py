@@ -146,24 +146,30 @@ class Query(base.Command):
           'Query successfully validated. Assuming the tables are not '
           'modified, running this query will process {0} bytes of data.'
           .format(job.statistics.query.totalBytesProcessed))
-    elif args.async:
+      return None
+    if args.async:
       job_resource = resource_parser.Create(
           'bigquery.jobs',
           projectId=job.jobReference.projectId,
           jobId=job.jobReference.jobId)
       log.CreatedResource(job_resource)
-    else:
-      return schema_and_rows.GetJobSchemaAndRows(
-          apitools_client, bigquery_messages, job.jobReference, args.start_row,
-          args.limit)
+      self.default_format = 'table(jobId, projectId)'
+      return job_resource
+    result = schema_and_rows.GetJobSchemaAndRows(
+        apitools_client, bigquery_messages, job.jobReference, args.start_row,
+        args.limit)
+    if not result:
+      return None
+    self.default_format = result.GetDefaultFormat()
+    return result.PrepareForDisplay()
 
-  def Display(self, args, result):
-    """This method is called to print the result of the Run() method.
+  def Format(self, args):
+    """Returns the default format string.
 
     Args:
       args: The arguments that command was run with.
-      result: If the --dry_run or --async flag was specified, None; otherwise, a
-        SchemaAndRows object.
+
+    Returns:
+      The default format string.
     """
-    if result:
-      schema_and_rows.DisplaySchemaAndRows(result)
+    return self.default_format
