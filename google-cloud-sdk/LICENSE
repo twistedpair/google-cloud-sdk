@@ -14,7 +14,7 @@ using the Cloud SDK with Google App Engine, your use would additionally be
 governed by the Google App Engine Terms of Service.
 
 This also means that if you were to create works that call Google APIs, you
-would still need to agree to the terms of service (usually, Google's
+would still need to agree to the terms of service (usually, Google’s
 Developer Terms of Service at https://developers.google.com/terms) for those
 APIs separately, as this code does not grant you any special rights to use
 the services.

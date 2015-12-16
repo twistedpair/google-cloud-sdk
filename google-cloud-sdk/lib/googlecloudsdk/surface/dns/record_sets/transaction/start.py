@@ -11,8 +11,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Start(base.Command):
@@ -45,7 +44,7 @@ class Start(base.Command):
     zone_ref = resources.Parse(args.zone, collection='dns.managedZones')
     try:
       zone = dns.managedZones.Get(zone_ref.Request())
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetErrorMessage(error))
 
     # Initialize an empty change
@@ -53,7 +52,7 @@ class Start(base.Command):
 
     # Get the SOA record, there will be one and only one.
     # Add addition and deletion for SOA incrementing to change.
-    records = [record for record in list_pager.YieldFromList(
+    records = [record for record in apitools_base.YieldFromList(
         dns.resourceRecordSets,
         messages.DnsResourceRecordSetsListRequest(
             project=project_id,

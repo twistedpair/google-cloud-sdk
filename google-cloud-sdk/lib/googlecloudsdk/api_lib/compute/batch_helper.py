@@ -3,7 +3,7 @@
 import json
 import logging
 
-from googlecloudsdk.third_party.apitools.base.py import batch
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
@@ -21,13 +21,13 @@ def MakeRequests(requests, http, batch_url=None):
     from the calls and the second is a list of error messages.
   """
   logging.debug('Starting batch request...')
-  batch_request = batch.BatchApiRequest(batch_url=batch_url)
+  batch = apitools_base.BatchApiRequest(batch_url=batch_url)
   for service, method, request in requests:
     logging.debug('Adding request: %s', (service, method, request))
-    batch_request.Add(service, method, request)
+    batch.Add(service, method, request)
 
   logging.debug('Making batch request...')
-  responses = batch_request.Execute(http)
+  responses = batch.Execute(http)
 
   objects = []
   errors = []

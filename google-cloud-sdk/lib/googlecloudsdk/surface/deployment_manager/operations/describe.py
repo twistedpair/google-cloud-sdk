@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Describe(base.Command):
@@ -62,7 +62,7 @@ class Describe(base.Command):
               operation=args.operation_name,
           )
       )
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(dm_v2_util.GetError(error))
 
   def Display(self, unused_args, result):

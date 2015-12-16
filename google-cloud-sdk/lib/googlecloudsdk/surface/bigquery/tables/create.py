@@ -11,7 +11,7 @@ from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.surface import bigquery as commands
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class TablesCreate(base.Command):
@@ -126,7 +126,7 @@ class TablesCreate(base.Command):
 
     try:
       apitools_client.tables.Insert(request)
-    except exceptions.HttpError as server_error:
+    except apitools_base.HttpError as server_error:
       raise bigquery.Error.ForHttpError(server_error)
 
     log.CreatedResource(resource)

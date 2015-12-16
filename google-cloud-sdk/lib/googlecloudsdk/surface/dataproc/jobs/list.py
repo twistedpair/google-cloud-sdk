@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 STATE_MATCHER_ENUM = ['active', 'inactive']
@@ -17,7 +17,7 @@ class TypedJob(util.Bunch):
   """Job with additional type field that corresponds to the job_type one_of."""
 
   def __init__(self, job):
-    super(TypedJob, self).__init__(encoding.MessageToDict(job))
+    super(TypedJob, self).__init__(apitools_base.MessageToDict(job))
     self._job = job
     self._type = None
 

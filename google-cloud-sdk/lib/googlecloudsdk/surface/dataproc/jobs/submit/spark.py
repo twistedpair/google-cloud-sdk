@@ -7,7 +7,7 @@ import argparse
 from googlecloudsdk.api_lib.dataproc import base_classes
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Spark(base_classes.JobSubmitter):
@@ -83,7 +83,7 @@ cluster, run:
         help=('A list of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
 
-  def PopulateFilesByType(self, args):
+  def PopulateFilesByType(self, args, files_by_type):
     # TODO(pclay): Move arg manipulation elsewhere.
     if not args.main_class and not args.main_jar:
       raise ValueError('Must either specify --class or JAR.')
@@ -94,27 +94,27 @@ cluster, run:
       args.jars.append(args.main_jar)
       args.main_jar = None
 
-    self.files_by_type.update({
+    files_by_type.update({
         'main_jar': args.main_jar,
         'jars': args.jars,
         'archives': args.archives,
         'files': args.files})
 
-  def ConfigureJob(self, job, args):
+  def ConfigureJob(self, job, args, files_by_type):
     messages = self.context['dataproc_messages']
 
     log_config = self.BuildLoggingConfiguration(args.driver_log_levels)
     spark_job = messages.SparkJob(
         args=args.job_args,
-        archiveUris=self.files_by_type['archives'],
-        fileUris=self.files_by_type['files'],
-        jarFileUris=self.files_by_type['jars'],
+        archiveUris=files_by_type['archives'],
+        fileUris=files_by_type['files'],
+        jarFileUris=files_by_type['jars'],
         mainClass=args.main_class,
-        mainJarFileUri=self.files_by_type['main_jar'],
+        mainJarFileUri=files_by_type['main_jar'],
         loggingConfiguration=log_config)
 
     if args.properties:
-      spark_job.properties = encoding.DictToMessage(
+      spark_job.properties = apitools_base.DictToMessage(
           args.properties, messages.SparkJob.PropertiesValue)
 
     job.sparkJob = spark_job

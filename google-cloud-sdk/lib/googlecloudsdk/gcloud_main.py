@@ -11,7 +11,6 @@ import os
 import signal
 import sys
 
-from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.core import config
@@ -110,33 +109,6 @@ def CreateCLI(surfaces):
   return generated_cli
 
 
-def _PrintSuggestedAction(err, err_string):
-  """Print the best action for the user to take, given the error."""
-  if (isinstance(err, backend.CommandLoadFailure) and
-      type(err.root_exception) is ImportError):
-    # This usually indicates installation corruption.
-    # We do want to suggest `gcloud components reinstall` here, because
-    # there's a good chance it'll work (rather than a manual reinstall).
-    # Don't suggest `gcloud feedback`, because this is probably an
-    # installation problem.
-    log.error(
-        ('gcloud failed to load ({0}): {1}\n\n'
-         'This usually indicates corruption in your gcloud installation. '
-         'Please run the following command to reinstall:\n'
-         '    $ gcloud components reinstall\n\n'
-         'If that command fails, please reinstall the Cloud SDK using the '
-         'instructions here:\n'
-         '    https://cloud.google.com/sdk/'
-        ).format(err.command, err_string))
-  else:
-    log.error('gcloud crashed ({0}): {1}'.format(
-        getattr(err, 'error_name', type(err).__name__),
-        err_string))
-    log.err.Print('\nIf you would like to report this issue, please run the '
-                  'following command:')
-    log.err.Print('  gcloud feedback')
-
-
 def main(gcloud_cli=None):
   metrics.Started(START_TIME)
   # TODO(markpell): Put a real version number here
@@ -147,8 +119,13 @@ def main(gcloud_cli=None):
     gcloud_cli = CreateCLI([])
   try:
     gcloud_cli.Execute()
-  except Exception as err:  # pylint:disable=broad-except
-    _PrintSuggestedAction(err, gcloud_cli.SafeExceptionToString(err))
+  except Exception as e:  # pylint:disable=broad-except
+    log.error('gcloud crashed ({0}): {1}'.format(
+        getattr(e, 'error_name', type(e).__name__),
+        gcloud_cli.SafeExceptionToString(e)))
+    log.err.Print('\nIf you would like to report this issue, please run the '
+                  'following command:')
+    log.err.Print('  gcloud feedback')
 
     if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
       # We want to see the traceback as normally handled by Python

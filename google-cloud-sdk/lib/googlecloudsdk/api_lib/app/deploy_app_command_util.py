@@ -9,14 +9,13 @@ import shutil
 
 from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import retry
 
 
-def CopyFilesToCodeBucket(modules, bucket, source_contexts):
+def CopyFilesToCodeBucket(modules, bucket):
   """Examines modules and copies files to a Google Cloud Storage bucket.
 
   Args:
@@ -24,8 +23,6 @@ def CopyFilesToCodeBucket(modules, bucket, source_contexts):
       module information.
     bucket: str A URL to the Google Cloud Storage bucket where the files will be
       uploaded.
-    source_contexts: [dict] List of json-serializable source contexts
-      associated with the modules.
   Returns:
     A lookup from module name to a dictionary representing the manifest. See
     _BuildStagingDirectory.
@@ -39,8 +36,7 @@ def CopyFilesToCodeBucket(modules, bucket, source_contexts):
       manifest = _BuildStagingDirectory(source_directory,
                                         staging_directory,
                                         bucket,
-                                        excluded_files_regex,
-                                        source_contexts)
+                                        excluded_files_regex)
       manifests[module] = manifest
 
     if any(manifest for manifest in manifests.itervalues()):
@@ -75,8 +71,7 @@ def CopyFilesToCodeBucket(modules, bucket, source_contexts):
   return manifests
 
 
-def _BuildStagingDirectory(source_dir, staging_dir, bucket, excluded_regexes,
-                           source_contexts):
+def _BuildStagingDirectory(source_dir, staging_dir, bucket, excluded_regexes):
   """Creates a staging directory to be uploaded to Google Cloud Storage.
 
   The staging directory will contain a symlink for each file in the original
@@ -116,8 +111,6 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket, excluded_regexes,
       uploaded.
     excluded_regexes: List of file patterns to skip while building the staging
       directory.
-    source_contexts: A list of source contexts indicating the source code's
-      origin.
   Returns:
     A dictionary which represents the file manifest.
   """
@@ -125,67 +118,22 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket, excluded_regexes,
 
   bucket_url = cloud_storage.GsutilReferenceToApiReference(bucket)
 
-  def AddFileToManifest(manifest_path, input_path):
-    """Adds the given file to the current manifest.
-
-    Args:
-      manifest_path: The path to the file as it will be stored in the manifest.
-      input_path: The location of the file to be added to the manifest.
-    Returns:
-      If the target was already in the manifest with different contexts,
-      returns None. In all other cases, returns a target location to which the
-      caller must copy, move, or link the file.
-    """
-    file_ext = os.path.splitext(input_path)[1]
-    sha1_hash = file_utils.Checksum().AddFileContents(input_path).HexDigest()
-
-    target_filename = sha1_hash + file_ext
-    target_path = os.path.join(staging_dir, target_filename)
-
-    dest_path = '/'.join([bucket_url.rstrip('/'), target_filename])
-    old_url = manifest.get(manifest_path, {}).get('sourceUrl', '')
-    if old_url and old_url != dest_path:
-      return None
-    manifest[manifest_path] = {
-        'sourceUrl': dest_path,
-        'sha1Sum': sha1_hash,
-    }
-    return target_path
-
   for relative_path in util.FileIterator(source_dir, excluded_regexes,
                                          runtime=None):
     local_path = os.path.join(source_dir, relative_path)
-    target_path = AddFileToManifest(relative_path, local_path)
-    # target_path should not be None because FileIterator should never visit the
-    # same file twice and if it did, the file would be identical and we'd get a
-    # non-None return.
-    if not target_path:
-      raise exceptions.InternalError(
-          'Attempted multiple uploads of {0} with varying contents.'.format(
-              local_path))
+    file_ext = os.path.splitext(local_path)[1]
+    sha1_hash = file_utils.Checksum().AddFileContents(local_path).HexDigest()
+
+    target_filename = sha1_hash + file_ext
+    target_path = os.path.join(staging_dir, target_filename)
     if not os.path.exists(target_path):
       _CopyOrSymlink(local_path, target_path)
 
-  context_files = context_util.CreateContextFiles(
-      staging_dir, source_contexts, overwrite=True, source_dir=source_dir)
-  for context_file in context_files:
-    manifest_path = os.path.basename(context_file)
-    target_path = AddFileToManifest(manifest_path, context_file)
-    if not target_path:
-      log.status.Print('Not generating {0} because a user-generated '
-                       'file with the same name exists.'.format(manifest_path))
-    if not target_path or os.path.exists(target_path):
-      # If we get here, it probably means that the user already generated the
-      # context file manually and put it either in the top directory or in some
-      # subdirectory. The new context file is useless and may confuse later
-      # stages of the upload (it is in the staging directory with a
-      # nonconformant name), so delete it. The entry in the manifest will point
-      # at the existing file.
-      os.remove(context_file)
-    else:
-      # Rename the source-context*.json file (which is in the staging directory)
-      # to the hash-based name in the same directory.
-      os.rename(context_file, target_path)
+    dest_path = '/'.join([bucket_url.rstrip('/'), target_filename])
+    manifest[relative_path] = {
+        'sourceUrl': dest_path,
+        'sha1Sum': sha1_hash,
+    }
 
   log.debug('Generated deployment manifest: "{0}"'.format(
       json.dumps(manifest, indent=2, sort_keys=True)))

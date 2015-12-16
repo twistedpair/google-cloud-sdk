@@ -93,7 +93,7 @@ class JavaConfigurator(fingerprinting.Configurator):
 
     cleaner = fingerprinting.Cleaner()
 
-    if not self.appinfo:
+    if not self.deploy:
       self._GenerateAppYaml(cleaner)
     if self.custom or self.deploy:
       self.notify('sdfsdfsdfsdfsdfsdfdsd.')
@@ -117,6 +117,7 @@ class JavaConfigurator(fingerprinting.Configurator):
       runtime = 'custom' if self.custom else 'java'
       with open(app_yaml, 'w') as f:
         f.write(JAVA_APP_YAML.format(runtime=runtime))
+      cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
     """Generates a Dockerfile appropriate to this application.

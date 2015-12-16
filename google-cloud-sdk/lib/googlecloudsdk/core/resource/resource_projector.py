@@ -12,8 +12,8 @@ Example usage:
 
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
+from protorpc import messages
 
 
 def MakeSerializable(resource):

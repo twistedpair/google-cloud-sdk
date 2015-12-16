@@ -7,7 +7,6 @@ provides functionality like extracting tar files into the installation and
 tracking when we check for updates.
 """
 
-import compileall
 import errno
 import logging
 import os
@@ -123,17 +122,6 @@ class InstallationState(object):
     if not sdk_root:
       raise InvalidSDKRootError()
     return InstallationState(os.path.realpath(sdk_root))
-
-  def BackupInstallationState(self):
-    """Gets the installation state for the backup of this  state, if it exists.
-
-    Returns:
-      InstallationState, The state for this area or None if the backup does not
-          exist.
-    """
-    if not self.HasBackup():
-      return None
-    return InstallationState(os.path.realpath(self.__backup_directory))
 
   @staticmethod
   def VersionForInstalledComponent(component_id):
@@ -570,20 +558,6 @@ class InstallationState(object):
     if not os.path.exists(my_properties):
       return
     shutil.copyfile(my_properties, other_properties)
-
-  def CompilePythonFiles(self):
-    """Attempts to compile all the python files into .pyc files.
-
-    This does not raise exceptions if compiling a given file fails.
-    """
-    root = self.sdk_root
-    to_compile = [
-        os.path.join(root, 'bin', 'bootstrapping'),
-        os.path.join(root, 'lib'),
-        os.path.join(root, 'platform'),
-    ]
-    for d in to_compile:
-      compileall.compile_dir(d, quiet=True)
 
 
 class InstallationManifest(object):

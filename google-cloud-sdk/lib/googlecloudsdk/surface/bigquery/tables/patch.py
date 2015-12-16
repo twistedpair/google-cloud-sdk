@@ -9,7 +9,7 @@ from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.surface import bigquery as commands
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class TablesPatch(base.Command):
@@ -97,7 +97,7 @@ class TablesPatch(base.Command):
 
     try:
       apitools_client.tables.Patch(request)
-    except exceptions.HttpError as e:
+    except apitools_base.HttpError as e:
       raise bigquery.Error.ForHttpError(e)
     log.UpdatedResource(reference)
 

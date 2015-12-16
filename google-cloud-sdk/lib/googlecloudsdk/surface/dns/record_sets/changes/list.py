@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class List(base.Command):
@@ -45,7 +45,7 @@ class List(base.Command):
 
     project_id = properties.VALUES.core.project.Get(required=True)
 
-    return list_pager.YieldFromList(
+    return apitools_base.YieldFromList(
         dns_client.changes,
         dns_messages.DnsChangesListRequest(
             project=project_id,

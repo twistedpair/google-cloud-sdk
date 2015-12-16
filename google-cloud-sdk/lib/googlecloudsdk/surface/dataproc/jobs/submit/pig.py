@@ -4,7 +4,7 @@
 
 from googlecloudsdk.api_lib.dataproc import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Pig(base_classes.JobSubmitter):
@@ -71,34 +71,34 @@ COUNT(WORDS)" \\
         help=('A list of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
 
-  def PopulateFilesByType(self, args):
+  def PopulateFilesByType(self, args, files_by_type):
     # TODO(pclay): Replace with argument group.
     if not args.queries and not args.file:
       raise ValueError('Must either specify --execute or --file.')
     if args.queries and args.file:
       raise ValueError('Cannot specify both --execute and --file.')
 
-    self.files_by_type.update({
+    files_by_type.update({
         'jars': args.jars,
         'file': args.file})
 
-  def ConfigureJob(self, job, args):
+  def ConfigureJob(self, job, args, files_by_type):
     messages = self.context['dataproc_messages']
 
     log_config = self.BuildLoggingConfiguration(args.driver_log_levels)
     pig_job = messages.PigJob(
         continueOnFailure=args.continue_on_failure,
-        jarFileUris=self.files_by_type['jars'],
-        queryFileUri=self.files_by_type['file'],
+        jarFileUris=files_by_type['jars'],
+        queryFileUri=files_by_type['file'],
         loggingConfiguration=log_config)
 
     if args.queries:
       pig_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      pig_job.scriptVariables = encoding.DictToMessage(
+      pig_job.scriptVariables = apitools_base.DictToMessage(
           args.params, messages.PigJob.ScriptVariablesValue)
     if args.properties:
-      pig_job.properties = encoding.DictToMessage(
+      pig_job.properties = apitools_base.DictToMessage(
           args.properties, messages.PigJob.PropertiesValue)
 
     job.pigJob = pig_job

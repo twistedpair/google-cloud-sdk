@@ -2,7 +2,6 @@
 
 """Functions to help with shelling out to other commands."""
 
-import cStringIO
 import os
 import signal
 import sys
@@ -165,8 +164,7 @@ class _ProcessHolder(object):
       sys.exit(ret_val)
 
 
-def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
-         file_only_logger=False):
+def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
   This executes the given command, waits for it to finish, and then exits this
@@ -179,14 +177,11 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
       exiting.
     pipe_output_through_logger: bool, True to feed output from the called
       command through the standard logger instead of raw stdout/stderr.
-    file_only_logger: bool, If piping through the logger, log to the file only
-      instead of log.out and log.err.
 
   Returns:
     int, The exit code of the child if no_exit is True, else this method does
     not return.
   """
-  log.debug('Executing command: %s', args)
   # We use subprocess instead of execv because windows does not support process
   # replacement.  The result of execv on windows is that a new processes is
   # started and the original is killed.  When running in a shell, the prompt
@@ -194,43 +189,24 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
   # running.  subprocess waits for the new process to finish before returning.
   env = _GetToolEnv(env=env)
   process_holder = _ProcessHolder()
+  signal.signal(signal.SIGTERM, process_holder.Handler)
+  extra_popen_kwargs = {}
+  if pipe_output_through_logger:
+    extra_popen_kwargs['stderr'] = subprocess.PIPE
+    extra_popen_kwargs['stdout'] = subprocess.PIPE
 
-  old_handler = signal.signal(signal.SIGTERM, process_holder.Handler)
+  p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
+  process_holder.process = p
 
-  try:
-    extra_popen_kwargs = {}
-    if pipe_output_through_logger:
-      extra_popen_kwargs['stderr'] = subprocess.PIPE
-      extra_popen_kwargs['stdout'] = subprocess.PIPE
-
-    p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-    process_holder.process = p
-
-    if pipe_output_through_logger:
-      if file_only_logger:
-        out = cStringIO.StringIO()
-        err = cStringIO.StringIO()
-      else:
-        out = log.out
-        err = log.err
-
-      ret_val = None
-      while ret_val is None:
-        stdout, stderr = p.communicate()
-        out.write(stdout)
-        err.write(stderr)
-        ret_val = p.returncode
-
-      if file_only_logger:
-        log.file_only_logger.debug(out.getvalue())
-        log.file_only_logger.debug(err.getvalue())
-
-    else:
-      ret_val = p.wait()
-
-  finally:
-    # Restore the original signal handler.
-    signal.signal(signal.SIGTERM, old_handler)
+  if pipe_output_through_logger:
+    ret_val = None
+    while ret_val is None:
+      stdout, stderr = p.communicate()
+      log.out.write(stdout)
+      log.err.write(stderr)
+      ret_val = p.returncode
+  else:
+    ret_val = p.wait()
 
   if no_exit:
     return ret_val

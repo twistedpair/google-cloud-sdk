@@ -7,7 +7,7 @@ import re
 import time
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 _DELIMITER_MAP = {
@@ -31,7 +31,7 @@ def DatasetExists(apitools_client, bigquery_messages, reference):
   try:
     apitools_client.datasets.Get(request)
     return True
-  except apitools_exceptions.HttpError as server_error:
+  except apitools_base.HttpError as server_error:
     try:
       raise bigquery.Error.ForHttpError(server_error)
     except bigquery.NotFoundError:
@@ -48,7 +48,7 @@ def TableExists(apitools_client, bigquery_messages, reference):
   try:
     apitools_client.tables.Get(request)
     return True
-  except apitools_exceptions.HttpError as server_error:
+  except apitools_base.HttpError as server_error:
     try:
       raise bigquery.Error.ForHttpError(server_error)
     except bigquery.NotFoundError:

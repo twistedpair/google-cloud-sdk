@@ -38,7 +38,7 @@ def GetError(error):
   """Parse HttpError returned from Google API into printable APIHttpError.
 
   Args:
-    error: apitools_exceptions.HttpError.
+    error: apitools_base.HttpError.
   Returns:
     APIHttpError containing http error code and error message.
   """

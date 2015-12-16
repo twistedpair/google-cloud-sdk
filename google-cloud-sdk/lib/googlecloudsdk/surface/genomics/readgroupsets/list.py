@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class List(base.Command):
@@ -63,7 +63,7 @@ class List(base.Command):
     request = req_class(
         name=args.name,
         datasetIds=args.dataset_ids)
-    return list_pager.YieldFromList(
+    return apitools_base.list_pager.YieldFromList(
         apitools_client.readgroupsets,
         request,
         method='Search',

@@ -70,7 +70,7 @@ def ParseAndReturnIncludePaths(appinfo_file, open_fn=open):
   # Reimplement appinfo.py handler checks after merge.
   if not appyaml.handlers:
     # Add a placeholder handler for VM runtime apps.
-    if appyaml.IsVm():
+    if appyaml.vm or appyaml.env == '2':
       appyaml.handlers = [appinfo.URLMap(url='.*', script='PLACEHOLDER')]
     else:
       raise appinfo_errors.MissingURLMapping(

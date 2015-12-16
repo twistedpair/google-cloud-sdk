@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Delete(base.Command):
@@ -20,8 +20,8 @@ class Delete(base.Command):
 
   def DeleteLogSink(self):
     """Deletes a log sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_logs_sinks.Delete(
         messages.LoggingProjectsLogsSinksDeleteRequest(
@@ -30,8 +30,8 @@ class Delete(base.Command):
 
   def DeleteLogServiceSink(self):
     """Deletes a log service sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_logServices_sinks.Delete(
         messages.LoggingProjectsLogServicesSinksDeleteRequest(
@@ -40,8 +40,8 @@ class Delete(base.Command):
 
   def DeleteProjectSink(self):
     """Deletes a project sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_sinks.Delete(
         messages.LoggingProjectsSinksDeleteRequest(
@@ -76,7 +76,7 @@ class Delete(base.Command):
       else:
         self.DeleteProjectSink()
       log.DeletedResource(sink_ref)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       project_sink = not args.log and not args.service
       # Suggest the user to add --log or --log-service flag.
       if project_sink and error.status_code == 404:

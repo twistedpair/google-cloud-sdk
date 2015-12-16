@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class List(base.Command):
@@ -61,7 +61,7 @@ class List(base.Command):
       raise exceptions.ToolException(
           '--name should also be provided when --type is used')
 
-    return list_pager.YieldFromList(
+    return apitools_base.YieldFromList(
         dns_client.resourceRecordSets,
         dns_messages.DnsResourceRecordSetsListRequest(
             project=project_id,

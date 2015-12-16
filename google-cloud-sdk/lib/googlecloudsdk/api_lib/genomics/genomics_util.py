@@ -10,7 +10,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import extra_types
 
 
@@ -98,7 +98,7 @@ def ReraiseHttpExceptionPager(pager):
   try:
     for result in pager:
       yield result
-  except apitools_exceptions.HttpError as error:
+  except apitools_base.HttpError as error:
     msg = GetErrorMessage(error)
     unused_type, unused_value, traceback = sys.exc_info()
     raise exceptions.HttpException, msg, traceback
@@ -108,7 +108,7 @@ def ReraiseHttpException(foo):
   def Func(*args, **kwargs):
     try:
       return foo(*args, **kwargs)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       msg = GetErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
       raise exceptions.HttpException, msg, traceback

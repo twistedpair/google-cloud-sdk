@@ -12,8 +12,8 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.third_party.apitools.base.protorpclite import util as protorpc_util
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
+import protorpc.util
 
 
 def _WhitelistClientIP(instance_ref, sql_client, sql_messages, resources):
@@ -41,7 +41,7 @@ def _WhitelistClientIP(instance_ref, sql_client, sql_messages, resources):
     ToolException: Server did not complete the whitelisting operation in time.
   """
   datetime_now = datetime.datetime.now(
-      protorpc_util.TimeZoneOffset(datetime.timedelta(0)))
+      protorpc.util.TimeZoneOffset(datetime.timedelta(0)))
 
   acl_name = 'sql connect at time {0}'.format(datetime_now)
   user_acl = sql_messages.AclEntry(
@@ -51,7 +51,7 @@ def _WhitelistClientIP(instance_ref, sql_client, sql_messages, resources):
 
   try:
     original = sql_client.instances.Get(instance_ref.Request())
-  except apitools_exceptions.HttpError as error:
+  except apitools_base.HttpError as error:
     raise exceptions.HttpException(errors.GetErrorMessage(error))
 
   original.settings.ipConfiguration.authorizedNetworks.append(user_acl)

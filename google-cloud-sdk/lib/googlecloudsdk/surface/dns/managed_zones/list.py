@@ -8,7 +8,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class List(base.Command):
@@ -49,7 +49,7 @@ class List(base.Command):
     project_id = properties.VALUES.core.project.Get(required=True)
     remote_completion.SetGetInstanceFun(self.GetRef)
 
-    return list_pager.YieldFromList(
+    return apitools_base.YieldFromList(
         dns_client.managedZones,
         dns_messages.DnsManagedZonesListRequest(project=project_id),
         limit=args.limit, field='managedZones')

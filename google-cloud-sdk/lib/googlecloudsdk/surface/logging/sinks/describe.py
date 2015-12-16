@@ -5,8 +5,7 @@
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import list_printer
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Describe(base.Command):
@@ -19,19 +18,19 @@ class Describe(base.Command):
 
   def GetLogSink(self):
     """Returns a log sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_logs_sinks.Get(
         self.context['sink_reference'].Request())
 
   def GetLogServiceSink(self):
     """Returns a log service sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_logServices_sinks.Get(
         self.context['sink_reference'].Request())
 
   def GetProjectSink(self):
     """Returns a project sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_sinks.Get(
         self.context['sink_reference'].Request())
 
@@ -47,13 +46,12 @@ class Describe(base.Command):
     """
     try:
       if args.log:
-        return util.TypedLogSink(self.GetLogSink(), log_name=args.log)
+        return self.GetLogSink()
       elif args.service:
-        return util.TypedLogSink(self.GetLogServiceSink(),
-                                 service_name=args.service)
+        return self.GetLogServiceSink()
       else:
-        return util.TypedLogSink(self.GetProjectSink())
-    except apitools_exceptions.HttpError as error:
+        return self.GetProjectSink()
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, unused_args, result):
@@ -63,8 +61,7 @@ class Describe(base.Command):
       unused_args: The arguments that command was run with.
       result: The value returned from the Run() method.
     """
-    list_printer.PrintResourceList('logging.typedSinks', [result])
-    util.PrintPermissionInstructions(result.destination)
+    self.format(result)
 
 
 Describe.detailed_help = {

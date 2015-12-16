@@ -26,15 +26,14 @@ class Import(base.Command):
                         help=('A comma-delimited list of URI patterns '
                               'referencing existing VCF or MasterVar files in '
                               'Google Cloud Storage.'))
-    parser.add_argument(
-        '--file-format',
-        choices=['COMPLETE_GENOMICS', 'VCF'],
-        default='VCF',
-        help=('One of "COMPLETE_GENOMICS" or "VCF". This indicates the file '
-              'format of the --source-uris.'))
+    parser.add_argument('--file-format',
+                        choices=['COMPLETE_GENOMICS', 'VCF'],
+                        default='VCF',
+                        help=('The format of the variant data being imported. '
+                              'If unspecified, defaults to VCF.'))
     parser.add_argument('--normalize-reference-names',
-                        dest='normalize_reference_names',
-                        action='store_true',
+                        type=bool,
+                        default=False,
                         help=('Convert reference names to the canonical '
                               'representation. hg19 haplotypes (those '
                               'reference names containing "_hap") are not '
@@ -46,7 +45,6 @@ class Import(base.Command):
                               'becomes "17" and "chrX" becomes "X". All '
                               'mitochondrial chromosomes ("chrM", "chrMT", '
                               'etc) become "MT".'))
-    parser.set_defaults(normalize_referecne_names=False)
 
   @genomics_util.ReraiseHttpException
   def Run(self, args):

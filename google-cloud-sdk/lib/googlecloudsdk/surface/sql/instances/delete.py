@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class _BaseDelete(object):
@@ -88,7 +88,7 @@ class Delete(_BaseDelete, base.Command):
       cache = remote_completion.RemoteCompletion()
       cache.DeleteFromCache(instance_ref.SelfLink())
 
-    except exceptions.HttpError:
+    except apitools_base.HttpError:
       log.debug('operation : %s', str(operation_ref))
       raise
 
@@ -166,6 +166,6 @@ class DeleteBeta(_BaseDelete, base.Command):
       cache = remote_completion.RemoteCompletion()
       cache.DeleteFromCache(instance_ref.SelfLink())
 
-    except exceptions.HttpError:
+    except apitools_base.HttpError:
       log.debug('operation : %s', str(operation_ref))
       raise

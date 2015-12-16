@@ -10,7 +10,7 @@ from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Import(base.Command):
@@ -99,7 +99,7 @@ class Import(base.Command):
               referenceSetId=args.reference_set_id,
               partitionStrategy=partition_strat,
           ))
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       # Map our error messages (JSON API camelCased) back into flag names.
       msg = (genomics_util.GetErrorMessage(error)
              .replace('datasetId', '--dataset-id')

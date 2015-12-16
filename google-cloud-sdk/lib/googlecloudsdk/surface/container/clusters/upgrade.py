@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 @base.ReleaseTracks(base.ReleaseTrack.GA)
@@ -91,7 +91,7 @@ class Upgrade(base.Command):
         cluster_config = adapter.GetServerConfig(cluster_ref.projectId,
                                                  cluster_ref.zone)
         new_version = cluster_config.defaultClusterVersion
-      except apitools_exceptions.HttpError as error:
+      except apitools_base.HttpError as error:
         raise exceptions.HttpException(util.GetError(error))
 
     if args.master:
@@ -117,7 +117,7 @@ class Upgrade(base.Command):
 
     try:
       op_ref = adapter.UpdateCluster(cluster_ref, options)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
     if args.wait:

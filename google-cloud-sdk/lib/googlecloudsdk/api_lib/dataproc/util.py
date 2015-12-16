@@ -13,8 +13,7 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import encoding
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 def FormatHttpError(error):
@@ -44,12 +43,12 @@ def FormatRpcError(error):
   Returns:
     A ready-to-print string representation of the error.
   """
-  log.debug('Error:\n' + encoding.MessageToJson(error))
+  log.debug('Error:\n' + apitools_base.MessageToJson(error))
   formatted_error = error.message
   # Only display details if the log level is INFO or finer.
   if error.details and log.GetVerbosity() <= log.info:
     formatted_error += (
-        '\nDetails:\n' + encoding.MessageToJson(error.details))
+        '\nDetails:\n' + apitools_base.MessageToJson(error.details))
   return formatted_error
 
 
@@ -60,7 +59,7 @@ def HandleHttpError(func):
   def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       msg = FormatHttpError(error)
       _, _, traceback = sys.exc_info()
       raise exceptions.HttpException, msg, traceback
@@ -99,12 +98,12 @@ def WaitForOperation(
         operation = client.operations.Get(request)
         if operation.done:
           break
-      except apitools_exceptions.HttpError as error:
+      except apitools_base.HttpError as error:
         log.debug('GetOperation failed:\n' + FormatHttpError(error))
         # Keep trying until we timeout in case error is transient.
       time.sleep(poll_period_s)
   # TODO(pclay): Parse operation metadata.
-  log.debug('Operation:\n' + encoding.MessageToJson(operation))
+  log.debug('Operation:\n' + apitools_base.MessageToJson(operation))
   if not operation.done:
     raise exceptions.ToolException(
         'Operation [{0}] timed out.'.format(operation.name))
@@ -131,7 +130,7 @@ def WaitForResourceDeletion(
     while timeout_s > (time.time() - start_time):
       try:
         request_method(request)
-      except apitools_exceptions.HttpError as error:
+      except apitools_base.HttpError as error:
         if error.status_code == 404:
           # Object deleted
           return
@@ -231,7 +230,7 @@ def WaitForJobTermination(
               and job.driverOutputResourceUri):
             driver_log_stream = storage_helpers.StorageObjectSeriesStream(
                 job.driverOutputResourceUri)
-        except apitools_exceptions.HttpError as error:
+        except apitools_base.HttpError as error:
           log.warn('GetJob failed:\n%s', error)
           # Keep trying until we timeout in case error is transient.
       time.sleep(log_poll_period_s)

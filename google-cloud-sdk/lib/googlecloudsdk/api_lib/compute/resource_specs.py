@@ -6,8 +6,8 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.py27 import py27_collections as collections
+import protorpc
 
 
 def _FirewallRulesToCell(firewall):
@@ -278,7 +278,7 @@ def _ProtobufDefinitionToFields(message_class):
     The flattened fields, in non-decreasing order.
   """
   for field in sorted(message_class.all_fields(), key=lambda field: field.name):
-    if isinstance(field, messages.MessageField):
+    if isinstance(field, protorpc.messages.MessageField):
       for remainder in _ProtobufDefinitionToFields(field.type):
         if field.repeated:
           yield field.name + '[].' + remainder

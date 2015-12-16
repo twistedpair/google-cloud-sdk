@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Update(base.Command):
@@ -29,52 +29,51 @@ class Update(base.Command):
 
   def GetLogSink(self):
     """Returns a log sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_logs_sinks.Get(
         self.context['sink_reference'].Request())
 
   def GetLogServiceSink(self):
     """Returns a log service sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_logServices_sinks.Get(
         self.context['sink_reference'].Request())
 
   def GetProjectSink(self):
     """Returns a project sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
+    client = self.context['logging_client']
     return client.projects_sinks.Get(
         self.context['sink_reference'].Request())
 
-  def UpdateLogSink(self, sink_data):
+  def UpdateLogSink(self, sink):
     """Updates a log sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_logs_sinks.Update(
         messages.LoggingProjectsLogsSinksUpdateRequest(
             projectsId=sink_ref.projectsId, logsId=sink_ref.logsId,
-            sinksId=sink_data['name'], logSink=messages.LogSink(**sink_data)))
+            sinksId=sink.name, logSink=sink))
 
-  def UpdateLogServiceSink(self, sink_data):
+  def UpdateLogServiceSink(self, sink):
     """Updates a log service sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_logServices_sinks.Update(
         messages.LoggingProjectsLogServicesSinksUpdateRequest(
             projectsId=sink_ref.projectsId,
-            logServicesId=sink_ref.logServicesId, sinksId=sink_data['name'],
-            logSink=messages.LogSink(**sink_data)))
+            logServicesId=sink_ref.logServicesId, sinksId=sink.name,
+            logSink=sink))
 
-  def UpdateProjectSink(self, sink_data):
+  def UpdateProjectSink(self, sink):
     """Updates a project sink specified by the arguments."""
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     sink_ref = self.context['sink_reference']
     return client.projects_sinks.Update(
         messages.LoggingProjectsSinksUpdateRequest(
-            projectsId=sink_ref.projectsId, sinksId=sink_data['name'],
-            logSink=messages.LogSink(**sink_data)))
+            projectsId=sink_ref.projectsId, sinksId=sink.name, logSink=sink))
 
   def Run(self, args):
     """This is what gets called when the user runs this command.
@@ -101,7 +100,7 @@ class Update(base.Command):
         sink = self.GetLogServiceSink()
       else:
         sink = self.GetProjectSink()
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
     # Only update fields that were passed to the command.
@@ -116,21 +115,19 @@ class Update(base.Command):
       log_filter = sink.filter
 
     sink_ref = self.context['sink_reference']
-    sink_data = {'name': sink_ref.sinksId, 'destination': destination,
-                 'filter': log_filter}
+    updated_sink = self.context['logging_messages'].LogSink(
+        name=sink_ref.sinksId, destination=destination, filter=log_filter)
 
     try:
       if args.log:
-        result = util.TypedLogSink(self.UpdateLogSink(sink_data),
-                                   log_name=args.log)
+        result = self.UpdateLogSink(updated_sink)
       elif args.service:
-        result = util.TypedLogSink(self.UpdateLogServiceSink(sink_data),
-                                   service_name=args.service)
+        result = self.UpdateLogServiceSink(updated_sink)
       else:
-        result = util.TypedLogSink(self.UpdateProjectSink(sink_data))
+        result = self.UpdateProjectSink(updated_sink)
       log.UpdatedResource(sink_ref)
       return result
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, unused_args, result):
@@ -140,7 +137,7 @@ class Update(base.Command):
       unused_args: The arguments that command was run with.
       result: The value returned from the Run() method.
     """
-    list_printer.PrintResourceList('logging.typedSinks', [result])
+    list_printer.PrintResourceList('logging.sinks', [result])
     util.PrintPermissionInstructions(result.destination)
 
 

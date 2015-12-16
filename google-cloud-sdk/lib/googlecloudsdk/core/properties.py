@@ -650,7 +650,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.dns = self._Add('dns')
     self.functions = self._Add('functions')
     self.genomics = self._Add('genomics')
-    self.iam = self._Add('iam')
     self.loasproject = self._Add('loasproject')
     self.logging = self._Add('logging')
     self.testing = self._Add('testing')

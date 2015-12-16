@@ -9,7 +9,7 @@ from googlecloudsdk.api_lib.dataflow import time_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.surface import dataflow as commands
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Tail(base.Command):
@@ -65,7 +65,7 @@ class Tail(base.Command):
 
     try:
       response = apitools_client.projects_jobs.GetMetrics(request)
-    except exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise calliope_exceptions.HttpException(
           'Failed to get metrics for job with ID [{0}] in project [{1}]: {2}'
           .format(job_ref.jobId, job_ref.projectId,

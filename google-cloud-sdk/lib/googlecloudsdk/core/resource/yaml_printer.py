@@ -4,6 +4,8 @@
 
 from googlecloudsdk.core.resource import resource_printer_base
 
+import yaml
+
 
 class YamlPrinter(resource_printer_base.ResourcePrinter):
   """Prints the YAML representations of JSON-serializable objects.
@@ -23,23 +25,16 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       - world
     b:
       - x: bye
-
-  Attributes:
-    _yaml: Reference to the `yaml` module. Imported locally to improve startup
-        performance.
   """
 
   def __init__(self, *args, **kwargs):
     super(YamlPrinter, self).__init__(*args, **kwargs)
-    # pylint:disable=g-import-not-at-top, Delay import for performance.
-    import yaml
-    self._yaml = yaml
 
     def LiteralPresenter(dumper, data):
       return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
 
-    self._yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
+    yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
+                         Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralString(str):
     """A type used to inform the yaml printer about how it should look."""
@@ -73,7 +68,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     record = self._UpdateTypesForOutput(record)
-    self._yaml.safe_dump(
+    yaml.safe_dump(
         record,
         stream=self._out,
         default_flow_style=False,

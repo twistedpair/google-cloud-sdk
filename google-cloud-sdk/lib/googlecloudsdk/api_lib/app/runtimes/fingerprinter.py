@@ -3,12 +3,11 @@
 """Package containing fingerprinting for all runtimes.
 """
 
-from googlecloudsdk.api_lib.app import ext_runtime
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.runtimes import go
 from googlecloudsdk.api_lib.app.runtimes import java
+from googlecloudsdk.api_lib.app.runtimes import nodejs
 from googlecloudsdk.api_lib.app.runtimes import python
-from googlecloudsdk.api_lib.app.runtimes import python_compat
 from googlecloudsdk.api_lib.app.runtimes import ruby
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -18,9 +17,8 @@ RUNTIMES = [
     # relative positions need to be tested carefully.
     go,  # Go's position is relatively flexible due to its orthogonal nature.
     ruby,
-    ext_runtime.CoreRuntimeLoader('nodejs', 'Node.js', ['nodejs', 'custom']),
+    nodejs,
     java,
-    python_compat,
     python,  # python is last because it passes if there are any .py files.
 ]
 

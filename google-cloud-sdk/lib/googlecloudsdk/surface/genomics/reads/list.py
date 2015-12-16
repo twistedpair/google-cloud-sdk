@@ -3,10 +3,15 @@
 """Implementation of gcloud genomics reads list.
 """
 
+import sys
+
+from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util
-from googlecloudsdk.calliope import base
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 _COLUMNS = [
     ('REFERENCE_NAME', 'alignment.position.referenceName'),
@@ -21,7 +26,6 @@ _PROJECTIONS = [
 _API_FIELDS = ','.join(['nextPageToken'] + [
     'alignments.' + f for _, f in _COLUMNS
     ])
-
 
 class List(base.Command):
   """Lists reads within a given read group set.
@@ -82,7 +86,7 @@ class List(base.Command):
     if not args.format:
       global_params = messages.StandardQueryParameters(fields=_API_FIELDS)
 
-    pager = list_pager.YieldFromList(
+    pager = apitools_base.list_pager.YieldFromList(
         apitools_client.reads,
         messages.SearchReadsRequest(
             readGroupSetIds=[args.read_group_set_id],

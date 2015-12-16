@@ -28,3 +28,6 @@ from googlecloudsdk.third_party.appengine.api.api_base_pb import VoidProto
 from googlecloudsdk.third_party.appengine.datastore import datastore_v3_pb
 from googlecloudsdk.third_party.appengine.datastore.datastore_v3_pb import *
 
+# Some python2.5 tests depend on this
+if hasattr(datastore_v3_pb, '_DatastoreService_ClientStub'):
+  _DatastoreService_ClientStub = datastore_v3_pb._DatastoreService_ClientStub

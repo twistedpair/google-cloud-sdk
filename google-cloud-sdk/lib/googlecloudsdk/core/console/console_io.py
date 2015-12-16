@@ -608,32 +608,22 @@ class ProgressTracker(object):
       '\\',
   ]
 
-  def __init__(self, message, autotick=True, detail_message_callback=None,
-               tick_delay=1):
+  def __init__(self, message, autotick=True):
     self._message = message
     self._prefix = message + '...'
     self._ticks = 0
     self._autotick = autotick
     self._done = False
     self._lock = threading.Lock()
-    self._detail_message_callback = detail_message_callback
-    self._last_message_size = 0
-    self._tick_delay = tick_delay
-
-  def _GetPrefix(self):
-    if self._detail_message_callback:
-      detail_message = self._detail_message_callback()
-      if detail_message:
-        return self._prefix + ' ' + detail_message + '...'
-    return self._prefix
 
   def __enter__(self):
-    log.file_only_logger.info(self._GetPrefix())
-    self._Print()
+    log.file_only_logger.info(self._prefix)
+    sys.stderr.write(self._prefix)
+
     if self._autotick:
       def Ticker():
         while True:
-          time.sleep(self._tick_delay)
+          time.sleep(1)
           if self.Tick():
             return
       threading.Thread(target=Ticker).start()
@@ -645,24 +635,14 @@ class ProgressTracker(object):
     with self._lock:
       if not self._done:
         self._ticks += 1
-        self._Print(ProgressTracker.SPIN_MARKS[
-            self._ticks % len(ProgressTracker.SPIN_MARKS)])
+        self._Print()
+        sys.stderr.write(
+            ProgressTracker.SPIN_MARKS[
+                self._ticks % len(ProgressTracker.SPIN_MARKS)])
       return self._done
 
-  def _Print(self, message=''):
-    """Reprints the prefix followed by an optional message."""
-    display_message = self._GetPrefix()
-    if message:
-      display_message += message
-
-    # This is to clear the display buffer, otherwise it would display the
-    # trailing parts of the previous line
-    if self._last_message_size > 0:
-      sys.stderr.write('\r' + self._last_message_size * ' ')
-      self._last_message_size = len(display_message)
-
-    sys.stderr.write('\r' + display_message)
-    sys.stderr.flush()
+  def _Print(self):
+    sys.stderr.write('\r' + self._prefix)
 
   def __exit__(self, ex_type, unused_value, unused_traceback):
     with self._lock:
@@ -672,9 +652,11 @@ class ProgressTracker(object):
       if ex_type:
         # This is to prevent the tick character from appearing before 'failed.'
         # (ex. 'message...failed' instead of 'message.../failed.')
-        self._Print('failed.\n')
+        self._Print()
+        sys.stderr.write('failed.\n')
         return False
-      self._Print('done.\n')
+      self._Print()
+    sys.stderr.write('done.\n')
 
 
 class DelayedProgressTracker(ProgressTracker):
@@ -695,11 +677,8 @@ class DelayedProgressTracker(ProgressTracker):
     STARTED = _TrackerStateTuple('Started')
     FINISHED = _TrackerStateTuple('Finished')
 
-  def __init__(self, message, timeout, autotick=True,
-               detail_message_callback=None):
-    super(DelayedProgressTracker, self).__init__(
-        message, autotick=autotick,
-        detail_message_callback=detail_message_callback)
+  def __init__(self, message, timeout, autotick=True):
+    super(DelayedProgressTracker, self).__init__(message, autotick=autotick)
     self._timeout = timeout
     self._state = self.TrackerState.WAITING
     self._state_lock = threading.Lock()

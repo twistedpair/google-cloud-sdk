@@ -13,7 +13,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 def _Args(parser):
@@ -187,7 +187,7 @@ class Create(base.Command):
           'Creating cluster {0}'.format(cluster_ref.clusterId),
           timeout_s=args.timeout)
       cluster = adapter.GetCluster(cluster_ref)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
     log.CreatedResource(cluster_ref)

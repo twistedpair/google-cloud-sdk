@@ -4,7 +4,7 @@
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Wait(base.Command):
@@ -38,7 +38,7 @@ class Wait(base.Command):
       return adapter.WaitForOperation(
           operation_ref,
           'Waiting for {0} to complete'.format(operation_ref.operationId))
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, args, result):

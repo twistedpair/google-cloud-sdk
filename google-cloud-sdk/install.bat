@@ -8,15 +8,8 @@ echo Welcome to the Google Cloud SDK!
 
 SETLOCAL EnableDelayedExpansion
 
-SET CLOUDSDK_ROOT_DIR=%~dp0..
-
 IF "%CLOUDSDK_PYTHON%"=="" (
-  SET BUNDLED_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\bundledpython\python.exe
-  IF EXIST !BUNDLED_PYTHON! (
-    SET CLOUDSDK_PYTHON=!BUNDLED_PYTHON!
-  ) ELSE (
-    FOR %%i in (python.exe) do (SET CLOUDSDK_PYTHON=%%~$PATH:i)
-  )
+  FOR %%i in (python.exe) do (SET CLOUDSDK_PYTHON=%%~$PATH:i)
 )
 IF "%CLOUDSDK_PYTHON%"=="" (
   echo.

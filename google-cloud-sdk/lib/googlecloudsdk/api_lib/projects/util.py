@@ -6,9 +6,8 @@ from datetime import datetime
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
-from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1.cloudresourcemanager_v1beta1_messages import Project
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 lifecycle = Project.LifecycleStateValueValuesEnum
 
@@ -109,31 +108,7 @@ def HandleHttpError(func):
   def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise GetError(error)
 
   return CatchHTTPErrorRaiseHTTPException
-
-
-def GetClient(http):
-  """Import and return the appropriate projects client.
-
-  Args:
-    http: httplib2.Http
-
-  Returns:
-    Cloud Resource Manager client for the appropriate release track.
-  """
-  # pylint: disable=g-import-not-at-top, Import here for load performance
-  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_client
-  return cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1(
-      url=properties.VALUES.api_endpoint_overrides.cloudresourcemanager.Get(),
-      get_credentials=False,
-      http=http)
-
-
-def GetMessages():
-  """Import and return the appropriate projects messages module."""
-  # pylint: disable=g-import-not-at-top, Import here for load performance
-  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_messages
-  return cloudresourcemanager_v1beta1_messages

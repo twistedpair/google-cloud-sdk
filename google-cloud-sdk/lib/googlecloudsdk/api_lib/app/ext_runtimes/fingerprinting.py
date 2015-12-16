@@ -27,17 +27,6 @@ class Params(object):
     self.custom = custom
     self.deploy = deploy
 
-  def ToDict(self):
-    """Returns the object converted to a dictionary.
-
-    Returns:
-      ({str: object}) A dictionary that can be converted to json using
-      json.dump().
-    """
-    return {'appinfo': self.appinfo and self.appinfo.ToDict(),
-            'custom': self.custom,
-            'deploy': self.deploy}
-
 
 class Cleaner(object):
   """Class to manage cleanup of a set of files.

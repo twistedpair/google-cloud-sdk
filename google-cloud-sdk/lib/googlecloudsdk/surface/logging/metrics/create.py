@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Create(base.Command):
@@ -31,8 +31,8 @@ class Create(base.Command):
     Returns:
       The created metric.
     """
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     metric_filter = args.filter
     # This prevents a clash with the Cloud SDK --filter flag.
     args.filter = None
@@ -46,7 +46,7 @@ class Create(base.Command):
               projectsId=project, logMetric=new_metric))
       log.CreatedResource(args.metric_name)
       return result
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, unused_args, result):

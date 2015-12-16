@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Delete(base.Command):
@@ -73,7 +73,7 @@ class Delete(base.Command):
 
         op_ref = adapter.DeleteCluster(cluster_ref)
         operations.append((op_ref, cluster_ref))
-      except exceptions.HttpError as error:
+      except apitools_base.HttpError as error:
         errors.append(util.GetError(error))
       except util.Error as error:
         errors.append(error)
@@ -93,7 +93,7 @@ class Delete(base.Command):
             properties.PersistProperty(
                 properties.VALUES.container.cluster, None)
           log.DeletedResource(cluster_ref)
-        except exceptions.HttpError as error:
+        except apitools_base.HttpError as error:
           errors.append(util.GetError(error))
         except util.Error as error:
           errors.append(error)

@@ -8,31 +8,12 @@ import textwrap
 from googlecloudsdk.core.console import console_io
 
 
-def _NormalizeDescription(description):
-  """Normalizes description text.
-
-  argparse.SUPPRESS normalizes to None.
-
-  Args:
-    description: str, The text to be normalized.
-
-  Returns:
-    str, The normalized text.
-  """
-  if description == argparse.SUPPRESS:
-    description = None
-  elif description:
-    description = textwrap.dedent(description)
-  return description
-
-
 class Flag(object):
   """Flag info.
 
   Attributes:
     type: str, The flag value type name {'bool', 'int', 'float', 'string'}.
     name: str, The normalized flag name (no leading -, '_' => '-').
-    hidden: bool, True if the flag is hidden.
     value: str, The flag value documentation name.
     countmin: int, The minimum number of flag values.
     countmax: int, The maximum number of flag values, 0 for unlimited.
@@ -45,13 +26,12 @@ class Flag(object):
   def __init__(self, name, description='', default=None):
     self.type = 'string'
     self.name = name
-    self.hidden = description == argparse.SUPPRESS
     self.value = ''
     self.countmin = 0
     self.countmax = 0
     self.required = 0
     self.default = default
-    self.description = _NormalizeDescription(description)
+    self.description = description
     self.group = 0
 
 
@@ -82,7 +62,6 @@ class Command(object):
   Attributes:
     release: str, The command release name {'internal', 'alpha', 'beta', 'ga'}.
     name: str, The normalized name ('_' => '-').
-    hidden: bool, True if the command is hidden.
     capsule: str, The first line of the command docstring.
     description: str, The second and following lines of the command docstring.
     flags: {str:str}, Command flag dict, indexed by normalized flag name.
@@ -102,13 +81,13 @@ class Command(object):
     self.release, capsule = self.__Release(
         command, self.release, getattr(command, 'short_help', ''))
     self.capsule = console_io.LazyFormat(
-        _NormalizeDescription(capsule),
+        self.__NormalizeDescription(capsule),
         command=self.name,
         parent_command=parent_command)
     self.release, description = self.__Release(
         command, self.release, getattr(command, 'long_help', ''))
     self.description = console_io.LazyFormat(
-        _NormalizeDescription(description),
+        self.__NormalizeDescription(description),
         command=self.name,
         index=self.capsule,
         parent_command=parent_command)
@@ -120,7 +99,7 @@ class Command(object):
               command, self.release, sections[s])
         else:
           self.sections[s] = console_io.LazyFormat(
-              _NormalizeDescription(sections[s]),
+              self.__NormalizeDescription(sections[s]),
               command=self.name,
               index=self.capsule,
               description=self.description,
@@ -166,7 +145,7 @@ class Command(object):
           if not self.__Ancestor(name) and (not name.startswith('no-') or
                                             arg.help != argparse.SUPPRESS):
             flag = Flag(name,
-                        description=arg.help,
+                        description=self.__NormalizeDescription(arg.help),
                         default=arg.default)
             # ArgParse does not have an explicit Boolean flag type. By
             # convention a flag with arg.nargs=0 and action='store_true' or
@@ -206,7 +185,8 @@ class Command(object):
     # Collect the positionals.
     for arg in args.positional_args:
       name = arg.dest.replace('_', '-')
-      positional = Positional(name, description=_NormalizeDescription(arg.help))
+      positional = Positional(name,
+                              description=self.__NormalizeDescription(arg.help))
       if arg.metavar:
         positional.value = arg.metavar
       if arg.nargs != 0:
@@ -237,6 +217,21 @@ class Command(object):
       command = command._parent  # pylint: disable=protected-access
     return False
 
+  @staticmethod
+  def __NormalizeDescription(description):
+    """Normalizes description text.
+
+    argparse.SUPPRESS normalizes to the empty string.
+
+    Args:
+      description: str, The text to be normalized.
+
+    Returns:
+      str, The normalized text.
+    """
+    description = textwrap.dedent(description)
+    return '' if description == argparse.SUPPRESS else description
+
   def __Release(self, command, release, description):
     """Determines the release type from the description text.
 
@@ -249,7 +244,7 @@ class Command(object):
       (release, description): (int, str), The actual release and description
         with release prefix omitted.
     """
-    description = _NormalizeDescription(description)
+    description = self.__NormalizeDescription(description)
     path = command.GetPath()
     if len(path) >= 2 and path[1] == 'internal':
       release = 'INTERNAL'

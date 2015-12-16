@@ -6,7 +6,6 @@ import json
 import os
 import time
 
-import googlecloudsdk
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
@@ -403,16 +402,6 @@ def EnsureSDKWriteAccess(sdk_root_override=None):
   sdk_root = sdk_root_override or Paths().sdk_root
   if sdk_root and not file_utils.HasWriteAccessInDir(sdk_root):
     raise exceptions.RequiresAdminRightsError(sdk_root)
-
-
-def GcloudPath():
-  """Gets the path the main gcloud entrypoint.
-
-  Returns:
-    str: The path to gcloud.py
-  """
-  return os.path.join(
-      os.path.dirname(os.path.dirname(googlecloudsdk.__file__)), 'gcloud.py')
 
 
 class Paths(object):

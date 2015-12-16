@@ -9,7 +9,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Describe(base.Command):
@@ -60,7 +60,7 @@ class Describe(base.Command):
       return client.deployments.Get(
           messages.DeploymentmanagerDeploymentsGetRequest(
               project=project, deployment=args.deployment_name))
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(dm_v2_util.GetError(error))
 
   def Display(self, unused_args, deployment):
@@ -87,7 +87,7 @@ class Describe(base.Command):
           messages.DeploymentmanagerResourcesListRequest(
               project=project, deployment=deployment.name))
       resources = response.resources
-    except apitools_exceptions.HttpError:
+    except apitools_base.HttpError:
       pass  # Couldn't get resources, skip adding them to the table.
     resource_printer.Print(resources=deployment,
                            print_format=unused_args.format or 'yaml',

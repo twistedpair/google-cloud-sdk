@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
@@ -31,8 +31,8 @@ class List(base.Command):
     Returns:
       The list of metrics.
     """
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     project = properties.VALUES.core.project.Get(required=True)
 
     if args.limit <= 0:
@@ -53,7 +53,7 @@ class List(base.Command):
     """
     try:
       list_printer.PrintResourceList('logging.metrics', result)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
 List.detailed_help = {

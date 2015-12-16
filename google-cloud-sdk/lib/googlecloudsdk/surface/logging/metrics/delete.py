@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Delete(base.Command):
@@ -27,8 +27,8 @@ class Delete(base.Command):
       args: an argparse namespace. All the arguments that were provided to this
         command invocation.
     """
-    client = self.context['logging_client_v1beta3']
-    messages = self.context['logging_messages_v1beta3']
+    client = self.context['logging_client']
+    messages = self.context['logging_messages']
     project = properties.VALUES.core.project.Get(required=True)
 
     if not console_io.PromptContinue(
@@ -40,7 +40,7 @@ class Delete(base.Command):
               metricsId=args.metric_name,
               projectsId=project))
       log.DeletedResource(args.metric_name)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
 Delete.detailed_help = {

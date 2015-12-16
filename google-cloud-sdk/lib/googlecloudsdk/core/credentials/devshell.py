@@ -7,8 +7,8 @@ import os
 import threading
 
 from googlecloudsdk.core import config
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from oauth2client import client
+from protorpc import messages
 
 
 DEVSHELL_ENV = 'DEVSHELL_CLIENT_PORT'

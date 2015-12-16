@@ -11,7 +11,7 @@ from googlecloudsdk.calliope.exceptions import HttpException
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 def PrettyPrint(resource, print_format='json'):
@@ -104,7 +104,7 @@ def WaitForOperation(operation_name, project, context, operation_description,
                 operation=operation_name,
             )
         )
-      except apitools_exceptions.HttpError as error:
+      except apitools_base.HttpError as error:
         raise HttpException(GetError(error))
       ticker.Tick()
       # Operation status will be one of PENDING, RUNNING, DONE
@@ -169,5 +169,5 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
                if response.get_assigned_value(resource_field)
                else [])
     return (results, return_token)
-  except apitools_exceptions.HttpError as error:
+  except apitools_base.HttpError as error:
     raise exceptions.HttpException(GetError(error))

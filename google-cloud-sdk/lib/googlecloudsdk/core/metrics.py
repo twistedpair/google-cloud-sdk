@@ -315,19 +315,12 @@ class _MetricsCollector(object):
     exec_env = os.environ.copy()
     exec_env['PYTHONPATH'] = os.pathsep.join(sys.path)
 
-    try:
-      p = subprocess.Popen(execution_args, env=exec_env,
-                           **self._async_popen_args)
-      log.debug('Metrics reporting process started...')
-    except OSError:
-      # This can happen specifically if the Python executable moves between the
-      # start of this process and now.
-      log.debug('Metrics reporting process failed to start.')
+    p = subprocess.Popen(execution_args, env=exec_env, **self._async_popen_args)
     if wait_for_report:
       # NOTE: p.wait() can cause a deadlock. p.communicate() is recommended.
       # See python docs for more information.
       p.communicate()
-      log.debug('Metrics reporting process finished.')
+    log.debug('Metrics reporting process started...')
 
 
 def _CollectGAMetricAndSetTimerContext(category, action, label, value=0):

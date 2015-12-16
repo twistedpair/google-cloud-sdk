@@ -5,6 +5,7 @@
 import argparse
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Submit(base.Group):

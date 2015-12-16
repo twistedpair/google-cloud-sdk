@@ -2,12 +2,12 @@
 """Command to list all Project IDs associated with the active user."""
 
 import textwrap
-from googlecloudsdk.api_lib.projects import projects_api
 from googlecloudsdk.api_lib.projects import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core import resources
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class List(base.Command):
@@ -45,11 +45,17 @@ class List(base.Command):
   def Run(self, args):
     """Run the list command."""
 
-    projects_client = self.context['projects_client']
+    projects = self.context['projects_client']
     messages = self.context['projects_messages']
     remote_completion.SetGetInstanceFun(self.ProjectIdToLink)
-    return projects_api.List(client=projects_client, messages=messages,
-                             limit=args.limit)
+    for project in apitools_base.YieldFromList(
+        projects.projects,
+        messages.CloudresourcemanagerProjectsListRequest(),
+        limit=args.limit,
+        field='projects',
+        predicate=util.IsActive,
+        batch_size_attribute='pageSize'):
+      yield project
 
   def Display(self, args, result):
     instance_refs = []

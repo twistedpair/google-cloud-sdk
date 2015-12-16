@@ -13,8 +13,7 @@ from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apis.container import v1 as container_v1
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import http_wrapper
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 WRONG_ZONE_ERROR_MSG = """\
@@ -29,8 +28,8 @@ No cluster named '{name}' in {project}."""
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
   if response.status_code == 503:
-    raise apitools_exceptions.HttpError.FromResponse(response)
-  return http_wrapper.CheckResponse(response)
+    raise apitools_base.HttpError.FromResponse(response)
+  return apitools_base.http_wrapper.CheckResponse(response)
 
 
 def NewAPIAdapter(api_version, endpoint_url, http):
@@ -157,7 +156,7 @@ class APIAdapter(object):
     """
     try:
       return self.client.projects_zones_clusters.Get(cluster_ref.Request())
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       api_error = util.GetError(error)
       if api_error.code != 404:
         raise api_error
@@ -165,7 +164,7 @@ class APIAdapter(object):
     # Cluster couldn't be found, maybe user got zone wrong?
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
     for cluster in clusters:
       if cluster.name == cluster_ref.clusterId:
@@ -220,21 +219,17 @@ class APIAdapter(object):
     Raises:
       Error: if the operation times out or finishes with an error.
     """
-    detail_message = None
-    with console_io.ProgressTracker(message, autotick=True,
-                                    detail_message_callback=
-                                    lambda: detail_message):
+    with console_io.ProgressTracker(message, autotick=True):
       start_time = time.clock()
       while timeout_s > (time.clock() - start_time):
         try:
           operation = self.GetOperation(operation_ref)
-          detail_message = operation.detail
           if self.IsOperationFinished(operation):
             # Success!
             log.info('Operation %s succeeded after %.3f seconds',
                      operation, (time.clock() - start_time))
             break
-        except apitools_exceptions.HttpError as error:
+        except apitools_base.HttpError as error:
           log.debug('GetOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
           # TODO(jeffml): add additional backoff if server is returning 500s

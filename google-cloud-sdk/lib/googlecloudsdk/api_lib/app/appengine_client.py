@@ -7,6 +7,7 @@ from __future__ import with_statement
 import urllib
 import urllib2
 
+from googlecloudsdk.api_lib.app import appengine_deployments
 from googlecloudsdk.api_lib.app import logs_requestor
 from googlecloudsdk.api_lib.app import module_downloader
 from googlecloudsdk.api_lib.app import service_util
@@ -21,6 +22,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import service_account as c_service_account
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
 from oauth2client import gce as oauth2client_gce
@@ -91,6 +93,19 @@ class AppengineClient(object):
     else:
       # Otherwise use a stored refresh token
       self.oauth2_refresh_token = credentials.refresh_token
+
+  def CancelDeployment(self, module, version, force=False):
+    """Cancels the deployment of the given module version.
+
+    Args:
+      module: str, The module deployment to cancel.
+      version: str, The version deployment to cancel.
+      force: bool, True to force the cancellation.
+    """
+    rpcserver = self._GetRpcServer()
+    rpcserver.Send('/api/appversion/rollback',
+                   app_id=self.project, module=module, version=version,
+                   force_rollback='1' if force else '0')
 
   def CleanupIndexes(self, index_yaml):
     """Removes unused datastore indexes.
@@ -245,6 +260,53 @@ class AppengineClient(object):
         all_services[version.service] = [version]
     return [service_util.Service(self.project, service_id, versions) for
             service_id, versions in all_services.items()]
+
+  def DeployModule(self, module, version, module_yaml, module_yaml_path):
+    """Updates and deploys new app versions based on given config.
+
+    Args:
+      module: str, The module to deploy.
+      version: str, The version of the module to deploy.
+      module_yaml: AppInfoExternal, Module info parsed from a module yaml file.
+      module_yaml_path: str, Path of the module yaml file.
+
+    Returns:
+      An appinfo.AppInfoSummary if one was returned from the Deploy, None
+      otherwise.
+    """
+    precompilation = True
+
+    # Hack for Admin Console
+    # Admin Console will continue to use 'module' instead of 'service'
+    if module_yaml.service:
+      module = module_yaml.service
+      module_yaml.module = module
+      module_yaml.service = None
+
+    if module_yaml.runtime == 'vm':
+      precompilation = False
+    elif (module_yaml.runtime.startswith('java') and
+          appinfo.JAVA_PRECOMPILED not in
+          (module_yaml.derived_file_type or [])):
+      precompilation = False
+
+    if precompilation:
+      if not module_yaml.derived_file_type:
+        module_yaml.derived_file_type = []
+      if appinfo.PYTHON_PRECOMPILED not in module_yaml.derived_file_type:
+        module_yaml.derived_file_type.append(appinfo.PYTHON_PRECOMPILED)
+
+    rpcserver = self._GetRpcServer()
+
+    appversion = appengine_deployments.AppVersionUploader(
+        rpcserver,
+        self.project,
+        module,
+        version,
+        module_yaml,
+        module_yaml_path,
+        self.ResourceLimitsInfo(version))
+    return appversion.DoUpload()
 
   def PrepareVmRuntime(self):
     """Prepare the application for vm runtimes and return state."""

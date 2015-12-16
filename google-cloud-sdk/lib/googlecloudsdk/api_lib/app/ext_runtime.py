@@ -10,7 +10,6 @@ import threading
 import yaml
 
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
-from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -88,12 +87,9 @@ class GeneratedFile(object):
 
   def WriteTo(self, dest_dir):
     path = _NormalizePath(dest_dir, self.filename)
-    if not os.path.exists(path):
-      with open(path, 'w') as f:
-        f.write(self.contents)
-      return path
-
-    return None
+    with open(path, 'w') as f:
+      f.write(self.contents)
+    return path
 
 
 class PluginResult(object):
@@ -181,8 +177,7 @@ class ExternalizedRuntime(object):
         break
       log.warn('%s: %s' % (section_name, line.rstrip()))
 
-  def _ProcessMessage(self, plugin_stdin, message, result, params,
-                      runtime_data):
+  def _ProcessMessage(self, message, result):
     msg_type = message.get('type')
     if msg_type is None:
       log.error('Missing type in message: %0.80s' % str(message))
@@ -201,19 +196,11 @@ class ExternalizedRuntime(object):
         result.files.append(GeneratedFile(filename, contents))
       except KeyError as ex:
         log.error('Missing [%s] field in gen_file message', ex.message)
-    elif msg_type == 'get_config':
-      response = {'type': 'get_config_response',
-                  'params': params.ToDict(),
-                  'runtime_data': runtime_data}
-      json.dump(response, plugin_stdin)
-      plugin_stdin.write('\n')
-      plugin_stdin.flush()
     # TODO(mmuller): implement remaining message types.
     else:
       log.error('Unknown message type %s' % msg_type)
 
-  def _ProcessPluginPipes(self, section_name, proc, result, params,
-                          runtime_data):
+  def _ProcessPluginPipes(self, section_name, proc, result):
     """Process the standard output and input streams of a plugin."""
     while True:
       line = proc.stdout.readline()
@@ -223,14 +210,13 @@ class ExternalizedRuntime(object):
       # Parse and process the message.
       try:
         message = json.loads(line)
-        self._ProcessMessage(proc.stdin, message, result, params, runtime_data)
+        self._ProcessMessage(message, result)
       except ValueError:
         # Unstructured lines get logged as "info".
         log.info('%s: %s' % (section_name, line.rstrip()))
 
-  def RunPlugin(self, section_name, plugin_spec, params, args=None,
-                valid_exit_codes=(0,),
-                runtime_data=None):
+  def RunPlugin(self, section_name, plugin_spec, args=None,
+                valid_exit_codes=(0,)):
     """Run a plugin.
 
     Args:
@@ -238,12 +224,9 @@ class ExternalizedRuntime(object):
         from.
       plugin_spec: ({str: str, ...}) A dictionary mapping plugin locales to
         script names
-      params: (fingerprinting.Params or None) Parameters for the plugin.
       args: ([str, ...] or None) Command line arguments for the plugin.
       valid_exit_codes: (int, ...) Exit codes that will be accepted without
         raising an exception.
-      runtime_data: ({str: object, ...}) A dictionary of runtime data passed
-        back from detect.
 
     Returns:
       (PluginResult) A bundle of the exit code and data produced by the plugin.
@@ -269,8 +252,7 @@ class ExternalizedRuntime(object):
                                        args=(section_name, p.stderr,))
       stderr_thread.start()
       stdout_thread = threading.Thread(target=self._ProcessPluginPipes,
-                                       args=(section_name, p, result,
-                                             params, runtime_data))
+                                       args=(section_name, p, result))
       stdout_thread.start()
 
       stderr_thread.join()
@@ -303,7 +285,7 @@ class ExternalizedRuntime(object):
     """
     detect = self.config.get('detect')
     if detect:
-      result = self.RunPlugin('detect', detect, params, [path], (0, 1))
+      result = self.RunPlugin('detect', detect, [path], (0, 1))
       if result.exit_code:
         return None
       else:
@@ -356,68 +338,14 @@ class ExternalizedRuntime(object):
                                            filename)
 
           dest_path = _NormalizePath(configurator.path, filename)
-          if not os.path.exists(dest_path):
-            cleaner.Add(dest_path)
-            shutil.copy(full_name, dest_path)
+          cleaner.Add(dest_path)
+          shutil.copy(full_name, dest_path)
       else:
-        result = self.RunPlugin('generate_configs', generate_configs,
-                                configurator.params,
-                                runtime_data=configurator.data)
+        result = self.RunPlugin('generate_configs', generate_configs)
         for file_info in result.files:
-          dest_filename = file_info.WriteTo(configurator.path)
-
-          # Cleanup everything except app.yaml files - these are never
-          # temporary.
-          if dest_filename and file_info.filename != 'app.yaml':
-            cleaner.Add(dest_filename)
+          cleaner.Add(file_info.WriteTo(configurator.path))
 
       return cleaner
     else:
       raise InvalidRuntimeDefinition('Runtime definition contains no '
                                      'generate_configs section.')
-
-
-def _GetRuntimeDefDir():
-  sdk_root = config.Paths().sdk_root
-  if sdk_root:
-    return os.path.join(sdk_root, 'lib', 'googlecloudsdk', 'api_lib', 'app',
-                        'ext_runtimes', 'runtime_defs')
-  else:
-    # Otherwise we cheat and use the directory of this file.
-    return os.path.join(os.path.dirname(__file__), 'ext_runtimes',
-                        'runtime_defs')
-
-
-class CoreRuntimeLoader(object):
-  """A loader stub for the core runtimes.
-
-  The externalized core runtimes are currently distributed with the cloud sdk.
-  This class encapsulates the name of a core runtime to avoid having to load
-  it at module load time.  Instead, the wrapped runtime is demand-loaded when
-  the Fingerprint() method is called.
-  """
-
-  def __init__(self, name, visible_name, allowed_runtime_names):
-    self._name = name
-    self._rep = None
-    self._visible_name = visible_name
-    self._allowed_runtime_names = allowed_runtime_names
-
-  # These need to be named this way because they're constants in the
-  # non-externalized implementation.  TODO(mmuller) change the names once the
-  # old implementation go away.
-  # pylint:disable=invalid-name
-  @property
-  def ALLOWED_RUNTIME_NAMES(self):
-    return self._allowed_runtime_names
-
-  # pylint:disable=invalid-name
-  @property
-  def NAME(self):
-    return self._visible_name
-
-  def Fingerprint(self, path, params):
-    if not self._rep:
-      path_to_runtime = os.path.join(_GetRuntimeDefDir(), self._name)
-      self._rep = ExternalizedRuntime.Load(path_to_runtime)
-    return self._rep.Fingerprint(path, params)

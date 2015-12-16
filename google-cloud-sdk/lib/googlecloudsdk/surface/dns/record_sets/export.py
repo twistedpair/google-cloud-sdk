@@ -8,8 +8,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Export(base.Command):
@@ -53,12 +52,12 @@ class Export(base.Command):
     zone_ref = resources.Parse(args.zone, collection='dns.managedZones')
     try:
       zone = dns.managedZones.Get(zone_ref.Request())
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(util.GetErrorMessage(error))
 
     # Get all the record-sets.
     record_sets = []
-    for record_set in list_pager.YieldFromList(
+    for record_set in apitools_base.YieldFromList(
         dns.resourceRecordSets,
         messages.DnsResourceRecordSetsListRequest(project=project_id,
                                                   managedZone=zone_ref.Name()),

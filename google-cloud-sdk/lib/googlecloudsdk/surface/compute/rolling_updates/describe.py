@@ -4,7 +4,7 @@
 from googlecloudsdk.api_lib.compute import rolling_updates_util as updater_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class Describe(base.Command):
@@ -52,7 +52,7 @@ class Describe(base.Command):
 
     try:
       return client.rollingUpdates.Get(request)
-    except apitools_exceptions.HttpError as error:
+    except apitools_base.HttpError as error:
       raise exceptions.HttpException(updater_util.GetError(error))
 
   def Display(self, args, result):

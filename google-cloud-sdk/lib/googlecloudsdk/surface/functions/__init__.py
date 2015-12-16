@@ -7,7 +7,7 @@ import argparse
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis.cloudfunctions import v1beta1
-from googlecloudsdk.third_party.apis.logging import v2beta1 as logging
+from googlecloudsdk.third_party.apis.logging import v1beta3 as logging
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
@@ -48,7 +48,7 @@ class Functions(base.Group):
         get_credentials=False)
 
     logging_url = properties.VALUES.api_endpoint_overrides.logging.Get()
-    logging_client = logging.LoggingV2beta1(
+    logging_client = logging.LoggingV1beta3(
         url=logging_url,
         http=self.Http(),
         get_credentials=False)
