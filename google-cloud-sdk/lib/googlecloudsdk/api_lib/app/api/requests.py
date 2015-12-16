@@ -9,7 +9,7 @@ import json
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 import httplib2
 
@@ -50,7 +50,7 @@ def TransformKnownErrors(error):
 
 
 def ExtractErrorMessage(error_details):
-  """Extracts error details from an apitools_base.HttpError."""
+  """Extracts error details from an apitools_exceptions.HttpError."""
   error_message = cStringIO.StringIO()
   error_message.write('Error Response: [{code}] {message}'.format(
       code=error_details.get('code', 'UNKNOWN'),
@@ -72,7 +72,7 @@ def MakeRequest(service_method, request_message):
   """Makes a request using the given client method and handles HTTP errors."""
   try:
     return service_method(request_message)
-  except apitools_base.HttpError as error:
+  except apitools_exceptions.HttpError as error:
     error_json = _ExtractErrorJsonFromHttpError(error)
     error_json = TransformKnownErrors(error_json)
     raise exceptions.HttpException(ExtractErrorMessage(error_json))

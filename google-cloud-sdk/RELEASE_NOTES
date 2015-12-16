@@ -2,6 +2,30 @@
 
 Copyright 2014-2015 Google Inc. All rights reserved.
 
+## 91.0.0 (2015/12/16)
+
+### Breaking Changes
+
+* Deprecated command group `gcloud compute replica-pools` has been removed.
+* Deprecated command group `gcloud compute resource-views` has been removed.
+* App Engine API is now the only supported method for deploying in the
+  `gcloud preview app deploy` command.
+
+### Google App Engine
+
+* `DEPLOYABLES` argument for `gcloud preview app deploy` is now optional. If not
+   given, the command defaults to `app.yaml` in the current directory; if that
+   is not found, it attempts to automatically generate necessary configuration
+   files (such as app.yaml) in the current directory before deployment.
+*  `--force` argument to `gcloud preview app deploy` is now deprecated and will
+   be removed in a future release.
+
+### Container
+
+* `gcloud container` commands that poll long running operations (e.g create,
+   delete, upgrade) now display progress details when available.
+
+
 ## 90.0.0 (2015/12/09)
 
 * Cloud SDK release version scheme has changed. Patch version is now treated as

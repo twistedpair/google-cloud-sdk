@@ -6,15 +6,16 @@
 import os
 import re
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import docker_util
 from googlecloudsdk.api_lib.app.images import util as images_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -38,12 +39,15 @@ class DockerfileError(exceptions.Error):
   """Raised if a Dockerfile was found along with a non-custom runtime."""
 
 
-def _GetDockerfileCreator(info):
+def _GetDockerfileCreator(info, config_cleanup=None):
   """Returns a function to create a dockerfile if the user doesn't have one.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ModuleYamlInfo)
       The module config.
+    config_cleanup: (callable() or None) If a temporary Dockerfile has already
+      been created during the course of the deployment, this should be a
+      callable that deletes it.
 
   Raises:
     images_util.NoDockerfileError: Dockerfile wasn't found and we couldn't
@@ -61,6 +65,11 @@ def _GetDockerfileCreator(info):
   # Dockerfile.
   dockerfile_dir = os.path.dirname(info.file)
   dockerfile = os.path.join(dockerfile_dir, 'Dockerfile')
+
+  if config_cleanup:
+    # Dockerfile has already been generated. It still needs to be cleaned up.
+    # This must be before the other conditions, since it's a special case.
+    return lambda: config_cleanup
 
   if info.runtime != 'custom' and os.path.exists(dockerfile):
     raise DockerfileError(
@@ -121,7 +130,9 @@ def _GetImageName(project, module, version):
 
 
 def BuildAndPushDockerImages(module_configs, version_id, gae_client,
-                             cloudbuild_client, code_bucket, cli, remote):
+                             cloudbuild_client, code_bucket, cli, remote,
+                             source_contexts,
+                             config_cleanup):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -132,6 +143,11 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
     code_bucket: The name of the GCS bucket where the source will be uploaded.
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     remote: Whether the user specified a remote build.
+    source_contexts: A list of json-serializable source contexts to place in
+      the application directory for each config.
+    config_cleanup: (callable() or None) If a temporary Dockerfile has already
+      been created during the course of the deployment, this should be a
+      callable that deletes it.
 
   Returns:
     A dictionary mapping modules to the name of the pushed container image.
@@ -141,10 +157,13 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
 
   # Prepare temporary dockerfile creators for all modules that need them
   # before doing the heavy lifting so we can fail fast if there are errors.
-  modules = [
-      (name, info, _GetDockerfileCreator(info))
-      for (name, info) in module_configs.iteritems()
-      if info.RequiresImage()]
+  modules = []
+  for (name, info) in module_configs.iteritems():
+    if info.RequiresImage():
+      context_creator = context_util.GetSourceContextFilesCreator(
+          os.path.dirname(info.file), source_contexts)
+      modules.append((name, info, _GetDockerfileCreator(info, config_cleanup),
+                      context_creator))
   if not modules:
     # No images need to be built.
     return {}
@@ -166,17 +185,19 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
   with docker_util.DockerHost(
       cli, version_id, remote, project) as docker_client:
     # Build and push all images.
-    for module, info, ensure_dockerfile in modules:
+    for module, info, ensure_dockerfile, ensure_context in modules:
       log.status.Print(
           'Building and pushing image for module [{module}]'
           .format(module=module))
-      cleanup = ensure_dockerfile()
+      cleanup_dockerfile = ensure_dockerfile()
+      cleanup_context = ensure_context()
       try:
         image_name = _GetImageName(project, module, version_id)
         images[module] = BuildAndPushDockerImage(
             info.file, docker_client, image_name)
       finally:
-        cleanup()
+        cleanup_dockerfile()
+        cleanup_context()
   metric_name = (metric_names.DOCKER_REMOTE_BUILD if remote
                  else metric_names.DOCKER_BUILD)
   metrics.CustomTimedEvent(metric_name)
@@ -187,11 +208,12 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
                                cloudbuild_client):
   """Build multiple modules with Cloud Build."""
   images = {}
-  for module, info, ensure_dockerfile in modules:
+  for module, info, ensure_dockerfile, ensure_context in modules:
     log.status.Print(
         'Building and pushing image for module [{module}]'
         .format(module=module))
-    cleanup = ensure_dockerfile()
+    cleanup_dockerfile = ensure_dockerfile()
+    cleanup_context = ensure_context()
     try:
       image = docker_image.Image(
           dockerfile_dir=os.path.dirname(info.file),
@@ -205,7 +227,8 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
       images[module] = image.repo_tag
     finally:
-      cleanup()
+      cleanup_dockerfile()
+      cleanup_context()
   return images
 
 

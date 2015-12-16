@@ -4,7 +4,7 @@
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Describe(base.Command):
@@ -34,7 +34,7 @@ class Describe(base.Command):
 
     try:
       return adapter.GetOperation(adapter.ParseOperation(args.operation_id))
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, args, result):

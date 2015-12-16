@@ -10,7 +10,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # Number of seconds (approximately) to wait for each delete operation to
 # complete.
@@ -98,7 +98,7 @@ class Delete(base.Command):
                 deployment=deployment_name,
             )
         )
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise exceptions.HttpException(dm_v2_util.GetError(error))
       if args.async:
         operations.append(operation)
@@ -113,7 +113,7 @@ class Delete(base.Command):
           log.error('Delete operation ' + op_name
                     + ' has errors or failed to complete within in '
                     + str(OPERATION_TIMEOUT) + ' seconds.')
-        except apitools_base.HttpError as error:
+        except apitools_exceptions.HttpError as error:
           raise exceptions.HttpException(dm_v2_util.GetError(error))
         try:
           completed_operation = client.operations.Get(
@@ -122,7 +122,7 @@ class Delete(base.Command):
                   operation=op_name,
               )
           )
-        except apitools_base.HttpError as error:
+        except apitools_exceptions.HttpError as error:
           raise exceptions.HttpException(dm_v2_util.GetError(error))
         operations.append(completed_operation)
 

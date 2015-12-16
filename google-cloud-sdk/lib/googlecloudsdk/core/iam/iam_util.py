@@ -2,8 +2,8 @@
 """General IAM utilities used by the Cloud SDK."""
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
 from googlecloudsdk.third_party.apitools.base.py import encoding
-from protorpc.messages import DecodeError
 
 
 def AddArgsForAddIamPolicyBinding(parser):
@@ -192,4 +192,3 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
           of policy role and member types.
           """.format(collection, example_id)
   }
-

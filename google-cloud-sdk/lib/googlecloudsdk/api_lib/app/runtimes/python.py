@@ -81,7 +81,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
     # Generate app.yaml.
     cleaner = fingerprinting.Cleaner()
-    if not self.params.deploy:
+    if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
@@ -89,7 +89,6 @@ class PythonConfigurator(fingerprinting.Configurator):
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(entrypoint=self.entrypoint,
                                          runtime=runtime))
-        cleaner.Add(app_yaml)
 
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)

@@ -9,6 +9,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.apis.logging import v1beta3
+from googlecloudsdk.third_party.apis.logging import v2beta1
 
 
 @base.ReleaseTracks(base.ReleaseTrack.BETA)
@@ -37,7 +38,16 @@ class Logging(base.Group):
         http=self.Http(),
         get_credentials=False)
 
-    context['logging_client'] = client_v1beta3
-    context['logging_messages'] = v1beta3
+    context['logging_client_v1beta3'] = client_v1beta3
+    context['logging_messages_v1beta3'] = v1beta3
+
+    client_v2beta1 = v2beta1.LoggingV2beta1(
+        url=url,
+        http=self.Http(),
+        get_credentials=False)
+
+    context['logging_client_v2beta1'] = client_v2beta1
+    context['logging_messages_v2beta1'] = v2beta1
+
     context['logging_resources'] = resources
     return context

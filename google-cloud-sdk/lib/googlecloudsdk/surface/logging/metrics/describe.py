@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Describe(base.Command):
@@ -28,8 +28,8 @@ class Describe(base.Command):
     Returns:
       The specified metric with its description and configured filter.
     """
-    client = self.context['logging_client']
-    messages = self.context['logging_messages']
+    client = self.context['logging_client_v1beta3']
+    messages = self.context['logging_messages_v1beta3']
     project = properties.VALUES.core.project.Get(required=True)
 
     try:
@@ -37,7 +37,7 @@ class Describe(base.Command):
           messages.LoggingProjectsMetricsGetRequest(
               metricsId=args.metric_name,
               projectsId=project))
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, unused_args, result):

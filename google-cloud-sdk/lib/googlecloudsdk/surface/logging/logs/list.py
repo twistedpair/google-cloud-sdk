@@ -7,7 +7,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
@@ -31,8 +31,8 @@ class List(base.Command):
     Returns:
       The list of logs.
     """
-    client = self.context['logging_client']
-    messages = self.context['logging_messages']
+    client = self.context['logging_client_v1beta3']
+    messages = self.context['logging_messages_v1beta3']
     project = properties.VALUES.core.project.Get(required=True)
 
     if args.limit <= 0:
@@ -55,7 +55,7 @@ class List(base.Command):
       # Custom selector to return user friendly log names.
       selector = ('NAME', lambda log: util.ExtractLogName(log.name))
       console_io.PrintExtendedList(result, (selector,))
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
 List.detailed_help = {

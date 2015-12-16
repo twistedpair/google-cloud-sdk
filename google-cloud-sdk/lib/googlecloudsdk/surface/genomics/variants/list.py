@@ -7,8 +7,22 @@ from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import list_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import list_pager
+
+_COLUMNS = [
+    ('VARIANT_SET_ID', 'variantSetId'),
+    ('REFERENCE_NAME', 'referenceName'),
+    ('START', 'start'),
+    ('END', 'end'),
+    ('REFERENCE_BASES', 'referenceBases'),
+    ('ALTERNATE_BASES', 'alternateBases'),
+]
+_PROJECTIONS = [
+    '{0}:label={1}'.format(field, col) for col, field in _COLUMNS
+]
+_API_FIELDS = ','.join(['nextPageToken'] + [
+    'variants.' + f for _, f in _COLUMNS
+    ])
 
 
 class List(base.Command):
@@ -65,37 +79,37 @@ class List(base.Command):
       A list of variants that meet the search criteria.
     """
     genomics_util.ValidateLimitFlag(args.limit)
-    genomics_util.ValidateLimitFlag(args.limit_calls, 'limit_calls')
+    genomics_util.ValidateLimitFlag(args.limit_calls, 'limit-calls')
 
     apitools_client = self.context[lib.GENOMICS_APITOOLS_CLIENT_KEY]
-    req_class = (self.context[lib.GENOMICS_MESSAGES_MODULE_KEY]
-                 .SearchVariantsRequest)
-    request = req_class(
-        variantSetIds=[args.variant_set_id],
-        callSetIds=args.call_set_ids,
-        referenceName=args.reference_name,
-        start=args.start,
-        end=args.end,
-        maxCalls=args.limit_calls)
-    return apitools_base.list_pager.YieldFromList(
+    messages = self.context[lib.GENOMICS_MESSAGES_MODULE_KEY]
+
+    # Filter down to just the displayed fields, if we know we're using the
+    # default format. This appears to only be the case when --format is unset.
+    global_params = None
+    if not args.format:
+      global_params = messages.StandardQueryParameters(fields=_API_FIELDS)
+
+    pager = list_pager.YieldFromList(
         apitools_client.variants,
-        request,
+        messages.SearchVariantsRequest(
+            variantSetIds=[args.variant_set_id],
+            callSetIds=args.call_set_ids,
+            referenceName=args.reference_name,
+            start=args.start,
+            end=args.end,
+            maxCalls=args.limit_calls),
+        global_params=global_params,
         limit=args.limit,
         method='Search',
         batch_size_attribute='pageSize',
         batch_size=args.limit,  # Use limit if any, else server default.
         field='variants')
+    return genomics_util.ReraiseHttpExceptionPager(pager)
 
-  @genomics_util.ReraiseHttpException
-  def Display(self, args, result):
-    """Display prints information about what just happened to stdout.
-
-    Args:
-      args: The same as the args in Run.
-
-      result: a list of Variant objects.
-
-    Raises:
-      ValueError: if result is None or not a list
-    """
-    list_printer.PrintResourceList('genomics.variants', result)
+  def Format(self, unused_args):
+    """Returns a paginated box table layout format string."""
+    # page allows us to incrementally show results as they stream in, thereby
+    # giving the user incremental feedback if they've queried a large set of
+    # results.
+    return 'table[box,page=512]({0})'.format(','.join(_PROJECTIONS))

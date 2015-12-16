@@ -209,6 +209,7 @@ class ComponentSnapshot(object):
                   for manifest in installed.values()]
     sdk_definition = schemas.SDKDefinition(
         revision=-1, schema_version=None, release_notes_url=None, version=None,
+        gcloud_rel_path=None, post_processing_command=None,
         components=components, notifications={})
     return ComponentSnapshot(sdk_definition)
 

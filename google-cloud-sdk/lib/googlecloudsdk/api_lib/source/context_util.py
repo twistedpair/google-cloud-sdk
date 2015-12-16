@@ -23,8 +23,10 @@ _CLOUD_REPO_PATTERN = (
     '(/r/(?P<repo_name>[^/?#]+))?'
     '([/#?].*)?')
 
-SNAPSHOT_CATEGORY = 'category'
+CAPTURE_CATEGORY = 'capture'
 REMOTE_REPO_CATEGORY = 'remote_repo'
+CONTEXT_FILENAME = 'source-context.json'
+EXT_CONTEXT_FILENAME = 'source-contexts.json'
 
 
 class GenerateSourceContextError(exceptions.Error):
@@ -32,8 +34,8 @@ class GenerateSourceContextError(exceptions.Error):
   pass
 
 
-def IsSnapshotContext(context):
-  return context.get('labels', {}).get('category', None) == SNAPSHOT_CATEGORY
+def IsCaptureContext(context):
+  return context.get('labels', {}).get('category', None) == CAPTURE_CATEGORY
 
 
 def ExtendContextDict(context, category=REMOTE_REPO_CATEGORY):
@@ -42,7 +44,7 @@ def ExtendContextDict(context, category=REMOTE_REPO_CATEGORY):
   Args:
     context: A SourceContext-compatible dict
     category:  string indicating the category of context (either
-        SNAPSHOT_CATEGORY or REMOTE_REPO_CATEGORY)
+        CAPTURE_CATEGORY or REMOTE_REPO_CATEGORY)
   Returns:
     An ExtendedSourceContext-compatible dict.
   """
@@ -164,6 +166,97 @@ def GenerateSourceContext(source_directory, output_file):
   files.MakeDir(output_dir)
   with open(output_file, 'w') as f:
     json.dump(source_context, f, indent=2, sort_keys=True)
+
+
+def GetSourceContextFilesCreator(output_dir, source_contexts, source_dir=None):
+  """Returns a function to create source context files in the given directory.
+
+  The returned creator function will produce two files: source-context.json and
+  source-contexts.json. See CreateContextFiles below for further discussion on
+  the difference between these two files.
+
+  Args:
+    output_dir: (String) The directory to create the files (usually the yaml
+        directory).
+    source_contexts: ([ExtendedSourceContext-compatible json dict])
+        A list of json-serializable dicts containing source contexts. If None
+        or empty, output_dir will be inspected to determine if it has an
+        associated Git repo, and appropriate source contexts will be created
+        for that directory.
+    source_dir: (String) The location of the source files, for inferring source
+        contexts when source_contexts is empty or None. If not specified,
+        output_dir will be used instead.
+  Returns:
+    callable() - A function that will create source-context.json and
+    source-contexts.json in the given directory. The creator function will
+    return a cleanup function which can be used to delete any files the
+    creator function creates.
+
+    If there are no source_contexts associated with the directory, the creator
+    function will not create any files (and the cleanup function it returns
+    will also do nothing).
+  """
+
+  if not source_contexts:
+    source_contexts = _GetSourceContexts(source_dir or output_dir)
+  if not source_contexts:
+    creators = []
+  else:
+    creators = [_GetContextFileCreator(output_dir, source_contexts),
+                _GetExtContextFileCreator(output_dir, source_contexts)]
+  def Generate():
+    cleanups = [g() for g in creators]
+    def Cleanup():
+      for c in cleanups:
+        c()
+    return Cleanup
+  return Generate
+
+
+def CreateContextFiles(output_dir, source_contexts, overwrite=False,
+                       source_dir=None):
+  """Creates source context files in the given directory.
+
+  Currently, two files will be produced, source-context.json and
+  source-contexts.json. The old-style source-context.json file is deprecated,
+  but will need to be produced until all components are updated to use the new
+  file. This process may take a while because there are managed VMs which may be
+  slow to update the debug agent to one that supports the new format.
+
+  The new format supports communicating multiple source contexts with labels to
+  enable the UI to chose the best contexts for a given situation.
+
+  Args:
+    output_dir: (String) The directory to create the files (usually the yaml
+        directory).
+    source_contexts:  ([ExtendedSourceContext-compatible json dict])
+        A list of json-serializable dicts containing source contexts. If None
+        or empty, source context will be inferred from source_dir.
+    overwrite: (boolean) If true, silently replace any existing file.
+    source_dir: (String) The location of the source files, for inferring
+        source contexts when source_contexts is empty or None. If not
+        specified, output_dir will be used instead.
+  Returns:
+    ([String]) A list containing the names of the files created.
+  """
+  if not source_contexts:
+    source_contexts = _GetSourceContexts(source_dir or output_dir)
+    if not source_contexts:
+      return []
+  created = []
+  try:
+    for context_filename, context_object in [
+        (CONTEXT_FILENAME, BestSourceContext(source_contexts, output_dir)),
+        (EXT_CONTEXT_FILENAME, source_contexts)]:
+      context_filename = os.path.join(output_dir, context_filename)
+      if overwrite or not os.path.exists(context_filename):
+        with open(context_filename, 'w') as f:
+          json.dump(context_object, f)
+        created.append(context_filename)
+  except (IOError, GenerateSourceContextError) as e:
+    log.warn('Could not generate [{0}]: {1}', context_filename, e)
+
+  return created
 
 
 def _CallGit(cwd, *args):
@@ -304,3 +397,87 @@ def _ParseSourceContext(remote_url, source_revision):
     context = {'git': {'url': remote_url, 'revisionId': source_revision}}
 
   return ExtendContextDict(context)
+
+
+def _GetJsonFileCreator(name, json_object):
+  """Creates a creator function for an extended source context file.
+
+  Args:
+    name: (String) The name of the file to generate.
+    json_object: Any object compatible with json.dump.
+  Returns:
+    (callable()) A creator function that will create the file and return a
+    cleanup function that will delete the file.
+  """
+  if os.path.exists(name):
+    log.warn('{0} already exists. It will not be updated.'.format(name))
+  def Cleanup():
+    os.remove(name)
+  def Generate():
+    try:
+      with open(name, 'w') as f:
+        json.dump(json_object, f)
+    except IOError as e:
+      log.warn('Could not generate [{0}]: {1}', name, e)
+    return Cleanup
+  return Generate
+
+
+def _GetContextFileCreator(output_dir, contexts):
+  """Creates a creator function for an old-style source context file.
+
+  Args:
+    output_dir: (String) The name of the directory in which to generate the
+        file. The file will be named source-context.json.
+    contexts: ([dict]) A list of ExtendedSourceContext-compatible dicts for json
+        serialization.
+  Returns:
+    A creator function that will create the file.
+  """
+  name = os.path.join(output_dir, CONTEXT_FILENAME)
+  try:
+    context = BestSourceContext(contexts, output_dir)
+  except GenerateSourceContextError as e:
+    log.warn('Could not generate [{0}]: {1}', name, e)
+    # Return a no-op creator function with a no-op cleaner.
+    return lambda: (lambda: None)
+  return _GetJsonFileCreator(name, context)
+
+
+def _GetExtContextFileCreator(output_dir, contexts):
+  """Creates a creator function for an extended source context file.
+
+  Args:
+    output_dir: (String) The name of the directory in which to generate the
+        file. The file will be named source-contexts.json.
+    contexts: ([dict]) A list of ExtendedSourceContext-compatible dicts for json
+        serialization.
+  Returns:
+    A creator function that will create the file.
+  """
+  name = os.path.join(output_dir, EXT_CONTEXT_FILENAME)
+  return _GetJsonFileCreator(name, contexts)
+
+
+def _GetSourceContexts(source_dir):
+  """Gets the source contexts associated with a directory.
+
+  This function is mostly a wrapper around CalculateExtendedSourceContexts
+  which logs a warning if the context could not be determined.
+  Args:
+    source_dir: (String) The directory to inspect.
+  Returns:
+    [ExtendedSourceContext-compatible json dict] A list of 0 or more source
+    contexts.
+  """
+  try:
+    source_contexts = (CalculateExtendedSourceContexts(source_dir))
+  except GenerateSourceContextError:
+    # No valid source contexts.
+    source_contexts = []
+  if not source_contexts:
+    log.warn(
+        'Could not find any remote repositories associated with [{0}]. '
+        'Cloud diagnostic tools may not be able to display the correct '
+        'source code for this deployment.'.format(source_dir))
+  return source_contexts

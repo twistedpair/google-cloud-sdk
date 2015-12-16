@@ -12,7 +12,7 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # FIXED(b/23150309): Error messages should be textual, not just regexp.
 _ENTRY_POINT_NAME_RE = re.compile(r'^[_a-zA-Z0-9]{1,128}$')
@@ -221,9 +221,20 @@ def CatchHTTPErrorRaiseHTTPException(func):
   def CatchHTTPErrorRaiseHTTPExceptionFn(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = GetHttpErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
       raise base_exceptions.HttpException, msg, traceback
 
   return CatchHTTPErrorRaiseHTTPExceptionFn
+
+
+def FormatTimestamp(timestamp):
+  """Formats a timestamp which will be presented to a user.
+
+  Args:
+    timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
+  Returns:
+    Formatted timestamp string.
+  """
+  return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))

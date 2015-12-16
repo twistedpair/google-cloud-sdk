@@ -9,7 +9,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class List(base.Command):
@@ -34,7 +35,7 @@ class List(base.Command):
       Objects representing user functions.
     """
     client = self.context['functions_client']
-    list_generator = apitools_base.YieldFromList(
+    list_generator = list_pager.YieldFromList(
         service=client.projects_regions_functions,
         request=self.BuildRequest(args),
         limit=args.limit, field='functions',
@@ -45,7 +46,7 @@ class List(base.Command):
     try:
       for item in list_generator:
         yield item
-    except apitools_base.HttpError as error:
+    except exceptions.HttpError as error:
       msg = util.GetHttpErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
       raise base_exceptions.HttpException, msg, traceback

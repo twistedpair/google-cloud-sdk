@@ -5,7 +5,7 @@
 from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class List(base.Command):
@@ -88,7 +88,7 @@ class List(base.Command):
         name='operations',
         filter=args.where)
 
-    return apitools_base.list_pager.YieldFromList(
+    return list_pager.YieldFromList(
         apitools_client.operations, request,
         limit=args.limit,
         batch_size_attribute='pageSize',

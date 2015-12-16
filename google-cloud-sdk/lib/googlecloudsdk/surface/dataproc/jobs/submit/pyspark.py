@@ -6,7 +6,7 @@ import argparse
 
 from googlecloudsdk.api_lib.dataproc import base_classes
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
 class PySpark(base_classes.JobSubmitter):
@@ -70,28 +70,28 @@ file:///usr/lib/spark/examples/src/main/python/pi.py 100
         help=('A list of package to log4j log level pairs to configure driver '
               'logging. For example: root=FATAL,com.example=INFO'))
 
-  def PopulateFilesByType(self, args, files_by_type):
+  def PopulateFilesByType(self, args):
     # TODO(pclay): Move arg manipulation elsewhere.
-    files_by_type.update({
+    self.files_by_type.update({
         'py_file': args.py_file,
         'py_files': args.py_files,
         'archives': args.archives,
         'files': args.files})
 
-  def ConfigureJob(self, job, args, files_by_type):
+  def ConfigureJob(self, job, args):
     messages = self.context['dataproc_messages']
 
     log_config = self.BuildLoggingConfiguration(args.driver_log_levels)
     pyspark_job = messages.PySparkJob(
         args=args.job_args,
-        archiveUris=files_by_type['archives'],
-        fileUris=files_by_type['files'],
-        pythonFileUris=files_by_type['py_files'],
-        mainPythonFileUri=files_by_type['py_file'],
+        archiveUris=self.files_by_type['archives'],
+        fileUris=self.files_by_type['files'],
+        pythonFileUris=self.files_by_type['py_files'],
+        mainPythonFileUri=self.files_by_type['py_file'],
         loggingConfiguration=log_config)
 
     if args.properties:
-      pyspark_job.properties = apitools_base.DictToMessage(
+      pyspark_job.properties = encoding.DictToMessage(
           args.properties, messages.PySparkJob.PropertiesValue)
 
     job.pysparkJob = pyspark_job

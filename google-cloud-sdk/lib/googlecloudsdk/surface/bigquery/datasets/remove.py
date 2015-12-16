@@ -11,7 +11,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.surface import bigquery as commands
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class DatasetsRemove(base.Command):
@@ -69,7 +69,7 @@ class DatasetsRemove(base.Command):
     try:
       apitools_client.datasets.Delete(request)
       log.DeletedResource(resource)
-    except apitools_base.HttpError as server_error:
+    except apitools_exceptions.HttpError as server_error:
       try:
         raise bigquery.Error.ForHttpError(server_error)
       except bigquery.NotFoundError:

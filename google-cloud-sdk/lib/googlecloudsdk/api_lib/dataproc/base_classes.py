@@ -5,6 +5,7 @@
 # TODO(pclay): Add more classes.
 
 import abc
+import os
 import urlparse
 
 from googlecloudsdk.api_lib.dataproc import constants
@@ -13,13 +14,20 @@ from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class JobSubmitter(base.Command):
   """Submit a job to a cluster."""
 
   __metaclass__ = abc.ABCMeta
+
+  def __init__(self, *args, **kwargs):
+    super(JobSubmitter, self).__init__(*args, **kwargs)
+    self.files_by_type = {}
+    self.files_to_stage = []
+    self._staging_dir = None
 
   @staticmethod
   def Args(parser):
@@ -37,21 +45,18 @@ class JobSubmitter(base.Command):
     job_id = util.GetJobId(args.id)
     job_ref = util.ParseJob(job_id, self.context)
 
-    files_by_type = {}
-    self.PopulateFilesByType(args, files_by_type)
+    self.PopulateFilesByType(args)
 
     cluster_ref = util.ParseCluster(args.cluster, self.context)
     request = cluster_ref.Request()
 
     try:
       cluster = client.projects_clusters.Get(request)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.FormatHttpError(error))
 
-    self.ValidateAndStageFiles(
-        bucket=args.bucket,
-        cluster=cluster,
-        files_by_type=files_by_type)
+    self._staging_dir = self.GetStagingDir(cluster)
+    self.ValidateAndStageFiles()
 
     job = messages.Job(
         reference=messages.JobReference(
@@ -60,7 +65,7 @@ class JobSubmitter(base.Command):
         placement=messages.JobPlacement(
             clusterName=args.cluster))
 
-    self.ConfigureJob(job, args, files_by_type)
+    self.ConfigureJob(job, args)
 
     request = messages.DataprocProjectsJobsSubmitRequest(
         projectId=job.reference.projectId,
@@ -69,7 +74,7 @@ class JobSubmitter(base.Command):
 
     try:
       job = client.projects_jobs.Submit(request)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.FormatHttpError(error))
 
     log.status.Print('Job [{0}] submitted.'.format(job_id))
@@ -88,54 +93,47 @@ class JobSubmitter(base.Command):
   def Display(self, args, result):
     self.format(result)
 
-  def ValidateAndStageFiles(self, bucket, cluster, files_by_type):
-    """Validate URIs and upload them if they are local."""
-    # TODO(pclay): Clean up / split up functionality.
-    files_to_stage = []
+  def _GetStagedFile(self, file_str):
+    """Validate file URI and register it for uploading if it is local."""
+    drive, _ = os.path.splitdrive(file_str)
+    uri = urlparse.urlsplit(file_str, allow_fragments=False)
+    # Determine the file is local to this machine if no scheme besides a drive
+    # is passed. file:// URIs are interpreted as living on VMs.
+    is_local = drive or not uri.scheme
+    if not is_local:
+      # Non-local files are already staged.
+      # TODO(pclay): Validate scheme.
+      return file_str
 
-    # Lazily determine staging directory since it might require an API call.
-    staging_dir = None
+    if not os.path.exists(file_str):
+      raise exceptions.ToolException('File Not Found: [{0}].'.format(file_str))
+    basename = os.path.basename(file_str)
+    self.files_to_stage.append(file_str)
+    staged_file = urlparse.urljoin(self._staging_dir, basename)
+    return staged_file
 
-    for file_type, files in files_by_type.iteritems():
-      singleton = False
-      staged_files = []
+  def ValidateAndStageFiles(self):
+    """Validate file URIs and upload them if they are local."""
+    for file_type, files in self.files_by_type.iteritems():
+      # TODO(pclay): Validate file suffixes.
       if not files:
         continue
-      # TODO(pclay): Remove terrible hack.
       elif isinstance(files, str):
-        singleton = True
-        files = [files]
-      for file_str in files:
-        uri = urlparse.urlsplit(file_str, allow_fragments=False)
-        if not uri.path:
-          raise ValueError(
-              '{0} URI [{1}] missing path.'.format(file_type, file_str))
-        # TODO(pclay): Validate file suffixes.
-        if uri.scheme:
-          # TODO(pclay): Validate scheme.
-          staged_files.append(file_str)
-        else:
-          if not staging_dir:
-            staging_dir = self.GetStagingDir(bucket, cluster)
-          basename = uri.path.split('/')[-1]
-          staged_file = urlparse.urljoin(staging_dir, basename)
-          files_to_stage.append(file_str)
-          staged_files.append(staged_file)
-      if singleton:
-        staged_files = staged_files[0]
-      files_by_type[file_type] = staged_files
+        self.files_by_type[file_type] = self._GetStagedFile(files)
+      else:
+        staged_files = [self._GetStagedFile(f) for f in files]
+        self.files_by_type[file_type] = staged_files
 
-    if files_to_stage:
+    if self.files_to_stage:
       log.info(
-          'Staging local files {0} to {1}.'.format(files_to_stage, staging_dir))
-      storage_helpers.Upload(files_to_stage, staging_dir)
+          'Staging local files {0} to {1}.'.format(
+              self.files_to_stage, self._staging_dir))
+      storage_helpers.Upload(self.files_to_stage, self._staging_dir)
 
-  def GetStagingDir(self, bucket, cluster):
+  def GetStagingDir(self, cluster):
     """Determine the GCS directory to stage job resources in."""
-    if not bucket:
-      # Get bucket from cluster.
-      bucket = cluster.configuration.configurationBucket
-    # TODO(pclay) Add flag for staging directory.
+    # Get bucket from cluster.
+    bucket = cluster.configuration.configurationBucket
     staging_dir = 'gs://{0}/{1}/{2}/'.format(
         bucket, constants.GCS_STAGING_PREFIX, cluster.clusterUuid)
     return staging_dir
@@ -148,16 +146,16 @@ class JobSubmitter(base.Command):
     messages = self.context['dataproc_messages']
 
     return messages.LoggingConfiguration(
-        driverLogLevels=apitools_base.DictToMessage(
+        driverLogLevels=encoding.DictToMessage(
             driver_logging,
             messages.LoggingConfiguration.DriverLogLevelsValue))
 
   @abc.abstractmethod
-  def ConfigureJob(self, job, args, files_by_type):
+  def ConfigureJob(self, job, args):
     """Add type-specific job configuration to job message."""
     pass
 
   @abc.abstractmethod
-  def PopulateFilesByType(self, args, files_by_type):
+  def PopulateFilesByType(self, args):
     """Take files out of args to allow for them to be staged."""
     pass

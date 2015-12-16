@@ -7,8 +7,8 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
 from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class ListAutoscalers(base_classes.BaseCommand):
@@ -26,7 +26,7 @@ class ListAutoscalers(base_classes.BaseCommand):
       request.project = properties.VALUES.core.project.Get(required=True)
       request.zone = resources.Parse(
           args.zone, collection='compute.zones').zone
-      return apitools_base.YieldFromList(client.autoscalers, request)
+      return list_pager.YieldFromList(client.autoscalers, request)
 
     except exceptions.HttpError as error:
       raise calliope_exceptions.HttpException(util.GetErrorMessage(error))

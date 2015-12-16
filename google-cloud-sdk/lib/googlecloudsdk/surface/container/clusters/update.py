@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
@@ -62,7 +62,7 @@ class Update(base.Command):
 
     try:
       op_ref = adapter.UpdateCluster(cluster_ref, options)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
     if args.wait:

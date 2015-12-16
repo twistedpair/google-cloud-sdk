@@ -7,7 +7,7 @@ from googlecloudsdk.api_lib.dataflow import job_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.surface import dataflow as commands
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class Cancel(base.Command):
@@ -54,5 +54,5 @@ class Cancel(base.Command):
     try:
       apitools_client.projects_jobs.Update(request)
       log.status.Print('Cancelled job [{0}]'.format(job_ref.jobId))
-    except apitools_base.HttpError as unused_error:
+    except exceptions.HttpError as unused_error:
       log.err.Print('Failed to cancel job [{0}]'.format(job_ref.jobId))

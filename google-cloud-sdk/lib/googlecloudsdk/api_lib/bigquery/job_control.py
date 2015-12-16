@@ -11,7 +11,8 @@ import time
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.api_lib.bigquery import job_ids
 from googlecloudsdk.api_lib.bigquery import job_progress
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 def ExecuteJob(
@@ -95,9 +96,9 @@ def _StartJob(
 
   media_upload = (
       upload_file
-      and apitools_base.Upload.FromFile(upload_file,
-                                        mime_type='application/octet-stream',
-                                        auto_transfer=True))
+      and transfer.Upload.FromFile(upload_file,
+                                   mime_type='application/octet-stream',
+                                   auto_transfer=True))
 
   job_descriptor = messages_module.Job(
       configuration=configuration, jobReference=job_reference)
@@ -106,7 +107,7 @@ def _StartJob(
       projectId=project_id)
   try:
     result = apitools_client.jobs.Insert(request, upload=media_upload)
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   return result
 

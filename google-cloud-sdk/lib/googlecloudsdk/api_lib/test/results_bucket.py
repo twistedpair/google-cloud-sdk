@@ -9,7 +9,8 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 GCS_PREFIX = 'gs://'
@@ -65,7 +66,7 @@ class ResultsBucketOps(object):
     try:
       response = tr_client.projects.InitializeSettings(request)
       return response.defaultBucket.decode('utf8')
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       code, err_msg = util.GetErrorCodeAndMessage(error)
       if code == HTTP_FORBIDDEN:
         msg = ('Permission denied while fetching the default results bucket '
@@ -91,7 +92,7 @@ class ResultsBucketOps(object):
     try:
       self._storage_client.buckets.Get(get_req)
       return  # The bucket exists and the user can access it.
-    except apitools_base.HttpError as err:
+    except apitools_exceptions.HttpError as err:
       code, err_msg = util.GetErrorCodeAndMessage(err)
       if code != HTTP_NOT_FOUND:
         raise exceptions.BadFileException(
@@ -116,7 +117,7 @@ class ResultsBucketOps(object):
     try:
       self._storage_client.buckets.Insert(insert_req)
       return
-    except apitools_base.HttpError as err:
+    except apitools_exceptions.HttpError as err:
 
       code, err_msg = util.GetErrorCodeAndMessage(err)
       if code == HTTP_FORBIDDEN:
@@ -158,7 +159,7 @@ class ResultsBucketOps(object):
           raise exceptions.BadFileException('[{0}] not found or not accessible'
                                             .format(path))
         src_obj = storage_v1.Object(size=file_size)
-        upload = apitools_base.Upload.FromFile(
+        upload = transfer.Upload.FromFile(
             path,
             mime_type='application/vnd.android.package-archive')
         insert_req = storage_v1.StorageObjectsInsertRequest(
@@ -173,7 +174,7 @@ class ResultsBucketOps(object):
               'Cloud storage upload failure: Insert response.size={0} bytes '
               'but [{1}] contains {2} bytes.\nInsert response: {3}'
               .format(response.size, path, file_size, repr(response)))
-    except apitools_base.HttpError as err:
+    except apitools_exceptions.HttpError as err:
       raise exceptions.BadFileException(
           'Could not copy [{f}] to [{gcs}] {e}.'
           .format(f=path, gcs=self.gcs_results_root, e=util.GetError(err)))

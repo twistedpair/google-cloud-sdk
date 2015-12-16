@@ -142,14 +142,8 @@ class Run(base.ListCommand):
     tr_messages = self.context['toolresults_messages']
     storage_client = self.context['storage_client']
 
-    # The Testing back-end needs a unique GCS object name within the results
-    # bucket to prevent race conditions while processing test results. This
-    # client uses the current time down to the microsecond in ISO format plus a
-    # random 4-letter suffix. The format is: "YYYY-MM-DD_hh:mm:ss.ssssss_rrrr"
-    unique_object = '{0}_{1}'.format(datetime.datetime.now().isoformat('_'),
-                                     ''.join(random.sample(string.letters, 4)))
     bucket_ops = results_bucket.ResultsBucketOps(
-        project, args.results_bucket, unique_object,
+        project, args.results_bucket, _UniqueGcsObjectName(),
         tr_client, tr_messages, storage_client)
     bucket_ops.UploadFileToGcs(args.app)
     if args.test:
@@ -163,8 +157,8 @@ class Run(base.ListCommand):
     history_id = tr_history_picker.FindToolResultsHistoryId(args)
     matrix = matrix_ops.CreateMatrix(
         args, self.context, history_id, bucket_ops.gcs_results_root)
-    matrix_id = matrix.testMatrixId
-    monitor = matrix_ops.MatrixMonitor(matrix_id, args.type, self.context)
+    monitor = matrix_ops.MatrixMonitor(
+        matrix.testMatrixId, args.type, self.context)
 
     with ctrl_c_handler.CancellableTestSection(monitor):
       supported_executions = monitor.HandleUnsupportedExecutions(matrix)
@@ -226,3 +220,18 @@ def _EnsureUserAcceptsTermsOfService():
     log.info('User has accepted Trusted Tester Agreement.')
     # Create an empty tos_file to mark user acceptance and avoid future prompts.
     open(tos_file, 'w').close()
+
+
+def _UniqueGcsObjectName():
+  """Create a unique GCS object name to hold test results.
+
+  The Testing back-end needs a unique GCS object name within the results
+  bucket to prevent race conditions while processing test results. The gcloud
+  client uses the current time down to the microsecond in ISO format plus a
+  random 4-letter suffix. The format is: "YYYY-MM-DD_hh:mm:ss.ssssss_rrrr".
+
+  Returns:
+    A string with the unique GCS object name.
+  """
+  return '{0}_{1}'.format(datetime.datetime.now().isoformat('_'),
+                          ''.join(random.sample(string.letters, 4)))

@@ -10,7 +10,8 @@ from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apis.bigquery.v2 import bigquery_v2_messages as messages
 from googlecloudsdk.third_party.apis.bigquery.v2.bigquery_v2_client import BigqueryV2 as client
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 DEFAULT_RESULTS_LIMIT = 100
@@ -68,7 +69,7 @@ class Project(Bigquery):
         allUsers=all_users,
         projection=(messages.BigqueryJobsListRequest.ProjectionValueValuesEnum
                     .full))
-    return apitools_base.list_pager.YieldFromList(
+    return list_pager.YieldFromList(
         self._client.jobs,
         request,
         limit=max_results,
@@ -97,7 +98,7 @@ class Job(Bigquery):
                                               jobId=self.id)
     try:
       self._job = self._client.jobs.Get(request)
-    except apitools_base.HttpError as server_error:
+    except apitools_exceptions.HttpError as server_error:
       raise Error.ForHttpError(server_error)
 
   # TODO(cherba): do not expose backend representation.
@@ -147,7 +148,7 @@ class Job(Bigquery):
     service = ServiceQueryWithSchema(self._client)
 
     # Create paging generator for client.jobs.GetQueryResults()[].rows.
-    rows = apitools_base.list_pager.YieldFromList(
+    rows = list_pager.YieldFromList(
         service,
         request,
         limit=max_rows,
@@ -164,7 +165,7 @@ class Job(Bigquery):
           yield tuple((cell.v.string_value or
                        cell.v.integer_value)
                       for cell in r.f)
-      except apitools_base.HttpError as server_error:
+      except apitools_exceptions.HttpError as server_error:
         raise Error.ForHttpError(server_error)
     result_iter = Yield()
     try:

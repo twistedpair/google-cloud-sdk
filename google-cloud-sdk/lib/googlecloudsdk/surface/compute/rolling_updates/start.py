@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Start(base.Command):
@@ -110,7 +110,7 @@ class Start(base.Command):
         raise exceptions.ToolException(
             'could not start [{0}]'.format(operation.targetLink))
 
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(updater_util.GetError(error))
 
   def _PrepareUpdate(self, args):

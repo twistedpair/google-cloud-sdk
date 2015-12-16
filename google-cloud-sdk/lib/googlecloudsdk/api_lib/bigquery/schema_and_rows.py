@@ -3,7 +3,7 @@
 """Facilities for fetching and displaying table rows and field names."""
 
 from googlecloudsdk.api_lib.bigquery import bigquery
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
@@ -34,7 +34,7 @@ class SchemaAndRows(object):
         for i, field_schema in enumerate(self.schema):
           r_map[field_schema.name] = row[i].string_value if row[i] else None
         yield r_map
-    except apitools_base.HttpError as server_error:
+    except exceptions.HttpError as server_error:
       raise bigquery.Error.ForHttpError(server_error)
 
   def GetDefaultFormat(self):
@@ -68,7 +68,7 @@ def GetJobSchemaAndRows(
       maxResults=1)
   try:
     schema = apitools_client.jobs.GetQueryResults(request_for_schema).schema
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   request_for_rows = bigquery_messages.BigqueryJobsGetQueryResultsRequest(
       projectId=job_reference.projectId,
@@ -100,7 +100,7 @@ def GetTableSchemaAndRows(
       tableId=table_reference.tableId)
   try:
     schema = apitools_client.tables.Get(request_for_schema).schema
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   request_for_rows = bigquery_messages.BigqueryTabledataListRequest(
       projectId=table_reference.projectId,

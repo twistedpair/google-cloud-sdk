@@ -9,6 +9,43 @@ from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.third_party.apitools.base.py import extra_types
 
 
+class TypedLogSink(object):
+  """Class that encapsulates V1 and V2 LogSinks during the transition period.
+
+  Attributes:
+    name: present in both versions.
+    destination: present in both versions.
+    filter: present in both versions.
+    format: format of exported entries, only present in V2 sinks.
+    type: one-of log/service/project.
+  """
+
+  def __init__(self, sink, log_name=None, service_name=None):
+    """Creates a TypedLogSink with type based on constructor values.
+
+    Args:
+      sink: instance of V1 or V2 LogSink
+      log_name: name of log, if it's a log-sink.
+      service_name: name of service, if it's a service-sink
+    """
+    self.name = sink.name
+    self.destination = sink.destination
+    self.filter = None
+    # Get sink type.
+    if log_name:
+      self.type = 'LOG: %s' % log_name
+    elif service_name:
+      self.type = 'SERVICE: %s' % service_name
+    else:
+      self.type = 'PROJECT SINK'
+      self.filter = sink.filter if sink.filter else '(empty filter)'
+    # Get sink format.
+    if hasattr(sink, 'outputVersionFormat'):
+      self.format = sink.outputVersionFormat.name
+    else:
+      self.format = 'V1'
+
+
 def GetError(error):
   """Returns a ready-to-print string representation from the http response.
 

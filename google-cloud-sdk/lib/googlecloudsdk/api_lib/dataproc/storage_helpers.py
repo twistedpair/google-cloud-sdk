@@ -18,7 +18,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_client
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_messages as messages
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 # URI scheme for GCS.
@@ -138,7 +139,7 @@ class StorageClient(object):
         bucket=object_ref.bucket, object=object_ref.name)
     try:
       return self.client.objects.Get(request=request, download=download)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       # TODO(pclay): Clean up error handling. Handle 403s.
       if error.status_code == 404:
         return None
@@ -175,7 +176,7 @@ class StorageClient(object):
     Returns:
       The download.
     """
-    download = apitools_base.Download.FromStream(stream, auto_transfer=False)
+    download = transfer.Download.FromStream(stream, auto_transfer=False)
     self._GetObject(object_ref, download=download)
     return download
 

@@ -5,7 +5,8 @@ from googlecloudsdk.api_lib.compute import rolling_updates_util as updater_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class ListInstanceUpdates(base.Command):
@@ -52,9 +53,9 @@ class ListInstanceUpdates(base.Command):
             rollingUpdate=ref.rollingUpdate))
 
     try:
-      return apitools_base.YieldFromList(
+      return list_pager.YieldFromList(
           client.rollingUpdates, request, method='ListInstanceUpdates')
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(updater_util.GetError(error))
 
   def Display(self, unused_args, result):

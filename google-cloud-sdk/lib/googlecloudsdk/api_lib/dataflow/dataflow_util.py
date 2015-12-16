@@ -11,7 +11,7 @@ def GetErrorMessage(error):
   """Extract the error message from an HTTPError.
 
   Args:
-    error: The error apitools_base.HttpError thrown by the API client.
+    error: The error exceptions.HttpError thrown by the API client.
 
   Returns:
     A string describing the error.

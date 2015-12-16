@@ -9,7 +9,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # Number of seconds (approximately) to wait for stop operation to complete.
 OPERATION_TIMEOUT = 20 * 60  # 20 mins
@@ -86,7 +86,7 @@ class Stop(base.Command):
       # This empty default can be removed once the fingerprint change is
       # fully implemented and all deployments have fingerprints.
       fingerprint = current_deployment.fingerprint or ''
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(dm_v2_util.GetError(error))
 
     try:
@@ -99,7 +99,7 @@ class Stop(base.Command):
               ),
           )
       )
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(dm_v2_util.GetError(error))
     if args.async:
       return operation
@@ -116,7 +116,7 @@ class Stop(base.Command):
         log.error('Stop operation ' + op_name
                   + ' has errors or failed to complete within '
                   + str(OPERATION_TIMEOUT) + ' seconds.')
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise exceptions.HttpException(dm_v2_util.GetError(error))
       try:
         # Fetch a list of the stopped resources.
@@ -128,7 +128,7 @@ class Stop(base.Command):
         )
         # TODO(munutzer): Pagination
         return response.resources if response.resources else []
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise exceptions.HttpException(dm_v2_util.GetError(error))
 
   def Display(self, unused_args, result):

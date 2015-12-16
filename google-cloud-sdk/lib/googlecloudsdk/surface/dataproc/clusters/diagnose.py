@@ -7,7 +7,8 @@ from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Diagnose(base.Command):
@@ -35,13 +36,13 @@ class Diagnose(base.Command):
           operation, self.context,
           message='Waiting for cluster diagnose operation')
       response = operation.response
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.FormatHttpError(error))
 
     if not response:
       raise exceptions.ToolException('Operation is missing response')
 
-    properties = apitools_base.MessageToDict(response)
+    properties = encoding.MessageToDict(response)
     output_uri = properties['outputUri']
 
     if not output_uri:

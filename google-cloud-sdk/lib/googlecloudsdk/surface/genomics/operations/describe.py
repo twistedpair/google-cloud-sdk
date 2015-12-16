@@ -6,6 +6,8 @@ from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import base
 
+_OPERATIONS_PREFIX = 'operations/'
+
 
 class Describe(base.Command):
   """Returns details about an operation.
@@ -16,7 +18,9 @@ class Describe(base.Command):
     """Register flags for this command."""
     parser.add_argument('name',
                         type=str,
-                        help='The name of the operation to be described.')
+                        help=('The name of the operation to be described. The '
+                              '"{0}" prefix for the name is optional.'
+                              .format(_OPERATIONS_PREFIX)))
 
   @genomics_util.ReraiseHttpException
   def Run(self, args):
@@ -32,8 +36,11 @@ class Describe(base.Command):
     apitools_client = self.context[lib.GENOMICS_APITOOLS_CLIENT_KEY]
     genomics_messages = self.context[lib.GENOMICS_MESSAGES_MODULE_KEY]
 
+    name = args.name
+    if not name.startswith(_OPERATIONS_PREFIX):
+      name = _OPERATIONS_PREFIX + name
     return apitools_client.operations.Get(
-        genomics_messages.GenomicsOperationsGetRequest(name=args.name))
+        genomics_messages.GenomicsOperationsGetRequest(name=name))
 
   def Display(self, args_unused, operation):
     """This method is called to print the result of the Run() method.

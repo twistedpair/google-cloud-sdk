@@ -6,7 +6,7 @@ import json
 import sys
 
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 def GetError(error, verbose=False):
@@ -43,7 +43,7 @@ def HandleHttpError(func):
   def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = GetErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
       raise exceptions.HttpException, msg, traceback

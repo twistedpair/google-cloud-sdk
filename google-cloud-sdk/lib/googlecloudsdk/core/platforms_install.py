@@ -7,7 +7,6 @@ import re
 import shutil
 
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import platforms
 
 # pylint:disable=superfluous-parens
@@ -152,8 +151,7 @@ def _GetShellRcFileName(shell, host_os):
   elif shell != 'bash':
     return '.{shell}rc'.format(shell=shell)
   elif host_os == platforms.OperatingSystem.LINUX:
-    if c_gce.Metadata().connected:
-      return '.bash_profile'
+    return '.bashrc'
   elif host_os == platforms.OperatingSystem.MACOSX:
     return '.bash_profile'
   elif host_os == platforms.OperatingSystem.MSYS:

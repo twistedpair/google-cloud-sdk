@@ -15,7 +15,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.surface import bigquery as commands
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class JobsWait(base.Command):
@@ -116,7 +116,7 @@ class JobsWait(base.Command):
           progress_reporter.Print(
               job_reference.jobId, total_wait_so_far, current_status)
           break
-      except apitools_base.HttpError as server_error:
+      except exceptions.HttpError as server_error:
         try:
           raise bigquery.Error.ForHttpError(server_error)
         except bigquery.CommunicationError as e:

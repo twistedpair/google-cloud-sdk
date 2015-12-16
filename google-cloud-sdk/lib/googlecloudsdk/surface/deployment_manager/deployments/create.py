@@ -11,7 +11,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # Number of seconds (approximately) to wait for create operation to complete.
 OPERATION_TIMEOUT = 20 * 60  # 20 mins
@@ -122,7 +122,7 @@ class Create(base.Command):
               preview=args.preview,
           )
       )
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(dm_v2_util.GetError(error))
     if args.async:
       return operation
@@ -139,7 +139,7 @@ class Create(base.Command):
         log.error('Create operation ' + op_name
                   + ' has errors or failed to complete within '
                   + str(OPERATION_TIMEOUT) + ' seconds.')
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise exceptions.HttpException(dm_v2_util.GetError(error))
       try:
         # Fetch a list of the previewed or updated resources.
@@ -151,7 +151,7 @@ class Create(base.Command):
         )
         # TODO(munutzer): Pagination
         return response.resources if response.resources else []
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise exceptions.HttpException(dm_v2_util.GetError(error))
 
   def Display(self, unused_args, result):

@@ -240,6 +240,7 @@ def Prepare(args, catalog):
                                        _TEST_TYPE_ARG_RULES,
                                        _SHARED_ARG_RULES,
                                        all_test_args_set)
+  arg_validate.ValidateOsVersions(args, catalog)
   arg_validate.ValidateResultsBucket(args)
   arg_validate.ValidateObbFileNames(args.obb_files)
 

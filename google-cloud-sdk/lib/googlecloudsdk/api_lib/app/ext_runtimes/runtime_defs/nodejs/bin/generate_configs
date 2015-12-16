@@ -1,0 +1,114 @@
+#!/usr/bin/python
+# Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+import StringIO
+import sys
+
+# Augment the path with our library directory.
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0])))
+sys.path.append(os.path.join(ROOT_DIR, 'lib'))
+
+import comm
+
+ROOT = comm.RuntimeDefinitionRoot(ROOT_DIR)
+
+# The template for the docker command that is injected into the Dockerfile
+# when the user specifies a node version in their "engines" section.
+# It first invokes node to check to see if the version already installed in
+# the base image satisfies the spec in engines.node.  If not, it obtains the
+# list of current versions from nodejs.org and invokes node again to locate
+# the latest matching version.  Finally, the script installs the matching
+# version.
+#
+# This gets expanded out into a multiline dockerfile command with
+# backslash-newlines separating the lines.  For example:
+#
+#     RUN npm install https://... && \
+#       (node -e 'var semver = require("semver"); \
+#                 if (!semver.satisfies(process.version, "%(version_spec)s")) \
+#                   process.exit(1);' || \
+#     ... etc
+INSTALL_NODE_TEMPLATE = (
+    ' \\\n'.join(ROOT.read_file('data/install-node-version').split('\n')))
+
+def main(args):
+    """Generate all config files for the module."""
+
+    # Get runtime parameters from the controller.
+    info = comm.get_config()
+    runtime_data = info.runtime_data
+    params = info.params
+
+    # Create an output context, which knows how to do the right thing for
+    # generated files.
+    out_ctx = comm.FileGenerationContext.create_from_argv(args)
+
+    # Write "Saving file" messages to the user or to log depending on whether
+    # we're in "deploy."
+    if out_ctx.is_deploy():
+        notify = comm.info
+    else:
+        notify = comm.print_status
+
+    # Generate app.yaml.
+    if not params.appinfo:
+        app_yaml = 'app.yaml'
+        if not out_ctx.exists(app_yaml):
+            notify('Saving [app.yaml].')
+            runtime = 'custom' if params.custom else 'nodejs'
+            app_yaml_contents = ROOT.read_file('data/app.yaml')
+            out_ctx.gen_file(app_yaml,
+                             app_yaml_contents.format(runtime=runtime))
+
+    if params.custom or params.deploy:
+        dockerfile = 'Dockerfile'
+        if not out_ctx.exists(dockerfile):
+            notify('Saving [%s].' % dockerfile)
+
+            # Customize the dockerfile.
+            out = StringIO.StringIO()
+            out.write(ROOT.read_file('data', 'Dockerfile'))
+            out.write('COPY . /app/\n')
+            # Generate npm install if there is a package.json.
+            if runtime_data.got_package_json:
+                out.write(ROOT.read_file('data/package-json-install'))
+
+
+            if runtime_data.node_version:
+                # Let node check to see if it satisfies the version constraint and
+                # try to install the correct version if not.
+                out.write(INSTALL_NODE_TEMPLATE %
+                        {'version_spec': runtime_data.node_version})
+
+            # Generate the appropriate start command.
+            if runtime_data.got_npm_start:
+                out.write('CMD npm start\n')
+            else:
+                out.write('CMD node server.js\n')
+
+            out_ctx.gen_file('Dockerfile', out.getvalue())
+
+        # Generate .dockerignore
+        dockerignore = '.dockerignore'
+        if not out_ctx.exists(dockerignore):
+            notify('Saving [.dockerignore].')
+            out_ctx.gen_file(dockerignore, ROOT.read_file('data/dockerignore'))
+
+    if not out_ctx.has_generated_files():
+        notify('All config files already exist, not generating anything.')
+
+if __name__ == '__main__':
+    main(sys.argv)

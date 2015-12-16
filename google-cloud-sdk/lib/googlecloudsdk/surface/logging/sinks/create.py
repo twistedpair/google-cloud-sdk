@@ -8,7 +8,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Create(base.Command):
@@ -26,34 +26,36 @@ class Create(base.Command):
         help=('A filter expression for the sink. If present, the filter '
               'specifies which log entries to export.'))
 
-  def CreateLogSink(self, sink):
+  def CreateLogSink(self, sink_data):
     """Creates a log sink specified by the arguments."""
-    client = self.context['logging_client']
-    messages = self.context['logging_messages']
+    client = self.context['logging_client_v1beta3']
+    messages = self.context['logging_messages_v1beta3']
     sink_ref = self.context['sink_reference']
     return client.projects_logs_sinks.Create(
         messages.LoggingProjectsLogsSinksCreateRequest(
             projectsId=sink_ref.projectsId, logsId=sink_ref.logsId,
-            logSink=sink))
+            logSink=messages.LogSink(**sink_data)))
 
-  def CreateLogServiceSink(self, sink):
+  def CreateLogServiceSink(self, sink_data):
     """Creates a log service sink specified by the arguments."""
-    client = self.context['logging_client']
-    messages = self.context['logging_messages']
+    client = self.context['logging_client_v1beta3']
+    messages = self.context['logging_messages_v1beta3']
     sink_ref = self.context['sink_reference']
     return client.projects_logServices_sinks.Create(
         messages.LoggingProjectsLogServicesSinksCreateRequest(
             projectsId=sink_ref.projectsId,
-            logServicesId=sink_ref.logServicesId, logSink=sink))
+            logServicesId=sink_ref.logServicesId,
+            logSink=messages.LogSink(**sink_data)))
 
-  def CreateProjectSink(self, sink):
+  def CreateProjectSink(self, sink_data):
     """Creates a project sink specified by the arguments."""
-    client = self.context['logging_client']
-    messages = self.context['logging_messages']
+    client = self.context['logging_client_v1beta3']
+    messages = self.context['logging_messages_v1beta3']
     sink_ref = self.context['sink_reference']
     return client.projects_sinks.Create(
         messages.LoggingProjectsSinksCreateRequest(
-            projectsId=sink_ref.projectsId, logSink=sink))
+            projectsId=sink_ref.projectsId,
+            logSink=messages.LogSink(**sink_data)))
 
   def Run(self, args):
     """This is what gets called when the user runs this command.
@@ -72,22 +74,21 @@ class Create(base.Command):
         raise exceptions.ToolException('action canceled by user')
 
     sink_ref = self.context['sink_reference']
-    new_sink = self.context['logging_messages'].LogSink(
-        name=sink_ref.sinksId, destination=args.destination)
-
-    if args.log_filter:
-      new_sink.filter = args.log_filter
+    sink_data = {'name': sink_ref.sinksId, 'destination': args.destination,
+                 'filter': args.log_filter}
 
     try:
       if args.log:
-        result = self.CreateLogSink(new_sink)
+        result = util.TypedLogSink(self.CreateLogSink(sink_data),
+                                   log_name=args.log)
       elif args.service:
-        result = self.CreateLogServiceSink(new_sink)
+        result = util.TypedLogSink(self.CreateLogServiceSink(sink_data),
+                                   service_name=args.service)
       else:
-        result = self.CreateProjectSink(new_sink)
+        result = util.TypedLogSink(self.CreateProjectSink(sink_data))
       log.CreatedResource(sink_ref)
       return result
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
 
   def Display(self, unused_args, result):
@@ -97,7 +98,7 @@ class Create(base.Command):
       unused_args: The arguments that command was run with.
       result: The value returned from the Run() method.
     """
-    list_printer.PrintResourceList('logging.sinks', [result])
+    list_printer.PrintResourceList('logging.typedSinks', [result])
     util.PrintPermissionInstructions(result.destination)
 
 

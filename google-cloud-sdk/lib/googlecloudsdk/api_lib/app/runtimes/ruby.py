@@ -172,7 +172,7 @@ class RubyConfigurator(fingerprinting.Configurator):
 
     cleaner = fingerprinting.Cleaner()
 
-    if not self.params.deploy:
+    if not self.params.appinfo:
       self._GenerateAppYaml(cleaner)
     if self.params.custom or self.params.deploy:
       self._GenerateDockerfile(cleaner)
@@ -196,7 +196,6 @@ class RubyConfigurator(fingerprinting.Configurator):
         f.write(APP_YAML_CONTENTS.format(runtime=runtime,
                                          entrypoint=self.entrypoint))
       self.notify('Created app.yaml in {0}'.format(self.root))
-      cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
     """Generates a Dockerfile appropriate to this application.

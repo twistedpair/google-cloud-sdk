@@ -29,10 +29,10 @@ from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
+from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
-import protorpc.messages
 import yaml
 
 
@@ -1605,7 +1605,7 @@ class BaseEdit(BaseCommand):
         resources = self.ProcessEditedResource(file_contents, args)
         break
       except (ValueError, yaml.error.YAMLError,
-              protorpc.messages.ValidationError,
+              messages.ValidationError,
               calliope_exceptions.ToolException) as e:
         if isinstance(e, ValueError):
           message = e.message

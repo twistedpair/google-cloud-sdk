@@ -5,7 +5,7 @@
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 _NATIVE_CRASH = 'Native crash'
@@ -87,7 +87,7 @@ class ToolResultsSummaryFetcher(object):
       response = self._client.projects_histories_executions.Get(request)
       log.debug('\nTRHistoriesExecutions.Get response:\n{0}\n'.format(response))
       return response.outcome
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = 'Http error fetching test roll-up outcome: ' + util.GetError(error)
       raise exceptions.HttpException(msg)
 
@@ -173,7 +173,7 @@ class ToolResultsSummaryFetcher(object):
       response = self._client.projects_histories_executions_steps.List(request)
       log.debug('\nToolResultsSteps.List response:\n{0}\n'.format(response))
       return response
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = 'Http error while listing test results: ' +  util.GetError(error)
       raise exceptions.HttpException(msg)
 

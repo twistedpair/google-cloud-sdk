@@ -7,6 +7,8 @@ import os
 import sys
 import types
 
+from googlecloudsdk.api_lib.projects import projects_api
+from googlecloudsdk.api_lib.source import source
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.core import log
@@ -86,12 +88,13 @@ class Init(base.Command):
       if not self._PickAccount(args.console_only):
         return
 
-      if not self._PickProject():
+      project_id = self._PickProject()
+      if not project_id:
         return
 
       self._PickDefaultRegionAndZone()
 
-      self._PickRepo()
+      self._PickRepo(project_id)
 
       log.status.write('\ngcloud has now been configured!\n')
     finally:
@@ -203,7 +206,11 @@ class Init(base.Command):
     Returns:
       str, project_id or None if was not selected.
     """
-    projects = self._RunExperimentalCmd(['beta', 'projects', 'list'])
+    try:
+      projects = list(projects_api.List(http=self.Http()))
+    except Exception:  # pylint: disable=broad-except
+      log.debug('Failed to execute projects list: %s, %s, %s', *sys.exc_info())
+      projects = None
 
     if projects is None:  # Failed to get the list.
       project_id = console_io.PromptResponse(
@@ -240,8 +247,17 @@ class Init(base.Command):
     try:
       project_info = self._RunCmd(['compute', 'project-info', 'describe'])
     except c_exc.FailedSubCommand:
-      log.status.write('Not setting default zone/region.\nMake sure Compute '
-                       'Engine API is enabled for your project.\n\n')
+      log.status.write("""\
+Not setting default zone/region (this feature makes it easier to use
+[gcloud compute] by setting an appropriate default value for the
+--zone and --region flag).
+See https://cloud.google.com/compute/docs/gcloud-compute section on how to set
+default compute region and zone manually. If you would like [gcloud init] to be
+able to do this for you the next time you run it, make sure the
+Compute Engine API is enabled for your project on the
+https://console.developers.google.com/apis page.
+
+""")
       return None
 
     default_zone = None
@@ -257,12 +273,7 @@ class Init(base.Command):
     # Same logic applies to region and zone properties.
     def SetProperty(name, default_value, list_command):
       """Set named compute property to default_value or get via list command."""
-      if default_value:
-        log.status.write('Your project default compute {0} has been set to '
-                         '[{1}].\nYou can change it by running '
-                         '[gcloud config set compute/{0} NAME].\n\n'
-                         .format(name, default_value['name']))
-      else:
+      if not default_value:
         values = self._RunCmd(list_command)
         if values is None:
           return
@@ -278,6 +289,10 @@ class Init(base.Command):
         default_value = values[idx]
       self._RunCmd(['config', 'set'],
                    ['compute/{0}'.format(name), default_value['name']])
+      log.status.write('Your project default compute {0} has been set to '
+                       '[{1}].\nYou can change it by running '
+                       '[gcloud config set compute/{0} NAME].\n\n'
+                       .format(name, default_value['name']))
       return default_value
 
     if default_zone:
@@ -291,10 +306,23 @@ class Init(base.Command):
                                     [default_region])
     SetProperty('region', default_region, ['compute', 'regions', 'list'])
 
-  def _PickRepo(self):
+  def _PickRepo(self, project_id):
     """Allows user to clone one of the projects repositories."""
-    cmd = ['alpha', 'source', 'repos', 'list']
-    repos = self._RunExperimentalCmd(cmd)
+    answer = console_io.PromptContinue(
+        prompt_string='Do you want to use Google\'s source hosting (see '
+        'https://cloud.google.com/tools/cloud-repositories/)')
+    if not answer:
+      return
+
+    try:
+      source.Source.SetApiEndpoint(
+          self.Http(), properties.VALUES.api_endpoint_overrides.source.Get())
+      project = source.Project(project_id)
+      repos = project.ListRepos()
+    except Exception:  # pylint: disable=broad-except
+      # This command is experimental right now; its failures shouldn't affect
+      # operation.
+      repos = None
 
     if repos:
       repos = sorted(repo.name or 'default' for repo in repos)
@@ -309,14 +337,9 @@ class Init(base.Command):
       else:
         return
     elif repos is None:
-      log.status.write('Could not retrieve list of repos via [gcloud {0}]\n'
-                       .format(' '.join(cmd)))
-      log.status.write('Perhaps alpha commands are not enabled '
-                       'or the repos list command failed.\n'
-                       '\n')
       answer = console_io.PromptContinue(
           prompt_string='Generally projects have a repository named [default]. '
-          'Would you like to try clone it?')
+          'Would you like to try clone it')
       if not answer:
         return
       repo_name = 'default'
@@ -397,21 +420,8 @@ class Init(base.Command):
       return result
 
     except SystemExit as exc:
-      log.status.write('[{0}] has failed\n'.format(' '.join(cmd + params)))
+      log.info('[%s] has failed\n', ' '.join(cmd + params))
       raise c_exc.FailedSubCommand(cmd + params, exc.code)
     except BaseException:
-      log.status.write('Failed to run [{0}]\n'.format(' '.join(cmd + params)))
+      log.info('Failed to run [%s]\n', ' '.join(cmd + params))
       raise
-
-  def _RunExperimentalCmd(self, cmd, params=None):
-    try:
-      return self._RunCmd(cmd, params)
-    except (Exception) as e:  # pylint:disable=broad-except
-      cmd_string = ' '.join(cmd + (params or []))
-      log.status.write(
-          'Unexpected failure while executing [{0}]: [{1}: {2}]\n'
-          'Please report by running `gcloud feedback`.\n\n'.format(
-              cmd_string, type(e), e))
-      log.debug('Failed to execute %s, %s, %s, %s', cmd_string, *sys.exc_info())
-      return None
-

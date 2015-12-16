@@ -7,7 +7,7 @@ from googlecloudsdk.api_lib.compute import autoscaler_utils as util
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 def UtilizationTargetTypeForItem(item):
@@ -39,7 +39,7 @@ class GetAutoscaler(base_classes.BaseCommand):
     try:
       return client.autoscalers.Get(request)
 
-    except apitools_base.exceptions.HttpError as error:
+    except exceptions.HttpError as error:
       raise calliope_exceptions.HttpException(util.GetErrorMessage(error))
 
   def Display(self, unused_args, result):

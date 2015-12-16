@@ -12,7 +12,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
 class _BasePatch(object):
@@ -206,7 +206,7 @@ class _BasePatch(object):
     log.status.write(
         'The following message will be used for the patch API method.\n')
     log.status.write(
-        apitools_base.MessageToJson(
+        encoding.MessageToJson(
             patch_instance, include_fields=cleared_fields)+'\n')
 
     self._PrintAndConfirmWarningMessage(args)

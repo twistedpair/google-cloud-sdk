@@ -7,7 +7,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class List(base.Command):
@@ -54,9 +55,9 @@ class List(base.Command):
     limit = updater_util.SanitizeLimitFlag(args.limit)
 
     try:
-      return apitools_base.YieldFromList(
+      return list_pager.YieldFromList(
           client.rollingUpdates, request, limit=limit)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(updater_util.GetError(error))
 
   def Display(self, unused_args, result):

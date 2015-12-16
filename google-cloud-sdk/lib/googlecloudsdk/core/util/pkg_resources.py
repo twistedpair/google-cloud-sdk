@@ -175,17 +175,17 @@ def _IterModules(file_list, prefix=None):
       yield modname, False
 
 
-def _ListDir(path, depth):
-  """List directory tree up to certain depth."""
-  path_len = len(path) + len(os.path.sep)
-  for root, dirs, files in os.walk(path):
-    for d in dirs:
-      yield os.path.join(root[path_len:], d) + os.path.sep
-    for f in files:
-      yield os.path.join(root[path_len:], f)
-    if depth == 0:
-      dirs[:] = []
-    depth -= 1
+def _ListImportables(path):
+  """List packages or modules which can be imported at given path."""
+  importables = []
+  for filename in os.listdir(path):
+    if filename.endswith('.py'):
+      importables.append(filename)
+      continue
+    pkg_init_filepath = os.path.join(path, filename, '__init__.py')
+    if os.path.isfile(pkg_init_filepath):
+      importables.append(os.path.join(filename, '__init__.py'))
+  return importables
 
 
 def ListPackage(path):
@@ -199,7 +199,7 @@ def ListPackage(path):
   """
   iter_modules = []
   if os.path.isdir(path):
-    iter_modules = _IterModules(_ListDir(path, 1))
+    iter_modules = _IterModules(_ListImportables(path))
   else:
     importer = pkgutil.get_importer(path)
     if hasattr(importer, '_files'):
@@ -263,7 +263,8 @@ def ListPackageResources(path):
     list of files/resources at specified path.
   """
   if os.path.isdir(path):
-    return _ListDir(path, 0)
+    return [f + os.sep if os.path.isdir(os.path.join(path, f)) else f
+            for f in os.listdir(path)]
 
   importer = pkgutil.get_importer(path)
   if hasattr(importer, '_files'):

@@ -61,14 +61,13 @@ class GoConfigurator(fingerprinting.Configurator):
 
     # Generate app.yaml.
     cleaner = fingerprinting.Cleaner()
-    if not self.params.deploy:
+    if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
         runtime = 'custom' if self.params.custom else 'go'
         with open(app_yaml, 'w') as f:
           f.write(GO_APP_YAML.format(runtime=runtime))
-        cleaner.Add(app_yaml)
 
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)

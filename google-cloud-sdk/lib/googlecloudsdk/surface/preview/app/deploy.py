@@ -4,6 +4,8 @@
 """The gcloud app deploy command."""
 
 import argparse
+import json
+import os
 
 from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import appengine_client
@@ -14,8 +16,11 @@ from googlecloudsdk.api_lib.app import flags
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
@@ -37,6 +42,63 @@ PROMOTE_MESSAGE = """\
      (add --promote if you also want to make this module available from
      [{default_url}])
 """
+
+
+class DeployError(exceptions.Error):
+  """Base class for app deploy failures."""
+
+
+class RepoInfoLoadError(DeployError):
+  """Indicates a failure to load a source context file."""
+
+  def __init__(self, filename, inner_exception):
+    self.filename = filename
+    self.inner_exception = inner_exception
+
+  def __str__(self):
+    return 'Could not read repo info file {0}: {1}'.format(
+        self.filename, self.inner_exception)
+
+
+class MultiDeployError(DeployError):
+  """Indicates a failed attempt to deploy multiple image urls."""
+
+  def __str__(self):
+    return ('No more than one module may be deployed when using the '
+            'image-url flag')
+
+
+class NoRepoInfoWithImageUrlError(DeployError):
+  """The user tried to specify a repo info file with a docker image."""
+
+  def __str__(self):
+    return 'The --repo-info-file option is not compatible with --image_url.'
+
+
+class UnsupportedRegistryError(DeployError):
+  """Indicates an attempt to use an unsuported registry."""
+
+  def __init__(self, image_url):
+    self.image_url = image_url
+
+  def __str__(self):
+    return ('{0} is not in a supported registry.  Supported registries are '
+            '{1}'.format(self.image_url, constants.ALL_SUPPORTED_REGISTRIES))
+
+
+class DefaultBucketAccessError(DeployError):
+  """Indicates a failed attempt to access a project's default bucket."""
+
+  def __init__(self, project):
+    self.project = project
+
+  def __str__(self):
+    return (
+        'Could not retrieve the default Google Cloud Storage bucket for [{a}]. '
+        'Please try again or use the [bucket] argument.').format(a=self.project)
+
+
+DEFAULT_DEPLOYABLE = 'app.yaml'
 
 
 def _DisplayProposedDeployment(project, app_config, version, promote):
@@ -150,10 +212,23 @@ class Deploy(base.Command):
               "perform a local build, you must have your local docker "
               "environment configured correctly. The default is a hosted "
               "build."))
-    parser.add_argument(
-        'deployables', nargs='+',
+    deployables = parser.add_argument(
+        'deployables', nargs='*',
         help='The yaml files for the modules or configurations you want to '
         'deploy.')
+    deployables.detailed_help = (
+        'The yaml files for the modules or configurations you want to deploy. '
+        'If not given, defaults to `app.yaml` in the current directory. '
+        'If that is not found, attempts to automatically generate necessary '
+        'configuration files (such as app.yaml) in the current directory.')
+    parser.add_argument(
+        '--repo-info-file', metavar='filename',
+        help=argparse.SUPPRESS)
+    unused_repo_info_file_help = (
+        'The name of a file containing source context information for the '
+        'modules being deployed. If not specified, the source context '
+        'information will be inferred from the directory containing the '
+        'app.yaml file.')
     # TODO(b/24008797): Add this in when it's implemented.
     unused_stop_previous_version_help = (
         'Stop the previously running version when deploying a new version '
@@ -181,11 +256,6 @@ class Deploy(base.Command):
         help=('Set the deployed version to be the default serving version '
               '(deprecated; use --promote instead)'))
 
-  @property
-  def use_admin_api(self):
-    """Whether to use the admin api for legacy deployments."""
-    return properties.VALUES.app.use_appengine_api.GetBool()
-
   def Run(self, args):
     if args.env_vars:
       log.warn('The env-vars flag is deprecated, and will soon be removed.')
@@ -196,7 +266,25 @@ class Deploy(base.Command):
     version = args.version or util.GenerateVersionId()
     use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool()
 
-    app_config = yaml_parsing.AppConfigSet(args.deployables)
+    config_cleanup = None
+    if args.deployables:
+      app_config = yaml_parsing.AppConfigSet(args.deployables)
+    else:
+      if not os.path.exists(DEFAULT_DEPLOYABLE):
+        console_io.PromptContinue(
+            'Deployment to Google App Engine requires an app.yaml file. '
+            'This command will run `gcloud preview app gen-config` to generate '
+            'an app.yaml file for you in the current directory (if the current '
+            'directory does not contain an App Engine module, please answer '
+            '"no").', cancel_on_no=True)
+        # This generates the app.yaml AND the Dockerfile (and related files).
+        params = fingerprinting.Params(deploy=True)
+        configurator = fingerprinter.IdentifyDirectory(os.getcwd(),
+                                                       params=params)
+        config_cleanup = configurator.GenerateConfigs()
+        log.status.Print('\nCreated [{0}] in the current directory.\n'.format(
+            DEFAULT_DEPLOYABLE))
+      app_config = yaml_parsing.AppConfigSet([DEFAULT_DEPLOYABLE])
 
     remote_build = True
     docker_build_property = properties.VALUES.app.docker_build.Get()
@@ -225,25 +313,39 @@ class Deploy(base.Command):
 
     log.status.Print('Beginning deployment...')
 
+    source_contexts = []
+    if args.repo_info_file:
+      if args.image_url:
+        raise NoRepoInfoWithImageUrlError()
+
+      try:
+        with open(args.repo_info_file, 'r') as f:
+          source_contexts = json.load(f)
+      except (ValueError, IOError) as ex:
+        raise RepoInfoLoadError(args.repo_info_file, ex)
+      if isinstance(source_contexts, dict):
+        # This is an old-style source-context.json file. Convert to a new-
+        # style array of extended contexts.
+        source_contexts = [context_util.ExtendContextDict(source_contexts)]
+
     code_bucket = None
-    if use_cloud_build:
+    if use_cloud_build or app_config.NonHermeticModules():
       # If using Argo CloudBuild, we'll need to upload source to a GCS bucket.
       code_bucket = self._GetCodeBucket(api_client, args)
+      metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
+      log.debug('Using bucket [{b}].'.format(b=code_bucket))
+      if not code_bucket:
+        raise DefaultBucketAccessError(project)
 
     modules = app_config.Modules()
     if args.image_url:
       if len(modules) != 1:
-        raise exceptions.ToolException(
-            'No more than one module may be deployed when using the '
-            'image-url flag')
+        raise MultiDeployError()
       for registry in constants.ALL_SUPPORTED_REGISTRIES:
         if args.image_url.startswith(registry):
           break
       else:
-        raise exceptions.ToolException(
-            '%s is not in a supported registry.  Supported registries are %s' %
-            (args.image_url,
-             constants.ALL_SUPPORTED_REGISTRIES))
+        raise UnsupportedRegistryError(args.image_url)
       module = modules.keys()[0]
       images = {module: args.image_url}
     else:
@@ -253,22 +355,14 @@ class Deploy(base.Command):
                                                             cloudbuild_client,
                                                             code_bucket,
                                                             self.cli,
-                                                            remote_build)
+                                                            remote_build,
+                                                            source_contexts,
+                                                            config_cleanup)
 
     deployment_manifests = {}
-    if app_config.NonHermeticModules() and self.use_admin_api:
-      # TODO(clouser): Consider doing this in parallel with
-      # BuildAndPushDockerImage.
-      code_bucket = self._GetCodeBucket(api_client, args)
-      metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
-      log.debug('Using bucket [{b}].'.format(b=code_bucket))
-      if not code_bucket:
-        raise exceptions.ToolException(('Could not retrieve the default Google '
-                                        'Cloud Storage bucket for [{a}]. '
-                                        'Please try again or use the [bucket] '
-                                        'argument.').format(a=project))
+    if app_config.NonHermeticModules():
       deployment_manifests = deploy_app_command_util.CopyFilesToCodeBucket(
-          app_config.NonHermeticModules().items(), code_bucket)
+          app_config.NonHermeticModules().items(), code_bucket, source_contexts)
       metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
 
     # Now do deployment.
@@ -276,26 +370,17 @@ class Deploy(base.Command):
       message = 'Updating module [{module}]'.format(module=module)
       with console_io.ProgressTracker(message):
         if args.force:
-          gae_client.CancelDeployment(module=module, version=version)
-          metrics.CustomTimedEvent(metric_names.CANCEL_DEPLOYMENT)
+          log.warning('The --force argument is deprecated and no longer '
+                      'required. It will be removed in a future release.')
 
-        if info.is_hermetic or self.use_admin_api:
-          api_client.DeployModule(module, version, info,
-                                  deployment_manifests.get(module),
-                                  images.get(module))
-          metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-        else:
-          gae_client.DeployModule(module, version, info.parsed, info.file)
-          metrics.CustomTimedEvent(metric_names.DEPLOY_ADMIN_CONSOLE)
+        api_client.DeployModule(module, version, info,
+                                deployment_manifests.get(module),
+                                images.get(module))
+        metrics.CustomTimedEvent(metric_names.DEPLOY_API)
 
         if promote:
-          if info.is_hermetic or self.use_admin_api:
-            api_client.SetDefaultVersion(module, version)
-            metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
-          else:
-            gae_client.SetDefaultVersion(modules=[module], version=version)
-            metrics.CustomTimedEvent(
-                metric_names.SET_DEFAULT_VERSION_ADMIN_CONSOLE)
+          api_client.SetDefaultVersion(module, version)
+          metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
 
     # Config files.
     for (c, info) in app_config.Configs().iteritems():

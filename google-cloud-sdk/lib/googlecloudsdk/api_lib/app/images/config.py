@@ -4,7 +4,7 @@
 
 # The version of the docker API the docker-py client uses.
 # Warning: other versions might have different return values for some functions.
-DOCKER_PY_VERSION = '1.16'
+DOCKER_PY_VERSION = '1.18'
 
 # Timeout of HTTP request from docker-py client to docker daemon, in seconds.
 DOCKER_D_REQUEST_TIMEOUT = 300

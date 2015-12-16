@@ -10,7 +10,8 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class Import(base.Command):
@@ -81,12 +82,12 @@ class Import(base.Command):
     zone_ref = resources.Parse(args.zone, collection='dns.managedZones')
     try:
       zone = dns.managedZones.Get(zone_ref.Request())
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetErrorMessage(error))
 
     # Get the current record-sets.
     current = {}
-    for record in apitools_base.YieldFromList(
+    for record in list_pager.YieldFromList(
         dns.resourceRecordSets,
         messages.DnsResourceRecordSetsListRequest(project=project_id,
                                                   managedZone=zone_ref.Name()),

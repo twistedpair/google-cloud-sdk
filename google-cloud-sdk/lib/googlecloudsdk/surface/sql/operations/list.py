@@ -10,7 +10,7 @@ from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class _BaseList(object):
@@ -40,7 +40,7 @@ class _BaseList(object):
     validate.ValidateInstanceName(args.instance)
     instance_ref = resources.Parse(args.instance, collection='sql.instances')
 
-    return apitools_base.YieldFromList(
+    return list_pager.YieldFromList(
         sql_client.operations,
         sql_messages.SqlOperationsListRequest(
             project=instance_ref.project,

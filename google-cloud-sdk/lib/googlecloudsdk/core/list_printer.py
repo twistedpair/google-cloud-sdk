@@ -416,9 +416,9 @@ COLLECTION_COLUMNS = {
         ('STATE', _Select('state')),
         ('CREATE_TIME', _Select('createTime')),
     ),
-    'source.snapshots.list': (
+    'source.captures.list': (
         ('PROJECT_ID ', _Select('project_id')),
-        ('SNAPSHOT_ID', _Select('id')),
+        ('CAPTURE_ID', _Select('id')),
     ),
 
     # Cloud Updater
@@ -449,14 +449,12 @@ COLLECTION_COLUMNS = {
     'logging.logs': (
         ('NAME', _Select('name')),
     ),
-    'logging.sinks': (
-        ('NAME', _Select('name')),
-        ('DESTINATION', _Select('destination')),
-    ),
     'logging.typedSinks': (
         ('NAME', _Select('name')),
         ('DESTINATION', _Select('destination')),
         ('TYPE', _Select('type')),
+        ('FORMAT', _Select('format')),
+        ('FILTER', _Select('filter'))
     ),
     'logging.metrics': (
         ('NAME', _Select('name')),

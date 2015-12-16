@@ -9,7 +9,7 @@ from googlecloudsdk.api_lib.genomics import genomics_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class Export(base.Command):
@@ -66,7 +66,7 @@ class Export(base.Command):
                   exportUri=args.export_uri,
                   referenceNames=args.reference_names)
           ))
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       # Map our error messages (JSON API camelCased) back into flag names.
       msg = (genomics_util.GetErrorMessage(error)
              .replace('exportUri', '--export-uri')

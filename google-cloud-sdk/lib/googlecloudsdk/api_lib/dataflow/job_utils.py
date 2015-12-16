@@ -6,7 +6,7 @@ from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.surface import dataflow as commands
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class _JobViewSummary(object):
@@ -58,7 +58,7 @@ def GetJob(context, job_ref, view=JOB_VIEW_SUMMARY, required=True):
 
   try:
     return apitools_client.projects_jobs.Get(request)
-  except apitools_base.HttpError as error:
+  except exceptions.HttpError as error:
     if error.status_code == 404:
       msg = 'No job with ID [{0}] in project [{1}]'.format(
           job_ref.jobId, job_ref.projectId)

@@ -8,7 +8,7 @@ from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.surface import bigquery as commands
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
@@ -58,5 +58,5 @@ class TablesList(base.Command):
     """
     try:
       list_printer.PrintResourceList('bigquery.tables.list', tables)
-    except apitools_base.HttpError as server_error:
+    except exceptions.HttpError as server_error:
       raise bigquery.Error.ForHttpError(server_error)

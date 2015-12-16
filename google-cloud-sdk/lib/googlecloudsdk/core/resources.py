@@ -14,7 +14,7 @@ import urllib
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import base_api
 from googlecloudsdk.third_party.apitools.base.py import util
 
 
@@ -250,9 +250,9 @@ class _ResourceParser(object):
     """Create a _ResourceParser for a given API and service, and register it.
 
     Args:
-      client: apitools_base.BaseApiClient subclass, The client that handles
+      client: base_api.BaseApiClient subclass, The client that handles
           requests to the API.
-      service: apitools_base.BaseApiService subclass, The service that manages
+      service: base_api.BaseApiService subclass, The service that manages
           the resource type
       registry: Registry, The registry that this parser should be added to.
     """
@@ -637,12 +637,12 @@ class Registry(object):
     """Register a generated API with this registry.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
       urls_only: bool, True if this API should only be used to interpret URLs,
           and not to interpret collection-paths.
     """
     for potential_service in api.__dict__.itervalues():
-      if not self._IsApiService(potential_service):
+      if not isinstance(potential_service, base_api.BaseApiService):
         continue
       try:
         self._RegisterService(api, potential_service, urls_only)
@@ -650,27 +650,12 @@ class Registry(object):
         pass
     self.registered_apis.add(_APINameFromURL(api.url))
 
-  def _IsApiService(self, service):
-    """"Check whether given object is actual service implementation."""
-    if isinstance(service, apitools_base.BaseApiService):
-      return True
-    # TODO(cherba): fix tests not to use unreleased apis, so above condition
-    # is sufficient.
-    if (not hasattr(service, 'GetMethodConfig') or
-        not hasattr(service, 'GetRequestType')):
-      return False
-    # Check actual name, just in case it is MagicMock.
-    for base in service.__class__.__bases__:
-      if 'BaseApiService' in base.__name__:
-        return True
-    return False
-
   def _RegisterService(self, api, service, urls_only):
     """Register one service for an API with this registry.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
-      service: apitools_base.BaseApiService, the service to be registered.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
+      service: base_api.BaseApiService, the service to be registered.
       urls_only: bool, True if this API should only be used to interpret URLs,
           and not to interpret collection-paths.
 
@@ -713,7 +698,7 @@ class Registry(object):
     API from self.parsers_by_collection, but leave self.parsers_by_url intact.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
     """
     # Clear out the old collections.
     for collection, parser in self.parsers_by_collection.items():

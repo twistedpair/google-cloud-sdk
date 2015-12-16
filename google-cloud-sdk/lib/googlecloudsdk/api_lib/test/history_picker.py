@@ -5,7 +5,7 @@
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class ToolResultsHistoryPicker(object):
@@ -42,7 +42,7 @@ class ToolResultsHistoryPicker(object):
       response = self._client.projects_histories.List(request)
       log.debug('\nToolResultsHistories.List response:\n{0}\n'.format(response))
       return response
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = ('Http error while getting list of Tool Results Histories:\n{0}'
              .format(util.GetError(error)))
       raise exceptions.HttpException(msg)
@@ -67,7 +67,7 @@ class ToolResultsHistoryPicker(object):
       log.debug('\nToolResultsHistories.Create response:\n{0}\n'
                 .format(response))
       return response
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = ('Http error while creating a Tool Results History:\n{0}'
              .format(util.GetError(error)))
       raise exceptions.HttpException(msg)

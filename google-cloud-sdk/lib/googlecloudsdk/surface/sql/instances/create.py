@@ -13,7 +13,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class _BaseCreate(object):
@@ -220,7 +220,7 @@ class Create(_BaseCreate, base.Command):
       cache = remote_completion.RemoteCompletion()
       cache.AddToCache(instance_ref.SelfLink())
       return new_resource
-    except apitools_base.HttpError:
+    except apitools_exceptions.HttpError:
       log.debug('operation : %s', str(operation_ref))
       raise
 
@@ -297,7 +297,7 @@ class CreateBeta(_BaseCreate, base.Command):
       cache = remote_completion.RemoteCompletion()
       cache.AddToCache(instance_ref.SelfLink())
       return new_resource
-    except apitools_base.HttpError:
+    except apitools_exceptions.HttpError:
       log.debug('operation : %s', str(operation_ref))
       raise
 

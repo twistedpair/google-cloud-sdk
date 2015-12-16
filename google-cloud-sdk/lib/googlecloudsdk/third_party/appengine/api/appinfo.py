@@ -1502,7 +1502,7 @@ def VmSafeSetRuntime(appyaml, runtime):
   Returns:
      The passed in appyaml (which has been modified).
   """
-  if appyaml.env == '2' or appyaml.vm:
+  if appyaml.IsVm():
     if not appyaml.vm_settings:
       appyaml.vm_settings = VmSettings()
 
@@ -1530,8 +1530,7 @@ def NormalizeVmSettings(appyaml):
   # NOTE(user): This hack is only being applied after the parsing of
   # AppInfoExternal. If the 'vm' attribute can ever be specified in the
   # AppInclude, then this processing will need to be done there too.
-  # TODO(user): env replaces vm.  Remove vm when the field is gone.
-  if appyaml.env == '2' or appyaml.vm:
+  if appyaml.IsVm():
     if not appyaml.vm_settings:
       appyaml.vm_settings = VmSettings()
 
@@ -1926,7 +1925,7 @@ class AppInfoExternal(validation.Validated):
       ModuleAndServiceDefined: if both 'module' and 'service' keywords are used.
     """
     super(AppInfoExternal, self).CheckInitialized()
-    if self.runtime is None and not self.vm and self.env != '2':
+    if self.runtime is None and not self.IsVm():
       raise appinfo_errors.MissingRuntimeError(
           'You must specify a "runtime" field for non-vm applications.')
     elif self.runtime is None:
@@ -1934,7 +1933,7 @@ class AppInfoExternal(validation.Validated):
       # we know that it's been defaulted)
       self.runtime = 'custom'
     if (not self.handlers and not self.builtins and not self.includes
-        and not (self.vm or self.env == '2')):
+        and not self.IsVm()):
       raise appinfo_errors.MissingURLMapping(
           'No URLMap entries found in application configuration')
     if self.handlers and len(self.handlers) > MAX_URL_MAPS:
@@ -2115,6 +2114,10 @@ class AppInfoExternal(validation.Validated):
         and self.beta_settings is not None):
       return self.beta_settings.get('vm_runtime')
     return self.runtime
+
+  # TODO(user): env replaces vm. Remove vm when field is removed.
+  def IsVm(self):
+    return self.vm or self.env == '2'
 
 
 def ValidateHandlers(handlers, is_include_file=False):

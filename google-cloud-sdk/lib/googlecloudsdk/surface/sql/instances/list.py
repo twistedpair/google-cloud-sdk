@@ -12,7 +12,7 @@ from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 class _BaseList(object):
@@ -55,7 +55,7 @@ class _BaseList(object):
     project_id = properties.VALUES.core.project.Get(required=True)
 
     remote_completion.SetGetInstanceFun(self.GetRef)
-    return apitools_base.YieldFromList(
+    return list_pager.YieldFromList(
         sql_client.instances,
         sql_messages.SqlInstancesListRequest(project=project_id),
         args.limit)

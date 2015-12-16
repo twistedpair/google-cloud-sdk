@@ -7,7 +7,7 @@ but modified to use pageSize rather than maxResults.
 
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
@@ -19,7 +19,7 @@ def YieldFromList(
   """Make a series of List requests, keeping track of page tokens.
 
   Args:
-    service: apitools_base.BaseApiService, A service with a .List() method.
+    service: base_api.BaseApiService, A service with a .List() method.
     request: protorpc.messages.Message, The request message corresponding to the
         service's .List() method, with all the attributes populated except
         the .maxResults and .pageToken attributes.
@@ -44,7 +44,7 @@ def YieldFromList(
   while limit is None or limit:
     try:
       response = getattr(service, method)(request)
-    except apitools_base.HttpError as error:
+    except exceptions.HttpError as error:
       raise calliope_exceptions.HttpException('RPC Failed: {0}'.format(
           dataflow_util.GetErrorMessage(error)))
     items = getattr(response, field)
