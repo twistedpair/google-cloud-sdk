@@ -1,11 +1,25 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Facilities for user prompting for request context."""
 
 import abc
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import gce as c_gce
 
@@ -26,6 +40,16 @@ GCE_SUGGESTION_SOURCES = {
     'zone': _GetGCEZone,
     'region': _GetGCERegion
 }
+
+
+class Error(core_exceptions.Error):
+  """Exceptions for the scope prompter."""
+  pass
+
+
+class _InvalidPromptInvocation(Error):
+  """Exception for invoking prompt with invalid parameters."""
+  pass
 
 
 class ScopePrompter(object):
@@ -85,41 +109,56 @@ class ScopePrompter(object):
 
     return choices
 
-  def PromptForScope(self, ambiguous_refs, attribute, service, resource_type,
+  def PromptForScope(self, ambiguous_refs,
+                     attributes, services, resource_type,
                      flag_names, prefix_filter):
     """Prompts user to specify a scope for ambiguous resources."""
 
     def RaiseOnPromptFailure():
       """Call this to raise an exn when prompt cannot read from input stream."""
       phrases = ('one of ', 'flags') if len(flag_names) > 1 else ('', 'flag')
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'Unable to prompt. Specify {0}the [{1}] {2}.'.format(
               phrases[0], ', '.join(flag_names), phrases[1]))
 
+    # one service per attribute
+    if len(attributes) != len(services):
+      raise _InvalidPromptInvocation()
+
     # Update selected_resource_name in response to user prompts
     selected_resource_name = None
+    selected_attribute = None
 
     # Try first to give a precise suggestion based on current VM zone/region.
-    gce_suggestor = GCE_SUGGESTION_SOURCES.get(attribute) or (lambda: None)
-    gce_suggested_resource = gce_suggestor()
-    if gce_suggested_resource:
-      selected_resource_name = self._PromptDidYouMeanScope(
-          ambiguous_refs, attribute, resource_type, gce_suggested_resource,
-          RaiseOnPromptFailure)
+    if len(attributes) == 1:
+      gce_suggestor = (
+          GCE_SUGGESTION_SOURCES.get(attributes[0]) or (lambda: None))
+      gce_suggested_resource = gce_suggestor()
+      if gce_suggested_resource:
+        selected_attribute = attributes[0]
+        selected_resource_name = self._PromptDidYouMeanScope(
+            ambiguous_refs, attributes[0], resource_type,
+            gce_suggested_resource, RaiseOnPromptFailure)
 
     # If the user said "no" fall back to a generic prompt.
     if selected_resource_name is None:
-      choice_resources = self.FetchChoiceResources(attribute, service,
-                                                   flag_names, prefix_filter)
-      selected_resource_name = self._PromptForScopeList(
-          ambiguous_refs, attribute, resource_type, choice_resources,
+      choice_resources = {}
+      for service, attribute in zip(services, attributes):
+        choice_resources[attribute] = (
+            self.FetchChoiceResources(
+                attribute, service, flag_names, prefix_filter))
+      selected_attribute, selected_resource_name = self._PromptForScopeList(
+          ambiguous_refs, attributes, resource_type, choice_resources,
           RaiseOnPromptFailure)
 
     # _PromptForScopeList ensures this.
     assert selected_resource_name is not None
+    assert selected_attribute is not None
 
     for _, resource_ref in ambiguous_refs:
-      setattr(resource_ref, attribute, selected_resource_name)
+      setattr(resource_ref, selected_attribute, selected_resource_name)
+
+    return selected_attribute
 
   def _PromptDidYouMeanScope(self, ambiguous_refs, attribute, resource_type,
                              suggested_resource, raise_on_prompt_failure):
@@ -140,35 +179,87 @@ class ScopePrompter(object):
     except console_io.UnattendedPromptError:
       raise_on_prompt_failure()
 
-  def _PromptForScopeList(self, ambiguous_refs, attribute,
+  def _PromptForScopeList(self, ambiguous_refs, attributes,
                           resource_type, choice_resources,
                           raise_on_prompt_failure):
     """Prompt to resolve abiguous resources.  Either returns str or throws."""
-
     # targetInstances -> target instances
     resource_name = utils.CamelCaseToOutputFriendly(resource_type)
     # Resource names should be surrounded by brackets while choices should not
     names = ['[{0}]'.format(name) for name, _ in ambiguous_refs]
     # Print deprecation state for choices.
     choice_names = []
-    for choice_resource in choice_resources:
-      deprecated = choice_resource.deprecated
-      if deprecated:
-        choice_name = '{0} ({1})'.format(
-            choice_resource.name, deprecated.state)
-      else:
-        choice_name = choice_resource.name
-      choice_names.append(choice_name)
+    choice_mapping = []
+    for attribute in attributes:
+      for choice_resource in choice_resources[attribute]:
+        deprecated = choice_resource.deprecated
+        if deprecated:
+          choice_name = '{0} ({1})'.format(
+              choice_resource.name, deprecated.state)
+        else:
+          choice_name = choice_resource.name
+
+        if len(attributes) > 1:
+          choice_name = '{0}: {1}'.format(attribute, choice_name)
+
+        choice_mapping.append((attribute, choice_resource.name))
+        choice_names.append(choice_name)
 
     title = utils.ConstructList(
         'For the following {0}:'.format(resource_name), names)
     idx = console_io.PromptChoice(
         options=choice_names,
-        message='{0}choose a {1}:'.format(title, attribute))
+        message='{0}choose a {1}:'.format(title, ' or '.join(attributes)))
     if idx is None:
       raise_on_prompt_failure()
     else:
-      return choice_resources[idx].name
+      return choice_mapping[idx]
+
+  def PromptForMultiScopedReferences(
+      self, resource_names, scope_names, scope_services, resource_types,
+      flag_names):
+    """Prompt for resources, which can be placed in several different scopes."""
+
+    # one service and resource type per scope
+    if len(scope_names) != len(scope_services) or (
+        len(scope_names) != len(resource_types)):
+      raise _InvalidPromptInvocation()
+
+    resource_refs = []
+    ambiguous_refs = []
+    for resource_name in resource_names:
+      for scope_name, resource_type in zip(scope_names, resource_types):
+        try:
+          resource_ref = self.resources.Parse(
+              resource_name,
+              collection=self.GetCollection(resource_type),
+              params={},
+              resolve=False)
+          resource_refs.append(resource_ref)
+          if not getattr(resource_ref, scope_name):
+            ambiguous_refs.append((resource_name, resource_ref))
+        except resources.WrongResourceCollectionException:
+          pass
+
+    if ambiguous_refs:
+      self.PromptForScope(
+          ambiguous_refs=ambiguous_refs,
+          attributes=scope_names,
+          services=scope_services,
+          resource_type=resource_types[0],
+          flag_names=flag_names,
+          prefix_filter=None)
+
+    resolved_refs = []
+    for resource_ref in resource_refs:
+      try:
+        resource_ref.Resolve()
+        resolved_refs.append(resource_ref)
+      except resources.UnknownFieldException:
+        # expected to happen
+        pass
+
+    return resolved_refs
 
   def CreateScopedReferences(self, resource_names, scope_name, scope_arg,
                              scope_service, resource_type, flag_names,
@@ -191,8 +282,8 @@ class ScopePrompter(object):
       # We need to prompt.
       self.PromptForScope(
           ambiguous_refs=ambiguous_refs,
-          attribute=scope_name,
-          service=scope_service,
+          attributes=[scope_name],
+          services=[scope_service],
           resource_type=resource_type or self.resource_type,
           flag_names=flag_names,
           prefix_filter=prefix_filter)

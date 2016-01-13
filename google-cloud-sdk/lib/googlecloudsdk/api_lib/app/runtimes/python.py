@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Fingerprinting code for the Python runtime."""
 
@@ -16,7 +28,7 @@ PYTHON_RUNTIME_NAME = 'python'
 DEFAULT_PYTHON_INTERPRETER_VERSION = '2'
 VALID_PYTHON_INTERPRETER_VERSIONS = ['2', '3']
 
-# TODO(mmuller): We'll move these into directories once we externalize
+# TODO(user): We'll move these into directories once we externalize
 # fingerprinting.
 PYTHON_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
@@ -81,7 +93,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
     # Generate app.yaml.
     cleaner = fingerprinting.Cleaner()
-    if not self.params.deploy:
+    if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
@@ -89,7 +101,6 @@ class PythonConfigurator(fingerprinting.Configurator):
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(entrypoint=self.entrypoint,
                                          runtime=runtime))
-        cleaner.Add(app_yaml)
 
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)
@@ -113,7 +124,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
         cleaner.Add(dockerfile)
 
-      # Generate .dockerignore TODO(mmuller): eventually this file will just be
+      # Generate .dockerignore TODO(user): eventually this file will just be
       # copied verbatim.
       dockerignore = os.path.join(self.root, '.dockerignore')
       if not os.path.exists(dockerignore):
@@ -173,7 +184,7 @@ def Fingerprint(path, params):
       elif appinfo:
         # We've got an entrypoint and the user had an app.yaml that didn't
         # specify it.
-        # TODO(mmuller): offer to edit the user's app.yaml.
+        # TODO(user): offer to edit the user's app.yaml.
         log.status.Print('To avoid being asked for an entrypoint in the '
                          'future, please add the entrypoint to your app.yaml:\n'
                          '  entrypoint: %s' % entrypoint)

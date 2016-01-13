@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Utilities for subcommands that need to SSH into virtual machine guests."""
 import logging
@@ -175,7 +187,7 @@ def _PrepareSSHKeysValue(ssh_keys):
 
 def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata):
   """Adds the public key material to the metadata if it's not already there."""
-  entry = '{user}:{public_key}'.format(
+  entry = u'{user}:{public_key}'.format(
       user=user, public_key=public_key)
 
   ssh_keys = _GetSSHKeysFromMetadata(metadata)
@@ -377,7 +389,11 @@ class BaseSSHCommand(base_classes.BaseCommand,
         _RunExecutable(keygen_args)
 
     with open(public_ssh_key_file) as f:
-      return f.readline().strip()
+      # We get back a unicode list of keys for the remaining metadata, so
+      # convert to unicode. Assume UTF 8, but if we miss a character we can just
+      # replace it with a '?'. The only source of issues would be the hostnames,
+      # which are relatively inconsequential.
+      return f.readline().strip().decode('utf8', 'replace')
 
   @property
   def resource_type(self):

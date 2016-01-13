@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A library that is used to support Functions commands."""
 
@@ -12,7 +24,7 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # FIXED(b/23150309): Error messages should be textual, not just regexp.
 _ENTRY_POINT_NAME_RE = re.compile(r'^[_a-zA-Z0-9]{1,128}$')
@@ -211,7 +223,7 @@ def _GetViolationsFromError(error_info):
 
 
 def CatchHTTPErrorRaiseHTTPException(func):
-# TODO(biskup): merge this function with HandleHttpError defined elsewhere:
+# TODO(user): merge this function with HandleHttpError defined elsewhere:
 # * shared/projects/util.py
 # * shared/dns/util.py
 # (obstacle: GetHttpErrorMessage function may be project-specific)
@@ -221,9 +233,20 @@ def CatchHTTPErrorRaiseHTTPException(func):
   def CatchHTTPErrorRaiseHTTPExceptionFn(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = GetHttpErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
       raise base_exceptions.HttpException, msg, traceback
 
   return CatchHTTPErrorRaiseHTTPExceptionFn
+
+
+def FormatTimestamp(timestamp):
+  """Formats a timestamp which will be presented to a user.
+
+  Args:
+    timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
+  Returns:
+    Formatted timestamp string.
+  """
+  return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))

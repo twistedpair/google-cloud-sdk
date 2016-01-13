@@ -1,7 +1,19 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Utility functions that don't belong in the other utility modules."""
 
-# TODO(aryann): Move the top-level functions in base_classes.py here.
+# TODO(user): Move the top-level functions in base_classes.py here.
 
 import cStringIO
 import re
@@ -14,11 +26,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apis.clouduseraccounts.alpha import clouduseraccounts_alpha_client
-from googlecloudsdk.third_party.apis.clouduseraccounts.beta import clouduseraccounts_beta_client
-from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_client
-from googlecloudsdk.third_party.apis.compute.beta import compute_beta_client
-from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_client
 
 
 class InstanceNotReadyError(calliope_exceptions.ToolException):
@@ -218,21 +225,22 @@ def UpdateContextEndpointEntries(context, http, api_client_default='v1',
 
   if not known_apis:
     known_apis = {
-        'alpha': compute_alpha_client.ComputeAlpha,
-        'beta': compute_beta_client.ComputeBeta,
-        'v1': compute_v1_client.ComputeV1,
+        'alpha': resources.ClientDef('compute', 'alpha'),
+        'beta': resources.ClientDef('compute', 'beta'),
+        'v1': resources.ClientDef('compute', 'v1')
     }
   if not known_clouduseraccounts_apis:
     known_clouduseraccounts_apis = {
-        'alpha': clouduseraccounts_alpha_client.ClouduseraccountsAlpha,
-        'beta': clouduseraccounts_beta_client.ClouduseraccountsBeta,
+        'alpha': resources.ClientDef('clouduseraccounts', 'alpha'),
+        'beta': resources.ClientDef('clouduseraccounts', 'beta')
     }
 
   api_client = properties.VALUES.api_client_overrides.compute.Get()
   if not api_client:
     api_client = api_client_default
-  client = known_apis.get(api_client, None)
-  if not client:
+  try:
+    client = known_apis[api_client].Import()
+  except KeyError:
     raise ValueError('Invalid API version: [{0}]'.format(api_client))
 
   compute_url = properties.VALUES.api_endpoint_overrides.compute.Get()
@@ -248,14 +256,15 @@ def UpdateContextEndpointEntries(context, http, api_client_default='v1',
   context['batch-url'] = urlparse.urljoin(api_host, 'batch')
 
   # Construct cloud user accounts client.
-  # TODO(broudy): User a separate API override from compute.
+  # TODO(user): User a separate API override from compute.
   api_client = properties.VALUES.api_client_overrides.compute.Get()
   if not api_client:
     api_client = api_client_default
-  client = known_clouduseraccounts_apis.get(api_client, None)
-  if not client:
+  try:
+    client = known_clouduseraccounts_apis[api_client].Import()
+  except KeyError:
     # Throw an error here once clouseuseraccounts has a v1 API version.
-    client = known_clouduseraccounts_apis.get('beta', None)
+    client = known_clouduseraccounts_apis['beta'].Import()
 
   clouduseraccounts_url = (properties.VALUES.api_endpoint_overrides
                            .clouduseraccounts.Get())

@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """One-line documentation for auth module.
 
@@ -93,7 +105,7 @@ def _GetStorageKeyForAccount(account):
   }
 
 
-# TODO(cherba): use _GetStorageKeyForAccount instead, but in meantime since the
+# TODO(user): use _GetStorageKeyForAccount instead, but in meantime since the
 # key format has changed this will not invalidate existing auth credentials and
 # will move over existing credentials under new key format.
 def _FindStorageKeyForAccount(account):
@@ -330,7 +342,13 @@ def Revoke(account=None):
   if not creds:
     raise NoCredentialsForAccountException(account)
 
-  # TODO(jasmuth): Remove this condition when oauth2client does not crash while
+  if isinstance(creds, c_devshell.DevshellCredentials):
+    raise RevokeError(
+        'Cannot revoke the automatically provisioned Cloud Shell credential.'
+        'This comes from your browser session and will not persist outside'
+        'of your connected Cloud Shell session.')
+
+  # TODO(user): Remove this condition when oauth2client does not crash while
   # revoking SignedJwtAssertionCredentials.
   if creds and (not client.HAS_CRYPTO or
                 type(creds) != client.SignedJwtAssertionCredentials):
@@ -429,7 +447,7 @@ def AcquireFromGCE(account=None):
     account = default_account
   if account != default_account:
     raise Error('Unable to use non-default GCE service accounts.')
-  # TODO(jasmuth): Update oauth2client to fetch alternate credentials. This
+  # TODO(user): Update oauth2client to fetch alternate credentials. This
   # inability is not currently a problem, because the metadata server does not
   # yet provide multiple service accounts.
 

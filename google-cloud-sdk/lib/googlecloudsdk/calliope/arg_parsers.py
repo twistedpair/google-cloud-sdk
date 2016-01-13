@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A module that provides parsing utilities for argparse.
 
@@ -352,7 +364,7 @@ class Datetime(object):
       return None
     accepted_formats = ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M:%S.%f',
                         '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S.%fZ')
-    # TODO(filipjs): Add timezone support.
+    # TODO(user): Add timezone support.
     for date_format in accepted_formats:
       try:
         return datetime.datetime.strptime(s, date_format)
@@ -473,7 +485,7 @@ class ArgList(ArgType):
             'information on escaping list or dictionary flag values.')
     arg_list = _TokenizeQuotedList(arg_value, delim=delim)
 
-    # TODO(jasmuth): These exceptions won't present well to the user.
+    # TODO(user): These exceptions won't present well to the user.
     if len(arg_list) < self.min_length:
       raise ArgumentTypeError('not enough args')
     if self.max_length is not None and len(arg_list) > self.max_length:
@@ -534,7 +546,7 @@ class ArgDict(ArgList):
     arg_dict = {}
     for arg in arg_list:
       split_arg = arg.split('=', 1)  # only use the first =
-      # TODO(jasmuth): These exceptions won't present well to the user.
+      # TODO(user): These exceptions won't present well to the user.
       if len(split_arg) != 2:
         raise ArgumentTypeError(
             ('Bad syntax for dict arg: {0}. Please see `gcloud topic escaping` '
@@ -586,7 +598,7 @@ def FloatingListValuesCatcher(
     and we'll remove it eventually.
     """
 
-    # TODO(cherba): remove this.
+    # TODO(user): remove this.
     _NOLINT = True
 
     def __init__(self, *args, **kwargs):
@@ -642,7 +654,7 @@ def FloatingListValuesCatcher(
                 values=','.join(suggestions),
                 extras=', '.join(extras))
 
-        # TODO(jasmuth): stop warning when we're ready
+        # TODO(user): stop warning when we're ready
         warn_only = True
 
         if not warn_only:

@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Utilities for interacting with Google Cloud Storage.
 
@@ -45,7 +57,7 @@ def ParseGcsUri(gcs_uri):
 
 
 def GsutilReferenceToApiReference(bucket):
-  # TODO(clouser) Consider using the JSON API version of bucket urls:
+  # TODO(user) Consider using the JSON API version of bucket urls:
   # http://www.googleapis.com/storage/v1/b/
   # If we do this, we can use resources.Parse() to auto-generate references.
   return bucket.replace('gs://', 'https://storage.googleapis.com/')
@@ -86,18 +98,16 @@ def _RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
     command_args = [command_name]
 
   command_args += command_arg_str.split(' ')
-  env = None
 
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
     gsutil_args = execution_utils.ArgsForCMDTool(command_path + '.cmd',
                                                  *command_args)
   else:
     gsutil_args = execution_utils.ArgsForShellTool(command_path, *command_args)
-  log.debug('Running command: [{args}], Env: [{env}]'.format(
-      args=' '.join(gsutil_args),
-      env=env))
-  return execution_utils.Exec(gsutil_args, no_exit=True, env=env,
-                              pipe_output_through_logger=True)
+  log.debug('Running command: [{args}]]'.format(args=' '.join(gsutil_args)))
+  return execution_utils.Exec(gsutil_args, no_exit=True,
+                              pipe_output_through_logger=True,
+                              file_only_logger=True)
 
 
 def Copy(source_file, dest_obj):

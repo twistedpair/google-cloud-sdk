@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Fingerprinting code for the Java runtime."""
 
 import os
@@ -10,10 +22,10 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 
 NAME ='java'
-ALLOWED_RUNTIME_NAMES = ('java', 'custom')
+ALLOWED_RUNTIME_NAMES = ('java', 'java7', 'custom')
 JAVA_RUNTIME_NAME = 'java'
 
-# TODO(ludo): We'll move these into directories once we externalize
+# TODO(user): We'll move these into directories once we externalize
 # fingerprinting.
 JAVA_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
@@ -93,10 +105,10 @@ class JavaConfigurator(fingerprinting.Configurator):
 
     cleaner = fingerprinting.Cleaner()
 
-    if not self.deploy:
+    if not self.appinfo:
       self._GenerateAppYaml(cleaner)
     if self.custom or self.deploy:
-      self.notify('sdfsdfsdfsdfsdfsdfdsd.')
+      self.notify('Generating Dockerfile.')
       self._GenerateDockerfile(cleaner)
       self._GenerateDockerignore(cleaner)
 
@@ -117,7 +129,6 @@ class JavaConfigurator(fingerprinting.Configurator):
       runtime = 'custom' if self.custom else 'java'
       with open(app_yaml, 'w') as f:
         f.write(JAVA_APP_YAML.format(runtime=runtime))
-      cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
     """Generates a Dockerfile appropriate to this application.
@@ -212,7 +223,7 @@ def Fingerprint(path, params):
   artifact_to_deploy = '?'
 
   # check for any Java known artifacts: a jar, a war, or an exploded Web App.
-  # TODO(ludo): expand to more complex configs with multiple Jars.
+  # TODO(user): expand to more complex configs with multiple Jars.
   number_of_possible_artifacts = 0
   for filename in os.listdir(path):
     if filename.endswith('.war'):

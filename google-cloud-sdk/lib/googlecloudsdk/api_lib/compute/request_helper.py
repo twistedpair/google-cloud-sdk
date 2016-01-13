@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Module for making API requests."""
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import utils
@@ -127,7 +139,7 @@ def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
       yield item
     return
 
-  # TODO(aryann): Delete the batch_helper module and move its logic
+  # TODO(user): Delete the batch_helper module and move its logic
   # here. To do this, we also have to edit the lister module to depend
   # on this module instead of batch_helper.
   responses, new_errors = batch_helper.MakeRequests(
@@ -181,7 +193,7 @@ def MakeRequests(requests, http, batch_url, errors, custom_get_requests=None):
 
   if operations:
     warnings = []
-    # TODO(aryann): Delete the waiters module and move the logic
+    # TODO(user): Delete the waiters module and move the logic
     # here. We can also get a rid of parameters like operation_service
     # and project since they can be inferred from the other args.
     for response in waiters.WaitForOperations(

@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A class for parsing a resource projection expression."""
 
@@ -85,6 +97,7 @@ class Parser(object):
       reverse: Reverse column sort if True.
       align: The column alignment name: left, center, or right.
       transform: obj = func(obj,...) function applied during projection.
+      subformat: Sub-format string.
     """
 
     def __init__(self, flag):
@@ -95,6 +108,7 @@ class Parser(object):
       self.reverse = None
       self.align = resource_projection_spec.ALIGN_DEFAULT
       self.transform = []
+      self.subformat = None
 
     def __str__(self):
       return (
@@ -212,6 +226,8 @@ class Parser(object):
       attribute.reverse = False
     if attribute_add.transform:
       attribute.transform = attribute_add.transform
+    if attribute_add.subformat:
+      attribute.subformat = attribute_add.subformat
     self._projection.AddAlias(attribute.label, key)
 
     if not self.__key_attributes_only:
@@ -303,6 +319,8 @@ class Parser(object):
           raise resource_exceptions.ExpressionSyntaxError(
               'Unknown alignment [{0}].'.format(self._lex.Annotate(here)))
         attribute.align = value
+      elif name == 'format':
+        attribute.subformat = value or ''
       elif name == 'label':
         attribute.label = value or ''
       elif name == 'reverse':

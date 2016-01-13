@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Util for Projects."""
 
@@ -6,8 +18,9 @@ from datetime import datetime
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
+from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1.cloudresourcemanager_v1beta1_messages import Project
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 lifecycle = Project.LifecycleStateValueValuesEnum
 
@@ -108,7 +121,31 @@ def HandleHttpError(func):
   def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_base.HttpError as error:
+    except exceptions.HttpError as error:
       raise GetError(error)
 
   return CatchHTTPErrorRaiseHTTPException
+
+
+def GetClient(http):
+  """Import and return the appropriate projects client.
+
+  Args:
+    http: httplib2.Http
+
+  Returns:
+    Cloud Resource Manager client for the appropriate release track.
+  """
+  # pylint: disable=g-import-not-at-top, Import here for load performance
+  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_client
+  return cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1(
+      url=properties.VALUES.api_endpoint_overrides.cloudresourcemanager.Get(),
+      get_credentials=False,
+      http=http)
+
+
+def GetMessages():
+  """Import and return the appropriate projects messages module."""
+  # pylint: disable=g-import-not-at-top, Import here for load performance
+  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_messages
+  return cloudresourcemanager_v1beta1_messages

@@ -1,18 +1,25 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Module used by gcloud to communicate with appengine services."""
 
 from __future__ import with_statement
 
-import urllib
 import urllib2
 
-from googlecloudsdk.api_lib.app import appengine_deployments
 from googlecloudsdk.api_lib.app import logs_requestor
-from googlecloudsdk.api_lib.app import module_downloader
-from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -22,7 +29,6 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import service_account as c_service_account
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
 from oauth2client import gce as oauth2client_gce
@@ -80,7 +86,7 @@ class AppengineClient(object):
     credentials = c_store.Load(account=account)
     if (isinstance(credentials, c_devshell.DevshellCredentials) or
         isinstance(credentials, c_service_account.ServiceAccountCredentials)):
-      # TODO(aalexand): This passes the access token to use for API calls to
+      # TODO(user): This passes the access token to use for API calls to
       # appcfg which means that commands that are longer than the lifetime
       # of the access token may fail - e.g. some long deployments.  The proper
       # solution is to integrate appcfg closer with the Cloud SDK libraries,
@@ -93,19 +99,6 @@ class AppengineClient(object):
     else:
       # Otherwise use a stored refresh token
       self.oauth2_refresh_token = credentials.refresh_token
-
-  def CancelDeployment(self, module, version, force=False):
-    """Cancels the deployment of the given module version.
-
-    Args:
-      module: str, The module deployment to cancel.
-      version: str, The version deployment to cancel.
-      force: bool, True to force the cancellation.
-    """
-    rpcserver = self._GetRpcServer()
-    rpcserver.Send('/api/appversion/rollback',
-                   app_id=self.project, module=module, version=version,
-                   force_rollback='1' if force else '0')
 
   def CleanupIndexes(self, index_yaml):
     """Removes unused datastore indexes.
@@ -148,23 +141,6 @@ class AppengineClient(object):
         for index in not_deleted.indexes:
           warning_message += index.ToYAML()
         log.warning(warning_message)
-
-  def DownloadModule(self, module, version, output_dir):
-    """Downloads the given version of the module.
-
-    Args:
-      module: str, The module to download.
-      version: str, The version of the module to download.
-      output_dir: str, The directory to download the module to.
-    """
-    rpcserver = self._GetRpcServer()
-    downloader = module_downloader.ModuleDownloader(
-        rpcserver, self.project, module, version)
-    (full_version, file_lines) = downloader.GetFileList()
-    with console_io.ProgressBar(
-        label='Downloading [{0}] files...'.format(len(file_lines)),
-        stream=log.status) as pb:
-      downloader.Download(full_version, file_lines, output_dir, pb.SetProgress)
 
   def GetLogs(self, module, version, severity, vhost, include_vhost,
               include_all, num_days, end_date, output_file):
@@ -216,136 +192,10 @@ class AppengineClient(object):
         include_vhost, include_all)
     requestor.DownloadLogsAppend(end_date, output_file)
 
-  def ListModules(self):
-    """Lists all versions for an app.
-
-    Returns:
-      {str: [str]}, A mapping of module name to a list of version for that
-      module.
-    """
-    rpcserver = self._GetRpcServer()
-    response = rpcserver.Send('/api/versions/list', app_id=self.project)
-    return yaml.safe_load(response)
-
-  def ListVersions(self):
-    """List all versions for an app.
-
-    Returns:
-      list of version_util.Version
-    """
-    all_versions = []
-    for service, versions in self.ListModules().items():
-      # The first version from the API is the default
-      if versions:
-        all_versions.append(version_util.Version(self.project, service,
-                                                 versions[0],
-                                                 traffic_allocation=100))
-        for version in versions[1:]:
-          all_versions.append(version_util.Version(self.project, service,
-                                                   version,
-                                                   traffic_allocation=0))
-    return all_versions
-
-  def ListServices(self):
-    """List all services for an app.
-
-    Returns:
-      list of service_util.Service
-    """
-    all_services = {}
-    for version in self.ListVersions():
-      if version.service in all_services:
-        all_services[version.service].append(version)
-      else:
-        all_services[version.service] = [version]
-    return [service_util.Service(self.project, service_id, versions) for
-            service_id, versions in all_services.items()]
-
-  def DeployModule(self, module, version, module_yaml, module_yaml_path):
-    """Updates and deploys new app versions based on given config.
-
-    Args:
-      module: str, The module to deploy.
-      version: str, The version of the module to deploy.
-      module_yaml: AppInfoExternal, Module info parsed from a module yaml file.
-      module_yaml_path: str, Path of the module yaml file.
-
-    Returns:
-      An appinfo.AppInfoSummary if one was returned from the Deploy, None
-      otherwise.
-    """
-    precompilation = True
-
-    # Hack for Admin Console
-    # Admin Console will continue to use 'module' instead of 'service'
-    if module_yaml.service:
-      module = module_yaml.service
-      module_yaml.module = module
-      module_yaml.service = None
-
-    if module_yaml.runtime == 'vm':
-      precompilation = False
-    elif (module_yaml.runtime.startswith('java') and
-          appinfo.JAVA_PRECOMPILED not in
-          (module_yaml.derived_file_type or [])):
-      precompilation = False
-
-    if precompilation:
-      if not module_yaml.derived_file_type:
-        module_yaml.derived_file_type = []
-      if appinfo.PYTHON_PRECOMPILED not in module_yaml.derived_file_type:
-        module_yaml.derived_file_type.append(appinfo.PYTHON_PRECOMPILED)
-
-    rpcserver = self._GetRpcServer()
-
-    appversion = appengine_deployments.AppVersionUploader(
-        rpcserver,
-        self.project,
-        module,
-        version,
-        module_yaml,
-        module_yaml_path,
-        self.ResourceLimitsInfo(version))
-    return appversion.DoUpload()
-
   def PrepareVmRuntime(self):
     """Prepare the application for vm runtimes and return state."""
     rpcserver = self._GetRpcServer()
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
-
-  def ResourceLimitsInfo(self, version):
-    """Returns the current resource limits."""
-    rpcserver = self._GetRpcServer()
-    request_params = {'app_id': self.project, 'version': version}
-    logging_context = util.ClientDeployLoggingContext(rpcserver,
-                                                      request_params,
-                                                      usage_reporting=False)
-
-    log.debug('Getting current resource limits.')
-    yaml_data = logging_context.Send('/api/appversion/getresourcelimits')
-    resource_limits = yaml.safe_load(yaml_data)
-    log.debug('Using resource limits: {0}'.format(resource_limits))
-    return resource_limits
-
-  def SetDefaultVersion(self, modules, version):
-    """Sets the default serving version of the given modules.
-
-    Args:
-      modules: [str], The module names
-      version: str, The version to set at the default.
-
-    Raises:
-      ValueError: If modules, or version is not set correctly.
-    """
-    if not modules:
-      raise ValueError('You must specify at least one module.')
-    if not version:
-      raise ValueError('You must specify a version to set as the default.')
-
-    params = [('app_id', self.project), ('version', version)]
-    params.extend(('module', module) for module in modules)
-    url = '/api/appversion/setdefault?' + urllib.urlencode(sorted(params))
-    self._GetRpcServer().Send(url)
 
   def SetManagedByGoogle(self, module, version, instance=None, wait=True):
     """Sets a module version (and optionally an instance) to Google managed.
@@ -551,7 +401,7 @@ class AppengineClient(object):
         account_type='HOSTED_OR_GOOGLE',
         secure=True,
         ignore_certs=self.ignore_bad_certs)
-    # TODO(vilasj) Hack to avoid failure due to missing cacerts.txt resource.
+    # TODO(user) Hack to avoid failure due to missing cacerts.txt resource.
     server.certpath = None
     # Don't use a cert file if the user passed ignore-bad-certs.
     server.cert_file_available = not self.ignore_bad_certs

@@ -1,16 +1,26 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """YAML format printer."""
 
 from googlecloudsdk.core.resource import resource_printer_base
 
-import yaml
-
 
 class YamlPrinter(resource_printer_base.ResourcePrinter):
   """Prints the YAML representations of JSON-serializable objects.
 
-  link:www.yaml.org[YAML], YAML ain't markup language.
+  [YAML](http://www.yaml.org), YAML ain't markup language.
 
   For example:
 
@@ -25,16 +35,23 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       - world
     b:
       - x: bye
+
+  Attributes:
+    _yaml: Reference to the `yaml` module. Imported locally to improve startup
+        performance.
   """
 
   def __init__(self, *args, **kwargs):
     super(YamlPrinter, self).__init__(*args, **kwargs)
+    # pylint:disable=g-import-not-at-top, Delay import for performance.
+    import yaml
+    self._yaml = yaml
 
     def LiteralPresenter(dumper, data):
       return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
 
-    yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
-                         Dumper=yaml.dumper.SafeDumper)
+    self._yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
+                               Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralString(str):
     """A type used to inform the yaml printer about how it should look."""
@@ -68,7 +85,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     record = self._UpdateTypesForOutput(record)
-    yaml.safe_dump(
+    self._yaml.safe_dump(
         record,
         stream=self._out,
         default_flow_style=False,

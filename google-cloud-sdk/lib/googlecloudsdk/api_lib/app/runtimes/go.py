@@ -1,8 +1,19 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Fingerprinting code for the Go runtime."""
 
-import atexit
 import fnmatch
 import os
 import re
@@ -10,7 +21,6 @@ import textwrap
 
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.images import config
-from googlecloudsdk.api_lib.app.images import util
 from googlecloudsdk.core import log
 
 NAME ='go'
@@ -28,6 +38,20 @@ DOCKERIGNORE = textwrap.dedent("""\
     .git
     .hg
     .svn
+    """)
+DOCKERFILE = textwrap.dedent("""\
+    # Dockerfile extending the generic Go image with application files for a
+    # single application.
+    FROM gcr.io/google_appengine/golang
+
+    # To enable Go 1.5 vendoring, uncomment the following line.
+    # For Go 1.5 vendoring details, see the documentation for the go command:
+    # https://golang.org/cmd/go/#hdr-Vendor_Directories
+    # and the design document: https://golang.org/s/go15vendor
+    # ENV GO15VENDOREXPERIMENT 1
+
+    COPY . /go/src/app
+    RUN go-wrapper install -tags appenginevm
     """)
 
 
@@ -61,24 +85,23 @@ class GoConfigurator(fingerprinting.Configurator):
 
     # Generate app.yaml.
     cleaner = fingerprinting.Cleaner()
-    if not self.params.deploy:
+    if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Saving [app.yaml] to [%s].' % self.root)
         runtime = 'custom' if self.params.custom else 'go'
         with open(app_yaml, 'w') as f:
           f.write(GO_APP_YAML.format(runtime=runtime))
-        cleaner.Add(app_yaml)
 
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)
       if not os.path.exists(dockerfile):
         notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
-        util.FindOrCopyDockerfile(GO_RUNTIME_NAME, self.root,
-                                  cleanup=self.params.deploy)
+        with open(dockerfile, 'w') as f:
+          f.write(DOCKERFILE)
         cleaner.Add(dockerfile)
 
-      # Generate .dockerignore TODO(mmuller): eventually this file will just be
+      # Generate .dockerignore TODO(user): eventually this file will just be
       # copied verbatim.
       dockerignore = os.path.join(self.root, '.dockerignore')
       if not os.path.exists(dockerignore):
@@ -86,9 +109,6 @@ class GoConfigurator(fingerprinting.Configurator):
         with open(dockerignore, 'w') as f:
           f.write(DOCKERIGNORE)
         cleaner.Add(dockerignore)
-
-        if self.params.deploy:
-          atexit.register(util.Clean, dockerignore)
 
     if not cleaner.HasFiles():
       notify('All config files already exist, not generating anything.')

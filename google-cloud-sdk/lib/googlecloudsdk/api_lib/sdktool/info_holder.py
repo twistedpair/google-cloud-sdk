@@ -1,5 +1,17 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 """Contains utilities for holding and formatting install information.
 
 This is useful for the output of 'gcloud info', which in turn is extremely
@@ -7,6 +19,7 @@ useful for debugging issues related to weird installations, out-of-date
 installations, and so on.
 """
 
+import datetime
 import os
 import re
 import StringIO
@@ -86,7 +99,7 @@ class InstallationInfo(object):
       this_path = os.path.realpath(
           os.path.join(self.sdk_root,
                        update_manager.UpdateManager.BIN_DIR_NAME))
-      # TODO(markpell): Validate symlinks in /usr/local/bin when we start
+      # TODO(user): Validate symlinks in /usr/local/bin when we start
       # creating them.
       self.on_path = this_path in paths
     else:
@@ -229,7 +242,7 @@ class LogData(object):
   """
 
   # This precedes the traceback in the log file.
-  TRACEBACK_MARKER = '\nTraceback (most recent call last):\n'
+  TRACEBACK_MARKER = 'BEGIN CRASH STACKTRACE\n'
 
   # This shows the command run in the log file
   COMMAND_REGEXP = r'Running (gcloud\.[a-z.]+)'
@@ -241,13 +254,33 @@ class LogData(object):
     self.traceback = traceback
 
   def __str__(self):
-    logs_dir = config.Paths().logs_dir
-    log_path = self.filename
-    if self.filename.startswith(logs_dir):
-      # Just keep the parts of the log paths that aren't common
-      log_path = self.filename[len(logs_dir + os.path.sep):]
     crash_detected = ' (crash detected)' if self.traceback else ''
-    return '[{0}]: [{1}]{2}'.format(log_path, self.command, crash_detected)
+    return '[{0}]: [{1}]{2}'.format(self.relative_path, self.command,
+                                    crash_detected)
+
+  @property
+  def relative_path(self):
+    logs_dir = config.Paths().logs_dir
+    if not self.filename.startswith(logs_dir):
+      return self.filename
+    return self.filename[len(logs_dir + os.path.sep):]
+
+  @property
+  def date(self):
+    """Return the date that this log file was created, based on its filename.
+
+    Returns:
+      datetime.datetime that the log file was created or None, if the filename
+        pattern was not recognized.
+    """
+    datetime_string = ':'.join(os.path.split(self.relative_path))
+    datetime_format = (log.DAY_DIR_FORMAT + ':' + log.FILENAME_FORMAT +
+                       log.LOG_FILE_EXTENSION)
+    try:
+      return datetime.datetime.strptime(datetime_string, datetime_format)
+    except ValueError:
+      # This shouldn't happen, but it's better not to crash because of it.
+      return None
 
   @classmethod
   def FromFile(cls, log_file):
@@ -269,8 +302,7 @@ class LogData(object):
         dotted_cmd_string, = match.groups()
         command = ' '.join(dotted_cmd_string.split('.'))
       if cls.TRACEBACK_MARKER in contents:
-        traceback = (cls.TRACEBACK_MARKER +
-                     contents.split(cls.TRACEBACK_MARKER)[-1])
+        traceback = (contents.split(cls.TRACEBACK_MARKER)[-1])
         # Trim any log lines that follow the traceback
         traceback = re.split(log.LOG_PREFIX_PATTERN, traceback)[0]
         traceback = traceback.strip()

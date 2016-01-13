@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Fingerprinting code for the Ruby runtime."""
 
@@ -172,7 +184,7 @@ class RubyConfigurator(fingerprinting.Configurator):
 
     cleaner = fingerprinting.Cleaner()
 
-    if not self.params.deploy:
+    if not self.params.appinfo:
       self._GenerateAppYaml(cleaner)
     if self.params.custom or self.params.deploy:
       self._GenerateDockerfile(cleaner)
@@ -196,7 +208,6 @@ class RubyConfigurator(fingerprinting.Configurator):
         f.write(APP_YAML_CONTENTS.format(runtime=runtime,
                                          entrypoint=self.entrypoint))
       self.notify('Created app.yaml in {0}'.format(self.root))
-      cleaner.Add(app_yaml)
 
   def _GenerateDockerfile(self, cleaner):
     """Generates a Dockerfile appropriate to this application.
@@ -370,7 +381,7 @@ def _DetectRubyInterpreter(path, bundler_available):
                format(ruby_version))
         log.status.Print(msg)
         return ruby_version
-      # TODO(dazuma): Identify other interpreters
+      # TODO(user): Identify other interpreters
       msg = 'Unrecognized platform in Gemfile: [{0}]'.format(ruby_info)
       log.status.Print(msg)
 
@@ -417,7 +428,7 @@ def _DetectDefaultEntrypoint(path, gems):
     gems: ([str, ...]) A list of gems used by this application.
 
   Returns:
-    (str) The default entrypoint command.
+    (str) The default entrypoint command, or the empty string if unknown.
   """
   procfile_path = os.path.join(path, 'Procfile')
   if os.path.isfile(procfile_path):
@@ -428,7 +439,11 @@ def _DetectDefaultEntrypoint(path, gems):
   elif 'unicorn' in gems:
     return ENTRYPOINT_UNICORN
 
-  return ENTRYPOINT_RACKUP
+  configru_path = os.path.join(path, 'config.ru')
+  if os.path.isfile(configru_path):
+    return ENTRYPOINT_RACKUP
+
+  return ''
 
 
 def _ChooseEntrypoint(default_entrypoint, appinfo):
@@ -446,16 +461,22 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
     RubyConfigError: Unable to get entrypoint from the user.
   """
   if console_io.CanPrompt():
-    prompt = ('\nPlease enter the command to run this Ruby app in production, '
-              'or leave blank to accept the default:\n[{0}] ')
-    entrypoint = console_io.PromptResponse(prompt.format(default_entrypoint))
+    if default_entrypoint:
+      prompt = ('\nPlease enter the command to run this Ruby app in '
+                'production, or leave blank to accept the default:\n[{0}] ')
+      entrypoint = console_io.PromptResponse(prompt.format(default_entrypoint))
+    else:
+      entrypoint = console_io.PromptResponse(
+          '\nPlease enter the command to run this Ruby app in production: ')
     entrypoint = entrypoint.strip()
     if not entrypoint:
+      if not default_entrypoint:
+        raise RubyConfigError('Entrypoint command is required.')
       entrypoint = default_entrypoint
     if appinfo:
       # We've got an entrypoint and the user had an app.yaml that didn't
       # specify it.
-      # TODO(mmuller): Offer to edit the user's app.yaml
+      # TODO(user): Offer to edit the user's app.yaml
       msg = ('\nTo avoid being asked for an entrypoint in the future, please '
              'add it to your app.yaml. e.g.\n  entrypoint: {0}'.
              format(entrypoint))

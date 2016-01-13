@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Source apis layer."""
 import os
@@ -19,7 +31,7 @@ def _NormalizeToSourceAPIPath(path):
   Returns:
     (string) The path converted to Unix/Source API style. '\' characters will
     be converted to '/' on Windows.
-    TODO(danielsb) Consider whether it makes sense to strip drive letters.
+    TODO(user) Consider whether it makes sense to strip drive letters.
   """
 
   return path.replace(os.sep, '/')
@@ -120,7 +132,7 @@ class Project(Source):
 class Repo(Source):
   """Abstracts a source repository.
 
-  TODO(danielsb) Increase coverage of the API.
+  TODO(user) Increase coverage of the API.
   """
 
   def __init__(self, project_id, name=''):
@@ -199,7 +211,9 @@ class Repo(Source):
       (Workspace) The list of workspaces.
     """
     request = messages.SourceProjectsReposWorkspacesListRequest(
-        projectId=self._project_id, repoName=self._repo_name)
+        projectId=self._project_id, repoName=self._repo_name,
+        view=messages.SourceProjectsReposWorkspacesListRequest.
+        ViewValueValuesEnum.MINIMAL)
     response = self._client.projects_repos_workspaces.List(request)
     for ws in response.workspaces:
       yield Workspace(self._project_id, ws.id.name, repo_name=self._repo_name,

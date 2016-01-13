@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """datetime module timezone support.
 
@@ -260,14 +272,15 @@ class _TimeZoneNoTzset(datetime.tzinfo):
 _TimeZone = _TimeZoneTzset if hasattr(time, 'tzset') else _TimeZoneNoTzset
 
 
+_ZERO = datetime.timedelta(0)
+
+
 class _UTCTimeZone(datetime.tzinfo):
   """The UTC tzinfo.
 
   This is an instantiation of the datetime.tzinfo abc module. See _TimeZone
   above for detailed docstrings.
   """
-
-  _ZERO = datetime.timedelta(0)
 
   def __init__(self):
     super(_UTCTimeZone, self).__init__()
@@ -280,13 +293,61 @@ class _UTCTimeZone(datetime.tzinfo):
     return self._tz
 
   def utcoffset(self, unused_dt):
-    return self._ZERO
+    return _ZERO
 
   def dst(self, unused_dt):
-    return self._ZERO
+    return _ZERO
 
 
-_TIMEZONES = {'UTC': _UTCTimeZone()}
+class LocalTimezone(datetime.tzinfo):
+  """The local tzinfo.
+
+  Reflects DST.
+
+  This is an instantiation of the datetime.tzinfo abc module. See _TimeZone
+  above for detailed docstrings.
+  """
+
+  _ZERO = datetime.timedelta(0)
+  _STD_OFFSET = datetime.timedelta(seconds=-time.timezone)
+
+  @property
+  def _dst_offset(self):
+    if time.daylight:
+      return datetime.timedelta(seconds=-time.altzone)
+    else:
+      return self._STD_OFFSET
+
+  def _IsDst(self, dt):
+    time_tuple = (dt.year, dt.month, dt.day,
+                  dt.hour, dt.minute, dt.second,
+                  dt.weekday(), 0, 0)
+    return time.localtime(time.mktime(time_tuple)).tm_isdst > 0
+
+  def utcoffset(self, dt):
+    if self._IsDst(dt):
+      return self._dst_offset
+    else:
+      return self._STD_OFFSET
+
+  def dst(self, dt):
+    if self._IsDst(dt):
+      return self._dst_offset - self._STD_OFFSET
+    else:
+      return _ZERO
+
+  def tzname(self, dt):
+    stdname, dstname = time.tzname
+    if self._IsDst(dt):
+      return dstname
+    else:
+      return stdname
+
+
+_TIMEZONES = {
+    'UTC': _UTCTimeZone(),
+    'local': LocalTimezone()
+}
 
 
 def GetTimeZone(tz):

@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Internal base classes for abstracting away common logic."""
 import abc
 from googlecloudsdk.api_lib.compute import base_classes
@@ -7,7 +19,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core.iam import iam_util
 
 
-# TODO(broudy): Investigate sharing more code with BaseDescriber command.
+# TODO(user): Investigate sharing more code with BaseDescriber command.
 class BaseGetIamPolicy(base_classes.BaseCommand):
   """Base class for getting the Iam Policy for a resource."""
 
@@ -68,7 +80,7 @@ class BaseGetIamPolicy(base_classes.BaseCommand):
           errors,
           error_message='Could not fetch resource:')
 
-    # TODO(broudy): determine how this output should look when empty.
+    # TODO(user): determine how this output should look when empty.
 
     # GetIamPolicy always returns either an error or a valid policy.
     # If no policy has been set it returns a valid empty policy (just an etag.)
@@ -137,7 +149,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
     policy_file.detailed_help = """\
         Path to a local JSON formatted file containing a valid policy.
         """
-    # TODO(broudy): fill in detailed help.
+    # TODO(user): fill in detailed help.
 
   @property
   def method(self):
@@ -184,7 +196,7 @@ class BaseSetIamPolicy(base_classes.BaseCommand):
           errors,
           error_message='Could not fetch resource:')
 
-    # TODO(broudy): determine how this output should look when empty.
+    # TODO(user): determine how this output should look when empty.
 
     # SetIamPolicy always returns either an error or the newly set policy.
     # If the policy was just set to the empty policy it returns a valid empty

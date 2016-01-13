@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Contains object representations of the JSON data for components."""
 
@@ -828,10 +840,16 @@ class SDKDefinition(object):
     revision: int, The unique, monotonically increasing version of the snapshot.
     release_notes_url: string, The URL where the latest release notes can be
       downloaded.
-    version: str, The version name of this release (i.e. 1.2.3).  This shoudl be
-      used only for informative purposes during an udpate (to say what verison
+    version: str, The version name of this release (i.e. 1.2.3).  This should be
+      used only for informative purposes during an update (to say what version
       you are updating to).
+    gcloud_rel_path: str, The path to the gcloud entrypoint relative to the SDK
+      root.
+    post_processing_command: str, The gcloud subcommand to run to do
+      post-processing after an update.  This will be split on spaces before
+      being executed.
     components: [Component], The component definitions.
+    notifications: [NotificationSpec], The active update notifications.
   """
 
   @classmethod
@@ -840,6 +858,8 @@ class SDKDefinition(object):
     p.Parse('revision', required=True)
     p.Parse('release_notes_url')
     p.Parse('version')
+    p.Parse('gcloud_rel_path')
+    p.Parse('post_processing_command')
     p.ParseList('components', required=True, func=Component.FromDictionary)
     p.ParseList('notifications', default=[],
                 func=NotificationSpec.FromDictionary)
@@ -861,17 +881,22 @@ class SDKDefinition(object):
     w.Write('revision')
     w.Write('release_notes_url')
     w.Write('version')
+    w.Write('gcloud_rel_path')
+    w.Write('post_processing_command')
     w.Write('schema_version', func=SchemaVersion.ToDictionary)
     w.WriteList('components', func=Component.ToDictionary)
     w.WriteList('notifications', func=NotificationSpec.ToDictionary)
     return w.Dictionary()
 
   def __init__(self, revision, schema_version, release_notes_url, version,
+               gcloud_rel_path, post_processing_command,
                components, notifications):
     self.revision = revision
     self.schema_version = schema_version
     self.release_notes_url = release_notes_url
     self.version = version
+    self.gcloud_rel_path = gcloud_rel_path
+    self.post_processing_command = post_processing_command
     self.components = components
     self.notifications = notifications
 

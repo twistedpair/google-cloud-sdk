@@ -1,20 +1,32 @@
 
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Utility methods used by the deploy command."""
 
 import os
 import re
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import docker_util
-from googlecloudsdk.api_lib.app.images import util as images_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -38,21 +50,30 @@ class DockerfileError(exceptions.Error):
   """Raised if a Dockerfile was found along with a non-custom runtime."""
 
 
-def _GetDockerfileCreator(info):
+class NoDockerfileError(exceptions.Error):
+  """No Dockerfile found."""
+
+
+class UnsupportedRuntimeError(exceptions.Error):
+  """Raised if we are unable to detect the runtime."""
+
+
+def _GetDockerfileCreator(info, config_cleanup=None):
   """Returns a function to create a dockerfile if the user doesn't have one.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ModuleYamlInfo)
       The module config.
+    config_cleanup: (callable() or None) If a temporary Dockerfile has already
+      been created during the course of the deployment, this should be a
+      callable that deletes it.
 
   Raises:
-    images_util.NoDockerfileError: Dockerfile wasn't found and we couldn't
-      create one.
-    InternalError: errors in util.FindOrCopyDockerfile().
     DockerfileError: Raised if a user supplied a Dockerfile and a non-custom
       runtime.
-    images_util.NoDefaultDockerfileError: Raised if there is no default
-      Dockerfile for the specified runtime.
+    NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
+      custom runtime.
+    UnsupportedRuntimeError: Raised if we can't detect a runtime.
   Returns:
     callable(), a function that can be used to create the correct Dockerfile
     later on.
@@ -61,6 +82,11 @@ def _GetDockerfileCreator(info):
   # Dockerfile.
   dockerfile_dir = os.path.dirname(info.file)
   dockerfile = os.path.join(dockerfile_dir, 'Dockerfile')
+
+  if config_cleanup:
+    # Dockerfile has already been generated. It still needs to be cleaned up.
+    # This must be before the other conditions, since it's a special case.
+    return lambda: config_cleanup
 
   if info.runtime != 'custom' and os.path.exists(dockerfile):
     raise DockerfileError(
@@ -78,30 +104,22 @@ def _GetDockerfileCreator(info):
         return lambda: None
       return NullGenerator
     else:
-      raise images_util.NoDockerfileError(
+      raise NoDockerfileError(
           'You must provide your own Dockerfile when using a custom runtime.  '
           'Otherwise provide a "runtime" field with one of the supported '
           'runtimes.')
 
-  # First try the new fingerprinting based code.
+  # Check the fingerprinting based code.
   params = fingerprinting.Params(appinfo=info.parsed, deploy=True)
   configurator = fingerprinter.IdentifyDirectory(dockerfile_dir, params)
   if configurator:
     return configurator.GenerateConfigs
-  # Then check that we can generate a Dockerfile for a non-custom runtime.
-  elif info.runtime != 'custom':
-    supported_runtimes = images_util.GetAllManagedVMsRuntimes()
-    if info.runtime not in supported_runtimes:
-      raise images_util.NoDefaultDockerfileError(
-          'No default {dockerfile} for runtime [{runtime}] in the SDK. '
-          'Use one of the supported runtimes: [{supported}].'.format(
-              dockerfile=config.DOCKERFILE,
-              runtime=info.runtime,
-              supported='|'.join(supported_runtimes)))
-  # Finally fall back to the old CopyDockerfile path.
-  def CopyDockerfile():
-    return images_util.FindOrCopyDockerfile(info.runtime, dockerfile_dir)
-  return CopyDockerfile
+  # Then throw an error.
+  else:
+    raise UnsupportedRuntimeError(
+        'We were unable to detect the runtime to use for this application. '
+        'Please specify the [runtime] field in your application yaml file '
+        'or check that your application is configured correctly.')
 
 
 def _GetDomainAndDisplayId(project_id):
@@ -120,18 +138,24 @@ def _GetImageName(project, module, version):
               display=display, domain=domain, module=module, version=version)
 
 
-def BuildAndPushDockerImages(module_configs, version_id, gae_client,
-                             cloudbuild_client, code_bucket, cli, remote):
+def BuildAndPushDockerImages(module_configs, version_id,
+                             cloudbuild_client, code_bucket, cli, remote,
+                             source_contexts,
+                             config_cleanup):
   """Builds and pushes a set of docker images.
 
   Args:
     module_configs: A map of module name to parsed config.
     version_id: The version id to deploy these modules under.
-    gae_client: An App Engine API client.
     cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
     code_bucket: The name of the GCS bucket where the source will be uploaded.
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     remote: Whether the user specified a remote build.
+    source_contexts: A list of json-serializable source contexts to place in
+      the application directory for each config.
+    config_cleanup: (callable() or None) If a temporary Dockerfile has already
+      been created during the course of the deployment, this should be a
+      callable that deletes it.
 
   Returns:
     A dictionary mapping modules to the name of the pushed container image.
@@ -141,16 +165,18 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
 
   # Prepare temporary dockerfile creators for all modules that need them
   # before doing the heavy lifting so we can fail fast if there are errors.
-  modules = [
-      (name, info, _GetDockerfileCreator(info))
-      for (name, info) in module_configs.iteritems()
-      if info.RequiresImage()]
+  modules = []
+  for (name, info) in module_configs.iteritems():
+    if info.RequiresImage():
+      context_creator = context_util.GetSourceContextFilesCreator(
+          os.path.dirname(info.file), source_contexts)
+      modules.append((name, info, _GetDockerfileCreator(info, config_cleanup),
+                      context_creator))
   if not modules:
     # No images need to be built.
     return {}
 
   log.status.Print('Verifying that Managed VMs are enabled and ready.')
-  _DoPrepareManagedVms(gae_client)
 
   if use_cloud_build:
     return _BuildImagesWithCloudBuild(project, modules, version_id,
@@ -166,17 +192,19 @@ def BuildAndPushDockerImages(module_configs, version_id, gae_client,
   with docker_util.DockerHost(
       cli, version_id, remote, project) as docker_client:
     # Build and push all images.
-    for module, info, ensure_dockerfile in modules:
+    for module, info, ensure_dockerfile, ensure_context in modules:
       log.status.Print(
           'Building and pushing image for module [{module}]'
           .format(module=module))
-      cleanup = ensure_dockerfile()
+      cleanup_dockerfile = ensure_dockerfile()
+      cleanup_context = ensure_context()
       try:
         image_name = _GetImageName(project, module, version_id)
         images[module] = BuildAndPushDockerImage(
             info.file, docker_client, image_name)
       finally:
-        cleanup()
+        cleanup_dockerfile()
+        cleanup_context()
   metric_name = (metric_names.DOCKER_REMOTE_BUILD if remote
                  else metric_names.DOCKER_BUILD)
   metrics.CustomTimedEvent(metric_name)
@@ -187,11 +215,12 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
                                cloudbuild_client):
   """Build multiple modules with Cloud Build."""
   images = {}
-  for module, info, ensure_dockerfile in modules:
+  for module, info, ensure_dockerfile, ensure_context in modules:
     log.status.Print(
         'Building and pushing image for module [{module}]'
         .format(module=module))
-    cleanup = ensure_dockerfile()
+    cleanup_dockerfile = ensure_dockerfile()
+    cleanup_context = ensure_context()
     try:
       image = docker_image.Image(
           dockerfile_dir=os.path.dirname(info.file),
@@ -205,11 +234,12 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
       images[module] = image.repo_tag
     finally:
-      cleanup()
+      cleanup_dockerfile()
+      cleanup_context()
   return images
 
 
-def _DoPrepareManagedVms(gae_client):
+def DoPrepareManagedVms(gae_client):
   """Call an API to prepare the for managed VMs."""
   try:
     message = 'If this is your first deployment, this may take a while'
@@ -340,71 +370,6 @@ def GetAppHostname(app_id, module=None, version=None,
         scheme = 'https'
 
   return '{0}://{1}.{2}'.format(scheme, subdomain, domain)
-
-
-CHANGING_PROMOTION_BEHAVIOR_WARNING = """\
-Soon, deployments will set the deployed version to receive all traffic by
-default.
-
-To keep the current behavior (where new deployments do not receive any traffic),
-use the `--no-promote` flag or run the following command:
-
-  $ gcloud config set app/promote_by_default false
-
-To adopt the new behavior early, use the `--promote` flag or run the following
-command:
-
-  $ gcloud config set app/promote_by_default true
-
-Either passing one of the new flags or setting one of these properties will
-silence this message.
-"""
-
-
-def GetPromoteFromArgs(args):
-  """Returns whether to promote deployment, based on environment and arguments.
-
-  Whether to promote is determined based on the following (in decreasing
-  precedence order):
-  1. if a command-line flag is set
-  2. if the `promote_by_default` property is set
-  3. the default: False (for now)
-
-  Issues appropriate warnings:
-  * if the user gives no indication of having seen the warning (i.e. no
-    `--[no-]promote` flag and no `promote_by_default` property set, issue a
-    comprehensive warning about changes coming and what to do about it.
-  * if the user uses the `--set-default` flag, warn that it is deprecated.
-
-  Args:
-    args: the parsed command-line arguments for the command invocation.
-
-  Returns:
-    bool, whether to promote the deployment
-  """
-  promote_by_default = properties.VALUES.app.promote_by_default.GetBool()
-
-  # Always issue applicable warnings
-  if args.set_default:
-    log.warn('The `--set-default` flag is deprecated. Please use the '
-             '`--promote` flag instead.')
-  if args.promote is None and promote_by_default is None:
-    log.warn(CHANGING_PROMOTION_BEHAVIOR_WARNING)
-
-  # 1. Check command-line flags
-  if args.promote or args.set_default:
-    return True
-  elif args.promote is False:
-    return False
-
-  # 2. Check `promote_by_default` property
-  if promote_by_default:
-    return True
-  if promote_by_default is False:
-    return False
-
-  # 3. Default value
-  return False
 
 
 def GetStopPreviousVersionFromArgs(args):

@@ -1,8 +1,22 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin API."""
 
 import json
 
+from googlecloudsdk.api_lib.app import service_util
+from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import exceptions
@@ -81,6 +95,8 @@ class AppengineApiClient(object):
     Args:
       module_name: str, The module name
       version_id: str, The version to set as default.
+    Returns:
+      Long running operation.
     """
     # Create a traffic split where 100% of traffic goes to the specified
     # version.
@@ -93,8 +109,10 @@ class AppengineApiClient(object):
         module=self.messages.Module(split=traffic_split),
         mask='split')
 
-    # TODO(clouser) Convert this to poll a long running operation.
-    requests.MakeRequest(self.client.apps_modules.Patch, update_module_request)
+    operation = requests.MakeRequest(
+        self.client.apps_modules.Patch,
+        update_module_request)
+    return operations.WaitForOperation(self.client.apps_operations, operation)
 
   def DeleteVersion(self, module_name, version_id):
     """Deletes the specified version of the given module.
@@ -115,10 +133,51 @@ class AppengineApiClient(object):
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
+  def ListServices(self):
+    """Lists all services for the given application.
+
+    Returns:
+      A list of service_util.Service objects.
+    """
+    request = self.messages.AppengineAppsModulesListRequest(
+        name=self._FormatApp(self.project))
+    response = requests.MakeRequest(self.client.apps_modules.List, request)
+
+    services = []
+    for s in response.modules:
+      traffic_split = {}
+      for split in s.split.allocations.additionalProperties:
+        traffic_split[split.key] = split.value
+      service = service_util.Service(self.project, s.id, traffic_split)
+      services.append(service)
+
+    return services
+
+  def ListVersions(self, services):
+    """Lists all versions for the specified services.
+
+    Args:
+      services: A list of service_util.Service objects.
+    Returns:
+      A list of version_util.Version objects.
+    """
+    versions = []
+    for service in services:
+      # Get the versions.
+      request = self.messages.AppengineAppsModulesVersionsListRequest(
+          name=self._FormatModule(self.project, service.id))
+      response = requests.MakeRequest(
+          self.client.apps_modules_versions.List, request)
+
+      for v in response.versions:
+        versions.append(version_util.Version.FromVersionResource(v, service))
+
+    return versions
+
   def _CreateVersionResource(self, module_config, manifest, version_id, image):
     """Constructs a Version resource for deployment."""
     appinfo = module_config.parsed
-    # TODO(bryanmau): Two Steps
+    # TODO(user): Two Steps
     # 1. Once Zeus supports service, flip this to write module into service
     #    and warn the user that module is deprecated
     # 2. Once we want to stop supporting module, take this code out

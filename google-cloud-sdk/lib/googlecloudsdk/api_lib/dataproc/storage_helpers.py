@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Helpers for accessing GCS.
 
@@ -18,7 +30,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_client
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_messages as messages
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 # URI scheme for GCS.
@@ -36,7 +49,7 @@ def _GetGsutilPath():
   """Determines the path to the gsutil binary."""
   sdk_bin_path = config.Paths().sdk_bin_path
   if not sdk_bin_path:
-    # TODO(pclay): check if gsutil component is installed and offer user
+    # TODO(user): check if gsutil component is installed and offer user
     # to install it if it is not.
     raise exceptions.ToolException(('A SDK root could not be found. Please '
                                     'check your installation.'))
@@ -103,7 +116,7 @@ def GetObjectRef(path):
   Raises:
     ToolException: If there is a parsing issue or the bucket is unspecified.
   """
-  # TODO(pclay): Let resources.Parse take GCS paths.
+  # TODO(user): Let resources.Parse take GCS paths.
   url = urlparse.urlparse(path)
   if url.scheme != STORAGE_SCHEME:
     log.warn(path)
@@ -124,7 +137,7 @@ def GetObjectRef(path):
 class StorageClient(object):
   """Micro-client for accessing GCS."""
 
-  # TODO(pclay): Add application-id.
+  # TODO(user): Add application-id.
 
   def __init__(self, http=None):
     if not http:
@@ -138,8 +151,8 @@ class StorageClient(object):
         bucket=object_ref.bucket, object=object_ref.name)
     try:
       return self.client.objects.Get(request=request, download=download)
-    except apitools_base.HttpError as error:
-      # TODO(pclay): Clean up error handling. Handle 403s.
+    except apitools_exceptions.HttpError as error:
+      # TODO(user): Clean up error handling. Handle 403s.
       if error.status_code == 404:
         return None
       raise error
@@ -175,7 +188,7 @@ class StorageClient(object):
     Returns:
       The download.
     """
-    download = apitools_base.Download.FromStream(stream, auto_transfer=False)
+    download = transfer.Download.FromStream(stream, auto_transfer=False)
     self._GetObject(object_ref, download=download)
     return download
 

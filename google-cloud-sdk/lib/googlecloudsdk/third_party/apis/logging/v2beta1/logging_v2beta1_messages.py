@@ -28,8 +28,8 @@ class HttpRequest(_messages.Message):
   Fields:
     cacheHit: Whether or not an entity was served from cache (with or without
       validation).
-    referer: The referer(sic) URL of the request, as defined in [HTTP/1.1
-      Header Field
+    referer: The referer URL of the request, as defined in [HTTP/1.1 Header
+      Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
     remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
       request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
@@ -48,7 +48,7 @@ class HttpRequest(_messages.Message):
       (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
     validatedWithOriginServer: Whether or not the response was validated with
       the origin server before being served from cache. This field is only
-      meaningful if cache_hit is True.
+      meaningful if `cache_hit` is True.
   """
 
   cacheHit = _messages.BooleanField(1)
@@ -351,7 +351,7 @@ class LogEntryOperation(_messages.Message):
       identifier are assumed to be part of the same operation.
     last: Optional. Set this to True if this is the last log entry in the
       operation.
-    producer: Required. A arbitrary producer identifier. The combination of
+    producer: Required. An arbitrary producer identifier. The combination of
       `id` and `producer` must be globally unique.  Examples for `producer`:
       `"MyDivision.MyBigCompany.com"`, "github.com/MyProject/MyApplication"`.
   """
@@ -384,17 +384,17 @@ class LogLine(_messages.Message):
   """Application log line emitted while processing a request.
 
   Enums:
-    SeverityValueValuesEnum: Severity of log.
+    SeverityValueValuesEnum: Severity of this log entry.
 
   Fields:
-    logMessage: App provided log message.
-    severity: Severity of log.
-    sourceLocation: Line of code that generated this log message.
-    time: Time when log entry was made.  May be inaccurate.
+    logMessage: App-provided log message.
+    severity: Severity of this log entry.
+    sourceLocation: Where in the source code this log message was written.
+    time: Approximate time when this log entry was made.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Severity of log.
+    """Severity of this log entry.
 
     Values:
       DEFAULT: The log entry has no assigned severity level.
@@ -476,15 +476,13 @@ class LogSink(_messages.Message):
       `"storage.googleapis.com/a-bucket"`,
       `"bigquery.googleapis.com/projects/a-project-id/datasets/a-dataset"`.
     errors: _Output only._ All active errors found for this sink.
-      TODO(user): For backwards compatibility, remove after v1 is gone.
     filter: An [advanced logs filter](/logging/docs/view/advanced_filters)
       that defines the log entries to be exported.  The filter must be
       consistent with the log entry format designed by the
       `outputVersionFormat` parameter, regardless of the format of the log
       entry that was originally written to Cloud Logging. Example:
       `"logName:syslog AND severity>=ERROR"`.
-    formatChange: TODO(user): Needed to keep track when format was changed.
-      Remove together with output_version_format field.
+    formatChange: When the format was changed.
     name: Required. The client-assigned sink identifier. Example: `"my-severe-
       errors-to-pubsub"`. Sink identifiers are limited to 1000 characters and
       can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
@@ -523,7 +521,7 @@ class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of results to return from this
       request.  Fewer results might be returned. You must check for the
-      'nextPageToken` result to determine if additional results are available,
+      `nextPageToken` result to determine if additional results are available,
       which you can retrieve by passing the `nextPageToken` value in the
       `pageToken` parameter to the next request.
     pageToken: Optional. If the `pageToken` request parameter is supplied,
@@ -595,7 +593,7 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of results to return from this
       request.  Fewer results might be returned. You must check for the
-      'nextPageToken` result to determine if additional results are available,
+      `nextPageToken` result to determine if additional results are available,
       which you can retrieve by passing the `nextPageToken` value in the
       `pageToken` parameter to the next request.
     pageToken: Optional. If the `pageToken` request parameter is supplied,
@@ -603,8 +601,8 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
       parameter must be set with the value of the `nextPageToken` result
       parameter from the previous request.  The value of `projectName` must be
       the same as in the previous request.
-    projectsId: Part of `projectName`. Required. The resource name for the
-      project whose metrics are wanted. Example: `"projects/my-project-id"`.
+    projectsId: Part of `projectName`. Required. The resource name of the
+      project containing the metrics. Example: `"projects/my-project-id"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -676,7 +674,7 @@ class LoggingProjectsSinksListRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of results to return from this
       request.  Fewer results might be returned. You must check for the
-      'nextPageToken` result to determine if additional results are available,
+      `nextPageToken` result to determine if additional results are available,
       which you can retrieve by passing the `nextPageToken` value in the
       `pageToken` parameter to the next request.
     pageToken: Optional. If the `pageToken` request parameter is supplied,
@@ -685,7 +683,7 @@ class LoggingProjectsSinksListRequest(_messages.Message):
       parameter from the previous request. The value of `projectName` must be
       the same as in the previous request.
     projectsId: Part of `projectName`. Required. The resource name of the
-      project owning the sinks. Example: `"projects/my-logging-project"`,
+      project containing the sinks. Example: `"projects/my-logging-project"`,
       `"projects/01234567890"`.
   """
 
@@ -809,63 +807,60 @@ class ReadLogEntriesResponse(_messages.Message):
 
 
 class RequestLog(_messages.Message):
-  """Complete log information about a single request to an application.
+  """Complete log information about a single HTTP request to an App Engine
+  application.
 
   Fields:
-    appEngineRelease: App Engine release version string.
-    appId: Identifies the application that handled this request.
+    appEngineRelease: App Engine release version.
+    appId: Application that handled this request.
     cost: An indication of the relative cost of serving this request.
-    endTime: Time at which request was known to end processing.
-    finished: If true, represents a finished request.  Otherwise, the request
-      is active.
-    host: The Internet host and port number of the resource being requested.
-    httpVersion: HTTP version of request.
-    instanceId: An opaque identifier for the instance that handled the
-      request.
-    instanceIndex: If the instance that processed this request was
-      individually addressable (i.e. belongs to a manually scaled module),
-      this is the 0 based index of the instance, otherwise this value is -1.
+    endTime: Time when the request finished.
+    finished: Whether this request is finished or active.
+    host: Internet host and port number of the resource being requested.
+    httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
+    instanceId: An identifier for the instance that handled the request.
+    instanceIndex: If the instance processing this request belongs to a
+      manually scaled module, then this is the 0-based index of the instance.
+      Otherwise, this value is -1.
     ip: Origin IP address.
     latency: Latency of the request.
-    line: List of log lines emitted by the application while serving this
-      request, if requested.
-    megaCycles: Number of CPU megacycles used to process request.
-    method: Request method, such as `GET`, `HEAD`, `PUT`, `POST`, or `DELETE`.
-    moduleId: Identifies the module of the application that handled this
+    line: A list of log lines emitted by the application while serving this
       request.
-    nickname: A string that identifies a logged-in user who made this request,
-      or empty if the user is not logged in.  Most likely, this is the part of
-      the user's email before the '@' sign.  The field value is the same for
-      different requests from the same user, but different users may have a
-      similar name.  This information is also available to the application via
-      Users API.  This field will be populated starting with App Engine
-      1.9.21.
-    pendingTime: Time this request spent in the pending request queue, if it
-      was pending at all.
+    megaCycles: Number of CPU megacycles used to process request.
+    method: Request method. Example: `"GET"`, `"HEAD"`, `"PUT"`, `"POST"`,
+      `"DELETE"`.
+    moduleId: Module of the application that handled this request.
+    nickname: The logged-in user who made the request.  Most likely, this is
+      the part of the user's email before the `@` sign.  The field value is
+      the same for different requests from the same user, but different users
+      can have similar names.  This information is also available to the
+      application via the App Engine Users API.  This field will be populated
+      starting with App Engine 1.9.21.
+    pendingTime: Time this request spent in the pending request queue.
     referrer: Referrer URL of request.
-    requestId: Globally unique identifier for a request, based on request
-      start time. Request IDs for requests which started later will compare
-      greater as strings than those for requests which started earlier.
+    requestId: Globally unique identifier for a request, which is based on the
+      request start time.  Request IDs for requests which started later will
+      compare greater as strings than those for requests which started
+      earlier.
     resource: Contains the path and query portion of the URL that was
       requested. For example, if the URL was
       "http://example.com/app?name=val", the resource would be
-      "/app?name=val". Any trailing fragment (separated by a '#' character)
-      will not be included.
+      "/app?name=val".  The fragment identifier, which is identified by the
+      `#` character, is not included.
     responseSize: Size in bytes sent back to client by request.
     sourceReference: Source code for the application that handled this
       request. There can be more than one source reference per deployed
       application if source code is distributed among multiple repositories.
-    startTime: Time at which request was known to have begun processing.
-    status: Response status of request.
-    taskName: Task name of the request (for an offline request).
-    taskQueueName: Queue name of the request (for an offline request).
-    traceId: Cloud Trace identifier of the trace for this request.
-    urlMapEntry: File or class within URL mapping used for request.  Useful
-      for tracking down the source code which was responsible for managing
-      request. Especially for multiply mapped handlers.
-    userAgent: User agent used for making request.
+    startTime: Time when the request started.
+    status: HTTP response status code. Example: 200, 404.
+    taskName: Task name of the request, in the case of an offline request.
+    taskQueueName: Queue name of the request, in the case of an offline
+      request.
+    traceId: Cloud Trace identifier for this request.
+    urlMapEntry: File or class that handled the request.
+    userAgent: User agent that made the request.
     versionId: Version of the application that handled this request.
-    wasLoadingRequest: Was this request a loading request for this instance?
+    wasLoadingRequest: Whether this was a loading request for the instance.
   """
 
   appEngineRelease = _messages.StringField(1)
@@ -902,17 +897,17 @@ class RequestLog(_messages.Message):
 
 
 class SourceLocation(_messages.Message):
-  """Specifies a location in a source file.
+  """Specifies a location in a source code file.
 
   Fields:
-    file: Source file name. May or may not be a fully qualified name,
-      depending on the runtime environment.
+    file: Source file name. Depending on the runtime environment, this might
+      be a simple name or a fully-qualified name.
     functionName: Human-readable name of the function or method being invoked,
-      with optional context such as the class or package name, for use in
-      contexts such as the logs viewer where file:line number is less
-      meaningful. This may vary by language, for example:   in Java:
-      qual.if.ied.Class.method   in Go: dir/package.func   in Python: function
-      ...
+      with optional context such as the class or package name. This
+      information is used in contexts such as the logs viewer, where a file
+      and line number are less meaningful. The format can vary by language.
+      For example: `qual.if.ied.Class.method` (Java), `dir/package.func` (Go),
+      `function` (Python).
     line: Line within the source file.
   """
 
@@ -928,7 +923,7 @@ class SourceReference(_messages.Message):
   Fields:
     repository: Optional. A URI string identifying the repository. Example:
       "https://github.com/GoogleCloudPlatform/kubernetes.git"
-    revisionId: The canonical (and persistent) identifier of the deployed
+    revisionId: The canonical and persistent identifier of the deployed
       revision. Example (git): "0035781c50ec7aa23385dc841529ce8a4b70db1b"
   """
 
@@ -1087,7 +1082,7 @@ class WriteLogEntriesRequest(_messages.Message):
   Messages:
     LabelsValue: Optional. User-defined `key:value` items that are added to
       the `labels` field of each log entry in `entries`, except when a log
-      entry specifies its own 'key:value' item with the same key. Example: `{
+      entry specifies its own `key:value` item with the same key. Example: `{
       "size": "large", "color":"red" }`
 
   Fields:
@@ -1095,11 +1090,15 @@ class WriteLogEntriesRequest(_messages.Message):
       values for all required fields.
     labels: Optional. User-defined `key:value` items that are added to the
       `labels` field of each log entry in `entries`, except when a log entry
-      specifies its own 'key:value' item with the same key. Example: `{
+      specifies its own `key:value` item with the same key. Example: `{
       "size": "large", "color":"red" }`
     logName: Optional. A default log resource name for those log entries in
       `entries` that do not specify their own `logName`.  Example: `"projects
       /my-project/logs/syslog"`.  See LogEntry.
+    partialSuccess: Optional. Whether valid entries should be written even if
+      some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
+      errors. If any entry is not written, the response status will be the
+      error associated with one of the failed entries.
     resource: Optional. A default monitored resource for those log entries in
       `entries` that do not specify their own `resource`.
   """
@@ -1108,7 +1107,7 @@ class WriteLogEntriesRequest(_messages.Message):
   class LabelsValue(_messages.Message):
     """Optional. User-defined `key:value` items that are added to the `labels`
     field of each log entry in `entries`, except when a log entry specifies
-    its own 'key:value' item with the same key. Example: `{ "size": "large",
+    its own `key:value` item with the same key. Example: `{ "size": "large",
     "color":"red" }`
 
     Messages:
@@ -1134,12 +1133,58 @@ class WriteLogEntriesRequest(_messages.Message):
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   labels = _messages.MessageField('LabelsValue', 2)
   logName = _messages.StringField(3)
-  resource = _messages.MessageField('MonitoredResource', 4)
+  partialSuccess = _messages.BooleanField(4)
+  resource = _messages.MessageField('MonitoredResource', 5)
 
 
 class WriteLogEntriesResponse(_messages.Message):
   """Result returned from WriteLogEntries.
-empty"""
+
+  Messages:
+    LogEntryErrorsValue: When `WriteLogEntriesRequest.partial_success` is
+      true, records the errors status for entries that were not written due to
+      a permanent error, keyed by the entry's zero-based index in
+      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
+      are written will not include per-entry errors.
+
+  Fields:
+    logEntryErrors: When `WriteLogEntriesRequest.partial_success` is true,
+      records the errors status for entries that were not written due to a
+      permanent error, keyed by the entry's zero-based index in
+      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
+      are written will not include per-entry errors.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LogEntryErrorsValue(_messages.Message):
+    """When `WriteLogEntriesRequest.partial_success` is true, records the
+    errors status for entries that were not written due to a permanent error,
+    keyed by the entry's zero-based index in `WriteLogEntriesRequest.entries`.
+    Failed requests for which no entries are written will not include per-
+    entry errors.
+
+    Messages:
+      AdditionalProperty: An additional property for a LogEntryErrorsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type LogEntryErrorsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LogEntryErrorsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Status attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Status', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  logEntryErrors = _messages.MessageField('LogEntryErrorsValue', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

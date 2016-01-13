@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """CSV resource printer."""
 
@@ -10,7 +22,7 @@ from googlecloudsdk.core.resource import resource_printer_base
 class CsvPrinter(resource_printer_base.ResourcePrinter):
   """A printer for printing CSV data.
 
-  link:www.ietf.org/rfc/rfc4180.txt[Comma Separated Values] with no keys.
+  [Comma Separated Values](http://www.ietf.org/rfc/rfc4180.txt) with no keys.
   This format requires a projection to define the values to be printed.
 
   Printer attributes:
@@ -80,13 +92,21 @@ class ValuePrinter(CsvPrinter):
     log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
       _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
       *info*, *warn*, or *error*.
+    no-quote: Prints NEWLINE terminated TAB delimited values with no quoting.
   """
+
+  def _WriteRow(self, row):
+    self._out.write('\t'.join(row) + '\n')
 
   def __init__(self, *args, **kwargs):
     super(ValuePrinter, self).__init__(*args, **kwargs)
     self._heading_printed = True
-    self._add_csv_row = csv.writer(self._out, dialect='excel',
-                                   delimiter='\t', lineterminator='\n').writerow
+    if self.attributes.get('no-quote', 0):
+      self._add_csv_row = self._WriteRow
+    else:
+      self._add_csv_row = csv.writer(
+          self._out, dialect='excel', delimiter='\t',
+          lineterminator='\n').writerow
 
   def Finish(self):
     """Prints the legend if any."""

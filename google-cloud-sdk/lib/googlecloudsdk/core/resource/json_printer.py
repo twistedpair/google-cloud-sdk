@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """JSON format resource printer."""
 
@@ -11,7 +23,7 @@ from googlecloudsdk.core.resource import resource_printer_base
 class JsonPrinter(resource_printer_base.ResourcePrinter):
   """Prints all records as a JSON list.
 
-  link:www.json.org[JSON], JavaScript Object Notation.
+  [JSON](http://www.json.org), JavaScript Object Notation.
 
   Attributes:
     _records: The list of all resource records.
@@ -53,3 +65,4 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
     """Prints the record list to the output stream."""
     if self._records is not None:
       self.__Dump(self._records)
+      self._records = None

@@ -1492,69 +1492,6 @@ class EnvironmentVariables(validation.ValidatedDict):
             if result_env_variables else None)
 
 
-def VmSafeSetRuntime(appyaml, runtime):
-  """Sets the runtime while respecting vm runtimes rules for runtime settings.
-
-  Args:
-     appyaml: AppInfoExternal instance, which will be modified.
-     runtime: The runtime to use.
-
-  Returns:
-     The passed in appyaml (which has been modified).
-  """
-  if appyaml.env == '2' or appyaml.vm:
-    if not appyaml.vm_settings:
-      appyaml.vm_settings = VmSettings()
-
-    # Patch up vm runtime setting. Copy 'runtime' to 'vm_runtime' and
-    # set runtime to the string 'vm'.
-    appyaml.vm_settings['vm_runtime'] = runtime
-    appyaml.runtime = 'vm'
-  else:
-    appyaml.runtime = runtime
-  return appyaml
-
-
-def NormalizeVmSettings(appyaml):
-  """Normalize Vm settings.
-
-  Args:
-    appyaml: AppInfoExternal instance.
-
-  Returns:
-    Normalized app yaml.
-  """
-  # NOTE(user): In the input files, 'vm' is not a type of runtime, but
-  # rather is specified as "vm: true|false". In the code, 'vm'
-  # is represented as a value of AppInfoExternal.runtime.
-  # NOTE(user): This hack is only being applied after the parsing of
-  # AppInfoExternal. If the 'vm' attribute can ever be specified in the
-  # AppInclude, then this processing will need to be done there too.
-  # TODO(user): env replaces vm.  Remove vm when the field is gone.
-  if appyaml.env == '2' or appyaml.vm:
-    if not appyaml.vm_settings:
-      appyaml.vm_settings = VmSettings()
-
-    if 'vm_runtime' not in appyaml.vm_settings:
-      appyaml = VmSafeSetRuntime(appyaml, appyaml.runtime)
-
-    # Copy fields that are automatically added by the SDK or this class
-    # to beta_settings.
-    if hasattr(appyaml, 'beta_settings') and appyaml.beta_settings:
-      # Only copy if beta_settings already exists, because we have logic in
-      # appversion.py to discard all of vm_settings if anything is in
-      # beta_settings.  So we won't create an empty one just to add these
-      # fields.
-      for field in ['vm_runtime',
-                    'has_docker_image',
-                    'image',
-                    'module_yaml_path']:
-        if field not in appyaml.beta_settings and field in appyaml.vm_settings:
-          appyaml.beta_settings[field] = appyaml.vm_settings[field]
-
-  return appyaml
-
-
 def ValidateSourceReference(ref):
   """Determines if a source reference is valid.
 
@@ -1762,7 +1699,8 @@ class AppInclude(validation.Validated):
       appyaml.handlers.extend(tail)
 
     appyaml = cls._CommonMergeOps(appyaml, appinclude)
-    return NormalizeVmSettings(appyaml)
+    appyaml.NormalizeVmSettings()
+    return appyaml
 
   @classmethod
   def MergeAppIncludes(cls, appinclude_one, appinclude_two):
@@ -1926,7 +1864,7 @@ class AppInfoExternal(validation.Validated):
       ModuleAndServiceDefined: if both 'module' and 'service' keywords are used.
     """
     super(AppInfoExternal, self).CheckInitialized()
-    if self.runtime is None and not self.vm and self.env != '2':
+    if self.runtime is None and not self.IsVm():
       raise appinfo_errors.MissingRuntimeError(
           'You must specify a "runtime" field for non-vm applications.')
     elif self.runtime is None:
@@ -1934,7 +1872,7 @@ class AppInfoExternal(validation.Validated):
       # we know that it's been defaulted)
       self.runtime = 'custom'
     if (not self.handlers and not self.builtins and not self.includes
-        and not (self.vm or self.env == '2')):
+        and not self.IsVm()):
       raise appinfo_errors.MissingURLMapping(
           'No URLMap entries found in application configuration')
     if self.handlers and len(self.handlers) > MAX_URL_MAPS:
@@ -2116,6 +2054,57 @@ class AppInfoExternal(validation.Validated):
       return self.beta_settings.get('vm_runtime')
     return self.runtime
 
+  def SetEffectiveRuntime(self, runtime):
+    """Sets the runtime while respecting vm runtimes rules for runtime settings.
+
+    Args:
+       runtime: The runtime to use.
+    """
+    if self.IsVm():
+      if not self.vm_settings:
+        self.vm_settings = VmSettings()
+
+      # Patch up vm runtime setting. Copy 'runtime' to 'vm_runtime' and
+      # set runtime to the string 'vm'.
+      self.vm_settings['vm_runtime'] = runtime
+      self.runtime = 'vm'
+    else:
+      self.runtime = runtime
+
+  def NormalizeVmSettings(self):
+    """Normalize Vm settings.
+    """
+    # NOTE(user): In the input files, 'vm' is not a type of runtime, but
+    # rather is specified as "vm: true|false". In the code, 'vm'
+    # is represented as a value of AppInfoExternal.runtime.
+    # NOTE(user): This hack is only being applied after the parsing of
+    # AppInfoExternal. If the 'vm' attribute can ever be specified in the
+    # AppInclude, then this processing will need to be done there too.
+    if self.IsVm():
+      if not self.vm_settings:
+        self.vm_settings = VmSettings()
+
+      if 'vm_runtime' not in self.vm_settings:
+        self.SetEffectiveRuntime(self.runtime)
+
+      # Copy fields that are automatically added by the SDK or this class
+      # to beta_settings.
+      if hasattr(self, 'beta_settings') and self.beta_settings:
+        # Only copy if beta_settings already exists, because we have logic in
+        # appversion.py to discard all of vm_settings if anything is in
+        # beta_settings.  So we won't create an empty one just to add these
+        # fields.
+        for field in ['vm_runtime',
+                      'has_docker_image',
+                      'image',
+                      'module_yaml_path']:
+          if field not in self.beta_settings and field in self.vm_settings:
+            self.beta_settings[field] = self.vm_settings[field]
+
+  # TODO(user): env replaces vm. Remove vm when field is removed.
+  def IsVm(self):
+    return self.vm or self.env == '2'
+
 
 def ValidateHandlers(handlers, is_include_file=False):
   """Validates a list of handler (URLMap) objects.
@@ -2186,7 +2175,8 @@ def LoadSingleAppInfo(app_info):
     appyaml.application = appyaml.project
     appyaml.project = None
 
-  return NormalizeVmSettings(appyaml)
+  appyaml.NormalizeVmSettings()
+  return appyaml
 
 
 class AppInfoSummary(validation.Validated):

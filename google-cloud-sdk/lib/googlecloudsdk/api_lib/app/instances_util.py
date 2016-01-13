@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Utilities for manipulating GCE instances running an App Engine project."""
 
 from googlecloudsdk.core import exceptions
@@ -31,7 +43,7 @@ class AppEngineInstance(object):
     self.id = id_
     self.instance = instance
 
-  # TODO(zjn): remove after API support for listing instances (b/24778093).
+  # TODO(user): remove after API support for listing instances (b/24778093).
   @classmethod
   def IsInstance(cls, instance):
     """Return whether instance was created by App Engine.
@@ -50,7 +62,7 @@ class AppEngineInstance(object):
             'gae_backend_version' in metadata and
             len(instance['name'].rsplit('-', 1)) > 1)
 
-  # TODO(zjn): remove after API support for listing instances (b/24778093).
+  # TODO(user): remove after API support for listing instances (b/24778093).
   @classmethod
   def FromComputeEngineInstance(cls, instance):
     """Create an AppEngineInstance object from its Compute Engine instance.

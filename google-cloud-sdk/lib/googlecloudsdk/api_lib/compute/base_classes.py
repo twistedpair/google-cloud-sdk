@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Base classes for abstracting away common logic."""
 import abc
 import argparse
@@ -29,16 +41,16 @@ from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
+from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
-import protorpc.messages
 import yaml
 
 
 def PrintTable(resources, table_cols):
   """Prints a table of the given resources."""
-  # TODO(aryann): Switch over to console_io.TablePrinter once the
+  # TODO(user): Switch over to console_io.TablePrinter once the
   # class is refactored to support tables without ASCII borders.
   printer = resource_printer.TablePrinter(out=log.out)
 
@@ -697,30 +709,44 @@ class ZonalDescriber(BaseDescriber):
     request.zone = ref.zone
 
 
-class GlobalRegionalDescriber(BaseDescriber):
+class ScopeType(Enum):
+  """Scope type of compute resource."""
+  global_scope = 1
+  regional_scope = 2
+  zonal_scope = 3
+
+
+class MultiScopeDescriber(BaseDescriber):
   """Base class for describing global or regional resources."""
 
   __metaclass__ = abc.ABCMeta
 
   @staticmethod
-  def Args(parser, resource_type, command=None):
+  def AddScopeArgs(parser, resource_type, scope_types, command=None):
     resource = resource_type
     BaseDescriber.AddArgs(parser, 'compute.' + resource, command)
     AddFieldsFlag(parser, resource_type)
 
     scope = parser.add_mutually_exclusive_group()
 
-    scope.add_argument(
-        '--region',
-        help='The region of the resource to fetch.',
-        completion_resource='compute.regions',
-        action=actions.StoreProperty(properties.VALUES.compute.region))
-
-    scope.add_argument(
-        '--global',
-        action='store_true',
-        help=('If provided, it is assumed that the requested resource is '
-              'global.'))
+    if ScopeType.zonal_scope in scope_types:
+      scope.add_argument(
+          '--zone',
+          help='The zone of the resource to fetch.',
+          completion_resource='compute.zones',
+          action=actions.StoreProperty(properties.VALUES.compute.zone))
+    if ScopeType.regional_scope in scope_types:
+      scope.add_argument(
+          '--region',
+          help='The region of the resource to fetch.',
+          completion_resource='compute.regions',
+          action=actions.StoreProperty(properties.VALUES.compute.region))
+    if ScopeType.global_scope in scope_types:
+      scope.add_argument(
+          '--global',
+          action='store_true',
+          help=('If provided, it is assumed that the requested resource is '
+                'global.'))
 
   @abc.abstractproperty
   def global_service(self):
@@ -731,6 +757,10 @@ class GlobalRegionalDescriber(BaseDescriber):
     """The service used to list regional resources."""
 
   @abc.abstractproperty
+  def zonal_service(self):
+    """The service used to list zonal resources."""
+
+  @abc.abstractproperty
   def global_resource_type(self):
     """The type of global resources."""
 
@@ -738,37 +768,132 @@ class GlobalRegionalDescriber(BaseDescriber):
   def regional_resource_type(self):
     """The type of regional resources."""
 
+  @abc.abstractproperty
+  def zonal_resource_type(self):
+    """The type of regional resources."""
+
   @property
   def service(self):
     return self._service
 
   def CreateReference(self, args):
+    has_region = hasattr(args, 'region') and args.region
+    has_zone = hasattr(args, 'zone') and args.zone
+    has_global = hasattr(args, 'global') and getattr(args, 'global')
+
+    only_zone_prompt = hasattr(args, 'zone') and not hasattr(args, 'region')
+    only_region_prompt = hasattr(args, 'region') and not hasattr(args, 'zone')
+
+    ref = None
     try:
-      ref = self.resources.Parse(args.name, params={'region': args.region})
+      params = {}
+      if has_region:
+        params['region'] = args.region
+      if has_zone:
+        params['zone'] = args.zone
+      ref = self.resources.Parse(args.name, params=params)
     except resource_exceptions.UnknownCollectionException:
-      if getattr(args, 'global'):
+      ref = None
+
+    if ref is None:
+      if has_global:
         ref = self.CreateGlobalReference(
             args.name, resource_type=self.global_resource_type)
-      else:
+      elif has_region or only_region_prompt:
         ref = self.CreateRegionalReference(
             args.name, args.region, resource_type=self.regional_resource_type)
+      elif has_zone or only_zone_prompt:
+        ref = self.CreateZonalReference(
+            args.name, args.zone, resource_type=self.zonal_resource_type)
+      else:
+        ref = self.PromptForMultiScopedReferences(
+            [args.name],
+            scope_names=['zone', 'region'],
+            scope_services=[self.compute.zones, self.compute.regions],
+            resource_types=[
+                self.zonal_resource_type, self.regional_resource_type],
+            flag_names=['--zone', '--region'])[0]
 
-    if ref.Collection() not in (
-        'compute.{0}'.format(self.regional_resource_type),
-        'compute.{0}'.format(self.global_resource_type)):
+    valid_collections = ['compute.{0}'.format(resource_type)
+                         for resource_type in [self.zonal_resource_type,
+                                               self.regional_resource_type,
+                                               self.global_resource_type]
+                         if resource_type is not None]
+
+    if ref.Collection() not in valid_collections:
       raise calliope_exceptions.ToolException(
           'You must pass in a reference to a global or regional resource.')
 
     ref_resource_type = utils.CollectionToResourceType(ref.Collection())
     if ref_resource_type == self.global_resource_type:
       self._service = self.global_service
-    else:
+    elif ref_resource_type == self.regional_resource_type:
       self._service = self.regional_service
+    else:
+      self._service = self.zonal_service
     return ref
 
   def ScopeRequest(self, ref, request):
     if ref.Collection() == 'compute.{0}'.format(self.regional_resource_type):
       request.region = ref.region
+    if ref.Collection() == 'compute.{0}'.format(self.zonal_resource_type):
+      request.zone = ref.zone
+
+
+def GetMultiScopeDescriberHelp(resource, scopes):
+  """Returns the detailed help dict for a multiscope describe command."""
+
+  zone_example_text = """\
+
+          To get details about a zonal {0} in the ``us-central1-b'' zone, run:
+
+            $ {{command}} --zone us-central1-b
+  """
+  region_example_text = """\
+
+          To get details about a regional {0} in the ``us-central1'' regions,
+          run:
+
+            $ {{command}} --region us-central1
+  """
+  global_example_text = """\
+
+          To get details about a global {0}, run:
+
+            $ {{command}} --global
+  """
+  return {
+      'brief': 'Display detailed information about a ' + resource,
+      'DESCRIPTION': """\
+          *{{command}}* displays all data associated with a {0} in a project.
+          """.format(resource),
+      'EXAMPLES': ("""\
+          """ + (global_example_text
+                 if ScopeType.global_scope in scopes else '')
+                   + (region_example_text
+                      if ScopeType.regional_scope in scopes else '')
+                   + (zone_example_text
+                      if ScopeType.zonal_scope in scopes else ''))
+                  .format(resource),
+  }
+
+
+class GlobalRegionalDescriber(MultiScopeDescriber):
+  """Base class for describing global or regional resources."""
+  SCOPES = [ScopeType.regional_scope, ScopeType.global_scope]
+
+  @staticmethod
+  def Args(parser, resource, command=None):
+    MultiScopeDescriber.AddScopeArgs(parser, resource,
+                                     GlobalRegionalDescriber.SCOPES, command)
+
+  @property
+  def zonal_service(self):
+    return None
+
+  @property
+  def zonal_resource_type(self):
+    return None
 
 
 def AddFieldsFlag(parser, resource_type):
@@ -1133,7 +1258,7 @@ class ReadWriteCommand(BaseCommand):
   def service(self):
     pass
 
-  # TODO(aryann): Make this an abstractproperty once all
+  # TODO(user): Make this an abstractproperty once all
   # ReadWriteCommands support URIs and prompting.
   def CreateReference(self, args):
     """Returns a resources.Resource object for the object being mutated."""
@@ -1605,7 +1730,7 @@ class BaseEdit(BaseCommand):
         resources = self.ProcessEditedResource(file_contents, args)
         break
       except (ValueError, yaml.error.YAMLError,
-              protorpc.messages.ValidationError,
+              messages.ValidationError,
               calliope_exceptions.ToolException) as e:
         if isinstance(e, ValueError):
           message = e.message

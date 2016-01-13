@@ -1,10 +1,23 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Read and write properties for the CloudSDK."""
 
 import ConfigParser
 import os
 import re
+import sys
 import threading
 
 from googlecloudsdk.core import config
@@ -200,6 +213,7 @@ class _Sections(object):
     self.devshell = _SectionDevshell()
     self.experimental = _SectionExperimental()
     self.metrics = _SectionMetrics()
+    self.proxy = _SectionProxy()
     self.test = _SectionTest()
 
     self.__sections = dict(
@@ -207,7 +221,7 @@ class _Sections(object):
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.core, self.component_manager, self.compute,
          self.container, self.datastore_emulator, self.devshell,
-         self.experimental, self.metrics, self.test])
+         self.experimental, self.metrics, self.proxy, self.test])
     self.__invocation_value_stack = [{}]
 
   @property
@@ -302,6 +316,28 @@ class _Sections(object):
         result[section.name] = section_result
     return result
 
+  def GetHelpString(self):
+    """Gets a string with the help contents for all properties and descriptions.
+
+    Returns:
+      str, The string for the man page section.
+    """
+    messages = []
+    sections = [self.default_section]
+    default_section_name = self.default_section.name
+    sections.extend(
+        sorted([s for name, s in self.__sections.iteritems()
+                if name != default_section_name and not s.is_hidden]))
+    for section in sections:
+      props = sorted([p for p in section if not p.is_hidden])
+      if not props:
+        continue
+      messages.append('_{section}_::'.format(section=section.name))
+      for prop in props:
+        messages.append(
+            '*{prop}*:::\n\n{text}'.format(prop=prop.name, text=prop.help_text))
+    return '\n\n\n'.join(messages)
+
 
 class _Section(object):
   """Represents a section of the properties file that has related properties.
@@ -327,12 +363,38 @@ class _Section(object):
   def __iter__(self):
     return iter(self.__properties.values())
 
-  def _Add(self, name, hidden=False, callbacks=None, validator=None):
+  def __eq__(self, other):
+    return self.name == other.name
+
+  def __ne__(self, other):
+    return self.name != other.name
+
+  def __gt__(self, other):
+    return self.name > other.name
+
+  def __ge__(self, other):
+    return self.name >= other.name
+
+  def __lt__(self, other):
+    return self.name < other.name
+
+  def __le__(self, other):
+    return self.name <= other.name
+
+  def _Add(self, name, help_text=None, hidden=False, callbacks=None,
+           validator=None, choices=None, resource=None,
+           resource_command_path=None):
     prop = _Property(
-        section=self.__name, name=name, hidden=(self.is_hidden or hidden),
-        callbacks=callbacks, validator=validator)
+        section=self.__name, name=name, help_text=help_text,
+        hidden=(self.is_hidden or hidden),
+        callbacks=callbacks, validator=validator, choices=choices,
+        resource=resource, resource_command_path=resource_command_path)
     self.__properties[name] = prop
     return prop
+
+  def _AddBool(self, name, help_text=None, hidden=False, callbacks=None):
+    return self._Add(name=name, help_text=help_text, hidden=hidden,
+                     callbacks=callbacks, choices=('true', 'false'))
 
   def Property(self, property_name):
     """Gets a property from this section, given its name.
@@ -417,8 +479,18 @@ class _SectionCompute(_Section):
 
   def __init__(self):
     super(_SectionCompute, self).__init__('compute')
-    self.zone = self._Add('zone')
-    self.region = self._Add('region')
+    self.zone = self._Add(
+        'zone',
+        help_text='The default zone to use when working with zonal Compute '
+        'Engine resources. When a `--zone` flag is required but not provided, '
+        'the command will fall back to this value, if set.',
+        resource='compute.zones')
+    self.region = self._Add(
+        'region',
+        help_text='The default region to use when working with regional Compute'
+        ' Engine resources. When a `--region` flag is required but not '
+        'provided, the command will fall back to this value, if set.',
+        resource='compute.regions')
 
 
 class _SectionApp(_Section):
@@ -426,13 +498,19 @@ class _SectionApp(_Section):
 
   def __init__(self):
     super(_SectionApp, self).__init__('app')
-    self.hosted_registry = self._Add('hosted_registry')
-    self.host = self._Add('host')
-    self.admin_host = self._Add('admin_host')
-    self.api_host = self._Add('api_host')
-    self.promote_by_default = self._Add('promote_by_default')
-    self.stop_previous_version = self._Add('stop_previous_version')
-    self.use_cloud_build = self._Add('use_cloud_build')
+    self.promote_by_default = self._AddBool(
+        'promote_by_default',
+        callbacks=[lambda: True],
+        hidden=True)
+    self.stop_previous_version = self._AddBool(
+        'stop_previous_version',
+        help_text='If True, when deploying a new version of a service, the '
+        'previously deployed version is stopped. If False, older versions must '
+        'be stopped manually.')
+    self.use_cloud_build = self._AddBool(
+        'use_cloud_build',
+        help_text='If True, use the Container Builder API to perform docker '
+        'builds.')
     self.hosted_build_image = self._Add(
         'hosted_build_image',
         callbacks=[lambda: 'gae-builder-vm'],
@@ -449,11 +527,11 @@ class _SectionApp(_Section):
         'hosted_build_boot_disk_size',
         callbacks=[lambda: '200GB'],
         hidden=True)
-    self.use_appengine_api = self._Add(
+    self.use_appengine_api = self._AddBool(
         'use_appengine_api',
         callbacks=[lambda: True],
         hidden=True)
-    self.suppress_change_warning = self._Add(
+    self.suppress_change_warning = self._AddBool(
         'suppress_change_warning',
         hidden=True)
 
@@ -465,7 +543,10 @@ class _SectionApp(_Section):
                                 "'remote'.")
     self.docker_build = self._Add(
         'docker_build',
-        validator=DockerBuildValidator)
+        help_text='Set to `local` to run `docker build` using a local docker '
+        'installation, or `remote` to do the build on a GCE VM.',
+        validator=DockerBuildValidator,
+        choices=('local', 'remote'))
 
 
 class _SectionContainer(_Section):
@@ -473,7 +554,10 @@ class _SectionContainer(_Section):
 
   def __init__(self):
     super(_SectionContainer, self).__init__('container')
-    self.cluster = self._Add('cluster')
+    self.cluster = self._Add(
+        'cluster',
+        help_text='The name of the cluster to use by default when working with '
+        'Container Engine.')
 
 
 def _GetGCEAccount():
@@ -492,24 +576,48 @@ class _SectionCore(_Section):
   def __init__(self):
     super(_SectionCore, self).__init__('core')
     self.account = self._Add(
-        'account', callbacks=[
-            c_devshell.DefaultAccount,
-            _GetGCEAccount])
-    self.disable_color = self._Add('disable_color')
-    self.disable_command_lazy_loading = self._Add(
+        'account',
+        help_text='The account gcloud should use for authentication.  You can '
+        'run `gcloud auth list` to see the accounts you currently have '
+        'available.',
+        callbacks=[c_devshell.DefaultAccount, _GetGCEAccount])
+    self.disable_color = self._AddBool(
+        'disable_color',
+        help_text='If True, color will not be used when printing messages in '
+        'the terminal.')
+    self.disable_command_lazy_loading = self._AddBool(
         'disable_command_lazy_loading', hidden=True)
-    self.disable_prompts = self._Add('disable_prompts')
-    self.disable_usage_reporting = self._Add('disable_usage_reporting')
+    self.disable_prompts = self._AddBool(
+        'disable_prompts',
+        help_text='If True, the default answer will be assumed for all user '
+        'prompts.  For any prompts that require user input, an error will be '
+        'raised. This is the equivalent of using the global `--quiet` flag.')
+    self.disable_usage_reporting = self._AddBool(
+        'disable_usage_reporting',
+        help_text='If True, anonymous statistics on SDK usage will not be '
+        'collected.  This is value is set based on your choices during '
+        'installation, but can be changed at any time.  For more information, '
+        'see: https://cloud.google.com/sdk/usage-statistics')
     self.api_host = self._Add(
         'api_host', hidden=True,
         callbacks=[lambda: 'https://www.googleapis.com'])
-    self.verbosity = self._Add('verbosity')
-    self.user_output_enabled = self._Add('user_output_enabled')
-    self.log_http = self._Add('log_http')
-    self.check_gce_metadata = self._Add(
+    self.verbosity = self._Add(
+        'verbosity',
+        help_text='The default logging verbosity for gcloud commands.  This is '
+        'the equivalent of using the global `--verbosity` flag.')
+    self.user_output_enabled = self._AddBool(
+        'user_output_enabled',
+        help_text='If False, messages to the user and command output on both '
+        'standard out and standard error will be suppressed.')
+    self.log_http = self._AddBool(
+        'log_http',
+        help_text='If True, log http requests and responses to the logs.  '
+        'You may need to adjust your `verbosity` setting if you want to see '
+        'in the terminal, otherwise it is available in the log files.')
+    self.check_gce_metadata = self._AddBool(
         'check_gce_metadata', hidden=True,
         callbacks=[lambda: True])
-    self.print_unhandled_tracebacks = self._Add(
+    self.print_unhandled_tracebacks = self._AddBool(
         'print_unhandled_tracebacks', hidden=True)
 
     def ProjectValidator(project):
@@ -540,12 +648,17 @@ class _SectionCore(_Section):
     # pylint: disable=unnecessary-lambda, We don't want to call Metadata()
     # unless we really have to.
     self.project = self._Add(
-        'project', validator=ProjectValidator,
-        callbacks=[
-            lambda: c_devshell.Project(),
-            _GetGCEProject])
+        'project',
+        help_text='The project id of the Cloud Platform project to operate on '
+        'by default.  This can be overridden by using the global `--project` '
+        'flag.',
+        validator=ProjectValidator,
+        callbacks=[lambda: c_devshell.Project(), _GetGCEProject],
+        resource='cloudresourcemanager.projects',
+        resource_command_path='beta.projects')
     self.credentialed_hosted_repo_domains = self._Add(
-        'credentialed_hosted_repo_domains')
+        'credentialed_hosted_repo_domains',
+        hidden=True)
 
 
 class _SectionAuth(_Section):
@@ -561,7 +674,7 @@ class _SectionAuth(_Section):
     self.token_host = self._Add(
         'token_host', hidden=True,
         callbacks=[lambda: 'https://accounts.google.com/o/oauth2/token'])
-    self.disable_ssl_validation = self._Add(
+    self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
         'client_id', hidden=True,
@@ -588,9 +701,16 @@ class _SectionComponentManager(_Section):
 
   def __init__(self):
     super(_SectionComponentManager, self).__init__('component_manager')
-    self.additional_repositories = self._Add('additional_repositories')
-    self.disable_update_check = self._Add('disable_update_check')
-    self.fixed_sdk_version = self._Add('fixed_sdk_version')
+    self.additional_repositories = self._Add(
+        'additional_repositories',
+        help_text='A comma separated list of additional repositories to check '
+        'for components.  This property is automatically managed by the '
+        '`gcloud components repositories` commands.')
+    self.disable_update_check = self._AddBool(
+        'disable_update_check',
+        help_text='If True, the Cloud SDK will not automatically check for '
+        'updates.')
+    self.fixed_sdk_version = self._Add('fixed_sdk_version', hidden=True)
     self.snapshot_url = self._Add('snapshot_url', hidden=True)
 
 
@@ -599,7 +719,7 @@ class _SectionExperimental(_Section):
 
   def __init__(self):
     super(_SectionExperimental, self).__init__('experimental', hidden=True)
-    self.fast_component_update = self._Add(
+    self.fast_component_update = self._AddBool(
         'fast_component_update',
         callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel])
 
@@ -610,9 +730,44 @@ class _SectionTest(_Section):
   def __init__(self):
     super(_SectionTest, self).__init__('test')
     self.results_base_url = self._Add('results_base_url', hidden=True)
-    # TODO(pauldavis): remove this when API provides an alternative to polling.
+    # TODO(user): remove this when API provides an alternative to polling.
     self.matrix_status_interval = self._Add('matrix_status_interval',
                                             hidden=True)
+
+
+class _SectionProxy(_Section):
+  """Contains the properties for the 'proxy' section."""
+
+  def __init__(self):
+    super(_SectionProxy, self).__init__('proxy')
+    self.address = self._Add(
+        'address',
+        help_text='The hostname or IP address of your proxy server.')
+    self.port = self._Add(
+        'port',
+        help_text='The port to use when connected to your proxy server.')
+    self.username = self._Add(
+        'username',
+        help_text='If your proxy requires authentication, the username to use '
+        'when connecting.')
+    self.password = self._Add(
+        'password',
+        help_text='If your proxy requires authentication, the password to use '
+        'when connecting.')
+
+    valid_proxy_types = sorted(config.GetProxyTypeMap().keys())
+    def ProxyTypeValidator(proxy_type):
+      if proxy_type is not None and proxy_type not in valid_proxy_types:
+        raise InvalidValueError(
+            'The proxy type property value [{0}] is not valid. '
+            'Possible values: [{1}].'.format(
+                proxy_type, ', '.join(valid_proxy_types)))
+    self.proxy_type = self._Add(
+        'type',
+        help_text='The type of proxy you are using.  Supported proxy types are:'
+        ' [{0}].'.format(', '.join(valid_proxy_types)),
+        validator=ProxyTypeValidator,
+        choices=valid_proxy_types)
 
 
 class _SectionDevshell(_Section):
@@ -642,6 +797,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.compute = self._Add('compute')
+    self.cloudbuild = self._Add('cloudbuild')
     self.clouduseraccounts = self._Add('clouduseraccounts')
     self.container = self._Add('container')
     self.dataflow = self._Add('dataflow')
@@ -650,6 +806,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.dns = self._Add('dns')
     self.functions = self._Add('functions')
     self.genomics = self._Add('genomics')
+    self.iam = self._Add('iam')
     self.loasproject = self._Add('loasproject')
     self.logging = self._Add('logging')
     self.testing = self._Add('testing')
@@ -717,13 +874,18 @@ class _Property(object):
         explanation of why it was invalid.
   """
 
-  def __init__(self, section, name, hidden=False,
-               callbacks=None, validator=None):
+  def __init__(self, section, name, help_text=None, hidden=False,
+               callbacks=None, validator=None, choices=None, resource=None,
+               resource_command_path=None):
     self.__section = section
     self.__name = name
+    self.__help_text = help_text
     self.__hidden = hidden
     self.__callbacks = callbacks or []
     self.__validator = validator
+    self.__choices = choices
+    self.__resource = resource
+    self.__resource_command_path = resource_command_path
 
   @property
   def section(self):
@@ -734,12 +896,46 @@ class _Property(object):
     return self.__name
 
   @property
+  def help_text(self):
+    return self.__help_text
+
+  @property
   def is_hidden(self):
     return self.__hidden
 
   @property
   def callbacks(self):
     return self.__callbacks
+
+  @property
+  def choices(self):
+    return self.__choices
+
+  @property
+  def resource(self):
+    return self.__resource
+
+  @property
+  def resource_command_path(self):
+    return self.__resource_command_path
+
+  def __eq__(self, other):
+    return self.section == other.section and self.name == other.name
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __gt__(self, other):
+    return self.name > other.name
+
+  def __ge__(self, other):
+    return self.name >= other.name
+
+  def __lt__(self, other):
+    return self.name < other.name
+
+  def __le__(self, other):
+    return self.name <= other.name
 
   def Get(self, required=False, validate=True):
     """Gets the value for this property.
@@ -897,7 +1093,7 @@ class Scope(object):
       description='The user based configuration file applies only to the '
       'current user of the system.  It will override any values from the '
       'installation configuration.',
-      get_file=lambda: config.Paths().user_properties_path)
+      get_file=named_configs.GetEffectiveNamedConfigFile)
   WORKSPACE = _SCOPE_TUPLE(
       id='workspace',
       description='The workspace based configuration file is based on your '
@@ -905,7 +1101,9 @@ class Scope(object):
       'here that will only take effect when working within that project\'s '
       'directory.  You cannot set this value if you are not currently within a '
       'gcloud workspace.  This will override all values from any other '
-      'configuration files.',
+      'configuration files.\n'
+      'Workspace configurations are deprecated and will be removed from a'
+      'future version of gcloud.',
       get_file=lambda: config.Paths().workspace_properties_path)
 
   _ALL = [WORKSPACE, USER, INSTALLATION]
@@ -1160,6 +1358,7 @@ class PropertiesFile(object):
 
   _PROPERTIES = None
   _LOCK = threading.RLock()
+  _ALREADY_GAVE_DEPRECATION_WARNINGS = False
 
   @staticmethod
   def Load():
@@ -1188,6 +1387,34 @@ class PropertiesFile(object):
         # Filter out None elements in paths
         paths = [p for p in paths if p]
         PropertiesFile._PROPERTIES = PropertiesFile(paths)
+
+        # Warn if loading file from deperecated paths
+
+        # Setting PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS is used
+        # to avoid printing redundant warnings after properties invalidation.
+        if not PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS:
+
+          PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS = True
+
+          if ((config_paths.user_properties_path in paths) and
+              os.path.isfile(config_paths.user_properties_path)):
+            # Write to standard out directly as importing `logging` here
+            # messes up the logging boot-strap process.  We could probably do
+            # a more principled refactor to avoid this, but it doesn't seem
+            # worthwhile for a temporary warning message.
+            sys.stderr.write(
+                'Loading user based configuration file: [{0}].\n'
+                'User based configuration files are deprecated and will '
+                'not be read in a future gcloud release.\n'.format(
+                    config_paths.user_properties_path))
+
+          if ((config_paths.workspace_properties_path in paths) and
+              os.path.isfile(config_paths.workspace_properties_path)):
+            sys.stderr.write(
+                'Loading workspace configuration file: [{0}].\n'
+                'Workspace configuration files are deprecated and will '
+                'not be read in a future gcloud release.\n'.format(
+                    config_paths.workspace_properties_path))
     finally:
       PropertiesFile._LOCK.release()
     return PropertiesFile._PROPERTIES

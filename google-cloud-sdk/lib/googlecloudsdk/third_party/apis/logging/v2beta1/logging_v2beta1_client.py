@@ -90,10 +90,9 @@ class LoggingV2beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists log entries.
-Use this method to examine log entries from Cloud Logging.
-See [Exporting Logs](/logging/docs/export) for other ways to copy
-log entries out of Cloud Logging.
+      """Lists log entries.  Use this method to retrieve log entries from Cloud.
+Logging.  For ways to export log entries, see
+[Exporting Logs](/logging/docs/export).
 
       Args:
         request: (ListLogEntriesRequest) input message

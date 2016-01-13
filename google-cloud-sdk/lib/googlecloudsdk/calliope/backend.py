@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Backend stuff for the calliope.cli module.
 
@@ -24,13 +36,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
-
-
-def LowerCaseWithDashes(name):
-  # Uses two passes to handle all-upper initialisms, such as fooBARBaz
-  s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
-  s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
-  return s2
 
 
 class ArgumentException(Exception):
@@ -62,12 +67,16 @@ class ArgumentParser(argparse.ArgumentParser):
   """
 
   def __init__(self, *args, **kwargs):
-    self._calliope_command = kwargs.pop('calliope_command', None)
+    self._calliope_command = kwargs.pop('calliope_command')
+    self._flag_collection = kwargs.pop('flag_collection')
     self._is_group = isinstance(self._calliope_command, CommandGroup)
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   # Assume we will never have a flag called ----calliope-internal...
   CIDP = '__calliope_internal_deepest_parser'
+
+  def GetFlagCollection(self):
+    return self._flag_collection
 
   def parse_known_args(self, args=None, namespace=None):
     """Override's argparse.ArgumentParser's .parse_known_args method."""
@@ -101,9 +110,39 @@ class ArgumentParser(argparse.ArgumentParser):
       start = 1 if argv[0] == '--' else 0
       args.implementation_args = argv[start:]
       return args
+
     # Content of these lines differs from argparser's parse_args().
     deepest_parser = getattr(args, self.CIDP, self)
-    deepest_parser.error('unrecognized arguments: {0}'.format(' '.join(argv)))
+
+    # Add a message for each unknown argument.  For each, try to come up with
+    # a suggestion based on text distance.  If one is close enough, print a
+    # 'did you mean' message along with that argument.
+    messages = []
+    suggester = usage_text.CommandChoiceSuggester()
+    # pylint:disable=protected-access, This is an instance of this class.
+    for flag in deepest_parser._calliope_command.GetAllAvailableFlags():
+      options = flag.option_strings
+      if options:
+        # This is a flag, add all its names as choices.
+        suggester.AddChoices(options)
+        # Add any aliases as choices as well, but suggest the primary name.
+        aliases = getattr(flag, 'suggestion_aliases', None)
+        if aliases:
+          suggester.AddAliases(aliases, options[0])
+
+    for arg in argv:
+      # Only do this for flag names.
+      suggestion = suggester.GetSuggestion(arg) if arg.startswith('-') else None
+      if suggestion:
+        messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
+      else:
+        messages.append(arg)
+
+    # If there is a single arg, put it on the same line.  If there are multiple
+    # add each on it's own line for better clarity.
+    separator = '\n  ' if len(messages) > 1 else ' '
+    deepest_parser.error('unrecognized arguments:{0}{1}'.format(
+        separator, separator.join(messages)))
 
   def _check_value(self, action, value):
     """Override's argparse.ArgumentParser's ._check_value(action, value) method.
@@ -171,8 +210,9 @@ class ArgumentParser(argparse.ArgumentParser):
     # See if the spelling was close to something else that exists here.
     else:
       choices = sorted(action.choices)
-      suggestion = usage_text.CommandChoiceSuggester().SuggestCommandChoice(
-          value, choices)
+      suggester = usage_text.CommandChoiceSuggester(choices)
+      suggester.AddSynonyms()
+      suggestion = suggester.GetSuggestion(value)
       if suggestion:
         message += " Did you mean '{0}'?".format(suggestion)
       else:
@@ -249,6 +289,38 @@ class ArgumentParser(argparse.ArgumentParser):
       return None
     return option_tuple
 
+  def _get_values(self, action, arg_strings):
+    """Override's argparse.ArgumentParser's ._get_values method.
+
+    This override does not actually change any behavior.  We use this hook to
+    grab the flags and arguments that are actually seen at parse time.  The
+    resulting namespace has entries for every argument (some with defaults) so
+    we can't know which the user actually typed.
+
+    Args:
+      action: Action, the action that is being processed.
+      arg_strings: [str], The values provided for this action.
+
+    Returns:
+      Whatever the parent method returns.
+    """
+    if action.dest != argparse.SUPPRESS:
+      # Don't look at the action unless it is a real argument or flag. The
+      # suppressed destination indicates that it is a SubParsers action.
+      name = None
+      if action.option_strings:
+        # This is a flag, save the first declared name of the flag.
+        name = action.option_strings[0]
+      elif arg_strings:
+        # This is a positional and there are arguments to consume.  Optional
+        # positionals will always get to this method, so we need to ignore the
+        # ones for which a value was not actually provided.  If it is provided,
+        # save the metavar name or the destination name.
+        name = action.metavar if action.metavar else action.dest
+      if name:
+        self._flag_collection.append(name)
+    return super(ArgumentParser, self)._get_values(action, arg_strings)
+
 
 # pylint:disable=protected-access
 class CloudSDKSubParsersAction(argparse._SubParsersAction):
@@ -262,8 +334,14 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
   """
 
   def __init__(self, *args, **kwargs):
-    self._calliope_command = kwargs.pop('calliope_command', None)
+    self._calliope_command = kwargs.pop('calliope_command')
+    self._flag_collection = kwargs.pop('flag_collection')
     super(CloudSDKSubParsersAction, self).__init__(*args, **kwargs)
+
+  def add_parser(self, name, **kwargs):
+    # Pass the same flag collection down to any sub parsers that are created.
+    kwargs['flag_collection'] = self._flag_collection
+    return super(CloudSDKSubParsersAction, self).add_parser(name, **kwargs)
 
   def IsValidChoice(self, choice):
     """Determines if the given arg is a valid sub group or command.
@@ -321,7 +399,8 @@ class ArgumentInterceptor(object):
 
   class ParserData(object):
 
-    def __init__(self):
+    def __init__(self, command_name):
+      self.command_name = command_name
       self.defaults = {}
       self.required = []
       self.dests = []
@@ -330,13 +409,21 @@ class ArgumentInterceptor(object):
       self.flag_args = []
       self.ancestor_flag_args = []
 
-  def __init__(self, parser, allow_positional, data=None, mutex_group_id=None,
-               cli=None):
+  def __init__(self, parser, is_root, cli_generator, allow_positional,
+               data=None, mutex_group_id=None):
     self.parser = parser
+    self.is_root = is_root
+    self.cli_generator = cli_generator
     self.allow_positional = allow_positional
-    self.data = data or ArgumentInterceptor.ParserData()
+    # If this is an argument group within a command, use the data from the
+    # parser for the entire command.  If it is the command itself, create a new
+    # data object and extract the command name from the parser.
+    if data:
+      self.data = data
+    else:
+      self.data = ArgumentInterceptor.ParserData(
+          command_name=self.parser._calliope_command.GetPath())
     self.mutex_group_id = mutex_group_id
-    self.cli = cli
 
   @property
   def defaults(self):
@@ -366,7 +453,198 @@ class ArgumentInterceptor(object):
   def ancestor_flag_args(self):
     return self.data.ancestor_flag_args
 
-  def _InvertBooleanFlag(self, name, action):
+  # pylint: disable=g-bad-name
+  def add_argument(self, *args, **kwargs):
+    """add_argument intercepts calls to the parser to track arguments."""
+    # TODO(user): do not allow short-options without long-options.
+
+    # we will choose the first option as the name
+    name = args[0]
+    dest = kwargs.get('dest')
+    if not dest:
+      # this is exactly what happens in argparse
+      dest = name.lstrip(self.parser.prefix_chars).replace('-', '_')
+
+    default = kwargs.get('default')
+    required = kwargs.get('required')
+
+    # A flag that can only be supplied where it is defined and not propagated to
+    # subcommands.
+    do_not_propagate = kwargs.pop('do_not_propagate', False)
+    # A global flag that is added at each level explicitly because each command
+    # has a different behavior (like -h).
+    is_replicated = kwargs.pop('is_replicated', False)
+    # This is used for help printing.  A flag is considered global if it is
+    # added at the root of the CLI tree, or if it is explicitly added to every
+    # command level.
+    is_global = self.is_root or is_replicated
+    # True if this should be marked as a commonly used flag.
+    is_common = kwargs.pop('is_common', False)
+    # Any alias this flag has for the purposes of the "did you mean"
+    # suggestions.
+    suggestion_aliases = kwargs.pop('suggestion_aliases', [])
+    # The resource name for the purposes of doing remote completion.
+    completion_resource = kwargs.pop('completion_resource', None)
+    # An explicit command to run for remote completion instead of the default
+    # for this resource type.
+    list_command_path = kwargs.pop('list_command_path', None)
+
+    positional = not name.startswith('-')
+    if positional:
+      if not self.allow_positional:
+        # TODO(user): More informative error message here about which group
+        # the problem is in.
+        raise ArgumentException(
+            'Illegal positional argument [{0}] for command [{1}]'.format(
+                name, self.data.command_name))
+      if '-' in name:
+        raise ArgumentException(
+            "Positional arguments cannot contain a '-'. Illegal argument [{0}] "
+            'for command [{1}]'.format(name, self.data.command_name))
+      if is_common:
+        raise ArgumentException(
+            'Positional argument [{0}] cannot be marked as a common flag in '
+            'command [{1}]'.format(name, self.data.command_name))
+      if suggestion_aliases:
+        raise ArgumentException(
+            'Positional argument [{0}] cannot have suggestion aliases in '
+            'command [{1}]'.format(name, self.data.command_name))
+
+    self.defaults[dest] = default
+    if required:
+      self.required.append(dest)
+    self.dests.append(dest)
+    if self.mutex_group_id:
+      self.mutex_groups[dest] = self.mutex_group_id
+
+    if positional and 'metavar' not in kwargs:
+      kwargs['metavar'] = name.upper()
+
+    added_argument = self.parser.add_argument(*args, **kwargs)
+    self._AddRemoteCompleter(added_argument, completion_resource,
+                             list_command_path)
+
+    if positional:
+      self.positional_args.append(added_argument)
+    else:
+      added_argument.do_not_propagate = do_not_propagate
+      added_argument.is_replicated = is_replicated
+      added_argument.is_global = is_global
+      added_argument.is_common = is_common
+      added_argument.suggestion_aliases = suggestion_aliases
+      self.flag_args.append(added_argument)
+
+      inverted_flag = self._AddInvertedBooleanFlagIfNecessary(
+          added_argument, name, dest, kwargs)
+      if inverted_flag:
+        inverted_flag.do_not_propagate = do_not_propagate
+        inverted_flag.is_replicated = is_replicated
+        inverted_flag.is_global = is_global
+        inverted_flag.is_common = is_common
+        # Don't add suggestion aliases for the inverted flag.  It can only map
+        # to one or the other.
+        self.flag_args.append(inverted_flag)
+
+    return added_argument
+
+  # pylint: disable=redefined-builtin
+  def register(self, registry_name, value, object):
+    return self.parser.register(registry_name, value, object)
+
+  def set_defaults(self, **kwargs):
+    return self.parser.set_defaults(**kwargs)
+
+  def get_default(self, dest):
+    return self.parser.get_default(dest)
+
+  def add_argument_group(self, *args, **kwargs):
+    new_parser = self.parser.add_argument_group(*args, **kwargs)
+    return ArgumentInterceptor(parser=new_parser,
+                               is_root=self.is_root,
+                               cli_generator=self.cli_generator,
+                               allow_positional=self.allow_positional,
+                               data=self.data)
+
+  def add_mutually_exclusive_group(self, **kwargs):
+    new_parser = self.parser.add_mutually_exclusive_group(**kwargs)
+    return ArgumentInterceptor(parser=new_parser,
+                               is_root=self.is_root,
+                               cli_generator=self.cli_generator,
+                               allow_positional=self.allow_positional,
+                               data=self.data,
+                               mutex_group_id=id(new_parser))
+
+  def AddFlagActionFromAncestors(self, action):
+    """Add a flag action to this parser, but segregate it from the others.
+
+    Segregating the action allows automatically generated help text to ignore
+    this flag.
+
+    Args:
+      action: argparse.Action, The action for the flag being added.
+
+    """
+    # pylint:disable=protected-access, simply no other way to do this.
+    self.parser._add_action(action)
+    # explicitly do this second, in case ._add_action() fails.
+    self.data.ancestor_flag_args.append(action)
+
+  def _AddInvertedBooleanFlagIfNecessary(self, added_argument, name, dest,
+                                         original_kwargs):
+    """Determines whether to create the --no-* flag and adds it to the parser.
+
+    Args:
+      added_argument: The argparse argument that was previously created.
+      name: str, The name of the flag.
+      dest: str, The dest field of the flag.
+      original_kwargs: {str: object}, The original set of kwargs passed to the
+        ArgumentInterceptor.
+
+    Returns:
+      The new argument that was added to the parser or None, if it was not
+      necessary to create a new argument.
+    """
+    action = original_kwargs.get('action')
+    # There are a few legitimate explicit --no-foo flags.
+    should_invert, prop = self._ShouldInvertBooleanFlag(name, action)
+    if not should_invert:
+      return
+
+    default = original_kwargs.get('default', False)
+    help_str = original_kwargs.get('help')
+
+    # Add hidden --no-foo for the --foo Boolean flag. The inverted flag will
+    # have the same dest and mutually exclusive group as the original flag.
+    inverted_name = '--no-' + name[2:]
+    # Explicit default=None yields the 'Use to disable.' text.
+    if prop or (default in (True, None) and help_str != argparse.SUPPRESS):
+      if prop:
+        inverted_help = (' Overrides the default *{0}* property value'
+                         ' for this command invocation. Use *{1}* to'
+                         ' disable.'.format(prop.name, inverted_name))
+      elif default:
+        inverted_help = ' Enabled by default, use *{0}* to disable.'.format(
+            inverted_name)
+      else:
+        inverted_help = ' Use *{0}* to disable.'.format(inverted_name)
+      # calliope.markdown.MarkdownGenerator._Details() checks and appends
+      # arg.inverted_help to the detailed help markdown.  We can't do that
+      # here because detailed_help may not have been set yet.
+      setattr(added_argument, 'inverted_help', inverted_help)
+
+    kwargs = dict(original_kwargs)
+    if action == 'store_true':
+      action = 'store_false'
+    elif action == 'store_false':
+      action = 'store_true'
+    kwargs['action'] = action
+    if not kwargs.get('dest'):
+      kwargs['dest'] = dest
+    kwargs['help'] = argparse.SUPPRESS
+
+    return self.parser.add_argument(inverted_name, **kwargs)
+
+  def _ShouldInvertBooleanFlag(self, name, action):
     """Checks if flag name with action is a Boolean flag to invert.
 
     Args:
@@ -394,150 +672,44 @@ class ArgumentInterceptor(object):
     # Not a Boolean flag.
     return False, None
 
-  # pylint: disable=g-bad-name
-  def add_argument(self, *args, **kwargs):
-    """add_argument intercepts calls to the parser to track arguments."""
-    # TODO(jasmuth): do not allow short-options without long-options.
+  def _AddRemoteCompleter(self, added_argument, completion_resource,
+                          list_command_path):
+    """Adds a remote completer to the given argument if necessary.
 
-    # we will choose the first option as the name
-    name = args[0]
+    Args:
+      added_argument: The argparse argument that was previously created.
+      completion_resource: str, The name of the resource that this argument
+        corresponds to.
+      list_command_path: str, The explicit calliope command to run to get the
+        completions if you want to override the default for the given resource
+        type.
+    """
+    if not completion_resource:
+      return
 
-    positional = not name.startswith('-')
-    if positional and not self.allow_positional:
-      # TODO(markpell): More informative error message here about which group
-      # the problem is in.
-      raise ArgumentException('Illegal positional argument: ' + name)
-
-    if positional and '-' in name:
-      raise ArgumentException(
-          "Positional arguments cannot contain a '-': " + name)
-
-    dest = kwargs.get('dest')
-    if not dest:
-      # this is exactly what happens in argparse
-      dest = name.lstrip(self.parser.prefix_chars).replace('-', '_')
-    default = kwargs.get('default')
-    required = kwargs.get('required')
-    # A flag declared somewhere between the top and leaf command.
-    group_flag = kwargs.pop('group_flag', False)
-    # A flag that each group/command has a unique copy of.
-    unique_flag = kwargs.pop('unique_flag', False)
-
-    self.defaults[dest] = default
-    if required:
-      self.required.append(dest)
-    self.dests.append(dest)
-    if self.mutex_group_id:
-      self.mutex_groups[dest] = self.mutex_group_id
-
-    if positional and 'metavar' not in kwargs:
-      kwargs['metavar'] = name.upper()
-
-    self.resource = kwargs.pop('completion_resource', None)
-    self.listpath = kwargs.pop('list_command_path', None)
-    if self.resource and not self.listpath:
-      self.listpath = self.resource
+    if not list_command_path:
+      list_command_path = completion_resource
       # alpha and beta commands need to specify list_command_path
-      if self.listpath.startswith('alpha') or self.listpath.startswith('beta'):
+      if (list_command_path.startswith('alpha') or
+          list_command_path.startswith('beta')):
         # if list_command_path not specified don't add the completer
-        self.resource = None
+        completion_resource = None
       else:
-        self.listpath = LowerCaseWithDashes(self.resource)
-    added_argument = self.parser.add_argument(*args, **kwargs)
-    if self.cli and self.resource:
+        list_command_path = self._LowerCaseWithDashes(completion_resource)
+
+    if completion_resource:
       # add a remote completer
       added_argument.completer = (
           remote_completion.RemoteCompletion.GetCompleterForResource(
-              self.resource,
-              self.cli,
-              ro_command_line=self.listpath))
-    if positional:
-      self.positional_args.append(added_argument)
-    else:
-      self.flag_args.append(added_argument)
-      # There are a few legitimate explicit --no-foo flags.
-      action = kwargs.get('action')
-      invert, prop = self._InvertBooleanFlag(name, action)
-      if invert:
-        # Add hidden --no-foo for the --foo Boolean flag. The inverted flag will
-        # have the same dest and mutually exclusive group as the original flag.
-        inverted_name = '--no-' + name[2:]
-        # Explicit default=None yields the 'Use to disable.' text.
-        if prop or (kwargs.get('default', False) in (True, None) and
-                    kwargs.get('help') != argparse.SUPPRESS):
-          if prop:
-            inverted_help = (' Overrides the default *{0}* property value'
-                             ' for this command invocation. Use *{1}* to'
-                             ' disable.'.format(prop.name, inverted_name))
-          elif default:
-            inverted_help = ' Enabled by default, use *{0}* to disable.'.format(
-                inverted_name)
-          else:
-            inverted_help = ' Use *{0}* to disable.'.format(inverted_name)
-          # calliope.markdown.MarkdownGenerator._Details() checks and appends
-          # arg.inverted_help to the detailed help markdown.  We can't do that
-          # here because detailed_help may not have been set yet.
-          setattr(added_argument, 'inverted_help', inverted_help)
-        kwargs = dict(kwargs)
-        if action == 'store_true':
-          action = 'store_false'
-        elif action == 'store_false':
-          action = 'store_true'
-        kwargs['action'] = action
-        if not kwargs.get('dest'):
-          kwargs['dest'] = dest
-        kwargs['help'] = argparse.SUPPRESS
-        inverted_argument = self.parser.add_argument(inverted_name, **kwargs)
-        self.flag_args.append(inverted_argument)
-        inverted_argument.group_flag = group_flag
-        inverted_argument.unique_flag = unique_flag
+              completion_resource,
+              self.cli_generator.Generate,
+              command_line=list_command_path))
 
-    added_argument.group_flag = group_flag
-    added_argument.unique_flag = unique_flag
-
-    return added_argument
-
-  # pylint: disable=redefined-builtin
-  def register(self, registry_name, value, object):
-    return self.parser.register(registry_name, value, object)
-
-  def set_defaults(self, **kwargs):
-    return self.parser.set_defaults(**kwargs)
-
-  def get_default(self, dest):
-    return self.parser.get_default(dest)
-
-  def add_argument_group(self, *args, **kwargs):
-    new_parser = self.parser.add_argument_group(*args, **kwargs)
-    cli = self.parser._calliope_command._cli_generator.Generate
-    return ArgumentInterceptor(parser=new_parser,
-                               allow_positional=self.allow_positional,
-                               cli=cli,
-                               data=self.data)
-
-  def add_mutually_exclusive_group(self, **kwargs):
-    new_parser = self.parser.add_mutually_exclusive_group(**kwargs)
-    cli = self.parser._calliope_command._cli_generator.Generate
-    return ArgumentInterceptor(parser=new_parser,
-                               allow_positional=self.allow_positional,
-                               data=self.data,
-                               cli=cli,
-                               mutex_group_id=id(new_parser))
-
-  def AddFlagActionFromAncestors(self, action):
-    """Add a flag action to this parser, but segregate it from the others.
-
-    Segregating the action allows automatically generated help text to ignore
-    this flag.
-
-    Args:
-      action: argparse.Action, The action for the flag being added.
-
-    """
-    # pylint:disable=protected-access, simply no other way to do this.
-    self.parser._add_action(action)
-    # explicitly do this second, in case ._add_action() fails.
-    self.data.ancestor_flag_args.append(action)
+  def _LowerCaseWithDashes(self, name):
+    # Uses two passes to handle all-upper initialisms, such as fooBARBaz
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
+    s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
+    return s2
 
 
 class ConfigHooks(object):
@@ -637,7 +809,7 @@ class CommandCommon(object):
       # Propagate down the hidden attribute.
       if parent_group.IsHidden():
         self._common_type._is_hidden = True
-      # TODO(markpell): This is going to go away once we remove the explicit
+      # TODO(user): This is going to go away once we remove the explicit
       # Alpha and Beta decorators for commands.  Once the commands show up
       # under the correct track, the help will use the regular release track
       # for annotations (b/19406151).
@@ -660,9 +832,13 @@ class CommandCommon(object):
     """Gets the hidden status of this command or group."""
     return self._common_type.IsHidden()
 
+  def IsRoot(self):
+    """Returns True if this is the root element in the CLI tree."""
+    return not self._parent_group
+
   def _TopCLIElement(self):
     """Gets the top group of this CLI."""
-    if not self._parent_group:
+    if self.IsRoot():
       return self
     return self._parent_group._TopCLIElement()
 
@@ -694,7 +870,7 @@ class CommandCommon(object):
     if tag:
       self.short_help = tag + self.short_help
       self.long_help = tag + self.long_help
-      # TODO(gsfowler):b/21208128: Drop these 4 lines.
+      # TODO(user):b/21208128: Drop these 4 lines.
       prefix = self.ReleaseTrack(for_help=True).prefix
       if len(self._path) < 2 or self._path[1] != prefix:
         self.index_help = tag + self.index_help
@@ -715,7 +891,8 @@ class CommandCommon(object):
           description=self.long_help,
           add_help=False,
           prog=self.dotted_name,
-          calliope_command=self)
+          calliope_command=self,
+          flag_collection=[])
     else:
       # This is a normal sub group, so just add a new subparser to the existing
       # one.
@@ -731,32 +908,27 @@ class CommandCommon(object):
 
     self.ai = ArgumentInterceptor(
         parser=self._parser,
-        cli=self._cli_generator.Generate,
+        is_root=not parser_group,
+        cli_generator=self._cli_generator,
         allow_positional=allow_positional_args)
 
     self.ai.add_argument(
         '-h', action=actions.ShortHelpAction(self),
-        unique_flag=True,
+        is_replicated=True,
+        is_common=True,
         help='Print a summary help and exit.')
     self.ai.add_argument(
         '--help', action=actions.RenderDocumentAction(self, '--help'),
-        unique_flag=True,
+        is_replicated=True,
+        is_common=True,
         help='Display detailed help.')
     self.ai.add_argument(
         '--document', action=actions.RenderDocumentAction(self),
-        unique_flag=True,
+        is_replicated=True,
         nargs=1,
         metavar='ATTRIBUTES',
         type=arg_parsers.ArgDict(),
         help=argparse.SUPPRESS)
-    self.ai.add_argument(
-        '--configuration',
-        metavar='CONFIGURATION',
-        unique_flag=True,
-        help=(argparse.SUPPRESS
-              # 'Named configuration for this invocation.  Run '
-              #' `gcloud topics configurations` for more information.'
-             ))
 
     self._AcquireArgs()
 
@@ -858,12 +1030,12 @@ class CommandCommon(object):
     if self._parent_group:
       # Add parent flags to children, if they aren't represented already
       for flag in self._parent_group.GetAllAvailableFlags():
-        if flag.unique_flag:
+        if flag.is_replicated:
           # Each command or group gets its own unique help flags.
           continue
-        if flag.group_flag:
-          # Don't propagate down flags that only apply to the group with no
-          # subcommand.
+        if flag.do_not_propagate:
+          # Don't propagate down flags that only apply to the group but not to
+          # subcommands.
           continue
         if flag.required:
           # It is not easy to replicate required flags to subgroups and
@@ -1045,7 +1217,8 @@ class CommandGroup(CommandCommon):
     """
     if not self._sub_parser:
       self._sub_parser = self._parser.add_subparsers(
-          action=CloudSDKSubParsersAction, calliope_command=self)
+          action=CloudSDKSubParsersAction, calliope_command=self,
+          flag_collection=self._parser._flag_collection)
     return self._sub_parser
 
   def AllSubElements(self):

@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """A helper function that executes a series of List queries for many APIs.
 
 Based on list_pager.py from //cloud/bigscience/apitools/base/py/list_pager.py,
@@ -7,7 +19,7 @@ but modified to use pageSize rather than maxResults.
 
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
@@ -19,7 +31,7 @@ def YieldFromList(
   """Make a series of List requests, keeping track of page tokens.
 
   Args:
-    service: apitools_base.BaseApiService, A service with a .List() method.
+    service: base_api.BaseApiService, A service with a .List() method.
     request: protorpc.messages.Message, The request message corresponding to the
         service's .List() method, with all the attributes populated except
         the .maxResults and .pageToken attributes.
@@ -44,7 +56,7 @@ def YieldFromList(
   while limit is None or limit:
     try:
       response = getattr(service, method)(request)
-    except apitools_base.HttpError as error:
+    except exceptions.HttpError as error:
       raise calliope_exceptions.HttpException('RPC Failed: {0}'.format(
           dataflow_util.GetErrorMessage(error)))
     items = getattr(response, field)

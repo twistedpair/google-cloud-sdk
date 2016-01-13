@@ -1,10 +1,23 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """The calliope CLI/API is a framework for building library interfaces."""
 
 import argparse
 import os
 import re
+import ssl
 import sys
 import uuid
 
@@ -24,12 +37,17 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
 
-# There are some error classes that we create and want to be handled as
-# recoverable errors, but cannot import the core_exceptions module (and
-# therefore the Error class) for various reasons (e.g. circular dependencies).
-# To work around this, we keep a list of known "friendly" error types, which we
-# handle in the same way.
-KNOWN_ERRORS = [files.Error]
+# There are some error classes that want to be handled as recoverable errors,
+# but cannot import the core_exceptions module (and therefore the Error class)
+# for various reasons (e.g. circular dependencies). To work around this, we keep
+# a list of known "friendly" error types, which we handle in the same way.
+# Additionally, we provide useful message suffixes for these error types.
+KNOWN_ERRORS = {
+    files.Error: '',
+    ssl.SSLError: 'This may be due to network connectivity issues. '
+                  'Please check your network settings, '
+                  'and the status of the service you are trying to reach.',
+}
 _COMMAND_SUFFIX = '.py'
 
 
@@ -423,14 +441,26 @@ class CLILoader(object):
     if self.__version_func is not None:
       top_element.ai.add_argument(
           '-v', '--version',
-          group_flag=True,
+          do_not_propagate=True,
+          is_common=True,
           action=actions.FunctionExitAction(self.__version_func),
-          help='Print version information.')
+          help='Print version information and exit. This flag is only available'
+          ' at the global level.')
+
+    top_element.ai.add_argument(
+        '--configuration',
+        metavar='CONFIGURATION',
+        is_common=True,
+        help=(argparse.SUPPRESS
+              # 'Named configuration for this invocation.  Run '
+              #' `gcloud topics configurations` for more information.'
+             ))
 
     top_element.ai.add_argument(
         '--verbosity',
         choices=log.OrderedVerbosityNames(),
         default=None,
+        is_common=True,
         help=(
             'Override the default verbosity for this command.  This must be '
             'a standard logging verbosity level: [{values}] (Default: '
@@ -442,7 +472,7 @@ class CLILoader(object):
     # This should be a pure Boolean flag, but the alternate true/false explicit
     # value form is preserved for backwards compatibility. This flag and
     # is the only Cloud SDK outlier.
-    # TODO(gsfowler): b/24095744: Add true/false deprecation message.
+    # TODO(user): b/24095744: Add true/false deprecation message.
     top_element.ai.add_argument(
         '--user-output-enabled',
         metavar=' ',  # Help text will look like the flag does not have a value.
@@ -457,6 +487,7 @@ class CLILoader(object):
     format_flag = top_element.ai.add_argument(
         '--format',
         default=None,
+        is_common=True,
         help='The format for printing command output resources.')
     format_flag.detailed_help = """\
         Sets the format for printing command output resources. The default is a
@@ -571,6 +602,7 @@ class CLI(object):
 
     named_configs.FLAG_OVERRIDE_STACK.AllocateFrame()
     properties.VALUES.PushInvocationValues()
+    flag_names = None
     try:
       for s in args:
         try:
@@ -584,6 +616,7 @@ class CLI(object):
           named_configs.AdhocConfigFlagParse(args),
           properties.PropertiesFile.Invalidate)
       args = self.__parser.parse_args(args)
+      flag_names = self.__parser.GetFlagCollection()
 
       # -h|--help|--document are dispatched by parse_args and never get here.
 
@@ -601,7 +634,8 @@ class CLI(object):
       log.SetVerbosity(None)
 
       command_path_string = '.'.join(args.command_path)
-      metrics.Commands(command_path_string, config.CLOUD_SDK_VERSION)
+      metrics.Commands(command_path_string, config.CLOUD_SDK_VERSION,
+                       flag_names)
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
@@ -614,17 +648,20 @@ class CLI(object):
       return result
 
     except exceptions.ExitCodeNoError as exc:
-      self._HandleKnownError(command_path_string, exc, print_error=False)
+      self._HandleKnownError(command_path_string, exc, flag_names,
+                             print_error=False)
     except core_exceptions.Error as exc:
-      self._HandleKnownError(command_path_string, exc, print_error=True)
+      self._HandleKnownError(command_path_string, exc, flag_names,
+                             print_error=True)
     except Exception as exc:
       if type(exc) in KNOWN_ERRORS:
-        self._HandleKnownError(command_path_string, exc, print_error=True)
+        self._HandleKnownError(command_path_string, exc, flag_names,
+                               print_error=True)
       else:
         # Make sure any uncaught exceptions still make it into the log file.
         exc_printable = self.SafeExceptionToString(exc)
         log.debug(exc_printable, exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc)
+        metrics.Error(command_path_string, exc, flag_names)
         raise
     finally:
       properties.VALUES.PopInvocationValues()
@@ -651,21 +688,26 @@ class CLI(object):
       # See http://stackoverflow.com/questions/3715865/unicodeencodeerror-ascii.
       return unicode(exc).encode('ascii', 'ignore')
 
-  def _HandleKnownError(self, command_path_string, exc, print_error=True):
+  def _HandleKnownError(self, command_path_string, exc, flag_names,
+                        print_error=True):
     """For exceptions we know about, just print the error and exit.
 
     Args:
       command_path_string: str, The command that was run.
       exc: Exception, The exeption that was raised.
+      flag_names: [str], The names of the flags that were used during this
+        execution.
       print_error: bool, True to print an error message, False to just exit with
         the given error code.
     """
-    msg = u'({0}) {1}'.format(command_path_string,
-                              unicode(exc))
+    # If this is a known error, we may have an additional message suffix.
+    message_suffix = KNOWN_ERRORS.get(type(exc), '')
+    msg = u'({0}) {1} {2}'.format(command_path_string, unicode(exc),
+                                  message_suffix)
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)
-    metrics.Error(command_path_string, exc)
+    metrics.Error(command_path_string, exc, flag_names)
     self._Exit(exc)
 
   def _Exit(self, exc):

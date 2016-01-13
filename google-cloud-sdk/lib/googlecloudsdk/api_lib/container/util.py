@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Common utilities for the containers tool."""
 import cStringIO
@@ -38,7 +50,7 @@ def GetError(error):
   """Parse HttpError returned from Google API into printable APIHttpError.
 
   Args:
-    error: apitools_base.HttpError.
+    error: apitools_exceptions.HttpError.
   Returns:
     APIHttpError containing http error code and error message.
   """
@@ -239,7 +251,7 @@ class ClusterConfig(object):
 
   @classmethod
   def _ClusterVersion(cls, cluster):
-    # TODO(jeffml): use api_adapter instead of getattr
+    # TODO(user): use api_adapter instead of getattr
     version = getattr(cluster, 'initialClusterVersion', None)
     if not version:
       version = getattr(cluster, 'clusterApiVersion')
@@ -283,10 +295,10 @@ class ClusterConfig(object):
       # state.
       log.error('Cluster is missing certificate data.')
 
-    # TODO(jeffml): these are not needed if cluster has certs, though they
+    # TODO(user): these are not needed if cluster has certs, though they
     # are useful for testing, e.g. with curl. Consider removing if/when the
     # apiserver no longer supports insecure (no certs) requests.
-    # TODO(jeffml): use api_adapter instead of getattr, or remove bearerToken
+    # TODO(user): use api_adapter instead of getattr, or remove bearerToken
     # support
     if getattr(auth, 'bearerToken', None):
       kwargs['token'] = auth.bearerToken

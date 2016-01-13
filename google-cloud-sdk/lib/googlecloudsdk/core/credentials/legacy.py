@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Generates credentials for gsutil."""
 
@@ -135,7 +147,7 @@ class LegacyGenerator(CredentialGenerator):
     # https://github.com/google/oauth2client/issues/165 is addressed.
     if isinstance(self.credentials,
                   oauth2_service_account._ServiceAccountCredentials):
-      # TODO(cherba): Currently activate-service-account discards the JSON
+      # TODO(user): Currently activate-service-account discards the JSON
       # key file after reading it; save it so that we can hand it to gsutil.
       # For now, serialize the credentials back to their original
       # JSON key file form.

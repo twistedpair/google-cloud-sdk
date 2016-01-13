@@ -8,8 +8,16 @@ echo Welcome to the Google Cloud SDK!
 
 SETLOCAL EnableDelayedExpansion
 
+rem install.bat lives in the root of the Cloud SDK installation directory.
+SET CLOUDSDK_ROOT_DIR=%~dp0
+
 IF "%CLOUDSDK_PYTHON%"=="" (
-  FOR %%i in (python.exe) do (SET CLOUDSDK_PYTHON=%%~$PATH:i)
+  SET BUNDLED_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\bundledpython\python.exe
+  IF EXIST !BUNDLED_PYTHON! (
+    SET CLOUDSDK_PYTHON=!BUNDLED_PYTHON!
+  ) ELSE (
+    FOR %%i in (python.exe) do (SET CLOUDSDK_PYTHON=%%~$PATH:i)
+  )
 )
 IF "%CLOUDSDK_PYTHON%"=="" (
   echo.
@@ -18,7 +26,7 @@ IF "%CLOUDSDK_PYTHON%"=="" (
   echo to the location of your Python executable.
   "%COMSPEC%" /C exit 1
 ) ELSE (
-  "%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "%~dp0bin\bootstrapping\install.py" %*"
+  "%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\bin\bootstrapping\install.py" %*"
 )
 
 IF _%INTERACTIVE%_==_0_ (

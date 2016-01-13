@@ -1,0 +1,55 @@
+#!/bin/bash
+# Import a git repo into a local directory (presumably somewhere in this
+# directory).  Use the "-v" option to verify.
+#
+# Example:
+#   ./xrt-import sso://team/byo-runtimes/nodejs-ext-runtime nodejs
+
+
+set -e
+
+verify=false
+help=false
+
+while getopts "hv" opt; do
+  case $opt in
+    v)
+      verify=true
+      shift
+      ;;
+    h)
+      help=true
+      shift
+      ;;
+    \?)
+      echo "Unrecognized option: $1" 1>&2
+      ;;
+  esac
+done
+
+if [[ -z "$2" ]] || $help; then
+  echo "Usage:"
+  echo "  $0 <git-repo> <local-dir>"
+  echo "     To import."
+  echo "  $0 -v <git-repo> <local-dir>"
+  echo "     To verify."
+  exit 1
+fi
+
+# Create the local repository name (/tmp/<last-part-of-git-url>.<pid> - for
+# example, if $1 is http://github.com/SomeProject/foobar and the shell pid is
+# 1234, local_repo will be "/tmp/foobar.1234".
+local_repo="/tmp/${1##*/}.$$"
+git clone "$1" $local_repo
+rm -rf $local_repo/.git
+
+rm -rf $local_repo/test  # b/26132552 test frameworks run tests they shouldn't
+
+if $verify; then
+  echo '=========== DIFFING =========='
+  git diff $local_repo $2
+else
+  cp -rf $local_repo/* $2
+fi
+
+rm -rf $local_repo

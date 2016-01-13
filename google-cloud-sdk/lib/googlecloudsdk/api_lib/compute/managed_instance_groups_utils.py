@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Common utility functions for Autoscaler processing."""
 
 import argparse
@@ -14,7 +26,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_messages
 
-# TODO(jbartosik): Use generated list of possible enum values.
+# TODO(user): Use generated list of possible enum values.
 _ALLOWED_UTILIZATION_TARGET_TYPES = sorted(
     compute_alpha_messages.AutoscalingPolicyCustomMetricUtilization
     .UtilizationTargetTypeValueValuesEnum.to_dict().keys())
@@ -150,10 +162,26 @@ def AssertInstanceGroupManagerExists(igm_ref, project, messages, compute,
 
 def AutoscalersForZones(zones, project, compute, http, batch_url,
                         fail_when_api_not_supported=True):
-  """Finds all Autoscalers defined for a given project and zones.
+  """Finds all Autoscalers defined for a given project and zones."""
+
+  return AutoscalersForLocations(
+      zones=zones,
+      regions=None,
+      project=project,
+      compute=compute,
+      http=http,
+      batch_url=batch_url,
+      fail_when_api_not_supported=fail_when_api_not_supported)
+
+
+def AutoscalersForLocations(zones, regions,
+                            project, compute, http, batch_url,
+                            fail_when_api_not_supported=True):
+  """Finds all Autoscalers defined for a given project and locations.
 
   Args:
     zones: target zones
+    regions: target regions
     project: project owning resources.
     compute: module representing compute api.
     http: communication channel.
@@ -167,22 +195,35 @@ def AutoscalersForZones(zones, project, compute, http, batch_url,
   # (ERROR_CODE, ERROR_MESSAGE) tuples.
   errors = []
 
-  if hasattr(compute, 'autoscalers'):
-    # Explicit list() is required to unwind the generator and make sure errors
-    # are detected at this level.
-    autoscalers = list(lister.GetZonalResources(
+  # Explicit list() is required to unwind the generator and make sure errors
+  # are detected at this level.
+  requests = []
+  if zones:
+    requests += lister.FormatListRequests(
         service=compute.autoscalers,
         project=project,
-        requested_zones=zones,
-        http=http,
-        batch_url=batch_url,
-        errors=errors,
-        filter_expr=None,
-    ))
-  else:
-    autoscalers = []
-    if fail_when_api_not_supported:
-      errors.append((None, 'API does not support autoscaling'))
+        scopes=zones,
+        scope_name='zone',
+        filter_expr=None)
+
+  if regions:
+    if hasattr(compute, 'regionAutoscalers'):
+      requests += lister.FormatListRequests(
+          service=compute.regionAutoscalers,
+          project=project,
+          scopes=regions,
+          scope_name='region',
+          filter_expr=None)
+    else:
+      if fail_when_api_not_supported:
+        errors.append((None, 'API does not support regional autoscaling'))
+
+  autoscalers = list(request_helper.MakeRequests(
+      requests=requests,
+      http=http,
+      batch_url=batch_url,
+      errors=errors,
+      custom_get_requests=None))
 
   if errors:
     utils.RaiseToolException(
@@ -197,17 +238,21 @@ def AutoscalersForMigs(migs, autoscalers, project):
   """Finds Autoscalers with target amongst given IGMs.
 
   Args:
-    migs: List of pairs (IGM name, zone).
+    migs: List of triples (IGM name, scope type, scope name).
     autoscalers: A list of Autoscalers to search among.
     project: Project owning resources.
   Returns:
     A list of all Autoscalers with target on mig_names list.
   """
   igm_url_regexes = []
-  for (name, zone) in migs:
+  for (name, scope_type, scope_name) in migs:
     igm_url_regexes.append(
-        '/projects/{project}/zones/{zone}/instanceGroupManagers/{name}'
-        .format(project=project, zone=zone, name=name))
+        '/projects/{project}/{scopeType}/{scopeName}/'
+        'instanceGroupManagers/{name}'
+        .format(project=project,
+                scopeType=(scope_type + 's'),
+                scopeName=scope_name,
+                name=name))
   igm_url_regex = re.compile('(' + ')|('.join(igm_url_regexes) + ')')
   result = [
       autoscaler for autoscaler in autoscalers
@@ -216,19 +261,21 @@ def AutoscalersForMigs(migs, autoscalers, project):
   return result
 
 
-def AutoscalerForMig(mig_name, autoscalers, project, zone):
+def AutoscalerForMig(mig_name, autoscalers, project, scope_name, scope_type):
   """Finds Autoscaler targetting given IGM.
 
   Args:
     mig_name: Name of MIG targetted by Autoscaler.
     autoscalers: A list of Autoscalers to search among.
     project: Project owning resources.
-    zone: Target zone.
+    scope_name: Target scope.
+    scope_type: Target scope type.
   Returns:
     Autoscaler object for autoscaling the given Instance Group Manager or None
     when such Autoscaler does not exist.
   """
-  autoscalers = AutoscalersForMigs([(mig_name, zone)], autoscalers, project)
+  autoscalers = AutoscalersForMigs(
+      [(mig_name, scope_type, scope_name)], autoscalers, project)
   if autoscalers:
     # For each Instance Group Manager there can be at most one Autoscaler having
     # the Manager as a target, so when one is found it can be returned as it is
@@ -246,23 +293,49 @@ def AddAutoscalersToMigs(migs_iterator, project, compute, http,
   """Add Autoscaler to each IGM object if autoscaling is enabled for it."""
   migs = list(migs_iterator)
   zone_names = set([path_simplifier.Name(mig['zone'])
-                    for mig in migs])
+                    for mig in migs if 'zone' in mig])
+  region_names = set([path_simplifier.Name(mig['region'])
+                      for mig in migs if 'region' in mig])
   autoscalers = {}
-  for zone_name in zone_names:
-    autoscalers[zone_name] = AutoscalersForZones(
-        zones=[zone_name],
-        project=project,
-        compute=compute,
-        http=http,
-        batch_url=batch_url,
-        fail_when_api_not_supported=fail_when_api_not_supported)
+  all_autoscalers = AutoscalersForLocations(
+      zones=zone_names,
+      regions=region_names,
+      project=project,
+      compute=compute,
+      http=http,
+      batch_url=batch_url,
+      fail_when_api_not_supported=fail_when_api_not_supported)
+
+  for scope_name in list(zone_names) + list(region_names):
+    autoscalers[scope_name] = []
+
+  for autoscaler in all_autoscalers:
+    autoscaler_scope = None
+    if autoscaler.zone is not None:
+      autoscaler_scope = path_simplifier.Name(autoscaler.zone)
+    if hasattr(autoscaler, 'region') and autoscaler.region is not None:
+      autoscaler_scope = path_simplifier.Name(autoscaler.region)
+    if autoscaler_scope is not None:
+      autoscalers[autoscaler_scope].append(autoscaler)
+
   for mig in migs:
-    zone_name = path_simplifier.Name(mig['zone'])
-    autoscaler = AutoscalerForMig(
-        mig_name=mig['name'],
-        autoscalers=autoscalers[zone_name],
-        project=project,
-        zone=zone_name)
+    scope_name = None
+    scope_type = None
+    if 'region' in mig:
+      scope_name = path_simplifier.Name(mig['region'])
+      scope_type = 'region'
+    elif 'zone' in mig:
+      scope_name = path_simplifier.Name(mig['zone'])
+      scope_type = 'zone'
+
+    autoscaler = None
+    if scope_name and scope_type:
+      autoscaler = AutoscalerForMig(
+          mig_name=mig['name'],
+          autoscalers=autoscalers[scope_name],
+          project=project,
+          scope_name=scope_name,
+          scope_type=scope_type)
     if autoscaler:
       mig['autoscaler'] = autoscaler
     yield mig

@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Support for externalized runtimes."""
 
 import json
@@ -10,11 +22,17 @@ import threading
 import yaml
 
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import schema
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
+
+
+WRITING_FILE_MESSAGE = 'Writing [{0}] to [{1}].'
+FILE_EXISTS_MESSAGE = 'Not writing [{0}], it already exists.'
 
 
 class PluginInvocationFailed(exceptions.Error):
@@ -80,16 +98,40 @@ def _NormalizePath(basedir, pathname):
 
 
 class GeneratedFile(object):
+  """Wraps the name and contents of a generated file."""
 
   def __init__(self, filename, contents):
+    """Constructor.
+
+    Args:
+      filename: (str) Unix style file path relative to the target source
+        directory.
+      contents: (str) File contents.
+    """
     self.filename = filename
     self.contents = contents
 
-  def WriteTo(self, dest_dir):
+  def WriteTo(self, dest_dir, notify):
+    """Write the file to the destination directory.
+
+    Args:
+      dest_dir: (str) Destination directory.
+      notify: (callable(str)) Function to notify the user.
+
+    Returns:
+      (str or None) The full normalized path name of the destination file,
+      None if it wasn't generated because it already exists.
+    """
     path = _NormalizePath(dest_dir, self.filename)
-    with open(path, 'w') as f:
-      f.write(self.contents)
-    return path
+    if not os.path.exists(path):
+      notify(WRITING_FILE_MESSAGE.format(self.filename, dest_dir))
+      with open(path, 'w') as f:
+        f.write(self.contents)
+      return path
+    else:
+      notify(FILE_EXISTS_MESSAGE.format(self.filename))
+
+    return None
 
 
 class PluginResult(object):
@@ -132,6 +174,10 @@ _RUNTIME_SCHEMA = schema.Message(
     detect=_EXEC_SECTION,
     pre_build=_EXEC_SECTION,
     post_build=_EXEC_SECTION)
+
+_MISSING_FIELD_ERROR = 'Missing [{0}] field in [{1}] message'
+_NO_DEFAULT_ERROR = ('User input requested: [{0}] while running '
+                     'non-interactive with no default specified.')
 
 
 class ExternalizedRuntime(object):
@@ -177,7 +223,28 @@ class ExternalizedRuntime(object):
         break
       log.warn('%s: %s' % (section_name, line.rstrip()))
 
-  def _ProcessMessage(self, message, result):
+  def _ProcessMessage(self, plugin_stdin, message, result, params,
+                      runtime_data):
+    """Process a message received from the plugin.
+
+    Args:
+      plugin_stdin: (file) The standard input stream of the plugin process.
+      message: ({str: object, ...}) The message (this maps directly to the
+        message's json object).
+      result: (PluginResult) A result object in which to store data collected
+        from some types of message.
+      params: (fingerprinting.Params) Parameters passed in through the
+        fingerprinter.
+      runtime_data: (object or None) Arbitrary runtime data obtained from the
+        "detect" plugin.  This will be None if we are processing a message for
+        the detect plugin itself or if no runtime data was provided.
+    """
+
+    def SendResponse(response):
+      json.dump(response, plugin_stdin)
+      plugin_stdin.write('\n')
+      plugin_stdin.flush()
+
     msg_type = message.get('type')
     if msg_type is None:
       log.error('Missing type in message: %0.80s' % str(message))
@@ -187,20 +254,50 @@ class ExternalizedRuntime(object):
       try:
         result.runtime_data = message['runtime_data']
       except KeyError:
-        log.error('Missing [runtime_data] field in runtime_parameters message.')
+        log.error(_MISSING_FIELD_ERROR.format('runtime_data', msg_type))
     elif msg_type == 'gen_file':
       try:
-        # TODO(mmuller): deal with 'encoding'
+        # TODO(user): deal with 'encoding'
         filename = message['filename']
         contents = message['contents']
         result.files.append(GeneratedFile(filename, contents))
       except KeyError as ex:
-        log.error('Missing [%s] field in gen_file message', ex.message)
-    # TODO(mmuller): implement remaining message types.
+        log.error(_MISSING_FIELD_ERROR.format(ex, msg_type))
+    elif msg_type == 'get_config':
+      response = {'type': 'get_config_response',
+                  'params': params.ToDict(),
+                  'runtime_data': runtime_data}
+      SendResponse(response)
+    elif msg_type == 'query_user':
+      try:
+        prompt = message['prompt']
+      except KeyError as ex:
+        log.error(_MISSING_FIELD_ERROR.format('prompt', msg_type))
+        return
+      default = message.get('default')
+
+      if console_io.CanPrompt():
+        if default:
+          message = '{0} [{1}]: '.format(prompt, default)
+        else:
+          message = prompt + ':'
+        result = console_io.PromptResponse(message)
+      else:
+        # TODO(user): Support the "id" field once there is a way to pass
+        # these through.
+        if default is not None:
+          result = default
+        else:
+          result = ''
+          log.error(_NO_DEFAULT_ERROR.format(prompt))
+
+      SendResponse({'type': 'query_user_response', 'result': result})
+    # TODO(user): implement remaining message types.
     else:
       log.error('Unknown message type %s' % msg_type)
 
-  def _ProcessPluginPipes(self, section_name, proc, result):
+  def _ProcessPluginPipes(self, section_name, proc, result, params,
+                          runtime_data):
     """Process the standard output and input streams of a plugin."""
     while True:
       line = proc.stdout.readline()
@@ -210,13 +307,14 @@ class ExternalizedRuntime(object):
       # Parse and process the message.
       try:
         message = json.loads(line)
-        self._ProcessMessage(message, result)
+        self._ProcessMessage(proc.stdin, message, result, params, runtime_data)
       except ValueError:
         # Unstructured lines get logged as "info".
         log.info('%s: %s' % (section_name, line.rstrip()))
 
-  def RunPlugin(self, section_name, plugin_spec, args=None,
-                valid_exit_codes=(0,)):
+  def RunPlugin(self, section_name, plugin_spec, params, args=None,
+                valid_exit_codes=(0,),
+                runtime_data=None):
     """Run a plugin.
 
     Args:
@@ -224,9 +322,12 @@ class ExternalizedRuntime(object):
         from.
       plugin_spec: ({str: str, ...}) A dictionary mapping plugin locales to
         script names
+      params: (fingerprinting.Params or None) Parameters for the plugin.
       args: ([str, ...] or None) Command line arguments for the plugin.
       valid_exit_codes: (int, ...) Exit codes that will be accepted without
         raising an exception.
+      runtime_data: ({str: object, ...}) A dictionary of runtime data passed
+        back from detect.
 
     Returns:
       (PluginResult) A bundle of the exit code and data produced by the plugin.
@@ -234,7 +335,7 @@ class ExternalizedRuntime(object):
     Raises:
       PluginInvocationFailed: The plugin terminated with a non-zero exit code.
     """
-    # TODO(mmuller): Support other script types.
+    # TODO(user): Support other script types.
     if plugin_spec.has_key('python'):
       normalized_path = _NormalizePath(self.root, plugin_spec['python'])
 
@@ -252,7 +353,8 @@ class ExternalizedRuntime(object):
                                        args=(section_name, p.stderr,))
       stderr_thread.start()
       stdout_thread = threading.Thread(target=self._ProcessPluginPipes,
-                                       args=(section_name, p, result))
+                                       args=(section_name, p, result,
+                                             params, runtime_data))
       stdout_thread.start()
 
       stderr_thread.join()
@@ -285,7 +387,7 @@ class ExternalizedRuntime(object):
     """
     detect = self.config.get('detect')
     if detect:
-      result = self.RunPlugin('detect', detect, [path], (0, 1))
+      result = self.RunPlugin('detect', detect, params, [path], (0, 1))
       if result.exit_code:
         return None
       else:
@@ -317,6 +419,10 @@ class ExternalizedRuntime(object):
       InvalidRuntimeDefinition: For a variety of problems with the runtime
         definition.
     """
+    # Log or print status messages depending on whether we're in gen-config or
+    # deploy.
+    notify = log.info if configurator.params.deploy else log.status.Print
+
     generate_configs = self.config.get('generateConfigs')
     if generate_configs:
       cleaner = fingerprinting.Cleaner()
@@ -338,14 +444,74 @@ class ExternalizedRuntime(object):
                                            filename)
 
           dest_path = _NormalizePath(configurator.path, filename)
-          cleaner.Add(dest_path)
-          shutil.copy(full_name, dest_path)
+          if not os.path.exists(dest_path):
+            notify(WRITING_FILE_MESSAGE.format(filename, configurator.path))
+            cleaner.Add(dest_path)
+            shutil.copy(full_name, dest_path)
+          else:
+            notify(FILE_EXISTS_MESSAGE.format(filename))
       else:
-        result = self.RunPlugin('generate_configs', generate_configs)
+        result = self.RunPlugin('generate_configs', generate_configs,
+                                configurator.params,
+                                runtime_data=configurator.data)
         for file_info in result.files:
-          cleaner.Add(file_info.WriteTo(configurator.path))
+          dest_filename = file_info.WriteTo(configurator.path, notify)
+
+          # Cleanup everything except app.yaml files - these are never
+          # temporary.
+          if dest_filename and file_info.filename != 'app.yaml':
+            cleaner.Add(dest_filename)
+
+      if not cleaner.HasFiles():
+        notify('All config files already exist, not generating anything.')
 
       return cleaner
     else:
       raise InvalidRuntimeDefinition('Runtime definition contains no '
                                      'generate_configs section.')
+
+
+def _GetRuntimeDefDir():
+  sdk_root = config.Paths().sdk_root
+  if sdk_root:
+    return os.path.join(sdk_root, 'lib', 'googlecloudsdk', 'api_lib', 'app',
+                        'ext_runtimes', 'runtime_defs')
+  else:
+    # Otherwise we cheat and use the directory of this file.
+    return os.path.join(os.path.dirname(__file__), 'ext_runtimes',
+                        'runtime_defs')
+
+
+class CoreRuntimeLoader(object):
+  """A loader stub for the core runtimes.
+
+  The externalized core runtimes are currently distributed with the cloud sdk.
+  This class encapsulates the name of a core runtime to avoid having to load
+  it at module load time.  Instead, the wrapped runtime is demand-loaded when
+  the Fingerprint() method is called.
+  """
+
+  def __init__(self, name, visible_name, allowed_runtime_names):
+    self._name = name
+    self._rep = None
+    self._visible_name = visible_name
+    self._allowed_runtime_names = allowed_runtime_names
+
+  # These need to be named this way because they're constants in the
+  # non-externalized implementation.  TODO(user) change the names once the
+  # old implementation go away.
+  # pylint:disable=invalid-name
+  @property
+  def ALLOWED_RUNTIME_NAMES(self):
+    return self._allowed_runtime_names
+
+  # pylint:disable=invalid-name
+  @property
+  def NAME(self):
+    return self._visible_name
+
+  def Fingerprint(self, path, params):
+    if not self._rep:
+      path_to_runtime = os.path.join(_GetRuntimeDefDir(), self._name)
+      self._rep = ExternalizedRuntime.Load(path_to_runtime)
+    return self._rep.Fingerprint(path, params)

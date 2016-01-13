@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Manages the state of what is installed in the cloud SDK.
 
@@ -7,6 +19,7 @@ provides functionality like extracting tar files into the installation and
 tracking when we check for updates.
 """
 
+import compileall
 import errno
 import logging
 import os
@@ -122,6 +135,17 @@ class InstallationState(object):
     if not sdk_root:
       raise InvalidSDKRootError()
     return InstallationState(os.path.realpath(sdk_root))
+
+  def BackupInstallationState(self):
+    """Gets the installation state for the backup of this  state, if it exists.
+
+    Returns:
+      InstallationState, The state for this area or None if the backup does not
+          exist.
+    """
+    if not self.HasBackup():
+      return None
+    return InstallationState(os.path.realpath(self.__backup_directory))
 
   @staticmethod
   def VersionForInstalledComponent(component_id):
@@ -558,6 +582,20 @@ class InstallationState(object):
     if not os.path.exists(my_properties):
       return
     shutil.copyfile(my_properties, other_properties)
+
+  def CompilePythonFiles(self):
+    """Attempts to compile all the python files into .pyc files.
+
+    This does not raise exceptions if compiling a given file fails.
+    """
+    root = self.sdk_root
+    to_compile = [
+        os.path.join(root, 'bin', 'bootstrapping'),
+        os.path.join(root, 'lib'),
+        os.path.join(root, 'platform'),
+    ]
+    for d in to_compile:
+      compileall.compile_dir(d, quiet=True)
 
 
 class InstallationManifest(object):

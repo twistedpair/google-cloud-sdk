@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """List printer for Cloud Platform resources."""
 
@@ -146,13 +158,18 @@ COLLECTION_COLUMNS = {
     'app.module_versions': (
         ('MODULE', _Select('module')),
         ('VERSION', _Select('version')),
-        ('IS_DEFAULT', _Select('is_default', _Boolean)),
+        ('TRAFFIC_SPLIT', _Select('traffic_split')),
     ),
 
     'app.versions': (
         ('SERVICE', _Select('service')),
         ('VERSION', _Select('version')),
-        ('TRAFFIC_SPLIT', _Select('traffic_split')),
+        # pylint: disable=unnecessary-lambda
+        ('TRAFFIC_SPLIT', _Select('traffic_split',
+                                  transform=lambda x: '{0:.2f}'.format(x))),
+        ('LAST_DEPLOYED', _Select(
+            'last_deployed_time',
+            transform=lambda x: x and x.isoformat()))
     ),
 
     # AUTOSCALER
@@ -215,6 +232,7 @@ COLLECTION_COLUMNS = {
         ('MASTER_IP', _Select('endpoint')),
         ('MACHINE_TYPE', _Select(
             'nodeConfig', transform=lambda x: '%s' % (x.machineType))),
+        ('NODE_VERSION', _Select('currentNodeVersion')),
         ('NUM_NODES', _Select('currentNodeCount')),
         ('STATUS', _Select('status')),
     ),
@@ -329,6 +347,20 @@ COLLECTION_COLUMNS = {
         ('REFERENCE_SET_ID', _Select('referenceSetId')),
     ),
 
+    'genomics.referenceSets': (
+        ('ID', _Select('id')),
+        ('ASSEMBLY_ID', _Select('assemblyId')),
+        ('SOURCE_ACCESSIONS', _Select('sourceAccessions')),
+    ),
+
+    'genomics.references': (
+        ('ID', _Select('id')),
+        ('NAME', _Select('name')),
+        ('LENGTH', _Select('length')),
+        ('SOURCE_URI', _Select('sourceUri')),
+        ('ACCESSIONS', _Select('sourceAccessions')),
+    ),
+
     'genomics.variants': (
         ('VARIANT_SET_ID', _Select('variantSetId')),
         ('REFERENCE_NAME', _Select('referenceName')),
@@ -416,9 +448,9 @@ COLLECTION_COLUMNS = {
         ('STATE', _Select('state')),
         ('CREATE_TIME', _Select('createTime')),
     ),
-    'source.snapshots.list': (
+    'source.captures.list': (
         ('PROJECT_ID ', _Select('project_id')),
-        ('SNAPSHOT_ID', _Select('id')),
+        ('CAPTURE_ID', _Select('id')),
     ),
 
     # Cloud Updater
@@ -449,19 +481,24 @@ COLLECTION_COLUMNS = {
     'logging.logs': (
         ('NAME', _Select('name')),
     ),
-    'logging.sinks': (
-        ('NAME', _Select('name')),
-        ('DESTINATION', _Select('destination')),
-    ),
     'logging.typedSinks': (
         ('NAME', _Select('name')),
         ('DESTINATION', _Select('destination')),
         ('TYPE', _Select('type')),
+        ('FORMAT', _Select('format')),
+        ('FILTER', _Select('filter'))
     ),
     'logging.metrics': (
         ('NAME', _Select('name')),
         ('DESCRIPTION', _Select('description')),
         ('FILTER', _Select('filter')),
+    ),
+    'logging.resourceDescriptors': (
+        ('TYPE', _Select('type')),
+        ('DESCRIPTION', _Select('description')),
+        ('LABELS', _Select('labels',
+                           # Print a comma separated list of label 'keys'.
+                           lambda x: ', '.join([ele.key for ele in x]))),
     ),
 
     # Service Management (Inception)

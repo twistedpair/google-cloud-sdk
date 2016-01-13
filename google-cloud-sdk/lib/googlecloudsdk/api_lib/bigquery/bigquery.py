@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Bigquery apis layer."""
 
@@ -10,7 +22,8 @@ from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apis.bigquery.v2 import bigquery_v2_messages as messages
 from googlecloudsdk.third_party.apis.bigquery.v2.bigquery_v2_client import BigqueryV2 as client
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 DEFAULT_RESULTS_LIMIT = 100
@@ -51,11 +64,11 @@ class Project(Bigquery):
   def __init__(self, project_id):
     self.id = project_id
 
-  # TODO(cherba): do not expose backend representation.
+  # TODO(user): do not expose backend representation.
   def GetCurrentRawJobsListGenerator(self, all_users, max_results):
     """Returns list of jobs using backed representation for this project."""
 
-    # TODO(cherba): add back state filter support once b/22224569 is resolved.
+    # TODO(user): add back state filter support once b/22224569 is resolved.
     # state_enum = messages.BigqueryJobsListRequest.StateFilterValueValuesEnum
     # state_map = {
     #    'done': state_enum.done,
@@ -68,7 +81,7 @@ class Project(Bigquery):
         allUsers=all_users,
         projection=(messages.BigqueryJobsListRequest.ProjectionValueValuesEnum
                     .full))
-    return apitools_base.list_pager.YieldFromList(
+    return list_pager.YieldFromList(
         self._client.jobs,
         request,
         limit=max_results,
@@ -97,10 +110,10 @@ class Job(Bigquery):
                                               jobId=self.id)
     try:
       self._job = self._client.jobs.Get(request)
-    except apitools_base.HttpError as server_error:
+    except apitools_exceptions.HttpError as server_error:
       raise Error.ForHttpError(server_error)
 
-  # TODO(cherba): do not expose backend representation.
+  # TODO(user): do not expose backend representation.
   def GetRaw(self):
     """Return backend representation for this job."""
     if not self._job:
@@ -147,7 +160,7 @@ class Job(Bigquery):
     service = ServiceQueryWithSchema(self._client)
 
     # Create paging generator for client.jobs.GetQueryResults()[].rows.
-    rows = apitools_base.list_pager.YieldFromList(
+    rows = list_pager.YieldFromList(
         service,
         request,
         limit=max_rows,
@@ -160,11 +173,11 @@ class Job(Bigquery):
     def Yield():
       try:
         for r in rows:
-          # TODO(cherba): handle various value types.
+          # TODO(user): handle various value types.
           yield tuple((cell.v.string_value or
                        cell.v.integer_value)
                       for cell in r.f)
-      except apitools_base.HttpError as server_error:
+      except apitools_exceptions.HttpError as server_error:
         raise Error.ForHttpError(server_error)
     result_iter = Yield()
     try:

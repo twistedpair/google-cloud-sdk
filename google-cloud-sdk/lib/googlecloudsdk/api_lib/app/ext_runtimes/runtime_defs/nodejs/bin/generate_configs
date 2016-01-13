@@ -42,7 +42,7 @@ ROOT = comm.RuntimeDefinitionRoot(ROOT_DIR)
 #                   process.exit(1);' || \
 #     ... etc
 INSTALL_NODE_TEMPLATE = (
-    ' \\\n'.join(ROOT.read_file('data/install-node-version').split('\n')))
+    ' \\\n'.join(ROOT.read_file('data/install-node-version').splitlines()))
 
 def main(args):
     """Generate all config files for the module."""
@@ -52,63 +52,43 @@ def main(args):
     runtime_data = info.runtime_data
     params = info.params
 
-    # Create an output context, which knows how to do the right thing for
-    # generated files.
-    out_ctx = comm.FileGenerationContext.create_from_argv(args)
-
-    # Write "Saving file" messages to the user or to log depending on whether
-    # we're in "deploy."
-    if out_ctx.is_deploy():
-        notify = comm.info
-    else:
-        notify = comm.print_status
-
     # Generate app.yaml.
     if not params.appinfo:
         app_yaml = 'app.yaml'
-        if not out_ctx.exists(app_yaml):
-            notify('Saving [app.yaml].')
-            runtime = 'custom' if params.custom else 'nodejs'
-            app_yaml_contents = ROOT.read_file('data/app.yaml')
-            out_ctx.gen_file(app_yaml,
-                             app_yaml_contents.format(runtime=runtime))
+        runtime = 'custom' if params.custom else 'nodejs'
+        app_yaml_contents = ROOT.read_file('data/app.yaml')
+        comm.gen_file(app_yaml,
+                      app_yaml_contents.format(runtime=runtime))
 
     if params.custom or params.deploy:
         dockerfile = 'Dockerfile'
-        if not out_ctx.exists(dockerfile):
-            notify('Saving [%s].' % dockerfile)
 
-            # Customize the dockerfile.
-            out = StringIO.StringIO()
-            out.write(ROOT.read_file('data', 'Dockerfile'))
-            out.write('COPY . /app/\n')
-            # Generate npm install if there is a package.json.
-            if runtime_data.got_package_json:
-                out.write(ROOT.read_file('data/package-json-install'))
+        # Customize the dockerfile.
+        out = StringIO.StringIO()
+        out.write(ROOT.read_file('data', 'Dockerfile'))
+        out.write('COPY . /app/\n')
+        # Generate npm install if there is a package.json.
+        if runtime_data.got_package_json:
+            out.write(ROOT.read_file('data/package-json-install'))
 
+        if runtime_data.node_version:
+            # Let node check to see if it satisfies the version constraint and
+            # try to install the correct version if not.
+            out.write(INSTALL_NODE_TEMPLATE %
+                      {'version_spec': runtime_data.node_version})
+            out.write('\n')
 
-            if runtime_data.node_version:
-                # Let node check to see if it satisfies the version constraint and
-                # try to install the correct version if not.
-                out.write(INSTALL_NODE_TEMPLATE %
-                        {'version_spec': runtime_data.node_version})
+        # Generate the appropriate start command.
+        if runtime_data.got_npm_start:
+            out.write('CMD npm start\n')
+        else:
+            out.write('CMD node server.js\n')
 
-            # Generate the appropriate start command.
-            if runtime_data.got_npm_start:
-                out.write('CMD npm start\n')
-            else:
-                out.write('CMD node server.js\n')
-
-            out_ctx.gen_file('Dockerfile', out.getvalue())
+        comm.gen_file('Dockerfile', out.getvalue())
 
         # Generate .dockerignore
         dockerignore = '.dockerignore'
-        if not out_ctx.exists(dockerignore):
-            notify('Saving [.dockerignore].')
-            out_ctx.gen_file(dockerignore, ROOT.read_file('data/dockerignore'))
-
-    if not out_ctx.has_generated_files():
-        notify('All config files already exist, not generating anything.')
+        comm.gen_file(dockerignore, ROOT.read_file('data/dockerignore'))
 
 if __name__ == '__main__':
     main(sys.argv)

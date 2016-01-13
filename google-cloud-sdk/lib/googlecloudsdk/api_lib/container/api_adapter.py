@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Api client adapter containers commands."""
 import time
@@ -12,8 +24,10 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.third_party.apis.compute import v1 as compute_v1
 from googlecloudsdk.third_party.apis.container import v1 as container_v1
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.third_party.apitools.base.py import http_wrapper
 
 
 WRONG_ZONE_ERROR_MSG = """\
@@ -28,16 +42,17 @@ No cluster named '{name}' in {project}."""
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
   if response.status_code == 503:
-    raise apitools_base.HttpError.FromResponse(response)
-  return apitools_base.http_wrapper.CheckResponse(response)
+    raise apitools_exceptions.HttpError.FromResponse(response)
+  return http_wrapper.CheckResponse(response)
 
 
-def NewAPIAdapter(api_version, endpoint_url, http):
+def NewAPIAdapter(api_version, endpoint_url, compute_endpoint_url, http):
   """Initialize an api adapter for the given api_version.
 
   Args:
     api_version: str, version to create api adapter for.
     endpoint_url: str, endpoint url for the api client.
+    compute_endpoint_url: str, endpoint url for the compute api client.
     http: httplib2.Http object for api client to use.
 
   Returns:
@@ -45,7 +60,9 @@ def NewAPIAdapter(api_version, endpoint_url, http):
   """
   if api_version == 'v1':
     api = container_v1
+    api_compute = compute_v1
     api_client = api.ContainerV1
+    api_compute_client = api_compute.ComputeV1
     zone_field = 'zone'
     adapter = V1Adapter
   else:
@@ -55,8 +72,13 @@ def NewAPIAdapter(api_version, endpoint_url, http):
 
   api_client = api_client(url=endpoint_url, get_credentials=False, http=http)
   api_client.check_response_func = CheckResponse
+  api_compute_client = api_compute_client(url=compute_endpoint_url,
+                                          get_credentials=False, http=http)
+  api_compute_client.check_response_func = CheckResponse
   messages = api
-  registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(api_client)
+  compute_messages = api_compute
+  registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(api_client,
+                                                         api_compute_client)
   registry.SetParamDefault(
       api='compute', collection=None, param='project',
       resolver=resolvers.FromProperty(properties.VALUES.core.project))
@@ -67,7 +89,8 @@ def NewAPIAdapter(api_version, endpoint_url, http):
       api='container', collection=None, param=zone_field,
       resolver=resolvers.FromProperty(properties.VALUES.compute.zone))
 
-  return adapter(api_version, registry, api_client, messages)
+  return adapter(api_version, registry, api_client, messages,
+                 api_compute_client, compute_messages)
 
 
 _REQUIRED_SCOPES = [
@@ -108,11 +131,14 @@ def ExpandScopeURIs(scopes):
 class APIAdapter(object):
   """Handles making api requests in a version-agnostic way."""
 
-  def __init__(self, api_version, registry, client, messages):
+  def __init__(self, api_version, registry, client, messages, compute_client,
+               compute_messages):
     self.api_version = api_version
     self.registry = registry
     self.client = client
     self.messages = messages
+    self.compute_client = compute_client
+    self.compute_messages = compute_messages
 
   def ParseCluster(self, name):
     properties.VALUES.compute.zone.Get(required=True)
@@ -156,7 +182,7 @@ class APIAdapter(object):
     """
     try:
       return self.client.projects_zones_clusters.Get(cluster_ref.Request())
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       api_error = util.GetError(error)
       if api_error.code != 404:
         raise api_error
@@ -164,7 +190,7 @@ class APIAdapter(object):
     # Cluster couldn't be found, maybe user got zone wrong?
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.GetError(error))
     for cluster in clusters:
       if cluster.name == cluster_ref.clusterId:
@@ -187,8 +213,14 @@ class APIAdapter(object):
     raise NotImplementedError('Update requires a v1 client.')
 
   def GetOperation(self, operation_ref):
-    return self.client.projects_zones_operations.Get(
-        operation_ref.Request())
+    return self.client.projects_zones_operations.Get(operation_ref.Request())
+
+  def GetComputeOperation(self, project, zone, operation_id):
+    req = self.compute_messages.ComputeZoneOperationsGetRequest(
+        operation=operation_id,
+        project=project,
+        zone=zone)
+    return self.compute_client.zoneOperations.Get(req)
 
   def GetOperationError(self, operation_ref):
     raise NotImplementedError('GetOperationError is not overriden')
@@ -219,20 +251,24 @@ class APIAdapter(object):
     Raises:
       Error: if the operation times out or finishes with an error.
     """
-    with console_io.ProgressTracker(message, autotick=True):
+    detail_message = None
+    with console_io.ProgressTracker(message, autotick=True,
+                                    detail_message_callback=
+                                    lambda: detail_message):
       start_time = time.clock()
       while timeout_s > (time.clock() - start_time):
         try:
           operation = self.GetOperation(operation_ref)
+          detail_message = operation.detail
           if self.IsOperationFinished(operation):
             # Success!
             log.info('Operation %s succeeded after %.3f seconds',
                      operation, (time.clock() - start_time))
             break
-        except apitools_base.HttpError as error:
+        except apitools_exceptions.HttpError as error:
           log.debug('GetOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
-          # TODO(jeffml): add additional backoff if server is returning 500s
+          # TODO(user): add additional backoff if server is returning 500s
         time.sleep(poll_period_s)
     if not self.IsOperationFinished(operation):
       log.err.Print('Timed out waiting for operation {0}'.format(operation))
@@ -246,6 +282,57 @@ class APIAdapter(object):
 
   def GetServerConfig(self, project, zone):
     raise NotImplementedError('GetServerConfig is not overriden')
+
+  def ResizeCluster(self, project, zone, name, size):
+    raise NotImplementedError('ResizeCluster is not overriden')
+
+  def IsComputeOperationFinished(self, operation):
+    return (operation.status ==
+            self.compute_messages.Operation.StatusValueValuesEnum.DONE)
+
+  def WaitForComputeOperation(self, project, zone, operation_id, message,
+                              timeout_s=1200, poll_period_s=5):
+    """Poll container Operation until its status is done or timeout reached.
+
+    Args:
+      project: project on which the operation is performed
+      zone: zone on which the operation is performed
+      operation_id: id of the compute operation to wait for
+      message: str, message to display to user while polling.
+      timeout_s: number, seconds to poll with retries before timing out.
+      poll_period_s: number, delay in seconds between requests.
+
+    Returns:
+      Operation: the return value of the last successful operations.get
+      request.
+
+    Raises:
+      Error: if the operation times out or finishes with an error.
+    """
+    with console_io.ProgressTracker(message, autotick=True):
+      start_time = time.clock()
+      while timeout_s > (time.clock() - start_time):
+        try:
+          operation = self.GetComputeOperation(project, zone, operation_id)
+          if self.IsComputeOperationFinished(operation):
+            # Success!
+            log.info('Operation %s succeeded after %.3f seconds',
+                     operation, (time.clock() - start_time))
+            break
+        except apitools_exceptions.HttpError as error:
+          log.debug('GetComputeOperation failed: %s', error)
+          # Keep trying until we timeout in case error is transient.
+          # TODO(user): add additional backoff if server is returning 500s
+        time.sleep(poll_period_s)
+    if not self.IsComputeOperationFinished(operation):
+      log.err.Print('Timed out waiting for operation {0}'.format(operation))
+      raise util.Error(
+          'Operation [{0}] is still running'.format(operation))
+    if self.GetOperationError(operation):
+      raise util.Error('Operation [{0}] finished with error: {1}'.format(
+          operation, self.GetOperationError(operation)))
+
+    return operation
 
 
 class CreateClusterOptions(object):
@@ -315,7 +402,7 @@ class V1Adapter(APIAdapter):
     node_config = self.messages.NodeConfig()
     if options.node_machine_type:
       node_config.machineType = options.node_machine_type
-    # TODO(jeffml): support disk size via flag
+    # TODO(user): support disk size via flag
     if options.node_disk_size_gb:
       node_config.diskSizeGb = options.node_disk_size_gb
     if options.node_source_image:
@@ -410,3 +497,12 @@ class V1Adapter(APIAdapter):
     req = self.messages.ContainerProjectsZonesGetServerconfigRequest(
         projectId=project, zone=zone)
     return self.client.projects_zones.GetServerconfig(req)
+
+  def ResizeCluster(self, project, zone, groupName, size):
+    req = self.compute_messages.ComputeInstanceGroupManagersResizeRequest(
+        instanceGroupManager=groupName,
+        project=project,
+        size=size,
+        zone=zone)
+    return self.compute_client.instanceGroupManagers.Resize(req)
+

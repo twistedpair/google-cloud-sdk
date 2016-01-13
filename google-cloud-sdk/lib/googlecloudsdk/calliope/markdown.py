@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Help document markdown helpers."""
 
@@ -34,8 +46,6 @@ class MarkdownGenerator(object):
     _is_top_element: True if command is the top CLI element.
     _is_topic: True if the command is a help topic.
     _out: Output writer.
-    _relative_offset: The relative path offset used to generate ../* link
-      paths to the reference root.
     _top_element: The top CLI element.
     _track: The Command release track prefix.
     _subcommand: The list of subcommand instances or None.
@@ -69,32 +79,9 @@ class MarkdownGenerator(object):
                       self._command_path[command_index] == 'topic')
     # pylint: disable=protected-access
     self._top_element = command._TopCLIElement()
-    self._is_top_element = command == self._top_element
-    self._relative_offset = 1
+    self._is_top_element = command.IsRoot()
     self._subcommands = command.GetSubCommandHelps()
     self._subgroups = command.GetSubGroupHelps()
-
-  def _IsGlobalFlag(self, arg):
-    """Checks if arg is a global (top level) flag.
-
-    Args:
-      arg: The argparse arg to check.
-
-    Returns:
-      True if arg is a global flag.
-    """
-    return arg.unique_flag or (arg in self._top_element.ai.flag_args)
-
-  def _IsGroupFlag(self, arg):
-    """Checks if arg is a group only flag.
-
-    Args:
-      arg: The argparse arg to check.
-
-    Returns:
-      True if arg is a group only flag.
-    """
-    return arg.group_flag
 
   def _IsSuppressed(self, arg):
     """Checks if arg help is suppressed.
@@ -159,42 +146,62 @@ class MarkdownGenerator(object):
       self._out(' ' + em + 'COMMAND' + em)
     elif self._subgroups:
       self._out(' ' + em + 'GROUP' + em)
-    else:
-      self._relative_offset = 2
 
     # Place all flags into a dict. Flags that are in a mutually
-    # exlusive group are mapped group_id -> [flags]. All other flags
+    # exclusive group are mapped group_id -> [flags]. All other flags
     # are mapped dest -> [flag].
     global_flags = False
     groups = collections.defaultdict(list)
     for flag in (self._command.ai.flag_args +
                  self._command.ai.ancestor_flag_args):
-      if self._IsGlobalFlag(flag) and not self._is_top_element:
+      if flag.is_global and not self._is_top_element:
         global_flags = True
       else:
         group_id = self._command.ai.mutex_groups.get(flag.dest, flag.dest)
         groups[group_id].append(flag)
 
-    for group in sorted(groups.values(), key=lambda g: g[0].option_strings):
-      if len(group) == 1:
-        arg = group[0]
-        if self._IsSuppressed(arg):
-          continue
-        msg = usage_text.FlagDisplayString(arg, markdown=True)
-        if not msg:
-          continue
-        if arg.required:
-          self._out(' {msg}'.format(msg=msg))
+    # Split the groups dict into required, common, and then the rest of the
+    # flags.  A group is required if any flag in it is required and common if
+    # any flag in it is common.  Required takes precedence over common.
+    required_groups = {}
+    common_groups = {}
+    for group_id, flags in groups.iteritems():
+      for f in flags:
+        if f.required:
+          required_groups[group_id] = flags
+          break
+        elif f.is_common:
+          common_groups[group_id] = flags
+          break
+    for g in required_groups:
+      del groups[g]
+    for g in common_groups:
+      del groups[g]
+
+    # Generate the flag usage string with required flags first, then common
+    # flags, then the rest of the flags.
+    for section in [required_groups, common_groups, groups]:
+      for group in sorted(section.values(), key=lambda g: g[0].option_strings):
+        if len(group) == 1:
+          arg = group[0]
+          if self._IsSuppressed(arg):
+            continue
+          msg = usage_text.FlagDisplayString(arg, markdown=True)
+          if not msg:
+            continue
+          if arg.required:
+            self._out(' {msg}'.format(msg=msg))
+          else:
+            self._out(' [{msg}]'.format(msg=msg))
         else:
+          group.sort(key=lambda f: f.option_strings)
+          group = [flag for flag in group if not self._IsSuppressed(flag)]
+          msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
+                           for arg in group)
+          if not msg:
+            continue
           self._out(' [{msg}]'.format(msg=msg))
-      else:
-        group.sort(key=lambda f: f.option_strings)
-        group = [flag for flag in group if not self._IsSuppressed(flag)]
-        msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
-                         for arg in group)
-        if not msg:
-          continue
-        self._out(' [{msg}]'.format(msg=msg))
+
     if global_flags:
       self._out(' [' + em + 'GLOBAL-FLAG ...' + em + ']')
 
@@ -221,30 +228,36 @@ class MarkdownGenerator(object):
             usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
         self._out('\n{arghelp}\n'.format(arghelp=self._Details(arg)))
 
-    # Partition the flags into FLAGS, GROUP FLAGS and GLOBAL FLAGS subsections.
-    command_flags = []
-    group_flags = []
-    global_flags = False
-    for arg in self._command.ai.flag_args:
+    # Partition the flags into REQUIRED FLAGS, COMMON FLAGS, OPTIONAL_FLAGS and
+    # GLOBAL FLAGS subsections.
+    required_flags = []
+    common_flags = []
+    other_flags = []
+    has_global_flags = False
+    for arg in (self._command.ai.flag_args +
+                self._command.ai.ancestor_flag_args):
       if not self._IsSuppressed(arg):
-        if self._IsGlobalFlag(arg) and not self._is_top_element:
-          global_flags = True
-        elif self._IsGroupFlag(arg):
-          group_flags.append(arg)
+        if arg.is_global and not self._is_top_element:
+          has_global_flags = True
+        elif arg.required:
+          required_flags.append(arg)
+        elif arg.is_common:
+          common_flags.append(arg)
         else:
-          command_flags.append(arg)
-    for arg in self._command.ai.ancestor_flag_args:
-      if not self._IsSuppressed(arg):
-        if self._IsGlobalFlag(arg) and not self._is_top_element:
-          global_flags = True
-        else:
-          group_flags.append(arg)
+          other_flags.append(arg)
 
-    for flags, section in ((command_flags, 'FLAGS'),
-                           (group_flags, 'GROUP FLAGS')):
+    other_flags_heading = 'FLAGS'
+    if required_flags:
+      other_flags_heading = 'OPTIONAL FLAGS'
+    if common_flags:
+      other_flags_heading = 'OTHER FLAGS'
+
+    for flags, section in ((required_flags, 'REQUIRED FLAGS'),
+                           (common_flags, 'COMMONLY USED FLAGS'),
+                           (other_flags, other_flags_heading)):
       self._PrintFlagSection(flags, section)
 
-    if global_flags:
+    if has_global_flags:
       self._Section('GLOBAL FLAGS', sep=False)
       self._out('\nRun *$ gcloud help* for a description of flags available to'
                 '\nall commands.\n')
@@ -259,6 +272,9 @@ class MarkdownGenerator(object):
     help_stuff = self._detailed_help.get(name, default)
     if not help_stuff:
       return
+    # Trim off the additional section marker.
+    if name.startswith('+'):
+      name = name[1:]
     if callable(help_stuff):
       help_message = help_stuff()
     else:
@@ -266,6 +282,12 @@ class MarkdownGenerator(object):
     self._Section(name)
     self._out('{message}\n'.format(
         message=textwrap.dedent(help_message).strip()))
+
+  def _PrintAllExtraSections(self):
+    """Print all extra man page sections.  These sections start with a '+'."""
+    for section in sorted(self._detailed_help):
+      if section.startswith('+'):
+        self._PrintSectionIfExists(section)
 
   def _PrintCommandSection(self, name, subcommands, is_topic=False):
     """Prints a group or command section.
@@ -281,7 +303,8 @@ class MarkdownGenerator(object):
       if self._command.IsHidden() or not help_info.is_hidden:
         # If this group is already hidden, we can safely include hidden
         # sub-items.  Else, only include them if they are not hidden.
-        content += '\n*link:{cmd}[{cmd}]*::\n\n{txt}\n'.format(
+        content += '\n*link:{ref}[{cmd}]*::\n\n{txt}\n'.format(
+            ref='/'.join(self._command_path + [subcommand]),
             cmd=subcommand,
             txt=help_info.help_text)
     if content:
@@ -406,8 +429,7 @@ class MarkdownGenerator(object):
         cmd = cmd[0:i]
       else:
         rem = ''
-      ref = '/'.join(['..'] * (len(self._command_path) - self._relative_offset)
-                     + cmd.split(' ')[1:])
+      ref = '/'.join(cmd.split(' '))
       lnk = 'link:' + ref + '[' + cmd + ']' + rem
       rep += self._doc[pos:match.start(1)] + lnk
       pos = match.end(1)
@@ -428,8 +450,7 @@ class MarkdownGenerator(object):
       ref = match.group(3).replace('_', ' ')
       if ref:
         ref = ref[1:]
-      ref = '/'.join(['..'] * (len(self._command_path) - self._relative_offset)
-                     + ref.split(' '))
+      ref = '/'.join(ref.split(' '))
       lnk = '*link:' + ref + '[' + cmd + ']*'
       rep += self._doc[pos:match.start(2)] + lnk
       pos = match.end(1)
@@ -478,6 +499,7 @@ class MarkdownGenerator(object):
         self._PrintCommandSection('COMMAND', self._subcommands)
     self._PrintSectionIfExists('EXAMPLES')
     self._PrintSectionIfExists('SEE ALSO')
+    self._PrintAllExtraSections()
     self._PrintNotesSection()
     self._doc = self._buf.getvalue()
 

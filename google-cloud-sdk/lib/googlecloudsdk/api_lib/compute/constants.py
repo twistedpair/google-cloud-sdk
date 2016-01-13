@@ -1,5 +1,19 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Defines tool-wide constants."""
+import os
+
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 BYTES_IN_ONE_GB = 2 ** 30
@@ -78,10 +92,10 @@ PUBLIC_IMAGE_PROJECTS = [
 PREVIEW_IMAGE_PROJECTS = []
 
 # SSH-related constants.
-DEFAULT_SSH_KEY_FILE = '~/.ssh/google_compute_engine'
+DEFAULT_SSH_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
 SSH_KEYS_METADATA_KEY = 'sshKeys'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
-PER_USER_SSH_CONFIG_FILE = '~/.ssh/config'
+PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'

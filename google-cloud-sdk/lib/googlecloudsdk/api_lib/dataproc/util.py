@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Common utilities for the gcloud dataproc tool."""
 
@@ -13,7 +25,8 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import encoding
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 def FormatHttpError(error):
@@ -43,12 +56,12 @@ def FormatRpcError(error):
   Returns:
     A ready-to-print string representation of the error.
   """
-  log.debug('Error:\n' + apitools_base.MessageToJson(error))
+  log.debug('Error:\n' + encoding.MessageToJson(error))
   formatted_error = error.message
   # Only display details if the log level is INFO or finer.
   if error.details and log.GetVerbosity() <= log.info:
     formatted_error += (
-        '\nDetails:\n' + apitools_base.MessageToJson(error.details))
+        '\nDetails:\n' + encoding.MessageToJson(error.details))
   return formatted_error
 
 
@@ -59,7 +72,7 @@ def HandleHttpError(func):
   def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except apitools_base.HttpError as error:
+    except apitools_exceptions.HttpError as error:
       msg = FormatHttpError(error)
       _, _, traceback = sys.exc_info()
       raise exceptions.HttpException, msg, traceback
@@ -67,7 +80,7 @@ def HandleHttpError(func):
   return CatchHTTPErrorRaiseHTTPException
 
 
-# TODO(pclay): Create a common wait_utils class to reuse common code.
+# TODO(user): Create a common wait_utils class to reuse common code.
 def WaitForOperation(
     operation, context, message, timeout_s=2100, poll_period_s=5):
   """Poll dataproc Operation until its status is done or timeout reached.
@@ -98,12 +111,12 @@ def WaitForOperation(
         operation = client.operations.Get(request)
         if operation.done:
           break
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         log.debug('GetOperation failed:\n' + FormatHttpError(error))
         # Keep trying until we timeout in case error is transient.
       time.sleep(poll_period_s)
-  # TODO(pclay): Parse operation metadata.
-  log.debug('Operation:\n' + apitools_base.MessageToJson(operation))
+  # TODO(user): Parse operation metadata.
+  log.debug('Operation:\n' + encoding.MessageToJson(operation))
   if not operation.done:
     raise exceptions.ToolException(
         'Operation [{0}] timed out.'.format(operation.name))
@@ -130,7 +143,7 @@ def WaitForResourceDeletion(
     while timeout_s > (time.time() - start_time):
       try:
         request_method(request)
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         if error.status_code == 404:
           # Object deleted
           return
@@ -190,7 +203,7 @@ def WaitForJobTermination(
 
   def ReadDriverLogIfPresent():
     if driver_log_stream and driver_log_stream.open:
-      # TODO(pclay): Don't read all output.
+      # TODO(user): Don't read all output.
       driver_log_stream.ReadIntoWritable(log.err)
 
   if stream_driver_log:
@@ -230,7 +243,7 @@ def WaitForJobTermination(
               and job.driverOutputResourceUri):
             driver_log_stream = storage_helpers.StorageObjectSeriesStream(
                 job.driverOutputResourceUri)
-        except apitools_base.HttpError as error:
+        except apitools_exceptions.HttpError as error:
           log.warn('GetJob failed:\n%s', error)
           # Keep trying until we timeout in case error is transient.
       time.sleep(log_poll_period_s)

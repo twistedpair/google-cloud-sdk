@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Generate usage text for displaying to the user.
 """
@@ -48,16 +60,66 @@ class CommandChoiceSuggester(object):
   """
   TEST_QUOTA = 5000
   MAX_DISTANCE = 5
+  _SYNONYM_SETS = [
+      set(['create', 'add']),
+      set(['delete', 'remove']),
+      set(['describe', 'get']),
+      set(['patch', 'update']),
+  ]
 
-  def __init__(self):
+  def __init__(self, choices=None):
     self.cache = {}
     self.inf = float('inf')
     self._quota = self.TEST_QUOTA
+    # A mapping of 'thing typed' to the suggestion that should be offered.
+    # Often, these will be the same, but this allows for offering more currated
+    # suggestions for more commonly misused things.
+    self._choices = {}
+    if choices:
+      self.AddChoices(choices)
 
-  def Deletions(self, s):
+  def AddChoices(self, choices):
+    """Add a set of valid things that can be suggested.
+
+    Args:
+      choices: [str], The valid choices.
+    """
+    for choice in choices:
+      if choice not in self._choices:
+        # Keep the first choice mapping that was added so later aliases don't
+        # clobber real choices.
+        self._choices[choice] = choice
+
+  def AddAliases(self, aliases, suggestion):
+    """Add an alias that is not actually a valid choice, but will suggest one.
+
+    This should be called after AddChoices() so that aliases will not clobber
+    any actual choices.
+
+    Args:
+      aliases: [str], The aliases for the valid choice.  This is something
+        someone will commonly type when they actually mean something else.
+      suggestion: str, The valid choice to suggest.
+    """
+    for alias in aliases:
+      if alias not in self._choices:
+        self._choices[alias] = suggestion
+
+  def AddSynonyms(self):
+    """Activate the set of synonyms for this suggester."""
+    for s_set in CommandChoiceSuggester._SYNONYM_SETS:
+      valid_choices = set(self._choices.keys()) & s_set
+      for choice in valid_choices:
+        # Add all synonyms in the set as aliases for each real choice that is
+        # valid.  This will never clobber the original choice that is there.
+        # If none of the synonyms are valid choices, this will not add any
+        # aliases for this synonym set.
+        self.AddAliases(s_set, choice)
+
+  def _Deletions(self, s):
     return [s[:i] + s[i + 1:] for i in range(len(s))]
 
-  def GetDistance(self, longer, shorter):
+  def _GetDistance(self, longer, shorter):
     """Get the edit distance between two words.
 
     They must be in the correct order, since deletions and mutations only happen
@@ -87,8 +149,8 @@ class CommandChoiceSuggester(object):
       if self._quota < 0:
         return self.inf
       self._quota -= 1
-      for m in self.Deletions(longer):
-        best_distance = min(best_distance, self.GetDistance(m, shorter) + 1)
+      for m in self._Deletions(longer):
+        best_distance = min(best_distance, self._GetDistance(m, shorter) + 1)
 
     if len(longer) == len(shorter):
       # just count how many letters differ
@@ -100,12 +162,11 @@ class CommandChoiceSuggester(object):
     self.cache[(longer, shorter)] = best_distance
     return best_distance
 
-  def SuggestCommandChoice(self, arg, choices):
+  def GetSuggestion(self, arg):
     """Find the item that is closest to what was attempted.
 
     Args:
       arg: str, The argument provided.
-      choices: [str], The list of valid arguments.
 
     Returns:
       str, The closest match.
@@ -113,7 +174,7 @@ class CommandChoiceSuggester(object):
 
     min_distance = self.inf
     bestchoice = None
-    for choice in choices:
+    for choice in self._choices:
       self._quota = self.TEST_QUOTA
       first, second = arg, choice
       if len(first) < len(second):
@@ -121,10 +182,11 @@ class CommandChoiceSuggester(object):
       if len(first) - len(second) > self.MAX_DISTANCE:
         # Don't bother if they're too different.
         continue
-      d = self.GetDistance(first.lower(), second.lower())
+      d = self._GetDistance(first.lower(), second.lower())
       if d < min_distance:
         min_distance = d
         bestchoice = choice
+
     if not bestchoice:
       return None
     # MAX_DISTANCE doesn't work very well for shorter strings (two strings of
@@ -133,7 +195,9 @@ class CommandChoiceSuggester(object):
     # confusing. This trick prevents that.
     if min_distance > min(self.MAX_DISTANCE, len(bestchoice) - 1, len(arg) - 1):
       return None
-    return bestchoice
+
+    # Return the suggestion for the best choice.
+    return self._choices[bestchoice]
 
 
 def WrapMessageInNargs(msg, nargs):
@@ -407,7 +471,9 @@ def ShortHelpText(command, argument_interceptor):
   buf = StringIO.StringIO()
 
   required_messages = []
+  common_messages = []
   optional_messages = []
+  has_global_flags = False
 
   # Sorting for consistency and readability.
   for arg in (argument_interceptor.flag_args +
@@ -415,8 +481,12 @@ def ShortHelpText(command, argument_interceptor):
     if arg.help == argparse.SUPPRESS:
       continue
     message = (FlagDisplayString(arg), arg.help or '')
-    if arg.required:
+    if arg.is_global and not command.IsRoot():
+      has_global_flags = True
+    elif arg.required:
       required_messages.append(message)
+    elif arg.is_common:
+      common_messages.append(message)
     else:
       optional_messages.append(message)
 
@@ -452,18 +522,30 @@ def ShortHelpText(command, argument_interceptor):
   # the command line, grouped into required flags, optional flags,
   # sub groups, sub commands, and positional arguments.
 
-  # This printing is done by collecting a list of rows. If the row is just
-  # a string, that means print it without decoration. If the row is a tuple,
-  # use WrapWithPrefix to print that tuple in aligned columns.
-
   def TextIfExists(title, messages):
+    """Generates the text for the given section.
+
+    This printing is done by collecting a list of rows. If the row is just a
+    string, that means print it without decoration. If the row is a tuple, use
+    WrapWithPrefix to print that tuple in aligned columns.
+
+    Args:
+      title: str, The name of this section.
+      messages: str or [(str, str)], The item or items to print in this section.
+
+    Returns:
+      str, The generated text.
+    """
     if not messages:
       return None
     textbuf = StringIO.StringIO()
     textbuf.write('%s\n' % title)
-    for (arg, helptxt) in messages:
-      WrapWithPrefix(arg, helptxt, HELP_INDENT, LINE_WIDTH,
-                     spacing='  ', writer=textbuf)
+    if type(messages) == str:
+      textbuf.write('  ' + messages + '\n')
+    else:
+      for (arg, helptxt) in messages:
+        WrapWithPrefix(arg, helptxt, HELP_INDENT, LINE_WIDTH,
+                       spacing='  ', writer=textbuf)
     return textbuf.getvalue()
 
   if topic:
@@ -472,12 +554,42 @@ def ShortHelpText(command, argument_interceptor):
     ]
   else:
     all_messages = [
-        TextIfExists('required flags:', sorted(required_messages)),
-        TextIfExists('optional flags:', sorted(optional_messages)),
         TextIfExists('positional arguments:', positional_messages),
+        TextIfExists('required flags:', sorted(required_messages)),
+    ]
+
+    # If this command has flags tagged as common, only show those flags, and
+    # print a message to use the long help to see all the flags (if there are
+    # others).
+    if common_messages:
+      all_messages.append(
+          TextIfExists('commonly used flags:', sorted(common_messages)))
+      command_path = ' '.join(command.GetPath())
+      if optional_messages:
+        all_messages.append(
+            TextIfExists(
+                'other flags:',
+                'Run: `{0} --help`\n  for the full list of available flags for '
+                'this command.'.format(command_path)))
+    # If nothing tagged as common, just display all the optional flags as we
+    # normally do.
+    else:
+      optional_flags_tag = 'optional flags:' if required_messages else 'flags:'
+      all_messages.append(
+          TextIfExists(optional_flags_tag, sorted(optional_messages)))
+
+    if has_global_flags:
+      root_command_name = command.GetPath()[0]
+      all_messages.append(
+          TextIfExists(
+              'global flags:',
+              'Run `{0} -h` for a description of flags available to all '
+              'commands.'.format(root_command_name)))
+
+    all_messages.extend([
         TextIfExists('command groups:', sorted(group_messages)),
         TextIfExists('commands:', sorted(command_messages)),
-    ]
+    ])
   buf.write('\n'.join([msg for msg in all_messages if msg]))
 
   return buf.getvalue()

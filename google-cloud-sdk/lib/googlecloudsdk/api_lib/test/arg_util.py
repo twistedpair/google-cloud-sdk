@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A shared library for processing and validating test arguments."""
 
@@ -46,7 +58,7 @@ def AddCommonTestRunArgs(parser):
   parser.add_argument(
       '--auto-google-login', action='store_true',
       help=argparse.SUPPRESS)
-      # TODO(pauldavis): add this help text when ready for this to be exposed:
+      # TODO(user): add this help text when ready for this to be exposed:
       # help='Automatically log into the test device using a preconfigured '
       # 'Google account before beginning the test.')
   parser.add_argument(
@@ -240,6 +252,7 @@ def Prepare(args, catalog):
                                        _TEST_TYPE_ARG_RULES,
                                        _SHARED_ARG_RULES,
                                        all_test_args_set)
+  arg_validate.ValidateOsVersions(args, catalog)
   arg_validate.ValidateResultsBucket(args)
   arg_validate.ValidateObbFileNames(args.obb_files)
 

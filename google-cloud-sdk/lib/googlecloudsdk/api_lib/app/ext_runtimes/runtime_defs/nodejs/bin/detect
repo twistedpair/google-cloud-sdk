@@ -59,7 +59,7 @@ def main(args):
             # something funny going on here so fail recognition.
             comm.debug('node.js checker: error accesssing package.json: %r' %
                        ex)
-            return None
+            return 1
 
         # See if we've got a scripts.start field.
         got_npm_start = bool(contents.get('scripts', {}).get('start'))

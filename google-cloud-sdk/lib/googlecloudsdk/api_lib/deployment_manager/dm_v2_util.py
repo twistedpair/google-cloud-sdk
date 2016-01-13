@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Common helper methods for DeploymentManager V2 Deployments."""
 
@@ -11,7 +23,7 @@ from googlecloudsdk.calliope.exceptions import HttpException
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 def PrettyPrint(resource, print_format='json'):
@@ -104,7 +116,7 @@ def WaitForOperation(operation_name, project, context, operation_description,
                 operation=operation_name,
             )
         )
-      except apitools_base.HttpError as error:
+      except apitools_exceptions.HttpError as error:
         raise HttpException(GetError(error))
       ticker.Tick()
       # Operation status will be one of PENDING, RUNNING, DONE
@@ -169,5 +181,5 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
                if response.get_assigned_value(resource_field)
                else [])
     return (results, return_token)
-  except apitools_base.HttpError as error:
+  except apitools_exceptions.HttpError as error:
     raise exceptions.HttpException(GetError(error))

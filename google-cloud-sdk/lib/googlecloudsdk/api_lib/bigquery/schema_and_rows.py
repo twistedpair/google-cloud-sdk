@@ -1,9 +1,21 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Facilities for fetching and displaying table rows and field names."""
 
 from googlecloudsdk.api_lib.bigquery import bigquery
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
@@ -34,7 +46,7 @@ class SchemaAndRows(object):
         for i, field_schema in enumerate(self.schema):
           r_map[field_schema.name] = row[i].string_value if row[i] else None
         yield r_map
-    except apitools_base.HttpError as server_error:
+    except exceptions.HttpError as server_error:
       raise bigquery.Error.ForHttpError(server_error)
 
   def GetDefaultFormat(self):
@@ -68,7 +80,7 @@ def GetJobSchemaAndRows(
       maxResults=1)
   try:
     schema = apitools_client.jobs.GetQueryResults(request_for_schema).schema
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   request_for_rows = bigquery_messages.BigqueryJobsGetQueryResultsRequest(
       projectId=job_reference.projectId,
@@ -100,7 +112,7 @@ def GetTableSchemaAndRows(
       tableId=table_reference.tableId)
   try:
     schema = apitools_client.tables.Get(request_for_schema).schema
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   request_for_rows = bigquery_messages.BigqueryTabledataListRequest(
       projectId=table_reference.projectId,

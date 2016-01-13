@@ -1,12 +1,28 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Functions to help with shelling out to other commands."""
 
+import cStringIO
 import os
 import signal
 import sys
 
+from googlecloudsdk.core import config
 from googlecloudsdk.core import log
+from googlecloudsdk.core import named_configs
+from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
@@ -79,10 +95,41 @@ def _GetToolArgs(interpreter, interpreter_args, executable_path, *args):
 
 
 def _GetToolEnv(env=None):
-  if not env:
+  """Generate the environment that should be used for the subprocess.
+
+  Args:
+    env: {str, str}, An existing environment to augment.  If None, the current
+      environment will be cloned and used as the base for the subprocess.
+
+  Returns:
+    The modified env.
+  """
+  if env is None:
     env = dict(os.environ)
   env['CLOUDSDK_WRAPPER'] = '1'
+
+  # Flags can set properties which override the properties file and the existing
+  # env vars.  We need to propagate them to children processes through the
+  # environment so that those commands will use the same settings.
+  for s in properties.VALUES:
+    for p in s:
+      _AddOrRemoveVar(
+          env, p.EnvironmentName(), p.Get(required=False, validate=False))
+
+  # Configuration needs to be handled separately because it's not a real
+  # property (although it behaves like one).
+  _AddOrRemoveVar(env,
+                  config.CLOUDSDK_ACTIVE_CONFIG_NAME,
+                  named_configs.GetNameOfActiveNamedConfig())
+
   return env
+
+
+def _AddOrRemoveVar(d, name, value):
+  if value is None:
+    d.pop(name, None)
+  else:
+    d[name] = value
 
 
 def ArgsForPythonTool(executable_path, *args, **kwargs):
@@ -164,7 +211,8 @@ class _ProcessHolder(object):
       sys.exit(ret_val)
 
 
-def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
+def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
+         file_only_logger=False):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
   This executes the given command, waits for it to finish, and then exits this
@@ -177,11 +225,14 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
       exiting.
     pipe_output_through_logger: bool, True to feed output from the called
       command through the standard logger instead of raw stdout/stderr.
+    file_only_logger: bool, If piping through the logger, log to the file only
+      instead of log.out and log.err.
 
   Returns:
     int, The exit code of the child if no_exit is True, else this method does
     not return.
   """
+  log.debug('Executing command: %s', args)
   # We use subprocess instead of execv because windows does not support process
   # replacement.  The result of execv on windows is that a new processes is
   # started and the original is killed.  When running in a shell, the prompt
@@ -189,24 +240,43 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False):
   # running.  subprocess waits for the new process to finish before returning.
   env = _GetToolEnv(env=env)
   process_holder = _ProcessHolder()
-  signal.signal(signal.SIGTERM, process_holder.Handler)
-  extra_popen_kwargs = {}
-  if pipe_output_through_logger:
-    extra_popen_kwargs['stderr'] = subprocess.PIPE
-    extra_popen_kwargs['stdout'] = subprocess.PIPE
 
-  p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-  process_holder.process = p
+  old_handler = signal.signal(signal.SIGTERM, process_holder.Handler)
 
-  if pipe_output_through_logger:
-    ret_val = None
-    while ret_val is None:
-      stdout, stderr = p.communicate()
-      log.out.write(stdout)
-      log.err.write(stderr)
-      ret_val = p.returncode
-  else:
-    ret_val = p.wait()
+  try:
+    extra_popen_kwargs = {}
+    if pipe_output_through_logger:
+      extra_popen_kwargs['stderr'] = subprocess.PIPE
+      extra_popen_kwargs['stdout'] = subprocess.PIPE
+
+    p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
+    process_holder.process = p
+
+    if pipe_output_through_logger:
+      if file_only_logger:
+        out = cStringIO.StringIO()
+        err = cStringIO.StringIO()
+      else:
+        out = log.out
+        err = log.err
+
+      ret_val = None
+      while ret_val is None:
+        stdout, stderr = p.communicate()
+        out.write(stdout)
+        err.write(stderr)
+        ret_val = p.returncode
+
+      if file_only_logger:
+        log.file_only_logger.debug(out.getvalue())
+        log.file_only_logger.debug(err.getvalue())
+
+    else:
+      ret_val = p.wait()
+
+  finally:
+    # Restore the original signal handler.
+    signal.signal(signal.SIGTERM, old_handler)
 
   if no_exit:
     return ret_val

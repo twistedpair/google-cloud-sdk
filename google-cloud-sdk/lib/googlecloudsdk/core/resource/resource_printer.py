@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Methods for formatting and printing Python objects.
 
@@ -26,6 +38,7 @@ from googlecloudsdk.core.resource import csv_printer
 from googlecloudsdk.core.resource import flattened_printer
 from googlecloudsdk.core.resource import json_printer
 from googlecloudsdk.core.resource import list_printer
+from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
@@ -39,11 +52,39 @@ class Error(core_exceptions.Error):
 
 
 class UnknownFormatError(Error):
-  """UnknownFormatError for unknown format names."""
+  """Unknown format name exception."""
 
 
 class ProjectionRequiredError(Error):
-  """ProjectionRequiredError for format with no projection that needs one."""
+  """Format missing required projection exception."""
+
+
+class ProjectionFormatRequiredError(Error):
+  """Projection key missing required format attribute."""
+
+
+def _PrintResources(resources, printer, single=False):
+  """Prints resources using printer.AddRecord() and printer.Finish().
+
+  Args:
+    resources: A singleton or list of JSON-serializable Python objects.
+    printer: An instantiated printer.
+    single: If True then resources is a single item and not a list.
+      For example, use this to print a single object as JSON.
+  """
+  # Resources may be a generator and since generators can raise exceptions, we
+  # have to call Finish() in the finally block to make sure that the resources
+  # we've been able to pull out of the generator are printed before control is
+  # given to the exception-handling code.
+  try:
+    if resources:
+      if single or not resource_property.IsListLike(resources):
+        printer.AddRecord(resources, delimit=False)
+      else:
+        for resource in resources:
+          printer.AddRecord(resource)
+  finally:
+    printer.Finish()
 
 
 class DefaultPrinter(yaml_printer.YamlPrinter):
@@ -67,6 +108,33 @@ class TextPrinter(flattened_printer.FlattenedPrinter):
   """
 
 
+class MultiPrinter(resource_printer_base.ResourcePrinter):
+  """A printer that prints different formats for each projection key.
+
+  Each projection key must have a subformat defined by the
+  :format=FORMAT-STRING attribute. For example,
+
+    _--format='multi(data:format=json, info:format="table[box](a, b, c)")'_
+
+  formats the *data* field as JSON and the *info* field as a boxed table.
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(MultiPrinter, self).__init__(*args, **kwargs)
+    self.columns = []
+    for col in self.column_attributes.Columns():
+      if not col.attribute.subformat:
+        raise ProjectionFormatRequiredError(
+            '{key} requires format attribute.'.format(
+                key=resource_lex.GetKeyName(col.key)))
+      self.columns.append(
+          (col, Printer(col.attribute.subformat, out=self._out)))
+
+  def _AddRecord(self, record, delimit=True):
+    for col, printer in self.columns:
+      _PrintResources(resource_property.Get(record, col.key), printer)
+
+
 class PrinterAttributes(resource_printer_base.ResourcePrinter):
   """Attributes for all printers. This docstring is used to generate topic docs.
 
@@ -86,9 +154,10 @@ _FORMATTERS = {
     'flattened': flattened_printer.FlattenedPrinter,
     'json': json_printer.JsonPrinter,
     'list': list_printer.ListPrinter,
+    'multi': MultiPrinter,
     'none': NonePrinter,
     'table': table_printer.TablePrinter,
-    'text': TextPrinter,  # TODO(gsfowler): Drop this in the cleanup.
+    'text': TextPrinter,  # TODO(user): Drop this in the cleanup.
     'value': csv_printer.ValuePrinter,
     'yaml': yaml_printer.YamlPrinter,
 }
@@ -166,17 +235,4 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
     raise ProjectionRequiredError(
         'Format [{0}] requires a non-empty projection.'.format(
             printer.column_attributes.Name()))
-
-  # Resources may be a generator and since generators can raise exceptions, we
-  # have to call Finish() in the finally block to make sure that the resources
-  # we've been able to pull out of the generator are printed before control is
-  # given to the exception-handling code.
-  try:
-    if resources:
-      if single or not resource_property.IsListLike(resources):
-        printer.AddRecord(resources, delimit=False)
-      else:
-        for resource in resources:
-          printer.AddRecord(resource)
-  finally:
-    printer.Finish()
+  _PrintResources(resources, printer, single)

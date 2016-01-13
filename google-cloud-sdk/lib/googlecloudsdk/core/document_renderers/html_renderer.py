@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Cloud SDK markdown document HTML renderer."""
 
@@ -74,15 +86,24 @@ class HTMLRenderer(renderer.Renderer):
 
   def _Title(self):
     """Renders an HTML document title."""
-    self._out.write(
-        '<html>\n'
-        '<head>\n')
+    self._out.write("""\
+<html>
+<head>
+""")
     if self._title:
       self._out.write('<title>%s</title>\n' % self._title)
-    self._out.write(
-        '<style>\n'
-        '  code { color: green; }\n'
-        '</style>\n')
+    self._out.write("""\
+<style>
+  code { color: green; }
+</style>
+<script>
+  window.onload = function() {
+    if (parent.navigation.navigate) {
+      parent.navigation.navigate(document.location.href);
+    }
+  }
+</script>
+""")
 
   def _Flush(self):
     """Flushes the current collection of Fill() lines."""
@@ -254,7 +275,19 @@ class HTMLRenderer(renderer.Renderer):
     Returns:
       The rendered link anchor and text.
     """
-    return '<a href="%s">%s</a>' % (target, text or target)
+    if ':' in target or target.startswith('www.'):
+      return '<a href="{target}" target=_top>{text}</a>'.format(
+          target=target, text=text or target)
+    if '#' in target or target.endswith('..'):
+      return '<a href="{target}">{text}</a>'.format(
+          target=target, text=text or target)
+    if not text:
+      text = target.replace('/', ' ')
+    tail = '/help'
+    if target.endswith(tail):
+      target = target[:-len(tail)]
+    target = target.replace('/', '_') + '.html'
+    return '<a href="{target}">{text}</a>'.format(target=target, text=text)
 
   def List(self, level, definition=None):
     """Renders a bullet or definition list item.

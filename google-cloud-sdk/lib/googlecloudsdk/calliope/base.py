@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Base classes for calliope commands and groups.
 
 """
@@ -99,7 +111,7 @@ class _Common(object):
   _cli_generator = None
   _is_hidden = False
   _release_track = None
-  # TODO(markpell): Remove this once commands are only allowed to show up under
+  # TODO(user): Remove this once commands are only allowed to show up under
   # the correct track (b/19406151)
   _legacy_release_track = None
   _valid_release_tracks = None
@@ -225,7 +237,7 @@ class _Common(object):
 
   @classmethod
   def ReleaseTrack(cls, for_help=False):
-    # TODO(markpell): Remove for_help once commands are only allowed to show up
+    # TODO(user): Remove for_help once commands are only allowed to show up
     # under the correct track (b/19406151).
     if for_help and cls._legacy_release_track:
       return cls._legacy_release_track
@@ -373,7 +385,7 @@ class Command(_Common):
     """Returns True if URI caching is enabled for this command."""
     return self.__uri_cache_enabled
 
-  # TODO(gsfowler): Drop format, __format_string after all use resource_printer.
+  # TODO(user): Drop format, __format_string after all use resource_printer.
   # pylint: disable=invalid-name
   def format(self, obj):
     """Prints out the given object using the format decided by the format flag.
@@ -497,7 +509,7 @@ def Hidden(cmd_class):
   return cmd_class
 
 
-# TODO(markpell): Remove this once commands are only allowed to show up under
+# TODO(user): Remove this once commands are only allowed to show up under
 # the correct track (b/19406151).
 def Alpha(cmd_class):
   """Decorator for annotating a command or group as ALPHA.
@@ -513,7 +525,7 @@ def Alpha(cmd_class):
   return cmd_class
 
 
-# TODO(markpell): Remove this once commands are only allowed to show up under
+# TODO(user): Remove this once commands are only allowed to show up under
 # the correct track (b/19406151)
 def Beta(cmd_class):
   """Decorator for annotating a command or group as BETA.

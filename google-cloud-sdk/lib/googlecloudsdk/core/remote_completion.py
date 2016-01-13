@@ -1,8 +1,20 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Remote resource completion and caching."""
 import logging
 import os
-from os import listdir
+import sys
 import tempfile
 import threading
 import time
@@ -254,7 +266,7 @@ class RemoteCompletion(object):
       if index < 0 or index >= len(items):
         return options
       flagname = _RESOURCE_FLAGS[items[index+2] + '.' + items[-2]]
-      for name in listdir(lst[0]):
+      for name in os.listdir(lst[0]):
         self.flags = flagname + name
         fpath = lst[0] + name + lst[1]
         # make sure that the data in this path is still valid
@@ -404,37 +416,26 @@ class RemoteCompletion(object):
     return list(cli().Execute(command, call_arg_complete=False))
 
   @staticmethod
-  def GetCompleterForResource(ro_resource, cli, ro_command_line=None):
-    """Returns a completer function for the given ro_resource.
+  def GetCompleterForResource(resource, cli, command_line=None):
+    """Returns a completer function for the given resource.
 
     Args:
-      ro_resource: The resource as subcommand.resource.
+      resource: The resource as subcommand.resource.
       cli: The calliope instance.
-      ro_command_line: The gcloud list command to run.
+      command_line: The gcloud list command to run.
 
     Returns:
       A completer function for the specified resource.
     """
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       return None
-    if not ro_command_line:
-      ro_command_line = ro_resource
+    if not command_line:
+      command_line = resource
 
     def RemoteCompleter(parsed_args, **unused_kwargs):
       """Run list command on resource to generates completion options."""
-      resource = ro_resource
-      command_line = ro_command_line
       options = []
       try:
-        if hasattr(parsed_args, 'property'):
-          if parsed_args.property == 'compute/region':
-            resource = 'compute.regions'
-            command_line = resource
-          elif parsed_args.property == 'compute/zone':
-            resource = 'compute.zones'
-            command_line = resource
-          elif parsed_args.property != 'project':
-            return options
         line = os.getenv('COMP_LINE')
         prefix = ''
         if line:
@@ -499,7 +500,7 @@ class RemoteCompletion(object):
             ccache.StoreInCache(self_links)
             if tracker.has_forked:
               # the parent already exited, so exit the child
-              os.exit(0)
+              sys.exit(0)
             if resource_missing:
               options = ccache.GetFromCache(resource_link, prefix,
                                             increment_counters=False) or []

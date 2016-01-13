@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Manage parsing resource arguments for the cloud platform.
 
 The Parse() function and Registry.Parse() method are to be used whenever a
@@ -14,8 +26,10 @@ import urllib
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import base_api
 from googlecloudsdk.third_party.apitools.base.py import util
+from googlecloudsdk.third_party.py27 import py27_collections as collections
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
@@ -33,8 +47,12 @@ _HTTP_RE = re.compile(r'^https?://')
 
 class ClientDef(object):
 
-  def __init__(self, classpath, urls_only=False):
-    self.classpath = classpath
+  def __init__(self, api_name, api_version,
+               base_import_path='googlecloudsdk.third_party.apis',
+               urls_only=False):
+    self.api_name = api_name
+    self.api_version = api_version
+    self.base_import_path = base_import_path
     self.urls_only = urls_only
 
   def Import(self):
@@ -43,92 +61,89 @@ class ClientDef(object):
     Returns:
       type: Class that can be used to contruct an instance of the client.
     """
-    module, version, class_name = self.classpath.rsplit('.', 2)
-    module_obj = __import__(module, fromlist=[version])
-    version_obj = getattr(module_obj, version)
-    return getattr(version_obj, class_name)
+    client_cls_name = _CamelCase(self.api_name) + _CamelCase(self.api_version)
+    module_obj = __import__(
+        '{base}.{api_name}.{api_version}.{api_name}_{api_version}_client'
+        .format(base=self.base_import_path,
+                api_name=self.api_name, api_version=self.api_version),
+        fromlist=[client_cls_name])
+    return getattr(module_obj, client_cls_name)
 
 
 # Map of all known APIs and their clients.
 _API_CLIENT_MAP = {
-    'autoscaler': [
-        ClientDef('googlecloudsdk.third_party.apis.autoscaler.v1beta2.'
-                  'AutoscalerV1beta2')
-    ],
-    'bigquery': [
-        ClientDef('googlecloudsdk.third_party.apis.bigquery.v2.BigqueryV2')
-    ],
-    'cloudresourcemanager': [
-        ClientDef('googlecloudsdk.third_party.apis.cloudresourcemanager.'
-                  'v1beta1.CloudresourcemanagerV1beta1')
-    ],
-    'compute': [
-        ClientDef('googlecloudsdk.third_party.apis.compute.v1.ComputeV1'),
-        ClientDef('googlecloudsdk.third_party.apis.compute.alpha.ComputeAlpha',
-                  True),
-        ClientDef('googlecloudsdk.third_party.apis.compute.beta.ComputeBeta',
-                  True),
-    ],
-    'clouduseraccounts': [
-        ClientDef('googlecloudsdk.third_party.apis.clouduseraccounts.beta.'
-                  'ClouduseraccountsBeta'),
-        ClientDef('googlecloudsdk.third_party.apis.clouduseraccounts.alpha.'
-                  'ClouduseraccountsAlpha', True),
-    ],
-    'container': [
-        ClientDef('googlecloudsdk.third_party.apis.container.v1.ContainerV1'),
-    ],
-    'dataflow': [
-        ClientDef('googlecloudsdk.third_party.apis.dataflow.v1b3.DataflowV1b3')
-    ],
-    'dataproc': [
-        ClientDef('googlecloudsdk.third_party.apis.dataproc.v1beta1.'
-                  'DataprocV1beta1')
-    ],
-    'datastore': [
-        ClientDef('googlecloudsdk.third_party.apis.datastore.v1beta3.'
-                  'DatastoreV1')
-    ],
-    'dns': [
-        ClientDef('googlecloudsdk.third_party.apis.dns.v1.DnsV1')
-    ],
-    'genomics': [
-        ClientDef('googlecloudsdk.third_party.apis.genomics.v1.GenomicsV1')
-    ],
-    'logging': [
-        ClientDef('googlecloudsdk.third_party.apis.logging.v1beta3.'
-                  'LoggingV1beta3')
-    ],
-    'manager': [
-        ClientDef('googlecloudsdk.third_party.apis.manager.v1beta2.'
-                  'ManagerV1beta2')
-    ],
-    'replicapool': [
-        ClientDef('googlecloudsdk.third_party.apis.replicapool.v1beta2.'
-                  'ReplicapoolV1beta2')
-    ],
-    'replicapoolupdater': [
-        ClientDef('googlecloudsdk.third_party.apis.replicapoolupdater.v1beta1.'
-                  'ReplicapoolupdaterV1beta1')
-    ],
-    'resourceviews': [
-        ClientDef('googlecloudsdk.third_party.apis.resourceviews.v1beta1.'
-                  'ResourceviewsV1beta1')
-    ],
-    'sql': [
-        ClientDef('googlecloudsdk.third_party.apis.sqladmin.v1beta3.'
-                  'SqladminV1beta3')],
-    'storage': [
-        ClientDef('googlecloudsdk.third_party.apis.storage.v1.StorageV1')
-    ],
-    'testing': [
-        ClientDef('googlecloudsdk.third_party.apis.testing.v1.TestingV1')
-    ],
-    'toolresults': [
-        ClientDef('googlecloudsdk.third_party.apis.toolresults.v1beta3.'
-                  'ToolresultsV1beta3')
-    ],
+    'autoscaler': {
+        'v1beta2': ClientDef('autoscaler', 'v1beta2')
+    },
+    'bigquery': {
+        'v2': ClientDef('bigquery', 'v2')
+    },
+    'cloudresourcemanager': {
+        'v1beta1': ClientDef('cloudresourcemanager', 'v1beta1')
+    },
+    'compute': {
+        'v1': ClientDef('compute', 'v1'),
+        'alpha': ClientDef('compute', 'alpha', urls_only=True),
+        'beta': ClientDef('compute', 'beta', urls_only=True),
+    },
+    'clouduseraccounts': {
+        'beta': ClientDef('clouduseraccounts', 'beta'),
+        'alpha': ClientDef('clouduseraccounts', 'alpha', urls_only=True),
+    },
+    'container': {
+        'v1': ClientDef('container', 'v1'),
+    },
+    'dataflow': {
+        'v1b3': ClientDef('dataflow', 'v1b3')
+    },
+    'dataproc': {
+        'v1beta1': ClientDef('dataproc', 'v1beta1')
+    },
+    'datastore': {
+        'v1beta3': ClientDef('datastore', 'v1beta3')
+    },
+    'dns': {
+        'v1': ClientDef('dns', 'v1')
+    },
+    'genomics': {
+        'v1': ClientDef('genomics', 'v1')
+    },
+    'logging': {
+        'v1beta3': ClientDef('logging', 'v1beta3')
+    },
+    'manager': {
+        'v1beta2': ClientDef('manager', 'v1beta2')
+    },
+    'replicapool': {
+        'v1beta2': ClientDef('replicapool', 'v1beta2')
+    },
+    'replicapoolupdater': {
+        'v1beta1': ClientDef('replicapoolupdater', 'v1beta1')
+    },
+    'resourceviews': {
+        'v1beta1': ClientDef('resourceviews', 'v1beta1')
+    },
+    'sql': {
+        'v1beta3': ClientDef('sqladmin', 'v1beta3'),
+        'v1beta4': ClientDef('sqladmin', 'v1beta4', urls_only=True)
+    },
+    'storage': {
+        'v1': ClientDef('storage', 'v1')
+    },
+    'testing': {
+        'v1': ClientDef('testing', 'v1')
+    },
+    'toolresults': {
+        'v1beta3': ClientDef('toolresults', 'v1beta3')
+    },
 }
+
+
+def _DefaultVersionForApiName(api_name):
+  for version, client_def in _API_CLIENT_MAP.get(api_name, {}).items():
+    if not client_def.urls_only:
+      return version
+  return None
 
 
 class Error(Exception):
@@ -138,9 +153,11 @@ class Error(Exception):
 class UnknownAPIException(Error):
   """Exception we are trying to register an unknown API."""
 
-  def __init__(self, api):
-    super(UnknownAPIException, self).__init__(
-        'trying to register unknown API [{0}]'.format(api))
+  def __init__(self, api, version=None):
+    msg = 'trying to register unknown API [{0}]'.format(api)
+    if version:
+      msg += ' (version [{0}])'.format(version)
+    super(UnknownAPIException, self).__init__(msg)
 
 
 class InvalidEndpointException(Error):
@@ -239,7 +256,7 @@ class InvalidCollectionException(UserError):
         'unknown collection [{collection}]'.format(collection=collection))
 
 
-# TODO(jasmuth): Ensure that all the user-facing error messages help the
+# TODO(user): Ensure that all the user-facing error messages help the
 # user figure out what to do.
 
 
@@ -250,9 +267,9 @@ class _ResourceParser(object):
     """Create a _ResourceParser for a given API and service, and register it.
 
     Args:
-      client: apitools_base.BaseApiClient subclass, The client that handles
+      client: base_api.BaseApiClient subclass, The client that handles
           requests to the API.
-      service: apitools_base.BaseApiService subclass, The service that manages
+      service: base_api.BaseApiService subclass, The service that manages
           the resource type
       registry: Registry, The registry that this parser should be added to.
     """
@@ -506,7 +523,7 @@ class Resource(object):
     if (self.Collection().startswith('compute.') or
         self.Collection().startswith('clouduseraccounts.') or
         self.Collection().startswith('resourceviews.')):
-      # TODO(jasmuth): Unquote URLs for compute, clouduseraccounts, and
+      # TODO(user): Unquote URLs for compute, clouduseraccounts, and
       # resourceviews pending b/15425944.
       self.__self_link = urllib.unquote(self.__self_link)
 
@@ -518,7 +535,7 @@ class Resource(object):
 
   def __str__(self):
     return self.SelfLink()
-    # TODO(jasmuth): Possibly change what is returned, here.
+    # TODO(user): Possibly change what is returned, here.
     # path = '/'.join([getattr(self, param) for param in self.__ordered_params])
     # return '{collection}::{path}'.format(
     #     collection=self.__collection, path=path)
@@ -534,8 +551,8 @@ def _CopyNestedDictSpine(maybe_dictionary):
     return maybe_dictionary
 
 
-def _APINameFromURL(url):
-  """Get the API name from a resource url.
+def _APINameAndVersionFromURL(url):
+  """Get the API name and version from a resource url.
 
   Supports four formats:
   http(s)://www.googleapis.com/api/version/resource-path,
@@ -550,21 +567,29 @@ def _APINameFromURL(url):
     url: str, The resource url.
 
   Returns:
-    str: The API name.
+    (str, str): The API name. and version
   """
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   for name, overridden_url in endpoint_overrides.iteritems():
     if overridden_url == url:
-      return name
+      return name, _DefaultVersionForApiName(name)
 
   tokens = _StripUrl(url).split('/')
   domain = tokens[0]
   if ('googleapis' not in domain
       or domain.startswith('www.') or domain.startswith('www-')):
     api_name = tokens[1]
+    if len(tokens) > 2:
+      version = tokens[2]
+    else:
+      version = None
   else:
     api_name = tokens[0].split('.')[0]
-  return api_name
+    if len(tokens) > 1:
+      version = tokens[1]
+    else:
+      version = _DefaultVersionForApiName(api_name)
+  return api_name, version
 
 
 def _APINameFromCollection(collection):
@@ -594,7 +619,8 @@ class Registry(object):
         value is a function that can be called to find values for params that
         aren't specified already. If the collection key is None, it matches
         all collections.
-    registered_apis: {str}, All the apis that have been registered.
+    registered_apis: {str: set}, All the api versions that have been registered.
+        For instance, {'compute': {'v1', 'beta', 'alpha'}}.
   """
 
   def __init__(self, parsers_by_collection=None, parsers_by_url=None,
@@ -602,25 +628,31 @@ class Registry(object):
     self.parsers_by_collection = parsers_by_collection or {}
     self.parsers_by_url = parsers_by_url or {}
     self.default_param_funcs = default_param_funcs or {}
-    self.registered_apis = registered_apis or set()
+    self.registered_apis = registered_apis or collections.defaultdict(set)
 
   def _Clone(self):
     return Registry(
         parsers_by_collection=_CopyNestedDictSpine(self.parsers_by_collection),
         parsers_by_url=_CopyNestedDictSpine(self.parsers_by_url),
         default_param_funcs=_CopyNestedDictSpine(self.default_param_funcs),
-        registered_apis=set(self.registered_apis))
+        registered_apis=copy.deepcopy(self.registered_apis))
 
-  def _RegisterAPIByName(self, api_name):
+  def _RegisterAPIByName(self, api_name, api_version=None):
     """Register the given API if it has not been registered already.
 
     Args:
       api_name: str, The API name.
+      api_version: if available, the version of the API being registered.
 
     Raises:
       UnknownAPIException: If the API to register is not in _API_CLIENT_MAP.
     """
-    if api_name in self.registered_apis:
+    if api_version and api_version in self.registered_apis.get(api_name, []):
+      # This API version has been registered.
+      return
+    if not api_version and api_name in self.registered_apis:
+      # This API doesn't have a specified version, and we have some API version
+      # registered under this name.
       return
 
     api_clients = _API_CLIENT_MAP.get(api_name, None)
@@ -628,49 +660,50 @@ class Registry(object):
     if not api_clients:
       raise UnknownAPIException(api_name)
 
-    for api_client in api_clients:
-      api_client_class = api_client.Import()
-      self._RegisterAPI(api_client_class(get_credentials=False),
-                        urls_only=api_client.urls_only)
+    if api_version:
+      try:
+        api_client = api_clients[api_version]
+        api_client_class = api_client.Import()
+        self._RegisterAPI(api_client_class(get_credentials=False),
+                          urls_only=api_client.urls_only,
+                          api_version=api_version)
+      except KeyError:
+        # This might get re-raised with the full collection path later.
+        # If it doesn't, this error is good enough.
+        raise InvalidResourceException('{0}/{1}'.format(api_name, api_version))
+    else:
+      for api_version, api_client in api_clients.items():
+        if not api_client.urls_only:
+          api_client_class = api_client.Import()
+          self._RegisterAPI(api_client_class(get_credentials=False),
+                            api_version=api_version)
 
-  def _RegisterAPI(self, api, urls_only=False):
+  def _RegisterAPI(self, api, urls_only=False, api_version=None):
     """Register a generated API with this registry.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
       urls_only: bool, True if this API should only be used to interpret URLs,
           and not to interpret collection-paths.
+      api_version: str, the version of the API if it's not in the API client
+          URL.
     """
     for potential_service in api.__dict__.itervalues():
-      if not self._IsApiService(potential_service):
+      if not isinstance(potential_service, base_api.BaseApiService):
         continue
       try:
         self._RegisterService(api, potential_service, urls_only)
       except _ResourceWithoutGetException:
         pass
-    self.registered_apis.add(_APINameFromURL(api.url))
-
-  def _IsApiService(self, service):
-    """"Check whether given object is actual service implementation."""
-    if isinstance(service, apitools_base.BaseApiService):
-      return True
-    # TODO(cherba): fix tests not to use unreleased apis, so above condition
-    # is sufficient.
-    if (not hasattr(service, 'GetMethodConfig') or
-        not hasattr(service, 'GetRequestType')):
-      return False
-    # Check actual name, just in case it is MagicMock.
-    for base in service.__class__.__bases__:
-      if 'BaseApiService' in base.__name__:
-        return True
-    return False
+    api_name, parsed_api_version = _APINameAndVersionFromURL(api.url)
+    self.registered_apis[api_name].add(parsed_api_version or api_version)
 
   def _RegisterService(self, api, service, urls_only):
     """Register one service for an API with this registry.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
-      service: apitools_base.BaseApiService, the service to be registered.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
+      service: base_api.BaseApiService, the service to be registered.
       urls_only: bool, True if this API should only be used to interpret URLs,
           and not to interpret collection-paths.
 
@@ -713,13 +746,13 @@ class Registry(object):
     API from self.parsers_by_collection, but leave self.parsers_by_url intact.
 
     Args:
-      api: apitools_base.BaseApiClient, The client for a Google Cloud API.
+      api: base_api.BaseApiClient, The client for a Google Cloud API.
     """
     # Clear out the old collections.
     for collection, parser in self.parsers_by_collection.items():
       if parser.client._PACKAGE == api._PACKAGE:  # pylint:disable=protected-access
         del self.parsers_by_collection[collection]
-    # TODO(jasmuth): Maybe remove the url parsers as well?
+    # TODO(user): Maybe remove the url parsers as well?
 
     self._RegisterAPI(api)
 
@@ -874,7 +907,12 @@ class Registry(object):
     params = {}
 
     # Register relevant API if necessary and possible
-    self._RegisterAPIByName(_APINameFromURL(url))
+    api_name, api_version = _APINameAndVersionFromURL(url)
+    try:
+      self._RegisterAPIByName(api_name, api_version=api_version)
+    except InvalidResourceException:
+      # The caught InvalidResourceException has a less detailed message.
+      raise InvalidResourceException(url)
 
     cur_level = self.parsers_by_url
     for token in tokens:
@@ -961,7 +999,7 @@ class Registry(object):
     return self.Parse(None, collection=collection, params=params)
 
 
-# TODO(jasmuth): Deglobalize this object, force gcloud to manage it on its own.
+# TODO(user): Deglobalize this object, force gcloud to manage it on its own.
 REGISTRY = Registry()
 
 
@@ -1050,3 +1088,9 @@ def _StripUrl(url):
   if not _HTTP_RE.match(url):
     raise InvalidEndpointException(url)
   return url[url.index(':') + 1:].strip('/')
+
+
+def _CamelCase(snake_case):
+  parts = snake_case.split('_')
+  return ''.join(s.capitalize() for s in parts)
+

@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Classes for working with component snapshots.
 
@@ -143,7 +155,7 @@ class ComponentSnapshot(object):
           current_function_name, unexpected_args.pop()))
     command_path = kwargs.get('command_path', 'unknown')
 
-    # TODO(markpell) Handle a json parse error here.
+    # TODO(user) Handle a json parse error here.
     first = urls[0]
     data = [
         (ComponentSnapshot._DictFromURL(url,
@@ -209,6 +221,7 @@ class ComponentSnapshot(object):
                   for manifest in installed.values()]
     sdk_definition = schemas.SDKDefinition(
         revision=-1, schema_version=None, release_notes_url=None, version=None,
+        gcloud_rel_path=None, post_processing_command=None,
         components=components, notifications={})
     return ComponentSnapshot(sdk_definition)
 

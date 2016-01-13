@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A module to make it easy to set up and run CLIs in the Cloud SDK."""
 
@@ -15,8 +27,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import platforms
+import httplib2
 from oauth2client import client
-
 
 __all__ = ['Http']
 
@@ -100,11 +112,11 @@ def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
   # GetDefaultTimeout.
   effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
 
-  # TODO(jasmuth): Have retry-once-if-denied logic, to allow client tools to not
+  # TODO(user): Have retry-once-if-denied logic, to allow client tools to not
   # worry about refreshing credentials.
 
   http = c_store._Http(  # pylint:disable=protected-access
-      timeout=effective_timeout)
+      timeout=effective_timeout, proxy_info=_GetHttpProxyInfo())
 
   # Wrap first to dump any data added by other wrappers.
   if log_http:
@@ -130,6 +142,28 @@ def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
     http = _WrapRequestForAuthErrHandling(http)
 
   return http
+
+
+def _GetHttpProxyInfo():
+  """Get ProxyInfo object to be passed to HTTP functions."""
+  proxy_type_map = config.GetProxyTypeMap()
+  proxy_type = properties.VALUES.proxy.proxy_type.Get()
+  proxy_address = properties.VALUES.proxy.address.Get()
+  proxy_port = properties.VALUES.proxy.port.GetInt()
+  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
+  if proxy_prop_set > 0 and proxy_prop_set < 3:
+    raise properties.InvalidValueError(
+        'Please set all or none of the following properties: '
+        'proxy/type, proxy/address and proxy/port')
+  proxy_info = httplib2.proxy_info_from_environment
+  if proxy_prop_set > 0:
+    proxy_info = httplib2.ProxyInfo(
+        proxy_type_map[proxy_type],
+        proxy_address,
+        proxy_port,
+        proxy_user=properties.VALUES.proxy.username.Get(),
+        proxy_pass=properties.VALUES.proxy.password.Get())
+  return proxy_info
 
 
 def _RequestArgsGetHeader(args, kwargs, header, default=None):

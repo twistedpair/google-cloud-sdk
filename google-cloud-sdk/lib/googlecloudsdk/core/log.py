@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Module with logging related functionality for calliope."""
 
@@ -35,6 +47,12 @@ _KNOWN_LOG_FILE_EXTENSIONS = [LOG_FILE_EXTENSION, '.sql3']
 # marker that marks the beginning of a new log line in a log file. It can be
 # used in parsing log files.
 LOG_PREFIX_PATTERN = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}'
+
+
+# These are the formats for the log directories and files.
+# For example, `logs/1970.01.01/12.00.00.000000.log`.
+DAY_DIR_FORMAT = '%Y.%m.%d'
+FILENAME_FORMAT = '%H.%M.%S.%f'
 
 
 class _NullHandler(logging.Handler, object):
@@ -195,6 +213,7 @@ class _LogManager(object):
   """
   FILE_ONLY_LOGGER_NAME = '___FILE_ONLY___'
   MAX_AGE = 60 * 60 * 24 * 30  # 30 days' worth of seconds.
+  MAX_AGE_TIMEDELTA = datetime.timedelta(days=30)
 
   def __init__(self):
     self.console_formatter = _ConsoleFormatter(sys.stderr)
@@ -354,40 +373,63 @@ class _LogManager(object):
     Args:
       logs_dir: str, The path to the logs directory.
     """
+    now = datetime.datetime.now()
     now_seconds = time.time()
 
-    # First delete log files in this directory that are older than MAX_AGE.
-    for (dirpath, dirnames, filenames) in os.walk(logs_dir, topdown=True):
-      # We skip any directories with a too-new st_mtime. This skipping can
-      # result in some false negatives, but that's ok since the files in the
-      # skipped directory are at most one day too old.
-      to_process = []
-      for dirname in dirnames:
-        logdirpath = os.path.join(dirpath, dirname)
-        if self._ShouldDelete(now_seconds, logdirpath):
-          to_process.append(dirname)
-      dirnames[:] = to_process
+    try:
+      dirnames = os.listdir(logs_dir)
+    except OSError:
+      # In event of a non-existing or non-readable directory, we don't want to
+      # cause an error
+      return
+    for dirname in dirnames:
+      dir_path = os.path.join(logs_dir, dirname)
+      if self._ShouldDeleteDir(now, dir_path):
+        for filename in os.listdir(dir_path):
+          log_file_path = os.path.join(dir_path, filename)
+          if self._ShouldDeleteFile(now_seconds, log_file_path):
+            os.remove(log_file_path)
+        try:
+          os.rmdir(dir_path)
+        except OSError:
+          # If the directory isn't empty, or isn't removable for some other
+          # reason. This is okay.
+          pass
 
-      for filename in filenames:
-        # Skip if filename is not formatted like a log file.
-        unused_non_ext, ext = os.path.splitext(filename)
-        if ext not in _KNOWN_LOG_FILE_EXTENSIONS:
-          continue
+  def _ShouldDeleteDir(self, now, path):
+    """Determines if the directory should be deleted.
 
-        # Remove if the file is older than MAX_AGE.
-        filepath = os.path.join(dirpath, filename)
-        if self._ShouldDelete(now_seconds, filepath):
-          os.remove(filepath)
+    True iff:
+    * path is a directory
+    * path name is formatted according to DAY_DIR_FORMAT
+    * age of path (according to DAY_DIR_FORMAT) is slightly older than the
+      MAX_AGE of a log file
 
-    # Second, delete any log directories that are now empty.
-    for (dirpath, dirnames, filenames) in os.walk(logs_dir, topdown=False):
-      # Since topdown is false, we get the children before the parents.
-      if not filenames and not dirnames:
-        # Delete if empty.
-        os.rmdir(dirpath)
+    Args:
+      now: datetime.datetime object indicating the current date/time.
+      path: the full path to the directory in question.
 
-  def _ShouldDelete(self, now_seconds, path):
-    """Determines if the file or directory is old enough to be deleted.
+    Returns:
+      bool, whether the path is a valid directory that should be deleted
+    """
+    if not os.path.isdir(path):
+      return False
+    try:
+      dir_date = datetime.datetime.strptime(os.path.basename(path),
+                                            DAY_DIR_FORMAT)
+    except ValueError:
+      # Not in a format we're expecting; we probably shouldn't mess with it
+      return False
+    dir_age = now - dir_date
+    # Add an additional day to this. It's better to delete a whole directory at
+    # once and leave some extra files on disk than to loop through on each run
+    # (some customers have pathologically large numbers of log files).
+    return dir_age > _LogManager.MAX_AGE_TIMEDELTA + datetime.timedelta(1)
+
+  def _ShouldDeleteFile(self, now_seconds, path):
+    """Determines if the file is old enough to be deleted.
+
+    If the file is not a file that we recognize, return False.
 
     Args:
       now_seconds: int, The current time in seconds.
@@ -396,6 +438,9 @@ class _LogManager(object):
     Returns:
       bool, True if it should be deleted, False otherwise.
     """
+    if os.path.splitext(path)[1] not in _KNOWN_LOG_FILE_EXTENSIONS:
+      # If we don't recognize this file, don't delete it
+      return False
     stat_info = os.stat(path)
     return now_seconds - stat_info.st_mtime > _LogManager.MAX_AGE
 
@@ -414,12 +459,12 @@ class _LogManager(object):
       str, The path to the file to log to
     """
     now = datetime.datetime.now()
-    day_dir_name = now.strftime('%Y.%m.%d')
+    day_dir_name = now.strftime(DAY_DIR_FORMAT)
     day_dir_path = os.path.join(logs_dir, day_dir_name)
     files.MakeDir(day_dir_path)
 
-    filename = '{timestamp}{ext}'.format(timestamp=now.strftime('%H.%M.%S.%f'),
-                                         ext=LOG_FILE_EXTENSION)
+    filename = '{timestamp}{ext}'.format(
+        timestamp=now.strftime(FILENAME_FORMAT), ext=LOG_FILE_EXTENSION)
     log_file = os.path.join(day_dir_path, filename)
     return log_file
 

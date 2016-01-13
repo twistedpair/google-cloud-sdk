@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Utility functions for managing customer supplied encryption keys."""
 
 import abc
@@ -21,7 +33,7 @@ class InvalidKeyFileException(core_exceptions.Error):
   def __init__(self, base_message):
     super(InvalidKeyFileException, self).__init__(
         '{0}'.format(base_message))
-    # TODO(jeffvaughan) Update this message to include
+    # TODO(user) Update this message to include
     # a lint to friendly documentation.
 
 
@@ -187,7 +199,7 @@ def AddCsekKeyArgs(parser, flags_about_creation=True):
       'Path to a csek key file, mapping Google Compute Engine resources to '
       'user managed keys to be used when creating, mounting, or snapshotting '
       'disks. ')
-  # TODO(jeffvaughan)
+  # TODO(user)
   # Argument - indicates the key file should be read from stdin.'
 
   if flags_about_creation:
@@ -345,7 +357,7 @@ class CsekKeyStore(object):
 
     for pat, key in self.state.iteritems():
       if pat.Matches(resource):
-        # TODO(jeffvaughan) what's the best thing to do if there are multiple
+        # TODO(user) what's the best thing to do if there are multiple
         # matches?
         if search_state[0]:
           raise exceptions.InvalidKeyFileException(

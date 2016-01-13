@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -100,87 +100,13 @@ class RuntimeDefinitionRoot(object):
             return src.read()
 
 
-class FileGenerationContext(object):
-    """An abstraction on top of filesystem writes.
+def gen_file(name, contents):
+    """Generate the file.
 
-    This is normally used from the generate_configs script.  It allows the
-    script to write to either the application root directory or to gen_file
-    messages depending on how it was invoked.
+    This writes the file to be generated back to the controller.
 
-    Instances of FileGenerationContext are normally created with the
-    CreateFromArgv() method which knows how to generate the correct object
-    depending from the arg list of a generate_configs script.
-
+    Args:
+        name: (str) The UNIX-style relative path of the file.
+        contents: (str) The complete file contents.
     """
-
-    @classmethod
-    def create_from_argv(cls, argv):
-        if len(argv) == 1:
-            return _DeploymentGenerationContext()
-        else:
-            return _FileSysGenerationContext(sys.argv[1])
-
-    def gen_file(self, name, contents):
-        """Generate a file.
-
-        This generates a file either to the filesystem or to an output message, as
-        appropriate.
-
-        Args:
-            name: (str) the filename, relative to the root of the docker context.
-            contents: (str) file contents.
-        """
-        raise NotImplementedError()
-
-    def is_deploy(self):
-        """Returns true (bool) if this is a deployment context."""
-        raise NotImplementedError()
-
-    def exists(self, filename):
-        """Returns true if the file already exists and should not be emitted."""
-        raise NotImplementedError()
-
-    def has_generated_files(self):
-        """Returns true if any files were generated."""
-        raise NotImplementedError()
-
-
-class _DeploymentGenerationContext(FileGenerationContext):
-
-    def __init__(self):
-        self._has_generated_files = False
-
-    def gen_file(self, name, contents):
-        _write_msg(type='gen_file', filename=name, contents=contents)
-
-    def is_deploy(self):
-        return True
-
-    def exists(self, filename):
-        # In deployment context, all generated files are temporary and are always
-        # emitted.
-        return False
-
-    def has_generated_files(self):
-        return self._has_generated_files
-
-
-class _FileSysGenerationContext(FileGenerationContext):
-
-    def __init__(self, root):
-        self.root = root
-        self._has_generated_files = False
-
-    def gen_file(self, name, contents):
-        with open(os.path.join(self.root, name), 'w') as dst:
-            dst.write(contents)
-        self._has_generated_files = True
-
-    def is_deploy(self):
-        return False
-
-    def exists(self, filename):
-        return os.path.exists(os.path.join(self.root, filename))
-
-    def has_generated_files(self):
-        return self._has_generated_files
+    _write_msg(type='gen_file', filename=name, contents=contents)

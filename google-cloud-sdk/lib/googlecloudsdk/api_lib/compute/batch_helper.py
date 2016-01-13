@@ -1,9 +1,21 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """"Helpers for making batch requests."""
 import json
 import logging
 
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import batch
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
@@ -21,13 +33,13 @@ def MakeRequests(requests, http, batch_url=None):
     from the calls and the second is a list of error messages.
   """
   logging.debug('Starting batch request...')
-  batch = apitools_base.BatchApiRequest(batch_url=batch_url)
+  batch_request = batch.BatchApiRequest(batch_url=batch_url)
   for service, method, request in requests:
     logging.debug('Adding request: %s', (service, method, request))
-    batch.Add(service, method, request)
+    batch_request.Add(service, method, request)
 
   logging.debug('Making batch request...')
-  responses = batch.Execute(http)
+  responses = batch_request.Execute(http)
 
   objects = []
   errors = []

@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Utilities for waiting on Compute Engine operations."""
 import httplib
 from googlecloudsdk.api_lib.compute import batch_helper
@@ -7,7 +19,7 @@ from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.core import log
 
 # 30 minute timeout... wild guess on avoiding timeouts on large disk clones.
-# TODO(jeffvaughan): look into backend metrics to see if we can do something
+# TODO(user): look into backend metrics to see if we can do something
 # more principled.
 _POLLING_TIMEOUT_SEC = 60 * 30
 _MAX_TIME_BETWEEN_POLLS_SEC = 5

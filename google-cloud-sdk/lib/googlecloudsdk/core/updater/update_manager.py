@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Higher level functions to support updater operations at the CLI level."""
 
@@ -8,7 +20,6 @@ import shutil
 import sys
 import textwrap
 
-import googlecloudsdk
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -69,6 +80,12 @@ _SHELL_RCFILES = [
     'gcfilesys.zsh.inc'
 ]
 
+BUNDLED_PYTHON_COMPONENT = 'bundled-python'
+BUNDLED_PYTHON_REMOVAL_WARNING = (
+    'This command is running using a bundled installation of Python. '
+    'If you remove it, you may have no way to run this command.\n'
+)
+
 
 class Error(exceptions.Error):
   """Base exception for the update_manager module."""
@@ -117,6 +134,12 @@ class MissingUpdateURLError(Error):
 
 class MismatchedFixedVersionsError(Error):
   """Error for when you have pinned a version but you ask for a different one.
+  """
+  pass
+
+
+class PostProcessingError(Error):
+  """Error for when post processing failed.
   """
   pass
 
@@ -653,7 +676,7 @@ To update your SDK installation to the latest version [{latest}], run:
     return Inner
 
   def Install(self, components, allow_no_backup=False,
-              throw_if_unattended=False):
+              throw_if_unattended=False, restart_args=None):
     """Installs the given components at the version you are current on.
 
     Args:
@@ -664,6 +687,9 @@ To update your SDK installation to the latest version [{latest}], run:
         so we only do it if necessary.
       throw_if_unattended: bool, True to throw an exception on prompts when
         not running in interactive mode.
+      restart_args: list of str or None. If given, this gcloud command should be
+        run in event of a restart (ex. if we're using a bundled Python
+        installation to do this update).
 
     Raises:
       InvalidComponentError: If any of the given component ids do not exist.
@@ -685,10 +711,11 @@ To update your SDK installation to the latest version [{latest}], run:
         components,
         allow_no_backup=allow_no_backup,
         throw_if_unattended=throw_if_unattended,
-        version=version)
+        version=version,
+        restart_args=restart_args)
 
   def Update(self, update_seed=None, allow_no_backup=False,
-             throw_if_unattended=False, version=None):
+             throw_if_unattended=False, version=None, restart_args=None):
     """Performs an update of the given components.
 
     If no components are provided, it will attempt to update everything you have
@@ -703,6 +730,9 @@ To update your SDK installation to the latest version [{latest}], run:
       throw_if_unattended: bool, True to throw an exception on prompts when
         not running in interactive mode.
       version: str, The SDK version to update to instead of latest.
+      restart_args: list of str or None. If given, this gcloud command should be
+        run in event of a restart (ex. if we're using a bundled Python
+        installation to do this update).
 
     Returns:
       bool, True if the update succeeded (or there was nothing to do, False if
@@ -760,19 +790,10 @@ To update your SDK installation to the latest version [{latest}], run:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
+    self._RestartIfUsingBundledPython(args=restart_args)
 
-    current_os = platforms.OperatingSystem.Current()
-    if (current_os is platforms.OperatingSystem.WINDOWS and
-        file_utils.IsDirAncestorOf(self.__sdk_root, sys.executable)):
-      # On Windows, you can't use a Python installed within a directory to move
-      # that directory, which means that with a bundled Python, updates will
-      # fail. To get around this, we copy the Python interpreter to a temporary
-      # directory and run it there.
-      # There's no issue that the `.py` files themselves are inside the install
-      # directory, because the Python interpreter loads them into memory and
-      # closes them immediately.
-      RestartCommand(python=_CopyPython(), block=False)
-      sys.exit(0)
+    if self._IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     # If explicitly listing components, you are probably installing and not
     # doing a full update, change the message to be more clear.
@@ -842,6 +863,8 @@ To update your SDK installation to the latest version [{latest}], run:
           diff.latest, platform_filter=self.__platform_filter)
       last_update_check.SetFromSnapshot(
           new_diff.latest, bool(new_diff.AvailableUpdates()), force=True)
+
+    self._PostProcess(snapshot=diff.latest)
 
     md5dict2 = self._HashRcfiles(_SHELL_RCFILES)
     if md5dict1 != md5dict2:
@@ -950,6 +973,10 @@ Please remove the following to avoid accidentally invoking these old tools:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
+    self._RestartIfUsingBundledPython()
+
+    if self._IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(message):
@@ -974,6 +1001,8 @@ Please remove the following to avoid accidentally invoking these old tools:
           stream=log.status, first=False) as pb:
         install_state.ReplaceWith(staging_state, pb.SetProgress)
 
+    self._PostProcess()
+
     self.__Write(log.status, '\nUninstall done!\n')
 
   def Restore(self):
@@ -991,6 +1020,13 @@ Please remove the following to avoid accidentally invoking these old tools:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
+    self._RestartIfUsingBundledPython()
+
+    backup_has_bundled_python = (
+        BUNDLED_PYTHON_COMPONENT in
+        install_state.BackupInstallationState().InstalledComponents())
+    if self._IsPythonBundled() and not backup_has_bundled_python:
+      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     if not console_io.PromptContinue(
         message='Your Cloud SDK installation will be restored to its previous '
@@ -999,6 +1035,7 @@ Please remove the following to avoid accidentally invoking these old tools:
 
     self.__Write(log.status, 'Restoring backup...')
     install_state.RestoreBackup()
+    self._PostProcess()
 
     self.__Write(log.status, 'Restoration done!\n')
 
@@ -1059,6 +1096,7 @@ Please remove the following to avoid accidentally invoking these old tools:
     # Ensure we have the rights to update the SDK now that we know an update is
     # necessary.
     config.EnsureSDKWriteAccess(self.__sdk_root)
+    self._RestartIfUsingBundledPython()
 
     answer = console_io.PromptContinue(
         message='\nThe component manager must perform a self update before you '
@@ -1137,9 +1175,16 @@ Please remove the following to avoid accidentally invoking these old tools:
              '[{components}]'.format(components=missing_components_list_str))
     self.__Write(log.status, msg, word_wrap=True)
 
-    # Need to install the component.
-    if not self.Install(components, throw_if_unattended=True):
-      raise MissingRequiredComponentsError("""\
+    try:
+      # Need to install the component.
+      # In the event that this command has to restart during the installation
+      # (can happen with bundled Python), we only want to restart the
+      # installation (NOT the command that the user typed; they'll have to do
+      # that themselves).
+      restart_args = ['components', 'install'] + list(missing_components)
+      if not self.Install(components, throw_if_unattended=True,
+                          restart_args=restart_args):
+        raise MissingRequiredComponentsError("""\
 The following components are required to run this command, but are not
 currently installed:
   [{components_list}]
@@ -1150,9 +1195,70 @@ prompt, or run:
 
 """.format(components_list=missing_components_list_str,
            components=' '.join(missing_components)))
+    except SystemExit:
+      # This happens when updating using bundled Python.
+      self.__Write(log.status,
+                   'Installing component in a new window.\n\n'
+                   'Please re-run this command when installation is complete.\n'
+                   '    $ {0}'.format(' '.join(sys.argv)))
+      raise
 
     # Restart the original command.
     RestartCommand(command)
+
+  def _IsPythonBundled(self):
+    return _IsPythonBundled(self.__sdk_root)
+
+  def _RestartIfUsingBundledPython(self, args=None, command=None):
+    RestartIfUsingBundledPython(self.__sdk_root, args, command)
+
+  def _PostProcess(self, snapshot=None):
+    """Runs the gcloud command to post process the update.
+
+    This runs gcloud as a subprocess so that the new version of gcloud (the one
+    we just updated to) is run instead of the old code (which is running here).
+    We do this so the new code can say how to correctly post process itself.
+
+    Args:
+      snapshot: ComponentSnapshot, The component snapshot for the version
+        we are updating do. The location of gcloud and the command to run can
+        change from version to version, which is why we try to pull this
+        information from the latest snapshot.  For a restore operation, we don't
+        have that information so we fall back to a best effort default.
+    """
+    command = None
+    gcloud_path = None
+
+    if snapshot:
+      if snapshot.sdk_definition.post_processing_command:
+        command = snapshot.sdk_definition.post_processing_command.split(' ')
+      if snapshot.sdk_definition.gcloud_rel_path:
+        gcloud_path = os.path.join(self.__sdk_root,
+                                   snapshot.sdk_definition.gcloud_rel_path)
+
+    command = command or ['components', 'post-process']
+    gcloud_path = gcloud_path or config.GcloudPath()
+
+    args = execution_utils.ArgsForPythonTool(gcloud_path, *command)
+    self.__Write(log.status)
+    try:
+      with console_io.ProgressTracker(
+          message='Performing post processing steps', tick_delay=.25):
+        # Raise PostProcessingError for all failures so the progress tracker
+        # will report the failure.
+        try:
+          ret_val = execution_utils.Exec(args, no_exit=True,
+                                         pipe_output_through_logger=True,
+                                         file_only_logger=True)
+        except OSError:
+          log.debug('Failed to execute post-processing command', exc_info=True)
+          raise PostProcessingError()
+        if ret_val:
+          log.debug('Post-processing command exited non-zero')
+          raise PostProcessingError()
+    except PostProcessingError:
+      log.warning('Post processing failed.  Run `gcloud info --show-log` '
+                  'to view the failures.')
 
 
 def _CopyPython():
@@ -1165,20 +1271,41 @@ def _CopyPython():
                       os.path.basename(sys.executable))
 
 
-def RestartCommand(command=None, python=None, block=True):
+def _IsPythonBundled(sdk_root):
+  return file_utils.IsDirAncestorOf(sdk_root, sys.executable)
+
+
+def RestartIfUsingBundledPython(sdk_root, args=None, command=None):
+  current_os = platforms.OperatingSystem.Current()
+  if (current_os is platforms.OperatingSystem.WINDOWS and
+      _IsPythonBundled(sdk_root)):
+    # On Windows, you can't use a Python installed within a directory to move
+    # that directory, which means that with a bundled Python, updates will
+    # fail. To get around this, we copy the Python interpreter to a temporary
+    # directory and run it there.
+    # There's no issue if the `.py` files themselves are inside the install
+    # directory, because the Python interpreter loads them into memory and
+    # closes them immediately.
+    RestartCommand(args=args, command=command, python=_CopyPython(),
+                   block=False)
+    sys.exit(0)
+
+
+def RestartCommand(command=None, args=None, python=None, block=True):
   """Calls command again with the same arguments as this invocation and exit.
 
   Args:
     command: str, the command to run (full path to Python file). If not
       specified, defaults to current `gcloud` installation.
+    args: list of str or None. If given, use these arguments to the command
+      instead of the args for this process.
     python: str or None, the path to the Python interpreter to use for the new
       command invocation (if None, uses the current Python interpreter)
     block: bool, whether to wait for the restarted command invocation to
       terminate before continuing.
   """
-  command = command or os.path.join(
-      os.path.dirname(os.path.dirname(googlecloudsdk.__file__)), 'gcloud.py')
-  command_args = sys.argv[1:]
+  command = command or config.GcloudPath()
+  command_args = args or sys.argv[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)
 

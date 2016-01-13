@@ -1,12 +1,12 @@
 # Check to see if the the version included in the base runtime satisfies
 # %(version_spec)s, if not then do an npm install of the latest available
 # version that satisfies it.
-RUN npm install \
+RUN npm install
     https://storage.googleapis.com/gae_node_packages/semver.tar.gz &&
   (node -e 'var semver = require("semver");
             if (!semver.satisfies(process.version, "%(version_spec)s"))
               process.exit(1);' ||
-   (version=$(curl -L \
+   (version=$(curl -L
 https://storage.googleapis.com/gae_node_packages/node_versions |
               node -e '
                 var semver = require("semver");
@@ -44,7 +44,7 @@ https://storage.googleapis.com/gae_node_packages/node_versions |
                 });
                 process.stdin.on("end", function() {
                   versions =
-                      versions.split("\\n").sort().reverse();
+                      versions.split("\n").sort().reverse();
                   if (!versions.some(satisfies)) {
                     console.error("No version of Node found satisfying: " +
                                   spec);
@@ -53,7 +53,7 @@ https://storage.googleapis.com/gae_node_packages/node_versions |
                 });'
                 "%(version_spec)s") &&
                 rm -rf /nodejs/* &&
-                (curl \
+                (curl
 https://storage.googleapis.com/gae_node_packages/node-$version-linux-x64.tar.gz |
                  tar xzf - -C /nodejs --strip-components=1
                  )

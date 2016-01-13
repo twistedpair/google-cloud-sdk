@@ -1,5 +1,17 @@
 
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Utility methods to upload source to GCS and call Argo Cloud Build service."""
 
@@ -95,7 +107,7 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
     BuildFailedError: when the build fails.
   """
   (source_bucket, source_object) = cloud_storage.ParseGcsUri(source_uri)
-  # TODO(ddopson): Consider building multiple output images in a single call
+  # TODO(user): Consider building multiple output images in a single call
   # to Argo Cloud Builder.
   build_op = cloudbuild_client.projects_builds.Create(
       cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
@@ -121,7 +133,7 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
       'Started cloud build [{build_id}].'.format(build_id=build_id))
   logs_uri = CLOUDBUILD_LOGS_URI_TEMPLATE.format(project_id=project,
                                                  build_id=build_id)
-  # TODO(ddopson): wait for job to be scheduled before printing logs uri.
+  # TODO(user): wait for job to be scheduled before printing logs uri.
   # Alternatively, it would be nice if we wrote a single line to the logs prior
   # to returning from the Create call.
   log.status.Print('Logs at: ' + logs_uri)
@@ -130,7 +142,7 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
     op = operations.WaitForOperation(cloudbuild_client.operations, build_op)
   final_status = _GetStatusFromOp(op)
   if final_status != CLOUDBUILD_SUCCESS:
-    raise BuildFailedError('Your Google Cloud Builder build failed with status '
+    raise BuildFailedError('Cloud build failed with status '
                            + final_status + '. Check logs at ' + logs_uri)
 
 

@@ -1,13 +1,27 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Package containing fingerprinting for all runtimes.
 """
 
+from googlecloudsdk.api_lib.app import ext_runtime
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from googlecloudsdk.api_lib.app.runtimes import aspnet
 from googlecloudsdk.api_lib.app.runtimes import go
 from googlecloudsdk.api_lib.app.runtimes import java
-from googlecloudsdk.api_lib.app.runtimes import nodejs
 from googlecloudsdk.api_lib.app.runtimes import python
+from googlecloudsdk.api_lib.app.runtimes import python_compat
 from googlecloudsdk.api_lib.app.runtimes import ruby
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -17,8 +31,10 @@ RUNTIMES = [
     # relative positions need to be tested carefully.
     go,  # Go's position is relatively flexible due to its orthogonal nature.
     ruby,
-    nodejs,
+    ext_runtime.CoreRuntimeLoader('nodejs', 'Node.js', ['nodejs', 'custom']),
     java,
+    python_compat,
+    aspnet,
     python,  # python is last because it passes if there are any .py files.
 ]
 

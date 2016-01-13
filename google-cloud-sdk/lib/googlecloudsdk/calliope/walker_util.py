@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A collection of CLI walkers."""
 
@@ -44,7 +56,7 @@ class DevSiteGenerator(walker.Walker):
     toc_path = os.path.join(self._directory, self._TOC)
     self._toc_root = open(toc_path, 'w')
     self._toc_root.write('toc:\n')
-    self._toc_root.write('- title: "Reference"\n')
+    self._toc_root.write('- title: "gcloud Reference"\n')
     self._toc_root.write('  path: %s\n' % self._REFERENCE)
     self._toc_root.write('  section:\n')
     self._toc_main = None
@@ -172,16 +184,77 @@ class HelpTextGenerator(walker.Walker):
     return parent
 
 
-class ManPageGenerator(walker.Walker):
-  """Generates manpage man(1) files in an output directory.
+class DocumentGenerator(walker.Walker):
+  """Generates style manpage files with suffix in an output directory.
 
-  This implements gcloud meta generate-help-docs --manpage-dir=DIRECTORY.
-
-  The output directory will contain a manN subdirectory for each section N
-  required by markdown.
+  All files will be generated in one directory.
 
   Attributes:
-    _directory: The manpage output directory.
+    _directory: The document output directory.
+    _style: The document style.
+    _suffix: The output file suffix.
+  """
+
+  def __init__(self, cli, directory, style, suffix):
+    """Constructor.
+
+    Args:
+      cli: The Cloud SDK CLI object.
+      directory: The manpage output directory path name.
+      style: The document style.
+      suffix: The generate document file suffix. None for .<SECTION>.
+    """
+    super(DocumentGenerator, self).__init__(cli)
+    self._directory = directory
+    self._style = style
+    self._suffix = suffix
+    files.MakeDir(self._directory)
+
+  def Visit(self, node, parent, is_group):
+    """Renders an HTML manpage doc for each node in the CLI tree.
+
+    Args:
+      node: group/command CommandCommon info.
+      parent: The parent Visit() return value, None at the top level.
+      is_group: True if node is a group, otherwise its is a command.
+
+    Returns:
+      The parent value, ignored here.
+    """
+    command = node.GetPath()
+    path = os.path.join(self._directory, '_'.join(command)) + self._suffix
+    with open(path, 'w') as f:
+      md = markdown.Markdown(node)
+      render_document.RenderDocument(style=self._style,
+                                     title=' '.join(command),
+                                     fin=cStringIO.StringIO(md),
+                                     out=f)
+    return parent
+
+
+class HtmlGenerator(DocumentGenerator):
+  """Generates HTML manpage files with suffix .html in an output directory.
+
+  The output directory will contain a man1 subdirectory containing all of the
+  HTML manpage files.
+  """
+
+  def __init__(self, cli, directory):
+    """Constructor.
+
+    Args:
+      cli: The Cloud SDK CLI object.
+      directory: The HTML output directory path name.
+    """
+    super(HtmlGenerator, self).__init__(
+        cli, directory=directory, style='html', suffix='.html')
+
+
+class ManPageGenerator(DocumentGenerator):
+  """Generates manpage files with suffix .1 in an output directory.
+
+  The output directory will contain a man1 subdirectory containing all of the
+  manpage files.
   """
 
   _SECTION_FORMAT = 'man{section}'
@@ -193,32 +266,11 @@ class ManPageGenerator(walker.Walker):
       cli: The Cloud SDK CLI object.
       directory: The manpage output directory path name.
     """
-    super(ManPageGenerator, self).__init__(cli)
     # Currently all gcloud manpages are in section 1.
-    section_1 = self._SECTION_FORMAT.format(section=1)
-    self._directory = os.path.join(directory, section_1)
-    files.MakeDir(self._directory)
-
-  def Visit(self, node, parent, is_group):
-    """Renders a manpage doc for each node in the CLI tree.
-
-    Args:
-      node: group/command CommandCommon info.
-      parent: The parent Visit() return value, None at the top level.
-      is_group: True if node is a group, otherwise its is a command.
-
-    Returns:
-      The parent value, ignored here.
-    """
-    command = node.GetPath()
-    path = os.path.join(self._directory, '_'.join(command)) + '.1'
-    with open(path, 'w') as f:
-      md = markdown.Markdown(node)
-      render_document.RenderDocument(style='man',
-                                     title=' '.join(command),
-                                     fin=cStringIO.StringIO(md),
-                                     out=f)
-    return parent
+    section_subdir = self._SECTION_FORMAT.format(section=1)
+    section_dir = os.path.join(directory, section_subdir)
+    super(ManPageGenerator, self).__init__(
+        cli, directory=section_dir, style='man', suffix='.1')
 
 
 class CommandTreeGenerator(walker.Walker):

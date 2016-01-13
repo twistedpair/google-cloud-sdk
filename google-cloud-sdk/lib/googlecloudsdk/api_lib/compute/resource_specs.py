@@ -1,4 +1,16 @@
 # Copyright 2014 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Annotates the resource types with extra information."""
 import httplib
 
@@ -6,8 +18,8 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
+from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.py27 import py27_collections as collections
-import protorpc
 
 
 def _FirewallRulesToCell(firewall):
@@ -278,7 +290,7 @@ def _ProtobufDefinitionToFields(message_class):
     The flattened fields, in non-decreasing order.
   """
   for field in sorted(message_class.all_fields(), key=lambda field: field.name):
-    if isinstance(field, protorpc.messages.MessageField):
+    if isinstance(field, messages.MessageField):
       for remainder in _ProtobufDefinitionToFields(field.type):
         if field.repeated:
           yield field.name + '[].' + remainder

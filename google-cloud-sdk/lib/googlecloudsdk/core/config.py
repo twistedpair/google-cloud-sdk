@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Config for Google Cloud Platform CLIs."""
 
@@ -6,6 +18,7 @@ import json
 import os
 import time
 
+import googlecloudsdk
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
@@ -141,6 +154,8 @@ rem
 rem (a) always defined by the preamble
 rem (u) user definition overrides preamble
 
+rem This command lives in google-cloud-sdk\bin so its parent directory is the
+rem root.
 SET CLOUDSDK_ROOT_DIR=%~dp0..
 SET PATH=%CLOUDSDK_ROOT_DIR%\bin\sdk;%PATH%
 
@@ -372,17 +387,16 @@ class InstallationConfig(object):
 INSTALLATION_CONFIG = InstallationConfig.Load()
 
 CLOUD_SDK_VERSION = INSTALLATION_CONFIG.version
-# TODO(jasmuth): Distribute a clientsecrets.json to avoid putting this in code.
+# TODO(user): Distribute a clientsecrets.json to avoid putting this in code.
 CLOUDSDK_CLIENT_ID = '32555940559.apps.googleusercontent.com'
 CLOUDSDK_CLIENT_NOTSOSECRET = 'ZmssLNjJy2998hD4CTg2ejr2'
 
 CLOUDSDK_USER_AGENT = INSTALLATION_CONFIG.user_agent
 
-# Do not add more scopes here, see http://b/19019218.
 CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',
-    # TODO(cherba): remove the following once 'cloud-platform' is sufficient.
+    # TODO(user): remove the following once 'cloud-platform' is sufficient.
     'https://www.googleapis.com/auth/appengine.admin',
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
@@ -402,6 +416,16 @@ def EnsureSDKWriteAccess(sdk_root_override=None):
   sdk_root = sdk_root_override or Paths().sdk_root
   if sdk_root and not file_utils.HasWriteAccessInDir(sdk_root):
     raise exceptions.RequiresAdminRightsError(sdk_root)
+
+
+def GcloudPath():
+  """Gets the path the main gcloud entrypoint.
+
+  Returns:
+    str: The path to gcloud.py
+  """
+  return os.path.join(
+      os.path.dirname(os.path.dirname(googlecloudsdk.__file__)), 'gcloud.py')
 
 
 class Paths(object):
@@ -676,3 +700,12 @@ class Paths(object):
       str, The path to the GCE cache.
     """
     return os.path.join(self.global_config_dir, 'gce')
+
+
+def GetProxyTypeMap():
+  # pylint:disable=g-import-not-at-top, We only want to import this if needed.
+  from httplib2 import socks
+  return {'socks4': socks.PROXY_TYPE_SOCKS4,
+          'socks5': socks.PROXY_TYPE_SOCKS5,
+          'http': socks.PROXY_TYPE_HTTP,
+          'http_no_tunnel': socks.PROXY_TYPE_HTTP_NO_TUNNEL}

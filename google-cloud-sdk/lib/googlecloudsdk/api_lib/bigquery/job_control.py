@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Provides methods for controlling jobs.
 """
@@ -11,7 +23,8 @@ import time
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.api_lib.bigquery import job_ids
 from googlecloudsdk.api_lib.bigquery import job_progress
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
+from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 def ExecuteJob(
@@ -95,9 +108,9 @@ def _StartJob(
 
   media_upload = (
       upload_file
-      and apitools_base.Upload.FromFile(upload_file,
-                                        mime_type='application/octet-stream',
-                                        auto_transfer=True))
+      and transfer.Upload.FromFile(upload_file,
+                                   mime_type='application/octet-stream',
+                                   auto_transfer=True))
 
   job_descriptor = messages_module.Job(
       configuration=configuration, jobReference=job_reference)
@@ -106,7 +119,7 @@ def _StartJob(
       projectId=project_id)
   try:
     result = apitools_client.jobs.Insert(request, upload=media_upload)
-  except apitools_base.HttpError as server_error:
+  except exceptions.HttpError as server_error:
     raise bigquery.Error.ForHttpError(server_error)
   return result
 

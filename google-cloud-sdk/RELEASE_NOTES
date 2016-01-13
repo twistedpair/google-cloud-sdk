@@ -1,11 +1,119 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2015 Google Inc. All rights reserved.
+Copyright 2014-2016 Google Inc. All rights reserved.
+
+## 92.0.0 (2016/1/13)
+
+*   Because of the rollback of 91.0.0, this release contains all of the changes
+    from 91.0.0 in addition to the changes listed below.
+
+### Breaking Changes
+
+*   `gcloud preview app deploy`
+
+    *   Changed deployments to set the deployed versions to receive all traffic
+        for their modules by default.
+
+        To keep the old behavior (traffic split remains the same), use the
+        `--no-promote` flag or run
+        `gcloud config set app/promote_by_default true`.
+
+        Note that your old versions are still running, and must be stopped
+        manually. This behavior will change in a future release.
+
+    *   Removed deprecated `--set-default` flag.  Please use `--promote`
+        instead.
+
+    *   `gcloud preview app deploy`: Removed deprecated `--env-vars` flag.
+
+*   The output of the `gcloud preview app modules list` command has been
+    changed to include the traffic split percentage instead of the 'default
+    version' field.
+
+*   Removed deprecated `gcloud preview app modules cancel-deployment` command.
+
+    This command is no longer necessary due to recent improvements in the
+    Deployment API.
+
+*   Removed deprecated `gcloud preview app modules download` command.
+
+    This command is no longer necessary due to recent improvements in the
+    Deployment API.
+
+*   Removed deprecated `gcloud preview app run` command. Please use
+    `dev_appserver.py` instead.
+
+*   Changed behavior of the `--zone`/`-z` flag in the `gcloud dns record-sets`
+    command group. This flag can no longer precede the command. For instance,
+    `gcloud dns record-sets -z=mz list` will not work, but
+    `gcloud dns record-sets list -z=mz` will.
+
+*   Changed `--password-file` option for `sql instances set-root-password`;
+    password now does not include trailing newline from password file. This
+    matches the documented behavior, but not the previous behavior.
+    (Fixes https://code.google.com/p/google-cloud-sdk/issues/detail?id=419)
+
+*   Removed `meta/active_configuration` from the results of `gcloud config list`
+    since it is not a property that can be set. You can continue to use the
+    `gcloud config configurations` commands to view and manage your
+    configurations.
+
+### Cloud SDK
+
+*   Added `gcloud config` proxy settings. Users can configure `gcloud` to use a
+    proxy via the following settings:
+
+    *   `gcloud config proxy/address`
+
+    *   `gcloud config proxy/password`
+
+    *   `gcloud config proxy/port`
+
+    *   `gcloud config proxy/type`
+
+    *   `gcloud config proxy/username`
+
+*   Added `alpha` and `beta` components to Debian packages.
+
+*   Removed unused config properties: `app/hosted_registry`, `app/host`,
+   `app/admin_host`, `app/api_host`.
+
+### Google Cloud Logging
+
+*   Migrated to
+    [v2beta1](https://cloud.google.com/logging/docs/api/introduction_v2) API
+    release.
+
+    *   Moved `gcloud beta logging sinks` commands to `v2beta1`.
+
+    *   Added `gcloud beta logging resource-descriptors` command to display
+        supported resources from various services.
+
+    *   Added `gcloud beta logging read` command to retrieve log entries using
+        filters.
+
+### Google Container Engine
+
+*   Added `gcloud container clusters resize` for resizing Container Engine
+    clusters.
+
+*   Added notifications when node upgrades are available to `gcloud container
+    cluster describe` and `list` commands.
+
+### Google App Engine
+
+*   Fixed bug where initial deployments using `--image-url` failed.
+
+*   Changed `gcloud preview app modules set_default` command to use the App
+    Engine Admin API.
+
+*   Changed `gcloud preview app modules list` command to use the App Engine
+    Admin API.
+
 
 ## 91.0.1 (2015/12/16)
 
 * The Cloud SDK has been rolled back to 90.0.0.
-
 
 ## 91.0.0 (2015/12/16)
 

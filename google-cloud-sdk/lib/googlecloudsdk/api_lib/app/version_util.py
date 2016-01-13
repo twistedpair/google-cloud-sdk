@@ -1,8 +1,24 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Utilities for dealing with version resources."""
 
+import datetime
+import re
+
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import timezone
 
 
 class VersionValidationError(exceptions.Error):
@@ -10,15 +26,31 @@ class VersionValidationError(exceptions.Error):
 
 
 class Version(object):
-  """Value class representing a version resource."""
+  """Value class representing a version resource.
+
+  This wrapper around appengine_v1beta4_messages.Version is necessary because
+  Versions don't have traffic split, project, or last_deployed_time as a
+  datetime object.
+  """
 
   _RESOURCE_PATH_PARTS = 3  # project/service/version
 
-  def __init__(self, project, service, version, traffic_allocation=None):
+  # This is the name in the Version resource from the API
+  _VERSION_NAME_PATTERN = ('apps/(?P<project>.*)/'
+                           'modules/(?P<service>.*)/'
+                           'versions/(?P<version>.*)')
+
+  def __init__(self, project, service, version, traffic_split=None,
+               last_deployed_time=None):
     self.project = project
     self.service = service
     self.version = version
-    self.traffic_allocation = traffic_allocation
+    self.traffic_split = traffic_split
+    self.last_deployed_time = last_deployed_time
+
+  @property
+  def id(self):
+    return self.version.id
 
   @classmethod
   def FromResourcePath(cls, path):
@@ -29,6 +61,26 @@ class Version(object):
 
     parts = [None] * (cls._RESOURCE_PATH_PARTS - len(parts)) + parts
     return cls(*parts)
+
+  @classmethod
+  def FromVersionResource(cls, version, service):
+    """Convert a appengine_v1beta4_messages.Version into a wrapped Version."""
+    project, service_id, version_id = re.match(cls._VERSION_NAME_PATTERN,
+                                               version.name).groups()
+    traffic_split = service and service.split.get(version_id, 0.0)
+    last_deployed = None
+    try:
+      if version.creationTime:
+        last_deployed_utc = datetime.datetime.strptime(
+            version.creationTime,
+            '%Y-%m-%dT%H:%M:%S.%fZ').replace(microsecond=0,
+                                             tzinfo=timezone.GetTimeZone('UTC'))
+        last_deployed = last_deployed_utc.astimezone(
+            timezone.GetTimeZone('local'))
+    except ValueError:
+      pass
+    return cls(project, service_id, version_id, traffic_split=traffic_split,
+               last_deployed_time=last_deployed)
 
   def __eq__(self, other):
     return (type(other) is Version and
@@ -69,7 +121,7 @@ def _ValidateServicesAreSubset(filtered_versions, all_versions):
                                                 version.version))
 
 
-def _ParseVersionResourcePaths(paths, project):
+def ParseVersionResourcePaths(paths, project):
   """Parse the list of resource paths specifying versions.
 
   Args:
@@ -148,7 +200,7 @@ def GetMatchingVersions(all_versions, args_versions, args_service, project):
   # versions based on the given service/version specifiers.
   versions = None
   if any('/' in version for version in args_versions):
-    versions = _ParseVersionResourcePaths(args_versions, project)
+    versions = ParseVersionResourcePaths(args_versions, project)
     _ValidateServicesAreSubset(versions, all_versions)
     for version in versions:
       if args_service and version.service != args_service:
@@ -156,7 +208,7 @@ def GetMatchingVersions(all_versions, args_versions, args_service, project):
             'If you provide a resource path as an argument, it must match the '
             'specified service.')
       version_from_api = all_versions[all_versions.index(version)]
-      version.traffic_allocation = version_from_api.traffic_allocation
+      version.traffic_split = version_from_api.traffic_split
   else:
     versions = _FilterVersions(all_versions, args_service, args_versions)
   return versions

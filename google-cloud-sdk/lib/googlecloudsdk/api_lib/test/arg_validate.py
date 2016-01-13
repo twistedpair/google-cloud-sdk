@@ -1,4 +1,16 @@
 # Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """A shared library to validate 'gcloud test' CLI argument values."""
 
@@ -7,6 +19,7 @@ import sys
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 
 
 class InvalidArgException(exceptions.InvalidArgumentException):
@@ -25,8 +38,8 @@ class InvalidArgException(exceptions.InvalidArgumentException):
 def ValidateArgFromFile(arg_internal_name, arg_value):
   """Do checks/mutations on arg values parsed from YAML which need validation.
 
-  Any arg not appearing in the _ARG_VALIDATORS dictionary is assumed to be a
-  simple string to be validated by the default _ValidateString() function.
+  Any arg not appearing in the _FILE_ARG_VALIDATORS dictionary is assumed to be
+  a simple string to be validated by the default _ValidateString() function.
 
   Mutations of the args are done in limited cases to improve ease-of-use.
   This includes:
@@ -52,8 +65,8 @@ def ValidateArgFromFile(arg_internal_name, arg_value):
   """
   if arg_value is None:
     raise InvalidArgException(arg_internal_name, 'no argument value found.')
-  if arg_internal_name in _ARG_VALIDATORS:
-    return _ARG_VALIDATORS[arg_internal_name](arg_internal_name, arg_value)
+  if arg_internal_name in _FILE_ARG_VALIDATORS:
+    return _FILE_ARG_VALIDATORS[arg_internal_name](arg_internal_name, arg_value)
   return _ValidateString(arg_internal_name, arg_value)
 
 
@@ -166,7 +179,7 @@ def _ValidateObbFileList(arg_internal_name, arg_value):
 
 # Map of internal arg names to their appropriate validation functions.
 # Any arg not appearing in this map is assumed to be a simple string.
-_ARG_VALIDATORS = {
+_FILE_ARG_VALIDATORS = {
     'async': _ValidateBool,
     'auto_google_login': _ValidateBool,
     'timeout': _ValidateDuration,
@@ -240,13 +253,44 @@ def ValidateResultsBucket(args):
   """Do some basic sanity checks on the format of the results-bucket arg."""
   if args.results_bucket is None:
     return
-  # TODO(jasmuth): use the resources module here once it understands gs:// links
+  # TODO(user): use the resources module here once it understands gs:// links
   if args.results_bucket.startswith('gs://'):
     args.results_bucket = args.results_bucket[5:]
   args.results_bucket = args.results_bucket.rstrip('/')
   if '/' in args.results_bucket:
     raise exceptions.InvalidArgumentException(
         'results-bucket', 'Results bucket name is not valid')
+
+
+def ValidateOsVersions(args, catalog):
+  """Validate os-version-ids strings against the TestingEnvironmentCatalog.
+
+  Also allow users to alternatively specify OS version strings (e.g. '5.1.x')
+  but translate them here to their corresponding version IDs (e.g. '22').
+  The final list of validated version IDs is sorted in ascending order.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to the
+      command invocation (i.e. group and command arguments combined).
+    catalog: the TestingEnvironmentCatalog which includes all valid OS versions
+      accepted by the Testing service.
+  """
+  validated_versions = set()  # Using a set will remove duplicates
+  version_ids = [v.id for v in catalog.versions]
+  # TODO(user): use dict comprehensions if py2.6 compatibility is dropped.
+  # version_to_id_map = {v.versionString: v.id for v in catalog.versions}
+  version_to_id_map = dict((v.versionString, v.id) for v in catalog.versions)
+
+  for vers in args.os_version_ids:
+    if vers in version_ids:
+      validated_versions.add(vers)
+    else:
+      version_id = version_to_id_map.get(vers, None)
+      if version_id is None:
+        raise exceptions.InvalidArgumentException('os-version-ids', vers)
+      validated_versions.add(version_id)
+  args.os_version_ids = sorted(validated_versions)
+  log.info('Testing against OS versions: {0}'.format(args.os_version_ids))
 
 
 _OBB_FILE_REGEX = re.compile(

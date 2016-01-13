@@ -1,4 +1,16 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Used to collect anonymous SDK metrics."""
 
@@ -42,11 +54,12 @@ _CSI_TOTAL_EVENT = 'total'
 
 class _GAEvent(object):
 
-  def __init__(self, category, action, label, value):
+  def __init__(self, category, action, label, value, **kwargs):
     self.category = category
     self.action = action
     self.label = label
     self.value = value
+    self.custom_dimensions = kwargs
 
 
 def _GetTimeMillis(time_secs=None):
@@ -69,11 +82,13 @@ class _CommandTimer(object):
     self.__category = 'unknown'
     self.__action = 'unknown'
     self.__label = None
+    self.__custom_dimensions = {}
 
-  def SetContext(self, category, action, label):
+  def SetContext(self, category, action, label, **kwargs):
     self.__category = category
     self.__action = action
     self.__label = label
+    self.__custom_dimensions = kwargs
 
   def GetAction(self):
     return self.__action
@@ -89,7 +104,10 @@ class _CommandTimer(object):
     return csi_action
 
   def GetCSIParams(self):
+    """Gets the fields to send in the CSI beacon."""
     params = [('action', self._GetCSIAction())]
+    params.extend([(k, v) for k, v in self.__custom_dimensions.iteritems()
+                   if v is not None])
 
     response_times = [
         '{0}.{1}'.format(event.name, event.time_millis - self.__start)
@@ -252,13 +270,15 @@ class _MetricsCollector(object):
     if self._action_level == 0 or not record_only_on_top_level:
       self._timer.Event(name)
 
-  def SetTimerContext(self, category, action, label=None):
+  def SetTimerContext(self, category, action, label=None, **kwargs):
     """Sets the context for which the timer is collecting timed events.
 
     Args:
       category: str, Category of the action being timed.
       action: str, Name of the action being timed.
       label: str, Additional information about the action being timed.
+      **kwargs: {str: str}, A dictionary of custom dimension names to values to
+        include.
     """
     # We only want to time top level commands
     if category is _GA_COMMANDS_CATEGORY and self._action_level != 0:
@@ -268,7 +288,7 @@ class _MetricsCollector(object):
     if category is _GA_ERROR_CATEGORY and self._action_level != 0:
       action = self._timer.GetAction()
 
-    self._timer.SetContext(category, action, label)
+    self._timer.SetContext(category, action, label, **kwargs)
 
   def CollectCSIMetric(self):
     """Adds metric with latencies for the given command to the metrics queue."""
@@ -291,6 +311,8 @@ class _MetricsCollector(object):
         ('el', event.label),
         ('ev', event.value),
     ]
+    params.extend([(k, v) for k, v in event.custom_dimensions.iteritems()
+                   if v is not None])
     params.extend(self._ga_params)
     data = urllib.urlencode(params)
 
@@ -306,7 +328,7 @@ class _MetricsCollector(object):
       pickle.dump(self._metrics, temp_metrics_file)
       self._metrics = []
 
-    # TODO(cherba): make this not depend on the file.
+    # TODO(user): make this not depend on the file.
     reporting_script_path = os.path.join(os.path.dirname(__file__),
                                          'metrics_reporter.py')
     execution_args = execution_utils.ArgsForPythonTool(
@@ -315,15 +337,23 @@ class _MetricsCollector(object):
     exec_env = os.environ.copy()
     exec_env['PYTHONPATH'] = os.pathsep.join(sys.path)
 
-    p = subprocess.Popen(execution_args, env=exec_env, **self._async_popen_args)
+    try:
+      p = subprocess.Popen(execution_args, env=exec_env,
+                           **self._async_popen_args)
+      log.debug('Metrics reporting process started...')
+    except OSError:
+      # This can happen specifically if the Python executable moves between the
+      # start of this process and now.
+      log.debug('Metrics reporting process failed to start.')
     if wait_for_report:
       # NOTE: p.wait() can cause a deadlock. p.communicate() is recommended.
       # See python docs for more information.
       p.communicate()
-    log.debug('Metrics reporting process started...')
+      log.debug('Metrics reporting process finished.')
 
 
-def _CollectGAMetricAndSetTimerContext(category, action, label, value=0):
+def _CollectGAMetricAndSetTimerContext(category, action, label, value=0,
+                                       flag_names=None):
   """Common code for processing a GA event."""
   collector = _MetricsCollector.GetCollector()
   if collector:
@@ -331,15 +361,27 @@ def _CollectGAMetricAndSetTimerContext(category, action, label, value=0):
     if _MetricsCollector.test_group and category is not _GA_ERROR_CATEGORY:
       label = _MetricsCollector.test_group
     collector.CollectGAMetric(
-        _GAEvent(category=category, action=action, label=label, value=value))
+        _GAEvent(category=category, action=action, label=label, value=value,
+                 cd6=flag_names))
 
     # Dont include version. We already send it as the rls CSI parameter.
     if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
-      collector.SetTimerContext(category, action)
+      collector.SetTimerContext(category, action, flag_names=flag_names)
     elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
                       _GA_TEST_EXECUTIONS_CATEGORY]:
-      collector.SetTimerContext(category, action, label)
+      collector.SetTimerContext(category, action, label, flag_names=flag_names)
     # Ignoring installs for now since there could be multiple per cmd execution.
+
+
+def _GetFlagNameString(flag_names):
+  if flag_names is None:
+    # We have no information on the flags that were used.
+    return ''
+  if not flag_names:
+    # We explicitly know that no flags were used.
+    return '==NONE=='
+  # One or more flags were used.
+  return ','.join(sorted(flag_names))
 
 
 def CaptureAndLogException(func):
@@ -395,17 +437,20 @@ def Installs(component_id, version_string):
 
 
 @CaptureAndLogException
-def Commands(command_path, version_string):
+def Commands(command_path, version_string, flag_names):
   """Logs that a gcloud command was run.
 
   Args:
     command_path: str, The '.' separated name of the calliope command.
     version_string: str, The version of the command.
+    flag_names: [str], The names of the flags that were used during this
+      execution.
   """
   if not version_string:
     version_string = 'unknown'
   _CollectGAMetricAndSetTimerContext(
-      _GA_COMMANDS_CATEGORY, command_path, version_string)
+      _GA_COMMANDS_CATEGORY, command_path, version_string,
+      flag_names=_GetFlagNameString(flag_names))
 
 
 @CaptureAndLogException
@@ -420,12 +465,14 @@ def Help(command_path, mode):
 
 
 @CaptureAndLogException
-def Error(command_path, exc):
+def Error(command_path, exc, flag_names):
   """Logs that a top level Exception was caught for a gcloud command.
 
   Args:
     command_path: str, The '.' separated name of the calliope command.
     exc: Exception, The exception that was caught.
+    flag_names: [str], The names of the flags that were used during this
+      execution.
   """
   try:
     cls = exc.__class__
@@ -433,7 +480,9 @@ def Error(command_path, exc):
   # pylint:disable=bare-except, Never want to fail on metrics reporting.
   except:
     name = 'unknown'
-  _CollectGAMetricAndSetTimerContext(_GA_ERROR_CATEGORY, command_path, name)
+  _CollectGAMetricAndSetTimerContext(
+      _GA_ERROR_CATEGORY, command_path, name,
+      flag_names=_GetFlagNameString(flag_names))
 
 
 @CaptureAndLogException
