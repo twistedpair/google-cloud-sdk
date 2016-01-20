@@ -45,30 +45,6 @@ class CloudbuildV1(base_api.BaseApiClient):
     def __init__(self, client):
       super(CloudbuildV1.OperationsService, self).__init__(client)
       self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'cloudbuild.operations.cancel',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}:cancel',
-              request_field=u'cancelOperationRequest',
-              request_type_name=u'CloudbuildOperationsCancelRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'cloudbuild.operations.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'CloudbuildOperationsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'cloudbuild.operations.get',
@@ -97,41 +73,6 @@ class CloudbuildV1(base_api.BaseApiClient):
 
       self._upload_configs = {
           }
-
-    def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation.
-
-      Args:
-        request: (CloudbuildOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudbuildOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation.  Clients can use this.
@@ -180,7 +121,7 @@ to use different resource name schemes, such as `users/*/operations`.
               path_params=[u'id', u'projectId'],
               query_params=[],
               relative_path=u'v1/projects/{projectId}/builds/{id}:cancel',
-              request_field='',
+              request_field=u'cancelBuildRequest',
               request_type_name=u'CloudbuildProjectsBuildsCancelRequest',
               response_type_name=u'Build',
               supports_download=False,

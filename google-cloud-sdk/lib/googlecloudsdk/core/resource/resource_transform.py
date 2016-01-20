@@ -41,7 +41,6 @@ import re
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_exceptions
-from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import timezone
 
@@ -269,9 +268,9 @@ def TransformFormat(r, projection, fmt, *args):
   Example:
     --format='value(format("{0:f.1}/{0:f.1}", q.CPU.default, q.CPU.limit))'
   """
-  columns = resource_projector.Compile('(' + ','.join(args) + ')',
-                                       by_columns=True,
-                                       defaults=projection).Evaluate(r)
+  columns = projection.compiler('(' + ','.join(args) + ')',
+                                by_columns=True,
+                                defaults=projection).Evaluate(r)
   return fmt.format(*columns)
 
 

@@ -25,7 +25,7 @@ class DisplayInfo(object):
 
   Fields:
      job_id: the job ID
-     job_type: one of 'copy', 'extract', 'link', 'load', 'query'
+     job_type: one of 'copy', 'extract', 'load', 'query'
      state: one of 'SUCCESS', 'FAILURE', 'RUNNING'
      start_time: in the form yyyy-mm-dd hh:mm:ss
      duration: in the form h:mm:ss
@@ -65,8 +65,6 @@ class DisplayInfo(object):
       return 'copy'
     if configuration.extract:
       return 'extract'
-    if configuration.link:
-      return 'link'
     if configuration.load:
       return 'load'
     if configuration.query:

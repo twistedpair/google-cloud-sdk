@@ -97,11 +97,13 @@ def GetErrorMessage(error):
   return content_obj.get('error', {}).get('message', '')
 
 
-def ReraiseHttpExceptionPager(pager):
+def ReraiseHttpExceptionPager(pager, rewrite_fn=None):
   """Wraps an HTTP paginator and converts errors to be gcloud-friendly.
 
   Args:
     pager: A list or generator of a response type.
+    rewrite_fn: A function that rewrites the returned message.
+        If 'None', no rewriting will occur.
 
   Returns:
     A generator which raises gcloud-friendly errors, if any.
@@ -112,6 +114,8 @@ def ReraiseHttpExceptionPager(pager):
       yield result
   except apitools_exceptions.HttpError as error:
     msg = GetErrorMessage(error)
+    if rewrite_fn:
+      msg = rewrite_fn(msg)
     unused_type, unused_value, traceback = sys.exc_info()
     raise exceptions.HttpException, msg, traceback
 

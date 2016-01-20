@@ -31,8 +31,8 @@ from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
 CLOUDBUILD_BUILDER = 'gcr.io/cloud-builders/dockerizer'
 CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
-    'https://console.developers.google.com/project/{project_id}/logs'
-    '?service=cloudbuild.googleapis.com&key1={build_id}')
+    'https://console.developers.google.com/logs?project={project_id}'
+    '&service=cloudbuild.googleapis.com&key1={build_id}')
 
 # Paths that shouldn't be ignored client-side.
 # Behavioral parity with github.com/docker/docker-py.

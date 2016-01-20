@@ -412,9 +412,9 @@ class PubsubProjectsSubscriptionsGetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsGetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being requested.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `getIamPolicy` documentation.
   """
@@ -490,9 +490,9 @@ class PubsubProjectsSubscriptionsSetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsSetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being specified.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `setIamPolicy` documentation.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
@@ -507,11 +507,11 @@ class PubsubProjectsSubscriptionsTestIamPermissionsRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsTestIamPermissionsRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy detail is being
-      requested. `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation. rpc.
+      `testIamPermissions` documentation.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -534,9 +534,9 @@ class PubsubProjectsTopicsGetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsTopicsGetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being requested.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `getIamPolicy` documentation.
   """
@@ -587,9 +587,9 @@ class PubsubProjectsTopicsSetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsTopicsSetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being specified.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `setIamPolicy` documentation.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
@@ -621,11 +621,11 @@ class PubsubProjectsTopicsTestIamPermissionsRequest(_messages.Message):
   """A PubsubProjectsTopicsTestIamPermissionsRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy detail is being
-      requested. `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation. rpc.
+      `testIamPermissions` documentation.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -933,6 +933,7 @@ class TestIamPermissionsRequest(_messages.Message):
   Fields:
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see IAM Overview.
   """
 
   permissions = _messages.StringField(1, repeated=True)

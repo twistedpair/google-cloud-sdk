@@ -101,12 +101,29 @@ class AppengineApiClient(object):
     # Create a traffic split where 100% of traffic goes to the specified
     # version.
     allocations = {version_id: 1.0}
-    traffic_split = encoding.PyValueToMessage(self.messages.TrafficSplit,
-                                              {'allocations': allocations})
+    return self.SetTrafficSplit(module_name, allocations)
 
+  def SetTrafficSplit(self, module_name, allocations,
+                      shard_by='UNSPECIFIED', migrate=False):
+    """Sets the traffic split of the given modules.
+
+    Args:
+      module_name: str, The module name
+      allocations: A dict mapping version ID to traffic split.
+      shard_by: A ShardByValuesEnum value specifying how to shard the traffic.
+      migrate: Whether or not to migrate traffic.
+    Returns:
+      Long running operation.
+    """
+    # Create a traffic split where 100% of traffic goes to the specified
+    # version.
+    traffic_split = encoding.PyValueToMessage(self.messages.TrafficSplit,
+                                              {'allocations': allocations,
+                                               'shardBy': shard_by})
     update_module_request = self.messages.AppengineAppsModulesPatchRequest(
         name=self._FormatModule(app_id=self.project, module_name=module_name),
         module=self.messages.Module(split=traffic_split),
+        migrateTraffic=migrate,
         mask='split')
 
     operation = requests.MakeRequest(

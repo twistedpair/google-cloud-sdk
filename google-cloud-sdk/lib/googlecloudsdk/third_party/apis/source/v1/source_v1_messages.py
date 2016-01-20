@@ -196,7 +196,8 @@ class CommitWorkspaceRequest(_messages.Message):
   """Request for CommitWorkspace.
 
   Fields:
-    author: required
+    author: Author of the commit in the format: "Author Name
+      <author@example.com>" required
     currentSnapshotId: If non-empty, current_snapshot_id must refer to the
       most recent update to the workspace, or ABORTED is returned.
     message: required

@@ -280,7 +280,7 @@ class CommandTreeGenerator(walker.Walker):
 
   Attributes:
     _with_flags: Include the non-global flags for each command/group if True.
-    _with_flag_values: Include flag value choices or <type> if True.
+    _with_flag_values: Include flag value choices or :type: if True.
     _global_flags: The set of global flags, only listed for the root command.
   """
 
@@ -290,7 +290,7 @@ class CommandTreeGenerator(walker.Walker):
     Args:
       cli: The Cloud SDK CLI object.
       with_flags: Include the non-global flags for each command/group if True.
-      with_flag_values: Include flags and flag value choices or <type> if True.
+      with_flag_values: Include flags and flag value choices or :type: if True.
     """
     super(CommandTreeGenerator, self).__init__(cli)
     self._with_flags = with_flags or with_flag_values
@@ -320,15 +320,16 @@ class CommandTreeGenerator(walker.Walker):
             if choices != ['false', 'true']:
               value = ','.join([str(choice) for choice in choices])
           elif isinstance(arg.type, int):
-            value = '<int>'
+            value = ':int:'
           elif isinstance(arg.type, float):
-            value = '<float>'
+            value = ':float:'
           elif isinstance(arg.type, arg_parsers.ArgDict):
-            value = '<dict>'
+            value = ':dict:'
           elif isinstance(arg.type, arg_parsers.ArgList):
-            value = '<list>'
-          elif arg.nargs:
-            value = '<string>'
+            value = ':list:'
+          elif arg.nargs != 0:
+            metavar = arg.metavar or arg.dest.upper()
+            value = ':' + metavar + ':'
         for f in arg.option_strings:
           if value:
             f += '=' + value

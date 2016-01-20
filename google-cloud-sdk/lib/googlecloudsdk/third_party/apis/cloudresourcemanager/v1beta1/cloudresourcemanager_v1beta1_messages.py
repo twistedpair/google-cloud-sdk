@@ -43,9 +43,9 @@ class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    resource: REQUIRED: The resource for which policy is being requested.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `getIamPolicy` documentation.
   """
@@ -93,9 +93,9 @@ class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerOrganizationsSetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being specified.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `setIamPolicy` documentation.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
@@ -110,11 +110,11 @@ class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Messa
   """A CloudresourcemanagerOrganizationsTestIamPermissionsRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy detail is being
-      requested. `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation. rpc.
+      `testIamPermissions` documentation.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -139,9 +139,9 @@ class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    resource: REQUIRED: The resource for which policy is being requested.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `getIamPolicy` documentation.
   """
@@ -192,9 +192,9 @@ class CloudresourcemanagerProjectsSetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerProjectsSetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy is being specified.
-      `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
       `setIamPolicy` documentation.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
@@ -209,11 +209,11 @@ class CloudresourcemanagerProjectsTestIamPermissionsRequest(_messages.Message):
   """A CloudresourcemanagerProjectsTestIamPermissionsRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which policy detail is being
-      requested. `resource` is usually specified as a path, such as,
-      `projects/{project}/zones/{zone}/disks/{disk}`.  The format for the path
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
       specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation. rpc.
+      `testIamPermissions` documentation.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -565,6 +565,7 @@ class TestIamPermissionsRequest(_messages.Message):
   Fields:
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see IAM Overview.
   """
 
   permissions = _messages.StringField(1, repeated=True)

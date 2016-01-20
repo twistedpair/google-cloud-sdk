@@ -3146,6 +3146,23 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetMachineTypeRequest(_messages.Message):
+  """A ComputeInstancesSetMachineTypeRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
+      to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMachineTypeRequest = _messages.MessageField('InstancesSetMachineTypeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesSetMetadataRequest(_messages.Message):
   """A ComputeInstancesSetMetadataRequest object.
 
@@ -3808,6 +3825,130 @@ class ComputeSslCertificatesListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
+
+
+class ComputeSubnetworksAggregatedListRequest(_messages.Message):
+  """A ComputeSubnetworksAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, filter=name ne
+      example-instance.  Compute Engine Beta API Only: If you use filtering in
+      the Beta API, you can also filter on nested fields. For example, you
+      could filter on instances that have set the scheduling.automaticRestart
+      field to true. In particular, use filtering on nested fields to take
+      advantage of instance labels to organize and filter results based on
+      label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions meaning
+      that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that Compute Engine
+      should return. If the number of available results is larger than
+      maxResults, Compute Engine returns a nextPageToken that can be used to
+      get the next page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeSubnetworksDeleteRequest(_messages.Message):
+  """A ComputeSubnetworksDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksGetRequest(_messages.Message):
+  """A ComputeSubnetworksGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksInsertRequest(_messages.Message):
+  """A ComputeSubnetworksInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: A Subnetwork resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.MessageField('Subnetwork', 3)
+
+
+class ComputeSubnetworksListRequest(_messages.Message):
+  """A ComputeSubnetworksListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, filter=name ne
+      example-instance.  Compute Engine Beta API Only: If you use filtering in
+      the Beta API, you can also filter on nested fields. For example, you
+      could filter on instances that have set the scheduling.automaticRestart
+      field to true. In particular, use filtering on nested fields to take
+      advantage of instance labels to organize and filter results based on
+      label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions meaning
+      that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that Compute Engine
+      should return. If the number of available results is larger than
+      maxResults, Compute Engine returns a nextPageToken that can be used to
+      get the next page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -6329,6 +6470,8 @@ class InstanceGroup(_messages.Message):
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
+    subnetwork: [Output Only] The URL of the subnetwork to which all instances
+      in the instance group belong.
     zone: [Output Only] The URL of the zone where the instance group is
       located.
   """
@@ -6343,7 +6486,8 @@ class InstanceGroup(_messages.Message):
   network = _messages.StringField(8)
   selfLink = _messages.StringField(9)
   size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(11)
+  subnetwork = _messages.StringField(11)
+  zone = _messages.StringField(12)
 
 
 class InstanceGroupAggregatedList(_messages.Message):
@@ -7256,6 +7400,18 @@ class InstancesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class InstancesSetMachineTypeRequest(_messages.Message):
+  """A InstancesSetMachineTypeRequest object.
+
+  Fields:
+    machineType: Full or partial URL of the machine type resource. See Machine
+      Types for a full list of machine types. For example: zones/us-
+      central1-f/machineTypes/n1-standard-1
+  """
+
+  machineType = _messages.StringField(1)
+
+
 class License(_messages.Message):
   """A license resource.
 
@@ -7731,6 +7887,11 @@ class Network(_messages.Message):
     IPv4Range: The range of internal addresses that are legal on this network.
       This range is a CIDR specification, for example: 192.168.0.0/16.
       Provided by the client when the network is created.
+    autoCreateSubnetworks: When set to true, the network is created in "auto
+      subnet mode". When set to false, the network is in "custom subnet mode".
+      In "auto subnet mode", a newly created network is assigned the default
+      CIDR of 10.128.0.0/9 and it automatically creates one subnetwork per
+      region.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -7750,16 +7911,20 @@ class Network(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
+    subnetworks: [Output Only] Server-defined fully-qualified URLs for all
+      subnetworks in this network.
   """
 
   IPv4Range = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  gatewayIPv4 = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#network')
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  autoCreateSubnetworks = _messages.BooleanField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  gatewayIPv4 = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#network')
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  subnetworks = _messages.StringField(10, repeated=True)
 
 
 class NetworkInterface(_messages.Message):
@@ -7782,12 +7947,21 @@ class NetworkInterface(_messages.Message):
       projects/project/global/networks/network  - global/networks/default
     networkIP: [Output Only] An optional IPV4 internal network address
       assigned to the instance for this network interface.
+    subnetwork: The URL of the Subnetwork resource for this instance. If the
+      network resource is in legacy mode, do not provide this property. If the
+      network is in auto subnet mode, providing the subnetwork is optional. If
+      the network is in custom subnet mode, then this field should be
+      specified. If you specify this property, you can specify the subnetwork
+      as a full or partial URL. For example, the following are all valid URLs:
+      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/subn
+      etworks/subnetwork  - zones/zone/subnetworks/subnetwork
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   name = _messages.StringField(2)
   network = _messages.StringField(3)
   networkIP = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
 
 
 class NetworkList(_messages.Message):
@@ -8288,6 +8462,7 @@ class Quota(_messages.Message):
     """[Output Only] Name of the quota metric.
 
     Values:
+      AUTOSCALERS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -8307,6 +8482,7 @@ class Quota(_messages.Message):
       SSD_TOTAL_GB: <no description>
       SSL_CERTIFICATES: <no description>
       STATIC_ADDRESSES: <no description>
+      SUBNETWORKS: <no description>
       TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
@@ -8315,32 +8491,34 @@ class Quota(_messages.Message):
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
-    BACKEND_SERVICES = 0
-    CPUS = 1
-    DISKS_TOTAL_GB = 2
-    FIREWALLS = 3
-    FORWARDING_RULES = 4
-    HEALTH_CHECKS = 5
-    IMAGES = 6
-    INSTANCES = 7
-    INSTANCE_GROUPS = 8
-    INSTANCE_GROUP_MANAGERS = 9
-    INSTANCE_TEMPLATES = 10
-    IN_USE_ADDRESSES = 11
-    LOCAL_SSD_TOTAL_GB = 12
-    NETWORKS = 13
-    ROUTES = 14
-    SNAPSHOTS = 15
-    SSD_TOTAL_GB = 16
-    SSL_CERTIFICATES = 17
-    STATIC_ADDRESSES = 18
-    TARGET_HTTPS_PROXIES = 19
-    TARGET_HTTP_PROXIES = 20
-    TARGET_INSTANCES = 21
-    TARGET_POOLS = 22
-    TARGET_VPN_GATEWAYS = 23
-    URL_MAPS = 24
-    VPN_TUNNELS = 25
+    AUTOSCALERS = 0
+    BACKEND_SERVICES = 1
+    CPUS = 2
+    DISKS_TOTAL_GB = 3
+    FIREWALLS = 4
+    FORWARDING_RULES = 5
+    HEALTH_CHECKS = 6
+    IMAGES = 7
+    INSTANCES = 8
+    INSTANCE_GROUPS = 9
+    INSTANCE_GROUP_MANAGERS = 10
+    INSTANCE_TEMPLATES = 11
+    IN_USE_ADDRESSES = 12
+    LOCAL_SSD_TOTAL_GB = 13
+    NETWORKS = 14
+    ROUTES = 15
+    SNAPSHOTS = 16
+    SSD_TOTAL_GB = 17
+    SSL_CERTIFICATES = 18
+    STATIC_ADDRESSES = 19
+    SUBNETWORKS = 20
+    TARGET_HTTPS_PROXIES = 21
+    TARGET_HTTP_PROXIES = 22
+    TARGET_INSTANCES = 23
+    TARGET_POOLS = 24
+    TARGET_VPN_GATEWAYS = 25
+    URL_MAPS = 26
+    VPN_TUNNELS = 27
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -8883,6 +9061,222 @@ class StandardQueryParameters(_messages.Message):
   quotaUser = _messages.StringField(6)
   trace = _messages.StringField(7)
   userIp = _messages.StringField(8)
+
+
+class Subnetwork(_messages.Message):
+  """A Subnetwork resource.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    gatewayAddress: [Output Only] The gateway address for default routes to
+      reach destination addresses outside this subnetwork.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    ipCidrRange: The range of internal addresses that are owned by this
+      subnetwork. Provide this property when you create the subnetwork. For
+      example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
+      overlapping within a network.
+    kind: [Output Only] Type of the resource. Always compute#subnetwork for
+      Subnetwork resources.
+    name: The name of the resource, provided by the client when initially
+      creating the resource. The name must be 1-63 characters long, and comply
+      with RFC1035. Specifically, the name must be 1-63 characters long and
+      match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
+    network: The URL of the network to which this subnetwork belongs, provided
+      by the client when initially creating the subnetwork. Only networks that
+      are in the distributed mode can have subnetworks.
+    region: [Output Only] URL of the region where the Subnetwork resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gatewayAddress = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(5)
+  kind = _messages.StringField(6, default=u'compute#subnetwork')
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+
+
+class SubnetworkAggregatedList(_messages.Message):
+  """A SubnetworkAggregatedList object.
+
+  Messages:
+    ItemsValue: [Output] A map of scoped Subnetwork lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output] A map of scoped Subnetwork lists.
+    kind: [Output Only] Type of resource. Always
+      compute#subnetworkAggregatedList for aggregated lists of subnetworks.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """[Output] A map of scoped Subnetwork lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of
+        Subnetworks.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SubnetworksScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SubnetworksScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#subnetworkAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class SubnetworkList(_messages.Message):
+  """Contains a list of Subnetwork resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: The Subnetwork resources.
+    kind: [Output Only] Type of resource. Always compute#subnetworkList for
+      lists of subnetworks.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Subnetwork', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#subnetworkList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class SubnetworksScopedList(_messages.Message):
+  """A SubnetworksScopedList object.
+
+  Messages:
+    WarningValue: An informational warning that appears when the list of
+      addresses is empty.
+
+  Fields:
+    subnetworks: List of subnetworks contained in this scope.
+    warning: An informational warning that appears when the list of addresses
+      is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """An informational warning that appears when the list of addresses is
+    empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      DEPRECATED_RESOURCE_USED = 0
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
+      INJECTED_KERNELS_DEPRECATED = 2
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
+      NEXT_HOP_CANNOT_IP_FORWARD = 4
+      NEXT_HOP_INSTANCE_NOT_FOUND = 5
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
+      NEXT_HOP_NOT_RUNNING = 7
+      NOT_CRITICAL_ERROR = 8
+      NO_RESULTS_ON_PAGE = 9
+      REQUIRED_TOS_AGREEMENT = 10
+      RESOURCE_NOT_DELETED = 11
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
+      UNREACHABLE = 13
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource, and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class Tags(_messages.Message):
@@ -10015,6 +10409,9 @@ class VpnTunnel(_messages.Message):
       version is 2.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
+    localTrafficSelector: Local traffic selector to use when establishing the
+      VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
+      string, for example: 192.168.0.0/16. The ranges should be disjoint.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -10067,14 +10464,15 @@ class VpnTunnel(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   ikeVersion = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   kind = _messages.StringField(6, default=u'compute#vpnTunnel')
-  name = _messages.StringField(7)
-  peerIp = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  sharedSecret = _messages.StringField(11)
-  sharedSecretHash = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  targetVpnGateway = _messages.StringField(14)
+  localTrafficSelector = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  peerIp = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sharedSecret = _messages.StringField(12)
+  sharedSecretHash = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  targetVpnGateway = _messages.StringField(15)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

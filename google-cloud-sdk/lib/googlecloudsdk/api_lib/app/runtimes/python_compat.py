@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 
 NAME = 'Python Compat'
-ALLOWED_RUNTIME_NAMES = ('python27', 'custom')
+ALLOWED_RUNTIME_NAMES = ('python27', 'python-compat')
 PYTHON_RUNTIME_NAME = 'python27'
 
 PYTHON_APP_YAML = textwrap.dedent("""\
@@ -113,11 +113,13 @@ def Fingerprint(path, params):
     (PythonConfigurator or None) Returns a module if the path contains a
     python app.
   """
-
   log.info('Checking for Python Compat.')
 
   # We need an appinfo and it needs to directly specify this runtime to use it.
-  if not params.appinfo or params.appinfo.GetEffectiveRuntime() != 'python27':
+  if (not params.appinfo or
+      params.appinfo.GetEffectiveRuntime() not in ALLOWED_RUNTIME_NAMES):
     return None
 
+  log.info('Python Compat matches ([{0}] specified in "runtime" field)'.format(
+      params.appinfo.GetEffectiveRuntime()))
   return PythonConfigurator(path, params)

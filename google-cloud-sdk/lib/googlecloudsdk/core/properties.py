@@ -544,7 +544,8 @@ class _SectionApp(_Section):
     self.docker_build = self._Add(
         'docker_build',
         help_text='Set to `local` to run `docker build` using a local docker '
-        'installation, or `remote` to do the build on a GCE VM.',
+        'installation, or `remote` to do the build on a Google Compute Engine '
+        'VM.',
         validator=DockerBuildValidator,
         choices=('local', 'remote'))
 

@@ -59,6 +59,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.routes = self.RoutesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
+    self.subnetworks = self.SubnetworksService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
     self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
     self.targetInstances = self.TargetInstancesService(self)
@@ -558,7 +559,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -571,7 +572,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -2808,6 +2809,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'SetMachineType': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.setMachineType',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setMachineType',
+              request_field=u'instancesSetMachineTypeRequest',
+              request_type_name=u'ComputeInstancesSetMachineTypeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetMetadata': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.setMetadata',
@@ -3029,6 +3042,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def SetMachineType(self, request, global_params=None):
+      """Changes the machine type for a stopped instance to the machine type specified in the request.
+
+      Args:
+        request: (ComputeInstancesSetMachineTypeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMachineType')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def SetMetadata(self, request, global_params=None):
       """Sets metadata for the specified instance to the data included in the request.
 
@@ -3069,7 +3095,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Start(self, request, global_params=None):
-      """This method starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -3082,7 +3108,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Stop(self, request, global_params=None):
-      """This method stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses,will continue to be charged until they are deleted. For more information, see Stopping an instance.
+      """Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 
       Args:
         request: (ComputeInstancesStopRequest) input message
@@ -3938,6 +3964,144 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class SubnetworksService(base_api.BaseApiService):
+    """Service class for the subnetworks resource."""
+
+    _NAME = u'subnetworks'
+
+    def __init__(self, client):
+      super(ComputeV1.SubnetworksService, self).__init__(client)
+      self._method_configs = {
+          'AggregatedList': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.aggregatedList',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/aggregated/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksAggregatedListRequest',
+              response_type_name=u'SubnetworkAggregatedList',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.subnetworks.delete',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.get',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksGetRequest',
+              response_type_name=u'Subnetwork',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field=u'subnetwork',
+              request_type_name=u'ComputeSubnetworksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksListRequest',
+              response_type_name=u'SubnetworkList',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of subnetworks.
+
+      Args:
+        request: (ComputeSubnetworksAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified subnetwork.
+
+      Args:
+        request: (ComputeSubnetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified subnetwork.
+
+      Args:
+        request: (ComputeSubnetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Subnetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a subnetwork in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSubnetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of subnetworks available to the specified project.
+
+      Args:
+        request: (ComputeSubnetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubnetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpProxies resource."""
 
@@ -4588,7 +4752,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def GetHealth(self, request, global_params=None):
-      """Gets the most recent health check results for each IP for the given instance that is referenced by given TargetPool.
+      """Gets the most recent health check results for each IP for the given instance that is referenced by the given TargetPool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -4953,7 +5117,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource. This method supports patch semantics.
+      """Updates the entire content of the UrlMap resource. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -4966,7 +5130,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource.
+      """Updates the entire content of the UrlMap resource.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message
@@ -4979,7 +5143,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Validate(self, request, global_params=None):
-      """Run static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+      """Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 
       Args:
         request: (ComputeUrlMapsValidateRequest) input message

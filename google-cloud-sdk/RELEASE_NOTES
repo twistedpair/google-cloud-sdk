@@ -2,6 +2,19 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 93.0.0 (2016/1/20)
+
+* kubectrl upgraded to 1.1.4.
+
+* [gcloud beta dataproc cluster create] now supports --properties flag to set
+  properties for installed packages.
+
+* Datastore emulator's DATASTORE_LOCAL_HOST environment variable changed to
+  DATASTORE_EMULATOR_HOST.
+
+* [gcloud source repos clone] now supports --dry-run flag to show equivalent git
+  command.
+
 ## 92.0.0 (2016/1/13)
 
 *   Because of the rollback of 91.0.0, this release contains all of the changes

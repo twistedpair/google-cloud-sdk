@@ -14,10 +14,12 @@
 
 """A library that is used to support logging commands."""
 
+import functools
 import json
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log as sdk_log
+from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import extra_types
 
 
@@ -108,6 +110,34 @@ def GetError(error):
     message = error.content
   return ('ResponseError: status=%s, code=%s, message=%s'
           % (status, code, message))
+
+
+# TODO(user): Switch to using gcloud provided methods when they are ready.
+def HandleHttpError(func):
+  """Decorator that handles http errors from methods."""
+
+  @functools.wraps(func)
+  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
+    try:
+      return func(*args, **kwargs)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(GetError(error))
+
+  return CatchHTTPErrorRaiseHTTPException
+
+
+def HandlePagerHttpError(func):
+  """Decorator that handles http errors, for methods that return a generator."""
+
+  @functools.wraps(func)
+  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
+    try:
+      for result in func(*args, **kwargs):
+        yield result
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(GetError(error))
+
+  return CatchHTTPErrorRaiseHTTPException
 
 
 def ConvertToJsonObject(json_string):

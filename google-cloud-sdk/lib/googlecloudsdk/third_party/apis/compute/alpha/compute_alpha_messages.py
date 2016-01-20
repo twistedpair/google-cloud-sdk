@@ -923,8 +923,12 @@ class BackendService(_messages.Message):
 
   Enums:
     ProtocolValueValuesEnum:
+    SessionAffinityValueValuesEnum: Type of session affinity to use.
 
   Fields:
+    affinityCookieTtlSec: Lifetime of cookies in seconds if session_affinity
+      is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
+      only until the end of the browser session (or equivalent).
     backends: The list of backends that serve this BackendService.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -955,6 +959,7 @@ class BackendService(_messages.Message):
       resource views referenced by this service. Required.
     protocol: A ProtocolValueValuesEnum attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
+    sessionAffinity: Type of session affinity to use.
     timeoutSec: How many seconds to wait for the backend before considering it
       a failed request. Default is 30 seconds.
   """
@@ -973,20 +978,34 @@ class BackendService(_messages.Message):
     SSL = 2
     TCP = 3
 
-  backends = _messages.MessageField('Backend', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCDN = _messages.BooleanField(4)
-  fingerprint = _messages.BytesField(5)
-  healthChecks = _messages.StringField(6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#backendService')
-  name = _messages.StringField(9)
-  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(11)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
-  selfLink = _messages.StringField(13)
-  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  class SessionAffinityValueValuesEnum(_messages.Enum):
+    """Type of session affinity to use.
+
+    Values:
+      CLIENT_IP: <no description>
+      GENERATED_COOKIE: <no description>
+      NONE: <no description>
+    """
+    CLIENT_IP = 0
+    GENERATED_COOKIE = 1
+    NONE = 2
+
+  affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backends = _messages.MessageField('Backend', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCDN = _messages.BooleanField(5)
+  fingerprint = _messages.BytesField(6)
+  healthChecks = _messages.StringField(7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#backendService')
+  name = _messages.StringField(10)
+  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(12)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
+  selfLink = _messages.StringField(14)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 15)
+  timeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -1425,6 +1444,18 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
+  """A ComputeBackendBucketsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeBackendBucketsGetRequest(_messages.Message):
   """A ComputeBackendBucketsGetRequest object.
 
@@ -1511,6 +1542,35 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   backendBucket = _messages.StringField(1, required=True)
   backendBucketResource = _messages.MessageField('BackendBucket', 2)
   project = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsSetIamPolicyRequest(_messages.Message):
+  """A ComputeBackendBucketsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeBackendBucketsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeBackendBucketsUpdateRequest(_messages.Message):
@@ -4260,6 +4320,20 @@ class ComputeInstancesStopRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesSuspendRequest(_messages.Message):
+  """A ComputeInstancesSuspendRequest object.
+
+  Fields:
+    instance: Name of the instance resource to suspend.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
   """A ComputeInstancesTestIamPermissionsRequest object.
 
@@ -4527,19 +4601,6 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
 
 class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   """A ComputeProjectsSetUsageExportBucketRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    usageExportLocation: A UsageExportLocation resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 2)
-
-
-class ComputeProjectsSetUsageExportCloudStorageBucketRequest(_messages.Message):
-  """A ComputeProjectsSetUsageExportCloudStorageBucketRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -11261,6 +11322,7 @@ class Quota(_messages.Message):
     """[Output Only] Name of the quota metric.
 
     Values:
+      AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
@@ -11276,6 +11338,8 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      REGIONAL_AUTOSCALERS: <no description>
+      REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
@@ -11291,35 +11355,38 @@ class Quota(_messages.Message):
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
-    BACKEND_BUCKETS = 0
-    BACKEND_SERVICES = 1
-    CPUS = 2
-    DISKS_TOTAL_GB = 3
-    FIREWALLS = 4
-    FORWARDING_RULES = 5
-    HEALTH_CHECKS = 6
-    IMAGES = 7
-    INSTANCES = 8
-    INSTANCE_GROUPS = 9
-    INSTANCE_GROUP_MANAGERS = 10
-    INSTANCE_TEMPLATES = 11
-    IN_USE_ADDRESSES = 12
-    LOCAL_SSD_TOTAL_GB = 13
-    NETWORKS = 14
-    ROUTERS = 15
-    ROUTES = 16
-    SNAPSHOTS = 17
-    SSD_TOTAL_GB = 18
-    SSL_CERTIFICATES = 19
-    STATIC_ADDRESSES = 20
-    SUBNETWORKS = 21
-    TARGET_HTTPS_PROXIES = 22
-    TARGET_HTTP_PROXIES = 23
-    TARGET_INSTANCES = 24
-    TARGET_POOLS = 25
-    TARGET_VPN_GATEWAYS = 26
-    URL_MAPS = 27
-    VPN_TUNNELS = 28
+    AUTOSCALERS = 0
+    BACKEND_BUCKETS = 1
+    BACKEND_SERVICES = 2
+    CPUS = 3
+    DISKS_TOTAL_GB = 4
+    FIREWALLS = 5
+    FORWARDING_RULES = 6
+    HEALTH_CHECKS = 7
+    IMAGES = 8
+    INSTANCES = 9
+    INSTANCE_GROUPS = 10
+    INSTANCE_GROUP_MANAGERS = 11
+    INSTANCE_TEMPLATES = 12
+    IN_USE_ADDRESSES = 13
+    LOCAL_SSD_TOTAL_GB = 14
+    NETWORKS = 15
+    REGIONAL_AUTOSCALERS = 16
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 17
+    ROUTERS = 18
+    ROUTES = 19
+    SNAPSHOTS = 20
+    SSD_TOTAL_GB = 21
+    SSL_CERTIFICATES = 22
+    STATIC_ADDRESSES = 23
+    SUBNETWORKS = 24
+    TARGET_HTTPS_PROXIES = 25
+    TARGET_HTTP_PROXIES = 26
+    TARGET_INSTANCES = 27
+    TARGET_POOLS = 28
+    TARGET_VPN_GATEWAYS = 29
+    URL_MAPS = 30
+    VPN_TUNNELS = 31
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -11907,6 +11974,9 @@ class RouterBgpPeer(_messages.Message):
   name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273
 
   Fields:
+    advertisedRoutePriority: The priority of routes advertised to this BGP
+      peer. In the case where there is more than one matching route of maximum
+      length, the routes with lowest priority value win.
     interfaceName: Name of the interface it is associated with.
     ipAddress: IP address of the interface inside Google cloud.
     name: Name of this BGP Peer. The name must be 1-63 characters long and
@@ -11916,11 +11986,12 @@ class RouterBgpPeer(_messages.Message):
     peerIpAddress: IP address of the BGP interface outside Google cloud.
   """
 
-  interfaceName = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  name = _messages.StringField(3)
-  peerAsn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(5)
+  advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  interfaceName = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  name = _messages.StringField(4)
+  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(6)
 
 
 class RouterInterface(_messages.Message):
@@ -13937,9 +14008,9 @@ class VpnTunnel(_messages.Message):
       version is 2.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
-    localTrafficSelector: IKE networks to use when establishing the VPN tunnel
-      with peer VPN gateway. The value should be a CIDR formatted string, for
-      example: 192.168.0.0/16. The ranges should be disjoint.
+    localTrafficSelector: Local traffic selector to use when establishing the
+      VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
+      string, for example: 192.168.0.0/16. The ranges should be disjoint.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the

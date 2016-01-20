@@ -196,7 +196,7 @@ class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):
       as the request body.
     masterProjectId: The hosted master project in which this master resides.
       This can be either a [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The zone of this master's cluster.
   """
 
@@ -213,7 +213,7 @@ class ContainerMasterProjectsZonesTokensCreateRequest(_messages.Message):
       request body.
     masterProjectId: The hosted master project in which this master resides.
       This can be either a [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The zone of this master's cluster.
   """
 
@@ -229,7 +229,7 @@ class ContainerProjectsZonesClustersCreateRequest(_messages.Message):
     createClusterRequest: A CreateClusterRequest resource to be passed as the
       request body.
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """
@@ -245,7 +245,7 @@ class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
   Fields:
     clusterId: The name of the cluster to delete.
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """
@@ -261,7 +261,7 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
   Fields:
     clusterId: The name of the cluster to retrieve.
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """
@@ -276,7 +276,7 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
 
   Fields:
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides, or
       "-" for all zones.
@@ -292,7 +292,7 @@ class ContainerProjectsZonesClustersUpdateRequest(_messages.Message):
   Fields:
     clusterId: The name of the cluster to upgrade.
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     updateClusterRequest: A UpdateClusterRequest resource to be passed as the
       request body.
     zone: The name of the Google Compute Engine
@@ -310,7 +310,7 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
 
   Fields:
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) to return operations for.
   """
@@ -325,7 +325,7 @@ class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
   Fields:
     operationId: The server-assigned `name` of the operation.
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """
@@ -340,7 +340,7 @@ class ContainerProjectsZonesOperationsListRequest(_messages.Message):
 
   Fields:
     projectId: The Google Developers Console [project ID or project
-      number](https://developers.google.com/console/help/new/#projectnumber).
+      number](https://support.google.com/cloud/answer/6158840).
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) to return operations for, or `-`
       for all zones.

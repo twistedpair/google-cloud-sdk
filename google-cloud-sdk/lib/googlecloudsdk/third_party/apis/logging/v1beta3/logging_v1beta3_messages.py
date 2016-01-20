@@ -63,6 +63,34 @@ class HttpRequest(_messages.Message):
   validatedWithOriginServer = _messages.BooleanField(10)
 
 
+class ListLogEntriesRequest(_messages.Message):
+  """The parameters to `ListLogEntries`.
+
+  Fields:
+    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
+      The response includes only entries that match the filter. If `filter` is
+      empty, then all entries in all logs are retrieved.
+    orderBy: Sort order of the results, consisting of a `LogEntry` field
+      optionally followed by a space and `desc`.  Examples:
+      `"metadata.timestamp"`, `"metadata.timestamp desc"`.  The only
+      `LogEntry` field supported for sorting is `metadata.timestamp`. The
+      default sort order is ascending (from older to newer entries) unless
+      `desc` is appended.
+    pageSize: The maximum number of entries to return per request.  Fewer
+      entries may be returned, but that is not an indication that there are no
+      more entries.
+    pageToken: An opaque token, returned as `nextPageToken` by a prior
+      `ListLogEntries` operation. If a page token is specified, other request
+      parameters must match the parameters from the request that generated the
+      page token.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.BytesField(4)
+
+
 class ListLogEntriesResponse(_messages.Message):
   """Result returned from `ListLogEntries`.
 
@@ -563,6 +591,22 @@ class LogSink(_messages.Message):
   errors = _messages.MessageField('LogError', 2, repeated=True)
   filter = _messages.StringField(3)
   name = _messages.StringField(4)
+
+
+class LoggingProjectsEntriesListRequest(_messages.Message):
+  """A LoggingProjectsEntriesListRequest object.
+
+  Fields:
+    listLogEntriesRequest: A ListLogEntriesRequest resource to be passed as
+      the request body.
+    projectsId: Part of `projectName`. The resource name of the project from
+      which to retrieve log entries.  The log service or log containing the
+      entries is specified in the `filter` parameter.  Example:
+      `projects/my_project_id`.
+  """
+
+  listLogEntriesRequest = _messages.MessageField('ListLogEntriesRequest', 1)
+  projectsId = _messages.StringField(2, required=True)
 
 
 class LoggingProjectsLogEntriesListRequest(_messages.Message):
@@ -1295,7 +1339,8 @@ class WriteLogEntriesRequest(_messages.Message):
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the
-      error associated with one of the failed entries.
+      error associated with one of the failed entries and include error
+      details in the form of WriteLogEntriesPartialErrors.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1334,52 +1379,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
 class WriteLogEntriesResponse(_messages.Message):
   """Result returned from WriteLogEntries.
-
-  Messages:
-    LogEntryErrorsValue: When `WriteLogEntriesRequest.partial_success` is
-      true, records the errors status for entries that were not written due to
-      a permanent error, keyed by the entry's zero-based index in
-      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
-      are written will not include per-entry errors.
-
-  Fields:
-    logEntryErrors: When `WriteLogEntriesRequest.partial_success` is true,
-      records the errors status for entries that were not written due to a
-      permanent error, keyed by the entry's zero-based index in
-      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
-      are written will not include per-entry errors.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LogEntryErrorsValue(_messages.Message):
-    """When `WriteLogEntriesRequest.partial_success` is true, records the
-    errors status for entries that were not written due to a permanent error,
-    keyed by the entry's zero-based index in `WriteLogEntriesRequest.entries`.
-    Failed requests for which no entries are written will not include per-
-    entry errors.
-
-    Messages:
-      AdditionalProperty: An additional property for a LogEntryErrorsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type LogEntryErrorsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LogEntryErrorsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Status attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Status', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  logEntryErrors = _messages.MessageField('LogEntryErrorsValue', 1)
+empty"""
 
 
 encoding.AddCustomJsonFieldMapping(

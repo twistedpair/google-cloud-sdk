@@ -94,13 +94,45 @@ class LabelDescriptor(_messages.Message):
 
 
 class ListLogEntriesRequest(_messages.Message):
+  """The parameters to `ListLogEntries`.
+
+  Fields:
+    filter: Optional. An [advanced logs
+      filter](/logging/docs/view/advanced_filters). The filter is compared
+      against all log entries in the projects specified by `projectIds`.  Only
+      entries that match the filter are retrieved.  An empty filter matches
+      all log entries.
+    isV1Request: A boolean attribute.
+    orderBy: Optional. How the results should be sorted.  Presently, the only
+      permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
+      The first option returns entries in order of increasing values of
+      `LogEntry.timestamp` (oldest first), and the second option returns
+      entries in order of decreasing timestamps (newest first).  Entries with
+      equal timestamps are returned in order of `LogEntry.insertId`.
+    pageSize: Optional. The maximum number of results to return from this
+      request. You must check for presence of `nextPageToken` to determine if
+      additional results are available, which you can retrieve by passing the
+      `nextPageToken` value as the `pageToken` parameter in the next request.
+    pageToken: Optional. If the `pageToken` parameter is supplied, then the
+      next page of results is retrieved.  The `pageToken` parameter must be
+      set to the value of the `nextPageToken` from the previous response. The
+      values of `projectIds`, `filter`, and `orderBy` must be the same as in
+      the previous request.
+    partialSuccess: Optional. If true, read access to all projects is not
+      required and results will be returned for the subset of projects for
+      which read access is permitted (empty subset is permitted).
+    projectIds: Required. One or more project IDs or project numbers from
+      which to retrieve log entries.  Examples of a project ID: `"my-project-
+      1A"`, `"1234567890"`.
+  """
 
   filter = _messages.StringField(1)
   isV1Request = _messages.BooleanField(2)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
-  projectIds = _messages.StringField(6, repeated=True)
+  partialSuccess = _messages.BooleanField(6)
+  projectIds = _messages.StringField(7, repeated=True)
 
 
 class ListLogEntriesResponse(_messages.Message):
@@ -109,8 +141,8 @@ class ListLogEntriesResponse(_messages.Message):
   Fields:
     entries: A list of log entries.
     nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is given a value in the response.  To get the next batch
-      of results, call this method again using the value of `nextPageToken` as
+      `nextPageToken` is included in the response.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
       `pageToken`.
   """
 
@@ -124,8 +156,8 @@ class ListLogMetricsResponse(_messages.Message):
   Fields:
     metrics: A list of logs-based metrics.
     nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is given a value in the response.  To get the next batch
-      of results, call this method again using the value of `nextPageToken` as
+      `nextPageToken` is included in the response.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
       `pageToken`.
   """
 
@@ -138,7 +170,7 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
   Fields:
     nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is returned in the response.  To get the next batch of
+      `nextPageToken` is included in the response.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
     resourceDescriptors: A list of resource descriptors.
@@ -153,8 +185,8 @@ class ListSinksResponse(_messages.Message):
 
   Fields:
     nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is given a value in the response.  To get the next batch
-      of results, call this method again using the value of `nextPageToken` as
+      `nextPageToken` is included in the response.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
       `pageToken`.
     sinks: A list of sinks.
   """
@@ -465,10 +497,9 @@ class LogSink(_messages.Message):
   """Describes a sink used to export log entries outside Cloud Logging.
 
   Enums:
-    OutputVersionFormatValueValuesEnum: The log entry version used when
-      exporting log entries from this sink.  This version does not have to
-      correspond to the version of the log entry when it was written to Cloud
-      Logging.
+    OutputVersionFormatValueValuesEnum: The log entry version to use for this
+      sink's exported log entries. This version does not have to correspond to
+      the version of the log entry when it was written to Cloud Logging.
 
   Fields:
     destination: The export destination. See [Exporting Logs With
@@ -476,26 +507,26 @@ class LogSink(_messages.Message):
       `"storage.googleapis.com/a-bucket"`,
       `"bigquery.googleapis.com/projects/a-project-id/datasets/a-dataset"`.
     errors: _Output only._ All active errors found for this sink.
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters)
-      that defines the log entries to be exported.  The filter must be
-      consistent with the log entry format designed by the
+    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
+      Only log entries matching that filter are exported. The filter must be
+      consistent with the log entry format specified by the
       `outputVersionFormat` parameter, regardless of the format of the log
-      entry that was originally written to Cloud Logging. Example:
-      `"logName:syslog AND severity>=ERROR"`.
+      entry that was originally written to Cloud Logging. Example (V2 format):
+      `"logName=projects/my-projectid/logs/syslog AND severity>=ERROR"`.
     formatChange: When the format was changed.
     name: Required. The client-assigned sink identifier. Example: `"my-severe-
       errors-to-pubsub"`. Sink identifiers are limited to 1000 characters and
       can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
       special characters `_-.`.
-    outputVersionFormat: The log entry version used when exporting log entries
-      from this sink.  This version does not have to correspond to the version
-      of the log entry when it was written to Cloud Logging.
+    outputVersionFormat: The log entry version to use for this sink's exported
+      log entries. This version does not have to correspond to the version of
+      the log entry when it was written to Cloud Logging.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    """The log entry version used when exporting log entries from this sink.
-    This version does not have to correspond to the version of the log entry
-    when it was written to Cloud Logging.
+    """The log entry version to use for this sink's exported log entries. This
+    version does not have to correspond to the version of the log entry when
+    it was written to Cloud Logging.
 
     Values:
       VERSION_FORMAT_UNSPECIFIED: An unspecified version format will default
@@ -520,14 +551,12 @@ class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request.  Fewer results might be returned. You must check for the
-      `nextPageToken` result to determine if additional results are available,
-      which you can retrieve by passing the `nextPageToken` value in the
-      `pageToken` parameter to the next request.
-    pageToken: Optional. If the `pageToken` request parameter is supplied,
-      then the next page of results in the set are retrieved.  The `pageToken`
-      parameter must be set with the value of the `nextPageToken` result
-      parameter from the previous request.
+      request. You must check for presence of `nextPageToken` to determine if
+      additional results are available, which you can retrieve by passing the
+      `nextPageToken` value as the `pageToken` parameter in the next request.
+    pageToken: Optional. If the `pageToken` parameter is supplied, then the
+      next page of results is retrieved.  The `pageToken` parameter must be
+      set to the value of the `nextPageToken` from the previous response.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -592,15 +621,13 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request.  Fewer results might be returned. You must check for the
-      `nextPageToken` result to determine if additional results are available,
-      which you can retrieve by passing the `nextPageToken` value in the
-      `pageToken` parameter to the next request.
-    pageToken: Optional. If the `pageToken` request parameter is supplied,
-      then the next page of results in the set are retrieved.  The `pageToken`
-      parameter must be set with the value of the `nextPageToken` result
-      parameter from the previous request.  The value of `projectName` must be
-      the same as in the previous request.
+      request. You must check for presence of `nextPageToken` to determine if
+      additional results are available, which you can retrieve by passing the
+      `nextPageToken` value as the `pageToken` parameter in the next request.
+    pageToken: Optional. If the `pageToken` parameter is supplied, then the
+      next page of results is retrieved.  The `pageToken` parameter must be
+      set to the value of the `nextPageToken` from the previous response. The
+      value of `projectName` must be the same as in the previous request.
     projectsId: Part of `projectName`. Required. The resource name of the
       project containing the metrics. Example: `"projects/my-project-id"`.
   """
@@ -673,18 +700,15 @@ class LoggingProjectsSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request.  Fewer results might be returned. You must check for the
-      `nextPageToken` result to determine if additional results are available,
-      which you can retrieve by passing the `nextPageToken` value in the
-      `pageToken` parameter to the next request.
-    pageToken: Optional. If the `pageToken` request parameter is supplied,
-      then the next page of results in the set are retrieved.  The `pageToken`
-      parameter must be set with the value of the `nextPageToken` result
-      parameter from the previous request. The value of `projectName` must be
-      the same as in the previous request.
+      request. You must check for presence of `nextPageToken` to determine if
+      additional results are available, which you can retrieve by passing the
+      `nextPageToken` value as the `pageToken` parameter in the next request.
+    pageToken: Optional. If the `pageToken` parameter is supplied, then the
+      next page of results is retrieved.  The `pageToken` parameter must be
+      set to the value of the `nextPageToken` from the previous response. The
+      value of `projectName` must be the same as in the previous request.
     projectsId: Part of `projectName`. Required. The resource name of the
-      project containing the sinks. Example: `"projects/my-logging-project"`,
-      `"projects/01234567890"`.
+      project containing the sinks. Example: `"projects/my-logging-project"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -710,33 +734,37 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
 
 class MonitoredResource(_messages.Message):
-  """A specific monitored resource or a group of monitored resources.
+  """A monitored resource describes a resource that can be used for monitoring
+  purpose. It can also be used for logging, billing, and other purposes. Each
+  resource has a `type` and a set of `labels`. The labels contain information
+  that identifies the resource and describes attributes of it. For example,
+  you can use monitored resource to describe a normal file, where the resource
+  has `type` as `"file"`, the label `path` identifies the file, and the label
+  `size` describes the file size. The monitoring system can use a set of
+  monitored resources of files to generate file size distribution.
 
   Messages:
     LabelsValue: Values for some or all of the labels listed in the associated
-      monitored resource descriptor. For example, specify a specific Cloud SQL
-      database by supplying values for both the `"database_id"` and `"zone"`
-      labels.  Specify the set of all Cloud SQL databases in a particular
-      location by supplying a value for only the `"zone"` label.
+      monitored resource descriptor. For example, you specify a specific Cloud
+      SQL database by supplying values for both the `"database_id"` and
+      `"zone"` labels.
 
   Fields:
     labels: Values for some or all of the labels listed in the associated
-      monitored resource descriptor. For example, specify a specific Cloud SQL
-      database by supplying values for both the `"database_id"` and `"zone"`
-      labels.  Specify the set of all Cloud SQL databases in a particular
-      location by supplying a value for only the `"zone"` label.
-    type: The type of monitored resource. This field must match the value of
-      the `type` field in a MonitoredResourceDescriptor object.  For example,
+      monitored resource descriptor. For example, you specify a specific Cloud
+      SQL database by supplying values for both the `"database_id"` and
+      `"zone"` labels.
+    type: The monitored resource type. This field must match the corresponding
+      MonitoredResourceDescriptor.type to this resource..  For example,
       `"cloudsql_database"` represents Cloud SQL databases.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Values for some or all of the labels listed in the associated monitored
-    resource descriptor. For example, specify a specific Cloud SQL database by
-    supplying values for both the `"database_id"` and `"zone"` labels.
-    Specify the set of all Cloud SQL databases in a particular location by
-    supplying a value for only the `"zone"` label.
+    resource descriptor. For example, you specify a specific Cloud SQL
+    database by supplying values for both the `"database_id"` and `"zone"`
+    labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -763,16 +791,17 @@ class MonitoredResource(_messages.Message):
 
 
 class MonitoredResourceDescriptor(_messages.Message):
-  """A description of a type of monitored resource.
+  """A descriptor that describes the schema of MonitoredResource.
 
   Fields:
-    description: A detailed description of the monitored resource type, which
-      is used in documentation.
-    displayName: A concise name for the monitored resource type, which is
-      displayed in user interfaces. For example, `"Cloud SQL Database"`.
+    description: A detailed description of the monitored resource type that
+      can be used in documentation.
+    displayName: A concise name for the monitored resource type that can be
+      displayed in user interfaces. For example, `"Google Cloud SQL
+      Database"`.
     labels: A set of labels that can be used to describe instances of this
-      monitored resource type. For example, Cloud SQL databases can be labeled
-      with their `"database_id"` and their `"zone"`.
+      monitored resource type. For example, Google Cloud SQL databases can be
+      labeled with their `"database_id"` and their `"zone"`.
     type: The monitored resource type. For example, the type
       `"cloudsql_database"` represents databases in Google Cloud SQL.
   """
@@ -784,6 +813,29 @@ class MonitoredResourceDescriptor(_messages.Message):
 
 
 class ReadLogEntriesRequest(_messages.Message):
+  """The parameters to `ReadLogEntries`. There are two different use cases for
+  streaming:  1.  To return a very large result set. The request eventually
+  completes when all entries have been returned. 2.  To "tail" a log stream,
+  returning new entries as they arrive.     In this case, the request never
+  completes.  Only the first use case is supported.
+
+  Fields:
+    filter: Optional. An [advanced logs
+      filter](/logging/docs/view/advanced_filters). The response includes only
+      entries that match the filter. If `filter` is empty, then all entries in
+      all logs are retrieved.
+    orderBy: Optional. How the results should be sorted.  Presently, the only
+      permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
+      The first option returns entries in order of increasing values of
+      `LogEntry.timestamp` (oldest first), and the second option returns
+      entries in order of decreasing timestamps (newest first).  Entries with
+      equal timestamps will be returned in order of `LogEntry.insertId`.
+    projectIds: Required. A list of project ids from which to retrieve log
+      entries. Example: `"my-project-id"`.
+    resumeToken: Optional. If the `resumeToken` parameter is supplied, then
+      the next page of results is retrieved. The `resumeToken` parameter must
+      be set to the value from the previous response.
+  """
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
@@ -1098,7 +1150,8 @@ class WriteLogEntriesRequest(_messages.Message):
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the
-      error associated with one of the failed entries.
+      error associated with one of the failed entries and include error
+      details in the form of WriteLogEntriesPartialErrors.
     resource: Optional. A default monitored resource for those log entries in
       `entries` that do not specify their own `resource`.
   """
@@ -1139,52 +1192,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
 class WriteLogEntriesResponse(_messages.Message):
   """Result returned from WriteLogEntries.
-
-  Messages:
-    LogEntryErrorsValue: When `WriteLogEntriesRequest.partial_success` is
-      true, records the errors status for entries that were not written due to
-      a permanent error, keyed by the entry's zero-based index in
-      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
-      are written will not include per-entry errors.
-
-  Fields:
-    logEntryErrors: When `WriteLogEntriesRequest.partial_success` is true,
-      records the errors status for entries that were not written due to a
-      permanent error, keyed by the entry's zero-based index in
-      `WriteLogEntriesRequest.entries`.  Failed requests for which no entries
-      are written will not include per-entry errors.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LogEntryErrorsValue(_messages.Message):
-    """When `WriteLogEntriesRequest.partial_success` is true, records the
-    errors status for entries that were not written due to a permanent error,
-    keyed by the entry's zero-based index in `WriteLogEntriesRequest.entries`.
-    Failed requests for which no entries are written will not include per-
-    entry errors.
-
-    Messages:
-      AdditionalProperty: An additional property for a LogEntryErrorsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type LogEntryErrorsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LogEntryErrorsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Status attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Status', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  logEntryErrors = _messages.MessageField('LogEntryErrorsValue', 1)
+empty"""
 
 
 encoding.AddCustomJsonFieldMapping(

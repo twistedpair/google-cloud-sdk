@@ -203,7 +203,7 @@ than once will not result in an error.
           config, request, global_params=global_params)
 
     def Create(self, request, global_params=None):
-      """Creates a subscription to a given topic for a given subscriber.
+      """Creates a subscription to a given topic.
 If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 

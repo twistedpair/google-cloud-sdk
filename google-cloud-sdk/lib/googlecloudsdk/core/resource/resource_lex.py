@@ -388,7 +388,7 @@ class Lexer(object):
       if self.IsCharacter(']'):
         raise resource_exceptions.ExpressionSyntaxError(
             'Unmatched ] in key [{0}].'.format(self.Annotate(here)))
-      if self.IsCharacter('['):
+      while self.IsCharacter('['):
         # [] slice or [NUMBER] array index.
         index = self.Token(']', convert=True)
         self.IsCharacter(']')

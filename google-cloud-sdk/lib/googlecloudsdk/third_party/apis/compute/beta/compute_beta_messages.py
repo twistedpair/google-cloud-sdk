@@ -3813,19 +3813,6 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   usageExportLocation = _messages.MessageField('UsageExportLocation', 2)
 
 
-class ComputeProjectsSetUsageExportCloudStorageBucketRequest(_messages.Message):
-  """A ComputeProjectsSetUsageExportCloudStorageBucketRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    usageExportLocation: A UsageExportLocation resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 2)
-
-
 class ComputeRegionOperationsDeleteRequest(_messages.Message):
   """A ComputeRegionOperationsDeleteRequest object.
 
@@ -9123,6 +9110,7 @@ class Quota(_messages.Message):
     """[Output Only] Name of the quota metric.
 
     Values:
+      AUTOSCALERS: <no description>
       BACKEND_SERVICES: <no description>
       CPUS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -9151,33 +9139,34 @@ class Quota(_messages.Message):
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
     """
-    BACKEND_SERVICES = 0
-    CPUS = 1
-    DISKS_TOTAL_GB = 2
-    FIREWALLS = 3
-    FORWARDING_RULES = 4
-    HEALTH_CHECKS = 5
-    IMAGES = 6
-    INSTANCES = 7
-    INSTANCE_GROUPS = 8
-    INSTANCE_GROUP_MANAGERS = 9
-    INSTANCE_TEMPLATES = 10
-    IN_USE_ADDRESSES = 11
-    LOCAL_SSD_TOTAL_GB = 12
-    NETWORKS = 13
-    ROUTES = 14
-    SNAPSHOTS = 15
-    SSD_TOTAL_GB = 16
-    SSL_CERTIFICATES = 17
-    STATIC_ADDRESSES = 18
-    SUBNETWORKS = 19
-    TARGET_HTTPS_PROXIES = 20
-    TARGET_HTTP_PROXIES = 21
-    TARGET_INSTANCES = 22
-    TARGET_POOLS = 23
-    TARGET_VPN_GATEWAYS = 24
-    URL_MAPS = 25
-    VPN_TUNNELS = 26
+    AUTOSCALERS = 0
+    BACKEND_SERVICES = 1
+    CPUS = 2
+    DISKS_TOTAL_GB = 3
+    FIREWALLS = 4
+    FORWARDING_RULES = 5
+    HEALTH_CHECKS = 6
+    IMAGES = 7
+    INSTANCES = 8
+    INSTANCE_GROUPS = 9
+    INSTANCE_GROUP_MANAGERS = 10
+    INSTANCE_TEMPLATES = 11
+    IN_USE_ADDRESSES = 12
+    LOCAL_SSD_TOTAL_GB = 13
+    NETWORKS = 14
+    ROUTES = 15
+    SNAPSHOTS = 16
+    SSD_TOTAL_GB = 17
+    SSL_CERTIFICATES = 18
+    STATIC_ADDRESSES = 19
+    SUBNETWORKS = 20
+    TARGET_HTTPS_PROXIES = 21
+    TARGET_HTTP_PROXIES = 22
+    TARGET_INSTANCES = 23
+    TARGET_POOLS = 24
+    TARGET_VPN_GATEWAYS = 25
+    URL_MAPS = 26
+    VPN_TUNNELS = 27
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -11085,9 +11074,9 @@ class VpnTunnel(_messages.Message):
       version is 2.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
-    localTrafficSelector: IKE networks to use when establishing the VPN tunnel
-      with peer VPN gateway. The value should be a CIDR formatted string, for
-      example: 192.168.0.0/16. The ranges should be disjoint.
+    localTrafficSelector: Local traffic selector to use when establishing the
+      VPN tunnel with peer VPN gateway. The value should be a CIDR formatted
+      string, for example: 192.168.0.0/16. The ranges should be disjoint.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the

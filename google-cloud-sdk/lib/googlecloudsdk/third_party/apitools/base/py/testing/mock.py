@@ -233,6 +233,7 @@ class _MockedMethod(object):
         # TODO(user): allow the testing code to expect certain
         # values in these currently unused_kwargs, especially the
         # upload parameter used by media-heavy services like bigquery
+        # or bigstore.
 
         # pylint: disable=protected-access
         # Class in same module.

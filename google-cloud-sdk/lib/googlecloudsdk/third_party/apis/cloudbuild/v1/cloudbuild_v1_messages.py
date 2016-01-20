@@ -12,77 +12,51 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'cloudbuild'
 
 
-class AliasContext(_messages.Message):
-  """An alias to a repo revision.
-
-  Enums:
-    KindValueValuesEnum: The alias kind.
-
-  Fields:
-    kind: The alias kind.
-    name: The alias name.
-  """
-
-  class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
-
-    Values:
-      ANY: Do not use.
-      FIXED: Git tag
-      MOVABLE: Git branch
-      OTHER: OTHER is used to specify non-standard aliases, those not of the
-        kinds above. For example, if a Git repo has a ref named
-        "refs/foo/bar", it is considered to be of kind OTHER.
-    """
-    ANY = 0
-    FIXED = 1
-    MOVABLE = 2
-    OTHER = 3
-
-  kind = _messages.EnumField('KindValueValuesEnum', 1)
-  name = _messages.StringField(2)
-
-
 class Build(_messages.Message):
-  """A build resource in the CloudBuild API.  At a high level, a Build
-  describes where to find source, how to build the source (i.e., the builder
-  image to run on the source), and what tag to apply to the built image when
-  it is pushed to Google Container Registry.
+  """A build resource in the Container Builder API.  At a high level, a Build
+  describes where to find source code, how to build it (for example, the
+  builder image to run on the source), and what tag to apply to the built
+  image when it is pushed to Google Container Registry.
 
   Enums:
-    StatusValueValuesEnum: The status of the build. @OutputOnly
+    StatusValueValuesEnum: Status of the build. @OutputOnly
 
   Fields:
-    createTime: The time that the build was created. @OutputOnly
-    finishTime: The time that execution of the build was finished. @OutputOnly
-    id: The unique identifier of the build. @OutputOnly
-    images: The list of images expected to be built and pushed to GCR. If an
-      image is listed here, and if the image is not produced by one of the
-      build steps, the build will fail. If all the images are present when the
-      build steps are complete, they will all be pushed.
-    projectId: The ID of the project. @OutputOnly.
-    source: Describes where to find source files to build.
-    startTime: The time that execution of the build was started. @OutputOnly
-    status: The status of the build. @OutputOnly
+    createTime: Time at which the build was created. @OutputOnly
+    finishTime: Time at whihc execution of the build was finished. @OutputOnly
+    id: Unique identifier of the build. @OutputOnly
+    images: List of images expected to be built and pushed to GCR. If an image
+      is listed here, and if the image is not produced by one of the build
+      steps, the build will fail. If all the images are present when the build
+      steps are complete, they will all be pushed.
+    logsBucket: Google Cloud Storage bucket where logs should be written (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)). Logs file names will be of the format
+      ${logs_bucket}/log-${build_id}.txt.
+    projectId: ID of the project. @OutputOnly.
+    results: Results of the build. @OutputOnly
+    source: Describes where to find the source files to build.
+    startTime: Time at which execution of the build was started. @OutputOnly
+    status: Status of the build. @OutputOnly
     steps: Describes the operations to be performed on the workspace.
-    timeout: The amount of time that this build should be allowed to run, to
+    timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
-      will cease and the build status will be TIMEOUT.  By default, this will
-      be ten minutes.
+      will cease and the build status will be TIMEOUT.  Default time is ten
+      minutes.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """The status of the build. @OutputOnly
+    """Status of the build. @OutputOnly
 
     Values:
-      STATUS_UNKNOWN: The status of the build is unknown.
-      QUEUED: The build is queued, work has not yet begun.
-      WORKING: The build is being executed.
-      SUCCESS: The build finished successfully.
-      FAILURE: The build failed to complete successfully.
-      INTERNAL_ERROR: The build failed due to an internal cause.
-      TIMEOUT: The build took longer than was allowed.
-      CANCELLED: The build was cancelled by a user.
+      STATUS_UNKNOWN: Status of the build is unknown.
+      QUEUED: Build is queued, work has not yet begun.
+      WORKING: Build is being executed.
+      SUCCESS: Build finished successfully.
+      FAILURE: Build failed to complete successfully.
+      INTERNAL_ERROR: Build failed due to an internal cause.
+      TIMEOUT: Build took longer than was allowed.
+      CANCELLED: Build was canceled by a user.
     """
     STATUS_UNKNOWN = 0
     QUEUED = 1
@@ -97,12 +71,14 @@ class Build(_messages.Message):
   finishTime = _messages.StringField(2)
   id = _messages.StringField(3)
   images = _messages.StringField(4, repeated=True)
-  projectId = _messages.StringField(5)
-  source = _messages.MessageField('Source', 6)
-  startTime = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  steps = _messages.MessageField('BuildStep', 9, repeated=True)
-  timeout = _messages.StringField(10)
+  logsBucket = _messages.StringField(5)
+  projectId = _messages.StringField(6)
+  results = _messages.MessageField('Results', 7)
+  source = _messages.MessageField('Source', 8)
+  startTime = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  steps = _messages.MessageField('BuildStep', 11, repeated=True)
+  timeout = _messages.StringField(12)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -123,8 +99,8 @@ class BuildStep(_messages.Message):
     dir: Working directory (relative to project source root) to use when
       running this operation's container.
     env: Additional environment variables to set for this step's container.
-    name: The name of the container image to use for creating this stage in
-      the pipeline, as presented to 'docker pull'.
+    name: Name of the container image to use for creating this stage in the
+      pipeline, as presented to `docker pull`.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -133,77 +109,21 @@ class BuildStep(_messages.Message):
   name = _messages.StringField(4)
 
 
-class CancelOperationRequest(_messages.Message):
-  """The request message for Operations.CancelOperation."""
-
-
-class CloudRepoSourceContext(_messages.Message):
-  """A CloudRepoSourceContext denotes a particular revision in a cloud repo (a
-  repo hosted by the Google Cloud Platform).
+class BuiltImage(_messages.Message):
+  """BuiltImage describes an image built by the pipeline.
 
   Fields:
-    aliasContext: An alias, which may be a branch or tag.
-    aliasName: The name of an alias (branch, tag, etc.).
-    repoId: The ID of the repo.
-    revisionId: A revision ID.
+    digest: Docker Registry 2.0 digest.
+    name: Name used to push the container image to GCR, as presented to
+      `docker push`.
   """
 
-  aliasContext = _messages.MessageField('AliasContext', 1)
-  aliasName = _messages.StringField(2)
-  repoId = _messages.MessageField('RepoId', 3)
-  revisionId = _messages.StringField(4)
+  digest = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
-class CloudWorkspaceId(_messages.Message):
-  """A CloudWorkspaceId is a unique identifier for a cloud workspace. A cloud
-  workspace is a place associated with a repo where modified files can be
-  stored before they are committed.
-
-  Fields:
-    name: The unique name of the workspace within the repo.  This is the name
-      chosen by the client in the Source API's CreateWorkspace method.
-    repoId: The ID of the repo containing the workspace.
-  """
-
-  name = _messages.StringField(1)
-  repoId = _messages.MessageField('RepoId', 2)
-
-
-class CloudWorkspaceSourceContext(_messages.Message):
-  """A CloudWorkspaceSourceContext denotes a workspace at a particular
-  snapshot.
-
-  Fields:
-    snapshotId: The ID of the snapshot. An empty snapshot_id refers to the
-      most recent snapshot.
-    workspaceId: The ID of the workspace.
-  """
-
-  snapshotId = _messages.StringField(1)
-  workspaceId = _messages.MessageField('CloudWorkspaceId', 2)
-
-
-class CloudbuildOperationsCancelRequest(_messages.Message):
-  """A CloudbuildOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudbuildOperationsDeleteRequest(_messages.Message):
-  """A CloudbuildOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
+class CancelBuildRequest(_messages.Message):
+  """Request to cancel an ongoing build."""
 
 
 class CloudbuildOperationsGetRequest(_messages.Message):
@@ -236,12 +156,15 @@ class CloudbuildProjectsBuildsCancelRequest(_messages.Message):
   """A CloudbuildProjectsBuildsCancelRequest object.
 
   Fields:
-    id: The ID of the build.
-    projectId: The ID of the project.
+    cancelBuildRequest: A CancelBuildRequest resource to be passed as the
+      request body.
+    id: ID of the build.
+    projectId: ID of the project.
   """
 
-  id = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
+  cancelBuildRequest = _messages.MessageField('CancelBuildRequest', 1)
+  id = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
 
 
 class CloudbuildProjectsBuildsCreateRequest(_messages.Message):
@@ -249,7 +172,7 @@ class CloudbuildProjectsBuildsCreateRequest(_messages.Message):
 
   Fields:
     build: A Build resource to be passed as the request body.
-    projectId: The ID of the project.
+    projectId: ID of the project.
   """
 
   build = _messages.MessageField('Build', 1)
@@ -260,8 +183,8 @@ class CloudbuildProjectsBuildsGetRequest(_messages.Message):
   """A CloudbuildProjectsBuildsGetRequest object.
 
   Fields:
-    id: The ID of the build.
-    projectId: The ID of the project.
+    id: ID of the build.
+    projectId: ID of the project.
   """
 
   id = _messages.StringField(1, required=True)
@@ -274,55 +197,12 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   Fields:
     pageSize: Number of results to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    projectId: The ID of the project.
+    projectId: ID of the project.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   projectId = _messages.StringField(3, required=True)
-
-
-class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
-class GerritSourceContext(_messages.Message):
-  """A SourceContext referring to a Gerrit project.
-
-  Fields:
-    aliasContext: An alias, which may be a branch or tag.
-    aliasName: The name of an alias (branch, tag, etc.).
-    gerritProject: The full project name within the host. Projects may be
-      nested, so "project/subproject" is a valid project name. The "repo name"
-      is hostURI/project.
-    hostUri: The URI of a running Gerrit instance.
-    revisionId: A revision (commit) ID.
-  """
-
-  aliasContext = _messages.MessageField('AliasContext', 1)
-  aliasName = _messages.StringField(2)
-  gerritProject = _messages.StringField(3)
-  hostUri = _messages.StringField(4)
-  revisionId = _messages.StringField(5)
-
-
-class GitSourceContext(_messages.Message):
-  """A GitSourceContext denotes a particular revision in a third party Git
-  repository (e.g. GitHub).
-
-  Fields:
-    revisionId: Git commit hash. required.
-    url: Git repository URL.
-  """
-
-  revisionId = _messages.StringField(1)
-  url = _messages.StringField(2)
 
 
 class ListBuildsResponse(_messages.Message):
@@ -457,62 +337,28 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class ProjectRepoId(_messages.Message):
-  """Selects a repo using a Google Cloud Platform project ID (e.g. winged-
-  cargo-31) and a repo name within that project.
+class Results(_messages.Message):
+  """Results describes the artifacts created by the build pipeline.
 
   Fields:
-    projectId: The ID of the project.
-    repoName: The name of the repo. Leave empty for the default repo.
+    images: Images that were built as a part of the build.
+    revision: Revision ID of the source that was built.
   """
 
-  projectId = _messages.StringField(1)
-  repoName = _messages.StringField(2)
-
-
-class RepoId(_messages.Message):
-  """A unique identifier for a cloud repo.
-
-  Fields:
-    projectRepoId: A combination of a project ID and a repo name.
-    uid: A server-assigned, globally unique identifier.
-  """
-
-  projectRepoId = _messages.MessageField('ProjectRepoId', 1)
-  uid = _messages.StringField(2)
+  images = _messages.MessageField('BuiltImage', 1, repeated=True)
+  revision = _messages.StringField(2)
 
 
 class Source(_messages.Message):
-  """Source describes the location of source either in a source repository, or
-  in an object in Google Cloud Storage.
+  """Source describes the location of the source in a supported storage
+  service.
 
   Fields:
-    repoSource: If provided, get source from this location in source control.
-    storageSource: If provided, get source from this location in in Google
+    storageSource: If provided, get the source from this location in in Google
       Cloud Storage.
   """
 
-  repoSource = _messages.MessageField('SourceContext', 1)
-  storageSource = _messages.MessageField('StorageSource', 2)
-
-
-class SourceContext(_messages.Message):
-  """A SourceContext is a reference to a tree of files. A SourceContext
-  together with a path point to a unique revision of a single file or
-  directory.
-
-  Fields:
-    cloudRepo: A SourceContext referring to a revision in a cloud repo.
-    cloudWorkspace: A SourceContext referring to a snapshot in a cloud
-      workspace.
-    gerrit: A SourceContext referring to a Gerrit project.
-    git: A SourceContext referring to any third party Git repo (e.g. GitHub).
-  """
-
-  cloudRepo = _messages.MessageField('CloudRepoSourceContext', 1)
-  cloudWorkspace = _messages.MessageField('CloudWorkspaceSourceContext', 2)
-  gerrit = _messages.MessageField('GerritSourceContext', 3)
-  git = _messages.MessageField('GitSourceContext', 4)
+  storageSource = _messages.MessageField('StorageSource', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -661,7 +507,7 @@ class Status(_messages.Message):
 
 
 class StorageSource(_messages.Message):
-  """StorageSource describes the location of source in an archive file in
+  """StorageSource describes the location of the source in an archive file in
   Google Cloud Storage.
 
   Fields:

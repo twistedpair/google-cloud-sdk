@@ -135,7 +135,7 @@ def WriteGCDEnvYaml(args):
   host_port = '{0}:{1}'.format(args.host_port.host, args.host_port.port)
   project_id = properties.VALUES.core.project.Get(required=True)
   env = {'DATASTORE_HOST': 'http://{0}'.format(host_port),
-         'DATASTORE_LOCAL_HOST': host_port,
+         'DATASTORE_EMULATOR_HOST': host_port,
          'DATASTORE_DATASET': project_id,
          'DATASTORE_PROJECT_ID': project_id,
         }

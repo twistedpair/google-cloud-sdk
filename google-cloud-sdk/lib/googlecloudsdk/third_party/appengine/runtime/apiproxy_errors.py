@@ -7,6 +7,7 @@
 
 
 
+
 class Error(Exception):
   """Base APIProxy error type."""
 
@@ -51,17 +52,22 @@ class OverQuotaError(Error):
   """Raised by APIProxy calls when they have been blocked due to a lack of
   available quota."""
 
+
 class RequestTooLargeError(Error):
   """Raised by APIProxy calls if the request was too large."""
+
 
 class ResponseTooLargeError(Error):
   """Raised by APIProxy calls if the response was too large."""
 
+
 class CapabilityDisabledError(Error):
   """Raised by APIProxy when API calls are temporarily disabled."""
 
+
 class FeatureNotEnabledError(Error):
   """Raised by APIProxy when the app must enable a feature to use this call."""
+
 
 class InterruptedError(Error):
   """Raised by APIProxy.Wait() when the wait is interrupted by an uncaught
@@ -76,7 +82,11 @@ class InterruptedError(Error):
   @property
   def rpc(self):
     return self.__rpc
-  
+
   @property
   def exception(self):
     return self.__exception
+
+
+class RpcAuthorityError(Error):
+  """Raised by APIProxy when loading rpc authority from the environment."""

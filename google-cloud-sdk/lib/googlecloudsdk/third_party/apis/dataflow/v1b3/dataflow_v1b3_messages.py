@@ -30,14 +30,39 @@ class ApproximateReportedProgress(_messages.Message):
   """A progress measurement of a WorkItem by a worker.
 
   Fields:
+    consumedParallelism: Total amount of parallelism in the portion of input
+      of this work item that has already been consumed. In the first two
+      examples above (see remaining_parallelism), the value should be 30 or 3
+      respectively. The sum of remaining_parallelism and consumed_parallelism
+      should equal the total amount of parallelism in this work item. If
+      specified, must be finite.
     fractionConsumed: Completion as fraction of the input consumed, from 0.0
       (beginning, nothing consumed), to 1.0 (end of the input, entire input
       consumed).
     position: A Position within the work to represent a progress.
+    remainingParallelism: Total amount of parallelism in the input of this
+      WorkItem that has not been consumed yet (i.e. can be delegated to a new
+      WorkItem via dynamic splitting).  "Amount of parallelism" refers to how
+      many non-empty parts of the input can be read in parallel. This does not
+      necessarily equal number of records. An input that can be read in
+      parallel down to the individual records is called "perfectly
+      splittable". An example of non-perfectly parallelizable input is a
+      block-compressed file format where a block of records has to be read as
+      a whole, but different blocks can be read in parallel.  Examples: * If
+      we have read 30 records out of 50 in a perfectly splittable   50-record
+      input, this value should be 20. * If we are reading through block 3 in a
+      block-compressed file consisting   of 5 blocks, this value should be 2
+      (since blocks 4 and 5 can be   processed in parallel by new work items
+      via dynamic splitting). * If we are reading through the last block in a
+      block-compressed file,   or reading or processing the last record in a
+      perfectly splittable   input, this value should be 0, because the
+      remainder of the work item   cannot be further split.
   """
 
-  fractionConsumed = _messages.FloatField(1)
-  position = _messages.MessageField('Position', 2)
+  consumedParallelism = _messages.MessageField('ReportedParallelism', 1)
+  fractionConsumed = _messages.FloatField(2)
+  position = _messages.MessageField('Position', 3)
+  remainingParallelism = _messages.MessageField('ReportedParallelism', 4)
 
 
 class ApproximateSplitRequest(_messages.Message):
@@ -1510,6 +1535,23 @@ class ReportWorkItemStatusResponse(_messages.Message):
   workItemServiceStates = _messages.MessageField('WorkItemServiceState', 1, repeated=True)
 
 
+class ReportedParallelism(_messages.Message):
+  """Represents the level of parallelism in a WorkItem's input, reported by
+  the worker.
+
+  Fields:
+    isInfinite: Specifies whether the parallelism is infinite. If true,
+      "value" is ignored. Infinite parallelism means the service will assume
+      that the work item can always be split into more non-empty work items by
+      dynamic splitting. This is a work-around for lack of support for
+      infinity by the current JSON-based Java RPC stack.
+    value: Specifies the level of parallelism in case it is finite.
+  """
+
+  isInfinite = _messages.BooleanField(1)
+  value = _messages.FloatField(2)
+
+
 class SendWorkerMessagesRequest(_messages.Message):
   """A request for sending worker messages to the service.
 
@@ -2913,8 +2955,8 @@ class WorkerPool(_messages.Message):
       the user. Because of this, Google recommends using the TEARDOWN_ALWAYS
       policy except for small, manually supervised test jobs.  If unknown or
       unspecified, the service will attempt to choose a reasonable default.
-    zone: Zone to run the worker pools in (e.g. "us-central1-a").  If empty or
-      unspecified, the service will attempt to choose a reasonable default.
+    zone: Zone to run the worker pools in.  If empty or unspecified, the
+      service will attempt to choose a reasonable default.
   """
 
   class DefaultPackageSetValueValuesEnum(_messages.Enum):

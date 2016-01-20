@@ -485,6 +485,18 @@ class ComputeAlpha(base_api.BaseApiClient):
               response_type_name=u'BackendBucket',
               supports_download=False,
           ),
+          'GetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.backendBuckets.getIamPolicy',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/backendBuckets/{resource}/getIamPolicy',
+              request_field='',
+              request_type_name=u'ComputeBackendBucketsGetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.backendBuckets.insert',
@@ -519,6 +531,30 @@ class ComputeAlpha(base_api.BaseApiClient):
               request_field=u'backendBucketResource',
               request_type_name=u'ComputeBackendBucketsPatchRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.backendBuckets.setIamPolicy',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/backendBuckets/{resource}/setIamPolicy',
+              request_field=u'policy',
+              request_type_name=u'ComputeBackendBucketsSetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.backendBuckets.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/backendBuckets/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeBackendBucketsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -564,6 +600,19 @@ class ComputeAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeBackendBucketsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Insert(self, request, global_params=None):
       """Creates a BackendBucket resource in the specified project using the data included in the request.
 
@@ -600,6 +649,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeBackendBucketsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeBackendBucketsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -791,7 +866,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -817,7 +892,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -3750,6 +3825,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'Suspend': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.suspend',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/suspend',
+              request_field='',
+              request_type_name=u'ComputeInstancesSuspendRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.testIamPermissions',
@@ -4015,7 +4102,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Start(self, request, global_params=None):
-      """This method starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -4028,7 +4115,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Stop(self, request, global_params=None):
-      """This method stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses,will continue to be charged until they are deleted. For more information, see Stopping an instance.
+      """Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 
       Args:
         request: (ComputeInstancesStopRequest) input message
@@ -4037,6 +4124,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Suspend(self, request, global_params=None):
+      """This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+
+      Args:
+        request: (ComputeInstancesSuspendRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Suspend')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4361,18 +4461,6 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
-          'SetUsageExportCloudStorageBucket': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.projects.setUsageExportCloudStorageBucket',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/setUsageExportCloudStorageBucket',
-              request_field=u'usageExportLocation',
-              request_type_name=u'ComputeProjectsSetUsageExportCloudStorageBucketRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
@@ -4414,19 +4502,6 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetUsageExportBucket')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetUsageExportCloudStorageBucket(self, request, global_params=None):
-      """[Deprecated] Use setUsageExportBucket instead.
-
-      Args:
-        request: (ComputeProjectsSetUsageExportCloudStorageBucketRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetUsageExportCloudStorageBucket')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6724,7 +6799,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def GetHealth(self, request, global_params=None):
-      """Gets the most recent health check results for each IP for the given instance that is referenced by given TargetPool.
+      """Gets the most recent health check results for each IP for the given instance that is referenced by the given TargetPool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -7176,7 +7251,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def InvalidateCache(self, request, global_params=None):
-      """Initiate a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
+      """Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
 
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message
@@ -7202,7 +7277,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource. This method supports patch semantics.
+      """Updates the entire content of the UrlMap resource. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -7228,7 +7303,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource.
+      """Updates the entire content of the UrlMap resource.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message
@@ -7241,7 +7316,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Validate(self, request, global_params=None):
-      """Run static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+      """Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 
       Args:
         request: (ComputeUrlMapsValidateRequest) input message

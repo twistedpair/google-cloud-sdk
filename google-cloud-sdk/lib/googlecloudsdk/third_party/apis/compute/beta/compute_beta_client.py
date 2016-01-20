@@ -559,7 +559,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -572,7 +572,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -3170,7 +3170,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Start(self, request, global_params=None):
-      """This method starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -3183,7 +3183,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Stop(self, request, global_params=None):
-      """This method stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses,will continue to be charged until they are deleted. For more information, see Stopping an instance.
+      """Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 
       Args:
         request: (ComputeInstancesStopRequest) input message
@@ -3478,18 +3478,6 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
-          'SetUsageExportCloudStorageBucket': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.projects.setUsageExportCloudStorageBucket',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/setUsageExportCloudStorageBucket',
-              request_field=u'usageExportLocation',
-              request_type_name=u'ComputeProjectsSetUsageExportCloudStorageBucketRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
@@ -3531,19 +3519,6 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetUsageExportBucket')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetUsageExportCloudStorageBucket(self, request, global_params=None):
-      """[Deprecated] Use setUsageExportBucket instead.
-
-      Args:
-        request: (ComputeProjectsSetUsageExportCloudStorageBucketRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetUsageExportCloudStorageBucket')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4802,7 +4777,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def GetHealth(self, request, global_params=None):
-      """Gets the most recent health check results for each IP for the given instance that is referenced by given TargetPool.
+      """Gets the most recent health check results for each IP for the given instance that is referenced by the given TargetPool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -5167,7 +5142,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource. This method supports patch semantics.
+      """Updates the entire content of the UrlMap resource. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -5180,7 +5155,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the UrlMap resource.
+      """Updates the entire content of the UrlMap resource.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message
@@ -5193,7 +5168,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Validate(self, request, global_params=None):
-      """Run static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+      """Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 
       Args:
         request: (ComputeUrlMapsValidateRequest) input message

@@ -19,6 +19,7 @@ import re
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
@@ -51,23 +52,20 @@ class Parser(object):
 
   _BOOLEAN_ATTRIBUTES = ['reverse']
 
-  def __init__(self, defaults=None, symbols=None):
+  def __init__(self, defaults=None, symbols=None, compiler=None):
     """Constructor.
 
     Args:
       defaults: resource_projection_spec.ProjectionSpec defaults.
       symbols: Transform function symbol table dict indexed by function name.
+      compiler: The projection compiler method for nested projections.
     """
     self.__key_attributes_only = False
     self._ordinal = 0
     self._projection = resource_projection_spec.ProjectionSpec(
-        defaults=defaults, symbols=symbols)
+        defaults=defaults, symbols=symbols, compiler=compiler)
     self._snake_headings = {}
     self._snake_re = None
-
-    # pylint: disable=g-import-not-at-top, cycle via resource_projector.Compile
-    from googlecloudsdk.core.resource import resource_transform
-
     self._builtin_transforms = resource_transform
 
   class _Tree(object):
@@ -484,15 +482,17 @@ class Parser(object):
     return self._projection
 
 
-def Parse(expression, defaults=None, symbols=None):
+def Parse(expression, defaults=None, symbols=None, compiler=None):
   """Parses a resource projector expression.
 
   Args:
     expression: The resource projection expression string.
     defaults: resource_projection_spec.ProjectionSpec defaults.
     symbols: Transform function symbol table dict indexed by function name.
+    compiler: The projection compiler method for nested projections.
 
   Returns:
     A ProjectionSpec for the expression.
   """
-  return Parser(defaults=defaults, symbols=symbols).Parse(expression)
+  return Parser(
+      defaults=defaults, symbols=symbols, compiler=compiler).Parse(expression)

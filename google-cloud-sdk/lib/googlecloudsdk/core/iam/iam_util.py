@@ -29,7 +29,7 @@ def AddArgsForAddIamPolicyBinding(parser):
   """
   parser.add_argument(
       '--role', required=True,
-      help='Define the role of the member')
+      help='Define the role of the member.')
   parser.add_argument(
       '--member', required=True,
       help='The member to add to the binding.')
@@ -45,7 +45,7 @@ def AddArgsForRemoveIamPolicyBinding(parser):
   """
   parser.add_argument(
       '--role', required=True,
-      help='The role to remove the member from')
+      help='The role to remove the member from.')
   parser.add_argument(
       '--member', required=True,
       help='The member to remove from the binding.')
@@ -72,8 +72,7 @@ def AddBindingToIamPolicy(messages, policy, args):
   # Just add the new binding at the end. Doesn't matter if there's already
   # a binding for the same role.
   policy.bindings.append(messages.Binding(
-      members=[args.member],
-      role='roles/{0}'.format(args.role)))
+      members=[args.member], role='{0}'.format(args.role)))
 
 
 def RemoveBindingFromIamPolicy(policy, args):
@@ -93,8 +92,7 @@ def RemoveBindingFromIamPolicy(policy, args):
     return
 
   for binding in policy.bindings:
-    if (binding.role == 'roles/{0}'.format(args.role) and
-        args.member in binding.members):
+    if binding.role == args.role and args.member in binding.members:
       binding.members.remove(args.member)
   # It's ok if some bindings have 0 members. The server should filter them out.
 
@@ -170,10 +168,11 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will add an IAM policy binding for the role
-          of 'editor' for the user 'test-user@gmail.com' on a {0} with
+          of 'roles/editor' for the user 'test-user@gmail.com' on a {0} with
           identifier '{1}'
 
-            $ {{command}} {1} --editor='user:test-user@gmail.com'
+            $ {{command}} {1} --member='user:test-user@gmail.com'
+            --role='roles/editor'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
@@ -195,10 +194,11 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will remove a IAM policy binding for the role
-          of 'editor' for the user 'test-user@gmail.com' on {0} with
+          of 'roles/editor' for the user 'test-user@gmail.com' on {0} with
           identifier '{1}'
 
-            $ {{command}} {1} --editor='user:test-user@gmail.com'
+            $ {{command}} {1} --member='user:test-user@gmail.com'
+            --role='roles/editor'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.

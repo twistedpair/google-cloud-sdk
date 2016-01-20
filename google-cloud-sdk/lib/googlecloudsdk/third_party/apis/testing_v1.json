@@ -1,0 +1,1920 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "testing:v1",
+  "name": "testing",
+  "version": "v1",
+  "revision": "0",
+  "title": "Google Cloud Testing API",
+  "description": "Allows developers to run automated tests for their mobile applications on Google infrastructure.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://developers.google.com/cloud-test-lab/",
+  "protocol": "rest",
+  "rootUrl": "https://testing.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://testing.googleapis.com/",
+  "batchPath": "batch",
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "bearer_token": {
+      "type": "string",
+      "description": "OAuth bearer token.",
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "pp": {
+      "type": "boolean",
+      "description": "Pretty-print response.",
+      "default": "true",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Device": {
+      "id": "Device",
+      "description": "A GCE virtual Android device instance.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Unique id set by the backend.\nNOT user-specified",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project id set by the backend.\nNOT user-specified",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the device.\nNOT user-specified",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The device is in the process of spinning up.",
+            "The device is created and ready to use.",
+            "The device has been closed.",
+            "There has been an error."
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_UNSPECIFIED",
+            "PREPARING",
+            "READY",
+            "CLOSED",
+            "DEVICE_ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Details about the state of the device.\nNOT user-specified",
+          "$ref": "DeviceStateDetails"
+        },
+        "deviceDetails": {
+          "description": "Information about the backing GCE instance and connection.\nNOT user-specified",
+          "$ref": "DeviceDetails"
+        },
+        "creationTime": {
+          "description": "The time the request to create this device was received.\nNOT user-specified",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "androidDevice": {
+          "description": "The Android device configuration.\nUser-specified\nRequired",
+          "$ref": "AndroidDevice"
+        }
+      }
+    },
+    "DeviceStateDetails": {
+      "id": "DeviceStateDetails",
+      "description": "Additional details about the status of the device.",
+      "type": "object",
+      "properties": {
+        "progressDetails": {
+          "description": "A human-readable, detailed description of the device's status.\nFor example: \"Starting Device\\n Device Ready\".\n\nDuring the device's lifespan data may be appended to the progress.",
+          "type": "string"
+        },
+        "errorDetails": {
+          "description": "If the DeviceState is ERROR, then this string may contain human-readable\ndetails about the error.",
+          "type": "string"
+        }
+      }
+    },
+    "DeviceDetails": {
+      "id": "DeviceDetails",
+      "description": "Details about the GCE instance and connection.",
+      "type": "object",
+      "properties": {
+        "gceInstanceDetails": {
+          "description": "Details about the GCE instance backing the device.",
+          "$ref": "GceInstanceDetails"
+        },
+        "connectionInfo": {
+          "description": "Details about the connection to the device.",
+          "$ref": "ConnectionInfo"
+        }
+      }
+    },
+    "GceInstanceDetails": {
+      "id": "GceInstanceDetails",
+      "description": "This information is provided for the user to look up additional details of\nthe backing GCE instance. It is assumed the user does not modify this\ninstance. If so, then the device service makes no guarantees about\ndevice functionality.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The GCE project that contains the instance backing this device. If\nuser-specified, must be the same as the project_id in the\nCreateDeviceRequest.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "Desired GCE zone for the device\nuser-specified",
+          "type": "string"
+        },
+        "name": {
+          "description": "Desired instance name of the device.\nMay be user-specified. If not, the backend will choose a name.",
+          "type": "string"
+        }
+      }
+    },
+    "ConnectionInfo": {
+      "id": "ConnectionInfo",
+      "description": "Information needed to connect to services running on the virtual device. The\nssh_port is used to connect to the device, and then the adb_port and vnc_port\non the device can be forwarded to two local ports, to which adb and vnc can\nconnect, respectively.\n\nAll of the fields in this message are provided by the backend.",
+      "type": "object",
+      "properties": {
+        "ipAddress": {
+          "description": "IP address of the device.\nNOT user-specified\nRequired",
+          "type": "string"
+        },
+        "adbPort": {
+          "description": "Port for ADB (e.g. 5555)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sshPort": {
+          "description": "Port for SSH (e.g. 22)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vncPort": {
+          "description": "Port for VNC (e.g. 6444)\nNOT user-specified\nRequired",
+          "type": "integer",
+          "format": "int32"
+        },
+        "vncPassword": {
+          "description": "Password for VNC\nNOT user-specified\nRequired",
+          "type": "string"
+        }
+      }
+    },
+    "AndroidDevice": {
+      "id": "AndroidDevice",
+      "description": "A single Android device.",
+      "type": "object",
+      "properties": {
+        "androidModelId": {
+          "description": "The id of the Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "androidVersionId": {
+          "description": "The id of the Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "locale": {
+          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        },
+        "orientation": {
+          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "string"
+        }
+      }
+    },
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
+      "description": "Response containing a list of devices. Supports pagination.",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "The GCE virtual Android devices to be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "Device"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of device results.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListTestMatricesResponse": {
+      "id": "ListTestMatricesResponse",
+      "description": "Response contain a list of Test Matrices.",
+      "type": "object",
+      "properties": {
+        "testMatrices": {
+          "description": "The set of test matrices.",
+          "type": "array",
+          "items": {
+            "$ref": "TestMatrix"
+          }
+        }
+      }
+    },
+    "TestMatrix": {
+      "id": "TestMatrix",
+      "description": "A group of one or more TestExecutions, built by taking a\nproduct of values over a pre-defined set of axes.",
+      "type": "object",
+      "properties": {
+        "testMatrixId": {
+          "description": "Unique id set by the service.\n@OutputOnly",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "The cloud project that owns the test matrix.\n@OutputOnly",
+          "type": "string"
+        },
+        "clientInfo": {
+          "description": "Information about the client which invoked the test.",
+          "$ref": "ClientInfo"
+        },
+        "testSpecification": {
+          "description": "How to run the test.\nRequired",
+          "$ref": "TestSpecification"
+        },
+        "environmentMatrix": {
+          "description": "How the host machine(s) are configured.\nRequired",
+          "$ref": "EnvironmentMatrix"
+        },
+        "testExecutions": {
+          "description": "The list of test executions that the service creates for this matrix.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "TestExecution"
+          }
+        },
+        "resultStorage": {
+          "description": "Where the results for the matrix are written.\nRequired",
+          "$ref": "ResultStorage"
+        },
+        "state": {
+          "description": "Indicates the current progress of the test matrix (e.g., FINISHED)\n@OutputOnly",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The execution or matrix is being validated.",
+            "The execution or matrix is waiting for resources to become available.",
+            "The execution is currently being processed.\n\nCan only be set on an execution.",
+            "The execution or matrix has terminated normally.\n\nOn a matrix this means that the matrix level processing completed normally,\nbut individual executions may be in an ERROR state.",
+            "The execution or matrix has stopped because it encountered an\ninfrastructure failure.",
+            "The execution was not run because it corresponds to a unsupported\nenvironment.\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested environment.\n\nExample: requested AndroidVersion is lower than APK's minSdkVersion\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested architecture.\n\nExample: requested device does not support running the native code in\nthe supplied APK\n\nCan only be set on an execution.",
+            "The user cancelled the execution.\n\nCan only be set on an execution.",
+            "The execution or matrix was not run because the provided inputs are not\nvalid.\n\nExamples: input file is not of the expected type, is malformed\/corrupt, or\nwas flagged as malware"
+          ],
+          "type": "string",
+          "enum": [
+            "TEST_STATE_UNSPECIFIED",
+            "VALIDATING",
+            "PENDING",
+            "RUNNING",
+            "FINISHED",
+            "ERROR",
+            "UNSUPPORTED_ENVIRONMENT",
+            "INCOMPATIBLE_ENVIRONMENT",
+            "INCOMPATIBLE_ARCHITECTURE",
+            "CANCELLED",
+            "INVALID"
+          ]
+        },
+        "timestamp": {
+          "description": "The time this test matrix was initially created.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ClientInfo": {
+      "id": "ClientInfo",
+      "description": "Information about the client which invoked the test.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Client name, such as gcloud.",
+          "type": "string"
+        }
+      }
+    },
+    "TestSpecification": {
+      "id": "TestSpecification",
+      "description": "A description of how to run the test.",
+      "type": "object",
+      "properties": {
+        "testTimeout": {
+          "description": "Max time a test execution is allowed to run before it is\nautomatically cancelled.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "testSetup": {
+          "description": "Test setup requirements e.g. files to install, bootstrap scripts",
+          "$ref": "TestSetup"
+        },
+        "androidInstrumentationTest": {
+          "description": "An Android instrumentation test.",
+          "$ref": "AndroidInstrumentationTest"
+        },
+        "androidRoboTest": {
+          "description": "An Android robo test.",
+          "$ref": "AndroidRoboTest"
+        },
+        "androidMonkeyTest": {
+          "description": "An Android monkey test.",
+          "$ref": "AndroidMonkeyTest"
+        },
+        "autoGoogleLogin": {
+          "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account\nand use it to log into the device, before executing the test. Note that\ntest accounts might be reused.\nMany applications can be tested more effectively in the context of\nsuch an account.\nDefault is false.\nOptional",
+          "type": "boolean"
+        }
+      }
+    },
+    "TestSetup": {
+      "id": "TestSetup",
+      "description": "A description of how to set up the device prior to running the test",
+      "type": "object",
+      "properties": {
+        "filesToPush": {
+
+          "type": "array",
+          "items": {
+            "$ref": "DeviceFile"
+          }
+        }
+      }
+    },
+    "DeviceFile": {
+      "id": "DeviceFile",
+      "description": "A single device file description.",
+      "type": "object",
+      "properties": {
+        "obbFile": {
+
+          "$ref": "ObbFile"
+        },
+        "regularFile": {
+
+          "$ref": "RegularFile"
+        }
+      }
+    },
+    "ObbFile": {
+      "id": "ObbFile",
+
+      "type": "object",
+      "properties": {
+        "obbFileName": {
+          "description": "OBB file name which must conform to the format as specified by\nAndroid\ne.g. [main|patch].0300110.com.example.android.obb\nwhich will be installed into\n  <shared-storage>\/Android\/obb\/<package-name>\/\non the device",
+          "type": "string"
+        },
+        "obb": {
+          "description": "Opaque Binary Blob (OBB) file(s) to install on the device",
+          "$ref": "FileReference"
+        }
+      }
+    },
+    "FileReference": {
+      "id": "FileReference",
+      "description": "A reference to a file, used for user inputs.",
+      "type": "object",
+      "properties": {
+        "gcsPath": {
+          "description": "A path to a file in Google Cloud Storage.\nExample: gs:\/\/build-app-1414623860166\/app-debug-unaligned.apk",
+          "type": "string"
+        },
+        "blob": {
+          "description": "A blob in Blobstore.",
+          "$ref": "BlobstoreFile"
+        }
+      }
+    },
+    "BlobstoreFile": {
+      "id": "BlobstoreFile",
+      "description": "Reference to a blob in Blobstore.",
+      "type": "object",
+      "properties": {
+        "blobId": {
+          "description": "A blob ID.\nExample: \/android_test\/blobs\/4e9AAT9sqHRY_oBBzIKHSEFgg",
+          "type": "string"
+        },
+        "md5Hash": {
+          "description": "The MD5 hash of the referenced blob. (This is necessary to create a\nBigstore object directly from the Blobstore reference.)",
+          "type": "string"
+        }
+      }
+    },
+    "RegularFile": {
+      "id": "RegularFile",
+      "description": "A file or directory to install on the device before the test starts",
+      "type": "object",
+      "properties": {
+        "content": {
+
+          "$ref": "FileReference"
+        },
+        "devicePath": {
+          "description": "Where to put the content on the device, must be a full, whitelisted path.\nIf it exists, it will be completely replaced.\nTODO(fsteen): Make the following path substitutions available:\n<p> ${EXTERNAL_STORAGE} - the external storage mount point (\/sdcard)\n<p> ${ANDROID_DATA} - the userdata partition mount point (\/data)\nNote: \/data\/user\/tmp is whitelisted, but \/data is not.\n\n<p> The corresponding paths (in parentheses) will be made available and\ntreated as implicit path substitutions, so the user may use them\ninterchangeably. E.g. if \/sdcard on a particular device does not map to\nexternal storage, the system will replace it with the external storage path\nprefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.",
+          "type": "string"
+        }
+      }
+    },
+    "AndroidInstrumentationTest": {
+      "id": "AndroidInstrumentationTest",
+      "description": "A test of an Android application that can control an Android component\nindependently of its normal lifecycle.\nAndroid instrumentation tests run an application APK and test APK inside the\nsame process on a virtual or physical AndroidDevice.  They also specify\na test runner class, such as com.google.GoogleTestRunner, which can vary\non the specific instrumentation framework chosen.\n\nSee <http:\/\/developer.android.com\/tools\/testing\/testing_android.html> for\nmore information on types of Android tests.",
+      "type": "object",
+      "properties": {
+        "appApk": {
+          "description": "The APK for the application under test.\nRequired",
+          "$ref": "FileReference"
+        },
+        "testApk": {
+          "description": "The APK containing the test code to be executed.\nRequired",
+          "$ref": "FileReference"
+        },
+        "appPackageId": {
+          "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "testPackageId": {
+          "description": "The java package for the test to be executed.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "testRunnerClass": {
+          "description": "The InstrumentationTestRunner class.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "testTargets": {
+          "description": "Each target must be fully qualified with the package name or class name,\nin one of these formats:\n - \"package package_name\"\n - \"class package_name.class_name\"\n - \"class package_name.class_name#method_name\"\n\nIf empty, all targets in the module will be run.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AndroidRoboTest": {
+      "id": "AndroidRoboTest",
+      "description": "A test of an android application that explores the application on a virtual\nor physical Android Device, finding culprits and crashes as it goes.",
+      "type": "object",
+      "properties": {
+        "appApk": {
+          "description": "The APK for the application under test.\nRequired",
+          "$ref": "FileReference"
+        },
+        "appPackageId": {
+          "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "appInitialActivity": {
+          "description": "The initial activity that should be used to start the app.\nOptional",
+          "type": "string"
+        },
+        "maxDepth": {
+          "description": "The max depth of the traversal stack Robo can explore. Needs to be at least\n2 to make Robo explore the app beyond the first activity.\nDefault is 50.\nOptional",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxSteps": {
+          "description": "The max number of steps Robo can execute.\nDefault is no limit.\nOptional",
+          "type": "integer",
+          "format": "int32"
+        },
+        "randomizeSteps": {
+          "description": "Whether Robo follows a random order of steps on a given activity state.\nOptional",
+          "type": "boolean"
+        }
+      }
+    },
+    "AndroidMonkeyTest": {
+      "id": "AndroidMonkeyTest",
+      "description": "A test of an Android application that uses the UI\/Application Exerciser\nMonkey from the Android SDK. (Not to be confused with the \"monkeyrunner\"\ntool, which is also included in the SDK.)\n\nSee http:\/\/developer.android.com\/tools\/help\/monkey.html for details.",
+      "type": "object",
+      "properties": {
+        "appApk": {
+          "description": "The APK for the application under test.\nRequired",
+          "$ref": "FileReference"
+        },
+        "appPackageId": {
+          "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
+          "type": "string"
+        },
+        "eventCount": {
+          "description": "Number of random monkey events (e.g. clicks, touches) to generate.\nDefaults to 2000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "eventDelay": {
+          "description": "Fixed delay between events.\nDefaults to 10ms.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "randomSeed": {
+          "description": "Seed value for pseudo-random number generator.\nNote that, although specifying a seed causes the monkey to generate the\nsame sequence of events, it does not guarantee that a particular outcome\nwill be reproducible across runs.\nOptional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "EnvironmentMatrix": {
+      "id": "EnvironmentMatrix",
+      "description": "The matrix of environments in which the test is to be executed.",
+      "type": "object",
+      "properties": {
+        "androidMatrix": {
+          "description": "A matrix of Android devices",
+          "$ref": "AndroidMatrix"
+        }
+      }
+    },
+    "AndroidMatrix": {
+      "id": "AndroidMatrix",
+      "description": "A set of Android device configuration permutations is defined by the\nthe cross-product of the given axes.  Internally, the given AndroidMatrix\nwill be expanded into a set of AndroidDevices.\n\nOnly supported permutations will be instantiated.  Invalid permutations\n(e.g., incompatible models\/versions) are ignored.",
+      "type": "object",
+      "properties": {
+        "androidModelIds": {
+          "description": "The ids of the set of Android device to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "androidVersionIds": {
+          "description": "The ids of the set of Android OS version to be used.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "locales": {
+          "description": "The set of locales the test device will enable for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "orientations": {
+          "description": "The set of orientations to test with.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestExecution": {
+      "id": "TestExecution",
+      "description": "Specifies a single test to be executed in a single environment.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Unique id set by the backend.\n@OutputOnly",
+          "type": "string"
+        },
+        "matrixId": {
+          "description": "Id of the containing TestMatrix.\n@OutputOnly",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "The cloud project that owns the test execution.\n@OutputOnly",
+          "type": "string"
+        },
+        "testSpecification": {
+          "description": "How to run the test.\n@OutputOnly",
+          "$ref": "TestSpecification"
+        },
+        "environment": {
+          "description": "How the host machine(s) are configured.\n@OutputOnly",
+          "$ref": "Environment"
+        },
+        "state": {
+          "description": "Indicates the current progress of the test execution (e.g., FINISHED).\n@OutputOnly",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The execution or matrix is being validated.",
+            "The execution or matrix is waiting for resources to become available.",
+            "The execution is currently being processed.\n\nCan only be set on an execution.",
+            "The execution or matrix has terminated normally.\n\nOn a matrix this means that the matrix level processing completed normally,\nbut individual executions may be in an ERROR state.",
+            "The execution or matrix has stopped because it encountered an\ninfrastructure failure.",
+            "The execution was not run because it corresponds to a unsupported\nenvironment.\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested environment.\n\nExample: requested AndroidVersion is lower than APK's minSdkVersion\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested architecture.\n\nExample: requested device does not support running the native code in\nthe supplied APK\n\nCan only be set on an execution.",
+            "The user cancelled the execution.\n\nCan only be set on an execution.",
+            "The execution or matrix was not run because the provided inputs are not\nvalid.\n\nExamples: input file is not of the expected type, is malformed\/corrupt, or\nwas flagged as malware"
+          ],
+          "type": "string",
+          "enum": [
+            "TEST_STATE_UNSPECIFIED",
+            "VALIDATING",
+            "PENDING",
+            "RUNNING",
+            "FINISHED",
+            "ERROR",
+            "UNSUPPORTED_ENVIRONMENT",
+            "INCOMPATIBLE_ENVIRONMENT",
+            "INCOMPATIBLE_ARCHITECTURE",
+            "CANCELLED",
+            "INVALID"
+          ]
+        },
+        "toolResultsStep": {
+          "description": "Where the results for this execution are written.\n@OutputOnly",
+          "$ref": "ToolResultsStep"
+        },
+        "timestamp": {
+          "description": "The time this test execution was initially created.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "testDetails": {
+          "description": "Additional details about the running test.\n@OutputOnly",
+          "$ref": "TestDetails"
+        }
+      }
+    },
+    "Environment": {
+      "id": "Environment",
+      "description": "The environment in which the test is run.",
+      "type": "object",
+      "properties": {
+        "androidDevice": {
+          "description": "An Android device which must be used with an Android test.",
+          "$ref": "AndroidDevice"
+        }
+      }
+    },
+    "ToolResultsStep": {
+      "id": "ToolResultsStep",
+      "description": "Represents a tool results step resource.\n\nThis has the results of a TestExecution.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The cloud project that owns the tool results step.\n@OutputOnly",
+          "type": "string"
+        },
+        "historyId": {
+          "description": "A tool results history ID.\n@OutputOnly",
+          "type": "string"
+        },
+        "executionId": {
+          "description": "A tool results execution ID.\n@OutputOnly",
+          "type": "string"
+        },
+        "stepId": {
+          "description": "A tool results step ID.\n@OutputOnly",
+          "type": "string"
+        }
+      }
+    },
+    "TestDetails": {
+      "id": "TestDetails",
+      "description": "Additional details about the progress of the running test.",
+      "type": "object",
+      "properties": {
+        "progressMessages": {
+          "description": "Human-readable, detailed descriptions of the test's progress.\nFor example: \"Provisioning a device\", \"Starting Test\".\n\nDuring the course of execution new data may be appended\nto the end of progress_messages.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "errorMessage": {
+          "description": "If the TestState is ERROR, then this string will contain human-readable\ndetails about the error.\n@OutputOnly",
+          "type": "string"
+        }
+      }
+    },
+    "ResultStorage": {
+      "id": "ResultStorage",
+      "description": "Locations where the results of running the test are stored.",
+      "type": "object",
+      "properties": {
+        "googleCloudStorage": {
+          "description": "Required.",
+          "$ref": "GoogleCloudStorage"
+        },
+        "toolResultsHistory": {
+          "description": "The tool results history that contains the tool results execution that\nresults are written to.\n\nIf not provided the service will choose an appropriate value.",
+          "$ref": "ToolResultsHistory"
+        },
+        "toolResultsExecution": {
+          "description": "The tool results execution that results are written to.\n@OutputOnly",
+          "$ref": "ToolResultsExecution"
+        }
+      }
+    },
+    "GoogleCloudStorage": {
+      "id": "GoogleCloudStorage",
+      "description": "A storage location within Google cloud storage (GCS).",
+      "type": "object",
+      "properties": {
+        "gcsPath": {
+          "description": "The path to a directory in GCS that will\neventually contain the results for this test.\nThe requesting user must have write access on the bucket in the supplied\npath.",
+          "type": "string"
+        }
+      }
+    },
+    "ToolResultsHistory": {
+      "id": "ToolResultsHistory",
+      "description": "Represents a tool results history resource.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The cloud project that owns the tool results history.",
+          "type": "string"
+        },
+        "historyId": {
+          "description": "A tool results history ID.",
+          "type": "string"
+        }
+      }
+    },
+    "ToolResultsExecution": {
+      "id": "ToolResultsExecution",
+      "description": "Represents a tool results execution resource.\n\nThis has the results of a TestMatrix.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The cloud project that owns the tool results execution.\n@OutputOnly",
+          "type": "string"
+        },
+        "historyId": {
+          "description": "A tool results history ID.\n@OutputOnly",
+          "type": "string"
+        },
+        "executionId": {
+          "description": "A tool results execution ID.\n@OutputOnly",
+          "type": "string"
+        }
+      }
+    },
+    "CancelTestMatrixResponse": {
+      "id": "CancelTestMatrixResponse",
+      "description": "Response containing the state of a cancelled test matrix.",
+      "type": "object",
+      "properties": {
+        "testState": {
+          "description": "The rolled-up state of the test matrix just before it was cancelled.",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The execution or matrix is being validated.",
+            "The execution or matrix is waiting for resources to become available.",
+            "The execution is currently being processed.\n\nCan only be set on an execution.",
+            "The execution or matrix has terminated normally.\n\nOn a matrix this means that the matrix level processing completed normally,\nbut individual executions may be in an ERROR state.",
+            "The execution or matrix has stopped because it encountered an\ninfrastructure failure.",
+            "The execution was not run because it corresponds to a unsupported\nenvironment.\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested environment.\n\nExample: requested AndroidVersion is lower than APK's minSdkVersion\n\nCan only be set on an execution.",
+            "The execution was not run because the provided inputs are incompatible with\nthe requested architecture.\n\nExample: requested device does not support running the native code in\nthe supplied APK\n\nCan only be set on an execution.",
+            "The user cancelled the execution.\n\nCan only be set on an execution.",
+            "The execution or matrix was not run because the provided inputs are not\nvalid.\n\nExamples: input file is not of the expected type, is malformed\/corrupt, or\nwas flagged as malware"
+          ],
+          "type": "string",
+          "enum": [
+            "TEST_STATE_UNSPECIFIED",
+            "VALIDATING",
+            "PENDING",
+            "RUNNING",
+            "FINISHED",
+            "ERROR",
+            "UNSUPPORTED_ENVIRONMENT",
+            "INCOMPATIBLE_ENVIRONMENT",
+            "INCOMPATIBLE_ARCHITECTURE",
+            "CANCELLED",
+            "INVALID"
+          ]
+        }
+      }
+    },
+    "WebDriver": {
+      "id": "WebDriver",
+      "description": "A WebDriver environment.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Unique id set by the system.\n@OutputOnly",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "The GCE project for this WebDriver test environment.\n@OutputOnly",
+          "type": "string"
+        },
+        "browserId": {
+          "description": "The id of the browser to be used.\nUse the EnvironmentDiscoveryService to get supported values.\nRequired",
+          "type": "string"
+        },
+        "vmDetails": {
+          "description": "The state details of the target device\/machine.\n@OutputOnly",
+          "$ref": "VMDetails"
+        },
+        "androidDevice": {
+          "description": "An Android device.",
+          "$ref": "AndroidDevice"
+        },
+        "linuxMachine": {
+          "description": "A Linux virtual machine.",
+          "$ref": "LinuxMachine"
+        },
+        "windowsMachine": {
+          "description": "A Windows virtual machine.",
+          "$ref": "WindowsMachine"
+        },
+        "sshPublicKey": {
+          "description": "The public key to be set on the VM in order to SSH into it.",
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "The endpoint in host:port format where the target running the specified\nbrowser accepts WebDriver protocol commands.\n@OutputOnly",
+          "type": "string"
+        }
+      }
+    },
+    "VMDetails": {
+      "id": "VMDetails",
+
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the device.\n@OutputOnly",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "The device is in the process of spinning up.",
+            "The device is created and ready to use.",
+            "The device has been closed.",
+            "There has been an error."
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_UNSPECIFIED",
+            "PREPARING",
+            "READY",
+            "CLOSED",
+            "DEVICE_ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Details about the state of the device.\n@OutputOnly",
+          "$ref": "DeviceStateDetails"
+        },
+        "deviceDetails": {
+          "description": "Information about the backing GCE instance and connection.\n@OutputOnly",
+          "$ref": "DeviceDetails"
+        },
+        "creationTime": {
+          "description": "The time this device was initially created.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "LinuxMachine": {
+      "id": "LinuxMachine",
+      "description": "A single Linux machine.",
+      "type": "object",
+      "properties": {
+        "versionId": {
+          "description": "The version id of the Linux OS to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "type": "string"
+        }
+      }
+    },
+    "WindowsMachine": {
+      "id": "WindowsMachine",
+      "description": "A single Windows machine.",
+      "type": "object",
+      "properties": {
+        "versionId": {
+          "description": "The version id of the Windows OS to be used.\nUse the EnvironmentDiscoveryService to get supported options.",
+          "type": "string"
+        }
+      }
+    },
+    "ListWebDriverResponse": {
+      "id": "ListWebDriverResponse",
+      "description": "Response containing a list of WebDriver environments. Supports pagination.",
+      "type": "object",
+      "properties": {
+        "webdriverEnvironments": {
+          "description": "The WebDriver environments to be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "WebDriver"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of WebDriver results.",
+          "type": "string"
+        }
+      }
+    },
+    "WebDriverKeepAliveRequest": {
+      "id": "WebDriverKeepAliveRequest",
+      "description": "Request to issue a keep-alive to a WebDriver environment instance by\nproject and webdriver ids.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "TestEnvironmentCatalog": {
+      "id": "TestEnvironmentCatalog",
+      "description": "A description of a test environment.",
+      "type": "object",
+      "properties": {
+        "androidDeviceCatalog": {
+          "description": "Android devices suitable for running Android Instrumentation Tests.",
+          "$ref": "AndroidDeviceCatalog"
+        },
+        "webDriverCatalog": {
+          "description": "WebDriver environments suitable for running web tests.",
+          "$ref": "WebDriverCatalog"
+        }
+      }
+    },
+    "AndroidDeviceCatalog": {
+      "id": "AndroidDeviceCatalog",
+      "description": "The currently supported Android devices.",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "The set of supported Android device models.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "AndroidModel"
+          }
+        },
+        "versions": {
+          "description": "The set of supported Android OS versions.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "AndroidVersion"
+          }
+        },
+        "runtimeConfiguration": {
+          "description": "The set of supported runtime configurations.\n@OutputOnly",
+          "$ref": "AndroidRuntimeConfiguration"
+        }
+      }
+    },
+    "AndroidModel": {
+      "id": "AndroidModel",
+      "description": "A description of an Android device tests may be run on.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique opaque id for this model.\nUse this for invoking the TestExecutionService.\n@OutputOnly",
+          "type": "string"
+        },
+        "name": {
+          "description": "The human-readable marketing name for this device model.\nExamples: \"Nexus 5\", \"Galaxy S5\"\n@OutputOnly",
+          "type": "string"
+        },
+        "manufacturer": {
+          "description": "The manufacturer of this device.\n@OutputOnly",
+          "type": "string"
+        },
+        "brand": {
+          "description": "The company that this device is branded with.\nExample: \"Google\", \"Samsung\"\n@OutputOnly",
+          "type": "string"
+        },
+        "codename": {
+          "description": "The name of the industrial design.\nThis corresponds to android.os.Build.DEVICE\n@OutputOnly",
+          "type": "string"
+        },
+        "form": {
+          "description": "Whether this device is virtual or physical.\n@OutputOnly",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "A software stack that simulates the device",
+            "Actual hardware"
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_FORM_UNSPECIFIED",
+            "VIRTUAL",
+            "PHYSICAL"
+          ]
+        },
+        "screenX": {
+          "description": "Screen size in the horizontal (X) dimension measured in pixels.\n@OutputOnly",
+          "type": "integer",
+          "format": "int32"
+        },
+        "screenY": {
+          "description": "Screen size in the vertical (Y) dimension measured in pixels.\n@OutputOnly",
+          "type": "integer",
+          "format": "int32"
+        },
+        "supportedVersionIds": {
+          "description": "The set of Android versions this device supports.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportedAbis": {
+          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "description": "Tags for this dimension.\nExamples: \"default\", \"preview\", \"deprecated\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AndroidVersion": {
+      "id": "AndroidVersion",
+      "description": "A version of the Android OS",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "An opaque id for this Android version.\nUse this id to invoke the TestExecutionService.\n@OutputOnly",
+          "type": "string"
+        },
+        "versionString": {
+          "description": "A string representing this version of the Android OS.\nExamples: \"4.3\", \"4.4\"\n@OutputOnly",
+          "type": "string"
+        },
+        "apiLevel": {
+          "description": "The API level for this Android version.\nExamples: 18, 19\n@OutputOnly",
+          "type": "integer",
+          "format": "int32"
+        },
+        "codeName": {
+          "description": "The code name for this Android version.\nExamples: \"JellyBean\", \"KitKat\"\n@OutputOnly",
+          "type": "string"
+        },
+        "releaseDate": {
+          "description": "The date this Android version became available in the market.\n@OutputOnly",
+          "$ref": "Date"
+        },
+        "distribution": {
+          "description": "Market share for this version.\n@OutputOnly",
+          "$ref": "Distribution"
+        },
+        "tags": {
+          "description": "Tags for this dimension.\nExamples: \"default\", \"preview\", \"deprecated\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Date": {
+      "id": "Date",
+      "description": "Represents a whole calendar date, e.g. date of birth. The time of day and\ntime zone are either specified elsewhere or are not significant. The date\nis relative to the Proleptic Gregorian Calendar. The day may be 0 to\nrepresent a year and month where the day is not significant, e.g. credit card\nexpiration date. The year may be 0 to represent a month and day independent\nof year, e.g. anniversary date. Related types are google.type.TimeOfDay\nand `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of date. Must be from 1 to 9999, or 0 if specifying a date without\na year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of year. Must be from 1 to 12.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of month. Must be from 1 to 31 and valid for the year and month, or 0\nif specifying a year\/month where the day is not significant.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Distribution": {
+      "id": "Distribution",
+      "description": "Data about the relative number of devices running a\ngiven configuration of the Android platform.",
+      "type": "object",
+      "properties": {
+        "measurementTime": {
+          "description": "The time this distribution was measured.\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "marketShare": {
+          "description": "The estimated fraction (0-1) of the total market with this configuration.\n@OutputOnly",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "AndroidRuntimeConfiguration": {
+      "id": "AndroidRuntimeConfiguration",
+      "description": "Configuration that can be selected at the time a test is run.",
+      "type": "object",
+      "properties": {
+        "locales": {
+          "description": "The set of available locales.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "Locale"
+          }
+        },
+        "orientations": {
+          "description": "The set of available orientations.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "Orientation"
+          }
+        }
+      }
+    },
+    "Locale": {
+      "id": "Locale",
+      "description": "A location\/region designation for language.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The id for this locale.\nExample: \"en_US\"\n@OutputOnly",
+          "type": "string"
+        },
+        "name": {
+          "description": "A human-friendly name for this language\/locale.\nExample: \"English\"\n@OutputOnly",
+          "type": "string"
+        },
+        "region": {
+          "description": "A human-friendy string representing the region for this locale.\nExample: \"United States\"\nNot present for every locale.\n@OutputOnly",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags for this dimension.\nExamples: \"default\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Orientation": {
+      "id": "Orientation",
+      "description": "Screen orientation of the device.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The id for this orientation.\nExample: \"portrait\"\n@OutputOnly",
+          "type": "string"
+        },
+        "name": {
+          "description": "A human-friendly name for this orientation.\nExample: \"portrait\"\n@OutputOnly",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags for this dimension.\nExamples: \"default\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WebDriverCatalog": {
+      "id": "WebDriverCatalog",
+      "description": "The currently supported WebDriver VM resources.",
+      "type": "object",
+      "properties": {
+        "browsers": {
+          "description": "The set of supported browsers.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "Browser"
+          }
+        }
+      }
+    },
+    "Browser": {
+      "id": "Browser",
+      "description": "An available browser.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "A human readable id for this Browser version.\nUse this id to invoke the TestExecutionService.\nExamples: \"chrome-stable-channel\", \"firefox-beta-channel\"\n@OutputOnly",
+          "type": "string"
+        },
+        "name": {
+          "description": "A string representing the browser name.\nExamples: \"chrome\", \"firefox\", \"ie\"\n@OutputOnly",
+          "type": "string"
+        },
+        "release": {
+          "description": "The release of the browser.\nExamples: \"stable-channel\", \"beta-channel\", \"10\" (for ie), etc\n@OutputOnly",
+          "type": "string"
+        },
+        "versionString": {
+          "description": "A string representing the version of the browser.\nExamples:  \"42.12.34.1234\", \"37.01\", \"10.0.9200.16384\" (for ie)\n@OutputOnly",
+          "type": "string"
+        },
+        "androidCatalog": {
+          "description": "The catalog of Android devices for which we offer this browser.\n@OutputOnly",
+          "$ref": "AndroidDeviceCatalog"
+        },
+        "linuxCatalog": {
+          "description": "The catalog of Linux machines which we offer this browser.\n@OutputOnly",
+          "$ref": "LinuxMachineCatalog"
+        },
+        "windowsCatalog": {
+          "description": "The catalog of Windows machines which we offer this browser.\n@OutputOnly",
+          "$ref": "WindowsMachineCatalog"
+        }
+      }
+    },
+    "LinuxMachineCatalog": {
+      "id": "LinuxMachineCatalog",
+      "description": "The currently supported Linux machines.",
+      "type": "object",
+      "properties": {
+        "versions": {
+          "description": "The set of supported Linux versions.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "LinuxVersion"
+          }
+        }
+      }
+    },
+    "LinuxVersion": {
+      "id": "LinuxVersion",
+      "description": "A verison of a Linux OS.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique opaque id for this Linux Version.\n@OutputOnly",
+          "type": "string"
+        },
+        "versionString": {
+          "description": "A string representing this version of the Linux OS.\nExamples: \"debian-7-wheezy-v20150325\", \"debian-7-wheezy-v30150325\"\n@OutputOnly",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags for this version.\nExamples: \"default\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WindowsMachineCatalog": {
+      "id": "WindowsMachineCatalog",
+      "description": "The currently supported Windows machines.",
+      "type": "object",
+      "properties": {
+        "versions": {
+          "description": "The set of supported Windows versions.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "WindowsVersion"
+          }
+        }
+      }
+    },
+    "WindowsVersion": {
+      "id": "WindowsVersion",
+      "description": "A version of a Windows OS.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique opaque id for this Windows Version.\n@OutputOnly",
+          "type": "string"
+        },
+        "versionString": {
+          "description": "A string representing this version of the Windows OS.\nExamples: \"windows-server-2008-r2-dc-v20150331\", windows-7\"\n@OutputOnly",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Tags for this version.\nExamples: \"default\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "devices": {
+          "methods": {
+            "create": {
+              "id": "testing.projects.devices.create",
+              "path": "v1/projects/{projectId}/devices",
+              "flatPath": "v1/projects/{projectId}/devices",
+              "httpMethod": "POST",
+              "description": "Creates a new GCE Android device.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the device type or project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project under which to create the device.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "sshPublicKey": {
+                  "description": "The public key to be set on the device in order to SSH into it.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "Device"
+              },
+              "response": {
+                "$ref": "Device"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "testing.projects.devices.get",
+              "path": "v1/projects/{projectId}/devices/{deviceId}",
+              "flatPath": "v1/projects/{projectId}/devices/{deviceId}",
+              "httpMethod": "GET",
+              "description": "Returns the GCE Android device.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the device type or project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project that contains this device instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "deviceId": {
+                  "description": "The id of the GCE Android virtual device.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "deviceId"
+              ],
+              "response": {
+                "$ref": "Device"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "list": {
+              "id": "testing.projects.devices.list",
+              "path": "v1/projects/{projectId}/devices",
+              "flatPath": "v1/projects/{projectId}/devices",
+              "httpMethod": "GET",
+              "description": "Lists all the current devices.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project to list the devices from.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Used to specify the max number of device results to be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Used to request a specific page of the device results list.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListDevicesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "delete": {
+              "id": "testing.projects.devices.delete",
+              "path": "v1/projects/{projectId}/devices/{deviceId}",
+              "flatPath": "v1/projects/{projectId}/devices/{deviceId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a GCE Android device instance.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project that contains the device to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "deviceId": {
+                  "description": "The GCE virtual Android device to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "deviceId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "keepalive": {
+              "id": "testing.projects.devices.keepalive",
+              "path": "v1/projects/{projectId}/devices/{deviceId}/keepalive",
+              "flatPath": "v1/projects/{projectId}/devices/{deviceId}/keepalive",
+              "httpMethod": "POST",
+              "description": "Issues a keep-alive to a GCE Android device instance.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project that contains the device to be issued the keep-alive.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "deviceId": {
+                  "description": "The GCE virtual Android device to be issued the keep-alive.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "deviceId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
+        "testMatrices": {
+          "methods": {
+            "list": {
+              "id": "testing.projects.testMatrices.list",
+              "path": "v1/projects/{projectId}/testMatrices",
+              "flatPath": "v1/projects/{projectId}/testMatrices",
+              "httpMethod": "GET",
+              "description": "List test matrices.\nThe matrices are returned in the order of newest first by submit time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the tests.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListTestMatricesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "create": {
+              "id": "testing.projects.testMatrices.create",
+              "path": "v1/projects/{projectId}/testMatrices",
+              "flatPath": "v1/projects/{projectId}/testMatrices",
+              "httpMethod": "POST",
+              "description": "Request to run a matrix of tests according to the given specifications.\nUnsupported environments will be returned in the state UNSUPPORTED.\nMatrices are limited to at most 200 supported executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed or if the matrix expands\n                     to more than 200 supported executions",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCE project under which this job will run.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "requestId": {
+                  "description": "A string id used to detect duplicated requests.\nIds are automatically scoped to a project, so\nusers should ensure the ID is unique per-project.\nA UUID is recommended.\n\nOptional, but strongly recommended.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "TestMatrix"
+              },
+              "response": {
+                "$ref": "TestMatrix"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "testing.projects.testMatrices.get",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "httpMethod": "GET",
+              "description": "Check the status of a test matrix.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test matrix.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Unique test matrix id which was assigned by the service.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "TestMatrix"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "delete": {
+              "id": "testing.projects.testMatrices.delete",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}",
+              "httpMethod": "DELETE",
+              "description": "Delete all record of a test matrix plus any associated test executions.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Test matrix that will be canceled.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "cancel": {
+              "id": "testing.projects.testMatrices.cancel",
+              "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
+              "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
+              "httpMethod": "POST",
+              "description": "Cancels unfinished test executions in a test matrix.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud project that owns the test.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "testMatrixId": {
+                  "description": "Test matrix that will be canceled.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "testMatrixId"
+              ],
+              "response": {
+                "$ref": "CancelTestMatrixResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
+        "webdriver": {
+          "methods": {
+            "create": {
+              "id": "testing.projects.webdriver.create",
+              "path": "v1/projects/{projectId}/webdriver",
+              "flatPath": "v1/projects/{projectId}/webdriver",
+              "httpMethod": "POST",
+              "description": "Creates a new WebDriver environment and returns the endpoint for the user\nto access.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the WebDriver environment or project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCP project under which to create the WebDriver environment.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "WebDriver"
+              },
+              "response": {
+                "$ref": "WebDriver"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "testing.projects.webdriver.get",
+              "path": "v1/projects/{projectId}/webdriver/{webdriverId}",
+              "flatPath": "v1/projects/{projectId}/webdriver/{webdriverId}",
+              "httpMethod": "GET",
+              "description": "Returns the WebDriver environment.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the WebDriver environment or project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCP project that contains this WebDriver instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "webdriverId": {
+                  "description": "The GCE WebDriver environment to be deleted specified from the\nWebDriver id.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "webdriverId"
+              ],
+              "response": {
+                "$ref": "WebDriver"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "list": {
+              "id": "testing.projects.webdriver.list",
+              "path": "v1/projects/{projectId}/webdriver",
+              "flatPath": "v1/projects/{projectId}/webdriver",
+              "httpMethod": "GET",
+              "description": "Lists all the WebDriver environments.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCP project to list the environments from.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Used to specify the max number of results to be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Used to request a specific page of the results list.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListWebDriverResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ]
+            },
+            "delete": {
+              "id": "testing.projects.webdriver.delete",
+              "path": "v1/projects/{projectId}/webdriver/{webdriverId}",
+              "flatPath": "v1/projects/{projectId}/webdriver/{webdriverId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a WebDriver environment instance.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCP project that contains the WebDriver endpoint to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "webdriverId": {
+                  "description": "The GCE WebDriver environment to be deleted specified from the\nWebDriver id.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "webdriverId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "keepalive": {
+              "id": "testing.projects.webdriver.keepalive",
+              "path": "v1/projects/{projectId}/webdriver/{webdriverId}:keepalive",
+              "flatPath": "v1/projects/{projectId}/webdriver/{webdriverId}:keepalive",
+              "httpMethod": "POST",
+              "description": "Issues a keep-alive to the WebDriver environment instance.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the project does not exist",
+              "parameters": {
+                "projectId": {
+                  "description": "The GCP project that contains the webdriver to be issued the keep-alive.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "webdriverId": {
+                  "description": "The WebDriver environment to be issued the keep-alive.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "webdriverId"
+              ],
+              "request": {
+                "$ref": "WebDriverKeepAliveRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "testEnvironmentCatalog": {
+      "methods": {
+        "get": {
+          "id": "testing.testEnvironmentCatalog.get",
+          "path": "v1/testEnvironmentCatalog/{environmentType}",
+          "flatPath": "v1/testEnvironmentCatalog/{environmentType}",
+          "httpMethod": "GET",
+          "description": "Get the catalog of supported test environments.\n\nMay return any of the following canonical error codes:\n\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the environment type does not exist\n- INTERNAL - if an internal error occurred",
+          "parameters": {
+            "environmentType": {
+              "description": "The type of environment that should be listed.",
+              "location": "path",
+              "required": true,
+              "type": "string",
+              "enum": [
+                "ENVIRONMENT_TYPE_UNSPECIFIED",
+                "ANDROID",
+                "WEBDRIVER"
+              ]
+            }
+          },
+          "parameterOrder": [
+            "environmentType"
+          ],
+          "response": {
+            "$ref": "TestEnvironmentCatalog"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ]
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

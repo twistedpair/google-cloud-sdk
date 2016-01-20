@@ -31,13 +31,13 @@ ALLOWED_RUNTIME_NAMES = ('ruby', 'custom')
 
 # This should be kept in sync with the default Ruby version specified in
 # the base docker image.
-PREFERRED_RUBY_VERSION = '2.2.3'
+PREFERRED_RUBY_VERSION = '2.3.0'
 
 # Keep these up to date. You can find the latest versions by visiting
 # rubygems.org and searching for "bundler" and for "foreman".
 # Checking about once every month or two should be sufficient.
-# (Last checked 2015.10.20.)
-BUNDLER_VERSION = '1.10.6'
+# (Last checked 2016-01-08.)
+BUNDLER_VERSION = '1.11.2'
 FOREMAN_VERSION = '0.78.0'
 
 # Mapping from Gemfile versions to rbenv versions with patchlevel.
@@ -47,14 +47,14 @@ FOREMAN_VERSION = '0.78.0'
 # only 2.0.0 to need updating, since earlier versions are end-of-lifed, and
 # later versions don't seem to be using patchlevels.)
 # Checking about once a quarter should be sufficient.
-# (Last checked 2015.10.20.)
+# (Last checked 2016-01-08.)
 RUBY_VERSION_MAP = {
     '1.8.6': '1.8.6-p420',
     '1.8.7': '1.8.7-p375',
     '1.9.1': '1.9.1-p430',
     '1.9.2': '1.9.2-p330',
     '1.9.3': '1.9.3-p551',
-    '2.0.0': '2.0.0-p647'
+    '2.0.0': '2.0.0-p648'
 }
 
 # Mapping from gems to libraries they expect.

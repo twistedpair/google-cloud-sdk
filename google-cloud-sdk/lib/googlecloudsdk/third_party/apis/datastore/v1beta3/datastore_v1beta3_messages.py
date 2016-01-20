@@ -71,80 +71,6 @@ class BeginTransactionResponse(_messages.Message):
   transaction = _messages.BytesField(1)
 
 
-class Change(_messages.Message):
-  """A change to a set of entities being watched. Usually a change to an
-  individual entity, but sometimes a change to the set of entities being
-  watched.
-
-  Enums:
-    NoChangeValueValuesEnum: No change has occurred. Usually returned to
-      provide an updated `resume_token`.
-    TargetChangeValueValuesEnum: The targets associate with this stream have
-      been modified. The affected targets are listed in `target_ids`.
-
-  Fields:
-    cause: The error that resulted in this change, if applicable.
-    continued: If true, more changes are needed to construct a consistent
-      snapshot.
-    existenceFilter: A filter representing delete mutations. Applies to the
-      *set* of entities previously returned for the given `target_ids`.
-    mutation: A mutation to a watched entity.
-    noChange: No change has occurred. Usually returned to provide an updated
-      `resume_token`.
-    resumeToken: A token that provides a compact representation of all the
-      changes that have been received by the caller up to this point
-      (including this one) that can be used to resume the stream. May not be
-      set on every change. Only valid for the targets specified in
-      `target_ids`.
-    targetChange: The targets associate with this stream have been modified.
-      The affected targets are listed in `target_ids`.
-    targetIds: The set of targets to which this change applies. When empty,
-      the change applies to all targets.
-  """
-
-  class NoChangeValueValuesEnum(_messages.Enum):
-    """No change has occurred. Usually returned to provide an updated
-    `resume_token`.
-
-    Values:
-      NULL_VALUE: Null value.
-    """
-    NULL_VALUE = 0
-
-  class TargetChangeValueValuesEnum(_messages.Enum):
-    """The targets associate with this stream have been modified. The affected
-    targets are listed in `target_ids`.
-
-    Values:
-      TARGET_CHANGE_UNSPECIFIED: <no description>
-      TARGET_ADDED: <no description>
-      TARGET_REMOVED: <no description>
-    """
-    TARGET_CHANGE_UNSPECIFIED = 0
-    TARGET_ADDED = 1
-    TARGET_REMOVED = 2
-
-  cause = _messages.MessageField('Status', 1)
-  continued = _messages.BooleanField(2)
-  existenceFilter = _messages.MessageField('ExistenceFilter', 3)
-  mutation = _messages.MessageField('Mutation', 4)
-  noChange = _messages.EnumField('NoChangeValueValuesEnum', 5)
-  resumeToken = _messages.BytesField(6)
-  targetChange = _messages.EnumField('TargetChangeValueValuesEnum', 7)
-  targetIds = _messages.IntegerField(8, repeated=True, variant=_messages.Variant.INT32)
-
-
-class ChangeBatch(_messages.Message):
-  """The streamed response for google.datastore.v1beta3.DatastoreWatcher.Watch
-  and google.datastore.v1beta3.DatastoreWatcher.MultiWatch.
-
-  Fields:
-    changes: A Change attribute.
-  """
-
-  changes = _messages.MessageField('Change', 1, repeated=True)
-
-
 class Circle(_messages.Message):
   """A "circle" on the surface of the Earth, defined as the area within a
   certain geographical distance of a point.
@@ -1529,7 +1455,8 @@ class PropertyReference(_messages.Message):
   """A reference to a property relative to the kind expressions.
 
   Fields:
-    name: The name of the property.
+    name: The name of the property. If name includes "."s, it may be
+      interpreted as a property name path.
   """
 
   name = _messages.StringField(1)
@@ -2005,6 +1932,76 @@ class Value(_messages.Message):
   timestampValue = _messages.StringField(13)
 
 
+class WatchChange(_messages.Message):
+  """A change to a set of targets being watched. Usually a change to an
+  individual entity, but sometimes a change to the set of entities being
+  watched.  If a change was requested (for example removing a target) but
+  rejected, a change will be returned with `change_type=NO_CHANGE`,
+  `target_ids=<relevant ids>`, and `cause=<error>`. .
+
+  Enums:
+    NoChangeValueValuesEnum: No change has occurred. Supports providing an
+      updated `resume_token` or returning an error.
+    TargetChangeValueValuesEnum: The targets associate with this stream have
+      changed. The affected targets are listed in `target_ids`.
+
+  Fields:
+    cause: The error that resulted in this change, if applicable.
+    continued: If true, more changes are needed to construct a consistent
+      snapshot.
+    entity: The most recent state of an entity that matches the given
+      `target_ids`.
+    entityRemoved: An entity no longer matches the given `target_ids`. Only
+      `entity.key` and `version` are populated.
+    filter: A filter to apply to the *set* of entities previously returned for
+      the given `target_ids`. Returned when entities may no longer match the
+      given `target_ids` but the exact keys are unknown.
+    noChange: No change has occurred. Supports providing an updated
+      `resume_token` or returning an error.
+    resumeToken: A token that provides a compact representation of all the
+      changes that have been received by the caller up to this point
+      (including this one) that can be used to resume the stream. May not be
+      set on every change. Only valid for the targets specified in
+      `target_ids`.
+    targetChange: The targets associate with this stream have changed. The
+      affected targets are listed in `target_ids`.
+    targetIds: The set of targets to which this change applies. When empty,
+      the change applies to all targets.
+  """
+
+  class NoChangeValueValuesEnum(_messages.Enum):
+    """No change has occurred. Supports providing an updated `resume_token` or
+    returning an error.
+
+    Values:
+      NULL_VALUE: Null value.
+    """
+    NULL_VALUE = 0
+
+  class TargetChangeValueValuesEnum(_messages.Enum):
+    """The targets associate with this stream have changed. The affected
+    targets are listed in `target_ids`.
+
+    Values:
+      TARGET_CHANGE_UNSPECIFIED: <no description>
+      TARGET_ADDED: <no description>
+      TARGET_REMOVED: <no description>
+    """
+    TARGET_CHANGE_UNSPECIFIED = 0
+    TARGET_ADDED = 1
+    TARGET_REMOVED = 2
+
+  cause = _messages.MessageField('Status', 1)
+  continued = _messages.BooleanField(2)
+  entity = _messages.MessageField('EntityResult', 3)
+  entityRemoved = _messages.MessageField('EntityResult', 4)
+  filter = _messages.MessageField('ExistenceFilter', 5)
+  noChange = _messages.EnumField('NoChangeValueValuesEnum', 6)
+  resumeToken = _messages.BytesField(7)
+  targetChange = _messages.EnumField('TargetChangeValueValuesEnum', 8)
+  targetIds = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+
+
 class WatchRequest(_messages.Message):
   """The request for google.datastore.v1beta3.DatastoreWatcher.Watch
 
@@ -2028,12 +2025,16 @@ class WatchTarget(_messages.Message):
     query: The query to watch.
     resumeToken: A resume token from a stream containing an identical watch
       target.
+    targetId: A previously assigned target id. Used to preserve target ids
+      when restarting a stream. All targets with previously assigned target
+      ids must be added before any new targets.
   """
 
   gqlQuery = _messages.MessageField('GqlQuery', 1)
   partitionId = _messages.MessageField('PartitionId', 2)
   query = _messages.MessageField('Query', 3)
   resumeToken = _messages.BytesField(4)
+  targetId = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

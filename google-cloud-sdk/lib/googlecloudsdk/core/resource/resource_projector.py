@@ -404,6 +404,6 @@ def Compile(expression='', defaults=None, symbols=None, by_columns=False):
   Returns:
     A Projector containing the compiled expression ready for Evaluate().
   """
-  projection = resource_projection_parser.Parse(expression, defaults=defaults,
-                                                symbols=symbols)
+  projection = resource_projection_parser.Parse(
+      expression, defaults=defaults, symbols=symbols, compiler=Compile)
   return Projector(projection, by_columns=by_columns)

@@ -177,7 +177,7 @@ def FormatDescribeMachineTypeName(resources, com_path):
   """Formats a custom machine type when 'instances describe' is called.
 
   Args:
-    resources: list of resources available for the instance in question
+    resources: dict of resources available for the instance in question
     com_path: command path of the calling command
 
   Returns:
@@ -187,9 +187,9 @@ def FormatDescribeMachineTypeName(resources, com_path):
   if ('instances' in com_path) and ('describe' in com_path):
     if not resources:
       return None
-    if 'machineType' not in resources[0]:
+    if 'machineType' not in resources:
       return None
-    mt_splitlist = resources[0]['machineType'].split('/')
+    mt_splitlist = resources['machineType'].split('/')
     mt = mt_splitlist[-1]
     if 'custom' not in mt:
       return None

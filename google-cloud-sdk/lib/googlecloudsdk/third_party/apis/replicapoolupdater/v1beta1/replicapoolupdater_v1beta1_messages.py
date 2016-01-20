@@ -106,7 +106,7 @@ class Operation(_messages.Message):
     operationType: A string attribute.
     progress: A integer attribute.
     region: [Output Only] URL of the region where the operation resides.
-    selfLink: [Output Only] Server defined URL for the resource.
+    selfLink: [Output Only] The fully qualified URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This is in RFC 3339 format.
     status: [Output Only] Status of the operation. Can be one of the
@@ -207,10 +207,10 @@ class OperationList(_messages.Message):
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: [Output Only] The Operation resources.
-    kind: [Output Only] Type of resource. Always replicapoolupdater#operations
-      for Operations resource.
+    kind: [Output Only] Type of resource. Always
+      replicapoolupdater#operationList for OperationList resources.
     nextPageToken: [Output Only] A token used to continue a truncate.
-    selfLink: [Output Only] Server-defined URL for this resource.
+    selfLink: [Output Only] The fully qualified URL for the resource.
   """
 
   id = _messages.StringField(1)

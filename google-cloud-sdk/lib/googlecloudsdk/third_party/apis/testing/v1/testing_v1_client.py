@@ -232,7 +232,7 @@ May return any of the following canonical error codes:
               method_id=u'testing.projects.testMatrices.create',
               ordered_params=[u'projectId'],
               path_params=[u'projectId'],
-              query_params=[],
+              query_params=[u'requestId'],
               relative_path=u'v1/projects/{projectId}/testMatrices',
               request_field=u'testMatrix',
               request_type_name=u'TestingProjectsTestMatricesCreateRequest',

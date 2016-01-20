@@ -204,7 +204,7 @@ class Git(object):
   def GetName(self):
     return self._repo_name
 
-  def Clone(self, destination_path):
+  def Clone(self, destination_path, dry_run=False):
     """Clone a git repository into a gcloud workspace.
 
     If the resulting clone does not have a .gcloud directory, create one. Also,
@@ -212,6 +212,7 @@ class Git(object):
 
     Args:
       destination_path: str, The relative path for the repository clone.
+      dry_run: bool, If true do not run but print commands instead.
 
     Returns:
       str, The absolute path of cloned repository.
@@ -265,14 +266,11 @@ class Git(object):
                $ gcloud auth print-refresh-token
               """))
           cmd = ['git', 'clone', self._uri, abs_repository_path]
-          log.debug('Executing %s', cmd)
-          subprocess.check_call(cmd)
         else:
           cmd = ['git', 'clone', self._uri, abs_repository_path,
                  '--config',
                  'credential.helper="{0}"'.format(_GetCredentialHelper())]
-          log.debug('Executing %s', cmd)
-          subprocess.check_call(cmd)
+        self._RunCommand(cmd, dry_run)
       else:
         # Otherwise, just do a simple clone. We do this clone, without the
         # credential helper, because a user may have already set a default
@@ -282,3 +280,10 @@ class Git(object):
     except subprocess.CalledProcessError as e:
       raise CannotFetchRepositoryException(e)
     return abs_repository_path
+
+  def _RunCommand(self, cmd, dry_run):
+    log.debug('Executing %s', cmd)
+    if dry_run:
+      log.out.Print(' '.join(cmd))
+    else:
+      subprocess.check_call(cmd)

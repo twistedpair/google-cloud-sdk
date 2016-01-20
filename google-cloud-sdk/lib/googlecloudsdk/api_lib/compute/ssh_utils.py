@@ -44,6 +44,10 @@ _SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
 _SSH_ERROR_EXIT_CODE = 255
 
 
+class SetProjectMetadataError(core_exceptions.Error):
+  pass
+
+
 class SshLikeCmdFailed(core_exceptions.Error):
   """Raise for a failure when invoking ssh, scp, or similar."""
 
@@ -143,12 +147,39 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
     return 0
 
 
-def _GetSSHKeysFromMetadata(metadata):
+def _GetMetadataKey(iam_ssh_keys):
+  """Get the metadata key name for the desired SSH key metadata.
+
+  There are three SSH key related metadata pairs:
+  * Per-project 'sshKeys': this grants SSH access to VMs project-wide.
+  * Per-instance 'sshKeys': this is used to grant access to an individual
+    instance. For historical reasons, it acts as an override to the
+    project-global value.
+  * Per-instance 'additional-ssh-keys': this also grants access to an individual
+   instance, but acts in addition to the per-project 'sshKeys'.
+
+  Args:
+    iam_ssh_keys: bool. If False, give the name of the original SSH metadata key
+        (that overrides the project-global SSH metadata key). If True, give the
+        name of the IAM SSH metadata key (that works in conjunction with the
+        project-global SSH key metadata).
+
+  Returns:
+    str, the corresponding metadata key name.
+  """
+  if iam_ssh_keys:
+    metadata_key = constants.SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY
+  else:
+    metadata_key = constants.SSH_KEYS_METADATA_KEY
+  return metadata_key
+
+
+def _GetSSHKeysFromMetadata(metadata, iam_keys=False):
   """Returns the value of the "sshKeys" metadata as a list."""
   if not metadata:
     return []
   for item in metadata.items:
-    if item.key == constants.SSH_KEYS_METADATA_KEY:
+    if item.key == _GetMetadataKey(iam_keys):
       return [key.strip() for key in item.value.split('\n') if key]
   return []
 
@@ -185,12 +216,13 @@ def _PrepareSSHKeysValue(ssh_keys):
   return '\n'.join(keys)
 
 
-def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata):
+def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
+                                iam_keys=False):
   """Adds the public key material to the metadata if it's not already there."""
   entry = u'{user}:{public_key}'.format(
       user=user, public_key=public_key)
 
-  ssh_keys = _GetSSHKeysFromMetadata(metadata)
+  ssh_keys = _GetSSHKeysFromMetadata(metadata, iam_keys=iam_keys)
   log.debug('Current SSH keys in project: {0}'.format(ssh_keys))
 
   if entry in ssh_keys:
@@ -200,7 +232,7 @@ def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata):
     return metadata_utils.ConstructMetadataMessage(
         message_classes=message_classes,
         metadata={
-            constants.SSH_KEYS_METADATA_KEY: _PrepareSSHKeysValue(ssh_keys)},
+            _GetMetadataKey(iam_keys): _PrepareSSHKeysValue(ssh_keys)},
         existing_metadata=metadata)
 
 
@@ -304,15 +336,80 @@ class BaseSSHCommand(base_classes.BaseCommand,
         errors=errors,
         custom_get_requests=None))
     if errors:
-      utils.RaiseToolException(
+      utils.RaiseException(
           errors,
+          SetProjectMetadataError,
           error_message='Could not add SSH key to project metadata:')
 
+  def SetInstanceMetadata(self, instance, new_metadata):
+    """Sets the project metadata to the new metadata."""
+    compute = self.compute
+
+    errors = []
+    # API wants just the zone name, not the full URL
+    zone = instance.zone.split('/')[-1]
+    list(request_helper.MakeRequests(
+        requests=[
+            (compute.instances,
+             'SetMetadata',
+             self.messages.ComputeInstancesSetMetadataRequest(
+                 instance=instance.name,
+                 metadata=new_metadata,
+                 project=properties.VALUES.core.project.Get(
+                     required=True),
+                 zone=zone
+             ))],
+        http=self.http,
+        batch_url=self.batch_url,
+        errors=errors,
+        custom_get_requests=None))
+    if errors:
+      utils.RaiseToolException(
+          errors,
+          error_message='Could not add SSH key to instance metadata:')
+
+  def EnsureSSHKeyIsInInstance(self, user, instance, iam_keys=False):
+    """Ensures that the user's public SSH key is in the instance metadata.
+
+    Args:
+      user: str, the name of the user associated with the SSH key in the
+          metadata
+      instance: Instance, ensure the SSH key is in the metadata of this instance
+      iam_keys: bool. If False, write to the original SSH metadata key (that
+          overrides the project-global SSH metadata key). If true, write to the
+          new SSH metadata key (that works in union with the project-global SSH
+          key metadata).
+
+    Returns:
+      bool, True if the key was newly added, False if it was in the metadata
+          already
+    """
+    # First, grab the public key from the user's computer. If the public key
+    # doesn't already exist, GetPublicKey() should create it.
+    public_key = self.GetPublicKey()
+
+    new_metadata = _AddSSHKeyToMetadataMessage(self.messages, user, public_key,
+                                               instance.metadata,
+                                               iam_keys=iam_keys)
+    if new_metadata != instance.metadata:
+      self.SetInstanceMetadata(instance, new_metadata)
+      return True
+    else:
+      return False
+
   def EnsureSSHKeyIsInProject(self, user):
-    """Ensures that the user's public SSH key is in the project metadata."""
-    # First, grab the public key from the user's computer. If the
-    # public key doesn't already exist, GetPublicKey() should create
-    # it.
+    """Ensures that the user's public SSH key is in the project metadata.
+
+    Args:
+      user: str, the name of the user associated with the SSH key in the
+          metadata
+
+    Returns:
+      bool, True if the key was newly added, False if it was in the metadata
+          already
+    """
+    # First, grab the public key from the user's computer. If the public key
+    # doesn't already exist, GetPublicKey() should create it.
     public_key = self.GetPublicKey()
 
     # Second, let's make sure the public key is in the project metadata.
@@ -446,8 +543,8 @@ class BaseSSHCLICommand(BaseSSHCommand):
         '-o', 'StrictHostKeyChecking=no',
     ]
 
-  def GetInstanceExternalIpAddress(self, instance_ref):
-    """Returns the external ip address for the given instance."""
+  def GetInstance(self, instance_ref):
+    """Fetch an instance based on the given instance_ref."""
     request = (self.compute.instances,
                'Get',
                self.messages.ComputeInstancesGetRequest(
@@ -466,7 +563,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
       utils.RaiseToolException(
           errors,
           error_message='Could not fetch instance:')
-    return GetExternalIPAddress(objects[0])
+    return objects[0]
 
   def WaitUntilSSHable(self, user, external_ip_address):
     """Blocks until SSHing to the given host succeeds."""
@@ -491,7 +588,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
             'ssh traffic.')
       time_utils.Sleep(5)
 
-  def ActuallyRun(self, args, cmd_args, user, external_ip_address,
+  def ActuallyRun(self, args, cmd_args, user, instance,
                   strict_error_checking=True, use_account_service=False):
     """Runs the scp/ssh command specified in cmd_args.
 
@@ -502,7 +599,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
       args: argparse.Namespace, The calling command invocation args.
       cmd_args: [str], The argv for the command to execute.
       user: str, The user name.
-      external_ip_address: str, The external IP address.
+      instance: Instance, the instance to connect to
       strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
         code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
@@ -515,12 +612,38 @@ class BaseSSHCLICommand(BaseSSHCommand):
       return
 
     if use_account_service:
-      has_keys = self.EnsureSSHKeyExistsForUser(user)
+      keys_newly_added = self.EnsureSSHKeyExistsForUser(user)
     else:
-      has_keys = self.EnsureSSHKeyIsInProject(user)
+      # There are two kinds of metadata: project-wide metadata and per-instance
+      # metadata. SSH-like commands work by copying a relevant SSH key to
+      # the 'sshKeys' metadata value. A VM first checks the per-instance
+      # metadata, then the project-wide metadata (if the former exists, it
+      # doesn't check the latter), so the per-instance metadata functions as an
+      # "override" for the project-wide metadata.
+      # If we add a key to project-wide metadata but the per-instance metadata
+      # exists, we won't be able to ssh in because the VM won't check the
+      # project-wide metadata. To avoid this, if the instance has per-instance
+      # SSH key metadata, we add the key there instead.
+      if _GetSSHKeysFromMetadata(instance.metadata):
+        keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance)
+      else:
+        try:
+          keys_newly_added = self.EnsureSSHKeyIsInProject(user)
+        except SetProjectMetadataError:
+          log.info('Could not set project metadata:', exc_info=True)
+          # If we can't write to the project metadata, it may be because of a
+          # permissions problem (we could inspect this exception object further
+          # to make sure, but because we only get a string back this would be
+          # fragile). If that's the case, we want to try the writing to the
+          # iam_keys metadata (we may have permissions to write to instance
+          # metadata). We prefer this to the per-instance override of the
+          # project metadata.
+          log.info('Attempting to set instance metadata.')
+          keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
+                                                           iam_keys=True)
 
-    if has_keys:
-      self.WaitUntilSSHable(user, external_ip_address)
+    if keys_newly_added:
+      self.WaitUntilSSHable(user, GetExternalIPAddress(instance))
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 

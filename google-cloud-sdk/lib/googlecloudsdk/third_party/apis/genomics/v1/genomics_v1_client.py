@@ -754,7 +754,7 @@ The caller must have WRITE permissions to the dataset.
 - Comments (`@CO`) in the input file header will not be preserved
 - Original header order of references (`@SQ`) will not be preserved
 - Any reverse stranded unmapped reads will be reverse complemented, and
-their qualities (and "BQ" tag, if any) will be reversed
+their qualities (also the "BQ" and "OQ" tags, if any) will be reversed
 - Unmapped reads will be stripped of positional information (reference name
 and position)
 

@@ -12,6 +12,16 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'cloudfunctions'
 
 
+class CallFunctionRequest(_messages.Message):
+  """Request for the CallFunction method.
+
+  Fields:
+    data: Input to be passed to the function.
+  """
+
+  data = _messages.StringField(1)
+
+
 class CallFunctionResponse(_messages.Message):
   """Response of CallFunction method.
 
@@ -43,11 +53,12 @@ class CloudfunctionsProjectsRegionsFunctionsCallRequest(_messages.Message):
   """A CloudfunctionsProjectsRegionsFunctionsCallRequest object.
 
   Fields:
-    data: Input to be passed to the function.
+    callFunctionRequest: A CallFunctionRequest resource to be passed as the
+      request body.
     name: The name of the function to be called.
   """
 
-  data = _messages.StringField(1)
+  callFunctionRequest = _messages.MessageField('CallFunctionRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -379,7 +390,6 @@ class SourceRepository(_messages.Message):
       The path should point to the directory where cloud functions files are
       located. Use '/' if the function is defined directly in the root
       directory of a repository.
-    sourceUrl: A string attribute.
     tag: The name of the tag that captures the state of the repository from
       which the function should be fetched.
   """
@@ -389,8 +399,7 @@ class SourceRepository(_messages.Message):
   repositoryUrl = _messages.StringField(3)
   revision = _messages.StringField(4)
   sourcePath = _messages.StringField(5)
-  sourceUrl = _messages.StringField(6)
-  tag = _messages.StringField(7)
+  tag = _messages.StringField(6)
 
 
 class StandardQueryParameters(_messages.Message):

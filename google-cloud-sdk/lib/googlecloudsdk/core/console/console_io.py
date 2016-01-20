@@ -671,7 +671,7 @@ class ProgressTracker(object):
     # trailing parts of the previous line
     if self._last_message_size > 0:
       sys.stderr.write('\r' + self._last_message_size * ' ')
-      self._last_message_size = len(display_message)
+    self._last_message_size = len(display_message)
 
     sys.stderr.write('\r' + display_message)
     sys.stderr.flush()

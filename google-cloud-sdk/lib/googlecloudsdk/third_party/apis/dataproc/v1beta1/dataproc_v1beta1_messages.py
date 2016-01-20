@@ -567,6 +567,34 @@ class Empty(_messages.Message):
 
 
 class GceClusterConfiguration(_messages.Message):
+  """Common configuration settings for resources of Google Compute Engine
+  cluster instances, applicable to all instances in the cluster.
+
+  Fields:
+    networkUri: The Google Compute Engine network to be used for machine
+      communications. Inbound SSH connections are necessary to complete
+      cluster configuration. Example:
+      `compute.googleapis.com/projects/[project_id]/zones/us-east1-a/default`.
+      This should follow the instructions for full resource names found here:
+      https://engdoc.corp.google.com/eng/doc/ti-apis/
+      style/resource_names.shtml?cl=head
+    serviceAccountScopes: The URIs of service account scopes to be included in
+      Google Compute Engine instances. The following base set of scopes is
+      always included: -
+      https://www.googleapis.com/auth/cloud.useraccounts.readonly -
+      https://www.googleapis.com/auth/devstorage.read_write -
+      https://www.googleapis.com/auth/logging.write If no scopes are specfied,
+      the following defaults are also provided: -
+      https://www.googleapis.com/auth/bigquery -
+      https://www.googleapis.com/auth/bigtable.admin.table -
+      https://www.googleapis.com/auth/bigtable.data -
+      https://www.googleapis.com/auth/devstorage.full_control
+    zoneUri: [Required] The zone where the Google Compute Engine cluster will
+      be located. Example: `compute.googleapis.com/projects/[project_id]/zones
+      /us-east1-a`. This should follow the instructions for full resource
+      names found here: https://engdoc.corp.google.com/eng/doc/ti-apis/
+      style/resource_names.shtml?cl=head
+  """
 
   networkUri = _messages.StringField(1)
   serviceAccountScopes = _messages.StringField(2, repeated=True)
@@ -574,6 +602,42 @@ class GceClusterConfiguration(_messages.Message):
 
 
 class HadoopJob(_messages.Message):
+  """A Cloud Dataproc job for running Hadoop MapReduce jobs on YARN.
+
+  Messages:
+    PropertiesValue: [Optional] A mapping of property names to values, used to
+      configure Hadoop. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/hadoop/conf/*-site and classes in user code.
+
+  Fields:
+    archiveUris: [Optional] HCFS URIs of archives to be extracted in the
+      working directory of Hadoop drivers and tasks. Supported file types:
+      .jar, .tar, .tar.gz, .tgz, or .zip.
+    args: [Optional] The arguments to pass to the driver. Do not include
+      arguments, such as `-libjars` or `-Dfoo=bar`, that can be set as job
+      properties, since a collision may occur that causes an incorrect job
+      submission.
+    fileUris: [Optional] HCFS URIs of files to be copied to the working
+      directory of Hadoop drivers and distributed tasks. Useful for naively
+      parallel tasks.
+    jarFileUris: [Optional] Jar file URIs to add to the CLASSPATHs of the
+      Hadoop driver and tasks.
+    loggingConfiguration: [Optional] The runtime log configuration for job
+      execution.
+    mainClass: The name of the driver's main class. The jar file containing
+      the class must be in the default CLASSPATH or specified in
+      `jar_file_uris`.
+    mainJarFileUri: The Hadoop Compatible Filesystem (HCFS) URI of the jar
+      file containing the main class. Examples:     'gs://foo-bucket
+      /analytics-binaries/extract-useful-metrics-mr.jar'     'hdfs:/tmp/test-
+      samples/custom-wordcount.jar'     'file:///home/usr/lib/hadoop-mapreduce
+      /hadoop-mapreduce-examples.jar'
+    properties: [Optional] A mapping of property names to values, used to
+      configure Hadoop. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/hadoop/conf/*-site and classes in user code.
+  """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -705,6 +769,36 @@ class HiveJob(_messages.Message):
 
 
 class InstanceGroupConfiguration(_messages.Message):
+  """The configuration settings for Google Compute Engine resources in an
+  instance group, such as a master or worker group.
+
+  Fields:
+    diskConfiguration: Disk option configuration settings.
+    imageUri: [Output-only] The Google Compute Engine image resource used for
+      cluster instances. Inferred from `SoftwareConfiguration.image_version`.
+      Can actually be specified for development purposes Example:
+      `compute.googleapis.com/projects/debian-cloud/global/images/backports-
+      debian-7-wheezy-v20140904`. This should follow the instructions for full
+      resource names found here: https://engdoc.corp.google.com/eng/doc/ti-
+      apis/ style/resource_names.shtml?cl=head
+    instanceNames: The list of instance names. Dataproc derives the names from
+      `cluster_name`, `num_instances`, and the instance group if not set by
+      user (recommended practice is to let Dataproc derive the name).
+    isPreemptible: Specifies that this instance group contains Preemptible
+      Instances.
+    machineTypeUri: The Google Compute Engine machine type used for cluster
+      instances. Example: `compute.googleapis.com/projects/[project_id]/zones
+      /us-east1-a/machineTypes/n1-standard-2`. This should follow the
+      instructions for full resource names found here:
+      https://engdoc.corp.google.com/eng/doc/ti-apis/
+      style/resource_names.shtml?cl=head
+    managedGroupConfiguration: [Output-only] The configuration for Google
+      Compute Engine Instance Group Manager that manages this group. This is
+      only used for preemptible instance groups.
+    numInstances: The number of VM instances in the instance group. For master
+      instance groups, must be set to 1. eventually support high availability
+      with multiple masters.
+  """
 
   diskConfiguration = _messages.MessageField('DiskConfiguration', 1)
   imageUri = _messages.StringField(2)
@@ -1430,13 +1524,11 @@ class SoftwareConfiguration(_messages.Message):
 
   Messages:
     PropertiesValue: [Optional] The properties to set on daemon configuration
-      files.  Property keys can be specified in one of two formats:  Raw, such
-      as "fs.defaultFS", in which case properties are mapped to configuration
-      file by Dataproc.  Prefixed, such as "core:fs.defaultFS", in which case
-      properties are written to exact destination. The following are supported
-      prefixes and their mappings:   core - core-site.xml   hdfs - hdfs-
-      site.xml   mapred - mapred-site.xml   yarn - yarn-site.xml   hive -
-      hive-site.xml   pig - pig.properties   spark - spark-defaults.conf
+      files.  Property keys are specified in "prefix:property" format, such as
+      "core:fs.defaultFS". The following are supported prefixes and their
+      mappings:   core - core-site.xml   hdfs - hdfs-site.xml   mapred -
+      mapred-site.xml   yarn - yarn-site.xml   hive - hive-site.xml   pig -
+      pig.properties   spark - spark-defaults.conf
 
   Fields:
     imageVersion: [Optional] The version of software inside the cluster. It
@@ -1444,25 +1536,21 @@ class SoftwareConfiguration(_messages.Message):
       defaults to the latest version (see [Cloud Dataproc
       Versioning](/dataproc/versioning)).
     properties: [Optional] The properties to set on daemon configuration
-      files.  Property keys can be specified in one of two formats:  Raw, such
-      as "fs.defaultFS", in which case properties are mapped to configuration
-      file by Dataproc.  Prefixed, such as "core:fs.defaultFS", in which case
-      properties are written to exact destination. The following are supported
-      prefixes and their mappings:   core - core-site.xml   hdfs - hdfs-
-      site.xml   mapred - mapred-site.xml   yarn - yarn-site.xml   hive -
-      hive-site.xml   pig - pig.properties   spark - spark-defaults.conf
+      files.  Property keys are specified in "prefix:property" format, such as
+      "core:fs.defaultFS". The following are supported prefixes and their
+      mappings:   core - core-site.xml   hdfs - hdfs-site.xml   mapred -
+      mapred-site.xml   yarn - yarn-site.xml   hive - hive-site.xml   pig -
+      pig.properties   spark - spark-defaults.conf
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     """[Optional] The properties to set on daemon configuration files.
-    Property keys can be specified in one of two formats:  Raw, such as
-    "fs.defaultFS", in which case properties are mapped to configuration file
-    by Dataproc.  Prefixed, such as "core:fs.defaultFS", in which case
-    properties are written to exact destination. The following are supported
-    prefixes and their mappings:   core - core-site.xml   hdfs - hdfs-site.xml
-    mapred - mapred-site.xml   yarn - yarn-site.xml   hive - hive-site.xml
-    pig - pig.properties   spark - spark-defaults.conf
+    Property keys are specified in "prefix:property" format, such as
+    "core:fs.defaultFS". The following are supported prefixes and their
+    mappings:   core - core-site.xml   hdfs - hdfs-site.xml   mapred - mapred-
+    site.xml   yarn - yarn-site.xml   hive - hive-site.xml   pig -
+    pig.properties   spark - spark-defaults.conf
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

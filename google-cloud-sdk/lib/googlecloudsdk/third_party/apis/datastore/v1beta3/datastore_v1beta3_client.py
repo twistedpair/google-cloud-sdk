@@ -384,7 +384,7 @@ to use different resource name schemes, such as `users/*/operations`.
               relative_path=u'v1beta3/projects/{projectId}:multiWatch',
               request_field=u'multiWatchRequest',
               request_type_name=u'DatastoreProjectsMultiWatchRequest',
-              response_type_name=u'ChangeBatch',
+              response_type_name=u'WatchChange',
               supports_download=False,
           ),
           'Rollback': base_api.ApiMethodInfo(
@@ -420,7 +420,7 @@ to use different resource name schemes, such as `users/*/operations`.
               relative_path=u'v1beta3/projects/{projectId}:watch',
               request_field=u'watchRequest',
               request_type_name=u'DatastoreProjectsWatchRequest',
-              response_type_name=u'ChangeBatch',
+              response_type_name=u'WatchChange',
               supports_download=False,
           ),
           }
@@ -526,7 +526,7 @@ subset of the data has already been imported to the Datastore.
         request: (DatastoreProjectsMultiWatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ChangeBatch) The response message.
+        (WatchChange) The response message.
       """
       config = self.GetMethodConfig('MultiWatch')
       return self._RunMethod(
@@ -565,7 +565,7 @@ subset of the data has already been imported to the Datastore.
         request: (DatastoreProjectsWatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ChangeBatch) The response message.
+        (WatchChange) The response message.
       """
       config = self.GetMethodConfig('Watch')
       return self._RunMethod(

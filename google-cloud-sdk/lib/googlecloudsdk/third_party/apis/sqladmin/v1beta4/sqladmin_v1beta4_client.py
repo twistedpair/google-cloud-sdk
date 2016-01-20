@@ -216,7 +216,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a resource containing information about a database inside a Cloud SQL instance.
+      """Deletes a database from a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesDeleteRequest) input message

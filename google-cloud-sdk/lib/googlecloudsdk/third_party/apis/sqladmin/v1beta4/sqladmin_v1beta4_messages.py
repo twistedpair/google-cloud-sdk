@@ -181,9 +181,13 @@ class DatabaseInstance(_messages.Message):
 
   Messages:
     FailoverReplicaValue: The name and status of the failover replica. This
-      property is only applicable to Second Generation instances.
+      property is applicable only to Second Generation instances.
 
   Fields:
+    backendType: FIRST_GEN: Basic Cloud SQL instance that runs in a Google-
+      managed container. SECOND_GEN: A newer Cloud SQL backend that runs in a
+      Compute Engine VM. EXTERNAL: A MySQL server that is not managed by
+      Google.
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Users should use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
@@ -194,7 +198,7 @@ class DatabaseInstance(_messages.Message):
       after instance creation.
     etag: HTTP 1.1 Entity tag for the resource.
     failoverReplica: The name and status of the failover replica. This
-      property is only applicable to Second Generation instances.
+      property is applicable only to Second Generation instances.
     instanceType: The instance type. This can be one of the following.
       CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
       master. ON_PREMISES_INSTANCE: An instance running on the customer's
@@ -202,7 +206,7 @@ class DatabaseInstance(_messages.Message):
       read-replica.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. This property is
-      only applicable to First Generation instances.
+      applicable only to First Generation instances.
     kind: This is always sql#instance.
     masterInstanceName: The name of the instance which will act as master in
       the replication setup.
@@ -212,16 +216,18 @@ class DatabaseInstance(_messages.Message):
     onPremisesConfiguration: Configuration specific to on-premises instances.
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
-    region: The geographical region. Can be us-central, asia-east1 or europe-
-      west1. Defaults to us-central. The region can not be changed after
-      instance creation.
+    region: The geographical region. Can be us-central (FIRST_GEN instances
+      only), us-central1 (SECOND_GEN instances only), asia-east1 or europe-
+      west1. Defaults to us-central or us-central1 depending on the instance
+      type (First Generation or Second Generation). The region can not be
+      changed after instance creation.
     replicaConfiguration: Configuration specific to read-replicas replicating
       from on-premises masters.
     replicaNames: The replicas of the instance.
     selfLink: The URI of this resource.
     serverCaCert: SSL configuration.
     serviceAccountEmailAddress: The service account email address assigned to
-      the instance. This property is only applicable to Second Generation
+      the instance. This property is applicable only to Second Generation
       instances.
     settings: The user settings.
     state: The current serving state of the Cloud SQL instance. This can be
@@ -234,8 +240,8 @@ class DatabaseInstance(_messages.Message):
   """
 
   class FailoverReplicaValue(_messages.Message):
-    """The name and status of the failover replica. This property is only
-    applicable to Second Generation instances.
+    """The name and status of the failover replica. This property is
+    applicable only to Second Generation instances.
 
     Fields:
       available: The availability status of the failover replica. A false
@@ -247,27 +253,28 @@ class DatabaseInstance(_messages.Message):
     available = _messages.BooleanField(1)
     name = _messages.StringField(2)
 
-  currentDiskSize = _messages.IntegerField(1)
-  databaseVersion = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 4)
-  instanceType = _messages.StringField(5)
-  ipAddresses = _messages.MessageField('IpMapping', 6, repeated=True)
-  ipv6Address = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(9)
-  maxDiskSize = _messages.IntegerField(10)
-  name = _messages.StringField(11)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 12)
-  project = _messages.StringField(13)
-  region = _messages.StringField(14)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 15)
-  replicaNames = _messages.StringField(16, repeated=True)
-  selfLink = _messages.StringField(17)
-  serverCaCert = _messages.MessageField('SslCert', 18)
-  serviceAccountEmailAddress = _messages.StringField(19)
-  settings = _messages.MessageField('Settings', 20)
-  state = _messages.StringField(21)
+  backendType = _messages.StringField(1)
+  currentDiskSize = _messages.IntegerField(2)
+  databaseVersion = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 5)
+  instanceType = _messages.StringField(6)
+  ipAddresses = _messages.MessageField('IpMapping', 7, repeated=True)
+  ipv6Address = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(10)
+  maxDiskSize = _messages.IntegerField(11)
+  name = _messages.StringField(12)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 13)
+  project = _messages.StringField(14)
+  region = _messages.StringField(15)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 16)
+  replicaNames = _messages.StringField(17, repeated=True)
+  selfLink = _messages.StringField(18)
+  serverCaCert = _messages.MessageField('SslCert', 19)
+  serviceAccountEmailAddress = _messages.StringField(20)
+  settings = _messages.MessageField('Settings', 21)
+  state = _messages.StringField(22)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1478,8 +1485,8 @@ class User(_messages.Message):
     etag: HTTP 1.1 Entity tag for the resource.
     host: The host name from which the user can connect. For insert
       operations, host defaults to an empty string. For update operations,
-      host is specified as part of the request URL. The host name is not
-      mutable with this API.
+      host is specified as part of the request URL. The host name cannot be
+      updated after insertion.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for update since it is already specified on
       the URL.

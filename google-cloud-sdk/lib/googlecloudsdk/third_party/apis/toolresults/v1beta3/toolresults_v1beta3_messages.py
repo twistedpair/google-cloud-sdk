@@ -530,6 +530,13 @@ class Step(_messages.Message):
     description: A description of this tool For example: mvn clean package -D
       skipTests=true  - In response: present if set by create/update request -
       In create/update request: optional
+    deviceUsageDuration: How much the device resource is used to perform the
+      test.  This is the device usage used for billing purpose, which is
+      different from the run_duration, for example, infrastructure failure
+      won't be charged for device usage.  PRECONDITION_FAILED will be returned
+      if one attempts to set a device_usage on a step which already has this
+      field set.  - In response: present if previously set. - In create
+      request: optional - In update request: optional
     dimensionValue: If the execution containing this step has any
       dimension_definition set, then this field allows the child to specify
       the values of the dimensions.  The keys must exactly match the
@@ -622,16 +629,17 @@ class Step(_messages.Message):
   completionTime = _messages.MessageField('Timestamp', 1)
   creationTime = _messages.MessageField('Timestamp', 2)
   description = _messages.StringField(3)
-  dimensionValue = _messages.MessageField('StepDimensionValueEntry', 4, repeated=True)
-  hasImages = _messages.BooleanField(5)
-  labels = _messages.MessageField('StepLabelsEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  outcome = _messages.MessageField('Outcome', 8)
-  runDuration = _messages.MessageField('Duration', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stepId = _messages.StringField(11)
-  testExecutionStep = _messages.MessageField('TestExecutionStep', 12)
-  toolExecutionStep = _messages.MessageField('ToolExecutionStep', 13)
+  deviceUsageDuration = _messages.MessageField('Duration', 4)
+  dimensionValue = _messages.MessageField('StepDimensionValueEntry', 5, repeated=True)
+  hasImages = _messages.BooleanField(6)
+  labels = _messages.MessageField('StepLabelsEntry', 7, repeated=True)
+  name = _messages.StringField(8)
+  outcome = _messages.MessageField('Outcome', 9)
+  runDuration = _messages.MessageField('Duration', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stepId = _messages.StringField(12)
+  testExecutionStep = _messages.MessageField('TestExecutionStep', 13)
+  toolExecutionStep = _messages.MessageField('ToolExecutionStep', 14)
 
 
 class StepDimensionValueEntry(_messages.Message):

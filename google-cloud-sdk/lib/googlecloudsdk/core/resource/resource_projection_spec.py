@@ -51,6 +51,7 @@ class ProjectionSpec(object):
     _attributes: Projection attributes dict indexed by attribute name.
     _columns: A list of (key,_Attribute) tuples used to project a resource to
       a list of columns.
+    _compiler: The projection compiler method for nested projections.
     _empty: An empty projection _Tree used by Projector().
     _name: The projection name from the expression string.
     _tree: The projection _Tree root, used by
@@ -75,16 +76,18 @@ class ProjectionSpec(object):
       self.key = key
       self.attribute = attribute
 
-  def __init__(self, defaults=None, symbols=None):
+  def __init__(self, defaults=None, symbols=None, compiler=None):
     """Initializes a projection.
 
     Args:
       defaults: resource_projection_spec.ProjectionSpec defaults.
       symbols: Transform function symbol table dict indexed by function name.
+      compiler: The projection compiler method for nested projections.
     """
     self.aliases = {}
     self.attributes = {}
     self._columns = []
+    self._compiler = compiler
     self._empty = None
     self._name = None
     self._snake_headings = {}
@@ -109,6 +112,11 @@ class ProjectionSpec(object):
   def active(self):
     """Gets the transform active level."""
     return self._active
+
+  @property
+  def compiler(self):
+    """Returns the projection compiler method for nested projections."""
+    return self._compiler
 
   def _Defaults(self, projection):
     """Defaults() helper -- converts a projection to a default projection.

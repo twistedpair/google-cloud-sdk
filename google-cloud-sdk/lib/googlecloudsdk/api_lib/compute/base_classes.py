@@ -16,7 +16,6 @@ import abc
 import argparse
 import cStringIO
 import json
-import sets
 import sys
 import textwrap
 
@@ -464,30 +463,48 @@ def GetZonalListerHelp(resource):
   }
 
 
-class GlobalRegionalLister(BaseLister):
+class ScopeType(Enum):
+  """Scope type of compute resource."""
+  global_scope = 1
+  regional_scope = 2
+  zonal_scope = 3
+
+
+class MultiScopeLister(BaseLister):
   """Base class for listing global and regional resources."""
 
   __metaclass__ = abc.ABCMeta
 
   @staticmethod
-  def Args(parser):
+  def AddScopeArgs(parser, scopes):
     BaseLister.Args(parser)
 
     scope = parser.add_mutually_exclusive_group()
 
-    scope.add_argument(
-        '--regions',
-        metavar='REGION',
-        help=('If provided, only regional resources are shown. '
-              'If arguments are provided, only resources from the given '
-              'regions are shown.'),
-        action=arg_parsers.FloatingListValuesCatcher(switch_value=[]),
-        type=arg_parsers.ArgList())
-    scope.add_argument(
-        '--global',
-        action='store_true',
-        help='If provided, only global resources are shown.',
-        default=False)
+    if ScopeType.zonal_scope in scopes:
+      scope.add_argument(
+          '--zones',
+          metavar='ZONE',
+          help=('If provided, only zonal resources are shown. '
+                'If arguments are provided, only resources from the given '
+                'zones are shown.'),
+          action=arg_parsers.FloatingListValuesCatcher(switch_value=[]),
+          type=arg_parsers.ArgList())
+    if ScopeType.regional_scope in scopes:
+      scope.add_argument(
+          '--regions',
+          metavar='REGION',
+          help=('If provided, only regional resources are shown. '
+                'If arguments are provided, only resources from the given '
+                'regions are shown.'),
+          action=arg_parsers.FloatingListValuesCatcher(switch_value=[]),
+          type=arg_parsers.ArgList())
+    if ScopeType.global_scope in scopes:
+      scope.add_argument(
+          '--global',
+          action='store_true',
+          help='If provided, only global resources are shown.',
+          default=False)
 
   @abc.abstractproperty
   def global_service(self):
@@ -497,10 +514,22 @@ class GlobalRegionalLister(BaseLister):
   def regional_service(self):
     """The service used to list regional resources."""
 
+  @abc.abstractproperty
+  def zonal_service(self):
+    """The service used to list regional resources."""
+
+  @abc.abstractproperty
+  def aggregation_service(self):
+    """The service used to get aggregated list of resources."""
+
   def GetResources(self, args, errors):
-    """Yields regional and/or global resources."""
+    """Yields zonal, regional and/or global resources."""
+    has_regions = hasattr(args, 'regions') and args.regions
+    has_zones = hasattr(args, 'zones') and args.zones
+    has_global = hasattr(args, 'global') and getattr(args, 'global')
+
     # This is true if the user provided no flags indicating scope
-    no_scope_flags = args.regions is None and not getattr(args, 'global')
+    no_scope_flags = not has_regions and not has_zones and not has_global
 
     requests = []
     filter_expr = self.GetFilterExpr(args)
@@ -509,7 +538,7 @@ class GlobalRegionalLister(BaseLister):
 
     # If --global is present OR no scope flags are present then we have to fetch
     # the global resources.
-    if getattr(args, 'global'):
+    if has_global:
       requests.append(
           (self.global_service,
            'List',
@@ -521,16 +550,16 @@ class GlobalRegionalLister(BaseLister):
     # If --regions is present with no arguments OR no scope flags are present
     # then we have to do an aggregated list
     # pylint:disable=g-explicit-bool-comparison
-    if args.regions == [] or no_scope_flags:
+    if no_scope_flags:
       requests.append(
-          (self.regional_service,
+          (self.aggregation_service,
            'AggregatedList',
-           self.regional_service.GetRequestType('AggregatedList')(
+           self.aggregation_service.GetRequestType('AggregatedList')(
                filter=filter_expr,
                maxResults=max_results,
                project=project)))
     # Else if some regions were provided then only list within them
-    elif args.regions:
+    elif has_regions:
       region_names = set(
           self.CreateGlobalReference(region, resource_type='regions').Name()
           for region in args.regions)
@@ -543,6 +572,20 @@ class GlobalRegionalLister(BaseLister):
                  maxResults=max_results,
                  region=region_name,
                  project=project)))
+    # Else if some regions were provided then only list within them
+    elif has_zones:
+      zone_names = set(
+          self.CreateGlobalReference(zone, resource_type='zones').Name()
+          for zone in args.zones)
+      for zone_name in sorted(zone_names):
+        requests.append(
+            (self.zonal_service,
+             'List',
+             self.zonal_service.GetRequestType('List')(
+                 filter=filter_expr,
+                 maxResults=max_results,
+                 zone=zone_name,
+                 project=project)))
 
     return request_helper.MakeRequests(
         requests=requests,
@@ -552,18 +595,56 @@ class GlobalRegionalLister(BaseLister):
         custom_get_requests=None)
 
 
-def GetGlobalRegionalListerHelp(resource):
+def GetMultiScopeListerHelp(resource, scopes):
   """Returns the detailed help dict for a global and regional list command."""
+
+  zone_example_text = """\
+
+          To list all {0} in zones ``us-central1-b'' and ``europe-west1-d'',
+          run:
+
+            $ {{command}} --zones us-central1 europe-west1
+  """
+  region_example_text = """\
+
+          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
+          run:
+
+            $ {{command}} --regions us-central1 europe-west1
+  """
+  global_example_text = """\
+
+          To list all global {0} in a project, run:
+
+            $ {{command}} --global
+  """
+
+  allowed_flags = []
+  default_result = []
+  if ScopeType.global_scope in scopes:
+    allowed_flags.append("``--global''")
+    default_result.append('global ' + resource)
+  if ScopeType.regional_scope in scopes:
+    allowed_flags.append("``--regions''")
+    default_result.append(resource + ' from all regions')
+  if ScopeType.zonal_scope in scopes:
+    allowed_flags.append("``--zones''")
+    default_result.append(resource + ' from all zones')
+
+  allowed_flags_text = (
+      ', '.join(allowed_flags[:-1]) + ' or ' + allowed_flags[-1])
+  default_result_text = (
+      ', '.join(default_result[:-1]) + ' and ' + default_result[-1])
+
   return {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
           *{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, global {0} and {0} from all regions are listed. The
-          results can be narrowed down by providing the ``--regions'' or
-          ``--global'' flag.
-          """.format(resource),
-      'EXAMPLES': """\
+          By default, {1} are listed. The results can be narrowed down by
+          providing the {2} flag.
+          """.format(resource, default_result_text, allowed_flags_text),
+      'EXAMPLES': ("""\
           To list all {0} in a project in table form, run:
 
             $ {{command}}
@@ -571,26 +652,35 @@ def GetGlobalRegionalListerHelp(resource):
           To list the URIs of all {0} in a project, run:
 
             $ {{command}} --uri
-
-          To list all {0} in zones ``us-central1-b'' and ``europe-west1-d'',
-          run:
-
-            $ {{command}} --regions us-central1 europe-west1
-
-          To list all global {0} in a project, run:
-
-            $ {{command}} --global
-
-          To list all regional {0} in a project, run:
-
-            $ {{command}} --regions
-
-          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          run:
-
-            $ {{command}} --regions us-central1 europe-west1
-            """.format(resource)
+          """ + (global_example_text
+                 if ScopeType.global_scope in scopes else '')
+                   + (region_example_text
+                      if ScopeType.regional_scope in scopes else '')
+                   + (zone_example_text
+                      if ScopeType.zonal_scope in scopes else ''))
+                  .format(resource),
   }
+
+
+class GlobalRegionalLister(MultiScopeLister):
+  """Base class for listing global and regional resources."""
+  SCOPES = [ScopeType.regional_scope, ScopeType.global_scope]
+
+  @staticmethod
+  def Args(parser):
+    MultiScopeLister.AddScopeArgs(parser, GlobalRegionalLister.SCOPES)
+
+  @property
+  def aggregation_service(self):
+    return self.regional_service
+
+  @property
+  def zonal_service(self):
+    return None
+
+
+def GetGlobalRegionalListerHelp(resource):
+  return GetMultiScopeListerHelp(resource, GlobalRegionalLister.SCOPES)
 
 
 class BaseDescriber(BaseCommand):
@@ -707,13 +797,6 @@ class ZonalDescriber(BaseDescriber):
 
   def ScopeRequest(self, ref, request):
     request.zone = ref.zone
-
-
-class ScopeType(Enum):
-  """Scope type of compute resource."""
-  global_scope = 1
-  regional_scope = 2
-  zonal_scope = 3
 
 
 class MultiScopeDescriber(BaseDescriber):
@@ -1039,17 +1122,36 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
     """Add information about Instance Group size."""
     errors = []
     items = list(items)
-    zone_names = sets.Set(
-        [path_simplifier.Name(result['zone']) for result in items])
+    zone_names = set([path_simplifier.Name(mig['zone'])
+                      for mig in items if 'zone' in mig])
+    region_names = set([path_simplifier.Name(mig['region'])
+                        for mig in items if 'region' in mig])
+    if zone_names:
+      zonal_instance_groups = lister.GetZonalResources(
+          service=self.compute.instanceGroups,
+          project=self.project,
+          requested_zones=zone_names,
+          filter_expr=None,
+          http=self.http,
+          batch_url=self.batch_url,
+          errors=errors)
+    else:
+      zonal_instance_groups = []
 
-    instance_groups = lister.GetZonalResources(
-        service=self.compute.instanceGroups,
-        project=self.project,
-        requested_zones=zone_names,
-        filter_expr=None,
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors)
+    if region_names and hasattr(self.compute, 'regionInstanceGroups'):
+      regional_instance_groups = lister.GetRegionalResources(
+          service=self.compute.regionInstanceGroups,
+          project=self.project,
+          requested_regions=region_names,
+          filter_expr=None,
+          http=self.http,
+          batch_url=self.batch_url,
+          errors=errors)
+    else:
+      regional_instance_groups = []
+
+    instance_groups = (
+        list(zonal_instance_groups) + list(regional_instance_groups))
     instance_group_ref_to_size = dict([
         (path_simplifier.ScopedSuffix(ig.selfLink), ig.size)
         for ig in instance_groups
@@ -1063,7 +1165,10 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
       gm_self_link = self_link.replace(
           '/instanceGroupManagers/', '/instanceGroups/')
       scoped_suffix = path_simplifier.ScopedSuffix(gm_self_link)
-      size = instance_group_ref_to_size[scoped_suffix]
+      if scoped_suffix in instance_group_ref_to_size:
+        size = instance_group_ref_to_size[scoped_suffix]
+      else:
+        size = ''
 
       item['size'] = str(size)
       yield item
@@ -1079,8 +1184,7 @@ class InstanceGroupDynamicProperiesMixin(object):
     """Add information if instance group is managed."""
     errors = []
     items = list(items)
-    zone_names = sets.Set(
-        [path_simplifier.Name(result['zone']) for result in items])
+    zone_names = set([path_simplifier.Name(result['zone']) for result in items])
 
     instance_group_managers = lister.GetZonalResources(
         service=self.compute.instanceGroupManagers,
@@ -1090,7 +1194,7 @@ class InstanceGroupDynamicProperiesMixin(object):
         http=self.http,
         batch_url=self.batch_url,
         errors=errors)
-    instance_group_managers_refs = sets.Set([
+    instance_group_managers_refs = set([
         path_simplifier.ScopedSuffix(igm.selfLink)
         for igm in instance_group_managers])
 

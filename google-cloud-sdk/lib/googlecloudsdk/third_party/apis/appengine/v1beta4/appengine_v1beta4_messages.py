@@ -121,7 +121,9 @@ class AppengineAppsGetRequest(_messages.Message):
     ensureResourcesExist: Certain resources associated with an application are
       created on-demand. Controls whether these resources should be created
       when performing the `GET` operation. If specified and any resources
-      cloud not be created, the request will fail with an error code.
+      could not be created, the request will fail with an error code.
+      Additionally, this parameter can cause the request to take longer to
+      complete.
     name: Name of the application to get. For example: "apps/myapp".
   """
 
@@ -301,6 +303,8 @@ class Application(_messages.Message):
       files associated with an application. This bucket is associated with the
       application and can be used by the gcloud deployment commands.
       @OutputOnly
+    defaultBucket: A Google Cloud Storage bucket which can be used by the
+      application to store content.  @OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the app that do
       not explicitly target a module or version. The rules are order-
       dependent.
@@ -316,10 +320,11 @@ class Application(_messages.Message):
   """
 
   codeBucket = _messages.StringField(1)
-  dispatchRules = _messages.MessageField('UrlDispatchRule', 2, repeated=True)
-  id = _messages.StringField(3)
-  location = _messages.StringField(4)
-  name = _messages.StringField(5)
+  defaultBucket = _messages.StringField(2)
+  dispatchRules = _messages.MessageField('UrlDispatchRule', 3, repeated=True)
+  id = _messages.StringField(4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
 
 
 class AutomaticScaling(_messages.Message):
