@@ -53,6 +53,10 @@ class UnidentifiedDirectoryError(exceptions.Error):
     self.path = path
 
 
+class ConflictingConfigError(exceptions.Error):
+  """Property in app.yaml conflicts with params passed to fingerprinter."""
+
+
 def IdentifyDirectory(path, params=None):
   """Try to identify the given directory.
 
@@ -68,13 +72,19 @@ def IdentifyDirectory(path, params=None):
     (fingerprinting.Module or None) Returns a module if we've identified it,
     None if not.
   """
-  specified_runtime = None
   if not params:
     params = fingerprinting.Params()
+
+  # Parameter runtime has precedence
+  if params.runtime:
+    specified_runtime = params.runtime
   elif params.appinfo:
     specified_runtime = params.appinfo.GetEffectiveRuntime()
-    if specified_runtime == 'custom':
-      params.custom = True
+  else:
+    specified_runtime = None
+
+  if specified_runtime == 'custom':
+    params.custom = True
 
   for runtime in RUNTIMES:
 
@@ -92,7 +102,7 @@ def IdentifyDirectory(path, params=None):
   return None
 
 
-def GenerateConfigs(path, params=None):
+def GenerateConfigs(path, params=None, config_filename=None):
   """Generate all config files for the path into the current directory.
 
   As a side-effect, if there is a config file in 'params' with a runtime of
@@ -102,15 +112,43 @@ def GenerateConfigs(path, params=None):
     path: (basestring) Root directory to identify.
     params: (fingerprinting.Params or None) Parameters passed through to the
       fingerprinters.  Uses defaults if not provided.
+    config_filename: (str or None) Filename of the config file (app.yaml).
 
   Raises:
     UnidentifiedDirectoryError: No runtime module matched the directory.
+    ConflictingConfigError: Current app.yaml conflicts with other params.
 
   Returns:
     (callable()) Function to remove all generated files (if desired).
   """
   if not params:
     params = fingerprinting.Params()
+
+  config = params.appinfo
+  # An app.yaml exists, results in a lot more cases
+  if config and not params.deploy:
+    # Enforce --custom
+    if not params.custom:
+      raise ConflictingConfigError(
+          'Configuration file already exists. This command generates an '
+          'app.yaml configured to run an application on Google App Engine. '
+          'To create the configuration files needed to run this '
+          'application with docker, try `gcloud preview app gen-config '
+          '--custom`.')
+    # Check that current config is for MVM
+    if not config.IsVm():
+      raise ConflictingConfigError(
+          'gen-config is only supported for App Engine Managed VMs.  Please '
+          'use "vm: true" in your app.yaml if you would like to use Managed '
+          'VMs to run your application.')
+    # Check for conflicting --runtime and runtime in app.yaml
+    if (config.GetEffectiveRuntime() != 'custom' and params.runtime is not None
+        and params.runtime != config.GetEffectiveRuntime()):
+      raise ConflictingConfigError(
+          '[{0}] contains "runtime: {1}" which conficts with '
+          '--runtime={2}.'.format(config_filename, config.GetEffectiveRuntime(),
+                                  params.runtime))
+
   module = IdentifyDirectory(path, params)
   if not module:
     raise UnidentifiedDirectoryError(path)

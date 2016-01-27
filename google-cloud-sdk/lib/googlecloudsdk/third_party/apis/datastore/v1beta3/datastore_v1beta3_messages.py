@@ -1143,9 +1143,9 @@ class MultiWatchRequest(_messages.Message):
   """A request for google.datastore.v1beta3.DatastoreWatcher.MultiWatch
 
   Fields:
-    addTargets: The set of watch targets to add to this stream. changes will
-      be returned with server assigned `target_ids` in the same order as
-      targets are specified here.
+    addTargets: TODO(user): Switch to a non-batching API. The set of watch
+      targets to add to this stream. changes will be returned with server
+      assigned `target_ids` in the same order as targets are specified here.
     databaseId: Database ID against which to make the request.
     removeTargets: The IDs of watch targets to remove from this stream.
   """

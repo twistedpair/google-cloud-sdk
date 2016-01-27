@@ -141,28 +141,44 @@ def HandlePagerHttpError(func):
 
 
 def ConvertToJsonObject(json_string):
-  """Try to convert the JSON string into JsonObject."""
+  """Tries to convert the JSON string into JsonObject."""
   try:
     return extra_types.JsonProtoDecoder(json_string)
   except Exception as e:
     raise exceptions.ToolException('Invalid JSON value: %s' % e.message)
 
 
-def ExtractLogName(full_name):
-  """Extract only the log name and restore original slashes.
+def CreateLogResourceName(project, log_id):
+  """Creates the full log resource name.
 
   Args:
-    full_name: The full log uri e.g projects/my-projects/logs/my-log.
+    project: The project id, e.g. my-project.
+    log_id: The log id, e.g. my-log.
 
   Returns:
-    A log name that can be used in other commands.
+    Log resource, e.g. projects/my-project/logs/my-log.
   """
-  log_name = full_name.split('/logs/', 1)[1]
-  return log_name.replace('%2F', '/')
+  # Also handle the case where we already have the correct format.
+  if 'projects/' in log_id and 'logs/' in log_id:
+    return log_id
+  return 'projects/%s/logs/%s' % (project, log_id.replace('/', '%2F'))
+
+
+def ExtractLogId(log_resource):
+  """Extracts only the log id and restore original slashes.
+
+  Args:
+    log_resource: The full log uri e.g projects/my-projects/logs/my-log.
+
+  Returns:
+    A log id that can be used in other commands.
+  """
+  log_id = log_resource.split('/logs/', 1)[1]
+  return log_id.replace('%2F', '/')
 
 
 def PrintPermissionInstructions(destination):
-  """Print a message to remind the user to set up permissions for a sink.
+  """Prints a message to remind the user to set up permissions for a sink.
 
   Args:
     destination: the sink destination (either bigquery or cloud storage).

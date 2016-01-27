@@ -549,10 +549,8 @@ class QueryGrantableRolesRequest(_messages.Message):
 
   Fields:
     fullResourceName: Required. The full resource name to query the list of
-      grantable roles for.  This will follow the GCP resource format. See http
-      s://g3doc.corp.google.com/google/g3doc/style/resource_names.md?cl=head
-      #relationship-between-resource-names-and-urls For example, a GCP project
-      of ID "my-project" will be named
+      grantable roles for.  This will follow the GCP resource format. For
+      example, a GCP project of ID "my-project" will be named
       "//cloudresourcemanager.googleapis.com/projects/my-project".
   """
 

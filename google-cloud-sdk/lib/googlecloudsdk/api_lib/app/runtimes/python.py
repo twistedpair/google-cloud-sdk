@@ -84,7 +84,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
   def GenerateConfigs(self):
     """Generate all config files for the module."""
-    # Write "Saving file" messages to the user or to log depending on whether
+    # Write "Writing file" messages to the user or to log depending on whether
     # we're in "deploy."
     if self.params.deploy:
       notify = log.info
@@ -96,7 +96,7 @@ class PythonConfigurator(fingerprinting.Configurator):
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
-        notify('Saving [app.yaml] to [%s].' % self.root)
+        notify('Writing [app.yaml] to [%s].' % self.root)
         runtime = 'custom' if self.params.custom else 'python'
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(entrypoint=self.entrypoint,
@@ -105,7 +105,7 @@ class PythonConfigurator(fingerprinting.Configurator):
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)
       if not os.path.exists(dockerfile):
-        notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
+        notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
         # Customize the dockerfile.
         with open(dockerfile, 'w') as out:
           out.write(DOCKERFILE_PREAMBLE)
@@ -128,7 +128,7 @@ class PythonConfigurator(fingerprinting.Configurator):
       # copied verbatim.
       dockerignore = os.path.join(self.root, '.dockerignore')
       if not os.path.exists(dockerignore):
-        notify('Saving [.dockerignore] to [%s].' % self.root)
+        notify('Writing [.dockerignore] to [%s].' % self.root)
         with open(dockerignore, 'w') as f:
           f.write(DOCKERIGNORE)
         cleaner.Add(dockerignore)

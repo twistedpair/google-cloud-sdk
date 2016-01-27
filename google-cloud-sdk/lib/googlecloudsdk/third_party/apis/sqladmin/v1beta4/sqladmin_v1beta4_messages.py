@@ -194,7 +194,7 @@ class DatabaseInstance(_messages.Message):
       Monitoring API instead. Please see https://groups.google.com/d/msg
       /google-cloud-sql-announce/I_7-F9EBhT0/BtvFtdFeAgAJ for details.
     databaseVersion: The database engine type and version. Can be MYSQL_5_5 or
-      MYSQL_5_6. Defaults to MYSQL_5_5. The databaseVersion can not be changed
+      MYSQL_5_6. Defaults to MYSQL_5_6. The databaseVersion can not be changed
       after instance creation.
     etag: HTTP 1.1 Entity tag for the resource.
     failoverReplica: The name and status of the failover replica. This

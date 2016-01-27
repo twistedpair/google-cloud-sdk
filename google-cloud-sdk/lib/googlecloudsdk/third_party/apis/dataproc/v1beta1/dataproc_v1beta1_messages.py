@@ -11,53 +11,6 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'dataproc'
 
 
-class Agent(_messages.Message):
-  """A record for a single agent within Dataproc.
-
-  Enums:
-    StatusValueValuesEnum: Agent status.
-
-  Fields:
-    agentId: [Required] 64 characters matching the regular expression:
-      [a-z0-9.-]{1,64} An agent chosen ID. This should typically be the
-      hostname of the GCE virtual machine on which the agent is currently
-      running.
-    agentVersion: The version of this agent in HTTP User-Agent Header value
-      format (RFC 2616 section 14.43), e.g., "Dataproc-Agent/1.2".
-    clusterMetrics: [Optional] Cluster level metrics.
-    diagnostic: [Optional] The list of diagnostic records since last agent
-      update.
-    lastAgentUpdateTime: [Out] the last time this agent checked-in with
-      Dataproc.
-    status: Agent status.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    """Agent status.
-
-    Values:
-      STATUS_UNKNOWN: Status is not known.
-      INITIALIZING: Agent has started and is running built-in initialization
-        actions.
-      PERFORMING_CUSTOM_INITIALIZATION_ACTIONS: Running user-supplied
-        initialization actions.
-      RUNNING: Agent is running and is ready to receive work.
-      SETUP_FAILED: Agent setup failed, node is not usable.
-    """
-    STATUS_UNKNOWN = 0
-    INITIALIZING = 1
-    PERFORMING_CUSTOM_INITIALIZATION_ACTIONS = 2
-    RUNNING = 3
-    SETUP_FAILED = 4
-
-  agentId = _messages.StringField(1)
-  agentVersion = _messages.StringField(2)
-  clusterMetrics = _messages.MessageField('ClusterMetrics', 3)
-  diagnostic = _messages.MessageField('DiagnosticRecord', 4, repeated=True)
-  lastAgentUpdateTime = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
-
-
 class CancelJobRequest(_messages.Message):
   """A request to cancel a job."""
 
@@ -129,16 +82,6 @@ class ClusterConfiguration(_messages.Message):
   secondaryWorkerConfiguration = _messages.MessageField('InstanceGroupConfiguration', 5)
   softwareConfiguration = _messages.MessageField('SoftwareConfiguration', 6)
   workerConfiguration = _messages.MessageField('InstanceGroupConfiguration', 7)
-
-
-class ClusterMetrics(_messages.Message):
-  """Metrics exported by the agent from the cluster.
-
-  Fields:
-    yarnMetrics: [Optional] Cluster level metrics exported from Yarn.
-  """
-
-  yarnMetrics = _messages.MessageField('YarnClusterMetrics', 1)
 
 
 class ClusterStatus(_messages.Message):
@@ -228,82 +171,6 @@ class DataprocOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class DataprocProjectsClustersAgentsCreateRequest(_messages.Message):
-  """A DataprocProjectsClustersAgentsCreateRequest object.
-
-  Fields:
-    agent: A Agent resource to be passed as the request body.
-    agentId: [Required] Agent ID being registered.
-    clusterUuid: Cluster that this agent is associated with
-    projectId: Project ID that this agent is associated with
-  """
-
-  agent = _messages.MessageField('Agent', 1)
-  agentId = _messages.StringField(2, required=True)
-  clusterUuid = _messages.StringField(3, required=True)
-  projectId = _messages.StringField(4, required=True)
-
-
-class DataprocProjectsClustersAgentsDeleteRequest(_messages.Message):
-  """A DataprocProjectsClustersAgentsDeleteRequest object.
-
-  Fields:
-    agentId: The agent.
-    clusterUuid: The agent's cluster.
-    projectId: The agent's project.
-  """
-
-  agentId = _messages.StringField(1, required=True)
-  clusterUuid = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
-
-
-class DataprocProjectsClustersAgentsGetRequest(_messages.Message):
-  """A DataprocProjectsClustersAgentsGetRequest object.
-
-  Fields:
-    agentId: The agent's ID.
-    clusterUuid: The agent's cluster.
-    projectId: The agent's project ID.
-  """
-
-  agentId = _messages.StringField(1, required=True)
-  clusterUuid = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
-
-
-class DataprocProjectsClustersAgentsListRequest(_messages.Message):
-  """A DataprocProjectsClustersAgentsListRequest object.
-
-  Fields:
-    clusterUuid: The cluster from which to list agents.
-    pageSize: Requested page size for listing.
-    pageToken: Page continuation token.
-    projectId: The project from which to list agents.
-  """
-
-  clusterUuid = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
-
-
-class DataprocProjectsClustersAgentsUpdateRequest(_messages.Message):
-  """A DataprocProjectsClustersAgentsUpdateRequest object.
-
-  Fields:
-    agent: A Agent resource to be passed as the request body.
-    agentId: [Required] ID of agent sending the update.
-    clusterUuid: The cluster on which the agent is running.
-    projectId: The agent's project.
-  """
-
-  agent = _messages.MessageField('Agent', 1)
-  agentId = _messages.StringField(2, required=True)
-  clusterUuid = _messages.StringField(3, required=True)
-  projectId = _messages.StringField(4, required=True)
-
-
 class DataprocProjectsClustersDeleteRequest(_messages.Message):
   """A DataprocProjectsClustersDeleteRequest object.
 
@@ -385,38 +252,6 @@ class DataprocProjectsClustersPatchRequest(_messages.Message):
   clusterName = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
-
-
-class DataprocProjectsClustersTasksLeaseRequest(_messages.Message):
-  """A DataprocProjectsClustersTasksLeaseRequest object.
-
-  Fields:
-    clusterUuid: The cluster id of the agent.
-    leaseTasksRequest: A LeaseTasksRequest resource to be passed as the
-      request body.
-    projectId: The project id of the agent.
-  """
-
-  clusterUuid = _messages.StringField(1, required=True)
-  leaseTasksRequest = _messages.MessageField('LeaseTasksRequest', 2)
-  projectId = _messages.StringField(3, required=True)
-
-
-class DataprocProjectsClustersTasksReportRequest(_messages.Message):
-  """A DataprocProjectsClustersTasksReportRequest object.
-
-  Fields:
-    clusterUuid: The cluster id of the agent.
-    projectId: The project id of the agent.
-    reportTaskStatusRequest: A ReportTaskStatusRequest resource to be passed
-      as the request body.
-    taskId: The task that is being reported on.
-  """
-
-  clusterUuid = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  reportTaskStatusRequest = _messages.MessageField('ReportTaskStatusRequest', 3)
-  taskId = _messages.StringField(4, required=True)
 
 
 class DataprocProjectsJobsCancelRequest(_messages.Message):
@@ -529,17 +364,6 @@ class DiagnoseClusterRequest(_messages.Message):
   """A request to collect cluster diagnostic information."""
 
 
-class DiagnosticRecord(_messages.Message):
-  """A record that can be used for diagnosing agent state.
-
-  Fields:
-    errorSample: A complete stack trace serialized to string from an exception
-      encountered by the agent.
-  """
-
-  errorSample = _messages.StringField(1)
-
-
 class DiskConfiguration(_messages.Message):
   """Specifies the configuration of disk options for a group of VM instances.
 
@@ -570,14 +394,17 @@ class GceClusterConfiguration(_messages.Message):
   """Common configuration settings for resources of Google Compute Engine
   cluster instances, applicable to all instances in the cluster.
 
+  Messages:
+    MetadataValue: The Google Compute Engine metadata entries to add to all
+      instances.
+
   Fields:
+    metadata: The Google Compute Engine metadata entries to add to all
+      instances.
     networkUri: The Google Compute Engine network to be used for machine
       communications. Inbound SSH connections are necessary to complete
       cluster configuration. Example:
       `compute.googleapis.com/projects/[project_id]/zones/us-east1-a/default`.
-      This should follow the instructions for full resource names found here:
-      https://engdoc.corp.google.com/eng/doc/ti-apis/
-      style/resource_names.shtml?cl=head
     serviceAccountScopes: The URIs of service account scopes to be included in
       Google Compute Engine instances. The following base set of scopes is
       always included: -
@@ -589,16 +416,41 @@ class GceClusterConfiguration(_messages.Message):
       https://www.googleapis.com/auth/bigtable.admin.table -
       https://www.googleapis.com/auth/bigtable.data -
       https://www.googleapis.com/auth/devstorage.full_control
+    tags: The Google Compute Engine tags to add to all instances.
     zoneUri: [Required] The zone where the Google Compute Engine cluster will
       be located. Example: `compute.googleapis.com/projects/[project_id]/zones
-      /us-east1-a`. This should follow the instructions for full resource
-      names found here: https://engdoc.corp.google.com/eng/doc/ti-apis/
-      style/resource_names.shtml?cl=head
+      /us-east1-a`.
   """
 
-  networkUri = _messages.StringField(1)
-  serviceAccountScopes = _messages.StringField(2, repeated=True)
-  zoneUri = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    """The Google Compute Engine metadata entries to add to all instances.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
+  networkUri = _messages.StringField(2)
+  serviceAccountScopes = _messages.StringField(3, repeated=True)
+  tags = _messages.StringField(4, repeated=True)
+  zoneUri = _messages.StringField(5)
 
 
 class HadoopJob(_messages.Message):
@@ -776,11 +628,8 @@ class InstanceGroupConfiguration(_messages.Message):
     diskConfiguration: Disk option configuration settings.
     imageUri: [Output-only] The Google Compute Engine image resource used for
       cluster instances. Inferred from `SoftwareConfiguration.image_version`.
-      Can actually be specified for development purposes Example:
-      `compute.googleapis.com/projects/debian-cloud/global/images/backports-
-      debian-7-wheezy-v20140904`. This should follow the instructions for full
-      resource names found here: https://engdoc.corp.google.com/eng/doc/ti-
-      apis/ style/resource_names.shtml?cl=head
+      Example: `compute.googleapis.com/projects/debian-cloud/global/images
+      /backports-debian-7-wheezy-v20140904`.
     instanceNames: The list of instance names. Dataproc derives the names from
       `cluster_name`, `num_instances`, and the instance group if not set by
       user (recommended practice is to let Dataproc derive the name).
@@ -788,16 +637,12 @@ class InstanceGroupConfiguration(_messages.Message):
       Instances.
     machineTypeUri: The Google Compute Engine machine type used for cluster
       instances. Example: `compute.googleapis.com/projects/[project_id]/zones
-      /us-east1-a/machineTypes/n1-standard-2`. This should follow the
-      instructions for full resource names found here:
-      https://engdoc.corp.google.com/eng/doc/ti-apis/
-      style/resource_names.shtml?cl=head
+      /us-east1-a/machineTypes/n1-standard-2`.
     managedGroupConfiguration: [Output-only] The configuration for Google
       Compute Engine Instance Group Manager that manages this group. This is
       only used for preemptible instance groups.
     numInstances: The number of VM instances in the instance group. For master
-      instance groups, must be set to 1. eventually support high availability
-      with multiple masters.
+      instance groups, must be set to 1.
   """
 
   diskConfiguration = _messages.MessageField('DiskConfiguration', 1)
@@ -867,8 +712,7 @@ class Job(_messages.Message):
 
 
 class JobPlacement(_messages.Message):
-  """Cloud Dataproc job configuration. This will also eventually store the
-  information for scheduling and queueing of jobs.
+  """Cloud Dataproc job configuration.
 
   Fields:
     clusterName: [Required] The name of the cluster where the job will be
@@ -899,8 +743,7 @@ class JobReference(_messages.Message):
 
 
 class JobStatus(_messages.Message):
-  """Cloud Dataproc job status. May eventually contain information about
-  progress, session state, etc.
+  """Cloud Dataproc job status.
 
   Enums:
     StateValueValuesEnum: [Required] A state message specifying the overall
@@ -943,47 +786,6 @@ class JobStatus(_messages.Message):
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateStartTime = _messages.StringField(3)
-
-
-class LeaseTasksRequest(_messages.Message):
-  """A request to lease tasks for execution by an agent.
-
-  Fields:
-    agentId: The agent's id.
-    currentAgentTime: The current timestamp at the worker.
-    requestedLeaseDuration: The requested initial lease period.
-  """
-
-  agentId = _messages.StringField(1)
-  currentAgentTime = _messages.StringField(2)
-  requestedLeaseDuration = _messages.StringField(3)
-
-
-class LeaseTasksResponse(_messages.Message):
-  """A Response for task leasing.
-
-  Fields:
-    leaseExpirationTime: The worker-local lease expiration time.
-    reportStatusInterval: The interval at which status should be reported.
-    tasks: A list of tasks that have been leased.
-  """
-
-  leaseExpirationTime = _messages.StringField(1)
-  reportStatusInterval = _messages.StringField(2)
-  tasks = _messages.MessageField('Task', 3, repeated=True)
-
-
-class ListAgentsResponse(_messages.Message):
-  """Response to ListAgents
-
-  Fields:
-    agents: A list of agents.
-    nextPageToken: The token to send to ListAgents to acquire any following
-      pages. Will be empty for last page.
-  """
-
-  agents = _messages.MessageField('Agent', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListClustersResponse(_messages.Message):
@@ -1491,34 +1293,6 @@ class QueryList(_messages.Message):
   queries = _messages.StringField(1, repeated=True)
 
 
-class ReportTaskStatusRequest(_messages.Message):
-  """A request to report task status, which may result in the corresponding
-  lease being extended.
-
-  Fields:
-    agentId: The id of the agent reporting task status.
-    currentWorkerTime: The current timestamp at the worker.
-    status: Status for a single task.
-  """
-
-  agentId = _messages.StringField(1)
-  currentWorkerTime = _messages.StringField(2)
-  status = _messages.MessageField('TaskStatus', 3)
-
-
-class ReportTaskStatusResponse(_messages.Message):
-  """A response to a task status report.
-
-  Fields:
-    leaseExpirationTime: New task lease expiration timestamp in worker-local
-      time.
-    reportStatusInterval: The interval at which status should be reported.
-  """
-
-  leaseExpirationTime = _messages.StringField(1)
-  reportStatusInterval = _messages.StringField(2)
-
-
 class SoftwareConfiguration(_messages.Message):
   """Specifies the selection and configuration of software inside the cluster.
 
@@ -1886,468 +1660,6 @@ class SubmitJobRequest(_messages.Message):
   job = _messages.MessageField('Job', 1)
 
 
-class SystemTaskStatus(_messages.Message):
-  """Status of cluster configuration task.
-
-  Enums:
-    StateValueValuesEnum: The outcome of reconfiguration.
-
-  Fields:
-    state: The outcome of reconfiguration.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """The outcome of reconfiguration.
-
-    Values:
-      STATE_UNSPECIFIED: State is unspecified.
-      PENDING: Reconfiguration has not started, but request has been received
-        by the agent.
-      RUNNING: Reconfiguration is in-flight.
-      FINISHED: Reconfiguration succeeded.
-      FAILED: Reconfiguration failed.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    FINISHED = 3
-    FAILED = 4
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-
-
-class Task(_messages.Message):
-  """A single Task for agent execution.  A task in Cloud Dataproc is a unit of
-  work originating with the Cloud Dataproc service and intended for execution
-  on a Cloud Dataproc agent. The most straightforward example of a Task in
-  Cloud Dataproc is one corresponding to an end-user originated Job. This task
-  is then allocated to an available agent for execution. Other examples of
-  Cloud Dataproc Tasks could include executing system-maintenance scripts,
-  periodic agent upgrades, etc.  Using the example of a Task corresponding to
-  a Job, the flow through Cloud Dataproc will appear as:  - The end-user
-  submits a Job to Cloud Dataproc for execution. - The Cloud Dataproc service
-  determines the best Cluster to execute the Job on    and creates a Task for
-  the job. - An agent polls Cloud Dataproc for outstanding Tasks via the
-  LeaseTasks    method and the Task created in step 2 is provided to the
-  agent. - During execution of the Task, the agent updates the Task status via
-  the ReportTaskStatus method. - Upon completion of a Task, the agent will
-  finally ReportTaskStatus    with a TaskStatus indicating the status of the
-  driver application's    exit status. - The Cloud Dataproc service updates
-  the status of the user-submitted Job    using the Task status reported by
-  the agent.
-
-  Fields:
-    configuration: Configuration for this task.
-    status: The status of a task.
-    taskId: System defined task id.
-  """
-
-  configuration = _messages.MessageField('TaskConfiguration', 1)
-  status = _messages.MessageField('TaskStatus', 2)
-  taskId = _messages.StringField(3)
-
-
-class TaskClusterConfiguration(_messages.Message):
-  """A system task corresponding to a request for Master node to update
-  configuration based on provided values.
-
-  Enums:
-    TypeValueValuesEnum: Type of configuration change.
-
-  Fields:
-    addMembers: New nodes to register with cluster.
-    removeMembers: Existing nodes to decommission.
-    type: Type of configuration change.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    """Type of configuration change.
-
-    Values:
-      TYPE_UNSPECIFIED: No type specified. This is an invalid configuration.
-      TYPE_CLUSTER_MEMBERSHIP_CHANGE: Adding or removing nodes to cluster.
-    """
-    TYPE_UNSPECIFIED = 0
-    TYPE_CLUSTER_MEMBERSHIP_CHANGE = 1
-
-  addMembers = _messages.StringField(1, repeated=True)
-  removeMembers = _messages.StringField(2, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
-class TaskConfiguration(_messages.Message):
-  """Configuration for a Dataproc Task.
-
-  Fields:
-    clusterConfiguration: Cluster reconfiguration task.
-    jobConfiguration: Configuration of a Job-based task.
-    maintenanceCommand: Execute cluster maintenance command.
-  """
-
-  clusterConfiguration = _messages.MessageField('TaskClusterConfiguration', 1)
-  jobConfiguration = _messages.MessageField('TaskJobConfiguration', 2)
-  maintenanceCommand = _messages.MessageField('TaskMaintenanceCommand', 3)
-
-
-class TaskJobConfiguration(_messages.Message):
-  """A task corresponding to a single job execution request.
-
-  Enums:
-    TypeValueValuesEnum: The type of the job.
-
-  Messages:
-    PropertiesValue: Properties for the submitted job.
-    ScriptVariablesValue: Variables to be substituted in Pig and Hive scripts.
-
-  Fields:
-    archiveUris: Required archives for the driver program or distributed
-      program. Used by Hadoop, Spark, and PySpark jobs.
-    args: Arguments for the driver program. Used by Hadoop, Spark, and PySpark
-      jobs.
-    continueOnFailure: True to continue processing pig or hive queries if an
-      earlier query fails.
-    driverControlFilesUri: [Output-only] If present, the location of
-      miscellaneous control files which may be used as part of job setup and
-      handling. If not present, control files may be placed in the same
-      location as driver_output_uri.
-    driverInputUri: [Output-only] A URI pointing to the location of the stdin
-      of the job's driver program, only set if the job is interactive.
-    driverOutputUri: Output URI for driver output.
-    fileUris: Required files for the driver program or distributed program.
-      Used by Hadoop, Spark, and PySpark jobs.
-    interactive: [Optional] If set to true, then the driver's stdin will be
-      kept open and driver_input_uri will be set to provide a path at which
-      additional input can be sent to the driver.
-    jarFileUris: JAR files that are required by the job.
-    loggingConfiguration: Logging configuration for the job.
-    mainClass: A class name that is contained either in core Hadoop or Spark
-      libraries or within a JAR specified within jar_file_uris.
-    mainJarFileUri: A JAR containing the main driver and containing a METADATA
-      entry for a main class contained within the jar.
-    mainPythonFileUri: The main Python file for a PySpark application.
-    properties: Properties for the submitted job.
-    pythonFileUris: URIs of files required by the PySpark application
-    queryFileUri: A URI of a file containing queries
-    queryList: A list of queries specified within the API.
-    scriptVariables: Variables to be substituted in Pig and Hive scripts.
-    submittedBy: The user that the job should be attributed to in Hadoop as a
-      posix-style username. If the user is not a member of the system's user-
-      database, the task will be started as a system account.
-    type: The type of the job.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    """The type of the job.
-
-    Values:
-      TYPE_UNSPECIFIED: No type specified. This is an invalid configuration.
-      HADOOP: A hadoop job.
-      SPARK: A spark job.
-      PYSPARK: A pyspark job.
-      HIVE: A hive job.
-      PIG: A pig job.
-      SPARK_SQL: A spark-sql job.
-    """
-    TYPE_UNSPECIFIED = 0
-    HADOOP = 1
-    SPARK = 2
-    PYSPARK = 3
-    HIVE = 4
-    PIG = 5
-    SPARK_SQL = 6
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PropertiesValue(_messages.Message):
-    """Properties for the submitted job.
-
-    Messages:
-      AdditionalProperty: An additional property for a PropertiesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type PropertiesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ScriptVariablesValue(_messages.Message):
-    """Variables to be substituted in Pig and Hive scripts.
-
-    Messages:
-      AdditionalProperty: An additional property for a ScriptVariablesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ScriptVariablesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ScriptVariablesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  archiveUris = _messages.StringField(1, repeated=True)
-  args = _messages.StringField(2, repeated=True)
-  continueOnFailure = _messages.BooleanField(3)
-  driverControlFilesUri = _messages.StringField(4)
-  driverInputUri = _messages.StringField(5)
-  driverOutputUri = _messages.StringField(6)
-  fileUris = _messages.StringField(7, repeated=True)
-  interactive = _messages.BooleanField(8)
-  jarFileUris = _messages.StringField(9, repeated=True)
-  loggingConfiguration = _messages.MessageField('TaskLoggingConfiguration', 10)
-  mainClass = _messages.StringField(11)
-  mainJarFileUri = _messages.StringField(12)
-  mainPythonFileUri = _messages.StringField(13)
-  properties = _messages.MessageField('PropertiesValue', 14)
-  pythonFileUris = _messages.StringField(15, repeated=True)
-  queryFileUri = _messages.StringField(16)
-  queryList = _messages.MessageField('TaskQueryList', 17)
-  scriptVariables = _messages.MessageField('ScriptVariablesValue', 18)
-  submittedBy = _messages.StringField(19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
-
-
-class TaskJobStatus(_messages.Message):
-  """Status of a single job-based task.
-
-  Enums:
-    DriverStateValueValuesEnum: The state of the driver.
-
-  Fields:
-    driverExitCode: If the driver has exited, its exit code.
-    driverState: The state of the driver.
-    yarnApplications: A list of YARN applications that have been launched for
-      this task.
-  """
-
-  class DriverStateValueValuesEnum(_messages.Enum):
-    """The state of the driver.
-
-    Values:
-      DRIVER_STATE_UNSPECIFIED: The state is unspecified.
-      PENDING: The driver has not yet been started, but it's known to the
-        agent.
-      RUNNING: The driver is running.
-      KILL_PENDING: A kill command has been received and the agent is shutting
-        down the driver.
-      KILLED: The driver has been killed.
-      FINISHED: The driver finished successfully.
-      FAILED: The driver failed.
-    """
-    DRIVER_STATE_UNSPECIFIED = 0
-    PENDING = 1
-    RUNNING = 2
-    KILL_PENDING = 3
-    KILLED = 4
-    FINISHED = 5
-    FAILED = 6
-
-  driverExitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  driverState = _messages.EnumField('DriverStateValueValuesEnum', 2)
-  yarnApplications = _messages.MessageField('TaskYarnApplication', 3, repeated=True)
-
-
-class TaskLoggingConfiguration(_messages.Message):
-  """Logging configuration for the task.
-
-  Messages:
-    LogLevelsValue: Map of logger name to log4j log level.
-
-  Fields:
-    logLevels: Map of logger name to log4j log level.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LogLevelsValue(_messages.Message):
-    """Map of logger name to log4j log level.
-
-    Messages:
-      AdditionalProperty: An additional property for a LogLevelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LogLevelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LogLevelsValue object.
-
-      Enums:
-        ValueValueValuesEnum:
-
-      Fields:
-        key: Name of the additional property.
-        value: A ValueValueValuesEnum attribute.
-      """
-
-      class ValueValueValuesEnum(_messages.Enum):
-        """ValueValueValuesEnum enum type.
-
-        Values:
-          LEVEL_UNSPECIFIED: <no description>
-          ALL: <no description>
-          TRACE: <no description>
-          DEBUG: <no description>
-          INFO: <no description>
-          WARN: <no description>
-          ERROR: <no description>
-          FATAL: <no description>
-          OFF: <no description>
-        """
-        LEVEL_UNSPECIFIED = 0
-        ALL = 1
-        TRACE = 2
-        DEBUG = 3
-        INFO = 4
-        WARN = 5
-        ERROR = 6
-        FATAL = 7
-        OFF = 8
-
-      key = _messages.StringField(1)
-      value = _messages.EnumField('ValueValueValuesEnum', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  logLevels = _messages.MessageField('LogLevelsValue', 1)
-
-
-class TaskMaintenanceCommand(_messages.Message):
-  """A system task corresponding to a request to run a maintenance command on
-  targeted agent.
-
-  Messages:
-    EnvironmentValue: The environment variables.
-
-  Fields:
-    args: Arguments to pass to the script.
-    environment: The environment variables.
-    gcsUri: The executable is stored on GCS.
-    localPath: The executable is a file on agent.
-    scriptOutputUri: The GCS URI where executable output will be stored.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvironmentValue(_messages.Message):
-    """The environment variables.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvironmentValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvironmentValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a EnvironmentValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  args = _messages.StringField(1, repeated=True)
-  environment = _messages.MessageField('EnvironmentValue', 2)
-  gcsUri = _messages.StringField(3)
-  localPath = _messages.StringField(4)
-  scriptOutputUri = _messages.StringField(5)
-
-
-class TaskQueryList(_messages.Message):
-  """A list of queries to execute as part of the task.
-
-  Fields:
-    queries: The queries to execute. The format of the queries is task-type
-      dependent, but in each case each query should be executed within its own
-      invocation of the interpreter for that task type.
-  """
-
-  queries = _messages.StringField(1, repeated=True)
-
-
-class TaskStatus(_messages.Message):
-  """Status for a single Task.
-
-  Fields:
-    jobStatus: The status of the Job.
-    systemTaskStatus: The status of the SystemTask.
-  """
-
-  jobStatus = _messages.MessageField('TaskJobStatus', 1)
-  systemTaskStatus = _messages.MessageField('SystemTaskStatus', 2)
-
-
-class TaskYarnApplication(_messages.Message):
-  """YARN applications that have been associated with a task.
-
-  Enums:
-    StateValueValuesEnum: The state of the YARN application.
-
-  Fields:
-    id: YARN application id.
-    name: YARN application name.
-    progress: The progress of the YARN application.
-    state: The state of the YARN application.
-    trackingUrl: The tracking URL for the YARN application. This URL may or
-      may not be accessible from outside the cluster.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """The state of the YARN application.
-
-    Values:
-      STATE_UNSPECIFIED: Status is unspecified.
-      NEW: Status is NEW.
-      NEW_SAVING: Status is NEW_SAVING.
-      SUBMITTED: Status is SUBMITTED.
-      ACCEPTED: Status is ACCEPTED.
-      RUNNING: Status is RUNNING.
-      FINISHED: Status is FINISHED.
-      FAILED: Status is FAILED.
-      KILLED: Status is KILLED.
-    """
-    STATE_UNSPECIFIED = 0
-    NEW = 1
-    NEW_SAVING = 2
-    SUBMITTED = 3
-    ACCEPTED = 4
-    RUNNING = 5
-    FINISHED = 6
-    FAILED = 7
-    KILLED = 8
-
-  id = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  name = _messages.StringField(2)
-  progress = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  trackingUrl = _messages.StringField(5)
-
-
 class YarnApplication(_messages.Message):
   """A YARN application created by a job. Application information is a subset
   of
@@ -2395,85 +1707,6 @@ class YarnApplication(_messages.Message):
   progress = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   trackingUrl = _messages.StringField(4)
-
-
-class YarnClusterMetrics(_messages.Message):
-  """Cluster level that are exported directly from Yarn. These will come from
-  Yarn ResourceManager's Cluster Metrics API that are described here:
-  https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-
-  site/ResourceManagerRest.html#Cluster_Metrics_API  \\ NOLINT
-
-  Messages:
-    IntegerMetricsValue: [Optional] a map of the metric name to metric value
-      for Yarn Cluster Metrics with integer values such as appsSubmitted or
-      totalNodes.
-    LongMetricsValue: [Optional] a map of the metric name to the value for
-      Yarn Cluster Metrics with long values such as reservedMB or
-      totalVirtualCores.
-
-  Fields:
-    integerMetrics: [Optional] a map of the metric name to metric value for
-      Yarn Cluster Metrics with integer values such as appsSubmitted or
-      totalNodes.
-    longMetrics: [Optional] a map of the metric name to the value for Yarn
-      Cluster Metrics with long values such as reservedMB or
-      totalVirtualCores.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IntegerMetricsValue(_messages.Message):
-    """[Optional] a map of the metric name to metric value for Yarn Cluster
-    Metrics with integer values such as appsSubmitted or totalNodes.
-
-    Messages:
-      AdditionalProperty: An additional property for a IntegerMetricsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type IntegerMetricsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a IntegerMetricsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A integer attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LongMetricsValue(_messages.Message):
-    """[Optional] a map of the metric name to the value for Yarn Cluster
-    Metrics with long values such as reservedMB or totalVirtualCores.
-
-    Messages:
-      AdditionalProperty: An additional property for a LongMetricsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type LongMetricsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LongMetricsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  integerMetrics = _messages.MessageField('IntegerMetricsValue', 1)
-  longMetrics = _messages.MessageField('LongMetricsValue', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

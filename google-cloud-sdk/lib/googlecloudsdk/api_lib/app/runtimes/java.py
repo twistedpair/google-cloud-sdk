@@ -125,7 +125,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     """
     app_yaml = os.path.join(self.root, 'app.yaml')
     if not os.path.exists(app_yaml):
-      self.notify('Saving [app.yaml] to [{0}].'.format(self.root))
+      self.notify('Writing [app.yaml] to [{0}].'.format(self.root))
       runtime = 'custom' if self.custom else 'java'
       with open(app_yaml, 'w') as f:
         f.write(JAVA_APP_YAML.format(runtime=runtime))
@@ -142,7 +142,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     env2 = self.appinfo and self.appinfo.env == '2'
     dockerfile = os.path.join(self.root, config.DOCKERFILE)
     if not os.path.exists(dockerfile):
-      self.notify('Saving [%s] to [%s].' % (config.DOCKERFILE, self.root))
+      self.notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
       # Customize the dockerfile.
       with open(dockerfile, 'w') as out:
         if self.artifact_to_deploy.endswith('.war'):
@@ -178,7 +178,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     """
     dockerignore = os.path.join(self.root, '.dockerignore')
     if not os.path.exists(dockerignore):
-      self.notify('Saving [.dockerignore] to [{0}].'.format(self.root))
+      self.notify('Writing [.dockerignore] to [{0}].'.format(self.root))
       with open(dockerignore, 'w') as f:
         f.write(DOCKERIGNORE)
       cleaner.Add(dockerignore)

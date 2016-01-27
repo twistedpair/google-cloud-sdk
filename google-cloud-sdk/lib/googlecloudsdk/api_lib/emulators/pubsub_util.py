@@ -38,9 +38,8 @@ def ToArgsList(args):
   """Converts an argparse.Namespace to a list of arg strings."""
   args_list = []
   if args.host_port:
-    host = args.host_port.host
-    if host is not None and host != 'localhost':
-      raise InvalidArgumentError('Invalid host. Only "localhost" is supported.')
+    if args.host_port.host is not None:
+      args_list.append('--host=%s' % args.host_port.host)
     if args.host_port.port is not None:
       args_list.append('--port=%s' % args.host_port.port)
   return args_list

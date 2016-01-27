@@ -16,9 +16,12 @@
 """
 
 import abc
+import sys
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
+from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
 
@@ -94,6 +97,97 @@ class ReleaseTrack(object):
       if track.prefix == prefix:
         return track
     return None
+
+
+class Argument(object):
+  """A class that allows you to save an argument configuration for reuse."""
+
+  def __init__(self, *args, **kwargs):
+    """Creates the argument.
+
+    Args:
+      *args: The positional args to parser.add_argument.
+      **kwargs: The keyword args to parser.add_argument.
+    """
+    self.__detailed_help = kwargs.pop('detailed_help', None)
+    self.__args = args
+    self.__kwargs = kwargs
+
+  def AddToParser(self, parser):
+    """Adds this argument to the given parser.
+
+    Args:
+      parser: The argparse parser.
+
+    Returns:
+      The result of parser.add_argument().
+    """
+    arg = parser.add_argument(*self.__args, **self.__kwargs)
+    if self.__detailed_help:
+      arg.detailed_help = self.__detailed_help
+    return arg
+
+
+# Common flag definitions for consistency.
+
+ASYNC_FLAG = Argument(
+    '--async',
+    action='store_true',
+    help="Don't wait for the operation to complete.",
+    detailed_help="""\
+    Display information about the operation in progress and don't wait for
+    the operation to complete.""")
+
+FILTER_FLAG = Argument(
+    '--filter',
+    metavar='EXPRESSION',
+    help='Apply _EXPRESSION_ to select resource items to list.',
+    detailed_help="""\
+    Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
+    If the expression evaluates True then that item is listed. For more
+    details run $ gcloud topic filters. If *--limit* is also specified
+    then it is applied after *--filter*.""")
+
+LIMIT_FLAG = Argument(
+    '--limit',
+    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    help='The maximum number of resources to list.',
+    detailed_help="""\
+    The maximum number of resources to list. The default is *unlimited*.
+    If *--filter* is also specified then it is applied before *--limit*.
+    """)
+
+PAGE_FLAG = Argument(
+    '--page',
+    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    help='The maximum resources list page size.',
+    detailed_help="""\
+    The maximum resources list page size. The default is determined by
+    the service if it supports paging, otherwise it is *unlimited*. If
+    *--filter* or *--limit** are also specified then less than the maximum may
+    be listed in each resource page.
+    """)
+
+SORT_BY_FLAG = Argument(
+    '--sort-by',
+    metavar='FIELDS',
+    help='A comma-separated list of field key names to sort by.',
+    detailed_help="""\
+    A comma-separated list of resource field key names to sort by. The
+    default order is ascending. Prefix a field with ``~'' for descending
+    order on that field.
+    """)
+
+URI_FLAG = Argument(
+    '--uri',
+    action='store_true',
+    help='If provided, a list of URIs is printed instead of a table.',
+    detailed_help="""\
+    If provided, the list command will only print URIs for the resources
+    returned.  If this flag is not provided, the list
+    command will print a human-readable table of useful resource
+    data.
+    """)
 
 
 class _Common(object):
@@ -226,8 +320,16 @@ class _Common(object):
     """Set up arguments for this command.
 
     Args:
-      parser: An argparse.ArgumentParser-like object. It is mocked out in order
-          to capture some information, but behaves like an ArgumentParser.
+      parser: An argparse.ArgumentParser.
+    """
+    pass
+
+  @staticmethod
+  def _Flags(parser):
+    """Adds subclass flags.
+
+    Args:
+      parser: An argparse.ArgumentParser object.
     """
     pass
 
@@ -355,19 +457,57 @@ class Command(_Common):
           arguments specified in the .Args() method.
 
     Returns:
-      A python object that is given back to the python caller, or sent to the
-      .Display() method in CLI mode.
+      A resource object dispatched by display.Displayer().
     """
     pass
 
-  def Collection(self, unused_args):
-    """Returns the default collection path string."""
+  @staticmethod
+  def Collection(args):
+    """Returns the default collection path string.
+
+    Should handle all command-specific args. --async is handled by
+    ResourceInfo().
+
+    Args:
+      args: argparse.Namespace, An object that contains the values for the
+          arguments specified in the ._Flags() and .Args() methods.
+
+    Returns:
+      The default collection path string.
+    """
+    _ = args
     return None
 
   def ResourceInfo(self, args):
-    """Returns the command resource ResourceInfo object."""
-    collection = self.Collection(args)
-    return resource_registry.Get(collection) if collection else None
+    """Returns the command resource ResourceInfo object.
+
+    Handles the --async flag.
+
+    Args:
+      args: argparse.Namespace, An object that contains the values for the
+          arguments specified in the ._Flags() and .Args() methods.
+
+    Raises:
+      ResourceRegistryAttributeError: If --async is set and the
+        resource_registry info does not have an async_collection attribute.
+      UnregisteredCollectionError: If the async_collection name is not in the
+        resource registry.
+
+    Returns:
+      A resource object dispatched by display.Displayer().
+    """
+    collection = self.Collection(args)  # pylint: disable=assignment-from-none
+    if not collection:
+      return None
+    info = resource_registry.Get(collection)
+    if not getattr(args, 'async', False):
+      return info
+    async_collection = info.async_collection
+    if not async_collection:
+      raise resource_exceptions.ResourceRegistryAttributeError(
+          'Collection [{collection}] does not have an async_collection '
+          'attribute.'.format(collection=collection))
+    return resource_registry.Get(async_collection)
 
   def Format(self, unused_args):
     """Returns the default format string."""
@@ -432,10 +572,16 @@ class ListCommand(CacheCommand):
 
   __metaclass__ = abc.ABCMeta
 
+  @staticmethod
+  def _Flags(parser):
+    """Adds the default flags for all ListCommand commands."""
+
+    FILTER_FLAG.AddToParser(parser)
+    LIMIT_FLAG.AddToParser(parser)
+    SORT_BY_FLAG.AddToParser(parser)
+
   def Format(self, args):
     info = self.ResourceInfo(args)
-    if getattr(args, 'simple_list', False) and info.simple_format:
-      return info.simple_format
     return info.list_format or 'default'
 
   def GetUriCacheUpdateOp(self):
@@ -458,38 +604,6 @@ class DeleteCommand(CacheCommand):
 
   def GetUriCacheUpdateOp(self):
     return DELETE_FROM_URI_CACHE
-
-
-class Argument(object):
-  """A class that allows you to save an argument configuration for reuse."""
-
-  def __init__(self, *args, **kwargs):
-    """Creates the argument.
-
-    Args:
-      *args: The positional args to parser.add_argument.
-      **kwargs: The keyword args to parser.add_argument.
-    """
-    try:
-      self.__detailed_help = kwargs.pop('detailed_help')
-    except KeyError:
-      self.__detailed_help = None
-    self.__args = args
-    self.__kwargs = kwargs
-
-  def AddToParser(self, parser):
-    """Adds this argument to the given parser.
-
-    Args:
-      parser: The argparse parser.
-
-    Returns:
-      The result of parser.add_argument().
-    """
-    arg = parser.add_argument(*self.__args, **self.__kwargs)
-    if self.__detailed_help:
-      arg.detailed_help = self.__detailed_help
-    return arg
 
 
 def Hidden(cmd_class):

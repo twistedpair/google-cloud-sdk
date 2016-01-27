@@ -40,17 +40,14 @@ class Version(object):
                            'modules/(?P<service>.*)/'
                            'versions/(?P<version>.*)')
 
-  def __init__(self, project, service, version, traffic_split=None,
-               last_deployed_time=None):
+  def __init__(self, project, service, version_id, traffic_split=None,
+               last_deployed_time=None, version_resource=None):
     self.project = project
     self.service = service
-    self.version = version
+    self.id = version_id
+    self.version = version_resource
     self.traffic_split = traffic_split
     self.last_deployed_time = last_deployed_time
-
-  @property
-  def id(self):
-    return self.version.id
 
   @classmethod
   def FromResourcePath(cls, path):
@@ -65,9 +62,9 @@ class Version(object):
   @classmethod
   def FromVersionResource(cls, version, service):
     """Convert a appengine_v1beta4_messages.Version into a wrapped Version."""
-    project, service_id, version_id = re.match(cls._VERSION_NAME_PATTERN,
-                                               version.name).groups()
-    traffic_split = service and service.split.get(version_id, 0.0)
+    project, service_id, _ = re.match(cls._VERSION_NAME_PATTERN,
+                                      version.name).groups()
+    traffic_split = service and service.split.get(version.id, 0.0)
     last_deployed = None
     try:
       if version.creationTime:
@@ -79,24 +76,24 @@ class Version(object):
             timezone.GetTimeZone('local'))
     except ValueError:
       pass
-    return cls(project, service_id, version_id, traffic_split=traffic_split,
-               last_deployed_time=last_deployed)
+    return cls(project, service_id, version.id, traffic_split=traffic_split,
+               last_deployed_time=last_deployed, version_resource=version)
 
   def __eq__(self, other):
     return (type(other) is Version and
             self.project == other.project and
             self.service == other.service and
-            self.version == other.version)
+            self.id == other.id)
 
   def __ne__(self, other):
     return not self == other
 
   def __cmp__(self, other):
-    return cmp((self.project, self.service, self.version),
-               (other.project, other.service, other.version))
+    return cmp((self.project, self.service, self.id),
+               (other.project, other.service, other.id))
 
   def __str__(self):
-    return '{0}/{1}/{2}'.format(self.project, self.service, self.version)
+    return '{0}/{1}/{2}'.format(self.project, self.service, self.id)
 
 
 def _ValidateServicesAreSubset(filtered_versions, all_versions):
@@ -118,7 +115,7 @@ def _ValidateServicesAreSubset(filtered_versions, all_versions):
     if version not in all_versions:
       raise VersionValidationError(
           'Version [{0}/{1}] not found.'.format(version.service,
-                                                version.version))
+                                                version.id))
 
 
 def ParseVersionResourcePaths(paths, project):
@@ -172,7 +169,7 @@ def _FilterVersions(all_versions, service, versions):
     filtered_versions = [v for v in all_versions if v.service == service]
 
   if versions:
-    filtered_versions = [v for v in filtered_versions if v.version in versions]
+    filtered_versions = [v for v in filtered_versions if v.id in versions]
 
   return filtered_versions
 

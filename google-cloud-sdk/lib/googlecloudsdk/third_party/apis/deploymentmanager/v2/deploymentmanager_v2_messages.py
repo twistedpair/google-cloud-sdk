@@ -162,10 +162,10 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -195,8 +195,8 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
       body.
     preview: If set to true, updates the deployment and creates and updates
       the "shell" resources but does not actually alter or instantiate these
-      resources. This allows you to preview what your deployment looks like.
-      You can use this intent to preview how an update would affect your
+      resources. This allows you to preview what your deployment will look
+      like. You can use this intent to preview how an update would affect your
       deployment. You must provide a target.config with a configuration if
       this is set to true. After previewing a deployment, you can deploy your
       resources by making a request with the update() or you can
@@ -266,8 +266,8 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
       body.
     preview: If set to true, updates the deployment and creates and updates
       the "shell" resources but does not actually alter or instantiate these
-      resources. This allows you to preview what your deployment looks like.
-      You can use this intent to preview how an update would affect your
+      resources. This allows you to preview what your deployment will look
+      like. You can use this intent to preview how an update would affect your
       deployment. You must provide a target.config with a configuration if
       this is set to true. After previewing a deployment, you can deploy your
       resources by making a request with the update() or you can
@@ -344,10 +344,10 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -397,10 +397,10 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -452,10 +452,10 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -493,10 +493,10 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     pageToken: Specifies a page token to use. Set pageToken to the
       nextPageToken returned by a previous list request to get the next page
       of results.
@@ -521,7 +521,7 @@ class DeploymentsCancelPreviewRequest(_messages.Message):
       another user attempts to cancel a preview, this would prevent one of the
       requests).  The fingerprint is initially generated by Deployment Manager
       and changes after every request to modify a deployment. To get the
-      latest fingerprint value, perform a get() request to a deployment.
+      latest fingerprint value, perform a get() request on the deployment.
   """
 
   fingerprint = _messages.BytesField(1)
@@ -553,7 +553,7 @@ class DeploymentsStopRequest(_messages.Message):
       stop an ongoing update request, this would prevent a collision).  The
       fingerprint is initially generated by Deployment Manager and changes
       after every request to modify a deployment. To get the latest
-      fingerprint value, perform a get() request to a deployment.
+      fingerprint value, perform a get() request on the deployment.
   """
 
   fingerprint = _messages.BytesField(1)
@@ -621,8 +621,7 @@ class Operation(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
-    clientOperationId: [Output Only] A unique client ID generated by the
-      server.
+    clientOperationId: [Output Only] Reserved for future use.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: [Output Only] A textual description of the operation, which
@@ -643,8 +642,8 @@ class Operation(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#operation for
       Operation resources.
     name: [Output Only] Name of the resource.
-    operationType: [Output Only] The type of operation, which can be insert,
-      update, or delete.
+    operationType: [Output Only] The type of operation, such as insert,
+      update, or delete, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
       to 100. There is no requirement that this be linear or support any
       granularity of operations. This should not be used to guess when the

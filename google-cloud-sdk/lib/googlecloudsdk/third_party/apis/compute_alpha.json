@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160113",
+ "revision": "20160120",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -794,7 +794,7 @@
    "properties": {
     "balancingMode": {
      "type": "string",
-     "description": "Specifies the balancing mode for this backend. The default is UTILIZATION but available values are UTILIZATION and RATE.",
+     "description": "Specifies the balancing mode for this backend. For global HTTP(S) load balancing, the default is UTILIZATION. Valid values are UTILIZATION and RATE.",
      "enum": [
       "RATE",
       "UTILIZATION"
@@ -819,12 +819,12 @@
     },
     "maxRate": {
      "type": "integer",
-     "description": "The max requests per second (RPS) of the group. Can be used with either balancing mode, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.",
+     "description": "The max requests per second (RPS) of the group. Can be used with either RATE or UTILIZATION balancing modes, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.",
      "format": "int32"
     },
     "maxRatePerInstance": {
      "type": "number",
-     "description": "The max requests per second (RPS) that a single backed instance can handle. This is used to calculate the capacity of the group. Can be used in either balancing mode. For RATE mode, either maxRate or maxRatePerInstance must be set.",
+     "description": "The max requests per second (RPS) that a single backend instance can handle.This is used to calculate the capacity of the group. Can be used in either balancing mode. For RATE mode, either maxRate or maxRatePerInstance must be set.",
      "format": "float"
     },
     "maxUtilization": {
@@ -974,6 +974,7 @@
     },
     "protocol": {
      "type": "string",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP and SSL.",
      "enum": [
       "HTTP",
       "HTTPS",
@@ -1007,7 +1008,7 @@
     },
     "timeoutSec": {
      "type": "integer",
-     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds.",
+     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds. Valid range is [1, 86400].",
      "format": "int32"
     }
    }
@@ -3106,6 +3107,11 @@
      "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be created or are currently being created. If the group fails to create one of these instances, it tries again until it creates the instance successfully.",
      "format": "int32"
     },
+    "creatingWithoutRetries": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances that the managed instance group will attempt to create. The group attempts to create each instance only once. If the group fails to create one of these instances, it decreases the group's target_size value accordingly.",
+     "format": "int32"
+    },
     "deleting": {
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be deleted or are currently being deleted.",
@@ -3268,6 +3274,21 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "InstanceGroupManagersResizeAdvancedRequest": {
+   "id": "InstanceGroupManagersResizeAdvancedRequest",
+   "type": "object",
+   "properties": {
+    "noCreationRetries": {
+     "type": "boolean",
+     "description": "If this flag is true, we will attempt to create all instances resized up with this request only once. In case of an error during creation, we will not create this instance, and we will decrease the target_size. If the flag is false, we will keep trying to create each instance until we succeed.\n\nThis flag matters only in the first attempt of creation of an instance. If an instance creation with this flag succeeds, the instance behaves the same way as all the other instances created with the flag set to false. In particular, consecutive instance creations (in case an instance dies and needs to be recreated) will not fail after the first attempt.\n\nThis flag is applicable only to the current resize request. It does not influence other resize requests in any way.\n\nYou can see which instances is being creating in which mode by calling the listManagedInstances API."
+    },
+    "targetSize": {
+     "type": "integer",
+     "description": "The number of running instances that the managed instance group should maintain at any given time. The group automatically adds or removes instances to maintain the number of instances specified by this parameter.",
+     "format": "int32"
     }
    }
   },
@@ -4142,6 +4163,7 @@
      "enum": [
       "ABANDONING",
       "CREATING",
+      "CREATING_WITHOUT_RETRIES",
       "DELETING",
       "NONE",
       "RECREATING",
@@ -4149,6 +4171,7 @@
       "RESTARTING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -4426,7 +4449,7 @@
    "properties": {
     "clientOperationId": {
      "type": "string",
-     "description": "[Output Only] A unique client ID generated by the server."
+     "description": "[Output Only] Reserved for future use."
     },
     "creationTimestamp": {
      "type": "string",
@@ -4496,7 +4519,7 @@
     },
     "operationType": {
      "type": "string",
-     "description": "[Output Only] The type of operation, which can be insert, update, or delete."
+     "description": "[Output Only] The type of operation, such as insert, update, or delete, and so on."
     },
     "progress": {
      "type": "integer",
@@ -7998,7 +8021,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -8167,7 +8190,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -8274,7 +8297,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -8443,7 +8466,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -8765,7 +8788,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9096,7 +9119,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9259,7 +9282,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9351,7 +9374,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9413,7 +9436,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9631,7 +9654,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -9921,7 +9944,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10084,7 +10107,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10253,7 +10276,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10499,7 +10522,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10685,7 +10708,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10812,7 +10835,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -10926,7 +10949,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11075,7 +11098,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11333,7 +11356,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11591,7 +11614,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -11922,7 +11945,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12091,7 +12114,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12297,7 +12320,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12462,6 +12485,48 @@
       "instanceGroupManager",
       "size"
      ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "resizeAdvanced": {
+     "id": "compute.instanceGroupManagers.resizeAdvanced",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeAdvanced",
+     "httpMethod": "POST",
+     "description": "Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. This method is an extended version of Resize and it supports more advanced options.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersResizeAdvancedRequest"
+     },
      "response": {
       "$ref": "Operation"
      },
@@ -12700,7 +12765,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12864,7 +12929,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -12927,7 +12992,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13216,7 +13281,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13358,7 +13423,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -13774,7 +13839,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14404,7 +14469,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14496,7 +14561,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14653,7 +14718,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -14952,7 +15017,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15298,7 +15363,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15655,7 +15720,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15718,7 +15783,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -15905,7 +15970,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16001,7 +16066,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16055,7 +16120,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16266,7 +16331,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16556,7 +16621,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16714,7 +16779,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -16936,7 +17001,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17027,7 +17092,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17196,7 +17261,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17398,7 +17463,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17620,7 +17685,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17783,7 +17848,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -17952,7 +18017,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18145,7 +18210,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18358,7 +18423,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18642,7 +18707,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -18811,7 +18876,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19049,7 +19114,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19248,7 +19313,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19417,7 +19482,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19604,7 +19669,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",
@@ -19700,7 +19765,7 @@
       },
       "maxResults": {
        "type": "integer",
-       "description": "The maximum number of results per page that Compute Engine should return. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
        "default": "500",
        "format": "uint32",
        "minimum": "0",

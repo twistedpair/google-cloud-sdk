@@ -4,7 +4,7 @@
  "id": "toolresults:v1beta3",
  "name": "toolresults",
  "version": "v1beta3",
- "revision": "20160113",
+ "revision": "20160120",
  "title": "Cloud Tool Results API",
  "description": "Read and publish results from tools such as Build and Test.",
  "ownerDomain": "google.com",
@@ -78,7 +78,7 @@
   "Any": {
    "id": "Any",
    "type": "object",
-   "description": "`Any` contains an arbitrary serialized message along with a URL that describes the type of the serialized message.\n\n\n\nJSON ==== The JSON representation of an `Any` value uses the regular representation of the deserialized, embedded message, with an additional field `@type` which contains the type URL. Example:\n\npackage google.profile; message Person { string first_name = 1; string last_name = 2; }\n\n{ \"@type\": \"type.googleapis.com/google.profile.Person\", \"firstName\": , \"lastName\":  }\n\nIf the embedded message type is well-known and has a custom JSON representation, that representation will be embedded adding a field `value` which holds the custom JSON in addition to the `@type` field. Example (for message [google.protobuf.Duration][]):\n\n{ \"@type\": \"type.googleapis.com/google.protobuf.Duration\", \"value\": \"1.212s\" }",
+   "description": "`Any` contains an arbitrary serialized message along with a URL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form of utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\nFoo foo = ...; Any any; any.PackFrom(foo); ... if (any.UnpackTo(&foo)) { ... }\n\nExample 2: Pack and unpack a message in Java.\n\nFoo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) { foo = any.unpack(Foo.class); }\n\nThe pack methods provided by protobuf library will by default use 'type.googleapis.com/full.type.name' as the type URL and the unpack methods only use the fully qualified type name after the last '/' in the type URL, for example \"foo.bar.com/x/y.z\" will yield type name \"y.z\".\n\n\n\nJSON ==== The JSON representation of an `Any` value uses the regular representation of the deserialized, embedded message, with an additional field `@type` which contains the type URL. Example:\n\npackage google.profile; message Person { string first_name = 1; string last_name = 2; }\n\n{ \"@type\": \"type.googleapis.com/google.profile.Person\", \"firstName\": , \"lastName\":  }\n\nIf the embedded message type is well-known and has a custom JSON representation, that representation will be embedded adding a field `value` which holds the custom JSON in addition to the `@type` field. Example (for message [google.protobuf.Duration][]):\n\n{ \"@type\": \"type.googleapis.com/google.protobuf.Duration\", \"value\": \"1.212s\" }",
    "externalTypeName": "google.protobuf.Any",
    "properties": {
     "typeUrl": {

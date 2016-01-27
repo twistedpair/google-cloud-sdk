@@ -107,8 +107,6 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
     BuildFailedError: when the build fails.
   """
   (source_bucket, source_object) = cloud_storage.ParseGcsUri(source_uri)
-  # TODO(user): Consider building multiple output images in a single call
-  # to Argo Cloud Builder.
   build_op = cloudbuild_client.projects_builds.Create(
       cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
           projectId=project,
@@ -127,18 +125,26 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
           ),
       )
   )
-  # Build ops are named "operation/build/{project_id}/{build_id}".
-  build_id = build_op.name.split('/')[-1]
+  # Find build ID from operation metadata and print the logs URL.
+  build_id = None
+  if build_op.metadata is not None:
+    for prop in build_op.metadata.additionalProperties:
+      if prop.key == 'build':
+        for build_prop in prop.value.object_value.properties:
+          if build_prop.key == 'id':
+            build_id = build_prop.value.string_value
+            break
+        break
+
+  if build_id is None:
+    raise BuildFailedError('Could not determine build ID')
   log.status.Print(
       'Started cloud build [{build_id}].'.format(build_id=build_id))
   logs_uri = CLOUDBUILD_LOGS_URI_TEMPLATE.format(project_id=project,
                                                  build_id=build_id)
-  # TODO(user): wait for job to be scheduled before printing logs uri.
-  # Alternatively, it would be nice if we wrote a single line to the logs prior
-  # to returning from the Create call.
-  log.status.Print('Logs at: ' + logs_uri)
-  message = 'Waiting for cloud build [{build_id}]'.format(build_id=build_id)
-  with console_io.ProgressTracker(message):
+  log.status.Print('View logs at: ' + logs_uri)
+
+  with console_io.ProgressTracker('Waiting for cloud build'):
     op = operations.WaitForOperation(cloudbuild_client.operations, build_op)
   final_status = _GetStatusFromOp(op)
   if final_status != CLOUDBUILD_SUCCESS:

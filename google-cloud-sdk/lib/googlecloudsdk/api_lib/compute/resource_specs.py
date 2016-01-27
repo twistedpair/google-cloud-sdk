@@ -603,6 +603,20 @@ _SPECS_V1 = {
         editables=None,
     ),
 
+    'invalidations': _InternalSpec(
+        message_class_name='Operation',
+        table_cols=[
+            ('DESCRIPTION', 'description'),
+            ('HTTP_STATUS', _OperationHttpStatusToCell),
+            ('STATUS', 'status'),
+            ('TIMESTAMP', 'insertTime'),
+        ],
+        transformations=[
+            ('targetLink', path_simplifier.ScopedSuffix),
+        ],
+        editables=None,
+    ),
+
     'regions': _InternalSpec(
         message_class_name='Region',
         table_cols=[
@@ -814,13 +828,13 @@ _SPECS_BETA['subnetworks'] = _InternalSpec(
         ('REGION', 'region'),
         ('NETWORK', 'network'),
         ('RANGE', 'ipCidrRange')
-        ],
+    ],
     transformations=[
         ('network', path_simplifier.Name),
         ('region', path_simplifier.Name),
-        ],
+    ],
     editables=None,
-    )
+)
 _SPECS_BETA['networks'] = _InternalSpec(
     message_class_name='Network',
     table_cols=[
@@ -832,7 +846,7 @@ _SPECS_BETA['networks'] = _InternalSpec(
     transformations=[
         ],
     editables=None,
-    )
+)
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
@@ -852,23 +866,23 @@ _SPECS_ALPHA['healthChecks'] = _InternalSpec(
     table_cols=[
         ('NAME', 'name'),
         ('PROTOCOL', 'type'),
-        ],
+    ],
     transformations=[],
     editables=None,
-    )
+)
 _SPECS_ALPHA['routers'] = _InternalSpec(
     message_class_name='Router',
     table_cols=[
         ('NAME', 'name'),
         ('REGION', 'region'),
         ('NETWORK', 'network'),
-        ],
+    ],
     transformations=[
         ('network', path_simplifier.Name),
         ('region', path_simplifier.Name),
-        ],
+    ],
     editables=None,
-    )
+)
 
 
 def _GetSpecsForVersion(api_version):

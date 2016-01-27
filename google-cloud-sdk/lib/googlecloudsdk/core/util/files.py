@@ -335,8 +335,6 @@ def _FindExecutableOnPath(executable, path, pathext):
   Raises:
     ValueError: invalid input.
   """
-  assert path is not None  # but '' is okay.
-  assert pathext is not None  # but an empty iterable is okay.
 
   if type(pathext) is str:
     raise ValueError('_FindExecutableOnPath(..., pathext=\'{0}\') failed '
@@ -346,6 +344,8 @@ def _FindExecutableOnPath(executable, path, pathext):
   # Prioritize preferred extension over earlier in path.
   for ext in pathext:
     for directory in path.split(os.pathsep):
+      # Windows can have paths quoted.
+      directory = directory.strip('"')
       full = os.path.normpath(os.path.join(directory, executable) + ext)
       # On Windows os.access(full, os.X_OK) is always True.
       if os.path.isfile(full) and os.access(full, os.X_OK):

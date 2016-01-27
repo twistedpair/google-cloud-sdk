@@ -32,11 +32,11 @@ class ExpressionSyntaxError(Error):
   pass
 
 
-class UnregisteredCollectionError(Error):
-  """Unregistered resource collection error."""
+class ResourceRegistryAttributeError(exceptions.InternalError):
+  """Missing or invalid resource registry attribute error."""
   pass
 
 
-class CollectionRefLoopError(InternalError):
-  """Resource collection ref lookup loop error."""
+class UnregisteredCollectionError(Error):
+  """Unregistered resource collection error."""
   pass

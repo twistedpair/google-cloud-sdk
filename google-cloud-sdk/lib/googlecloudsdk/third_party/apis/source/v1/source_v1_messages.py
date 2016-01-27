@@ -419,11 +419,11 @@ class ListChangedFilesRequest(_messages.Message):
   """Request for ListChangedFiles.
 
   Fields:
-    pageSize: The maximum number of values to return.
+    pageSize: The maximum number of ChangedFileInfo values to return.
     pageToken: The value of next_page_token from the previous call. Omit for
       the first page.
-    sourceContext1: The first source context to compare.
-    sourceContext2: The second source context to compare.
+    sourceContext1: The starting source context to compare.
+    sourceContext2: The ending source context to compare.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

@@ -31,12 +31,14 @@ class Params(object):
     appinfo: (apphosting.api.appinfo.AppInfoExternal or None) The parsed
       app.yaml file for the module if it exists.
     custom: (bool) True if the Configurator should generate a custom runtime.
+    runtime (str or None) Runtime (alias allowed) that should be enforced.
     deploy: (bool) True if this is happening from deployment.
   """
 
-  def __init__(self, appinfo=None, custom=False, deploy=False):
+  def __init__(self, appinfo=None, custom=False, runtime=None, deploy=False):
     self.appinfo = appinfo
     self.custom = custom
+    self.runtime = runtime
     self.deploy = deploy
 
   def ToDict(self):
@@ -48,6 +50,7 @@ class Params(object):
     """
     return {'appinfo': self.appinfo and self.appinfo.ToDict(),
             'custom': self.custom,
+            'runtime': self.runtime,
             'deploy': self.deploy}
 
 

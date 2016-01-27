@@ -109,13 +109,12 @@ def _GetRcData(comment, rc_path, rc_data, pattern=None):
   """
   if not pattern:
     pattern = re.escape(comment)
-  subre = re.compile(r'\n*' + pattern + r'\n.*$', re.MULTILINE)
+  subre = re.compile('\n' + pattern + '\n.*\n', re.MULTILINE)
   line = "{comment}\nsource '{rc_path}'\n".format(
       comment=comment, rc_path=rc_path)
   filtered_data = subre.sub('', rc_data)
   rc_data = '{filtered_data}\n{line}'.format(
-      filtered_data=filtered_data,
-      line=line)
+      filtered_data=filtered_data, line=line)
   return rc_data
 
 
@@ -265,7 +264,7 @@ def UpdateRC(command_completion, path_update, rc_path, bin_path, sdk_root):
       rc_data = _GetRcData('# The next line enables shell command completion'
                            ' for gcloud.', rc_paths.completion, rc_data,
                            pattern='# The next line enables [a-z][a-z]*'
-                           'completion for gcloud.')
+                           ' command completion for gcloud.')
 
     if cached_rc_data == rc_data:
       print('No changes necessary for [{rc}].'.format(rc=rc_paths.rc_path))

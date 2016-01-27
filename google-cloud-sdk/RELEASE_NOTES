@@ -2,18 +2,66 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 94.0.0 (2016/1/27)
+
+### Google Compute Engine
+
+* Added `gcloud alpha compute url-maps list-cache-invalidations` command.
+
+### Google App Engine
+
+* Google App Engine components updated to 1.9.31. Please visit the following
+  release notes for details:
+  Python - https://cloud.google.com/appengine/docs/python/release-notes
+  Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+* Added `--runtime` flag to `gcloud preview app gen-config` to specify a runtime
+  when a directory identifies as multiple runtimes. This flag can be used in
+  conjunction with `--custom`.
+
+### Google Container Engine
+
+* `gcloud container cluster describe` and `list` commands now notify the user
+  when their cluster versions are about to go out of support or are unsupported.
+
+### Google Cloud Logging
+
+* `gcloud beta logging write` and `gcloud beta logging logs delete` commands now
+  use the V2beta1 API. The `gcloud beta logging write` command now uses the
+  global resource descriptor (which translates to "custom.googleapis.com"
+  service in V1).
+
+### Cloud Dataproc
+
+* `gcloud beta dataproc clusters create` now supports `--tags` and `--metadata`
+  flags to set instance tags and metadata on all instances in the Dataproc
+  cluster.
+
+### PubSub Emulator
+
+* A new --host flag can be used to specify the address the emulator should bind
+  as. The flag can be left unspecified, set to "localhost", a hostname, or an
+  explicit IP address.
+
+### Projects
+
+* Added commands `get-iam-policy`, `set-iam-policy`, `add-iam-policy-binding`,
+  and `remove-iam-policy-binding` for the `gcloud beta projects` surface.
+
+* Added the `gcloud projects list` command that can be used to list projects.
+
 ## 93.0.0 (2016/1/20)
 
 * kubectrl upgraded to 1.1.4.
 
-* [gcloud beta dataproc cluster create] now supports --properties flag to set
+* `gcloud beta dataproc cluster create` now supports `--properties` flag to set
   properties for installed packages.
 
-* Datastore emulator's DATASTORE_LOCAL_HOST environment variable changed to
-  DATASTORE_EMULATOR_HOST.
+* Datastore emulator's `DATASTORE_LOCAL_HOST` environment variable changed to
+  `DATASTORE_EMULATOR_HOST`.
 
-* [gcloud source repos clone] now supports --dry-run flag to show equivalent git
-  command.
+* `gcloud source repos clone` now supports `--dry-run` flag to show equivalent
+  git command.
 
 ## 92.0.0 (2016/1/13)
 

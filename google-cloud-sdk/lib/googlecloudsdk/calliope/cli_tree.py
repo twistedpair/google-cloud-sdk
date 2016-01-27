@@ -35,7 +35,7 @@ def _NormalizeDescription(description):
     description = None
   elif description:
     description = textwrap.dedent(description)
-  return description
+  return description or ''
 
 
 class Flag(object):
@@ -43,15 +43,17 @@ class Flag(object):
 
   Attributes:
     type: str, The flag value type name {'bool', 'int', 'float', 'string'}.
-    name: str, The normalized flag name (no leading -, '_' => '-').
+    name: str, The normalized flag name ('_' => '-').
     hidden: bool, True if the flag is hidden.
     value: str, The flag value documentation name.
     countmin: int, The minimum number of flag values.
     countmax: int, The maximum number of flag values, 0 for unlimited.
     required: int, 1 if the flag must be specified, 0 otherwise.
     description: str, The help text.
+    choices: list, The list of static choices.
     default: (self.type), The default flag value or None if no default.
     group: int, Mutually exclusive flag group id counting from 1, 0 if none.
+    resource: str, Flag value resource identifier.
   """
 
   def __init__(self, name, description='', default=None):
@@ -62,9 +64,11 @@ class Flag(object):
     self.countmin = 0
     self.countmax = 0
     self.required = 0
+    self.choices = []
     self.default = default
     self.description = _NormalizeDescription(description)
     self.group = 0
+    self.resource = ''
 
 
 class Positional(object):
@@ -72,11 +76,12 @@ class Positional(object):
 
   Attributes:
     name: str, The normalized name ('_' => '-').
-    value: str, The flag value documentation name.
+    value: str, The positional value documentation name.
     countmin: int, The minimum number of positional values.
     countmax: int, The maximum number of positional values.
-    required: int, 1 if the flag must be specified, 0 otherwise.
-    description: str, The second and following lines of the flag docstring.
+    required: int, 1 if the positional must be specified, 0 otherwise.
+    description: str, The help text.
+    resource: str, Positional value resource identifier.
   """
 
   def __init__(self, name, description):
@@ -86,6 +91,7 @@ class Positional(object):
     self.countmax = 0
     self.capsule = ''
     self.description = description
+    self.resource = ''
 
 
 class Command(object):
@@ -150,7 +156,7 @@ class Command(object):
     for arg in args.flag_args:
       for name in arg.option_strings:
         if name.startswith('--'):
-          name = name[2:].replace('_', '-')
+          name = name.replace('_', '-')
           if not self.__Ancestor(name):
             g = args.mutex_groups.get(arg.dest, None)
             if g:
@@ -170,15 +176,13 @@ class Command(object):
         group_id[g] = group_id_count
 
     # Collect the flags.
-    for arg in args.flag_args:
+    for arg in sorted(args.flag_args):
       for name in arg.option_strings:
         if name.startswith('--'):
-          name = name[2:].replace('_', '-')
-          # Don't include ancestor flags or auto-generated --no-FLAG flags.
-          if not self.__Ancestor(name) and (not name.startswith('no-') or
-                                            arg.help != argparse.SUPPRESS):
-            flag = Flag(name,
-                        description=arg.help,
+          name = name.replace('_', '-')
+          # Don't include ancestor flags.
+          if not self.__Ancestor(name):
+            flag = Flag(name, description=_NormalizeDescription(arg.help),
                         default=arg.default)
             # ArgParse does not have an explicit Boolean flag type. By
             # convention a flag with arg.nargs=0 and action='store_true' or
@@ -208,9 +212,16 @@ class Command(object):
               if arg.metavar:
                 flag.value = arg.metavar
               else:
-                flag.value = name.upper()
+                flag.value = name[2:].upper()
+            if arg.choices:
+              choices = sorted(arg.choices)
+              if choices == ['false', 'true']:
+                flag.type = 'bool'
+              else:
+                flag.choices = choices
             if arg.required:
               flag.required = 1
+            flag.resource = getattr(arg, 'completion_resource', '')
             if name in group_name and group_name[name] in group_id:
               flag.group = group_id[group_name[name]]
             self.flags[flag.name] = flag
@@ -231,6 +242,7 @@ class Command(object):
         elif type(arg.nargs) in (int, long):
           positional.countmin = arg.nargs
           positional.countmax = arg.nargs
+      positional.resource = getattr(arg, 'completion_resource', '')
       self.positionals.append(positional)
 
   def __Ancestor(self, flag):

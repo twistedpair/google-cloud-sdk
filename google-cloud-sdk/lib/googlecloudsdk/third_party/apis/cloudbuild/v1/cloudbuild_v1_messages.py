@@ -25,14 +25,14 @@ class Build(_messages.Message):
     createTime: Time at which the build was created. @OutputOnly
     finishTime: Time at whihc execution of the build was finished. @OutputOnly
     id: Unique identifier of the build. @OutputOnly
-    images: List of images expected to be built and pushed to GCR. If an image
-      is listed here, and if the image is not produced by one of the build
-      steps, the build will fail. If all the images are present when the build
-      steps are complete, they will all be pushed.
+    images: List of images expected to be built and pushed to Google Container
+      Registry. If an image is listed here and the image is not produced by
+      one of the build steps, the build will fail. Any images present when the
+      build steps are complete will be pushed to Container Registry.
     logsBucket: Google Cloud Storage bucket where logs should be written (see
       [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
-      ${logs_bucket}/log-${build_id}.txt.
+      `${logs_bucket}/log-${build_id}.txt`.
     projectId: ID of the project. @OutputOnly.
     results: Results of the build. @OutputOnly
     source: Describes where to find the source files to build.
@@ -114,8 +114,8 @@ class BuiltImage(_messages.Message):
 
   Fields:
     digest: Docker Registry 2.0 digest.
-    name: Name used to push the container image to GCR, as presented to
-      `docker push`.
+    name: Name used to push the container image to Google Container Registry,
+      as presented to `docker push`.
   """
 
   digest = _messages.StringField(1)
@@ -515,7 +515,7 @@ class StorageSource(_messages.Message):
       Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
     object: Google Cloud Storage object containing source.  This object must
-      be an archive file (zip, tar, tar.gz) containing source to build.
+      be a gzipped archive file (.tgz) containing source to build.
   """
 
   bucket = _messages.StringField(1)

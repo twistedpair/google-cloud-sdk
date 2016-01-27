@@ -14,55 +14,77 @@
 
 """JSON format resource printer."""
 
-
+import cStringIO
 import json
 
 from googlecloudsdk.core.resource import resource_printer_base
 
 
 class JsonPrinter(resource_printer_base.ResourcePrinter):
-  """Prints all records as a JSON list.
+  """Prints resource records as a JSON list.
 
   [JSON](http://www.json.org), JavaScript Object Notation.
 
   Attributes:
-    _records: The list of all resource records.
+    _buffer: Buffer stream for record item indentation.
+    _delimiter: Delimiter string before the next record.
+    _empty: True if no records were output.
+    _indent: Resource item indentation.
   """
+
+  # json.dump() does not have a streaming mode. In order to print a resource`
+  # list it requires the complete list contents. To get around that limitation
+  # and print each resource list item, _AddRecord() prints the initial "[", the
+  # intervening ",", the final "]", captures the json.dump() output for each
+  # resource list item and prints it indented by STRUCTURED_INDENTATION spaces.
+
+  _BEGIN_DELIMITER = '[\n'
 
   def __init__(self, *args, **kwargs):
     super(JsonPrinter, self).__init__(*args, **kwargs)
-    self._records = []
+    self._buffer = cStringIO.StringIO()
+    self._empty = True
+    self._delimiter = self._BEGIN_DELIMITER
+    self._indent = ' ' * resource_printer_base.STRUCTURED_INDENTATION
 
-  def __Dump(self, resource):
+  def __Dump(self, resource, out=None):
     json.dump(
         resource,
-        fp=self._out,
+        fp=out or self._out,
         indent=resource_printer_base.STRUCTURED_INDENTATION,
         sort_keys=True,
         separators=(',', ': '))
-    self._out.write('\n')
 
   def _AddRecord(self, record, delimit=True):
-    """Adds a JSON-serializable Python object to the resource list.
+    """Prints one element of a JSON-serializable Python object resource list.
 
-    The logic allows intermingled delimit=True and delimit=False.
+    Allows intermingled delimit=True and delimit=False.
 
     Args:
       record: A JSON-serializable object.
       delimit: Dump one record if False, used by PrintSingleRecord().
     """
+    self._empty = False
     if delimit:
-      if self._records is None:
-        self._records = []
-      self._records.append(record)
+      delimiter = self._delimiter + self._indent
+      self._delimiter = ',\n'
+      self.__Dump(record, self._buffer)
+      output = self._buffer.getvalue()
+      self._buffer.truncate(0)
+      for line in output.split('\n'):
+        self._out.write(delimiter + line)
+        delimiter = '\n' + self._indent
     else:
-      if self._records:
-        self.__Dump(self._records)
-      self._records = None
+      if self._delimiter != self._BEGIN_DELIMITER:
+        self._out.write('\n]\n')
+        self._delimiter = self._BEGIN_DELIMITER
       self.__Dump(record)
+      self._out.write('\n')
 
   def Finish(self):
-    """Prints the record list to the output stream."""
-    if self._records is not None:
-      self.__Dump(self._records)
-      self._records = None
+    """Prints the final delimiter and preps for the next resource list."""
+    if self._empty:
+      self._out.write('[]\n')
+    elif self._delimiter != self._BEGIN_DELIMITER:
+      self._out.write('\n]\n')
+      self._delimiter = self._BEGIN_DELIMITER

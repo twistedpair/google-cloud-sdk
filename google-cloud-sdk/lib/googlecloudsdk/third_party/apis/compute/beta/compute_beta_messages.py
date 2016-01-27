@@ -758,12 +758,13 @@ class Backend(_messages.Message):
 
   Enums:
     BalancingModeValueValuesEnum: Specifies the balancing mode for this
-      backend. The default is UTILIZATION but available values are UTILIZATION
-      and RATE.
+      backend. For global HTTP(S) load balancing, the default is UTILIZATION.
+      Valid values are UTILIZATION and RATE.
 
   Fields:
-    balancingMode: Specifies the balancing mode for this backend. The default
-      is UTILIZATION but available values are UTILIZATION and RATE.
+    balancingMode: Specifies the balancing mode for this backend. For global
+      HTTP(S) load balancing, the default is UTILIZATION. Valid values are
+      UTILIZATION and RATE.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (either UTILIZATION or RATE). Default value is 1, which means
       the group will serve up to 100% of its configured CPU or RPS (depending
@@ -779,11 +780,11 @@ class Backend(_messages.Message):
       specify an Instance Group resource using the fully-qualified URL, rather
       than a partial URL.
     maxRate: The max requests per second (RPS) of the group. Can be used with
-      either balancing mode, but required if RATE mode. For RATE mode, either
-      maxRate or maxRatePerInstance must be set.
-    maxRatePerInstance: The max requests per second (RPS) that a single backed
-      instance can handle. This is used to calculate the capacity of the
-      group. Can be used in either balancing mode. For RATE mode, either
+      either RATE or UTILIZATION balancing modes, but required if RATE mode.
+      For RATE mode, either maxRate or maxRatePerInstance must be set.
+    maxRatePerInstance: The max requests per second (RPS) that a single
+      backend instance can handle.This is used to calculate the capacity of
+      the group. Can be used in either balancing mode. For RATE mode, either
       maxRate or maxRatePerInstance must be set.
     maxUtilization: Used when balancingMode is UTILIZATION. This ratio defines
       the CPU utilization target for the group. The default is 0.8. Valid
@@ -791,8 +792,9 @@ class Backend(_messages.Message):
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
-    """Specifies the balancing mode for this backend. The default is
-    UTILIZATION but available values are UTILIZATION and RATE.
+    """Specifies the balancing mode for this backend. For global HTTP(S) load
+    balancing, the default is UTILIZATION. Valid values are UTILIZATION and
+    RATE.
 
     Values:
       RATE: <no description>
@@ -815,7 +817,9 @@ class BackendService(_messages.Message):
   virtual machines and their serving capacity.
 
   Enums:
-    ProtocolValueValuesEnum:
+    ProtocolValueValuesEnum: The protocol this BackendService uses to
+      communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
+      and SSL.
 
   Fields:
     backends: The list of backends that serve this BackendService.
@@ -845,14 +849,16 @@ class BackendService(_messages.Message):
       backend. The default value is 80.
     portName: Name of backend port. The same name should appear in the
       resource views referenced by this service. Required.
-    protocol: A ProtocolValueValuesEnum attribute.
+    protocol: The protocol this BackendService uses to communicate with
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
     selfLink: [Output Only] Server-defined URL for the resource.
     timeoutSec: How many seconds to wait for the backend before considering it
-      a failed request. Default is 30 seconds.
+      a failed request. Default is 30 seconds. Valid range is [1, 86400].
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
-    """ProtocolValueValuesEnum enum type.
+    """The protocol this BackendService uses to communicate with backends.
+    Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
 
     Values:
       HTTP: <no description>
@@ -937,10 +943,10 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1028,10 +1034,10 @@ class ComputeAddressesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1079,10 +1085,10 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1170,10 +1176,10 @@ class ComputeAutoscalersListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1308,10 +1314,10 @@ class ComputeBackendServicesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1387,10 +1393,10 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1450,10 +1456,10 @@ class ComputeDiskTypesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1501,10 +1507,10 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1610,10 +1616,10 @@ class ComputeDisksListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1714,10 +1720,10 @@ class ComputeFirewallsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1791,10 +1797,10 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1883,10 +1889,10 @@ class ComputeForwardingRulesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -1988,10 +1994,10 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2074,10 +2080,10 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2139,10 +2145,10 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2216,10 +2222,10 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2302,10 +2308,10 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2418,10 +2424,10 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2548,10 +2554,10 @@ class ComputeImagesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2615,10 +2621,10 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2740,10 +2746,10 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2900,10 +2906,10 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -2995,10 +3001,10 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
       generate a list of included instances.
     instanceGroupsListInstancesRequest: A InstanceGroupsListInstancesRequest
       resource to be passed as the request body.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3048,10 +3054,10 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3173,10 +3179,10 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3241,10 +3247,10 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3398,10 +3404,10 @@ class ComputeInstancesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3603,10 +3609,10 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3666,10 +3672,10 @@ class ComputeMachineTypesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3753,10 +3759,10 @@ class ComputeNetworksListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3869,10 +3875,10 @@ class ComputeRegionOperationsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -3932,10 +3938,10 @@ class ComputeRegionsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4017,10 +4023,10 @@ class ComputeRoutesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4090,10 +4096,10 @@ class ComputeSnapshotsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4176,10 +4182,10 @@ class ComputeSslCertificatesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4225,10 +4231,10 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4316,10 +4322,10 @@ class ComputeSubnetworksListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4404,10 +4410,10 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4506,10 +4512,10 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4588,10 +4594,10 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4680,10 +4686,10 @@ class ComputeTargetInstancesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4767,10 +4773,10 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4876,10 +4882,10 @@ class ComputeTargetPoolsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -4983,10 +4989,10 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5075,10 +5081,10 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5162,10 +5168,10 @@ class ComputeUrlMapsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5254,10 +5260,10 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5345,10 +5351,10 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5428,10 +5434,10 @@ class ComputeZoneOperationsListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -5491,10 +5497,10 @@ class ComputeZonesListRequest(_messages.Message):
       For example, (scheduling.automaticRestart eq true) (zone eq us-
       central1-f). Multiple expressions are treated as AND expressions meaning
       that resources must match all expressions to pass the filters.
-    maxResults: The maximum number of results per page that Compute Engine
-      should return. If the number of available results is larger than
-      maxResults, Compute Engine returns a nextPageToken that can be used to
-      get the next page of results in subsequent list requests.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
@@ -8649,8 +8655,7 @@ class Operation(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
-    clientOperationId: [Output Only] A unique client ID generated by the
-      server.
+    clientOperationId: [Output Only] Reserved for future use.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: [Output Only] A textual description of the operation, which
@@ -8671,8 +8676,8 @@ class Operation(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#operation for
       Operation resources.
     name: [Output Only] Name of the resource.
-    operationType: [Output Only] The type of operation, which can be insert,
-      update, or delete.
+    operationType: [Output Only] The type of operation, such as insert,
+      update, or delete, and so on.
     progress: [Output Only] An optional progress indicator that ranges from 0
       to 100. There is no requirement that this be linear or support any
       granularity of operations. This should not be used to guess when the

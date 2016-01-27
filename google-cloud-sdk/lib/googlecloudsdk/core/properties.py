@@ -1403,11 +1403,19 @@ class PropertiesFile(object):
             # messes up the logging boot-strap process.  We could probably do
             # a more principled refactor to avoid this, but it doesn't seem
             # worthwhile for a temporary warning message.
-            sys.stderr.write(
-                'Loading user based configuration file: [{0}].\n'
-                'User based configuration files are deprecated and will '
-                'not be read in a future gcloud release.\n'.format(
-                    config_paths.user_properties_path))
+            sys.stderr.write("""\
+Loading legacy configuration file: [{0}]
+This configuration file is deprecated and will not be read in a future
+gcloud release.  gcloud will automatically migrate your current settings to the
+new configuration format the next time you set a property by running:
+  $ gcloud config set PROPERTY VALUE
+You may also run:
+  $ gcloud init
+to create a new configuration and walk you through initializing some basic
+settings.  You can find more information on named configurations by running:
+  $ gcloud topic configurations
+
+""".format(config_paths.user_properties_path))
 
           if ((config_paths.workspace_properties_path in paths) and
               os.path.isfile(config_paths.workspace_properties_path)):

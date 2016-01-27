@@ -149,6 +149,20 @@ class SemVer(object):
         self.prerelease, other.prerelease)
     return result
 
+  def Distance(self, other):
+    """Compare this SemVer to other and returns the distances.
+
+    Args:
+      other: SemVer, the other version to compare this one to.
+
+    Returns:
+      Distances between the major, minor and patch versions.
+    """
+    major_diff = self.major - other.major
+    minor_diff = self.minor - other.minor
+    patch_diff = self.patch - other.patch
+    return major_diff, minor_diff, patch_diff
+
   def __eq__(self, other):
     return (
         (self.major, self.minor, self.patch, self.prerelease, self.build) ==

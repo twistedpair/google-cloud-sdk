@@ -591,7 +591,7 @@
       "type": "object",
       "properties": {
         "fullResourceName": {
-          "description": "Required. The full resource name to query the list of grantable roles for.\n\nThis will follow the GCP resource format.\nSee https:\/\/g3doc.corp.google.com\/google\/g3doc\/style\/resource_names.md?cl=head#relationship-between-resource-names-and-urls\nFor example, a GCP project of ID \"my-project\" will be named\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my-project\".",
+          "description": "Required. The full resource name to query the list of grantable roles for.\n\nThis will follow the GCP resource format.\nFor example, a GCP project of ID \"my-project\" will be named\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my-project\".",
           "type": "string"
         }
       }

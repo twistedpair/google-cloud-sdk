@@ -1502,7 +1502,7 @@
           "type": "string"
         },
         "addTargets": {
-          "description": "The set of watch targets to add to this stream.\nchanges will be returned with\nserver assigned `target_ids` in the same order as targets are specified\nhere.",
+          "description": "TODO(arfuller): Switch to a non-batching API.\nThe set of watch targets to add to this stream.\nchanges will be returned with\nserver assigned `target_ids` in the same order as targets are specified\nhere.",
           "type": "array",
           "items": {
             "$ref": "WatchTarget"

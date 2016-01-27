@@ -1321,12 +1321,19 @@ def RestartCommand(command=None, args=None, python=None, block=True):
   if block:
     execution_utils.Exec(args)
   else:
-    if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
-      # Open in a new cmd window, and wait for the user to hit enter at the end.
-      # Otherwise, the output is either lost (without `pause`) or comes out
-      # asynchronously over the next commands (without the new window).
-      def Quote(s):
-        return '"' + s + '"'
-      args = 'cmd.exe /c "{0} && pause"'.format(' '.join(map(Quote, args)))
-    subprocess.Popen(args, shell=True,
-                     **platforms.Platform.Current().AsyncPopenArgs())
+    current_platform = platforms.Platform.Current()
+    if console_io.CanPrompt():
+      popen_args = current_platform.AsyncPopenArgs()
+      if (current_platform.operating_system is
+          platforms.OperatingSystem.WINDOWS):
+        # Open in a new cmd window, and wait for the user to hit enter at the
+        # end. Otherwise, the output is either lost (without `pause`) or comes
+        # out asynchronously over the next commands (without the new window).
+        def Quote(s):
+          return '"' + s + '"'
+        args = 'cmd.exe /c "{0} && pause"'.format(' '.join(map(Quote, args)))
+    else:
+      # We're in the non-interactive setting, so we don't want to e.g. open a
+      # new window or wait for user acknowledgement
+      popen_args = current_platform.SyncPopenArgs()
+    subprocess.Popen(args, shell=True, **popen_args)

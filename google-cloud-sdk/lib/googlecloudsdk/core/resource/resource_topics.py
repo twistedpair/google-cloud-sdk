@@ -14,7 +14,6 @@
 
 """Common resource topic text."""
 
-import cStringIO
 import textwrap
 
 from googlecloudsdk.core.resource import resource_printer
@@ -29,7 +28,7 @@ def ResourceDescription(name):
   place.
 
   Args:
-    name: One of ['format', 'key', 'projection'].
+    name: One of ['filter', 'format', 'key', 'projection'].
 
   Raises:
     ValueError: If name is not one of the expected topic names.
@@ -51,24 +50,30 @@ def ResourceDescription(name):
 {see_projection}
 
   _resource keys_:: Keys are names for resource resource items. {see_key}
+
+  Most *gcloud* *list* commands have a *--filter=*_EXPRESSION_ flag that
+  selects resources to be listed. {see_filter}
   """
-  topics = ['format', 'key', 'projection']
+  # topic <name> => gcloud topic <command>
+  topics = {
+      'filter': 'filters',
+      'format': 'formats',
+      'key': 'resource-keys',
+      'projection': 'projections',
+  }
   if name not in topics:
     raise ValueError('Expected one of [{topics}], got [{name}].'.format(
-        topics=','.join(topics), name=name))
+        topics=','.join(sorted(topics)), name=name))
   see = {}
-  for topic in ['format', 'key', 'projection']:
+  for topic, command in topics.iteritems():
     if topic == name:
-      see[topic] = 'Resource {0}s are described in detail below.'.format(topic)
+      see[topic] = 'Resource {topic}s are described in detail below.'.format(
+          topic=topic)
     else:
-      topic_command = {
-          'format': 'formats',
-          'key': 'resource-keys',
-          'projection': 'projections',
-          }
-      see[topic] = 'For details run $ gcloud topic {0}.'.format(
-          topic_command[topic])
-  return textwrap.dedent(description).format(see_format=see['format'],
+      see[topic] = 'For details run $ gcloud topic {command}.'.format(
+          command=command)
+  return textwrap.dedent(description).format(see_filter=see['filter'],
+                                             see_format=see['format'],
                                              see_key=see['key'],
                                              see_projection=see['projection'])
 
@@ -283,20 +288,22 @@ def _TransformsDescriptions(transforms):
   Returns:
     The resource transform help text markdown for transforms.
   """
-  buf = cStringIO.StringIO()
+  descriptions = []
   for name, transform in sorted(transforms.iteritems()):
     description, prototype, args, example = _ParseTransformDocString(transform)
     if not description:
       continue
-    buf.write('\n*%s*%s::\n%s\n' % (name, prototype, description))
+    descriptions.append('\n*{name}*{prototype}::\n{description}\n'.format(
+        name=name, prototype=prototype, description=description))
     if args:
-      buf.write('+\n+\nThe arguments are:\n\n')
+      descriptions.append('+\n+\nThe arguments are:\n\n')
       for arg, description in args:
-        buf.write('*```%s```*:::\n%s\n' % (arg, description))
+        descriptions.append('*```{arg}```*:::\n{description}\n'.format(
+            arg=arg, description=description))
     if example:
-      buf.write('+\nFor example`:`:::\n\n{example}\n'.format(
+      descriptions.append('+\nFor example`:`:::\n\n{example}\n'.format(
           example=' '.join(example)))
-  return buf.getvalue()
+  return ''.join(descriptions)
 
 
 def TransformRegistryDescriptions():

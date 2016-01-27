@@ -801,6 +801,17 @@ class Job(_messages.Message):
         job was started, inheriting state from this one. This is a terminal
         job state. This state may only be set by the Dataflow service, and
         only as a transition from JOB_STATE_RUNNING.
+      JOB_STATE_DRAINING: JOB_STATE_DRAINING indicates that the job is in the
+        process of draining. A draining job has stopped pulling from its input
+        sources and is processing any data that remains in-flight. This state
+        may be set via a Dataflow UpdateJob call, but only as a transition
+        from JOB_STATE_RUNNING. Jobs that are draining may only transition to
+        JOB_STATE_DRAINED, JOB_STATE_CANCELLED, or JOB_STATE_FAILED.
+      JOB_STATE_DRAINED: JOB_STATE_DRAINED indicates that the job has been
+        drained. A drained job terminated by stopping pulling from its input
+        sources and processing any data that remained in-flight when draining
+        was requested. This state is a terminal state, may only be set by the
+        Dataflow service, and only as a transition from JOB_STATE_DRAINING.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -809,6 +820,8 @@ class Job(_messages.Message):
     JOB_STATE_FAILED = 4
     JOB_STATE_CANCELLED = 5
     JOB_STATE_UPDATED = 6
+    JOB_STATE_DRAINING = 7
+    JOB_STATE_DRAINED = 8
 
   class RequestedStateValueValuesEnum(_messages.Enum):
     """The job's requested state.  UpdateJob may be used to switch between the
@@ -840,6 +853,17 @@ class Job(_messages.Message):
         job was started, inheriting state from this one. This is a terminal
         job state. This state may only be set by the Dataflow service, and
         only as a transition from JOB_STATE_RUNNING.
+      JOB_STATE_DRAINING: JOB_STATE_DRAINING indicates that the job is in the
+        process of draining. A draining job has stopped pulling from its input
+        sources and is processing any data that remains in-flight. This state
+        may be set via a Dataflow UpdateJob call, but only as a transition
+        from JOB_STATE_RUNNING. Jobs that are draining may only transition to
+        JOB_STATE_DRAINED, JOB_STATE_CANCELLED, or JOB_STATE_FAILED.
+      JOB_STATE_DRAINED: JOB_STATE_DRAINED indicates that the job has been
+        drained. A drained job terminated by stopping pulling from its input
+        sources and processing any data that remained in-flight when draining
+        was requested. This state is a terminal state, may only be set by the
+        Dataflow service, and only as a transition from JOB_STATE_DRAINING.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -848,6 +872,8 @@ class Job(_messages.Message):
     JOB_STATE_FAILED = 4
     JOB_STATE_CANCELLED = 5
     JOB_STATE_UPDATED = 6
+    JOB_STATE_DRAINING = 7
+    JOB_STATE_DRAINED = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of dataflow job.

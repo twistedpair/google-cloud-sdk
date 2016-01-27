@@ -22,6 +22,7 @@ class ResourceInfo(object):
   """collection => resource information mapping support.
 
   Attributes:
+    async_collection: The operations collection when --async is set.
     collection: Memoized collection name set by Get().
     cache_command: The gcloud command string that updates the URI cache.
     list_format: The default list format string for resource_printer.Print().
@@ -36,9 +37,11 @@ class ResourceInfo(object):
     'none': Do not print anything.
   """
 
-  def __init__(self, cache_command=None, list_format=None, simple_format=None,
-               defaults=None, transforms=None):
+  def __init__(self, async_collection=None, cache_command=None,
+               list_format=None, simple_format=None, defaults=None,
+               transforms=None):
     self.collection = None  # memoized by Get().
+    self.async_collection = async_collection
     self.cache_command = cache_command
     self.list_format = list_format
     self.simple_format = simple_format
@@ -98,9 +101,10 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             service,
-            version,
-            format("%.2f", traffic_split),
-            last_deployed_utc.date("%Y-%m-%d %H:%M:%Sz")
+            id:label=VERSION,
+            format("{0:.2f}", traffic_split):label=TRAFFIC_SPLIT,
+            last_deployed_time.date("%Y-%m-%dT%H:%M:%S"):label=LAST_DEPLOYED,
+            version.servingStatus
           )
         """,
     ),
@@ -234,6 +238,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.autoscalers': ResourceInfo(
+        async_collection='compute.operations',
         cache_command='compute autoscaler list',
         list_format="""
           table(
@@ -444,7 +449,6 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.operations': ResourceInfo(
-        cache_command='compute operations list',
         list_format="""
           table(
             name,
@@ -712,6 +716,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'dataproc.jobs': ResourceInfo(
+        async_collection='dataproc.operations',
         list_format="""
           table(
             reference.jobId,
@@ -733,6 +738,7 @@ RESOURCE_REGISTRY = {
     # deployment manager v2
 
     'deploymentmanager.deployments': ResourceInfo(
+        async_collection='deployments.operations',
         list_format="""
           table(
             name,
@@ -947,6 +953,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'sql.instances': ResourceInfo(
+        async_collection='sql.operations',
         cache_command='sql instances list',
         list_format="""
           table(
@@ -960,6 +967,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'sql.instances.v1beta4': ResourceInfo(
+        async_collection='sql.operations.v1beta4',
         cache_command='sql instances list',
         list_format="""
           table(
@@ -999,6 +1007,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'sql.sslCerts': ResourceInfo(
+        async_collection='sql.operations',
         list_format="""
           table(
             commonName:label=NAME,
@@ -1060,6 +1069,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'test.android.run.outcomes': ResourceInfo(
+        async_collection='test.android.run.url',
         list_format="""
           table[box](
             outcome.color(red=Fail, green=Pass, yellow=Inconclusive),

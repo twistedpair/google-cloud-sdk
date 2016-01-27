@@ -725,11 +725,11 @@
       "type": "object",
       "properties": {
         "sourceContext1": {
-          "description": "The first source context to compare.",
+          "description": "The starting source context to compare.",
           "$ref": "SourceContext"
         },
         "sourceContext2": {
-          "description": "The second source context to compare.",
+          "description": "The ending source context to compare.",
           "$ref": "SourceContext"
         },
         "pageToken": {
@@ -737,7 +737,7 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "The maximum number of values to return.",
+          "description": "The maximum number of ChangedFileInfo values to return.",
           "type": "integer",
           "format": "int32"
         }

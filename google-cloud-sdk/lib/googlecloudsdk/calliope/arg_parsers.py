@@ -376,12 +376,28 @@ class Datetime(object):
             user_input=s))
 
 
-def BoundedInt(lower_bound=None, upper_bound=None):
-  """Returns a function that can parse integers within some bound."""
+def BoundedInt(lower_bound=None, upper_bound=None, unlimited=False):
+  """Returns a function that can parse integers within some bound.
+
+  Args:
+    lower_bound: int, The value must be >= lower_bound.
+    upper_bound: int, The value must be <= upper_bound.
+    unlimited: bool, If True then a value of 'unlimited' means no limit.
+
+  Returns:
+    A function that can parse integers within some bound.
+  """
 
   def _Parse(value):
     """Parses value as an int, raising ArgumentTypeError if out of bounds."""
-    v = int(value)
+    if unlimited and value == 'unlimited':
+      return None
+
+    try:
+      v = int(value)
+    except ValueError:
+      raise ArgumentTypeError(
+          _GenerateErrorMessage('Value must be an integer', user_input=value))
 
     if lower_bound is not None and v < lower_bound:
       raise ArgumentTypeError(

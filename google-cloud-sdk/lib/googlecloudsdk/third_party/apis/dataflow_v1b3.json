@@ -171,7 +171,9 @@
             "JOB_STATE_DONE indicates that the job has successfully completed.\nThis is a terminal job state.  This state may be set by the Dataflow\nservice, as a transition from JOB_STATE_RUNNING. It may also be set via a\nDataflow UpdateJob call, if the job has not yet reached a terminal state.",
             "JOB_STATE_FAILED indicates that the job has failed.  This is a\nterminal job state.  This state may only be set by the Dataflow\nservice, and only as a transition from JOB_STATE_RUNNING.",
             "JOB_STATE_CANCELLED indicates that the job has been explicitly\ncancelled.  This is a terminal job state.  This state may only be\nset via a Dataflow UpdateJob call, and only if the job has not\nyet reached another terminal state.",
-            "JOB_STATE_UPDATED indicates that the job was successfully updated,\nmeaning that this job was stopped and another job was started, inheriting\nstate from this one. This is a terminal job state. This state may only be\nset by the Dataflow service, and only as a transition from\nJOB_STATE_RUNNING."
+            "JOB_STATE_UPDATED indicates that the job was successfully updated,\nmeaning that this job was stopped and another job was started, inheriting\nstate from this one. This is a terminal job state. This state may only be\nset by the Dataflow service, and only as a transition from\nJOB_STATE_RUNNING.",
+            "JOB_STATE_DRAINING indicates that the job is in the process of draining.\nA draining job has stopped pulling from its input sources and is processing\nany data that remains in-flight. This state may be set via a Dataflow\nUpdateJob call, but only as a transition from JOB_STATE_RUNNING. Jobs that\nare draining may only transition to JOB_STATE_DRAINED,\nJOB_STATE_CANCELLED, or JOB_STATE_FAILED.",
+            "JOB_STATE_DRAINED indicates that the job has been drained.\nA drained job terminated by stopping pulling from its input sources and\nprocessing any data that remained in-flight when draining was requested.\nThis state is a terminal state, may only be set by the Dataflow service,\nand only as a transition from JOB_STATE_DRAINING."
           ],
           "type": "string",
           "enum": [
@@ -181,7 +183,9 @@
             "JOB_STATE_DONE",
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_UPDATED"
+            "JOB_STATE_UPDATED",
+            "JOB_STATE_DRAINING",
+            "JOB_STATE_DRAINED"
           ]
         },
         "currentStateTime": {
@@ -198,7 +202,9 @@
             "JOB_STATE_DONE indicates that the job has successfully completed.\nThis is a terminal job state.  This state may be set by the Dataflow\nservice, as a transition from JOB_STATE_RUNNING. It may also be set via a\nDataflow UpdateJob call, if the job has not yet reached a terminal state.",
             "JOB_STATE_FAILED indicates that the job has failed.  This is a\nterminal job state.  This state may only be set by the Dataflow\nservice, and only as a transition from JOB_STATE_RUNNING.",
             "JOB_STATE_CANCELLED indicates that the job has been explicitly\ncancelled.  This is a terminal job state.  This state may only be\nset via a Dataflow UpdateJob call, and only if the job has not\nyet reached another terminal state.",
-            "JOB_STATE_UPDATED indicates that the job was successfully updated,\nmeaning that this job was stopped and another job was started, inheriting\nstate from this one. This is a terminal job state. This state may only be\nset by the Dataflow service, and only as a transition from\nJOB_STATE_RUNNING."
+            "JOB_STATE_UPDATED indicates that the job was successfully updated,\nmeaning that this job was stopped and another job was started, inheriting\nstate from this one. This is a terminal job state. This state may only be\nset by the Dataflow service, and only as a transition from\nJOB_STATE_RUNNING.",
+            "JOB_STATE_DRAINING indicates that the job is in the process of draining.\nA draining job has stopped pulling from its input sources and is processing\nany data that remains in-flight. This state may be set via a Dataflow\nUpdateJob call, but only as a transition from JOB_STATE_RUNNING. Jobs that\nare draining may only transition to JOB_STATE_DRAINED,\nJOB_STATE_CANCELLED, or JOB_STATE_FAILED.",
+            "JOB_STATE_DRAINED indicates that the job has been drained.\nA drained job terminated by stopping pulling from its input sources and\nprocessing any data that remained in-flight when draining was requested.\nThis state is a terminal state, may only be set by the Dataflow service,\nand only as a transition from JOB_STATE_DRAINING."
           ],
           "type": "string",
           "enum": [
@@ -208,7 +214,9 @@
             "JOB_STATE_DONE",
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_UPDATED"
+            "JOB_STATE_UPDATED",
+            "JOB_STATE_DRAINING",
+            "JOB_STATE_DRAINED"
           ]
         },
         "executionInfo": {

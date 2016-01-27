@@ -263,6 +263,17 @@ class Platform(object):
       args['creationflags'] = detached_process
     return args
 
+  def SyncPopenArgs(self):
+    """Returns args for spawning a synchronous process using Popen on this OS.
+
+    Returns:
+      {str:}, The args for spawning a syncronous process using Popen on this OS.
+    """
+    args = {}
+    if self.operating_system == OperatingSystem.WINDOWS:
+      args['close_fds'] = True
+    return args
+
   def IsSupported(self):
     """Ensure that we support the given platform.
 

@@ -712,7 +712,7 @@ class RegularFile(_messages.Message):
       TODO(user): Make the following path substitutions available: <p>
       ${EXTERNAL_STORAGE} - the external storage mount point (/sdcard) <p>
       ${ANDROID_DATA} - the userdata partition mount point (/data) Note:
-      /data/user/tmp is whitelisted, but /data is not.  <p> The corresponding
+      /data/local/tmp is whitelisted, but /data is not.  <p> The corresponding
       paths (in parentheses) will be made available and treated as implicit
       path substitutions, so the user may use them interchangeably. E.g. if
       /sdcard on a particular device does not map to external storage, the

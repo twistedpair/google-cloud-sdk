@@ -163,13 +163,13 @@ COLLECTION_COLUMNS = {
 
     'app.versions': (
         ('SERVICE', _Select('service')),
-        ('VERSION', _Select('version')),
-        # pylint: disable=unnecessary-lambda
+        ('VERSION', _Select('id')),
         ('TRAFFIC_SPLIT', _Select('traffic_split',
-                                  transform=lambda x: '{0:.2f}'.format(x))),
+                                  transform='{0:.2f}'.format)),
         ('LAST_DEPLOYED', _Select(
             'last_deployed_time',
-            transform=lambda x: x and x.isoformat()))
+            transform=lambda x: x and x.isoformat())),
+        ('SERVING_STATUS', _Select('version.servingStatus'))
     ),
 
     # AUTOSCALER

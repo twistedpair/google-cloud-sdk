@@ -704,6 +704,7 @@ class ArgumentInterceptor(object):
               completion_resource,
               self.cli_generator.Generate,
               command_line=list_command_path))
+      added_argument.completion_resource = completion_resource
 
   def _LowerCaseWithDashes(self, name):
     # Uses two passes to handle all-upper initialisms, such as fooBARBaz
@@ -1021,11 +1022,11 @@ class CommandCommon(object):
       raise CommandLoadFailure('.'.join(path), e), None, exc_traceback
 
   def _AcquireArgs(self):
-    """Call the function to register the arguments for this module."""
-    args_func = self._common_type.Args
-    if not args_func:
-      return
-    args_func(self.ai)
+    """Calls the functions to register the arguments for this module."""
+    # A Command subclass can define a _Flags() method.
+    self._common_type._Flags(self.ai)
+    # A command implementation can optionally define an Args() method.
+    self._common_type.Args(self.ai)
 
     if self._parent_group:
       # Add parent flags to children, if they aren't represented already

@@ -2929,6 +2929,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'ResizeAdvanced': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instanceGroupManagers.resizeAdvanced',
+              ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+              path_params=[u'instanceGroupManager', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeAdvanced',
+              request_field=u'instanceGroupManagersResizeAdvancedRequest',
+              request_type_name=u'ComputeInstanceGroupManagersResizeAdvancedRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetAutoHealingPolicies': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instanceGroupManagers.setAutoHealingPolicies',
@@ -3109,6 +3121,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def ResizeAdvanced(self, request, global_params=None):
+      """Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. This method is an extended version of Resize and it supports more advanced options.
+
+      Args:
+        request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResizeAdvanced')
       return self._RunMethod(
           config, request, global_params=global_params)
 

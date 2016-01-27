@@ -13,7 +13,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/container-builder/docs/",
   "protocol": "rest",
   "rootUrl": "https://cloudbuild.googleapis.com/",
   "servicePath": "",
@@ -191,14 +191,14 @@
           "format": "google-duration"
         },
         "images": {
-          "description": "List of images expected to be built and pushed to GCR. If an image\nis listed here, and if the image is not produced by one of the build\nsteps, the build will fail. If all the images are present when the build\nsteps are complete, they will all be pushed.",
+          "description": "List of images expected to be built and pushed to Google Container\nRegistry. If an image is listed here and the image is not produced by\none of the build steps, the build will fail. Any images present when\nthe build steps are complete will be pushed to Container Registry.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "logsBucket": {
-          "description": "Google Cloud Storage bucket where logs should be written (see\n[Bucket Name\nRequirements](https:\/\/cloud.google.com\/storage\/docs\/bucket-naming#requirements)).\nLogs file names will be of the format ${logs_bucket}\/log-${build_id}.txt.",
+          "description": "Google Cloud Storage bucket where logs should be written (see\n[Bucket Name\nRequirements](https:\/\/cloud.google.com\/storage\/docs\/bucket-naming#requirements)).\nLogs file names will be of the format `${logs_bucket}\/log-${build_id}.txt`.",
           "type": "string"
         }
       }
@@ -224,7 +224,7 @@
           "type": "string"
         },
         "object": {
-          "description": "Google Cloud Storage object containing source.\n\nThis object must be an archive file (zip, tar, tar.gz) containing source to\nbuild.",
+          "description": "Google Cloud Storage object containing source.\n\nThis object must be a gzipped archive file (.tgz) containing source to\nbuild.",
           "type": "string"
         }
       }
@@ -282,7 +282,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name used to push the container image to GCR, as presented to\n`docker push`.",
+          "description": "Name used to push the container image to Google Container Registry, as\npresented to `docker push`.",
           "type": "string"
         },
         "digest": {

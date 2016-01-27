@@ -920,7 +920,7 @@ class JobConfigurationQuery(_messages.Message):
   """A JobConfigurationQuery object.
 
   Messages:
-    TableDefinitionsValue: [Experimental] If querying an external data source
+    TableDefinitionsValue: [Optional] If querying an external data source
       outside of BigQuery, describes the data format, location and other
       properties of the data source. By defining these properties, the data
       source can then be queried as if it were a standard BigQuery table.
@@ -952,10 +952,10 @@ class JobConfigurationQuery(_messages.Message):
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
     query: [Required] BigQuery SQL query to execute.
-    tableDefinitions: [Experimental] If querying an external data source
-      outside of BigQuery, describes the data format, location and other
-      properties of the data source. By defining these properties, the data
-      source can then be queried as if it were a standard BigQuery table.
+    tableDefinitions: [Optional] If querying an external data source outside
+      of BigQuery, describes the data format, location and other properties of
+      the data source. By defining these properties, the data source can then
+      be queried as if it were a standard BigQuery table.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
@@ -976,7 +976,7 @@ class JobConfigurationQuery(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TableDefinitionsValue(_messages.Message):
-    """[Experimental] If querying an external data source outside of BigQuery,
+    """[Optional] If querying an external data source outside of BigQuery,
     describes the data format, location and other properties of the data
     source. By defining these properties, the data source can then be queried
     as if it were a standard BigQuery table.
@@ -1447,10 +1447,10 @@ class Table(_messages.Message):
       milliseconds since the epoch. If not present, the table will persist
       indefinitely. Expired tables will be deleted and their storage
       reclaimed.
-    externalDataConfiguration: [Experimental] Describes the data format,
-      location, and other properties of a table stored outside of BigQuery. By
-      defining these properties, the data source can then be queried as if it
-      were a standard BigQuery table.
+    externalDataConfiguration: [Optional] Describes the data format, location,
+      and other properties of a table stored outside of BigQuery. By defining
+      these properties, the data source can then be queried as if it were a
+      standard BigQuery table.
     friendlyName: [Optional] A descriptive name for this table.
     id: [Output-only] An opaque ID uniquely identifying the table.
     kind: [Output-only] The type of the resource.
