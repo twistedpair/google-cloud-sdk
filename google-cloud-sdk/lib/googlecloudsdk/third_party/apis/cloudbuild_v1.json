@@ -224,7 +224,7 @@
           "type": "string"
         },
         "object": {
-          "description": "Google Cloud Storage object containing source.\n\nThis object must be a gzipped archive file (.tgz) containing source to\nbuild.",
+          "description": "Google Cloud Storage object containing source.\n\nThis object must be a gzipped archive file (.tar.gz) containing source to\nbuild.",
           "type": "string"
         }
       }
@@ -263,10 +263,6 @@
       "description": "Results describes the artifacts created by the build pipeline.",
       "type": "object",
       "properties": {
-        "revision": {
-          "description": "Revision ID of the source that was built.",
-          "type": "string"
-        },
         "images": {
           "description": "Images that were built as a part of the build.",
           "type": "array",

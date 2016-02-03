@@ -224,21 +224,19 @@ class ModuleYamlInfo(_YamlInfo):
       vm_runtime = parsed.GetEffectiveRuntime()
     else:
       vm_runtime = None
-
-    if parsed.env == '2':
-      if vm_runtime == 'python27':
-        raise YamlValidationError(
-            'The "python27" is not a valid runtime in env: 2.  '
-            'Please use [python-compat] instead.')
-    else:
-      if parsed.runtime == 'python' or vm_runtime == 'python':
+      if parsed.runtime == 'python':
         raise YamlValidationError(
             'Module [{module}] uses unsupported Python 2.5 runtime. '
             'Please use [runtime: python27] instead.'.format(
                 module=parsed.module))
-      elif parsed.runtime == 'python-compat' or vm_runtime == 'python-compat':
+      elif parsed.runtime == 'python-compat':
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
+
+    if parsed.env == '2' and vm_runtime == 'python27':
+      raise YamlValidationError(
+          'The "python27" is not a valid runtime in env: 2.  '
+          'Please use [python-compat] instead.')
 
     if not parsed.module:
       parsed.module = ModuleYamlInfo.DEFAULT_MODULE_NAME

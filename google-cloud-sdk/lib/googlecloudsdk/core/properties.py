@@ -510,7 +510,9 @@ class _SectionApp(_Section):
     self.use_cloud_build = self._AddBool(
         'use_cloud_build',
         help_text='If True, use the Container Builder API to perform docker '
-        'builds.')
+        'builds, rather than a temporary VM. See '
+        'https://cloud.google.com/container-builder/docs/ for more '
+        'information.')
     self.hosted_build_image = self._Add(
         'hosted_build_image',
         callbacks=[lambda: 'gae-builder-vm'],
@@ -609,7 +611,7 @@ class _SectionCore(_Section):
     self.user_output_enabled = self._AddBool(
         'user_output_enabled',
         help_text='If False, messages to the user and command output on both '
-        'standard out and standard error will be suppressed.')
+        'standard output and standard error will be suppressed.')
     self.log_http = self._AddBool(
         'log_http',
         help_text='If True, log http requests and responses to the logs.  '
@@ -1399,7 +1401,7 @@ class PropertiesFile(object):
 
           if ((config_paths.user_properties_path in paths) and
               os.path.isfile(config_paths.user_properties_path)):
-            # Write to standard out directly as importing `logging` here
+            # Write to standard output directly as importing `logging` here
             # messes up the logging boot-strap process.  We could probably do
             # a more principled refactor to avoid this, but it doesn't seem
             # worthwhile for a temporary warning message.

@@ -478,7 +478,7 @@ def _GetSourceContexts(source_dir):
   """Gets the source contexts associated with a directory.
 
   This function is mostly a wrapper around CalculateExtendedSourceContexts
-  which logs a warning if the context could not be determined.
+  which logs a message if the context could not be determined.
   Args:
     source_dir: (String) The directory to inspect.
   Returns:
@@ -491,7 +491,7 @@ def _GetSourceContexts(source_dir):
     # No valid source contexts.
     source_contexts = []
   if not source_contexts:
-    log.warn(
+    log.info(
         'Could not find any remote repositories associated with [{0}]. '
         'Cloud diagnostic tools may not be able to display the correct '
         'source code for this deployment.'.format(source_dir))

@@ -707,7 +707,7 @@
       "type": "object",
       "properties": {
         "files": {
-          "description": "info.size and contents are not set.",
+          "description": "The contents field is empty.",
           "type": "array",
           "items": {
             "$ref": "File"

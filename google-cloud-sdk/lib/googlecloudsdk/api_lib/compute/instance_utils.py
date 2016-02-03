@@ -389,17 +389,6 @@ def AddPreemptibleVmArgs(parser):
 
 
 def AddNetworkArgs(parser):
-  network = parser.add_argument(
-      '--network',
-      default=constants.DEFAULT_NETWORK,
-      help='Specifies the network that the instances will be part of.')
-  network.detailed_help = """\
-      Specifies the network that the instances will be part of. If
-      omitted, the ``default'' network is used.
-      """
-
-
-def AddNetworkArgsAlpha(parser):
   """Set arguments for choosing the network/subnetwork."""
   netparser = parser.add_mutually_exclusive_group()
 

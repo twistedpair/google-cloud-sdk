@@ -126,9 +126,8 @@ class HTMLRenderer(renderer.Renderer):
     Returns:
       The string with special characters converted to entity tags.
     """
-    # Translate ' => &actute; but retain ``...''.
-    esc = buf.replace("'", '&acute;')
-    esc = re.sub('(``[^`]*)&acute;&acute;', r"\1''", esc)
+    # Translate ``...'' => ``...&acute;&actute;.
+    esc = re.sub("(``[^`]*)''", r'\1&acute;&acute;', buf)
     return esc.replace('...', '&hellip;')
 
   def Escape(self, buf):
@@ -161,8 +160,7 @@ class HTMLRenderer(renderer.Renderer):
     line = line.lstrip()
     indent -= len(line)
     self._out.write('&nbsp;' * (self._fill + indent))
-    # Retain ' in examples for ascii cut-and-paste.
-    self._out.write(line.replace('&acute;', "'"))
+    self._out.write(line)
     self._out.write('</code>\n')
 
   def Fill(self, line):

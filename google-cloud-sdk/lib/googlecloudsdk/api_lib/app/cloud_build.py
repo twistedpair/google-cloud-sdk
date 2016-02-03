@@ -25,7 +25,6 @@ from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
 
 CLOUDBUILD_BUILDER = 'gcr.io/cloud-builders/dockerizer'
@@ -33,10 +32,15 @@ CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
     'https://console.developers.google.com/logs?project={project_id}'
     '&service=cloudbuild.googleapis.com&key1={build_id}')
+CLOUDBUILD_LOGFILE_FMT_STRING = 'log-{build_id}.txt'
 
 # Paths that shouldn't be ignored client-side.
 # Behavioral parity with github.com/docker/docker-py.
 BLACKLISTED_DOCKERIGNORE_PATHS = ['Dockerfile', '.dockerignore']
+
+
+class UploadFailedError(exceptions.Error):
+  """Raised when the source fails to upload to GCS."""
 
 
 class BuildFailedError(exceptions.Error):
@@ -61,6 +65,9 @@ def UploadSource(source_dir, target_object):
   Args:
     source_dir: the directory to be archived.
     target_object: the GCS location where the tarball will be stored.
+
+  Raises:
+    UploadFailedError: when the source fails to upload to GCS.
   """
   dockerignore = os.path.join(source_dir, '.dockerignore')
   exclude = None
@@ -87,12 +94,14 @@ def UploadSource(source_dir, target_object):
     with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
       docker.utils.tar(source_dir, exclude, fileobj=gz)
     f.close()
-    cloud_storage.Copy(f.name, target_object)
+    if cloud_storage.Copy(f.name, target_object) != 0:  # For cli, 0 is success.
+      raise UploadFailedError('Failed to upload source code.')
   finally:
     shutil.rmtree(temp_dir)
 
 
-def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
+def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
+                      http):
   """Execute a call to Argo CloudBuild service and wait for it to finish.
 
   Args:
@@ -102,11 +111,13 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
     output_image: GCR location for the output docker image;
                   eg, gcr.io/test-argo/hardcoded-output-tag.
     cloudbuild_client: client to the Argo Cloud Build service.
+    http: an http provider that can be used to create api clients.
 
   Raises:
     BuildFailedError: when the build fails.
   """
   (source_bucket, source_object) = cloud_storage.ParseGcsUri(source_uri)
+  logs_bucket = source_bucket
   build_op = cloudbuild_client.projects_builds.Create(
       cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
           projectId=project,
@@ -122,6 +133,7 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
                   args=[output_image]
               )],
               images=[output_image],
+              logsBucket=logs_bucket,
           ),
       )
   )
@@ -140,12 +152,24 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client):
     raise BuildFailedError('Could not determine build ID')
   log.status.Print(
       'Started cloud build [{build_id}].'.format(build_id=build_id))
+  log_object = CLOUDBUILD_LOGFILE_FMT_STRING.format(build_id=build_id)
+  log_tailer = cloud_storage.LogTailer(
+      http=http,
+      bucket=logs_bucket,
+      obj=log_object)
   logs_uri = CLOUDBUILD_LOGS_URI_TEMPLATE.format(project_id=project,
                                                  build_id=build_id)
-  log.status.Print('View logs at: ' + logs_uri)
-
-  with console_io.ProgressTracker('Waiting for cloud build'):
-    op = operations.WaitForOperation(cloudbuild_client.operations, build_op)
+  log.status.Print('To see logs in the Cloud Console: ' + logs_uri)
+  op = operations.WaitForOperation(
+      operation_service=cloudbuild_client.operations,
+      operation=build_op,
+      retry_interval=1,
+      max_retries=60 * 60,
+      retry_callback=log_tailer.Poll)
+  # Poll the logs one final time to ensure we have everything. We know this
+  # final poll will get the full log contents because GCS is strongly consistent
+  # and Argo waits for logs to finish pushing before marking the build complete.
+  log_tailer.Poll(is_last=True)
   final_status = _GetStatusFromOp(op)
   if final_status != CLOUDBUILD_SUCCESS:
     raise BuildFailedError('Cloud build failed with status '
@@ -170,6 +194,3 @@ def _GetStatusFromOp(op):
     if prop.key == 'status':
       return prop.value.string_value
   return 'UNKNOWN'
-
-
-

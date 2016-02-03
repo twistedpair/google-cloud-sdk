@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.api_lib.compute import user_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -236,47 +237,15 @@ def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
         existing_metadata=metadata)
 
 
-def _GenerateKeyNoPassphraseOnWindows(keygen_args):
-  """Generate a passphrase-less key on Windows.
+def _IsRunningOnWindows():
+  """Returns True if the current os is Windows."""
+  current_os = platforms.OperatingSystem.Current()
+  return current_os is platforms.OperatingSystem.WINDOWS
 
-  Windows ssh-keygen does not support arguments for the '-P' flag, so we
-  communicate with it to have no passphrase.
 
-  Args:
-    keygen_args: list of str, the arguments (including path to ssh-keygen
-      executable) for the ssh-keygen command.
-
-  Raises:
-    SshLikeCmdFailed: if the ssh-keygen process fails.
-  """
-  err_msg = ('SSH Key Generation failed. Please run this command again in '
-             'interactive mode.')
-
-  keygen_process = subprocess.Popen(keygen_args, stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
-  keygen_output = ''
-  for prompt_keywords in [('enter', 'passphrase'),
-                          ('enter', 'passphrase', 'again')]:
-    chunk = ''
-    while not chunk.endswith(': '):
-      char = keygen_process.stdout.read(1)
-      chunk += char
-      if not char:  # Process terminated
-        break
-    keygen_output += chunk
-    if not all([keyword in chunk.lower() for keyword in prompt_keywords]):
-      # If we don't get the output we're expecting, we don't know how to
-      # generate keys.
-      log.error(err_msg)
-      raise SshLikeCmdFailed(keygen_args[0], message=keygen_output)
-    keygen_process.stdin.write('\n')  # empty passphrase
-  chunk, _ = keygen_process.communicate()  # stderr is not piped
-  keygen_output += chunk
-  if keygen_process.returncode != 0:
-    log.error(err_msg)
-    raise SshLikeCmdFailed(keygen_args[0],
-                           message=keygen_output,
-                           return_code=keygen_process.returncode)
+def _SdkHelperBin():
+  """Returns the SDK helper executable bin directory."""
+  return os.path.join(config.Paths().sdk_root, 'bin', 'sdk')
 
 
 class BaseSSHCommand(base_classes.BaseCommand,
@@ -467,23 +436,19 @@ class BaseSSHCommand(base_classes.BaseCommand,
         else:
           raise exceptions.ToolException('SSH key generation aborted by user.')
 
-      keygen_args = [
-          self.ssh_keygen_executable,
-          '-t', 'rsa',
-          '-f', self.ssh_key_file,
-      ]
-      if properties.VALUES.core.disable_prompts.GetBool():
-        # If prompts are disabled, use the default of no passphrase
-        current_os = platforms.OperatingSystem.Current()
-        if current_os is platforms.OperatingSystem.WINDOWS:
-          _GenerateKeyNoPassphraseOnWindows(keygen_args)
-        else:
+      keygen_args = [self.ssh_keygen_executable]
+      if _IsRunningOnWindows():
+        # No passphrase in the current implementation.
+        keygen_args.append(self.ssh_key_file)
+      else:
+        if properties.VALUES.core.disable_prompts.GetBool():
           # Specify empty passphrase on command line
           keygen_args.extend(['-P', ''])
-          _RunExecutable(keygen_args)
-      else:
-        # Prompts are enabled. Run normally.
-        _RunExecutable(keygen_args)
+        keygen_args.extend([
+            '-t', 'rsa',
+            '-f', self.ssh_key_file,
+        ])
+      _RunExecutable(keygen_args)
 
     with open(public_ssh_key_file) as f:
       # We get back a unicode list of keys for the remaining metadata, so
@@ -498,12 +463,30 @@ class BaseSSHCommand(base_classes.BaseCommand,
 
   def Run(self, args):
     """Subclasses must call this in their Run() before continuing."""
-    self.scp_executable = files.FindExecutableOnPath('scp')
-    self.ssh_executable = files.FindExecutableOnPath('ssh')
-    self.ssh_keygen_executable = files.FindExecutableOnPath('ssh-keygen')
+    if _IsRunningOnWindows():
+      scp_command = 'pscp'
+      ssh_command = 'plink'
+      ssh_keygen_command = 'winkeygen'
+      ssh_term_command = 'putty'
+      # The ssh helper executables are installed in this dir only.
+      path = _SdkHelperBin()
+      self.ssh_term_executable = files.FindExecutableOnPath(
+          ssh_term_command, path=path)
+    else:
+      scp_command = 'scp'
+      ssh_command = 'ssh'
+      ssh_keygen_command = 'ssh-keygen'
+      ssh_term_command = None
+      path = None
+      self.ssh_term_executable = None
+    self.scp_executable = files.FindExecutableOnPath(scp_command, path=path)
+    self.ssh_executable = files.FindExecutableOnPath(ssh_command, path=path)
+    self.ssh_keygen_executable = files.FindExecutableOnPath(
+        ssh_keygen_command, path=path)
     if (not self.scp_executable or
         not self.ssh_executable or
-        not self.ssh_keygen_executable):
+        not self.ssh_keygen_executable or
+        ssh_term_command and not self.ssh_term_executable):
       raise exceptions.ToolException('Your platform does not support OpenSSH.')
 
     self.ssh_key_file = os.path.realpath(os.path.expanduser(
@@ -571,6 +554,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
     ssh_args_for_polling.extend(self.GetDefaultFlags())
     ssh_args_for_polling.append(UserHost(user, external_ip_address))
     ssh_args_for_polling.append('true')
+    ssh_args_for_polling = self.LocalizeCommand(ssh_args_for_polling)
 
     start_sec = time_utils.CurrentTimeSec()
     while True:
@@ -587,6 +571,58 @@ class BaseSSHCLICommand(BaseSSHCommand):
             'verify that the firewall and instance are set to accept '
             'ssh traffic.')
       time_utils.Sleep(5)
+
+  def LocalizeCommand(self, cmd_args):
+    """Modifies an ssh/scp command line to match the local implementation.
+
+    Args:
+      cmd_args: [str], The command line that will be executed.
+
+    Returns:
+      Returns new_cmd_args, the localized command line.
+    """
+    if not _IsRunningOnWindows():
+      return cmd_args
+    args = [cmd_args[0]]
+    i = 1
+    n = len(cmd_args)
+    positionals = 0
+    while i < n:
+      arg = cmd_args[i]
+      i += 1
+      if arg == '-i' and i < n:
+        # -i private_key_file -- use private_key_file.ppk if it exists.
+        args.append(arg)
+        arg = cmd_args[i]
+        i += 1
+        ppk_file = arg + '.ppk'
+        if os.path.exists(ppk_file):
+          arg = ppk_file
+      elif arg == '-o' and i < n:
+        arg = cmd_args[i]
+        i += 1
+        if arg.startswith('CheckHostIP'):
+          # Ignore -o CheckHostIP=yes/no.
+          continue
+        elif arg.startswith('IdentitiesOnly'):
+          # Ignore -o IdentitiesOnly=yes/no.
+          continue
+        elif arg.startswith('StrictHostKeyChecking'):
+          # Ignore -o StrictHostKeyChecking=yes/no.
+          continue
+        elif arg.startswith('UserKnownHostsFile'):
+          # Ignore UserKnownHostsFile=path.
+          continue
+      elif arg == '-p':
+        # -p port => -P port.
+        arg = '-P'
+      elif not arg.startswith('-'):
+        positionals += 1
+      args.append(arg)
+    # Check if a putty term should be opened here.
+    if positionals == 1 and cmd_args[0] == self.ssh_executable:
+      args[0] = self.ssh_term_executable
+    return args
 
   def ActuallyRun(self, args, cmd_args, user, instance,
                   strict_error_checking=True, use_account_service=False):
@@ -607,6 +643,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
     Returns:
       int, the exit code of the command that was run
     """
+    cmd_args = self.LocalizeCommand(cmd_args)
     if args.dry_run:
       log.out.Print(' '.join(cmd_args))
       return

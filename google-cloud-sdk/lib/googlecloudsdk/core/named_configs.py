@@ -498,14 +498,6 @@ def DeleteNamedConfig(name):
 
   _ValidateConfigNameOrRaise(name)
 
-  # Fail the delete operation when we're attempting to delete the
-  # active config.
-  if GetNameOfActiveNamedConfig() == name:
-    raise NamedConfigWriteError(
-        'Deleting named configuration failed because configuration '
-        '[{0}] is set as active.  Use `gcloud config configurations '
-        'activate` to change the active configuration.'.format(name))
-
   # Also fail if we're attempting to delete the configuration that the file
   # system thinks is active, even if that's overriden by a flag or
   # environment variable.  This avoids leaving gcloud in an invalid state.

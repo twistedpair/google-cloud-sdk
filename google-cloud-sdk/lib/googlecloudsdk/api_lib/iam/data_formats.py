@@ -28,8 +28,7 @@ def Select(column, transform=None):
 
 
 SERVICE_ACCOUNT_COLUMNS = (('NAME', Select('displayName')),
-                           ('EMAIL', Select('email')),
-                           ('DESCRIPTION', Select('description')),)
+                           ('EMAIL', Select('email')),)
 
 SERVICE_ACCOUNT_KEY_COLUMNS = (
     ('KEY_ID', Select('name', utils.GetKeyIdFromResourceName)),

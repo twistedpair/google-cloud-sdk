@@ -25,10 +25,13 @@ NAME = 'Python Compat'
 ALLOWED_RUNTIME_NAMES = ('python27', 'python-compat')
 PYTHON_RUNTIME_NAME = 'python27'
 
+# TODO(user): this generated app.yaml doesn't work because the compat
+# runtimes need a "handlers" section.  Query the user for this information.
 PYTHON_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
     vm: true
     api_version: 1
+    threadsafe: false
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore
@@ -37,25 +40,35 @@ DOCKERIGNORE = textwrap.dedent("""\
     .hg
     .svn
     """)
-DOCKERFILE_PREAMBLE = 'FROM gcr.io/google_appengine/python-compat\n'
+COMPAT_DOCKERFILE_PREAMBLE = (
+    'FROM gcr.io/google_appengine/python-compat-multicore\n')
+PYTHON27_DOCKERFILE_PREAMBLE = 'FROM gcr.io/google_appengine/python-compat\n'
 
 DOCKERFILE_INSTALL_APP = 'ADD . /app/\n'
+
+# TODO(user): Do the check for requirements.txt in the source inspection
+# and don't generate the pip install if it doesn't exist.
+DOCKERFILE_INSTALL_REQUIREMENTS_TXT = (
+    'RUN if [ -s requirements.txt ]; then pip install -r requirements.txt; '
+    'fi\n')
 
 
 class PythonConfigurator(fingerprinting.Configurator):
   """Generates configuration for a Python application."""
 
-  def __init__(self, path, params):
+  def __init__(self, path, params, runtime):
     """Constructor.
 
     Args:
       path: (str) Root path of the source tree.
       params: (fingerprinting.Params) Parameters passed through to the
         fingerprinters.
+      runtime: (str) The runtime name.
     """
 
     self.root = path
     self.params = params
+    self.runtime = runtime
 
   def GenerateConfigs(self):
     """Generate all config files for the module."""
@@ -66,13 +79,18 @@ class PythonConfigurator(fingerprinting.Configurator):
     else:
       notify = log.status.Print
 
+    if self.runtime == 'python-compat':
+      dockerfile_preamble = COMPAT_DOCKERFILE_PREAMBLE
+    else:
+      dockerfile_preamble = PYTHON27_DOCKERFILE_PREAMBLE
+
     # Generate app.yaml.
     cleaner = fingerprinting.Cleaner()
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
         notify('Writing [app.yaml] to [%s].' % self.root)
-        runtime = 'custom' if self.params.custom else 'python27'
+        runtime = 'custom' if self.params.custom else self.runtime
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(runtime=runtime))
         cleaner.Add(app_yaml)
@@ -83,8 +101,10 @@ class PythonConfigurator(fingerprinting.Configurator):
         notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
         # Customize the dockerfile.
         with open(dockerfile, 'w') as out:
-          out.write(DOCKERFILE_PREAMBLE)
+          out.write(dockerfile_preamble)
           out.write(DOCKERFILE_INSTALL_APP)
+          if self.runtime == 'python-compat':
+            out.write(DOCKERFILE_INSTALL_REQUIREMENTS_TXT)
 
         cleaner.Add(dockerfile)
 
@@ -115,11 +135,18 @@ def Fingerprint(path, params):
   """
   log.info('Checking for Python Compat.')
 
-  # We need an appinfo and it needs to directly specify this runtime to use it.
-  if (not params.appinfo or
-      params.appinfo.GetEffectiveRuntime() not in ALLOWED_RUNTIME_NAMES):
+  # The only way we select these runtimes is if either the user has specified
+  # it or a matching runtime is specified in the app.yaml.
+  if (not params.runtime and
+      (not params.appinfo or
+       params.appinfo.GetEffectiveRuntime() not in ALLOWED_RUNTIME_NAMES)):
     return None
 
+  if params.appinfo:
+    runtime = params.appinfo.GetEffectiveRuntime()
+  else:
+    runtime = params.runtime
+
   log.info('Python Compat matches ([{0}] specified in "runtime" field)'.format(
-      params.appinfo.GetEffectiveRuntime()))
-  return PythonConfigurator(path, params)
+      runtime))
+  return PythonConfigurator(path, params, runtime)

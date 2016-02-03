@@ -2,6 +2,56 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 95.0.0 (2016/2/3)
+
+### Breaking Changes
+
+* Use `gcloud compute networks create --mode=legacy` to create non-subnet
+  networks.
+
+### Google Compute Engine
+
+* `gcloud compute copy-files` and `gcloud compute ssh` on Windows now use
+  standard PuTTY plink.exe, pscp.exe and putty.exe. A standalone winkeygen.exe
+  generates PuTTY and ssh compatible keys. The Windows PuTTY executables are up
+  to date at version 0.66.
+
+### Google Compute Engine subnets
+
+* Added `gcloud compute networks subnets`.
+
+* Added `--mode` flag to `gcloud compute networks create`.
+
+* Added `--subnet` flag to `gcloud compute instances create` and
+  `gcloud compute instance-templates create`.
+
+* Added `--local-traffic-selector` flag to `gcloud compute vpn-tunnels create`.
+
+### Google App Engine
+
+* Added support for streaming logs when the `use_cloud_build=1` property is set.
+
+* Moved the nodejs install script into the docker image.
+
+### Projects
+
+* `gcloud projects update|undelete|delete` have been moved to beta.
+
+### gcloud --format
+
+* Added nested table formatting by
+  `--format="table(field1,listField2:format=FORMAT-STRING)"` where
+  _FORMAT-STRING_ can be any format (json, table, ...).
+  Try: `gcloud compute instances list
+  --format="table[box](name, disks:format='table[no-heading](deviceName:sort=1,
+  kind)')"`
+
+* Added list field aggregation formatting (similar to nested formatting) by
+  `--format="table(listField2:format=FORMAT-STRING)"`. When the main table
+  has no columns each nested format is aggregated into a single list.
+  Try: `gcloud compute instances list
+  --format="table(disks:format='table[box](deviceName:sort=1, kind)')"`
+
 ## 94.0.0 (2016/1/27)
 
 ### Google Compute Engine

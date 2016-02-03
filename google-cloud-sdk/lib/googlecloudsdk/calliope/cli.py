@@ -447,14 +447,17 @@ class CLILoader(object):
           help='Print version information and exit. This flag is only available'
           ' at the global level.')
 
-    top_element.ai.add_argument(
+    configuration_flag = top_element.ai.add_argument(
         '--configuration',
         metavar='CONFIGURATION',
         is_common=True,
-        help=(argparse.SUPPRESS
-              # 'Named configuration for this invocation.  Run '
-              #' `gcloud topics configurations` for more information.'
-             ))
+        help='The configuration to use for this command invocation.')
+    configuration_flag.detailed_help = (
+        'The configuration to use for this command invocation. For more '
+        'information on how to use configurations, run:  '
+        '`gcloud topic configurations`.  You can also use the [{0}] environment'
+        ' variable to set the equivalent of this flag for a terminal session.'
+        .format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))
 
     top_element.ai.add_argument(
         '--verbosity',

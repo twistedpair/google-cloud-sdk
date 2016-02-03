@@ -138,8 +138,13 @@ def _GetImageName(project, module, version):
               display=display, domain=domain, module=module, version=version)
 
 
-def BuildAndPushDockerImages(module_configs, version_id,
-                             cloudbuild_client, code_bucket, cli, remote,
+def BuildAndPushDockerImages(module_configs,
+                             version_id,
+                             cloudbuild_client,
+                             http,
+                             code_bucket,
+                             cli,
+                             remote,
                              source_contexts,
                              config_cleanup):
   """Builds and pushes a set of docker images.
@@ -148,6 +153,7 @@ def BuildAndPushDockerImages(module_configs, version_id,
     module_configs: A map of module name to parsed config.
     version_id: The version id to deploy these modules under.
     cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
+    http: a http provider that can be used to create API clients
     code_bucket: The name of the GCS bucket where the source will be uploaded.
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     remote: Whether the user specified a remote build.
@@ -180,7 +186,7 @@ def BuildAndPushDockerImages(module_configs, version_id,
 
   if use_cloud_build:
     return _BuildImagesWithCloudBuild(project, modules, version_id,
-                                      code_bucket, cloudbuild_client)
+                                      code_bucket, cloudbuild_client, http)
 
   # Update docker client's credentials.
   for registry_host in constants.ALL_SUPPORTED_REGISTRIES:
@@ -212,7 +218,7 @@ def BuildAndPushDockerImages(module_configs, version_id,
 
 
 def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
-                               cloudbuild_client):
+                               cloudbuild_client, http):
   """Build multiple modules with Cloud Build."""
   images = {}
   for module, info, ensure_dockerfile, ensure_context in modules:
@@ -230,7 +236,7 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
       cloud_build.UploadSource(image.dockerfile_dir, source_gcs_uri)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
       cloud_build.ExecuteCloudBuild(project, source_gcs_uri, image.repo_tag,
-                                    cloudbuild_client)
+                                    cloudbuild_client, http)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
       images[module] = image.repo_tag
     finally:

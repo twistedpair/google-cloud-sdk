@@ -96,7 +96,9 @@ DOCKERFILE_DEFAULT_INTERPRETER = textwrap.dedent("""\
     """)
 DOCKERFILE_CUSTOM_INTERPRETER = textwrap.dedent("""\
     # Install ruby {{0}} if not already preinstalled by the base image
-    RUN rbenv install -s {{0}} && \\
+    RUN cd /rbenv/plugins/ruby-build && \\
+        git pull && \\
+        rbenv install -s {{0}} && \\
         rbenv global {{0}} && \\
         gem install -q --no-rdoc --no-ri bundler --version {0} && \\
         gem install -q --no-rdoc --no-ri foreman --version {1}

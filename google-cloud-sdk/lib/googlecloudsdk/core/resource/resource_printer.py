@@ -63,30 +63,6 @@ class ProjectionFormatRequiredError(Error):
   """Projection key missing required format attribute."""
 
 
-def _PrintResources(resources, printer, single=False):
-  """Prints resources using printer.AddRecord() and printer.Finish().
-
-  Args:
-    resources: A singleton or list of JSON-serializable Python objects.
-    printer: An instantiated printer.
-    single: If True then resources is a single item and not a list.
-      For example, use this to print a single object as JSON.
-  """
-  # Resources may be a generator and since generators can raise exceptions, we
-  # have to call Finish() in the finally block to make sure that the resources
-  # we've been able to pull out of the generator are printed before control is
-  # given to the exception-handling code.
-  try:
-    if resources:
-      if single or not resource_property.IsListLike(resources):
-        printer.AddRecord(resources, delimit=False)
-      else:
-        for resource in resources:
-          printer.AddRecord(resource)
-  finally:
-    printer.Finish()
-
-
 class DefaultPrinter(yaml_printer.YamlPrinter):
   """An alias for YamlPrinter.
 
@@ -132,7 +108,7 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
 
   def _AddRecord(self, record, delimit=True):
     for col, printer in self.columns:
-      _PrintResources(resource_property.Get(record, col.key), printer)
+      printer.Print(resource_property.Get(record, col.key))
 
 
 class PrinterAttributes(resource_printer_base.ResourcePrinter):
@@ -177,13 +153,16 @@ def SupportedFormats():
   return sorted(_FORMATTERS)
 
 
-def Printer(print_format, out=None, defaults=None):
+def Printer(print_format, out=None, defaults=None, console_attr=None):
   """Returns a resource printer given a format string.
 
   Args:
     print_format: The _FORMATTERS name with optional attributes and projection.
     out: Output stream, log.out if None.
     defaults: Optional resource_projection_spec.ProjectionSpec defaults.
+    console_attr: The console attributes for the output stream. Ignored by some
+      printers. If None then printers that require it will initialize it to
+      match out.
 
   Raises:
     UnknownFormatError: The print_format is invalid.
@@ -191,7 +170,6 @@ def Printer(print_format, out=None, defaults=None):
   Returns:
     An initialized ResourcePrinter class or None if printing is disabled.
   """
-
   projector = resource_projector.Compile(
       expression=print_format, defaults=defaults,
       symbols=resource_transform.GetTransforms())
@@ -207,7 +185,9 @@ def Printer(print_format, out=None, defaults=None):
                           name=printer_name,
                           attributes=projection.Attributes(),
                           column_attributes=projection,
-                          process_record=projector.Evaluate)
+                          process_record=projector.Evaluate,
+                          printer=Printer,
+                          console_attr=console_attr)
   projector.SetByColumns(printer.ByColumns())
   return printer
 
@@ -235,4 +215,4 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
     raise ProjectionRequiredError(
         'Format [{0}] requires a non-empty projection.'.format(
             printer.column_attributes.Name()))
-  _PrintResources(resources, printer, single)
+  printer.Print(resources, single)

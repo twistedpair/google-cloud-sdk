@@ -215,7 +215,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of address resources contained within the specified region.
+      """Retrieves a list of addresses contained within the specified region.
 
       Args:
         request: (ComputeAddressesListRequest) input message
@@ -954,7 +954,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of disk type resources.
+      """Retrieves an aggregated list of disk types.
 
       Args:
         request: (ComputeDiskTypesAggregatedListRequest) input message
@@ -967,7 +967,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified disk type resource.
+      """Returns the specified disk type.
 
       Args:
         request: (ComputeDiskTypesGetRequest) input message
@@ -980,7 +980,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of disk type resources available to the specified project.
+      """Retrieves a list of disk types available to the specified project.
 
       Args:
         request: (ComputeDiskTypesListRequest) input message
@@ -1166,7 +1166,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a persistent disk in the specified project using the data included in the request.
+      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 200 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message
@@ -1328,7 +1328,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified firewall resource.
+      """Deletes the specified firewall.
 
       Args:
         request: (ComputeFirewallsDeleteRequest) input message
@@ -1341,7 +1341,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified firewall resource.
+      """Returns the specified firewall.
 
       Args:
         request: (ComputeFirewallsGetRequest) input message
@@ -1354,7 +1354,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a firewall resource in the specified project using the data included in the request.
+      """Creates a firewall rule in the specified project using the data included in the request.
 
       Args:
         request: (ComputeFirewallsInsertRequest) input message
@@ -1367,7 +1367,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of firewall resources available to the specified project.
+      """Retrieves the list of firewall rules available to the specified project.
 
       Args:
         request: (ComputeFirewallsListRequest) input message
@@ -1380,7 +1380,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates the specified firewall resource with the data included in the request. This method supports patch semantics.
+      """Updates the specified firewall rule with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeFirewallsPatchRequest) input message
@@ -1406,7 +1406,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall resource with the data included in the request.
+      """Updates the specified firewall rule with the data included in the request.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -1719,7 +1719,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of global address resources.
+      """Retrieves a list of global addresses.
 
       Args:
         request: (ComputeGlobalAddressesListRequest) input message
@@ -2694,7 +2694,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified image resource.
+      """Deletes the specified image.
 
       Args:
         request: (ComputeImagesDeleteRequest) input message
@@ -2722,7 +2722,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified image resource.
+      """Returns the specified image.
 
       Args:
         request: (ComputeImagesGetRequest) input message
@@ -2735,7 +2735,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def GetFromFamily(self, request, global_params=None):
-      """Returns the latest undeprecated image resource for an image family.
+      """Returns the latest undeprecated image for an image family.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message
@@ -2748,7 +2748,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates an image resource in the specified project using the data included in the request.
+      """Creates an image in the specified project using the data included in the request.
 
       Args:
         request: (ComputeImagesInsertRequest) input message
@@ -3323,7 +3323,7 @@ See Accessing images for more information.
           }
 
     def AddInstances(self, request, global_params=None):
-      """Adds a list of instances to the specified instance group. Read  Adding instances for more information.
+      """Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -3526,7 +3526,7 @@ See Accessing images for more information.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified instance template.
+      """Deletes the specified instance template. If you delete an instance template that is being referenced from another instance group, the instance group will not be able to create or recreate virtual machine instances. Deleting an instance template is permanent and cannot be undone.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -3893,7 +3893,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves aggregated list of instance resources.
+      """Retrieves aggregated list of instances.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -3958,7 +3958,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified instance resource.
+      """Returns the specified Instance resource.
 
       Args:
         request: (ComputeInstancesGetRequest) input message
@@ -4010,7 +4010,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of instance resources contained within the specified zone.
+      """Retrieves the list of instances contained within the specified zone.
 
       Args:
         request: (ComputeInstancesListRequest) input message
@@ -4266,7 +4266,7 @@ See Accessing images for more information.
           }
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of machine type resources.
+      """Retrieves an aggregated list of machine types.
 
       Args:
         request: (ComputeMachineTypesAggregatedListRequest) input message
@@ -4279,7 +4279,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified machine type resource.
+      """Returns the specified machine type.
 
       Args:
         request: (ComputeMachineTypesGetRequest) input message
@@ -4292,7 +4292,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of machine type resources available to the specified project.
+      """Retrieves a list of machine types available to the specified project.
 
       Args:
         request: (ComputeMachineTypesListRequest) input message
@@ -4378,7 +4378,7 @@ See Accessing images for more information.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified network resource.
+      """Deletes the specified network.
 
       Args:
         request: (ComputeNetworksDeleteRequest) input message
@@ -4391,7 +4391,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified network resource.
+      """Returns the specified network.
 
       Args:
         request: (ComputeNetworksGetRequest) input message
@@ -4404,7 +4404,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a network resource in the specified project using the data included in the request.
+      """Creates a network in the specified project using the data included in the request.
 
       Args:
         request: (ComputeNetworksInsertRequest) input message
@@ -4417,7 +4417,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of network resources available to the specified project.
+      """Retrieves the list of networks available to the specified project.
 
       Args:
         request: (ComputeNetworksListRequest) input message
@@ -6759,7 +6759,7 @@ For more information, see Deleting snaphots.
           }
 
     def AddHealthCheck(self, request, global_params=None):
-      """Adds health check URL to targetPool.
+      """Adds health check URLs to a target pool.
 
       Args:
         request: (ComputeTargetPoolsAddHealthCheckRequest) input message
@@ -6772,7 +6772,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def AddInstance(self, request, global_params=None):
-      """Adds instance URL to targetPool.
+      """Adds an instance to a target pool.
 
       Args:
         request: (ComputeTargetPoolsAddInstanceRequest) input message
@@ -6798,7 +6798,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified TargetPool resource.
+      """Deletes the specified target pool.
 
       Args:
         request: (ComputeTargetPoolsDeleteRequest) input message
@@ -6811,7 +6811,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetPool resource.
+      """Returns the specified target pool.
 
       Args:
         request: (ComputeTargetPoolsGetRequest) input message
@@ -6824,7 +6824,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def GetHealth(self, request, global_params=None):
-      """Gets the most recent health check results for each IP for the given instance that is referenced by the given TargetPool.
+      """Gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -6837,7 +6837,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a TargetPool resource in the specified project and region using the data included in the request.
+      """Creates a target pool in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeTargetPoolsInsertRequest) input message
@@ -6850,7 +6850,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of TargetPool resources available to the specified project and region.
+      """Retrieves a list of target pools available to the specified project and region.
 
       Args:
         request: (ComputeTargetPoolsListRequest) input message
@@ -6863,7 +6863,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def RemoveHealthCheck(self, request, global_params=None):
-      """Removes health check URL from targetPool.
+      """Removes health check URL from a target pool.
 
       Args:
         request: (ComputeTargetPoolsRemoveHealthCheckRequest) input message
@@ -6876,7 +6876,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def RemoveInstance(self, request, global_params=None):
-      """Removes instance URL from targetPool.
+      """Removes instance URL from a target pool.
 
       Args:
         request: (ComputeTargetPoolsRemoveInstanceRequest) input message
@@ -6889,7 +6889,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def SetBackup(self, request, global_params=None):
-      """Changes backup pool configurations.
+      """Changes a backup target pool's configurations.
 
       Args:
         request: (ComputeTargetPoolsSetBackupRequest) input message
@@ -7038,7 +7038,7 @@ For more information, see Deleting snaphots.
           }
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of target VPN gateways .
+      """Retrieves an aggregated list of target VPN gateways.
 
       Args:
         request: (ComputeTargetVpnGatewaysAggregatedListRequest) input message
@@ -7051,7 +7051,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified TargetVpnGateway resource.
+      """Deletes the specified target VPN gateway.
 
       Args:
         request: (ComputeTargetVpnGatewaysDeleteRequest) input message
@@ -7064,7 +7064,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetVpnGateway resource.
+      """Returns the specified target VPN gateway.
 
       Args:
         request: (ComputeTargetVpnGatewaysGetRequest) input message
@@ -7077,7 +7077,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a TargetVpnGateway resource in the specified project and region using the data included in the request.
+      """Creates a target VPN gateway in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeTargetVpnGatewaysInsertRequest) input message
@@ -7090,7 +7090,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of TargetVpnGateway resources available to the specified project and region.
+      """Retrieves a list of target VPN gateways available to the specified project and region.
 
       Args:
         request: (ComputeTargetVpnGatewaysListRequest) input message

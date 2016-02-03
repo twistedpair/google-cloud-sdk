@@ -1197,8 +1197,8 @@ class Query(dict):
   > query['name ='] = 'Ryan'
   > query['age >='] = 21
 
-  This query returns all Person entities where the name property is 'Ryan',
-  'Ken', or 'Bret', and the age property is at least 21.
+  This query returns all Person entities where the name property is 'Ryan'
+  and the age property is at least 21.
 
   Another way to build this query is:
 

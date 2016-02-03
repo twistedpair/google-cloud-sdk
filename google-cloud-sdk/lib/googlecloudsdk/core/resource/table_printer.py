@@ -38,6 +38,23 @@ def _Stringify(value):
     return json.dumps(value, sort_keys=True)
 
 
+class SubFormat(object):
+  """A sub format object.
+
+  Attributes:
+    index: The parent column index.
+    printer: The nested printer object.
+    out: The nested printer output stream.
+    rows: The nested format aggregate rows if the parent has no columns.
+  """
+
+  def __init__(self, index, printer, out):
+    self.index = index
+    self.printer = printer
+    self.out = out
+    self.rows = []
+
+
 class TablePrinter(resource_printer_base.ResourcePrinter):
   """A printer for printing human-readable tables.
 
@@ -54,6 +71,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
       are no items. The default *empty-legend* is "Listed 0 items.".
       *no-empty-legend* disables the default.
+    format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
+      _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
     legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
       item if there is at least one item.
@@ -78,16 +97,44 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
     self._rows = []
+    self._nest = []
     super(TablePrinter, self).__init__(*args, by_columns=True, **kwargs)
     encoding = None
     for name in ['ascii', 'utf8', 'win']:
       if name in self.attributes:
         encoding = name
         break
-    self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
-                                                     out=self._out)
+    if not self._console_attr:
+      self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
+                                                       out=self._out)
     self._rows_per_page = self.attributes.get('page', 0)
     self._page_count = 0
+
+    # Check for subformat columns.
+    self._subformats = []
+    has_subformats = False
+    self._aggregate = True
+    if self.column_attributes:
+      for col in self.column_attributes.Columns():
+        if col.attribute.subformat:
+          has_subformats = True
+        else:
+          self._aggregate = False
+      index = 0
+      for col in self.column_attributes.Columns():
+        if col.attribute.subformat:
+          # This initializes a Printer to a string stream.
+          out = self._out if self._aggregate else cStringIO.StringIO()
+          printer = self.Printer(col.attribute.subformat, out=out,
+                                 console_attr=self._console_attr)
+        else:
+          out = None
+          printer = None
+        self._subformats.append(SubFormat(index, printer, out))
+        index += 1
+    if not has_subformats:
+      self._subformats = None
+      self._aggregate = False
 
   def _AddRecord(self, record, delimit=True):
     """Adds a list of columns. Output delayed until Finish().
@@ -100,7 +147,16 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._page_count += 1
       self.Finish(last_page=False)
       self._rows = []
-    self._rows.append(record)
+      self._nest = []
+    if self._subformats and not self._aggregate:
+      row = []
+      for subformat in self._subformats:
+        if not subformat.printer:
+          row.append(record[subformat.index])
+      self._rows.append(row)
+      self._nest.append(record)
+    else:
+      self._rows.append(record)
 
   def Finish(self, last_page=True):
     """Prints the table.
@@ -111,6 +167,17 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     if last_page and not self._rows:
       # Table is empty but there might be an empty legend.
       self.AddLegend()
+      return
+
+    if self._aggregate:
+      # No parent columns, only nested formats. Aggregate each subformat
+      # column to span all records.
+      for subformat in self._subformats:
+        for row in self._rows:
+          subformat.printer.Print(row[subformat.index], intermediate=True)
+        subformat.printer.Finish()
+      if last_page:
+        self.AddLegend()
       return
 
     # Border box decorations.
@@ -128,9 +195,21 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     self._rows = []
     heading = []
     if 'no-heading' not in self.attributes:
-      labels = self._heading or self.column_attributes.Labels()
+      if self._heading:
+        labels = self._heading
+      elif self.column_attributes:
+        labels = self.column_attributes.Labels()
+      else:
+        labels = None
       if labels:
-        heading = [[_Stringify(cell) for cell in labels]]
+        if self._subformats:
+          cells = []
+          for subformat in self._subformats:
+            if not subformat.printer and subformat.index < len(labels):
+              cells.append(_Stringify(labels[subformat.index]))
+          heading = [cells]
+        else:
+          heading = [[_Stringify(cell) for cell in labels]]
     col_widths = [0] * max(len(x) for x in rows + heading)
     for row in rows + heading:
       for i in range(len(row)):
@@ -230,7 +309,13 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     # Print the left-adjusted columns with space stripped from rightmost column.
     # We must flush directly to the output just in case there is a Windows-like
     # colorizer. This complicates the trailing space logic.
+    first = True
     for row in heading + rows:
+      if first:
+        first = False
+      elif box and self._subformats:
+        self._out.write(t_rule)
+        self._out.write('\n')
       pad = 0
       for i in range(len(row)):
         if box:
@@ -268,8 +353,27 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
             pad += table_column_pad + len(value)
       if box:
         self._out.write(box.v)
-      self._out.write('\n')
-    if box:
+      if self._nest:
+        if heading:
+          heading = []
+          continue
+        self._out.write('\n')
+        if box:
+          self._out.write(b_rule)
+          self._out.write('\n')
+        r = self._nest.pop()
+        for subformat in self._subformats:
+          if subformat.printer:
+            # Indent the nested printer lines.
+            subformat.printer.Print(r[subformat.index])
+            nested_output = subformat.out.getvalue()
+            for line in nested_output.split('\n')[:-1]:
+              self._out.write('    ' + line + '\n')
+            # Rewind the output buffer.
+            subformat.out.truncate(0)
+      else:
+        self._out.write('\n')
+    if box and not self._subformats:
       self._out.write(b_rule)
       self._out.write('\n')
 

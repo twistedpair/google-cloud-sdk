@@ -160,7 +160,7 @@ class AppengineClient(object):
         available.
       end_date: datetime.date, Date object representing last day of logs to
         return.  If None, today is used.
-      output_file: Output file name or '-' for standard out.
+      output_file: Output file name or '-' for standard output.
     """
     rpcserver = self._GetRpcServer()
     requestor = logs_requestor.LogsRequester(
@@ -184,7 +184,7 @@ class AppengineClient(object):
         about the request.
       end_date: datetime.date, Date object representing last day of logs to
         return.  If None, today is used.
-      output_file: Output file name or '-' for standard out.
+      output_file: Output file name or '-' for standard output.
     """
     rpcserver = self._GetRpcServer()
     requestor = logs_requestor.LogsRequester(

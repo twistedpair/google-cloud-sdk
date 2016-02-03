@@ -136,10 +136,10 @@ class AppengineApiClient(object):
 
     Args:
       module_name: str, The module name
-      version_id: str, The version to set as default.
+      version_id: str, The version to delete.
 
     Returns:
-      A Version resource representing the deleted version.
+      The completed Operation.
     """
     delete_request = self.messages.AppengineAppsModulesVersionsDeleteRequest(
         name=self._FormatVersion(app_id=self.project,

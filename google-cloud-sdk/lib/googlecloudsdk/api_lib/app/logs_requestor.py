@@ -83,7 +83,7 @@ class LogsRequester(object):
     Args:
       end_date: datetime.date, Date object representing last day of logs to
         return.  If None, today is used.
-      output_file: Output file name or '-' for standard out.
+      output_file: Output file name or '-' for standard output.
     """
     now = PacificDate(time.time())
     end_date = end_date if (end_date and end_date < now) else now
@@ -102,7 +102,7 @@ class LogsRequester(object):
       num_days: Number of days worth of logs to export; 0 for all available.
       end_date: datetime.date, Date object representing last day of logs to
         return.  If None, today is used.
-      output_file: Output file name or '-' for standard out.
+      output_file: Output file name or '-' for standard output.
     """
     now = PacificDate(time.time())
     end_date = end_date if (end_date and end_date < now) else now

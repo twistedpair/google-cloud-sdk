@@ -453,7 +453,7 @@ class ListFilesResponse(_messages.Message):
   """Response for ListFiles.
 
   Fields:
-    files: info.size and contents are not set.
+    files: The contents field is empty.
     nextPageToken: Use as the value of page_token in the next call to obtain
       the next page of results. If empty, there are no more results.
   """

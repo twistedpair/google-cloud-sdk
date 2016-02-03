@@ -342,11 +342,9 @@ class Results(_messages.Message):
 
   Fields:
     images: Images that were built as a part of the build.
-    revision: Revision ID of the source that was built.
   """
 
   images = _messages.MessageField('BuiltImage', 1, repeated=True)
-  revision = _messages.StringField(2)
 
 
 class Source(_messages.Message):
@@ -515,7 +513,7 @@ class StorageSource(_messages.Message):
       Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
     object: Google Cloud Storage object containing source.  This object must
-      be a gzipped archive file (.tgz) containing source to build.
+      be a gzipped archive file (.tar.gz) containing source to build.
   """
 
   bucket = _messages.StringField(1)

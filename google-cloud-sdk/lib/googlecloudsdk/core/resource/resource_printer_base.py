@@ -35,6 +35,7 @@ Example:
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_projector
+from googlecloudsdk.core.resource import resource_property
 
 
 # Structured output indentation.
@@ -48,6 +49,7 @@ class ResourcePrinter(object):
     attributes: Optional printer attribute dict indexed by attribute name.
     _by_columns: True if AddRecord() expects a list of columns.
     column_attributes: Projection ColumnAttributes().
+    _console_attr: The console attributes. May be ignored by some printers.
     _empty: True if there are no records.
     _heading: The list of column heading label strings.
     _name: Format name.
@@ -55,6 +57,7 @@ class ResourcePrinter(object):
     _process_record: The function called to process each record passed to
       AddRecord() before calling _AddRecord(). It is called like this:
         record = process_record(record)
+    _printer: The resource_printer.Printer method for nested formats.
 
   Printer attributes:
     empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
@@ -68,7 +71,8 @@ class ResourcePrinter(object):
   """
 
   def __init__(self, out=None, name=None, attributes=None,
-               column_attributes=None, by_columns=False, process_record=None):
+               column_attributes=None, by_columns=False, process_record=None,
+               printer=None, console_attr=None):
     """Constructor.
 
     Args:
@@ -82,10 +86,15 @@ class ResourcePrinter(object):
       process_record: The function called to process each record passed to
         AddRecord() before calling _AddRecord(). It is called like this:
           record = process_record(record)
+      printer: The resource_printer.Printer method for nested formats.
+      console_attr: The console attributes for the output stream. Ignored by
+        some printers. If None then printers that require it will initialize it
+        to match out.
     """
     self.attributes = attributes or {}
     self._by_columns = by_columns
     self.column_attributes = column_attributes
+    self._console_attr = console_attr
     self._empty = True
     self._heading = None
     self._name = name
@@ -98,6 +107,7 @@ class ResourcePrinter(object):
         pass
     self._process_record = (process_record or
                             resource_projector.Compile().Evaluate)
+    self._printer = printer
 
   def AddHeading(self, heading):
     """Overrides the default heading.
@@ -182,3 +192,31 @@ class ResourcePrinter(object):
     """
     self.AddRecord(record, delimit=False)
     self.Finish()
+
+  def Print(self, resources, single=False, intermediate=False):
+    """Prints resources using printer.AddRecord() and printer.Finish().
+
+    Args:
+      resources: A singleton or list of JSON-serializable Python objects.
+      single: If True then resources is a single item and not a list.
+        For example, use this to print a single object as JSON.
+      intermediate: This is an intermediate call, do not call Finish().
+    """
+    # Resources may be a generator and since generators can raise exceptions, we
+    # have to call Finish() in the finally block to make sure that the resources
+    # we've been able to pull out of the generator are printed before control is
+    # given to the exception-handling code.
+    try:
+      if resources:
+        if single or not resource_property.IsListLike(resources):
+          self.AddRecord(resources, delimit=False)
+        else:
+          for resource in resources:
+            self.AddRecord(resource)
+    finally:
+      if not intermediate:
+        self.Finish()
+
+  def Printer(self, *args, **kwargs):
+    """Calls the resource_printer.Printer() method (for nested printers)."""
+    return self._printer(*args, **kwargs)

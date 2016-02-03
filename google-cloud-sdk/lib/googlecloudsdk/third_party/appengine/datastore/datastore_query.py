@@ -46,7 +46,6 @@ from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3 import entit
 
 from googlecloudsdk.third_party.appengine.api import datastore_errors
 from googlecloudsdk.third_party.appengine.api import datastore_types
-from googlecloudsdk.third_party.appengine.api.search import geo_util
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_pbs

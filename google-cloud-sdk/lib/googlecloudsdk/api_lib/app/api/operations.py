@@ -35,7 +35,8 @@ class OperationTimeoutError(exceptions.Error):
 
 def WaitForOperation(operation_service, operation,
                      max_retries=None,
-                     retry_interval=None):
+                     retry_interval=None,
+                     retry_callback=None):
   """Wait until the operation is complete or times out.
 
   Args:
@@ -43,6 +44,7 @@ def WaitForOperation(operation_service, operation,
     operation: The operation resource to wait on
     max_retries: Maximum number of times to poll the operation
     retry_interval: Frequency of polling
+    retry_callback: A callback to be executed before each retry.
   Returns:
     The operation resource when it has completed
   Raises:
@@ -55,7 +57,8 @@ def WaitForOperation(operation_service, operation,
     retry_interval = constants.DEFAULT_OPERATION_RETRY_INTERVAL
 
   completed_operation = _PollUntilDone(operation_service, operation,
-                                       max_retries, retry_interval)
+                                       max_retries, retry_interval,
+                                       retry_callback)
   if not completed_operation:
     raise OperationTimeoutError(('Operation [{0}] timed out. This operation '
                                  'may still be underway.').format(
@@ -69,7 +72,7 @@ def WaitForOperation(operation_service, operation,
 
 
 def _PollUntilDone(operation_service, operation, max_retries,
-                   retry_interval):
+                   retry_interval, retry_callback):
   """Polls the operation resource until it is complete or times out."""
   if operation.done:
     return operation
@@ -87,5 +90,7 @@ def _PollUntilDone(operation_service, operation, max_retries,
     log.debug('Operation [{0}] not complete. Waiting {1}s.'.format(
         operation.name, retry_interval))
     time.sleep(retry_interval)
+    if retry_callback is not None:
+      retry_callback()
 
   return None
