@@ -224,6 +224,7 @@ class AddressesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -239,20 +240,21 @@ class AddressesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -456,17 +458,25 @@ class AttachedDiskInitializeParams(_messages.Message):
 
 
 class Autoscaler(_messages.Message):
-  """A Autoscaler object.
+  """Represents an Autoscaler resource. Autoscalers allow you to automatically
+  scale virtual machine instances in managed instance groups according to an
+  autoscaling policy that you define. For more information, read Autoscaling
+  Groups of Instances.
 
   Fields:
-    autoscalingPolicy: Autoscaling configuration.
+    autoscalingPolicy: The configuration parameters for the autoscaling
+      algorithm. You can define one or more of the policies for an autoscaler:
+      cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
+      If none of these are specified, the default will be to autoscale based
+      on cpuUtilization to 0.8 or 80%.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    kind: Type of the resource.
+    kind: [Output Only] Type of the resource. Always compute#autoscaler for
+      autoscalers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -475,8 +485,7 @@ class Autoscaler(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
-    target: URL of Instance Group Manager or Replica Pool which will be
-      controlled by Autoscaler.
+    target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides.
   """
 
@@ -501,7 +510,8 @@ class AutoscalerAggregatedList(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     items: A map of scoped autoscaler lists.
-    kind: Type of resource.
+    kind: [Output Only] Type of resource. Always
+      compute#autoscalerAggregatedList for aggregated lists of autoscalers.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -518,8 +528,8 @@ class AutoscalerAggregatedList(_messages.Message):
       AdditionalProperty: An additional property for a ItemsValue object.
 
     Fields:
-      additionalProperties: Name of the scope containing this set of
-        autoscalers.
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of autoscalers.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -543,13 +553,14 @@ class AutoscalerAggregatedList(_messages.Message):
 
 
 class AutoscalerList(_messages.Message):
-  """Contains a list of persistent autoscaler resources.
+  """Contains a list of Autoscaler resources.
 
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     items: A list of Autoscaler resources.
-    kind: Type of resource.
+    kind: [Output Only] Type of resource. Always compute#autoscalerList for
+      lists of autoscalers.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -569,18 +580,18 @@ class AutoscalersScopedList(_messages.Message):
   """A AutoscalersScopedList object.
 
   Messages:
-    WarningValue: Informational warning which replaces the list of autoscalers
-      when the list is empty.
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of autoscalers when the list is empty.
 
   Fields:
-    autoscalers: List of autoscalers contained in this scope.
-    warning: Informational warning which replaces the list of autoscalers when
-      the list is empty.
+    autoscalers: [Output Only] List of autoscalers contained in this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      autoscalers when the list is empty.
   """
 
   class WarningValue(_messages.Message):
-    """Informational warning which replaces the list of autoscalers when the
-    list is empty.
+    """[Output Only] Informational warning which replaces the list of
+    autoscalers when the list is empty.
 
     Enums:
       CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
@@ -605,6 +616,7 @@ class AutoscalersScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -620,20 +632,21 @@ class AutoscalersScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -665,26 +678,29 @@ class AutoscalingPolicy(_messages.Message):
   """Cloud Autoscaler policy.
 
   Fields:
-    coolDownPeriodSec: The number of seconds that the Autoscaler should wait
-      between two succeeding changes to the number of virtual machines. You
-      should define an interval that is at least as long as the initialization
-      time of a virtual machine and the time it may take for replica pool to
-      create the virtual machine. The default is 60 seconds.
-    cpuUtilization: TODO(user): Add support for scaling based on muliple
-      utilization metrics (take max recommendation). Exactly one utilization
-      policy should be provided. Configuration parameters of CPU based
-      autoscaling policy.
+    coolDownPeriodSec: The number of seconds that the autoscaler should wait
+      before it starts collecting information from a new instance. This
+      prevents the autoscaler from collecting information when the instance is
+      initializing, during which the collected usage would not be reliable.
+      The default time autoscaler waits is 60 seconds.  Virtual machine
+      initialization times might vary because of numerous factors. We
+      recommend that you test how long an instance may take to initialize. To
+      do this, create an instance and time the startup process.
+    cpuUtilization: Defines the CPU utilization policy that allows the
+      autoscaler to scale based on the average CPU utilization of a managed
+      instance group.
     customMetricUtilizations: Configuration parameters of autoscaling based on
-      custom metric.
+      a custom metric.
     loadBalancingUtilization: Configuration parameters of autoscaling based on
       load balancer.
-    maxNumReplicas: The maximum number of replicas that the Autoscaler can
-      scale up to. This field is required for config to be effective. Maximum
-      number of replicas should be not lower than minimal number of replicas.
-      Absolute limit for this value is defined in Autoscaler backend.
-    minNumReplicas: The minimum number of replicas that the Autoscaler can
-      scale down to. Can't be less than 0. If not provided Autoscaler will
-      choose default value depending on maximal number of replicas.
+    maxNumReplicas: The maximum number of instances that the autoscaler can
+      scale up to. This is required when creating or updating an autoscaler.
+      The maximum number of replicas should not be lower than minimal number
+      of replicas.
+    minNumReplicas: The minimum number of replicas that the autoscaler can
+      scale down to. This cannot be less than 0. If not provided, autoscaler
+      will choose a default value depending on maximum number of instances
+      allowed.
   """
 
   coolDownPeriodSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -699,10 +715,15 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
   """CPU utilization policy.
 
   Fields:
-    utilizationTarget: The target utilization that the Autoscaler should
-      maintain. It is represented as a fraction of used cores. For example: 6
-      cores used in 8-core VM are represented here as 0.75. Must be a float
-      value between (0, 1]. If not defined, the default is 0.8.
+    utilizationTarget: The target CPU utilization that the autoscaler should
+      maintain. Must be a float value in the range (0, 1]. If not specified,
+      the default is 0.8.  If the CPU level is below the target utilization,
+      the autoscaler scales down the number of instances until it reaches the
+      minimum number of instances you specified or until the average CPU of
+      your instances reaches the target utilization.  If the average CPU is
+      above the target utilization, the autoscaler scales up until it reaches
+      the maximum number of instances you specified or until the average
+      utilization reaches the target utilization.
   """
 
   utilizationTarget = _messages.FloatField(1)
@@ -712,24 +733,33 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
   """Custom utilization metric policy.
 
   Enums:
-    UtilizationTargetTypeValueValuesEnum: Defines type in which
-      utilization_target is expressed.
+    UtilizationTargetTypeValueValuesEnum: Defines how target utilization value
+      is expressed for a Cloud Monitoring metric. Either GAUGE,
+      DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is
+      GAUGE.
 
   Fields:
-    metric: Identifier of the metric. It should be a Cloud Monitoring metric.
-      The metric can not have negative values. The metric should be an
-      utilization metric (increasing number of VMs handling requests x times
-      should reduce average value of the metric roughly x times). For example
-      you could use:
-      compute.googleapis.com/instance/network/received_bytes_count.
-    utilizationTarget: Target value of the metric which Autoscaler should
+    metric: The identifier of the Cloud Monitoring metric. The metric cannot
+      have negative values and should be a utilization metric, which means
+      that the number of virtual machines handling requests should increase or
+      decrease proportionally to the metric. The metric must also have a label
+      of compute.googleapis.com/resource_id with the value of the instance's
+      unique ID, although this alone does not guarantee that the metric is
+      valid.  For example, the following is a valid metric:
+      compute.googleapis.com/instance/network/received_bytes_count   The
+      following is not a valid metric because it does not increase or decrease
+      based on usage: compute.googleapis.com/instance/cpu/reserved_cores
+    utilizationTarget: Target value of the metric which autoscaler should
       maintain. Must be a positive value.
-    utilizationTargetType: Defines type in which utilization_target is
-      expressed.
+    utilizationTargetType: Defines how target utilization value is expressed
+      for a Cloud Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
+      DELTA_PER_MINUTE. If not specified, the default is GAUGE.
   """
 
   class UtilizationTargetTypeValueValuesEnum(_messages.Enum):
-    """Defines type in which utilization_target is expressed.
+    """Defines how target utilization value is expressed for a Cloud
+    Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If
+    not specified, the default is GAUGE.
 
     Values:
       DELTA_PER_MINUTE: <no description>
@@ -746,15 +776,12 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
 
 
 class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
-  """Load balancing utilization policy.
+  """Configuration parameters of autoscaling based on load balancing.
 
   Fields:
-    utilizationTarget: Fraction of backend capacity utilization (set in HTTP
-      load balancing configuration) that Autoscaler should maintain. Must be a
-      positive float value. If not defined, the default is 0.8. For example if
-      your maxRatePerInstance capacity (in HTTP Load Balancing configuration)
-      is set at 10 and you would like to keep number of instances such that
-      each instance receives 7 QPS on average, set this to 0.7.
+    utilizationTarget: Fraction of backend capacity utilization (set in
+      HTTP(s) load balancing configuration) that autoscaler should maintain.
+      Must be a positive float value. If not defined, the default is 0.8.
   """
 
   utilizationTarget = _messages.FloatField(1)
@@ -860,7 +887,7 @@ class BackendService(_messages.Message):
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
     selfLink: [Output Only] Server-defined URL for the resource.
     timeoutSec: How many seconds to wait for the backend before considering it
-      a failed request. Default is 30 seconds. Valid range is [1, 86400].
+      a failed request. Default is 30 seconds.
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
@@ -1127,9 +1154,9 @@ class ComputeAutoscalersDeleteRequest(_messages.Message):
   """A ComputeAutoscalersDeleteRequest object.
 
   Fields:
-    autoscaler: Name of the persistent autoscaler resource to delete.
+    autoscaler: Name of the autoscaler to delete.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1, required=True)
@@ -1141,9 +1168,9 @@ class ComputeAutoscalersGetRequest(_messages.Message):
   """A ComputeAutoscalersGetRequest object.
 
   Fields:
-    autoscaler: Name of the persistent autoscaler resource to return.
+    autoscaler: Name of the autoscaler to return.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1, required=True)
@@ -1157,7 +1184,7 @@ class ComputeAutoscalersInsertRequest(_messages.Message):
   Fields:
     autoscaler: A Autoscaler resource to be passed as the request body.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.MessageField('Autoscaler', 1)
@@ -1207,7 +1234,7 @@ class ComputeAutoscalersListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   filter = _messages.StringField(1)
@@ -1222,11 +1249,11 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   """A ComputeAutoscalersPatchRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler resource to update.
+    autoscaler: Name of the autoscaler to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1, required=True)
@@ -1239,11 +1266,11 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   """A ComputeAutoscalersUpdateRequest object.
 
   Fields:
-    autoscaler: Name of the autoscaler resource to update.
+    autoscaler: Name of the autoscaler to update.
     autoscalerResource: A Autoscaler resource to be passed as the request
       body.
     project: Project ID for this request.
-    zone: Name of the zone scoping this request.
+    zone: Name of the zone for this request.
   """
 
   autoscaler = _messages.StringField(1)
@@ -4046,6 +4073,198 @@ class ComputeRegionsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeRoutersAggregatedListRequest(_messages.Message):
+  """A ComputeRoutersAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances whose name is not equal to example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: If you
+      use filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. In particular, use filtering
+      on nested fields to take advantage of instance labels to organize and
+      filter results based on label values.  The Beta API also supports
+      filtering on multiple expressions by providing each separate expression
+      within parentheses. For example, (scheduling.automaticRestart eq true)
+      (zone eq us-central1-f). Multiple expressions are treated as AND
+      expressions meaning that resources must match all expressions to pass
+      the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeRoutersDeleteRequest(_messages.Message):
+  """A ComputeRoutersDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: Name of the Router resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersGetRequest(_messages.Message):
+  """A ComputeRoutersGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: Name of the Router resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersGetRouterStatusRequest(_messages.Message):
+  """A ComputeRoutersGetRouterStatusRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: Name of the Router resource to query.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersInsertRequest(_messages.Message):
+  """A ComputeRoutersInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.MessageField('Router', 3)
+
+
+class ComputeRoutersListRequest(_messages.Message):
+  """A ComputeRoutersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances whose name is not equal to example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: If you
+      use filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. In particular, use filtering
+      on nested fields to take advantage of instance labels to organize and
+      filter results based on label values.  The Beta API also supports
+      filtering on multiple expressions by providing each separate expression
+      within parentheses. For example, (scheduling.automaticRestart eq true)
+      (zone eq us-central1-f). Multiple expressions are treated as AND
+      expressions meaning that resources must match all expressions to pass
+      the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRoutersPatchRequest(_messages.Message):
+  """A ComputeRoutersPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: Name of the Router resource to update.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
+class ComputeRoutersUpdateRequest(_messages.Message):
+  """A ComputeRoutersUpdateRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    router: Name of the Router resource to update.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
 class ComputeRoutesDeleteRequest(_messages.Message):
   """A ComputeRoutesDeleteRequest object.
 
@@ -4535,8 +4754,7 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    targetHttpProxy: The name of the TargetHttpProxy resource to set a URL map
-      for.
+    targetHttpProxy: Name of the TargetHttpProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
   """
@@ -4642,8 +4860,8 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
     targetHttpsProxiesSetSslCertificatesRequest: A
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
-    targetHttpsProxy: Name of the TargetHttpsProxy resource to set an SSL
-      certificate for.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to set an
+      SSLCertificate resource for.
   """
 
   project = _messages.StringField(1, required=True)
@@ -5721,6 +5939,11 @@ class Disk(_messages.Message):
     StorageTypeValueValuesEnum: [Deprecated] Storage type of the persistent
       disk.
 
+  Messages:
+    LabelsValue: Labels to apply to this disk. These can be later modified by
+      the setLabels method. Each label key & value must comply with RFC1035.
+      Label values may be empty.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -5739,6 +5962,16 @@ class Disk(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
+    labelFingerprint: A fingerprint for the labels being applied to this disk,
+      which is essentially a hash of the labels set used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make get() request to the
+      disk.
+    labels: Labels to apply to this disk. These can be later modified by the
+      setLabels method. Each label key & value must comply with RFC1035. Label
+      values may be empty.
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
@@ -5837,29 +6070,57 @@ class Disk(_messages.Message):
     HDD = 0
     SSD = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this disk. These can be later modified by the
+    setLabels method. Each label key & value must comply with RFC1035. Label
+    values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#disk')
-  lastAttachTimestamp = _messages.StringField(6)
-  lastDetachTimestamp = _messages.StringField(7)
-  licenses = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  options = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sizeGb = _messages.IntegerField(12)
-  sourceImage = _messages.StringField(13)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceImageId = _messages.StringField(15)
-  sourceSnapshot = _messages.StringField(16)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceSnapshotId = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 20)
-  type = _messages.StringField(21)
-  users = _messages.StringField(22, repeated=True)
-  zone = _messages.StringField(23)
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  lastAttachTimestamp = _messages.StringField(8)
+  lastDetachTimestamp = _messages.StringField(9)
+  licenses = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  options = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  sizeGb = _messages.IntegerField(14)
+  sourceImage = _messages.StringField(15)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceImageId = _messages.StringField(17)
+  sourceSnapshot = _messages.StringField(18)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceSnapshotId = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 22)
+  type = _messages.StringField(23)
+  users = _messages.StringField(24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -6087,6 +6348,7 @@ class DiskTypesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -6102,20 +6364,21 @@ class DiskTypesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -6193,6 +6456,7 @@ class DisksScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -6208,20 +6472,21 @@ class DisksScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -6546,6 +6811,7 @@ class ForwardingRulesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -6561,20 +6827,21 @@ class ForwardingRulesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -6830,6 +7097,9 @@ class Image(_messages.Message):
       Possible values are FAILED, PENDING, or READY.
 
   Messages:
+    LabelsValue: Labels to apply to this image. These can be later modified by
+      the setLabels method. Each label key & value must comply with RFC1035.
+      Label values may be empty.
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
@@ -6857,6 +7127,16 @@ class Image(_messages.Message):
       using an automatically generated key and you do not need to provide a
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      image, which is essentially a hash of the labels set used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make get() request to
+      retrieve the image.
+    labels: Labels to apply to this image. These can be later modified by the
+      setLabels method. Each label key & value must comply with RFC1035. Label
+      values may be empty.
     licenses: Any applicable publicly visible licenses.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -6912,6 +7192,32 @@ class Image(_messages.Message):
     PENDING = 1
     READY = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this image. These can be later modified by the
+    setLabels method. Each label key & value must comply with RFC1035. Label
+    values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   class RawDiskValue(_messages.Message):
     """The parameters of the raw disk image.
 
@@ -6956,15 +7262,17 @@ class Image(_messages.Message):
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
   imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
   kind = _messages.StringField(9, default=u'compute#image')
-  licenses = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  rawDisk = _messages.MessageField('RawDiskValue', 12)
-  selfLink = _messages.StringField(13)
-  sourceDisk = _messages.StringField(14)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceDiskId = _messages.StringField(16)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 17, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  rawDisk = _messages.MessageField('RawDiskValue', 14)
+  selfLink = _messages.StringField(15)
+  sourceDisk = _messages.StringField(16)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDiskId = _messages.StringField(18)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 19, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
 
 
 class ImageList(_messages.Message):
@@ -7321,7 +7629,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """InstanceGroupManagers  Next available tag: 20
+  """A InstanceGroupManager object.
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -7599,6 +7907,7 @@ class InstanceGroupManagersScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -7614,20 +7923,21 @@ class InstanceGroupManagersScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -7814,6 +8124,7 @@ class InstanceGroupsScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -7829,20 +8140,21 @@ class InstanceGroupsScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8104,6 +8416,7 @@ class InstancesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -8119,20 +8432,21 @@ class InstancesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8389,6 +8703,7 @@ class MachineTypesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -8404,20 +8719,21 @@ class MachineTypesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8902,6 +9218,7 @@ class Operation(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -8917,20 +9234,21 @@ class Operation(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9095,6 +9413,7 @@ class OperationsScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -9110,20 +9429,21 @@ class OperationsScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9479,6 +9799,7 @@ class Route(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -9494,20 +9815,21 @@ class Route(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9570,6 +9892,338 @@ class RouteList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#routeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class Router(_messages.Message):
+  """Router resource.
+
+  Fields:
+    bgp: A RouterBgp attribute.
+    bgpPeers: A RouterBgpPeer attribute.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    interfaces: A RouterInterface attribute.
+    kind: [Output Only] Type of resource. Always compute#router for routers.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long and comply with RFC1035.
+    network: URI of the network to which this router belongs.
+    region: [Output Only] URI of the region where the router resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  bgp = _messages.MessageField('RouterBgp', 1)
+  bgpPeers = _messages.MessageField('RouterBgpPeer', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
+  kind = _messages.StringField(7, default=u'compute#router')
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+
+
+class RouterAggregatedList(_messages.Message):
+  """Contains a list of RoutersScopedList.
+
+  Messages:
+    ItemsValue: A map of scoped Router lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A map of scoped Router lists.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """A map of scoped Router lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of Routers.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RoutersScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RoutersScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#routerAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RouterBgp(_messages.Message):
+  """A RouterBgp object.
+
+  Fields:
+    asn: Local BGP Autonomous System Number (ASN) Can be a constant public ASN
+      value for google, or a customer-specified private ASN. In either case,
+      the value will be fixed for this router resource. All VPN tunnels that
+      link to this router will have the same local ASN.
+  """
+
+  asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+
+
+class RouterBgpPeer(_messages.Message):
+  """BGP information that needs to be configured into the routing stack to
+  establish the BGP peering. It must specify peer ASN and either interface
+  name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273
+
+  Fields:
+    advertisedRoutePriority: The priority of routes advertised to this BGP
+      peer. In the case where there is more than one matching route of maximum
+      length, the routes with lowest priority value win.
+    interfaceName: Name of the interface it is associated with.
+    ipAddress: IP address of the interface inside Google cloud.
+    name: Name of this BGP Peer. The name must be 1-63 characters long and
+      comply with RFC1035.
+    peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
+      value can be different for every tunnel.
+    peerIpAddress: IP address of the BGP interface outside Google cloud.
+  """
+
+  advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  interfaceName = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  name = _messages.StringField(4)
+  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(6)
+
+
+class RouterInterface(_messages.Message):
+  """Router interfaces. Each interface requires either one linked resource
+  (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
+
+  Fields:
+    ipRange: IP address and range of the interface. The value should be a CIDR
+      formatted string, for example: 169.254.0.1/30. NOTE: Do NOT trucate
+      address, as it represents IP address of interface.
+    linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
+      as the router. Each interface can have at most one linked resource.
+    name: Name of this interface entry. The name must be 1-63 characters long
+      and comply with RFC1035.
+  """
+
+  ipRange = _messages.StringField(1)
+  linkedVpnTunnel = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class RouterList(_messages.Message):
+  """Contains a list of Router resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of Router resources.
+    kind: [Output Only] Type of resource. Always compute#router for routers.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Router', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#routerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RouterStatus(_messages.Message):
+  """A RouterStatus object.
+
+  Fields:
+    bestRoutes: Best routes for this Router.
+    bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
+    network: URI of the network to which this router belongs.
+  """
+
+  bestRoutes = _messages.MessageField('Route', 1, repeated=True)
+  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 2, repeated=True)
+  network = _messages.StringField(3)
+
+
+class RouterStatusBgpPeerStatus(_messages.Message):
+  """A RouterStatusBgpPeerStatus object.
+
+  Enums:
+    StatusValueValuesEnum: Status of the BgpPeer: {UP, DOWN}
+
+  Fields:
+    advertisedRoutes: Routes that were advertised to the remote BgpPeer
+    ipAddress: IP address of the local BGP interface.
+    linkedVpnTunnel: URL of the VPN tunnel that this BgpPeer controls.
+    name: Name of this BgpPeer which is unique within the Router resource.
+    numLearnedRoutes: Number of routes learned from the remote BGP Peer.
+    peerIpAddress: IP address of the remote BGP interface.
+    state: BGP state as specified in RFC-1771.
+    status: Status of the BgpPeer: {UP, DOWN}
+    uptime: Time this session has been up. Format: 1 second < uptime < 1 day =
+      "23:59:59" 1 day <= uptime < 1 week = "6d:23h:59m" 1 week <= uptime =
+      "123w:6d:23h"
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """Status of the BgpPeer: {UP, DOWN}
+
+    Values:
+      DOWN: <no description>
+      UNKNOWN: <no description>
+      UP: <no description>
+    """
+    DOWN = 0
+    UNKNOWN = 1
+    UP = 2
+
+  advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
+  ipAddress = _messages.StringField(2)
+  linkedVpnTunnel = _messages.StringField(3)
+  name = _messages.StringField(4)
+  numLearnedRoutes = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(6)
+  state = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  uptime = _messages.StringField(9)
+
+
+class RouterStatusResponse(_messages.Message):
+  """A RouterStatusResponse object.
+
+  Fields:
+    kind: Type of resource.
+    result: A RouterStatus attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#routerStatusResponse')
+  result = _messages.MessageField('RouterStatus', 2)
+
+
+class RoutersScopedList(_messages.Message):
+  """A RoutersScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of routers
+      when the list is empty.
+
+  Fields:
+    routers: List of Routers contained in this scope.
+    warning: Informational warning which replaces the list of routers when the
+      list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """Informational warning which replaces the list of routers when the list
+    is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource, and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  routers = _messages.MessageField('Router', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class Scheduling(_messages.Message):
@@ -9651,6 +10305,11 @@ class Snapshot(_messages.Message):
       the size of the snapshot is being updated, or UP_TO_DATE, meaning the
       size of the snapshot is up-to-date.
 
+  Messages:
+    LabelsValue: Labels to apply to this snapshot. These can be later modified
+      by the setLabels method. Each label key & value must comply with
+      RFC1035. Label values may be empty.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -9661,6 +10320,16 @@ class Snapshot(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
       Snapshot resources.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      snapshot, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update metadata. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make get() request to the
+      snapshot.
+    labels: Labels to apply to this snapshot. These can be later modified by
+      the setLabels method. Each label key & value must comply with RFC1035.
+      Label values may be empty.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -9733,21 +10402,49 @@ class Snapshot(_messages.Message):
     UPDATING = 0
     UP_TO_DATE = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this snapshot. These can be later modified by the
+    setLabels method. Each label key & value must comply with RFC1035. Label
+    values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#snapshot')
-  licenses = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  sourceDisk = _messages.StringField(10)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
-  sourceDiskId = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  storageBytes = _messages.IntegerField(14)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenses = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  sourceDisk = _messages.StringField(12)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceDiskId = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  storageBytes = _messages.IntegerField(16)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 17)
 
 
 class SnapshotList(_messages.Message):
@@ -10036,6 +10733,7 @@ class SubnetworksScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -10051,20 +10749,21 @@ class SubnetworksScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10122,8 +10821,8 @@ class TargetHttpProxy(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpProxy for
-      target HTTP proxies.
-    name: Name of the resource; provided by the client when the resource is
+      targetHttpProxy resources.
+    name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
       regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
@@ -10152,7 +10851,7 @@ class TargetHttpProxyList(_messages.Message):
       is defined by the server.
     items: A list of TargetHttpProxy resources.
     kind: Type of resource. Always compute#targetHttpProxyList for lists of
-      target HTTP proxies.
+      targetHttpProxy resources.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -10172,9 +10871,9 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   """A TargetHttpsProxiesSetSslCertificatesRequest object.
 
   Fields:
-    sslCertificates: New set of URLs to SslCertificate resources to associate
-      with this TargetHttpProxy. Currently exactly one SSL certificate must be
-      specified.
+    sslCertificates: New set of SslCertificate resources to associate with
+      this TargetHttpsProxy resource. Currently exactly one SSLcertificate
+      resource must be specified.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -10190,8 +10889,8 @@ class TargetHttpsProxy(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    kind: [Output Only] Type of the resource. Always compute#targetHttpsProxy
-      for target HTTPS proxies.
+    kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
+      targetHttpsproxy resources.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -10227,7 +10926,8 @@ class TargetHttpsProxyList(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     items: A list of TargetHttpsProxy resources.
-    kind: Type of resource.
+    kind: Type of resource. Always compute#targetHttpsProxyList for lists of
+      targetHttpsProxy resources.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -10414,6 +11114,7 @@ class TargetInstancesScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -10429,20 +11130,21 @@ class TargetInstancesScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10751,6 +11453,7 @@ class TargetPoolsScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -10766,20 +11469,21 @@ class TargetPoolsScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10997,6 +11701,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -11012,20 +11717,21 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11257,6 +11963,7 @@ class VpnTunnel(_messages.Message):
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway.
     region: [Output Only] URL of the region where the VPN tunnel resides.
+    router: URL of Router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
       Cloud VPN gateway and the peer VPN gateway.
@@ -11304,11 +12011,12 @@ class VpnTunnel(_messages.Message):
   name = _messages.StringField(8)
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sharedSecret = _messages.StringField(12)
-  sharedSecretHash = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  targetVpnGateway = _messages.StringField(15)
+  router = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  sharedSecret = _messages.StringField(13)
+  sharedSecretHash = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  targetVpnGateway = _messages.StringField(16)
 
 
 class VpnTunnelAggregatedList(_messages.Message):
@@ -11427,6 +12135,7 @@ class VpnTunnelsScopedList(_messages.Message):
       response.
 
       Values:
+        CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -11442,20 +12151,21 @@ class VpnTunnelsScopedList(_messages.Message):
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
         UNREACHABLE: <no description>
       """
-      DEPRECATED_RESOURCE_USED = 0
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 1
-      INJECTED_KERNELS_DEPRECATED = 2
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 3
-      NEXT_HOP_CANNOT_IP_FORWARD = 4
-      NEXT_HOP_INSTANCE_NOT_FOUND = 5
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 6
-      NEXT_HOP_NOT_RUNNING = 7
-      NOT_CRITICAL_ERROR = 8
-      NO_RESULTS_ON_PAGE = 9
-      REQUIRED_TOS_AGREEMENT = 10
-      RESOURCE_NOT_DELETED = 11
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 12
-      UNREACHABLE = 13
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.

@@ -191,6 +191,23 @@ class AppengineApiClient(object):
 
     return versions
 
+  def DeleteService(self, service_name):
+    """Deletes the specified service.
+
+    Args:
+      service_name: str, Name of the service to delete.
+
+    Returns:
+      The completed Operation.
+    """
+    delete_request = self.messages.AppengineAppsModulesDeleteRequest(
+        name=self._FormatModule(app_id=self.project,
+                                module_name=service_name))
+    operation = requests.MakeRequest(
+        self.client.apps_modules.Delete,
+        delete_request)
+    return operations.WaitForOperation(self.client.apps_operations, operation)
+
   def _CreateVersionResource(self, module_config, manifest, version_id, image):
     """Constructs a Version resource for deployment."""
     appinfo = module_config.parsed

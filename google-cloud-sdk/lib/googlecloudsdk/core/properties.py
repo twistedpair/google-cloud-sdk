@@ -806,6 +806,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.dataflow = self._Add('dataflow')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
+    self.debug = self._Add('debug')
     self.dns = self._Add('dns')
     self.functions = self._Add('functions')
     self.genomics = self._Add('genomics')

@@ -708,17 +708,16 @@ class RegularFile(_messages.Message):
   Fields:
     content: A FileReference attribute.
     devicePath: Where to put the content on the device, must be a full,
-      whitelisted path. If it exists, it will be completely replaced.
-      TODO(user): Make the following path substitutions available: <p>
-      ${EXTERNAL_STORAGE} - the external storage mount point (/sdcard) <p>
-      ${ANDROID_DATA} - the userdata partition mount point (/data) Note:
-      /data/local/tmp is whitelisted, but /data is not.  <p> The corresponding
-      paths (in parentheses) will be made available and treated as implicit
-      path substitutions, so the user may use them interchangeably. E.g. if
-      /sdcard on a particular device does not map to external storage, the
-      system will replace it with the external storage path prefix for that
-      device and copy the file there.  <p> It is strongly advised to use the
-      <a href=
+      whitelisted path. If it exists, it will be completely replaced. The
+      following path substitutions are available: <p> ${EXTERNAL_STORAGE} -
+      the external storage mount point (/sdcard) <p> ${ANDROID_DATA} - the
+      userdata partition mount point (/data) Note: /data/local/tmp is
+      whitelisted, but /data is not.  <p> The corresponding paths (in
+      parentheses) will be made available and treated as implicit path
+      substitutions, so the user may use them interchangeably. E.g. if /sdcard
+      on a particular device does not map to external storage, the system will
+      replace it with the external storage path prefix for that device and
+      copy the file there.  <p> It is strongly advised to use the <a href=
       "http://developer.android.com/reference/android/os/Environment.html">
       Environment API</a> in app and test code to access files on the device
       in a portable way.

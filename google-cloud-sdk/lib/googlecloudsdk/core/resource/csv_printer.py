@@ -17,6 +17,7 @@
 import csv
 
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_transform
 
 
 class CsvPrinter(resource_printer_base.ResourcePrinter):
@@ -70,6 +71,8 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
                         for k, v in sorted(col.iteritems())])
       elif isinstance(col, list):
         val = ';'.join([str(x) for x in col])
+      elif isinstance(col, float):
+        val = resource_transform.TransformFloat(col)
       else:
         val = str(col)
       line.append(val)

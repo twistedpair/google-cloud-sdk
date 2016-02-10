@@ -1148,6 +1148,8 @@ class JobStatistics2(_messages.Message):
       query cache.
     queryPlan: [Output-only, Experimental] Describes execution plan for the
       query as a list of stages.
+    referencedTables: [Output-only] Referenced tables for the job. Queries
+      that reference more than 50 tables will not have a complete list.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
   """
@@ -1155,8 +1157,9 @@ class JobStatistics2(_messages.Message):
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
   queryPlan = _messages.MessageField('ExplainQueryStage', 3, repeated=True)
-  totalBytesBilled = _messages.IntegerField(4)
-  totalBytesProcessed = _messages.IntegerField(5)
+  referencedTables = _messages.MessageField('TableReference', 4, repeated=True)
+  totalBytesBilled = _messages.IntegerField(5)
+  totalBytesProcessed = _messages.IntegerField(6)
 
 
 class JobStatistics3(_messages.Message):
@@ -1523,8 +1526,8 @@ class TableDataInsertAllRequest(_messages.Message):
     skipInvalidRows: [Optional] Insert all valid rows of a request, even if
       invalid rows exist. The default value is false, which causes the entire
       request to fail if any invalid rows exist.
-    templateSuffix: [Optional] If specified, treats the destination table as a
-      base template, and inserts the rows into an instance table named
+    templateSuffix: [Experimental] If specified, treats the destination table
+      as a base template, and inserts the rows into an instance table named
       "{destination}{templateSuffix}". BigQuery will manage creation of the
       instance table, using the schema of the base template table. See
       https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-

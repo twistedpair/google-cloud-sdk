@@ -15,6 +15,7 @@
 """Utilities for subcommands that need to SSH into virtual machine guests."""
 import logging
 import os
+import re
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import constants
@@ -685,3 +686,37 @@ class BaseSSHCLICommand(BaseSSHCommand):
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 
     return _RunExecutable(cmd_args, strict_error_checking=strict_error_checking)
+
+
+# A remote path has three parts host[@user]:[path], where @user and path are
+# optional.
+#   A host:
+#   - cannot start with '.'
+#   - cannot contain ':', '/', '\\', '@'
+#   A user:
+#   - cannot contain ':'.
+#   A path:
+#   - can be anything
+
+_SSH_REMOTE_PATH_REGEX = r'[^.:/\\@][^:/\\@]*(@[^:]*)?:'
+
+
+def IsScpLocalPath(path):
+  """Checks if path is an scp local file path.
+
+  Args:
+    path: The path name to check.
+
+  Returns:
+    True if path is an scp local path, false if it is a remote path.
+  """
+  # Paths that start with a drive are local. _SSH_REMOTE_PATH_REGEX could match
+  # path for some os implementations, so the drive test must be done before the
+  # pattern match.
+  if os.path.splitdrive(path)[0]:
+    return True
+  # Paths that match _SSH_REMOTE_PATH_REGEX are not local.
+  if re.match(_SSH_REMOTE_PATH_REGEX, path):
+    return False
+  # Otherwise the path is local.
+  return True

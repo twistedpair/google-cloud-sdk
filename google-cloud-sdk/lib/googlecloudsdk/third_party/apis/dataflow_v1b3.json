@@ -1820,6 +1820,10 @@
         "streamingComputationTopology": {
           "description": "The global topology of the streaming Dataflow job.",
           "$ref": "TopologyConfig"
+        },
+        "drain": {
+          "description": "The user has requested drain.",
+          "type": "boolean"
         }
       }
     },

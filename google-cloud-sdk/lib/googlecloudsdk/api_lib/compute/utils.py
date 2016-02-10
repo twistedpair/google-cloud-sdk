@@ -21,6 +21,7 @@ import urlparse
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
@@ -215,61 +216,35 @@ def SetResourceParamDefaults():
         resolver=resolvers.FromProperty(prop))
 
 
-def UpdateContextEndpointEntries(context, http, api_client_default='v1',
-                                 known_apis=None,
-                                 known_clouduseraccounts_apis=None):
+def UpdateContextEndpointEntries(context, http, api_client_default='v1'):
   """Updates context to set API enpoints; requires context['http'] be set."""
 
   context['project'] = properties.VALUES.core.project.Get(required=True)
   context['http'] = http
 
-  if not known_apis:
-    known_apis = {
-        'alpha': resources.ClientDef('compute', 'alpha'),
-        'beta': resources.ClientDef('compute', 'beta'),
-        'v1': resources.ClientDef('compute', 'v1')
-    }
-  if not known_clouduseraccounts_apis:
-    known_clouduseraccounts_apis = {
-        'alpha': resources.ClientDef('clouduseraccounts', 'alpha'),
-        'beta': resources.ClientDef('clouduseraccounts', 'beta')
-    }
-
-  api_client = properties.VALUES.api_client_overrides.compute.Get()
-  if not api_client:
-    api_client = api_client_default
-  try:
-    client = known_apis[api_client].Import()
-  except KeyError:
-    raise ValueError('Invalid API version: [{0}]'.format(api_client))
-
-  compute_url = properties.VALUES.api_endpoint_overrides.compute.Get()
-  compute = client(url=compute_url, get_credentials=False, http=http)
+  api_client = core_apis.ResolveVersion('compute', api_client_default)
+  compute = core_apis.GetClientInstance('compute', api_client, http)
   context['api-version'] = api_client
   context['compute'] = compute
   context['resources'] = resources.REGISTRY.CloneAndSwitchAPIs(compute)
 
   # Turn the endpoint into just the host.
   # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
+  compute_url = properties.VALUES.api_endpoint_overrides.compute.Get()
   u_endpoint = urlparse.urlparse(compute_url or 'https://www.googleapis.com')
   api_host = '%s://%s' % (u_endpoint.scheme, u_endpoint.netloc)
   context['batch-url'] = urlparse.urljoin(api_host, 'batch')
 
   # Construct cloud user accounts client.
-  # TODO(user): User a separate API override from compute.
-  api_client = properties.VALUES.api_client_overrides.compute.Get()
-  if not api_client:
-    api_client = api_client_default
   try:
-    client = known_clouduseraccounts_apis[api_client].Import()
-  except KeyError:
+    # TODO(user): User a separate API override from compute.
+    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts',
+                                                    api_client, http)
+  except core_apis.UnknownVersionError:
     # Throw an error here once clouseuseraccounts has a v1 API version.
-    client = known_clouduseraccounts_apis['beta'].Import()
+    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts', 'beta',
+                                                    http)
 
-  clouduseraccounts_url = (properties.VALUES.api_endpoint_overrides
-                           .clouduseraccounts.Get())
-  clouduseraccounts = client(url=clouduseraccounts_url, get_credentials=False,
-                             http=http)
   context['clouduseraccounts'] = clouduseraccounts
   context['clouduseraccounts-resources'] = (
       resources.REGISTRY.CloneAndSwitchAPIs(clouduseraccounts))

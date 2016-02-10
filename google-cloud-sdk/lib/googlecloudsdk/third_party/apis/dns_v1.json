@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20160120",
+ "revision": "20160202",
  "title": "Google Cloud DNS API",
  "description": "The Google Cloud DNS API provides services for configuring and serving authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -114,7 +114,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "The time that this operation was started by the server. This is in RFC3339 text format."
+     "description": "The time that this operation was started by the server (output only). This is in RFC3339 text format."
     },
     "status": {
      "type": "string",

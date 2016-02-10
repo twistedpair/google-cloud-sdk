@@ -57,6 +57,15 @@ class ConflictingConfigError(exceptions.Error):
   """Property in app.yaml conflicts with params passed to fingerprinter."""
 
 
+class AlterConfigFileError(exceptions.Error):
+  """Error when attempting to update an existing config file (app.yaml)."""
+
+  def __init__(self, inner_exception):
+    super(AlterConfigFileError, self).__init__(
+        'Could not alter app.yaml due to an internal error:\n{0}\n'
+        'Please update app.yaml manually.'.format(inner_exception))
+
+
 def IdentifyDirectory(path, params=None):
   """Try to identify the given directory.
 

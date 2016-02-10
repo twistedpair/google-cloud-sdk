@@ -2,6 +2,51 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 96.0.0 (2016/2/10)
+
+### Breaking Changes
+
+### Google App Engine
+
+* Google App Engine components updated to 1.9.32. Please visit the following
+  release notes for details:
+  Python - https://cloud.google.com/appengine/docs/python/release-notes
+  Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+* The `gcloud preview app gen-config` command now offers to automatically update
+  the runtime field in app.yaml if necessary.
+
+### IAM
+
+* The `gcloud beta iam` command group has launched.
+
+### Emulators
+
+* The Pub/Sub emulator now supports Gzip-encoded requests.
+
+### Google Compute Engine
+
+* The gcloud compute copy-files|scp commands on Windows now treat path arguments
+  with a drive prefix as local files.
+
+### Configurations
+
+* The `config configurations delete` command now takes multiple configuration
+  names.
+
+### Containers
+
+* kubectl is updated to v1.1.7.
+
+* Bugfix on the `gcloud container clusters get-credentials` when run from a
+  client without edit permissions.
+
+### Misc. Changes
+
+* The default floating point output format precision is 6. Exponent notation is
+  used for abs(n) < 1e-04 and abs(n) >= 1e+09.
+* The arrow and page up/down/home/end keys now work in the Windows help pager.
+
 ## 95.0.0 (2016/2/3)
 
 ### Breaking Changes

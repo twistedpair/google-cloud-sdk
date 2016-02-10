@@ -26,8 +26,11 @@ class HttpRequest(_messages.Message):
   """A common proto for logging HTTP requests.
 
   Fields:
+    cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
+      only when a cache fill was attempted.
     cacheHit: Whether or not an entity was served from cache (with or without
       validation).
+    cacheLookup: Whether or not a cache lookup was attempted.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -51,16 +54,18 @@ class HttpRequest(_messages.Message):
       meaningful if `cache_hit` is True.
   """
 
-  cacheHit = _messages.BooleanField(1)
-  referer = _messages.StringField(2)
-  remoteIp = _messages.StringField(3)
-  requestMethod = _messages.StringField(4)
-  requestSize = _messages.IntegerField(5)
-  requestUrl = _messages.StringField(6)
-  responseSize = _messages.IntegerField(7)
-  status = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(9)
-  validatedWithOriginServer = _messages.BooleanField(10)
+  cacheFillBytes = _messages.IntegerField(1)
+  cacheHit = _messages.BooleanField(2)
+  cacheLookup = _messages.BooleanField(3)
+  referer = _messages.StringField(4)
+  remoteIp = _messages.StringField(5)
+  requestMethod = _messages.StringField(6)
+  requestSize = _messages.IntegerField(7)
+  requestUrl = _messages.StringField(8)
+  responseSize = _messages.IntegerField(9)
+  status = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(11)
+  validatedWithOriginServer = _messages.BooleanField(12)
 
 
 class ListLogEntriesRequest(_messages.Message):
@@ -1059,6 +1064,9 @@ class RequestLog(_messages.Message):
     cost: An indication of the relative cost of serving this request.
     endTime: Time when the request finished.
     finished: Whether this request is finished or active.
+    first: Whether this is the first RequestLog entry for this request.  If an
+      active request has several RequestLog entries written to Cloud Logging,
+      this field will be set for one of them.
     host: Internet host and port number of the resource being requested.
     httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
     instanceId: An identifier for the instance that handled the request.
@@ -1111,32 +1119,33 @@ class RequestLog(_messages.Message):
   cost = _messages.FloatField(3)
   endTime = _messages.StringField(4)
   finished = _messages.BooleanField(5)
-  host = _messages.StringField(6)
-  httpVersion = _messages.StringField(7)
-  instanceId = _messages.StringField(8)
-  instanceIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  ip = _messages.StringField(10)
-  latency = _messages.StringField(11)
-  line = _messages.MessageField('LogLine', 12, repeated=True)
-  megaCycles = _messages.IntegerField(13)
-  method = _messages.StringField(14)
-  moduleId = _messages.StringField(15)
-  nickname = _messages.StringField(16)
-  pendingTime = _messages.StringField(17)
-  referrer = _messages.StringField(18)
-  requestId = _messages.StringField(19)
-  resource = _messages.StringField(20)
-  responseSize = _messages.IntegerField(21)
-  sourceReference = _messages.MessageField('SourceReference', 22, repeated=True)
-  startTime = _messages.StringField(23)
-  status = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  taskName = _messages.StringField(25)
-  taskQueueName = _messages.StringField(26)
-  traceId = _messages.StringField(27)
-  urlMapEntry = _messages.StringField(28)
-  userAgent = _messages.StringField(29)
-  versionId = _messages.StringField(30)
-  wasLoadingRequest = _messages.BooleanField(31)
+  first = _messages.BooleanField(6)
+  host = _messages.StringField(7)
+  httpVersion = _messages.StringField(8)
+  instanceId = _messages.StringField(9)
+  instanceIndex = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  ip = _messages.StringField(11)
+  latency = _messages.StringField(12)
+  line = _messages.MessageField('LogLine', 13, repeated=True)
+  megaCycles = _messages.IntegerField(14)
+  method = _messages.StringField(15)
+  moduleId = _messages.StringField(16)
+  nickname = _messages.StringField(17)
+  pendingTime = _messages.StringField(18)
+  referrer = _messages.StringField(19)
+  requestId = _messages.StringField(20)
+  resource = _messages.StringField(21)
+  responseSize = _messages.IntegerField(22)
+  sourceReference = _messages.MessageField('SourceReference', 23, repeated=True)
+  startTime = _messages.StringField(24)
+  status = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  taskName = _messages.StringField(26)
+  taskQueueName = _messages.StringField(27)
+  traceId = _messages.StringField(28)
+  urlMapEntry = _messages.StringField(29)
+  userAgent = _messages.StringField(30)
+  versionId = _messages.StringField(31)
+  wasLoadingRequest = _messages.BooleanField(32)
 
 
 class SourceLocation(_messages.Message):

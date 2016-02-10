@@ -24,6 +24,7 @@ import re
 import types
 import urllib
 
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import base_api
@@ -45,119 +46,8 @@ _METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
 _HTTP_RE = re.compile(r'^https?://')
 
 
-class ClientDef(object):
-
-  def __init__(self, api_name, api_version,
-               base_import_path='googlecloudsdk.third_party.apis',
-               urls_only=False):
-    self.api_name = api_name
-    self.api_version = api_version
-    self.base_import_path = base_import_path
-    self.urls_only = urls_only
-
-  def Import(self):
-    """Imports the client module and returns the client class.
-
-    Returns:
-      type: Class that can be used to contruct an instance of the client.
-    """
-    client_cls_name = _CamelCase(self.api_name) + _CamelCase(self.api_version)
-    module_obj = __import__(
-        '{base}.{api_name}.{api_version}.{api_name}_{api_version}_client'
-        .format(base=self.base_import_path,
-                api_name=self.api_name, api_version=self.api_version),
-        fromlist=[client_cls_name])
-    return getattr(module_obj, client_cls_name)
-
-
-# Map of all known APIs and their clients.
-_API_CLIENT_MAP = {
-    'autoscaler': {
-        'v1beta2': ClientDef('autoscaler', 'v1beta2')
-    },
-    'bigquery': {
-        'v2': ClientDef('bigquery', 'v2')
-    },
-    'cloudresourcemanager': {
-        'v1beta1': ClientDef('cloudresourcemanager', 'v1beta1')
-    },
-    'compute': {
-        'v1': ClientDef('compute', 'v1'),
-        'alpha': ClientDef('compute', 'alpha', urls_only=True),
-        'beta': ClientDef('compute', 'beta', urls_only=True),
-    },
-    'clouduseraccounts': {
-        'beta': ClientDef('clouduseraccounts', 'beta'),
-        'alpha': ClientDef('clouduseraccounts', 'alpha', urls_only=True),
-    },
-    'container': {
-        'v1': ClientDef('container', 'v1'),
-    },
-    'dataflow': {
-        'v1b3': ClientDef('dataflow', 'v1b3')
-    },
-    'dataproc': {
-        'v1beta1': ClientDef('dataproc', 'v1beta1')
-    },
-    'datastore': {
-        'v1beta3': ClientDef('datastore', 'v1beta3')
-    },
-    'dns': {
-        'v1': ClientDef('dns', 'v1')
-    },
-    'genomics': {
-        'v1': ClientDef('genomics', 'v1')
-    },
-    'logging': {
-        'v1beta3': ClientDef('logging', 'v1beta3')
-    },
-    'manager': {
-        'v1beta2': ClientDef('manager', 'v1beta2')
-    },
-    'replicapool': {
-        'v1beta2': ClientDef('replicapool', 'v1beta2')
-    },
-    'replicapoolupdater': {
-        'v1beta1': ClientDef('replicapoolupdater', 'v1beta1')
-    },
-    'resourceviews': {
-        'v1beta1': ClientDef('resourceviews', 'v1beta1')
-    },
-    'sql': {
-        'v1beta3': ClientDef('sqladmin', 'v1beta3'),
-        'v1beta4': ClientDef('sqladmin', 'v1beta4', urls_only=True)
-    },
-    'storage': {
-        'v1': ClientDef('storage', 'v1')
-    },
-    'testing': {
-        'v1': ClientDef('testing', 'v1')
-    },
-    'toolresults': {
-        'v1beta3': ClientDef('toolresults', 'v1beta3')
-    },
-}
-
-
-def _DefaultVersionForApiName(api_name):
-  for version, client_def in _API_CLIENT_MAP.get(api_name, {}).items():
-    if not client_def.urls_only:
-      return version
-  return None
-
-
 class Error(Exception):
   """Exceptions for this module."""
-
-
-class UnknownAPIException(Error):
-  """Exception we are trying to register an unknown API."""
-
-  def __init__(self, api, version=None):
-    msg = 'trying to register unknown API [{0}]'.format(api)
-    if version:
-      msg += ' (version [{0}])'.format(version)
-    super(UnknownAPIException, self).__init__(msg)
 
 
 class InvalidEndpointException(Error):
@@ -572,7 +462,7 @@ def _APINameAndVersionFromURL(url):
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   for name, overridden_url in endpoint_overrides.iteritems():
     if overridden_url == url:
-      return name, _DefaultVersionForApiName(name)
+      return name, core_apis.GetDefaultVersion(name)
 
   tokens = _StripUrl(url).split('/')
   domain = tokens[0]
@@ -588,7 +478,7 @@ def _APINameAndVersionFromURL(url):
     if len(tokens) > 1:
       version = tokens[1]
     else:
-      version = _DefaultVersionForApiName(api_name)
+      version = core_apis.GetDefaultVersion(api_name)
   return api_name, version
 
 
@@ -643,9 +533,6 @@ class Registry(object):
     Args:
       api_name: str, The API name.
       api_version: if available, the version of the API being registered.
-
-    Raises:
-      UnknownAPIException: If the API to register is not in _API_CLIENT_MAP.
     """
     if api_version and api_version in self.registered_apis.get(api_name, []):
       # This API version has been registered.
@@ -655,47 +542,35 @@ class Registry(object):
       # registered under this name.
       return
 
-    api_clients = _API_CLIENT_MAP.get(api_name, None)
-
-    if not api_clients:
-      raise UnknownAPIException(api_name)
-
-    if api_version:
-      try:
-        api_client = api_clients[api_version]
-        api_client_class = api_client.Import()
-        self._RegisterAPI(api_client_class(get_credentials=False),
-                          urls_only=api_client.urls_only,
-                          api_version=api_version)
-      except KeyError:
-        # This might get re-raised with the full collection path later.
-        # If it doesn't, this error is good enough.
-        raise InvalidResourceException('{0}/{1}'.format(api_name, api_version))
+    # Register only URL's if not default version.
+    if api_version is None:
+      # Default version is used if no version is provided.
+      urls_only = False
     else:
-      for api_version, api_client in api_clients.items():
-        if not api_client.urls_only:
-          api_client_class = api_client.Import()
-          self._RegisterAPI(api_client_class(get_credentials=False),
-                            api_version=api_version)
+      default_version = core_apis.GetDefaultVersion(api_name)
+      urls_only = api_version != default_version
 
-  def _RegisterAPI(self, api, urls_only=False, api_version=None):
+    api_client = core_apis.GetClientInstance(api_name, api_version)
+    self._RegisterAPI(api_client, urls_only, api_version)
+
+  def _RegisterAPI(self, api_client, urls_only=False, api_version=None):
     """Register a generated API with this registry.
 
     Args:
-      api: base_api.BaseApiClient, The client for a Google Cloud API.
+      api_client: base_api.BaseApiClient, The client for a Google Cloud API.
       urls_only: bool, True if this API should only be used to interpret URLs,
           and not to interpret collection-paths.
       api_version: str, the version of the API if it's not in the API client
           URL.
     """
-    for potential_service in api.__dict__.itervalues():
+    for potential_service in api_client.__dict__.itervalues():
       if not isinstance(potential_service, base_api.BaseApiService):
         continue
       try:
-        self._RegisterService(api, potential_service, urls_only)
+        self._RegisterService(api_client, potential_service, urls_only)
       except _ResourceWithoutGetException:
         pass
-    api_name, parsed_api_version = _APINameAndVersionFromURL(api.url)
+    api_name, parsed_api_version = _APINameAndVersionFromURL(api_client.url)
     self.registered_apis[api_name].add(parsed_api_version or api_version)
 
   def _RegisterService(self, api, service, urls_only):
@@ -910,7 +785,7 @@ class Registry(object):
     api_name, api_version = _APINameAndVersionFromURL(url)
     try:
       self._RegisterAPIByName(api_name, api_version=api_version)
-    except InvalidResourceException:
+    except (core_apis.UnknownAPIError, core_apis.UnknownVersionError):
       # The caught InvalidResourceException has a less detailed message.
       raise InvalidResourceException(url)
 
@@ -1088,9 +963,4 @@ def _StripUrl(url):
   if not _HTTP_RE.match(url):
     raise InvalidEndpointException(url)
   return url[url.index(':') + 1:].strip('/')
-
-
-def _CamelCase(snake_case):
-  parts = snake_case.split('_')
-  return ''.join(s.capitalize() for s in parts)
 

@@ -123,65 +123,110 @@ def _GetTermSizeTput():
   return (cols, rows)
 
 
-def GetRawCharFunction():
-  """Returns a function that reads one character from stdin with no echo.
+_ANSI_CSI = '\x1b'  # ANSI control sequence indicator (ESC)
+_CONTROL_D = '\x04'  # unix EOF (^D)
+_CONTROL_Z = '\x1a'  # Windows EOF (^Z)
+_WINDOWS_CSI_1 = '\x00'  # Windows control sequence indicator #1
+_WINDOWS_CSI_2 = '\xe0'  # Windows control sequence indicator #2
+
+
+def GetRawKeyFunction():
+  """Returns a function that reads one keypress from stdin with no echo.
 
   Returns:
-    A function that reads one character from stdin with no echo or a function
+    A function that reads one keypress from stdin with no echo or a function
     that always returns None if stdin does not support it.
   """
   # Believe the first helper that doesn't bail.
-  for get_raw_char_function in (_GetRawCharFunctionPosix,
-                                _GetRawCharFunctionWindows):
+  for get_raw_key_function in (_GetRawKeyFunctionPosix,
+                               _GetRawKeyFunctionWindows):
     try:
-      return get_raw_char_function()
+      return get_raw_key_function()
     except:  # pylint: disable=bare-except
       pass
   return lambda: None
 
 
-def _GetRawCharFunctionPosix():
-  """_GetRawCharFunction helper using Posix APIs."""
+def _GetRawKeyFunctionPosix():
+  """_GetRawKeyFunction helper using Posix APIs."""
   # pylint: disable=g-import-not-at-top
   import tty
   # pylint: disable=g-import-not-at-top
   import termios
 
-  def _GetRawCharPosix():
-    """Reads one char from stdin without echo using Posix APIs.
+  def _GetRawKeyPosix():
+    """Reads and returns one keypress from stdin, no echo, using Posix APIs.
 
     Returns:
-      One character, None on EOF (^D or ^Z) or error.
+      The key name, None for EOF, <*> for function keys, otherwise a
+      character.
     """
+    ansi_to_key = {
+        'A': '<UP-ARROW>',
+        'B': '<DOWN-ARROW>',
+        'D': '<LEFT-ARROW>',
+        'C': '<RIGHT-ARROW>',
+        '5': '<PAGE-UP>',
+        '6': '<PAGE-DOWN>',
+        'H': '<HOME>',
+        'F': '<END>',
+        'M': '<DOWN-ARROW>',
+        'S': '<PAGE-UP>',
+        'T': '<PAGE-DOWN>',
+    }
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
       tty.setraw(fd)
       c = sys.stdin.read(1)
+      if c == _ANSI_CSI:
+        c = sys.stdin.read(1)
+        while True:
+          if c == _ANSI_CSI:
+            return c
+          if c.isalpha():
+            break
+          prev_c = c
+          c = sys.stdin.read(1)
+          if c == '~':
+            c = prev_c
+            break
+        return ansi_to_key.get(c, '')
     except:  # pylint:disable=bare-except
       c = None
     finally:
       termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return None if c in ('\x04', '\x1a') else c
+    return None if c in (_CONTROL_D, _CONTROL_Z) else c
 
-  return _GetRawCharPosix
+  return _GetRawKeyPosix
 
 
-def _GetRawCharFunctionWindows():
-  """_GetRawCharFunction helper using Windows APIs."""
+def _GetRawKeyFunctionWindows():
+  """_GetRawKeyFunction helper using Windows APIs."""
   # pylint: disable=g-import-not-at-top
   import msvcrt
 
-  def _GetRawCharWindows():
-    """Reads one char from stdin without echo using Windows APIs.
+  def _GetRawKeyWindows():
+    """Reads and returns one keypress from stdin, no echo, using Windows APIs.
 
     Returns:
-      One character, None on EOF (^D or ^Z).
+      The key name, None for EOF, <*> for function keys, otherwise a
+      character.
     """
+    windows_to_key = {
+        'H': '<UP-ARROW>',
+        'P': '<DOWN-ARROW>',
+        'K': '<LEFT-ARROW>',
+        'M': '<RIGHT-ARROW>',
+        'I': '<PAGE-UP>',
+        'Q': '<PAGE-DOWN>',
+        'G': '<HOME>',
+        'O': '<END>',
+    }
     c = msvcrt.getch()
     # Special function key is a two character sequence; return the second char.
-    if c in ('\x00', '\xe0'):
-      c = msvcrt.getch()
-    return None if c in ('\x04', '\x1a') else c
+    if c in (_WINDOWS_CSI_1, _WINDOWS_CSI_2):
+      return windows_to_key.get(msvcrt.getch(), '')
+    return None if c in (_CONTROL_D, _CONTROL_Z) else c
 
-  return _GetRawCharWindows
+  return _GetRawKeyWindows

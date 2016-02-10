@@ -23,7 +23,7 @@ from googlecloudsdk.third_party.apis.iam.v1 import iam_v1_messages as msgs
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
-CREATE_KEY_TYPES = (msgs.IamProjectsServiceAccountsKeysCreateRequest
+CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
                     .PrivateKeyTypeValueValuesEnum)
 KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
 MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest

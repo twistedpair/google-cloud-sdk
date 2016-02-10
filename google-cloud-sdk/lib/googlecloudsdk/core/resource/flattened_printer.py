@@ -15,6 +15,7 @@
 """Flattened tree resource printer."""
 
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_transform
 
 
 def _Flatten(obj):
@@ -60,6 +61,8 @@ def _Flatten(obj):
               name=name, dot='.' if name else '', key=k), res)
       else:
         res.append((name, {}))
+    elif isinstance(obj, float):
+      res.append((name, resource_transform.TransformFloat(obj)))
     else:
       res.append((name, obj))
 

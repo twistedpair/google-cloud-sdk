@@ -26,8 +26,11 @@ class HttpRequest(_messages.Message):
   """A common proto for logging HTTP requests.
 
   Fields:
+    cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
+      only when a cache fill was attempted.
     cacheHit: Whether or not an entity was served from cache (with or without
       validation).
+    cacheLookup: Whether or not a cache lookup was attempted.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -51,16 +54,18 @@ class HttpRequest(_messages.Message):
       meaningful if `cache_hit` is True.
   """
 
-  cacheHit = _messages.BooleanField(1)
-  referer = _messages.StringField(2)
-  remoteIp = _messages.StringField(3)
-  requestMethod = _messages.StringField(4)
-  requestSize = _messages.IntegerField(5)
-  requestUrl = _messages.StringField(6)
-  responseSize = _messages.IntegerField(7)
-  status = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(9)
-  validatedWithOriginServer = _messages.BooleanField(10)
+  cacheFillBytes = _messages.IntegerField(1)
+  cacheHit = _messages.BooleanField(2)
+  cacheLookup = _messages.BooleanField(3)
+  referer = _messages.StringField(4)
+  remoteIp = _messages.StringField(5)
+  requestMethod = _messages.StringField(6)
+  requestSize = _messages.IntegerField(7)
+  requestUrl = _messages.StringField(8)
+  responseSize = _messages.IntegerField(9)
+  status = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(11)
+  validatedWithOriginServer = _messages.BooleanField(12)
 
 
 class LabelDescriptor(_messages.Message):
@@ -138,16 +143,49 @@ class ListLogEntriesRequest(_messages.Message):
 class ListLogEntriesResponse(_messages.Message):
   """Result returned from `ListLogEntries`.
 
+  Messages:
+    ProjectIdErrorsValue: If partial_success is true, contains the project ids
+      that had errors and the associated errors.
+
   Fields:
     entries: A list of log entries.
     nextPageToken: If there are more results than were returned, then
       `nextPageToken` is included in the response.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
+    projectIdErrors: If partial_success is true, contains the project ids that
+      had errors and the associated errors.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProjectIdErrorsValue(_messages.Message):
+    """If partial_success is true, contains the project ids that had errors
+    and the associated errors.
+
+    Messages:
+      AdditionalProperty: An additional property for a ProjectIdErrorsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ProjectIdErrorsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ProjectIdErrorsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Status attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Status', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  projectIdErrors = _messages.MessageField('ProjectIdErrorsValue', 3)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -165,6 +203,21 @@ class ListLogMetricsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLogsResponse(_messages.Message):
+  """Result returned from ListLogs.
+
+  Fields:
+    logIds: A list of log ids matching the criteria.
+    nextPageToken: If there are more results, then `nextPageToken` is returned
+      in the response.  To get the next batch of logs, use the value of
+      `nextPageToken` as `pageToken` in the next call of `ListLogs`. If
+      `nextPageToken` is empty, then there are no more results.
+  """
+
+  logIds = _messages.StringField(1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMonitoredResourceDescriptorsResponse(_messages.Message):
   """Result returned from ListMonitoredResourceDescriptors.
 
@@ -178,6 +231,40 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   resourceDescriptors = _messages.MessageField('MonitoredResourceDescriptor', 2, repeated=True)
+
+
+class ListResourceKeysResponse(_messages.Message):
+  """Result returned from `ListResourceKeysRequest`.
+
+  Fields:
+    logResourceKeys: A list of log resource keys.
+    nextPageToken: If there are more results, then `nextPageToken` is returned
+      in the response.  To get the next batch of resource types, use the value
+      of `nextPageToken` as `pageToken` in the next call of
+      `ListResourceKeys`. If `nextPageToken` is empty, then there are no more
+      results.
+  """
+
+  logResourceKeys = _messages.MessageField('ResourceKeys', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListResourceValuesResponse(_messages.Message):
+  """Result returned from ListResourceValues.
+
+  Fields:
+    nextPageToken: If there are more results, then `nextPageToken` is returned
+      in the response.  To get the next batch of indexes, use the value of
+      `nextPageToken` as `pageToken` in the next call of `ListResourceValues`.
+      If `nextPageToken` is empty, then there are no more results.
+    resourceValuePrefixes: A list of log resource type index values. Each
+      index value has the form `"/value1/value2/..."`, where `value1` is a
+      value in the primary index, `value2` is a value in the secondary index,
+      and so forth.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceValuePrefixes = _messages.StringField(2, repeated=True)
 
 
 class ListSinksResponse(_messages.Message):
@@ -576,6 +663,39 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
   projectsId = _messages.StringField(2, required=True)
 
 
+class LoggingProjectsLogsListRequest(_messages.Message):
+  """A LoggingProjectsLogsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return.
+    pageToken: An opaque token, returned as `nextPageToken` by a prior
+      `ListLogs` operation.  If `pageToken` is supplied, then the other fields
+      of this request are ignored, and instead the previous `ListLogs`
+      operation is continued.
+    projectsId: Part of `projectName`. The resource name of the project whose
+      logs are requested. If both `resource_type` and `resourceIndexPrefix`
+      are empty, then all logs with entries in this project are listed.
+    resourceIndexPrefix: The purpose of this field is to restrict the listed
+      logs to those with entries of a certain kind. If `resource_type` is the
+      name of a resource type, then this field may contain values for the log
+      resource type's indexes. Only logs that have entries whose indexes
+      include the values are listed. The format for this field is
+      `"/val1/val2.../valN"`, where `val1` is a value for the first index,
+      `val2` for the second index, etc. An empty value (a single slash) for an
+      index matches all values, and you can omit values for later indexes
+      entirely.
+    resourceType: If not empty, this field must be a resource type such as
+      `"gce_instance`. Only logs associated with that resource type are
+      listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  projectsId = _messages.StringField(3, required=True)
+  resourceIndexPrefix = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+
+
 class LoggingProjectsMetricsCreateRequest(_messages.Message):
   """A LoggingProjectsMetricsCreateRequest object.
 
@@ -653,6 +773,66 @@ class LoggingProjectsMetricsUpdateRequest(_messages.Message):
   logMetric = _messages.MessageField('LogMetric', 1)
   metricsId = _messages.StringField(2, required=True)
   projectsId = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsResourceKeysListRequest(_messages.Message):
+  """A LoggingProjectsResourceKeysListRequest object.
+
+  Fields:
+    pageSize: The maximum number of `ResourceKeys` objects to return in one
+      operation.
+    pageToken: An opaque token, returned as `nextPageToken` by a prior
+      `ListResourceKeys` operation.
+    projectsId: Part of `projectName`. The resource name of the project whose
+      services are to be listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  projectsId = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsResourceKeysValuesListRequest(_messages.Message):
+  """A LoggingProjectsResourceKeysValuesListRequest object.
+
+  Fields:
+    depth: A non-negative integer that limits the number of levels of the
+      index hierarchy that are returned. If `depth` is 1 (default), only the
+      first index key value is returned. If `depth` is 2, both primary and
+      secondary key values are returned. If `depth` is 0, the depth is the
+      number of slash-separators in the `indexPrefix` field, not counting a
+      slash appearing as the last character of the prefix. If the
+      `indexPrefix` field is empty, the default depth is 1. It is an error for
+      `depth` to be any positive value less than the number of components in
+      `indexPrefix`.
+    indexPrefix: Restricts the index values returned to be those with a
+      specified prefix for each index key. This field has the form
+      `"/prefix1/prefix2/..."`, in order corresponding to the `ResourceKeys
+      indexKeys`. Non-empty prefixes must begin with `/`. For example, App
+      Engine's two keys are the module ID and the version ID. Following is the
+      effect of using various values for `indexPrefix`:  +  `"/Mod/"`
+      retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +  `"/Mod`
+      retrieves `/Mod/10`, `/Mod/11` and `/ModA/10` but not `/XXX/33`. +
+      `"/Mod/1"` retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +
+      `"/Mod/10/"` retrieves `/Mod/10` only. +  An empty prefix or `"/"`
+      retrieves all values.
+    pageSize: The maximum number of log resource index resources to return in
+      one operation.
+    pageToken: An opaque token, returned as `nextPageToken` by a prior
+      `ListResourceValues` operation.
+    projectsId: Part of `resourceTypeName`. The resource name of a resource
+      type whose indexes are requested. Example: `"projects/my-project-
+      id/resourceTypes/gae_app"`.
+    resourceKeysId: Part of `resourceTypeName`. See documentation of
+      `projectsId`.
+  """
+
+  depth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  indexPrefix = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectsId = _messages.StringField(5, required=True)
+  resourceKeysId = _messages.StringField(6, required=True)
 
 
 class LoggingProjectsSinksCreateRequest(_messages.Message):
@@ -755,7 +935,7 @@ class MonitoredResource(_messages.Message):
       SQL database by supplying values for both the `"database_id"` and
       `"zone"` labels.
     type: The monitored resource type. This field must match the corresponding
-      MonitoredResourceDescriptor.type to this resource..  For example,
+      MonitoredResourceDescriptor.type to this resource. For example,
       `"cloudsql_database"` represents Cloud SQL databases.
   """
 
@@ -802,6 +982,8 @@ class MonitoredResourceDescriptor(_messages.Message):
     labels: A set of labels that can be used to describe instances of this
       monitored resource type. For example, Google Cloud SQL databases can be
       labeled with their `"database_id"` and their `"zone"`.
+    name: Resource name of the monitored resource descriptor. For example:
+      projects/{project_id}/monitoredResourceDescriptors/{type}
     type: The monitored resource type. For example, the type
       `"cloudsql_database"` represents databases in Google Cloud SQL.
   """
@@ -809,7 +991,8 @@ class MonitoredResourceDescriptor(_messages.Message):
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
   labels = _messages.MessageField('LabelDescriptor', 3, repeated=True)
-  type = _messages.StringField(4)
+  name = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class ReadLogEntriesRequest(_messages.Message):
@@ -868,6 +1051,9 @@ class RequestLog(_messages.Message):
     cost: An indication of the relative cost of serving this request.
     endTime: Time when the request finished.
     finished: Whether this request is finished or active.
+    first: Whether this is the first RequestLog entry for this request.  If an
+      active request has several RequestLog entries written to Cloud Logging,
+      this field will be set for one of them.
     host: Internet host and port number of the resource being requested.
     httpVersion: HTTP version of request. Example: `"HTTP/1.1"`.
     instanceId: An identifier for the instance that handled the request.
@@ -920,32 +1106,50 @@ class RequestLog(_messages.Message):
   cost = _messages.FloatField(3)
   endTime = _messages.StringField(4)
   finished = _messages.BooleanField(5)
-  host = _messages.StringField(6)
-  httpVersion = _messages.StringField(7)
-  instanceId = _messages.StringField(8)
-  instanceIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  ip = _messages.StringField(10)
-  latency = _messages.StringField(11)
-  line = _messages.MessageField('LogLine', 12, repeated=True)
-  megaCycles = _messages.IntegerField(13)
-  method = _messages.StringField(14)
-  moduleId = _messages.StringField(15)
-  nickname = _messages.StringField(16)
-  pendingTime = _messages.StringField(17)
-  referrer = _messages.StringField(18)
-  requestId = _messages.StringField(19)
-  resource = _messages.StringField(20)
-  responseSize = _messages.IntegerField(21)
-  sourceReference = _messages.MessageField('SourceReference', 22, repeated=True)
-  startTime = _messages.StringField(23)
-  status = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  taskName = _messages.StringField(25)
-  taskQueueName = _messages.StringField(26)
-  traceId = _messages.StringField(27)
-  urlMapEntry = _messages.StringField(28)
-  userAgent = _messages.StringField(29)
-  versionId = _messages.StringField(30)
-  wasLoadingRequest = _messages.BooleanField(31)
+  first = _messages.BooleanField(6)
+  host = _messages.StringField(7)
+  httpVersion = _messages.StringField(8)
+  instanceId = _messages.StringField(9)
+  instanceIndex = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  ip = _messages.StringField(11)
+  latency = _messages.StringField(12)
+  line = _messages.MessageField('LogLine', 13, repeated=True)
+  megaCycles = _messages.IntegerField(14)
+  method = _messages.StringField(15)
+  moduleId = _messages.StringField(16)
+  nickname = _messages.StringField(17)
+  pendingTime = _messages.StringField(18)
+  referrer = _messages.StringField(19)
+  requestId = _messages.StringField(20)
+  resource = _messages.StringField(21)
+  responseSize = _messages.IntegerField(22)
+  sourceReference = _messages.MessageField('SourceReference', 23, repeated=True)
+  startTime = _messages.StringField(24)
+  status = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  taskName = _messages.StringField(26)
+  taskQueueName = _messages.StringField(27)
+  traceId = _messages.StringField(28)
+  urlMapEntry = _messages.StringField(29)
+  userAgent = _messages.StringField(30)
+  versionId = _messages.StringField(31)
+  wasLoadingRequest = _messages.BooleanField(32)
+
+
+class ResourceKeys(_messages.Message):
+  """_Output only._ Describes resource keys for log entries.
+
+  Fields:
+    displayName: Displayable name for this type that can be presented in a UI.
+    keys: A list of the names of the keys used to index and label individual
+      log entries associated with this resource type.      [ "module_id",
+      "version_id" ]
+    type: The type of the resource - e.g. "gce_instance" This value can appear
+      in the `LogEntry.resource.type` field of log entries
+  """
+
+  displayName = _messages.StringField(1)
+  keys = _messages.StringField(2, repeated=True)
+  type = _messages.StringField(3)
 
 
 class SourceLocation(_messages.Message):

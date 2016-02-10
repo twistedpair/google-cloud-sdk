@@ -97,7 +97,13 @@ def WaitForOp(context, op_id, text):
   msg = context['clusteradmin-msgs'].BigtableclusteradminOperationsGetRequest(
       name=op_id)
   with console_io.ProgressTracker(text, autotick=False) as pt:
-    while not cli.operations.Get(msg).done:
+    while True:
+      # TODO(user): set reasonable timeout with input from API team
+      resp = cli.operations.Get(msg)
+      if resp.error:
+        raise sdk_ex.HttpException(resp.error.message)
+      if resp.done:
+        break
       pt.Tick()
       time.sleep(0.5)
 

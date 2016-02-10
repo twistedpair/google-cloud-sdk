@@ -16,9 +16,11 @@
 
 from datetime import datetime
 import os
+import re
 import uuid
 import zipfile
 from googlecloudsdk.api_lib.source import context_util as contexts
+from googlecloudsdk.api_lib.source import git
 from googlecloudsdk.api_lib.source import source
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -49,23 +51,6 @@ TIME_FORMAT = '%Y/%m/%d-%H.%M.%S'
 def _IsWorkspaceForCapture(workspace_name, capture_id):
   return (workspace_name.startswith(CAPTURE_PREFIX) and
           workspace_name.endswith(capture_id))
-
-
-def _IsGitDirectoryName(path):
-  return path == '.git' or (path.startswith('git') and path[-1:].isdigit()
-                            and path.find('~') != -1)
-
-
-def _WalkNonGitPaths(root):
-  for base, dirs, files in os.walk(root):
-    # Modify dirs in place to skip Git directories.
-    if _IsGitDirectoryName(os.path.basename(base)):
-      dirs[:] = []
-    # Exclude symbolic links, since they're not useful in captures.
-    # NOTE: If we decided in the future to include links, we need to exclude
-    # links where _IsGitDirectoryName(f) is True.
-    files = [f for f in files if not os.path.islink(os.path.join(base, f))]
-    yield (base, files)
 
 
 class Capture(object):
@@ -107,6 +92,11 @@ class CaptureManager(object):
       repo_name = CAPTURE_REPO_NAME
     self._repo_name = repo_name
     self._repo = None
+    self._ignore_handler = git.GitIgnoreHandler()
+    # Add a top-level ignore for the .git directory (the expression matches
+    # the .git directory and any file contained in it).
+    self._ignore_handler.AddIgnoreRules(
+        '/', [(re.compile(r'^(.*/)?\.git(/.*)?'), True)])
 
   def GetCaptureRepo(self, create_if_missing=True):
     """Returns the repo where captures will be created.
@@ -156,8 +146,9 @@ class CaptureManager(object):
     # TODO(user) Once "wsync capture" is available, use that instead of
     # explicitly modifying the workspace as we do here.
 
-    paths = [os.path.relpath(os.path.join(basedir, f), src_path)
-             for basedir, files in _WalkNonGitPaths(src_path) for f in files]
+    paths = [os.path.relpath(f, src_path)
+             for f in self._ignore_handler.GetFiles(src_path)
+             if not os.path.islink(f)]
     total_files = len(paths)
     progress_bar = console_io.ProgressBar(
         'Uploading {0} files'.format(total_files))

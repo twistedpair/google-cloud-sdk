@@ -146,6 +146,36 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
+class CreateServiceAccountKeyRequest(_messages.Message):
+  """The service account key create request.
+
+  Enums:
+    PrivateKeyTypeValueValuesEnum: The type of the key requested.
+      GOOGLE_CREDENTIALS is the default key type.
+
+  Fields:
+    privateKeyType: The type of the key requested. GOOGLE_CREDENTIALS is the
+      default key type.
+  """
+
+  class PrivateKeyTypeValueValuesEnum(_messages.Enum):
+    """The type of the key requested. GOOGLE_CREDENTIALS is the default key
+    type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      TYPE_PKCS12_FILE: PKCS12 format. The password for the PKCS12 file is
+        'notasecret'. For more information, see
+        https://tools.ietf.org/html/rfc7292.
+      TYPE_GOOGLE_CREDENTIALS_FILE: Google Credentials File format.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PKCS12_FILE = 1
+    TYPE_GOOGLE_CREDENTIALS_FILE = 2
+
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 1)
+
+
 class CreateServiceAccountRequest(_messages.Message):
   """The service account create request.
 
@@ -154,8 +184,8 @@ class CreateServiceAccountRequest(_messages.Message):
       account email address and a stable unique id. It is unique within a
       project, must be 1-63 characters long, and match the regular expression
       [a-z]([-a-z0-9]*[a-z0-9]) to comply with RFC1035.
-    serviceAccount: The ServiceAccount resource to create. Currently only the
-      display_name and the description are user assignable values.
+    serviceAccount: The ServiceAccount resource to create. Currently, only the
+      following values are user assignable: display_name .
   """
 
   accountId = _messages.StringField(1)
@@ -215,20 +245,6 @@ class GetPolicyDetailsResponse(_messages.Message):
   policies = _messages.MessageField('PolicyDetail', 2, repeated=True)
 
 
-class IamGetIamPolicyRequest(_messages.Message):
-  """A IamGetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
-  """
-
-  resource = _messages.StringField(1, required=True)
-
-
 class IamProjectsServiceAccountsCreateRequest(_messages.Message):
   """A IamProjectsServiceAccountsCreateRequest object.
 
@@ -256,6 +272,20 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
+  """A IamProjectsServiceAccountsGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      `getIamPolicy` documentation.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
 class IamProjectsServiceAccountsGetRequest(_messages.Message):
   """A IamProjectsServiceAccountsGetRequest object.
 
@@ -272,34 +302,17 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
 class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
   """A IamProjectsServiceAccountsKeysCreateRequest object.
 
-  Enums:
-    PrivateKeyTypeValueValuesEnum: The type of the key requested.
-      GOOGLE_CREDENTIALS is the default key type.
-
   Fields:
+    createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
+      to be passed as the request body.
     name: The resource name of the service account in the format
       "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
       for the project, will infer the project from the account. The account
       value can be the email address or the unique_id of the service account.
-    privateKeyType: The type of the key requested. GOOGLE_CREDENTIALS is the
-      default key type.
   """
 
-  class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the key requested. GOOGLE_CREDENTIALS is the default key
-    type.
-
-    Values:
-      TYPE_UNSPECIFIED: <no description>
-      TYPE_PKCS12_FILE: <no description>
-      TYPE_GOOGLE_CREDENTIALS_FILE: <no description>
-    """
-    TYPE_UNSPECIFIED = 0
-    TYPE_PKCS12_FILE = 1
-    TYPE_GOOGLE_CREDENTIALS_FILE = 2
-
-  name = _messages.StringField(1, required=True)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 2)
+  createServiceAccountKeyRequest = _messages.MessageField('CreateServiceAccountKeyRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
@@ -387,6 +400,23 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
   removeDeletedServiceAccounts = _messages.BooleanField(4)
 
 
+class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
+  """A IamProjectsServiceAccountsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path, such as
+      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
+      specified in this value is resource specific and is specified in the
+      `setIamPolicy` documentation.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   """A IamProjectsServiceAccountsSignBlobRequest object.
 
@@ -403,25 +433,8 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   signBlobRequest = _messages.MessageField('SignBlobRequest', 2)
 
 
-class IamSetIamPolicyRequest(_messages.Message):
-  """A IamSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IamTestIamPermissionsRequest(_messages.Message):
-  """A IamTestIamPermissionsRequest object.
+class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
+  """A IamProjectsServiceAccountsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being

@@ -253,7 +253,9 @@ class Lexer(object):
       ExpressionSyntaxError: The expression has a syntax error.
 
     Returns:
-      The token string, None if there is none.
+      None if there is no token, the token string if convert is False or the
+      token is quoted, otherwise the converted float / int / string value of
+      the token.
     """
     quote = None  # The current quote character, None if not in quote.
     quoted = False  # True if the token is constructed from quoted parts.

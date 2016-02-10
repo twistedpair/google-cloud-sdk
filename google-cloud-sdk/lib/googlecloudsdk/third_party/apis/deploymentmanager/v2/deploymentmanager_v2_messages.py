@@ -38,6 +38,12 @@ class Deployment(_messages.Message):
       server.
     insertTime: [Output Only] Timestamp when the deployment was created, in
       RFC3339 text format .
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     manifest: [Output Only] URL of the manifest representing the last manifest
       that was successfully deployed.
     name: Name of the resource; provided by the client when the resource is
@@ -60,22 +66,54 @@ class Deployment(_messages.Message):
   fingerprint = _messages.BytesField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(4)
-  manifest = _messages.StringField(5)
-  name = _messages.StringField(6)
-  operation = _messages.MessageField('Operation', 7)
-  target = _messages.MessageField('TargetConfiguration', 8)
-  update = _messages.MessageField('DeploymentUpdate', 9)
+  labels = _messages.MessageField('DeploymentLabelEntry', 5, repeated=True)
+  manifest = _messages.StringField(6)
+  name = _messages.StringField(7)
+  operation = _messages.MessageField('Operation', 8)
+  target = _messages.MessageField('TargetConfiguration', 9)
+  update = _messages.MessageField('DeploymentUpdate', 10)
+
+
+class DeploymentLabelEntry(_messages.Message):
+  """A DeploymentLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DeploymentUpdate(_messages.Message):
   """DeploymentUpdate message type.
 
   Fields:
+    labels: [Output Only] Map of labels; provided by the client when the
+      resource is created or updated. Specifically: Label keys must be between
+      1 and 63 characters long and must conform to the following regular
+      expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
+      and 63 characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     manifest: [Output Only] URL of the manifest representing the update
       configuration of this deployment.
   """
 
-  manifest = _messages.StringField(1)
+  labels = _messages.MessageField('DeploymentUpdateLabelEntry', 1, repeated=True)
+  manifest = _messages.StringField(2)
+
+
+class DeploymentUpdateLabelEntry(_messages.Message):
+  """A DeploymentUpdateLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class DeploymentmanagerDeploymentsCancelPreviewRequest(_messages.Message):

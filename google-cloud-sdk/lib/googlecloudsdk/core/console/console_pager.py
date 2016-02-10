@@ -48,9 +48,9 @@ class Pager(object):
   HELP_TEXT = """
   Simple pager commands:
 
-    b, ^B, <PAGE-UP>
+    b, ^B, <PAGE-UP>, <LEFT-ARROW>
       Back one page.
-    f, ^F, <SPACE>, <PAGE-DOWN>
+    f, ^F, <SPACE>, <PAGE-DOWN>, <RIGHT-ARROW>
       Forward one page. Does not quit if there are no more lines.
     g, <HOME>
       Back to the first page.
@@ -80,22 +80,6 @@ class Pager(object):
       Prompt again.
 
   Hit any key to continue:"""
-
-  # This dict maps ANSI key codes to pager commands. For example, the ANSI
-  # page up key code is <ESC>S and that corresponds to the pager b command.
-  _ANSI_TO_COMMAND = {
-      'A': 'k',
-      'B': 'j',
-      'C': 'G',
-      'D': 'g',
-      'F': 'G',
-      'H': 'g',
-      'M': 'j',
-      'S': 'b',
-      'T': 'f',
-      '5': 'b',
-      '6': 'f',
-      }
 
   def __init__(self, contents, out=None, prompt=None):
     """Constructor.
@@ -128,27 +112,6 @@ class Pager(object):
     for line in contents.splitlines():
       self._lines += self._attr.SplitLine(line, self._width)
 
-  def _GetANSIKeyCommand(self):
-    """Consumes an ANSI key sequence and returns the pager equivalent command.
-
-    The initial CSI (control sequnce indicator) has already been consumed.
-
-    Returns:
-      A command character or '' to silently ignore the ANSI key.
-    """
-    c = self._attr.GetRawChar()
-    while True:
-      if c.isalpha():
-        break
-      prev_c = c
-      c = self._attr.GetRawChar()
-      if c == '~':
-        c = prev_c
-        break
-    # Map the control sequence command char to a pager command char.
-    # Unknown keys are silently ignored via ''.
-    return self._ANSI_TO_COMMAND.get(c, '')
-
   def _GetSearchCommand(self, c):
     """Consumes a search command and returns the equivalent pager command.
 
@@ -164,8 +127,8 @@ class Pager(object):
     self._out.write(c)
     buf = ''
     while True:
-      p = self._attr.GetRawChar()
-      if p in ('\n', '\r'):
+      p = self._attr.GetRawKey()
+      if p in (None, '\n', '\r') or len(p) != 1:
         break
       self._out.write(p)
       buf += p
@@ -187,7 +150,7 @@ class Pager(object):
     if clear > 0:
       self._out.write('\n' * clear)
     self._out.write(self.HELP_TEXT)
-    self._attr.GetRawChar()
+    self._attr.GetRawKey()
     self._out.write('\n')
 
   def Run(self):
@@ -215,7 +178,7 @@ class Pager(object):
       digits = ''
       while True:
         self._out.write(percent)
-        c = self._attr.GetRawChar()
+        c = self._attr.GetRawKey()
         self._out.write(self._clear)
 
         # Parse the command.
@@ -223,13 +186,10 @@ class Pager(object):
                  'q',     # Quit.
                  'Q',     # Quit.
                  '\x03',  # ^C  (unix & windows terminal interrupt)
-                 '\x04',  # ^D  (unix terminal input EOF)
-                 '\x1a',  # ^Z  (windows terminal input EOF)
+                 '\x1b',  # ESC.
                 ):
           # Quit.
           return
-        elif c == '\x1b':  # ASCII <ESC> indicating possible ANSI key sequence.
-          c = self._GetANSIKeyCommand()
         elif c in ('/', '?'):
           c = self._GetSearchCommand(c)
         elif c.isdigit():
@@ -245,24 +205,28 @@ class Pager(object):
           count = 0
 
         # Finally commit to command c.
-        if c in ('b', '\x02'):
+        if c in ('<PAGE-UP>', '<LEFT-ARROW>', 'b', '\x02'):
           # Previous page.
           nxt = pos - self._height
           if nxt < 0:
             nxt = 0
-        elif c in ('f', '\x06', ' '):
+        elif c in ('<PAGE-DOWN>', '<RIGHT-ARROW>', 'f', '\x06', ' '):
           # Next page.
           if nxt >= len(self._lines):
             continue
           nxt = pos + self._height
           if nxt >= len(self._lines):
             nxt = pos
-        elif c in ('g', 'G'):
-          # First or last page.
-          if c == 'g':
-            nxt = count - 1
-          else:
-            nxt = len(self._lines) - count
+        elif c in ('<HOME>', 'g'):
+          # First page.
+          nxt = count - 1
+          if nxt > len(self._lines) - self._height:
+            nxt = len(self._lines) - self._height
+          if nxt < 0:
+            nxt = 0
+        elif c in ('<END>', 'G'):
+          # Last page.
+          nxt = len(self._lines) - count
           if nxt > len(self._lines) - self._height:
             nxt = len(self._lines) - self._height
           if nxt < 0:
@@ -271,14 +235,14 @@ class Pager(object):
           self._Help()
           nxt = pos
           break
-        elif c in ('j', '+', '\n', '\r'):
+        elif c in ('<DOWN-ARROW>', 'j', '+', '\n', '\r'):
           # Next line.
           if nxt >= len(self._lines):
             continue
           nxt = pos + 1
           if nxt >= len(self._lines):
             nxt = pos
-        elif c in ('k', '-'):
+        elif c in ('<UP-ARROW>', 'k', '-'):
           # Previous line.
           nxt = pos - 1
           if nxt < 0:

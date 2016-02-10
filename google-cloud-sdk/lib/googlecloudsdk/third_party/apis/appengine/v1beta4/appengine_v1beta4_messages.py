@@ -309,7 +309,6 @@ class Application(_messages.Message):
       not explicitly target a module or version. The rules are order-
       dependent.
     id: The relative name/path of the application. Example: "myapp".
-      @OutputOnly
     location: The location from which the application will be run. Choices are
       "us-central" for United States and "europe-west" for European Union.
       Application instances will run out of data centers in the chosen

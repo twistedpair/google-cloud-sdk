@@ -286,7 +286,7 @@ class RemoteCompletion(object):
         fpath = lst0[:-len('regions/')] + 'global' + lst[1]
         if os.path.isfile(fpath) and os.path.getmtime(fpath) > time.time():
           self.flags = ' --global'
-          options = self. GetAllMatchesFromCache(prefix, fpath, options,
+          options = self._GetAllMatchesFromCache(prefix, fpath, options,
                                                  increment_counters)
       return options
     if not fpath:

@@ -477,9 +477,7 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
       'EXAMPLES': """\
           For example, to apply the named ports to an entire instance group:
 
-            $ {command} example-instance-group \
-                --named-ports example-service:1111 \
-                --zone us-central1-a
+            $ {command} example-instance-group --named-ports example-service:1111 --zone us-central1-a
 
           The above example will assign a name 'example-service' for port 1111
           to the instance group called 'example-instance-group' in the
@@ -489,9 +487,6 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
           To clear named ports from instance group provide empty named ports
           list as parameter:
 
-            $ {command} example-instance-group \
-                --named-ports "" \
-                --zone us-central1-a
+            $ {command} example-instance-group --named-ports "" --zone us-central1-a
           """,
   }
-

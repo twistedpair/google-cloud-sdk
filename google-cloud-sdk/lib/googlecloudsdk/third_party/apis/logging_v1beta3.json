@@ -359,6 +359,10 @@
           "description": "The referer URL of the request, as defined in\n[HTTP\/1.1 Header Field Definitions](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
           "type": "string"
         },
+        "cacheLookup": {
+          "description": "Whether or not a cache lookup was attempted.",
+          "type": "boolean"
+        },
         "cacheHit": {
           "description": "Whether or not an entity was served from cache\n(with or without validation).",
           "type": "boolean"
@@ -366,6 +370,11 @@
         "validatedWithOriginServer": {
           "description": "Whether or not the response was validated with the origin server before\nbeing served from cache. This field is only meaningful if `cache_hit` is\nTrue.",
           "type": "boolean"
+        },
+        "cacheFillBytes": {
+          "description": "The number of HTTP response bytes inserted into cache. Set only when a\ncache fill was attempted.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -765,6 +774,10 @@
         },
         "finished": {
           "description": "Whether this request is finished or active.",
+          "type": "boolean"
+        },
+        "first": {
+          "description": "Whether this is the first RequestLog entry for this request.  If an active\nrequest has several RequestLog entries written to Cloud Logging, this field\nwill be set for one of them.",
           "type": "boolean"
         },
         "instanceId": {

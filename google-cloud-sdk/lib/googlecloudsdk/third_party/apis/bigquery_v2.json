@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20160120",
+ "revision": "20160201",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -942,6 +942,13 @@
       "$ref": "ExplainQueryStage"
      }
     },
+    "referencedTables": {
+     "type": "array",
+     "description": "[Output-only] Referenced tables for the job. Queries that reference more than 50 tables will not have a complete list.",
+     "items": {
+      "$ref": "TableReference"
+     }
+    },
     "totalBytesBilled": {
      "type": "string",
      "description": "[Output-only] Total bytes billed for the job.",
@@ -1344,7 +1351,7 @@
     },
     "templateSuffix": {
      "type": "string",
-     "description": "[Optional] If specified, treats the destination table as a base template, and inserts the rows into an instance table named \"{destination}{templateSuffix}\". BigQuery will manage creation of the instance table, using the schema of the base template table. See https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables for considerations when working with templates tables."
+     "description": "[Experimental] If specified, treats the destination table as a base template, and inserts the rows into an instance table named \"{destination}{templateSuffix}\". BigQuery will manage creation of the instance table, using the schema of the base template table. See https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-tables for considerations when working with templates tables."
     }
    }
   },

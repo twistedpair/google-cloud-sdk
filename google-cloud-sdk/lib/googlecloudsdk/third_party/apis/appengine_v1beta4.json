@@ -127,7 +127,7 @@
           "type": "string"
         },
         "id": {
-          "description": "The relative name\/path of the application. Example: \"myapp\".\n\n@OutputOnly",
+          "description": "The relative name\/path of the application. Example: \"myapp\".",
           "type": "string"
         },
         "dispatchRules": {

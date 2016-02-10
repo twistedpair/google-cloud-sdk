@@ -22,8 +22,8 @@ class Change(_messages.Message):
       only).
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#change".
-    startTime: The time that this operation was started by the server. This is
-      in RFC3339 text format.
+    startTime: The time that this operation was started by the server (output
+      only). This is in RFC3339 text format.
     status: Status of the operation (output only).
   """
 

@@ -28,5 +28,17 @@ def AddUpdatableArgs(parser):
       '--gcs-bucket-name',
       help=('The name of the GCS Bucket to use.'))
   gcs_bucket_name.detailed_help = """\
-      TODO(eriel): Add details here.
+      The name of the Google Cloud Storage bucket to serve from.
+      The storage bucket must be owned by the project's owner.
+      """
+
+  enable_cdn = parser.add_argument(
+      '--enable-cdn',
+      action='store_true',
+      default=None,  # Tri-valued, None => don't change the setting.
+      help='Enable cloud CDN.')
+  enable_cdn.detailed_help = """\
+      Enable Cloud CDN for the backend bucket. Cloud CDN can cache HTTP
+      responses from a backend bucket at the edge of the network, close to
+      users.
       """

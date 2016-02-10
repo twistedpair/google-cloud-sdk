@@ -131,6 +131,13 @@
           "items": {
             "$ref": "Cluster"
           }
+        },
+        "missingZones": {
+          "description": "If any zones are listed here, the list of clusters returned\nmay be missing those zones.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -481,6 +488,13 @@
           "type": "array",
           "items": {
             "$ref": "Operation"
+          }
+        },
+        "missingZones": {
+          "description": "If any zones are listed here, the list of operations returned\nmay be missing the operations from those zones.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

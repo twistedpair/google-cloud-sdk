@@ -22,7 +22,7 @@ from googlecloudsdk.core.util import platforms
 
 
 def BuildRemoteDestination(bucket, path):
-  return '{0}/{1}'.format(bucket, path)
+  return '{0}{1}'.format(bucket, path)
 
 
 def _GetGsutilPath():

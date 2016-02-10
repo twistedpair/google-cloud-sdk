@@ -69,8 +69,24 @@ def AddBindingToIamPolicy(messages, policy, args):
   if not hasattr(args, 'role') or not hasattr(args, 'member'):
     return
 
-  # Just add the new binding at the end. Doesn't matter if there's already
-  # a binding for the same role.
+  # First check all bindings to see if the member is already in a binding with
+  # the same role.
+  # A policy can have multiple bindings with the same role. This is why we need
+  # to explicitly do this as a separate, first, step and check all bindings.
+  for binding in policy.bindings:
+    if binding.role == args.role:
+      if args.member in binding.members:
+        return  # Nothing to do. Member already has the role.
+
+  # Second step: check to see if a binding already exists with the same role and
+  # add the member to this binding. This is to not create new bindings with
+  # the same role.
+  for binding in policy.bindings:
+    if binding.role == args.role:
+      binding.members.append(args.member)
+      return
+
+  # Third step: no binding was found that has the same role. Create a new one.
   policy.bindings.append(messages.Binding(
       members=[args.member], role='{0}'.format(args.role)))
 
@@ -91,10 +107,14 @@ def RemoveBindingFromIamPolicy(policy, args):
   if not hasattr(args, 'role') or not hasattr(args, 'member'):
     return
 
+  # First, remove the member from any binding that has the given role.
+  # A server policy can have duplicates.
   for binding in policy.bindings:
     if binding.role == args.role and args.member in binding.members:
       binding.members.remove(args.member)
-  # It's ok if some bindings have 0 members. The server should filter them out.
+
+  # Second, remove any empty bindings.
+  policy.bindings[:] = [b for b in policy.bindings if b.members]
 
 
 def ParseJsonPolicyFile(policy_file_path, policy_message_type):

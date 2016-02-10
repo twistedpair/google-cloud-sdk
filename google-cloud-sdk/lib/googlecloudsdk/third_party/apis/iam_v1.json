@@ -186,7 +186,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to create. Currently only the\ndisplay_name and the description are user assignable values.",
+          "description": "The ServiceAccount resource to create. Currently, only the following\nvalues are user assignable: display_name .",
           "$ref": "ServiceAccount"
         }
       }
@@ -249,6 +249,27 @@
           "description": "The key can be used before this timestamp.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "CreateServiceAccountKeyRequest": {
+      "id": "CreateServiceAccountKeyRequest",
+      "description": "The service account key create request.",
+      "type": "object",
+      "properties": {
+        "privateKeyType": {
+          "description": "The type of the key requested. GOOGLE_CREDENTIALS is the default key type.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "PKCS12 format.\nThe password for the PKCS12 file is 'notasecret'.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
+            "Google Credentials File format."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "TYPE_PKCS12_FILE",
+            "TYPE_GOOGLE_CREDENTIALS_FILE"
+          ]
         }
       }
     },
@@ -332,7 +353,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -787,7 +808,7 @@
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "PUT",
-              "description": "Updates a service account.\n\nCurrently the only updatable fields are 'display_name' and 'description'.\nThe 'etag' is mandatory.",
+              "description": "Updates a service account.\n\nCurrently, only the following fields are updatable:\n'display_name' .\nThe 'etag' is mandatory.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\n\nIn requests using '-' as a wildcard for the project, will infer the project\nfrom the account and the account value can be the email address or the\nunique_id of the service account.\n\nIn responses the resource name will always be in the format\n\"projects\/{project}\/serviceAccounts\/{email}\".",
@@ -858,6 +879,87 @@
               },
               "response": {
                 "$ref": "SignBlobResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "getIamPolicy": {
+              "id": "iam.projects.serviceAccounts.getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:getIamPolicy",
+              "httpMethod": "POST",
+              "description": "Returns the IAM access control policy for specified IAM resource.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `getIamPolicy` documentation.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "setIamPolicy": {
+              "id": "iam.projects.serviceAccounts.setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:setIamPolicy",
+              "httpMethod": "POST",
+              "description": "Sets the IAM access control policy for the specified IAM resource.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `setIamPolicy` documentation.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "iam.projects.serviceAccounts.testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Tests the specified permissions against the IAM access control policy\nfor the specified IAM resource.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `testIamPermissions` documentation.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "TestIamPermissionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -942,21 +1044,14 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
                       "type": "string"
-                    },
-                    "privateKeyType": {
-                      "description": "The type of the key requested. GOOGLE_CREDENTIALS is the default key type.",
-                      "location": "query",
-                      "type": "string",
-                      "enum": [
-                        "TYPE_UNSPECIFIED",
-                        "TYPE_PKCS12_FILE",
-                        "TYPE_GOOGLE_CREDENTIALS_FILE"
-                      ]
                     }
                   },
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "CreateServiceAccountKeyRequest"
+                  },
                   "response": {
                     "$ref": "ServiceAccountKey"
                   },
@@ -992,91 +1087,6 @@
               }
             }
           }
-        }
-      }
-    },
-    "v1": {
-      "methods": {
-        "getIamPolicy": {
-          "id": "iam.getIamPolicy",
-          "path": "v1/{+resource}:getIamPolicy",
-          "flatPath": "v1/{v1Id}:getIamPolicy",
-          "httpMethod": "POST",
-          "description": "Returns the IAM access control policy for specified IAM resource.",
-          "parameters": {
-            "resource": {
-              "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `getIamPolicy` documentation.",
-              "location": "path",
-              "required": true,
-              "pattern": "^.*$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resource"
-          ],
-          "response": {
-            "$ref": "Policy"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ]
-        },
-        "setIamPolicy": {
-          "id": "iam.setIamPolicy",
-          "path": "v1/{+resource}:setIamPolicy",
-          "flatPath": "v1/{v1Id}:setIamPolicy",
-          "httpMethod": "POST",
-          "description": "Sets the IAM access control policy for the specified IAM resource.",
-          "parameters": {
-            "resource": {
-              "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `setIamPolicy` documentation.",
-              "location": "path",
-              "required": true,
-              "pattern": "^.*$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resource"
-          ],
-          "request": {
-            "$ref": "SetIamPolicyRequest"
-          },
-          "response": {
-            "$ref": "Policy"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ]
-        },
-        "testIamPermissions": {
-          "id": "iam.testIamPermissions",
-          "path": "v1/{+resource}:testIamPermissions",
-          "flatPath": "v1/{v1Id}:testIamPermissions",
-          "httpMethod": "POST",
-          "description": "Tests the specified permissions against the IAM access control policy\nfor the specified IAM resource.",
-          "parameters": {
-            "resource": {
-              "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `testIamPermissions` documentation.",
-              "location": "path",
-              "required": true,
-              "pattern": "^.*$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "resource"
-          ],
-          "request": {
-            "$ref": "TestIamPermissionsRequest"
-          },
-          "response": {
-            "$ref": "TestIamPermissionsResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ]
         }
       }
     },

@@ -37,6 +37,8 @@ class LoggingV2beta1(base_api.BaseApiClient):
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_metrics = self.ProjectsMetricsService(self)
+    self.projects_resourceKeys_values = self.ProjectsResourceKeysValuesService(self)
+    self.projects_resourceKeys = self.ProjectsResourceKeysService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
 
@@ -190,6 +192,18 @@ All log entries in Cloud Logging are written by this method.
               response_type_name=u'Empty',
               supports_download=False,
           ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'logging.projects.logs.list',
+              ordered_params=[u'projectsId'],
+              path_params=[u'projectsId'],
+              query_params=[u'pageSize', u'pageToken', u'resourceIndexPrefix', u'resourceType'],
+              relative_path=u'v2beta1/projects/{projectsId}/logs',
+              request_field='',
+              request_type_name=u'LoggingProjectsLogsListRequest',
+              response_type_name=u'ListLogsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -206,6 +220,20 @@ The log will reappear if it receives new entries.
         (Empty) The response message.
       """
       config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingProjectsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -344,6 +372,82 @@ The log will reappear if it receives new entries.
         (LogMetric) The response message.
       """
       config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class ProjectsResourceKeysValuesService(base_api.BaseApiService):
+    """Service class for the projects_resourceKeys_values resource."""
+
+    _NAME = u'projects_resourceKeys_values'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.ProjectsResourceKeysValuesService, self).__init__(client)
+      self._method_configs = {
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'logging.projects.resourceKeys.values.list',
+              ordered_params=[u'projectsId', u'resourceKeysId'],
+              path_params=[u'projectsId', u'resourceKeysId'],
+              query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
+              relative_path=u'v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values',
+              request_field='',
+              request_type_name=u'LoggingProjectsResourceKeysValuesListRequest',
+              response_type_name=u'ListResourceValuesResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the current index values for a log resource type.
+
+      Args:
+        request: (LoggingProjectsResourceKeysValuesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class ProjectsResourceKeysService(base_api.BaseApiService):
+    """Service class for the projects_resourceKeys resource."""
+
+    _NAME = u'projects_resourceKeys'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.ProjectsResourceKeysService, self).__init__(client)
+      self._method_configs = {
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'logging.projects.resourceKeys.list',
+              ordered_params=[u'projectsId'],
+              path_params=[u'projectsId'],
+              query_params=[u'pageSize', u'pageToken'],
+              relative_path=u'v2beta1/projects/{projectsId}/resourceKeys',
+              request_field='',
+              request_type_name=u'LoggingProjectsResourceKeysListRequest',
+              response_type_name=u'ListResourceKeysResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the resource keys that have log entries in this project.
+
+      Args:
+        request: (LoggingProjectsResourceKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 

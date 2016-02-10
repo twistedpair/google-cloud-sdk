@@ -429,19 +429,25 @@ class ListClustersResponse(_messages.Message):
   Fields:
     clusters: A list of clusters in the project in the specified zone, or
       across all ones.
+    missingZones: If any zones are listed here, the list of clusters returned
+      may be missing those zones.
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  missingZones = _messages.StringField(2, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
   """ListOperationsResponse is the result of ListOperationsRequest.
 
   Fields:
+    missingZones: If any zones are listed here, the list of operations
+      returned may be missing the operations from those zones.
     operations: A list of operations in the project in the specified zone.
   """
 
-  operations = _messages.MessageField('Operation', 1, repeated=True)
+  missingZones = _messages.StringField(1, repeated=True)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class MasterAuth(_messages.Message):

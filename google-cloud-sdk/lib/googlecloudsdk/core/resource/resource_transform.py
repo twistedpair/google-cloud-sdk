@@ -249,6 +249,50 @@ def TransformFirstOf(r, *args):
   return ''
 
 
+def TransformFloat(r, precision=6, spec=None):
+  """Returns the string representation of the floating point number r.
+
+  One of these formats is used (1) ". _precision_ _spec_" if _spec_ is specified
+  (2) ". _precision_" unless 1e-04 <= abs(r) < 1e+09 (3) ".1f" otherwise.
+
+  Args:
+    r: A JSON-serializable object.
+    precision: The maximum number of digits before and after the decimal point.
+    spec: The printf(3) floating point format "e", "f" or "g" spec character.
+
+  Returns:
+    The string representation of the floating point number r.
+  """
+  # TransformFloat vs. float.str() comparison:
+  #
+  #   METHOD          PRECISION   NO-EXPONENT-RANGE
+  #   TransformFloat()        6   1e-04 <= x < 1e+9
+  #   float.str()            12   1e-04 <= x < 1e+11
+  #
+  # The TransformFloat default avoids implementation dependent floating point
+  # roundoff differences in the fraction digits.
+  #
+  # round(float(r), precision) won't work here because it only works for
+  # significant digits immediately after the decimal point. For example,
+  # round(0.0000000000123456789, 6) is 0, not 1.23457e-11.
+
+  try:
+    number = float(r)
+  except (TypeError, ValueError):
+    return None
+  if spec is not None:
+    fmt = '{{number:.{precision}{spec}}}'.format(precision=precision, spec=spec)
+    return fmt.format(number=number)
+  fmt = '{{number:.{precision}}}'.format(precision=precision)
+  representation = fmt.format(number=number)
+  exponent_index = representation.find('e+')
+  if exponent_index >= 0:
+    exponent = int(representation[exponent_index + 2:])
+    if exponent < 9:
+      return '{number:.1f}'.format(number=number)
+  return representation
+
+
 # The 'format' transform is special: it has no kwargs and the second argument
 # is the ProjectionSpec of the calling projection.
 def TransformFormat(r, projection, fmt, *args):
@@ -630,6 +674,7 @@ _BUILTIN_TRANSFORMS = {
     'error': TransformError,
     'fatal': TransformFatal,
     'firstof': TransformFirstOf,
+    'float': TransformFloat,
     'format': TransformFormat,
     'group': TransformGroup,
     'iso': TransformIso,

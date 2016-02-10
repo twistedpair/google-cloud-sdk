@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160121",
+ "revision": "20160202",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -268,6 +268,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -284,6 +285,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -457,10 +459,11 @@
   "Autoscaler": {
    "id": "Autoscaler",
    "type": "object",
+   "description": "Represents an Autoscaler resource. Autoscalers allow you to automatically scale virtual machine instances in managed instance groups according to an autoscaling policy that you define. For more information, read Autoscaling Groups of Instances.",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
-     "description": "Autoscaling configuration."
+     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.8 or 80%."
     },
     "creationTimestamp": {
      "type": "string",
@@ -477,7 +480,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of the resource.",
+     "description": "[Output Only] Type of the resource. Always compute#autoscaler for autoscalers.",
      "default": "compute#autoscaler"
     },
     "name": {
@@ -496,7 +499,7 @@
     },
     "target": {
      "type": "string",
-     "description": "URL of Instance Group Manager or Replica Pool which will be controlled by Autoscaler."
+     "description": "URL of the managed instance group that this autoscaler will scale."
     },
     "zone": {
      "type": "string",
@@ -517,12 +520,12 @@
      "description": "A map of scoped autoscaler lists.",
      "additionalProperties": {
       "$ref": "AutoscalersScopedList",
-      "description": "Name of the scope containing this set of autoscalers."
+      "description": "[Output Only] Name of the scope containing this set of autoscalers."
      }
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "[Output Only] Type of resource. Always compute#autoscalerAggregatedList for aggregated lists of autoscalers.",
      "default": "compute#autoscalerAggregatedList"
     },
     "nextPageToken": {
@@ -538,7 +541,7 @@
   "AutoscalerList": {
    "id": "AutoscalerList",
    "type": "object",
-   "description": "Contains a list of persistent autoscaler resources.",
+   "description": "Contains a list of Autoscaler resources.",
    "properties": {
     "id": {
      "type": "string",
@@ -553,7 +556,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "[Output Only] Type of resource. Always compute#autoscalerList for lists of autoscalers.",
      "default": "compute#autoscalerList"
     },
     "nextPageToken": {
@@ -572,19 +575,20 @@
    "properties": {
     "autoscalers": {
      "type": "array",
-     "description": "List of autoscalers contained in this scope.",
+     "description": "[Output Only] List of autoscalers contained in this scope.",
      "items": {
       "$ref": "Autoscaler"
      }
     },
     "warning": {
      "type": "object",
-     "description": "Informational warning which replaces the list of autoscalers when the list is empty.",
+     "description": "[Output Only] Informational warning which replaces the list of autoscalers when the list is empty.",
      "properties": {
       "code": {
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -601,6 +605,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -649,16 +654,16 @@
    "properties": {
     "coolDownPeriodSec": {
      "type": "integer",
-     "description": "The number of seconds that the Autoscaler should wait between two succeeding changes to the number of virtual machines. You should define an interval that is at least as long as the initialization time of a virtual machine and the time it may take for replica pool to create the virtual machine. The default is 60 seconds.",
+     "description": "The number of seconds that the autoscaler should wait before it starts collecting information from a new instance. This prevents the autoscaler from collecting information when the instance is initializing, during which the collected usage would not be reliable. The default time autoscaler waits is 60 seconds.\n\nVirtual machine initialization times might vary because of numerous factors. We recommend that you test how long an instance may take to initialize. To do this, create an instance and time the startup process.",
      "format": "int32"
     },
     "cpuUtilization": {
      "$ref": "AutoscalingPolicyCpuUtilization",
-     "description": "TODO(jbartosik): Add support for scaling based on muliple utilization metrics (take max recommendation). Exactly one utilization policy should be provided. Configuration parameters of CPU based autoscaling policy."
+     "description": "Defines the CPU utilization policy that allows the autoscaler to scale based on the average CPU utilization of a managed instance group."
     },
     "customMetricUtilizations": {
      "type": "array",
-     "description": "Configuration parameters of autoscaling based on custom metric.",
+     "description": "Configuration parameters of autoscaling based on a custom metric.",
      "items": {
       "$ref": "AutoscalingPolicyCustomMetricUtilization"
      }
@@ -669,12 +674,12 @@
     },
     "maxNumReplicas": {
      "type": "integer",
-     "description": "The maximum number of replicas that the Autoscaler can scale up to. This field is required for config to be effective. Maximum number of replicas should be not lower than minimal number of replicas. Absolute limit for this value is defined in Autoscaler backend.",
+     "description": "The maximum number of instances that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of replicas should not be lower than minimal number of replicas.",
      "format": "int32"
     },
     "minNumReplicas": {
      "type": "integer",
-     "description": "The minimum number of replicas that the Autoscaler can scale down to. Can't be less than 0. If not provided Autoscaler will choose default value depending on maximal number of replicas.",
+     "description": "The minimum number of replicas that the autoscaler can scale down to. This cannot be less than 0. If not provided, autoscaler will choose a default value depending on maximum number of instances allowed.",
      "format": "int32"
     }
    }
@@ -686,7 +691,7 @@
    "properties": {
     "utilizationTarget": {
      "type": "number",
-     "description": "The target utilization that the Autoscaler should maintain. It is represented as a fraction of used cores. For example: 6 cores used in 8-core VM are represented here as 0.75. Must be a float value between (0, 1]. If not defined, the default is 0.8.",
+     "description": "The target CPU utilization that the autoscaler should maintain. Must be a float value in the range (0, 1]. If not specified, the default is 0.8.\n\nIf the CPU level is below the target utilization, the autoscaler scales down the number of instances until it reaches the minimum number of instances you specified or until the average CPU of your instances reaches the target utilization.\n\nIf the average CPU is above the target utilization, the autoscaler scales up until it reaches the maximum number of instances you specified or until the average utilization reaches the target utilization.",
      "format": "double"
     }
    }
@@ -698,16 +703,16 @@
    "properties": {
     "metric": {
      "type": "string",
-     "description": "Identifier of the metric. It should be a Cloud Monitoring metric. The metric can not have negative values. The metric should be an utilization metric (increasing number of VMs handling requests x times should reduce average value of the metric roughly x times). For example you could use: compute.googleapis.com/instance/network/received_bytes_count."
+     "description": "The identifier of the Cloud Monitoring metric. The metric cannot have negative values and should be a utilization metric, which means that the number of virtual machines handling requests should increase or decrease proportionally to the metric. The metric must also have a label of compute.googleapis.com/resource_id with the value of the instance's unique ID, although this alone does not guarantee that the metric is valid.\n\nFor example, the following is a valid metric:\ncompute.googleapis.com/instance/network/received_bytes_count\n\n\nThe following is not a valid metric because it does not increase or decrease based on usage:\ncompute.googleapis.com/instance/cpu/reserved_cores"
     },
     "utilizationTarget": {
      "type": "number",
-     "description": "Target value of the metric which Autoscaler should maintain. Must be a positive value.",
+     "description": "Target value of the metric which autoscaler should maintain. Must be a positive value.",
      "format": "double"
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines type in which utilization_target is expressed.",
+     "description": "Defines how target utilization value is expressed for a Cloud Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -724,11 +729,11 @@
   "AutoscalingPolicyLoadBalancingUtilization": {
    "id": "AutoscalingPolicyLoadBalancingUtilization",
    "type": "object",
-   "description": "Load balancing utilization policy.",
+   "description": "Configuration parameters of autoscaling based on load balancing.",
    "properties": {
     "utilizationTarget": {
      "type": "number",
-     "description": "Fraction of backend capacity utilization (set in HTTP load balancing configuration) that Autoscaler should maintain. Must be a positive float value. If not defined, the default is 0.8. For example if your maxRatePerInstance capacity (in HTTP Load Balancing configuration) is set at 10 and you would like to keep number of instances such that each instance receives 7 QPS on average, set this to 0.7.",
+     "description": "Fraction of backend capacity utilization (set in HTTP(s) load balancing configuration) that autoscaler should maintain. Must be a positive float value. If not defined, the default is 0.8.",
      "format": "double"
     }
    }
@@ -854,7 +859,7 @@
     },
     "timeoutSec": {
      "type": "integer",
-     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds. Valid range is [1, 86400].",
+     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds.",
      "format": "int32"
     }
    }
@@ -989,6 +994,18 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#disk for disks.",
      "default": "compute#disk"
+    },
+    "labelFingerprint": {
+     "type": "string",
+     "description": "A fingerprint for the labels being applied to this disk, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make get() request to the disk.",
+     "format": "byte"
+    },
+    "labels": {
+     "type": "object",
+     "description": "Labels to apply to this disk. These can be later modified by the setLabels method. Each label key & value must comply with RFC1035. Label values may be empty.",
+     "additionalProperties": {
+      "type": "string"
+     }
     },
     "lastAttachTimestamp": {
      "type": "string",
@@ -1291,6 +1308,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1307,6 +1325,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1378,6 +1397,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1394,6 +1414,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1700,6 +1721,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1716,6 +1738,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2060,6 +2083,18 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#image for images.",
      "default": "compute#image"
+    },
+    "labelFingerprint": {
+     "type": "string",
+     "description": "A fingerprint for the labels being applied to this image, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make get() request to retrieve the image.",
+     "format": "byte"
+    },
+    "labels": {
+     "type": "object",
+     "description": "Labels to apply to this image. These can be later modified by the setLabels method. Each label key & value must comply with RFC1035. Label values may be empty.",
+     "additionalProperties": {
+      "type": "string"
+     }
     },
     "licenses": {
      "type": "array",
@@ -2472,7 +2507,6 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "InstanceGroupManagers\n\nNext available tag: 20",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -2764,6 +2798,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -2780,6 +2815,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2954,6 +2990,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -2970,6 +3007,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3261,6 +3299,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -3277,6 +3316,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3519,6 +3559,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -3535,6 +3576,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4000,6 +4042,7 @@
         "type": "string",
         "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
         "enum": [
+         "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
          "INJECTED_KERNELS_DEPRECATED",
@@ -4016,6 +4059,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -4143,6 +4187,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -4159,6 +4204,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4591,6 +4637,7 @@
         "type": "string",
         "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
         "enum": [
+         "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
          "INJECTED_KERNELS_DEPRECATED",
@@ -4607,6 +4654,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -4677,6 +4725,372 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "Router": {
+   "id": "Router",
+   "type": "object",
+   "description": "Router resource.",
+   "properties": {
+    "bgp": {
+     "$ref": "RouterBgp"
+    },
+    "bgpPeers": {
+     "type": "array",
+     "items": {
+      "$ref": "RouterBgpPeer"
+     }
+    },
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "interfaces": {
+     "type": "array",
+     "items": {
+      "$ref": "RouterInterface"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#router for routers.",
+     "default": "compute#router"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long and comply with RFC1035.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.routers.insert"
+      ]
+     }
+    },
+    "network": {
+     "type": "string",
+     "description": "URI of the network to which this router belongs.",
+     "annotations": {
+      "required": [
+       "compute.routers.insert"
+      ]
+     }
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URI of the region where the router resides."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    }
+   }
+  },
+  "RouterAggregatedList": {
+   "id": "RouterAggregatedList",
+   "type": "object",
+   "description": "Contains a list of RoutersScopedList.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "object",
+     "description": "A map of scoped Router lists.",
+     "additionalProperties": {
+      "$ref": "RoutersScopedList",
+      "description": "Name of the scope containing this set of Routers."
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "compute#routerAggregatedList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "RouterBgp": {
+   "id": "RouterBgp",
+   "type": "object",
+   "properties": {
+    "asn": {
+     "type": "integer",
+     "description": "Local BGP Autonomous System Number (ASN) Can be a constant public ASN value for google, or a customer-specified private ASN. In either case, the value will be fixed for this router resource. All VPN tunnels that link to this router will have the same local ASN.",
+     "format": "uint32"
+    }
+   }
+  },
+  "RouterBgpPeer": {
+   "id": "RouterBgpPeer",
+   "type": "object",
+   "description": "BGP information that needs to be configured into the routing stack to establish the BGP peering. It must specify peer ASN and either interface name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273",
+   "properties": {
+    "advertisedRoutePriority": {
+     "type": "integer",
+     "description": "The priority of routes advertised to this BGP peer. In the case where there is more than one matching route of maximum length, the routes with lowest priority value win.",
+     "format": "uint32"
+    },
+    "interfaceName": {
+     "type": "string",
+     "description": "Name of the interface it is associated with."
+    },
+    "ipAddress": {
+     "type": "string",
+     "description": "IP address of the interface inside Google cloud."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of this BGP Peer. The name must be 1-63 characters long and comply with RFC1035.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "peerAsn": {
+     "type": "integer",
+     "description": "Peer BGP Autonomous System Number (ASN). For VPN use case, this value can be different for every tunnel.",
+     "format": "uint32"
+    },
+    "peerIpAddress": {
+     "type": "string",
+     "description": "IP address of the BGP interface outside Google cloud."
+    }
+   }
+  },
+  "RouterInterface": {
+   "id": "RouterInterface",
+   "type": "object",
+   "description": "Router interfaces. Each interface requires either one linked resource (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).",
+   "properties": {
+    "ipRange": {
+     "type": "string",
+     "description": "IP address and range of the interface. The value should be a CIDR formatted string, for example: 169.254.0.1/30. NOTE: Do NOT trucate address, as it represents IP address of interface."
+    },
+    "linkedVpnTunnel": {
+     "type": "string",
+     "description": "URI of linked VPN tunnel. It must be in the same region as the router. Each interface can have at most one linked resource."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of this interface entry. The name must be 1-63 characters long and comply with RFC1035.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    }
+   }
+  },
+  "RouterList": {
+   "id": "RouterList",
+   "type": "object",
+   "description": "Contains a list of Router resources.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of Router resources.",
+     "items": {
+      "$ref": "Router"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#router for routers.",
+     "default": "compute#routerList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    }
+   }
+  },
+  "RouterStatus": {
+   "id": "RouterStatus",
+   "type": "object",
+   "properties": {
+    "bestRoutes": {
+     "type": "array",
+     "description": "Best routes for this Router.",
+     "items": {
+      "$ref": "Route"
+     }
+    },
+    "bgpPeerStatus": {
+     "type": "array",
+     "items": {
+      "$ref": "RouterStatusBgpPeerStatus"
+     }
+    },
+    "network": {
+     "type": "string",
+     "description": "URI of the network to which this router belongs."
+    }
+   }
+  },
+  "RouterStatusBgpPeerStatus": {
+   "id": "RouterStatusBgpPeerStatus",
+   "type": "object",
+   "properties": {
+    "advertisedRoutes": {
+     "type": "array",
+     "description": "Routes that were advertised to the remote BgpPeer",
+     "items": {
+      "$ref": "Route"
+     }
+    },
+    "ipAddress": {
+     "type": "string",
+     "description": "IP address of the local BGP interface."
+    },
+    "linkedVpnTunnel": {
+     "type": "string",
+     "description": "URL of the VPN tunnel that this BgpPeer controls."
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of this BgpPeer which is unique within the Router resource."
+    },
+    "numLearnedRoutes": {
+     "type": "integer",
+     "description": "Number of routes learned from the remote BGP Peer.",
+     "format": "uint32"
+    },
+    "peerIpAddress": {
+     "type": "string",
+     "description": "IP address of the remote BGP interface."
+    },
+    "state": {
+     "type": "string",
+     "description": "BGP state as specified in RFC-1771."
+    },
+    "status": {
+     "type": "string",
+     "description": "Status of the BgpPeer: {UP, DOWN}",
+     "enum": [
+      "DOWN",
+      "UNKNOWN",
+      "UP"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "uptime": {
+     "type": "string",
+     "description": "Time this session has been up. Format: 1 second \u003c uptime \u003c 1 day = \"23:59:59\" 1 day \u003c= uptime \u003c 1 week = \"6d:23h:59m\" 1 week \u003c= uptime = \"123w:6d:23h\""
+    }
+   }
+  },
+  "RouterStatusResponse": {
+   "id": "RouterStatusResponse",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "compute#routerStatusResponse"
+    },
+    "result": {
+     "$ref": "RouterStatus"
+    }
+   }
+  },
+  "RoutersScopedList": {
+   "id": "RoutersScopedList",
+   "type": "object",
+   "properties": {
+    "routers": {
+     "type": "array",
+     "description": "List of Routers contained in this scope.",
+     "items": {
+      "$ref": "Router"
+     }
+    },
+    "warning": {
+     "type": "object",
+     "description": "Informational warning which replaces the list of routers when the list is empty.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "INJECTED_KERNELS_DEPRECATED",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_NOT_DELETED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource, and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
     }
    }
   },
@@ -4772,6 +5186,18 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#snapshot for Snapshot resources.",
      "default": "compute#snapshot"
+    },
+    "labelFingerprint": {
+     "type": "string",
+     "description": "A fingerprint for the labels being applied to this snapshot, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make get() request to the snapshot.",
+     "format": "byte"
+    },
+    "labels": {
+     "type": "object",
+     "description": "Labels to apply to this snapshot. These can be later modified by the setLabels method. Each label key & value must comply with RFC1035. Label values may be empty.",
+     "additionalProperties": {
+      "type": "string"
+     }
     },
     "licenses": {
      "type": "array",
@@ -5077,6 +5503,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -5093,6 +5520,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5173,12 +5601,12 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for target HTTP proxies.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for targetHttpProxy resources.",
      "default": "compute#targetHttpProxy"
     },
     "name": {
      "type": "string",
-     "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
     "selfLink": {
@@ -5209,7 +5637,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource. Always compute#targetHttpProxyList for lists of target HTTP proxies.",
+     "description": "Type of resource. Always compute#targetHttpProxyList for lists of targetHttpProxy resources.",
      "default": "compute#targetHttpProxyList"
     },
     "nextPageToken": {
@@ -5228,7 +5656,7 @@
    "properties": {
     "sslCertificates": {
      "type": "array",
-     "description": "New set of URLs to SslCertificate resources to associate with this TargetHttpProxy. Currently exactly one SSL certificate must be specified.",
+     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SSLcertificate resource must be specified.",
      "items": {
       "type": "string"
      }
@@ -5255,7 +5683,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#targetHttpsProxy for target HTTPS proxies.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpsProxy for targetHttpsproxy resources.",
      "default": "compute#targetHttpsProxy"
     },
     "name": {
@@ -5298,7 +5726,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "Type of resource. Always compute#targetHttpsProxyList for lists of targetHttpsProxy resources.",
      "default": "compute#targetHttpsProxyList"
     },
     "nextPageToken": {
@@ -5444,6 +5872,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -5460,6 +5889,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5726,6 +6156,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -5742,6 +6173,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5955,6 +6387,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -5971,6 +6404,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6274,6 +6708,10 @@
      "type": "string",
      "description": "[Output Only] URL of the region where the VPN tunnel resides."
     },
+    "router": {
+     "type": "string",
+     "description": "URL of Router resource to be used for dynamic routing."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
@@ -6408,6 +6846,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -6424,6 +6863,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6863,11 +7303,11 @@
      "id": "compute.autoscalers.delete",
      "path": "{project}/zones/{zone}/autoscalers/{autoscaler}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified autoscaler resource.",
+     "description": "Deletes the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to delete.",
+       "description": "Name of the autoscaler to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -6881,7 +7321,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -6904,11 +7344,11 @@
      "id": "compute.autoscalers.get",
      "path": "{project}/zones/{zone}/autoscalers/{autoscaler}",
      "httpMethod": "GET",
-     "description": "Returns the specified autoscaler resource.",
+     "description": "Returns the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to return.",
+       "description": "Name of the autoscaler to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -6922,7 +7362,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -6946,7 +7386,7 @@
      "id": "compute.autoscalers.insert",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "POST",
-     "description": "Creates an autoscaler resource in the specified project using the data included in the request.",
+     "description": "Creates an autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -6957,7 +7397,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -6982,7 +7422,7 @@
      "id": "compute.autoscalers.list",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "GET",
-     "description": "Retrieves a list of autoscaler resources contained within the specified zone.",
+     "description": "Retrieves a list of autoscalers contained within the specified zone.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -7017,7 +7457,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -7040,11 +7480,11 @@
      "id": "compute.autoscalers.patch",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "PATCH",
-     "description": "Updates an autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
@@ -7058,7 +7498,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -7084,11 +7524,11 @@
      "id": "compute.autoscalers.update",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "PUT",
-     "description": "Updates an autoscaler resource in the specified project using the data included in the request.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
       },
@@ -7101,7 +7541,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -12192,6 +12632,367 @@
     }
    }
   },
+  "routers": {
+   "methods": {
+    "aggregatedList": {
+     "id": "compute.routers.aggregatedList",
+     "path": "{project}/aggregated/routers",
+     "httpMethod": "GET",
+     "description": "Retrieves an aggregated list of Routers.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances whose name is not equal to example-instance, you would use filter=name ne example-instance.\n\nCompute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.\n\nThe Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "RouterAggregatedList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "delete": {
+     "id": "compute.routers.delete",
+     "path": "{project}/regions/{region}/routers/{router}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified Router resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.routers.get",
+     "path": "{project}/regions/{region}/routers/{router}",
+     "httpMethod": "GET",
+     "description": "Returns the specified Router resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "response": {
+      "$ref": "Router"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getRouterStatus": {
+     "id": "compute.routers.getRouterStatus",
+     "path": "{project}/regions/{region}/routers/{router}/getRouterStatus",
+     "httpMethod": "GET",
+     "description": "Retrieves runtime information of the specified Router.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to query.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "response": {
+      "$ref": "RouterStatusResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.routers.insert",
+     "path": "{project}/regions/{region}/routers",
+     "httpMethod": "POST",
+     "description": "Creates a Router resource in the specified project and region using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "Router"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.routers.list",
+     "path": "{project}/regions/{region}/routers",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of Router resources available to the specified project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances whose name is not equal to example-instance, you would use filter=name ne example-instance.\n\nCompute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.\n\nThe Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "maximum": "500",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "response": {
+      "$ref": "RouterList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.routers.patch",
+     "path": "{project}/regions/{region}/routers/{router}",
+     "httpMethod": "PATCH",
+     "description": "Update the entire content of the Router resource. This method supports patch semantics.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "request": {
+      "$ref": "Router"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "update": {
+     "id": "compute.routers.update",
+     "path": "{project}/regions/{region}/routers/{router}",
+     "httpMethod": "PUT",
+     "description": "Update the entire content of the Router resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "request": {
+      "$ref": "Router"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    }
+   }
+  },
   "routes": {
    "methods": {
     "delete": {
@@ -13004,7 +13805,7 @@
       },
       "targetHttpProxy": {
        "type": "string",
-       "description": "The name of the TargetHttpProxy resource to set a URL map for.",
+       "description": "Name of the TargetHttpProxy to set a URL map for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -13189,7 +13990,7 @@
       },
       "targetHttpsProxy": {
        "type": "string",
-       "description": "Name of the TargetHttpsProxy resource to set an SSL certificate for.",
+       "description": "Name of the TargetHttpsProxy resource to set an SSLCertificate resource for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"

@@ -38,7 +38,6 @@ class IamV1(base_api.BaseApiClient):
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
     self.roles = self.RolesService(self)
-    self.v1 = self.V1Service(self)
 
   class IamPoliciesService(base_api.BaseApiService):
     """Service class for the iamPolicies resource."""
@@ -92,9 +91,9 @@ the user has access to.
               method_id=u'iam.projects.serviceAccounts.keys.create',
               ordered_params=[u'name'],
               path_params=[u'name'],
-              query_params=[u'privateKeyType'],
+              query_params=[],
               relative_path=u'v1/{+name}/keys',
-              request_field='',
+              request_field=u'createServiceAccountKeyRequest',
               request_type_name=u'IamProjectsServiceAccountsKeysCreateRequest',
               response_type_name=u'ServiceAccountKey',
               supports_download=False,
@@ -237,6 +236,18 @@ by key id.
               response_type_name=u'ServiceAccount',
               supports_download=False,
           ),
+          'GetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'iam.projects.serviceAccounts.getIamPolicy',
+              ordered_params=[u'resource'],
+              path_params=[u'resource'],
+              query_params=[],
+              relative_path=u'v1/{+resource}:getIamPolicy',
+              request_field='',
+              request_type_name=u'IamProjectsServiceAccountsGetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'iam.projects.serviceAccounts.list',
@@ -249,6 +260,18 @@ by key id.
               response_type_name=u'ListServiceAccountsResponse',
               supports_download=False,
           ),
+          'SetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'iam.projects.serviceAccounts.setIamPolicy',
+              ordered_params=[u'resource'],
+              path_params=[u'resource'],
+              query_params=[],
+              relative_path=u'v1/{+resource}:setIamPolicy',
+              request_field=u'setIamPolicyRequest',
+              request_type_name=u'IamProjectsServiceAccountsSetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
           'SignBlob': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'iam.projects.serviceAccounts.signBlob',
@@ -259,6 +282,18 @@ by key id.
               request_field=u'signBlobRequest',
               request_type_name=u'IamProjectsServiceAccountsSignBlobRequest',
               response_type_name=u'SignBlobResponse',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'iam.projects.serviceAccounts.testIamPermissions',
+              ordered_params=[u'resource'],
+              path_params=[u'resource'],
+              query_params=[],
+              relative_path=u'v1/{+resource}:testIamPermissions',
+              request_field=u'testIamPermissionsRequest',
+              request_type_name=u'IamProjectsServiceAccountsTestIamPermissionsRequest',
+              response_type_name=u'TestIamPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -317,6 +352,19 @@ by key id.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Returns the IAM access control policy for specified IAM resource.
+
+      Args:
+        request: (IamProjectsServiceAccountsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def List(self, request, global_params=None):
       """Lists service accounts for a project.
 
@@ -327,6 +375,19 @@ by key id.
         (ListServiceAccountsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the IAM access control policy for the specified IAM resource.
+
+      Args:
+        request: (IamProjectsServiceAccountsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -343,10 +404,25 @@ by key id.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Tests the specified permissions against the IAM access control policy.
+for the specified IAM resource.
+
+      Args:
+        request: (IamProjectsServiceAccountsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Updates a service account.
 
-Currently the only updatable fields are 'display_name' and 'description'.
+Currently, only the following fields are updatable:
+'display_name' .
 The 'etag' is mandatory.
 
       Args:
@@ -407,94 +483,5 @@ The 'etag' is mandatory.
         (QueryGrantableRolesResponse) The response message.
       """
       config = self.GetMethodConfig('QueryGrantableRoles')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-  class V1Service(base_api.BaseApiService):
-    """Service class for the v1 resource."""
-
-    _NAME = u'v1'
-
-    def __init__(self, client):
-      super(IamV1.V1Service, self).__init__(client)
-      self._method_configs = {
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'iam.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field='',
-              request_type_name=u'IamGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'iam.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'IamSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'iam.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'IamTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      """Returns the IAM access control policy for specified IAM resource.
-
-      Args:
-        request: (IamGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the IAM access control policy for the specified IAM resource.
-
-      Args:
-        request: (IamSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def TestIamPermissions(self, request, global_params=None):
-      """Tests the specified permissions against the IAM access control policy.
-for the specified IAM resource.
-
-      Args:
-        request: (IamTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)

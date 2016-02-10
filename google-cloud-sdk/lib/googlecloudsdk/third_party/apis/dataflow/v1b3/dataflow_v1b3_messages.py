@@ -2377,6 +2377,7 @@ class StreamingSetupTask(_messages.Message):
   """A task which initializes part of a streaming Dataflow job.
 
   Fields:
+    drain: The user has requested drain.
     receiveWorkPort: The TCP port on which the worker should listen for
       messages from other streaming computation workers.
     streamingComputationTopology: The global topology of the streaming
@@ -2385,9 +2386,10 @@ class StreamingSetupTask(_messages.Message):
       Dataflow worker harness.
   """
 
-  receiveWorkPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  streamingComputationTopology = _messages.MessageField('TopologyConfig', 2)
-  workerHarnessPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  drain = _messages.BooleanField(1)
+  receiveWorkPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  streamingComputationTopology = _messages.MessageField('TopologyConfig', 3)
+  workerHarnessPort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class StreamingSideInputLocation(_messages.Message):

@@ -176,7 +176,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The monitored resource type. This field must match the corresponding\nMonitoredResourceDescriptor.type to this resource..  For example,\n`\"cloudsql_database\"` represents Cloud SQL databases.",
+          "description": "The monitored resource type. This field must match the corresponding\nMonitoredResourceDescriptor.type to this resource. For example,\n`\"cloudsql_database\"` represents Cloud SQL databases.",
           "type": "string"
         },
         "labels": {
@@ -322,6 +322,10 @@
           "description": "The referer URL of the request, as defined in\n[HTTP\/1.1 Header Field Definitions](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec14.html).",
           "type": "string"
         },
+        "cacheLookup": {
+          "description": "Whether or not a cache lookup was attempted.",
+          "type": "boolean"
+        },
         "cacheHit": {
           "description": "Whether or not an entity was served from cache\n(with or without validation).",
           "type": "boolean"
@@ -329,6 +333,11 @@
         "validatedWithOriginServer": {
           "description": "Whether or not the response was validated with the origin server before\nbeing served from cache. This field is only meaningful if `cache_hit` is\nTrue.",
           "type": "boolean"
+        },
+        "cacheFillBytes": {
+          "description": "The number of HTTP response bytes inserted into cache. Set only when a\ncache fill was attempted.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -416,6 +425,40 @@
         "nextPageToken": {
           "description": "If there are more results than were returned, then `nextPageToken` is\nincluded in the response.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
+        },
+        "projectIdErrors": {
+          "description": "If partial_success is true, contains the project ids that had errors and\nthe associated errors.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Status"
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @ype with type URL."
+            }
+          }
         }
       }
     },
@@ -486,6 +529,10 @@
       "description": "A descriptor that describes the schema of MonitoredResource.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Resource name of the monitored resource descriptor. For example:\n\n    projects\/{project_id}\/monitoredResourceDescriptors\/{type}",
+          "type": "string"
+        },
         "type": {
           "description": "The monitored resource type. For example, the type `\"cloudsql_database\"`\nrepresents databases in Google Cloud SQL.",
           "type": "string"
@@ -532,6 +579,82 @@
         },
         "description": {
           "description": "A human-readable description for the label.",
+          "type": "string"
+        }
+      }
+    },
+    "ListLogsResponse": {
+      "id": "ListLogsResponse",
+      "description": "Result returned from ListLogs.",
+      "type": "object",
+      "properties": {
+        "logIds": {
+          "description": "A list of log ids matching the criteria.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of logs, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogs`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "type": "string"
+        }
+      }
+    },
+    "ListResourceKeysResponse": {
+      "id": "ListResourceKeysResponse",
+      "description": "Result returned from `ListResourceKeysRequest`.",
+      "type": "object",
+      "properties": {
+        "logResourceKeys": {
+          "description": "A list of log resource keys.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceKeys"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of resource types, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListResourceKeys`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "type": "string"
+        }
+      }
+    },
+    "ResourceKeys": {
+      "id": "ResourceKeys",
+      "description": "_Output only._ Describes resource keys for log entries.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the resource - e.g. \"gce_instance\"\nThis value can appear in the `LogEntry.resource.type` field of\nlog entries",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Displayable name for this type that can be presented in a UI.",
+          "type": "string"
+        },
+        "keys": {
+          "description": "A list of the names of the keys used to index and label\nindividual log entries associated with this resource type.\n\n    [ \"module_id\",\n      \"version_id\" ]",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListResourceValuesResponse": {
+      "id": "ListResourceValuesResponse",
+      "description": "Result returned from ListResourceValues.",
+      "type": "object",
+      "properties": {
+        "resourceValuePrefixes": {
+          "description": "A list of log resource type index values.\nEach index value has the form `\"\/value1\/value2\/...\"`,\nwhere `value1` is a value in the primary index, `value2` is\na value in the secondary index, and so forth.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of indexes, use the value of\n`nextPageToken` as `pageToken` in the next call of\n`ListResourceValues`.\nIf `nextPageToken` is empty, then there are no more results.",
           "type": "string"
         }
       }
@@ -616,33 +739,6 @@
           "description": "The time the error was observed, in nanoseconds since the Unix epoch.",
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @ype with type URL."
-            }
-          }
         }
       }
     },
@@ -813,6 +909,10 @@
           "description": "Whether this request is finished or active.",
           "type": "boolean"
         },
+        "first": {
+          "description": "Whether this is the first RequestLog entry for this request.  If an active\nrequest has several RequestLog entries written to Cloud Logging, this field\nwill be set for one of them.",
+          "type": "boolean"
+        },
         "instanceId": {
           "description": "An identifier for the instance that handled the request.",
           "type": "string"
@@ -959,6 +1059,141 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ]
+            },
+            "list": {
+              "id": "logging.projects.logs.list",
+              "path": "v2beta1/projects/{projectsId}/logs",
+              "flatPath": "v2beta1/projects/{projectsId}/logs",
+              "httpMethod": "GET",
+              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.\n",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `projectName`. The resource name of the project whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this project are listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "resourceType": {
+                  "description": "If not empty, this field must be a resource type such as\n`\"gce_instance`. Only logs associated with that resource type are listed.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceIndexPrefix": {
+                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `resource_type` is the name of a resource type,\nthen this field may contain values for the log resource type's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogs`\noperation.  If `pageToken` is supplied, then the other fields of this\nrequest are ignored, and instead the previous `ListLogs` operation is\ncontinued.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId"
+              ],
+              "response": {
+                "$ref": "ListLogsResponse"
+              }
+            }
+          }
+        },
+        "resourceKeys": {
+          "methods": {
+            "list": {
+              "id": "logging.projects.resourceKeys.list",
+              "path": "v2beta1/projects/{projectsId}/resourceKeys",
+              "flatPath": "v2beta1/projects/{projectsId}/resourceKeys",
+              "httpMethod": "GET",
+              "description": "Lists the resource keys that have log entries in this project.\n",
+              "parameters": {
+                "projectsId": {
+                  "description": "Part of `projectName`. The resource name of the project whose services are to be listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of `ResourceKeys` objects to return in one operation.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "An opaque token, returned as `nextPageToken` by a prior\n`ListResourceKeys` operation.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectsId"
+              ],
+              "response": {
+                "$ref": "ListResourceKeysResponse"
+              }
+            }
+          }
+          ,
+          "resources": {
+            "values": {
+              "methods": {
+                "list": {
+                  "id": "logging.projects.resourceKeys.values.list",
+                  "path": "v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values",
+                  "flatPath": "v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values",
+                  "httpMethod": "GET",
+                  "description": "Lists the current index values for a log resource type.\n",
+                  "parameters": {
+                    "projectsId": {
+                      "description": "Part of `resourceTypeName`. The resource name of a resource type whose indexes are requested.\nExample:\n`\"projects\/my-project-id\/resourceTypes\/gae_app\"`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "resourceKeysId": {
+                      "description": "Part of `resourceTypeName`. See documentation of `projectsId`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "indexPrefix": {
+                      "description": "Restricts the index values returned to be those with a specified prefix\nfor each index key.\nThis field has the form `\"\/prefix1\/prefix2\/...\"`, in order corresponding\nto the `ResourceKeys indexKeys`.\nNon-empty prefixes must begin with `\/`.\nFor example, App Engine's two keys are the module ID and the version ID.\nFollowing is the effect of using various values for `indexPrefix`:\n\n+  `\"\/Mod\/\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod` retrieves `\/Mod\/10`, `\/Mod\/11` and `\/ModA\/10` but not `\/XXX\/33`.\n+  `\"\/Mod\/1\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod\/10\/\"` retrieves `\/Mod\/10` only.\n+  An empty prefix or `\"\/\"` retrieves all values.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "depth": {
+                      "description": "A non-negative integer that limits the number of levels of the index\nhierarchy that are returned.\nIf `depth` is 1 (default), only the first index key value is returned.\nIf `depth` is 2, both primary and secondary key values are returned.\nIf `depth` is 0, the depth is the number of slash-separators in the\n`indexPrefix` field, not counting a slash appearing as the last character\nof the prefix.\nIf the `indexPrefix` field is empty, the default depth is 1.\nIt is an error for `depth` to be any positive value\nless than the number of components in `indexPrefix`.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of log resource index resources to return in one\noperation.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "An opaque token, returned as `nextPageToken` by a prior\n`ListResourceValues` operation.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectsId",
+                    "resourceKeysId"
+                  ],
+                  "response": {
+                    "$ref": "ListResourceValuesResponse"
+                  }
+                }
+              }
             }
           }
         },

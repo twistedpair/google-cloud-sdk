@@ -61,7 +61,7 @@ Usage:
                                             normal=normal))
 
   # Read one character from stdin with echo disabled.
-  c = con.GetRawChar()
+  c = con.GetRawKey()
   if c is None:
     print 'EOF\n'
 
@@ -198,7 +198,7 @@ class ConsoleAttr(object):
         win: Windows code page 437.
     _font_bold: The ANSI bold font embellishment code string.
     _font_italic: The ANSI italic font embellishment code string.
-    _get_raw_char: A function that reads one character from stdin with no echo.
+    _get_raw_key: A function that reads one keypress from stdin with no echo.
     _out: The console output file stream.
     _term: TERM environment variable value.
     _term_size: The terminal (x, y) dimensions in characters.
@@ -267,7 +267,7 @@ class ConsoleAttr(object):
       self._bullets = self._BULLETS_ASCII
 
     # OS specific attributes.
-    self._get_raw_char = [console_attr_os.GetRawCharFunction()]
+    self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
     self._term_size = console_attr_os.GetTermSize()
 
   def Colorize(self, string, color, justify=None):
@@ -370,13 +370,14 @@ class ConsoleAttr(object):
       codes.append(self._font_italic)
     return '{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
 
-  def GetRawChar(self):
-    """Reads one character from stdin with no echo.
+  def GetRawKey(self):
+    """Reads one key press from stdin with no echo.
 
     Returns:
-      One raw character.
+      The key name, None for EOF, <KEY-*> for function keys, otherwise a
+      character.
     """
-    return self._get_raw_char[0]()
+    return self._get_raw_key[0]()
 
   def GetTermSize(self):
     """Returns the terminal (x, y) dimensions in characters.

@@ -319,7 +319,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified autoscaler resource.
+      """Deletes the specified autoscaler.
 
       Args:
         request: (ComputeAutoscalersDeleteRequest) input message
@@ -332,7 +332,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified autoscaler resource.
+      """Returns the specified autoscaler.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -345,7 +345,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates an autoscaler resource in the specified project using the data included in the request.
+      """Creates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersInsertRequest) input message
@@ -358,7 +358,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of autoscaler resources contained within the specified zone.
+      """Retrieves a list of autoscalers contained within the specified zone.
 
       Args:
         request: (ComputeAutoscalersListRequest) input message
@@ -371,7 +371,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -384,7 +384,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates an autoscaler resource in the specified project using the data included in the request.
+      """Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersUpdateRequest) input message

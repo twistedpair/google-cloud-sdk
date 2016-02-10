@@ -33,7 +33,7 @@ _ENTRY_POINT_NAME_ERROR = (
     'upper-case), digits and underscore (_), and must be at most 128 '
     'characters long.')
 
-_FUNCTION_NAME_RE = re.compile(r'^[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?$')
+_FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,46}[A-Za-z0-9])?$')
 _FUNCTION_NAME_ERROR = (
     'Function name must contain only lower case Latin letters, digits and a '
     'hyphen (-). It must start with letter, must not end with a hyphen, '

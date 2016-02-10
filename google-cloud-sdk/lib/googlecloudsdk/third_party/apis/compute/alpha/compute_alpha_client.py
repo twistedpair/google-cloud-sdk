@@ -363,7 +363,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified autoscaler resource.
+      """Deletes the specified autoscaler.
 
       Args:
         request: (ComputeAutoscalersDeleteRequest) input message
@@ -376,7 +376,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified autoscaler resource.
+      """Returns the specified autoscaler.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -389,7 +389,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates an autoscaler resource in the specified project using the data included in the request.
+      """Creates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersInsertRequest) input message
@@ -402,7 +402,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of autoscaler resources contained within the specified zone.
+      """Retrieves a list of autoscalers contained within the specified zone.
 
       Args:
         request: (ComputeAutoscalersListRequest) input message
@@ -415,7 +415,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates an autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -441,7 +441,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates an autoscaler resource in the specified project using the data included in the request.
+      """Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersUpdateRequest) input message
@@ -4598,6 +4598,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionAutoscalers.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/autoscalers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionAutoscalersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'compute.regionAutoscalers.update',
@@ -4616,7 +4628,7 @@ See Accessing images for more information.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified autoscaler resource.
+      """Deletes the specified autoscaler.
 
       Args:
         request: (ComputeRegionAutoscalersDeleteRequest) input message
@@ -4629,7 +4641,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified autoscaler resource.
+      """Returns the specified autoscaler.
 
       Args:
         request: (ComputeRegionAutoscalersGetRequest) input message
@@ -4642,7 +4654,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a autoscaler resource in the specified project using the data included in the request.
+      """Creates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersInsertRequest) input message
@@ -4655,7 +4667,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of autoscaler resources contained within the specified region.
+      """Retrieves a list of autoscalers contained within the specified region.
 
       Args:
         request: (ComputeRegionAutoscalersListRequest) input message
@@ -4668,7 +4680,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates a autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates a autoscaler in the specified project using the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -4680,8 +4692,21 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionAutoscalersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
-      """Updates a autoscaler resource in the specified project using the data included in the request.
+      """Updates a autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersUpdateRequest) input message
@@ -4845,6 +4870,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroupManagers.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -5006,6 +5043,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class RegionInstanceGroupsService(base_api.BaseApiService):
     """Service class for the regionInstanceGroups resource."""
 
@@ -5062,6 +5112,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionInstanceGroups.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionInstanceGroupsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -5116,6 +5178,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetNamedPorts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstanceGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

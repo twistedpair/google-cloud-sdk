@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160121",
+ "revision": "20160202",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -268,6 +268,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -284,6 +285,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -475,10 +477,11 @@
   "Autoscaler": {
    "id": "Autoscaler",
    "type": "object",
+   "description": "Represents an Autoscaler resource. Autoscalers allow you to automatically scale virtual machine instances in managed instance groups according to an autoscaling policy that you define. For more information, read Autoscaling Groups of Instances.",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
-     "description": "Autoscaling configuration."
+     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.8 or 80%."
     },
     "creationTimestamp": {
      "type": "string",
@@ -495,7 +498,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of the resource.",
+     "description": "[Output Only] Type of the resource. Always compute#autoscaler for autoscalers.",
      "default": "compute#autoscaler"
     },
     "name": {
@@ -518,7 +521,7 @@
     },
     "status": {
      "type": "string",
-     "description": "The status of Autoscaler config. (output only)",
+     "description": "[Output Only] The status of the autoscaler configuration.",
      "enum": [
       "ACTIVE",
       "DELETING",
@@ -534,14 +537,14 @@
     },
     "statusDetails": {
      "type": "array",
-     "description": "Human-readable details about the current state of the Autoscaler (output only). Examples: ?Error when fetching replicas: Replica Pool xxx doesn?t exist.? ?Autoscaling capped at min_num_replicas: 2.?",
+     "description": "[Output Only] Human-readable details about the current state of the autoscaler. Examples: ?Error when fetching replicas: Replica Pool xxx doesn?t exist.? ?Autoscaling capped at min_num_replicas: 2.?",
      "items": {
       "$ref": "AutoscalerStatusDetails"
      }
     },
     "target": {
      "type": "string",
-     "description": "URL of Instance Group Manager or Replica Pool which will be controlled by Autoscaler."
+     "description": "URL of the managed instance group that this autoscaler will scale."
     },
     "zone": {
      "type": "string",
@@ -562,12 +565,12 @@
      "description": "A map of scoped autoscaler lists.",
      "additionalProperties": {
       "$ref": "AutoscalersScopedList",
-      "description": "Name of the scope containing this set of autoscalers."
+      "description": "[Output Only] Name of the scope containing this set of autoscalers."
      }
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "[Output Only] Type of resource. Always compute#autoscalerAggregatedList for aggregated lists of autoscalers.",
      "default": "compute#autoscalerAggregatedList"
     },
     "nextPageToken": {
@@ -583,7 +586,7 @@
   "AutoscalerList": {
    "id": "AutoscalerList",
    "type": "object",
-   "description": "Contains a list of persistent autoscaler resources.",
+   "description": "Contains a list of Autoscaler resources.",
    "properties": {
     "id": {
      "type": "string",
@@ -598,7 +601,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "[Output Only] Type of resource. Always compute#autoscalerList for lists of autoscalers.",
      "default": "compute#autoscalerList"
     },
     "nextPageToken": {
@@ -626,19 +629,20 @@
    "properties": {
     "autoscalers": {
      "type": "array",
-     "description": "List of autoscalers contained in this scope.",
+     "description": "[Output Only] List of autoscalers contained in this scope.",
      "items": {
       "$ref": "Autoscaler"
      }
     },
     "warning": {
      "type": "object",
-     "description": "Informational warning which replaces the list of autoscalers when the list is empty.",
+     "description": "[Output Only] Informational warning which replaces the list of autoscalers when the list is empty.",
      "properties": {
       "code": {
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -655,6 +659,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -703,16 +708,16 @@
    "properties": {
     "coolDownPeriodSec": {
      "type": "integer",
-     "description": "The number of seconds that the Autoscaler should wait between two succeeding changes to the number of virtual machines. You should define an interval that is at least as long as the initialization time of a virtual machine and the time it may take for replica pool to create the virtual machine. The default is 60 seconds.",
+     "description": "The number of seconds that the autoscaler should wait before it starts collecting information from a new instance. This prevents the autoscaler from collecting information when the instance is initializing, during which the collected usage would not be reliable. The default time autoscaler waits is 60 seconds.\n\nVirtual machine initialization times might vary because of numerous factors. We recommend that you test how long an instance may take to initialize. To do this, create an instance and time the startup process.",
      "format": "int32"
     },
     "cpuUtilization": {
      "$ref": "AutoscalingPolicyCpuUtilization",
-     "description": "TODO(jbartosik): Add support for scaling based on muliple utilization metrics (take max recommendation). Exactly one utilization policy should be provided. Configuration parameters of CPU based autoscaling policy."
+     "description": "Defines the CPU utilization policy that allows the autoscaler to scale based on the average CPU utilization of a managed instance group."
     },
     "customMetricUtilizations": {
      "type": "array",
-     "description": "Configuration parameters of autoscaling based on custom metric.",
+     "description": "Configuration parameters of autoscaling based on a custom metric.",
      "items": {
       "$ref": "AutoscalingPolicyCustomMetricUtilization"
      }
@@ -723,12 +728,12 @@
     },
     "maxNumReplicas": {
      "type": "integer",
-     "description": "The maximum number of replicas that the Autoscaler can scale up to. This field is required for config to be effective. Maximum number of replicas should be not lower than minimal number of replicas. Absolute limit for this value is defined in Autoscaler backend.",
+     "description": "The maximum number of instances that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of replicas should not be lower than minimal number of replicas.",
      "format": "int32"
     },
     "minNumReplicas": {
      "type": "integer",
-     "description": "The minimum number of replicas that the Autoscaler can scale down to. Can't be less than 0. If not provided Autoscaler will choose default value depending on maximal number of replicas.",
+     "description": "The minimum number of replicas that the autoscaler can scale down to. This cannot be less than 0. If not provided, autoscaler will choose a default value depending on maximum number of instances allowed.",
      "format": "int32"
     }
    }
@@ -740,7 +745,7 @@
    "properties": {
     "utilizationTarget": {
      "type": "number",
-     "description": "The target utilization that the Autoscaler should maintain. It is represented as a fraction of used cores. For example: 6 cores used in 8-core VM are represented here as 0.75. Must be a float value between (0, 1]. If not defined, the default is 0.8.",
+     "description": "The target CPU utilization that the autoscaler should maintain. Must be a float value in the range (0, 1]. If not specified, the default is 0.8.\n\nIf the CPU level is below the target utilization, the autoscaler scales down the number of instances until it reaches the minimum number of instances you specified or until the average CPU of your instances reaches the target utilization.\n\nIf the average CPU is above the target utilization, the autoscaler scales up until it reaches the maximum number of instances you specified or until the average utilization reaches the target utilization.",
      "format": "double"
     }
    }
@@ -752,16 +757,16 @@
    "properties": {
     "metric": {
      "type": "string",
-     "description": "Identifier of the metric. It should be a Cloud Monitoring metric. The metric can not have negative values. The metric should be an utilization metric (increasing number of VMs handling requests x times should reduce average value of the metric roughly x times). For example you could use: compute.googleapis.com/instance/network/received_bytes_count."
+     "description": "The identifier of the Cloud Monitoring metric. The metric cannot have negative values and should be a utilization metric, which means that the number of virtual machines handling requests should increase or decrease proportionally to the metric. The metric must also have a label of compute.googleapis.com/resource_id with the value of the instance's unique ID, although this alone does not guarantee that the metric is valid.\n\nFor example, the following is a valid metric:\ncompute.googleapis.com/instance/network/received_bytes_count\n\n\nThe following is not a valid metric because it does not increase or decrease based on usage:\ncompute.googleapis.com/instance/cpu/reserved_cores"
     },
     "utilizationTarget": {
      "type": "number",
-     "description": "Target value of the metric which Autoscaler should maintain. Must be a positive value.",
+     "description": "Target value of the metric which autoscaler should maintain. Must be a positive value.",
      "format": "double"
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines type in which utilization_target is expressed.",
+     "description": "Defines how target utilization value is expressed for a Cloud Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -778,11 +783,11 @@
   "AutoscalingPolicyLoadBalancingUtilization": {
    "id": "AutoscalingPolicyLoadBalancingUtilization",
    "type": "object",
-   "description": "Load balancing utilization policy.",
+   "description": "Configuration parameters of autoscaling based on load balancing.",
    "properties": {
     "utilizationTarget": {
      "type": "number",
-     "description": "Fraction of backend capacity utilization (set in HTTP load balancing configuration) that Autoscaler should maintain. Must be a positive float value. If not defined, the default is 0.8. For example if your maxRatePerInstance capacity (in HTTP Load Balancing configuration) is set at 10 and you would like to keep number of instances such that each instance receives 7 QPS on average, set this to 0.7.",
+     "description": "Fraction of backend capacity utilization (set in HTTP(s) load balancing configuration) that autoscaler should maintain. Must be a positive float value. If not defined, the default is 0.8.",
      "format": "double"
     }
    }
@@ -1008,7 +1013,7 @@
     },
     "timeoutSec": {
      "type": "integer",
-     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds. Valid range is [1, 86400].",
+     "description": "How many seconds to wait for the backend before considering it a failed request. Default is 30 seconds.",
      "format": "int32"
     }
    }
@@ -1558,6 +1563,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1574,6 +1580,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1645,6 +1652,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1661,6 +1669,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1967,6 +1976,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -1983,6 +1993,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2962,7 +2973,6 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "InstanceGroupManagers\n\nNext available tag: 20",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -2992,6 +3002,18 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "failoverAction": {
+     "type": "string",
+     "description": "The action to perform in case of zone failure (only valid for RegionalInstanceGroupManager).",
+     "enum": [
+      "NO_FAILOVER",
+      "UNKNOWN"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "fingerprint": {
      "type": "string",
@@ -3312,6 +3334,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -3328,6 +3351,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3502,6 +3526,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -3518,6 +3543,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3813,6 +3839,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -3829,6 +3856,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4097,6 +4125,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -4113,6 +4142,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4580,6 +4610,7 @@
         "type": "string",
         "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
         "enum": [
+         "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
          "INJECTED_KERNELS_DEPRECATED",
@@ -4596,6 +4627,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -4723,6 +4755,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -4739,6 +4772,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5076,7 +5110,7 @@
   "RegionAutoscalerList": {
    "id": "RegionAutoscalerList",
    "type": "object",
-   "description": "Contains a list of persistent autoscaler resources.",
+   "description": "Contains a list of autoscalers.",
    "properties": {
     "id": {
      "type": "string",
@@ -5084,7 +5118,7 @@
     },
     "items": {
      "type": "array",
-     "description": "A list of Autoscaler resources.",
+     "description": "A list of autoscalers.",
      "items": {
       "$ref": "Autoscaler"
      }
@@ -5477,6 +5511,7 @@
         "type": "string",
         "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
         "enum": [
+         "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
          "INJECTED_KERNELS_DEPRECATED",
@@ -5493,6 +5528,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -5873,6 +5909,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -5889,6 +5926,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6438,6 +6476,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -6454,6 +6493,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6557,12 +6597,12 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for target HTTP proxies.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for targetHttpProxy resources.",
      "default": "compute#targetHttpProxy"
     },
     "name": {
      "type": "string",
-     "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
     "selfLink": {
@@ -6593,7 +6633,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource. Always compute#targetHttpProxyList for lists of target HTTP proxies.",
+     "description": "Type of resource. Always compute#targetHttpProxyList for lists of targetHttpProxy resources.",
      "default": "compute#targetHttpProxyList"
     },
     "nextPageToken": {
@@ -6612,7 +6652,7 @@
    "properties": {
     "sslCertificates": {
      "type": "array",
-     "description": "New set of URLs to SslCertificate resources to associate with this TargetHttpProxy. Currently exactly one SSL certificate must be specified.",
+     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SSLcertificate resource must be specified.",
      "items": {
       "type": "string"
      }
@@ -6639,7 +6679,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#targetHttpsProxy for target HTTPS proxies.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpsProxy for targetHttpsproxy resources.",
      "default": "compute#targetHttpsProxy"
     },
     "name": {
@@ -6682,7 +6722,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource.",
+     "description": "Type of resource. Always compute#targetHttpsProxyList for lists of targetHttpsProxy resources.",
      "default": "compute#targetHttpsProxyList"
     },
     "nextPageToken": {
@@ -6828,6 +6868,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -6844,6 +6885,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7110,6 +7152,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -7126,6 +7169,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7339,6 +7383,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -7355,6 +7400,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7822,6 +7868,7 @@
        "type": "string",
        "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
        "enum": [
+        "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
         "INJECTED_KERNELS_DEPRECATED",
@@ -7838,6 +7885,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8340,11 +8388,11 @@
      "id": "compute.autoscalers.delete",
      "path": "{project}/zones/{zone}/autoscalers/{autoscaler}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified autoscaler resource.",
+     "description": "Deletes the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to delete.",
+       "description": "Name of the autoscaler to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8358,7 +8406,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8381,11 +8429,11 @@
      "id": "compute.autoscalers.get",
      "path": "{project}/zones/{zone}/autoscalers/{autoscaler}",
      "httpMethod": "GET",
-     "description": "Returns the specified autoscaler resource.",
+     "description": "Returns the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to return.",
+       "description": "Name of the autoscaler to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8399,7 +8447,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8423,7 +8471,7 @@
      "id": "compute.autoscalers.insert",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "POST",
-     "description": "Creates an autoscaler resource in the specified project using the data included in the request.",
+     "description": "Creates an autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -8434,7 +8482,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8459,7 +8507,7 @@
      "id": "compute.autoscalers.list",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "GET",
-     "description": "Retrieves a list of autoscaler resources contained within the specified zone.",
+     "description": "Retrieves a list of autoscalers contained within the specified zone.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -8494,7 +8542,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8517,11 +8565,11 @@
      "id": "compute.autoscalers.patch",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "PATCH",
-     "description": "Updates an autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
@@ -8535,7 +8583,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -8606,11 +8654,11 @@
      "id": "compute.autoscalers.update",
      "path": "{project}/zones/{zone}/autoscalers",
      "httpMethod": "PUT",
-     "description": "Updates an autoscaler resource in the specified project using the data included in the request.",
+     "description": "Updates an autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
       },
@@ -8623,7 +8671,7 @@
       },
       "zone": {
        "type": "string",
-       "description": "Name of the zone scoping this request.",
+       "description": "Name of the zone for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -14891,11 +14939,11 @@
      "id": "compute.regionAutoscalers.delete",
      "path": "{project}/regions/{region}/autoscalers/{autoscaler}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified autoscaler resource.",
+     "description": "Deletes the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to delete.",
+       "description": "Name of the autoscaler to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -14932,11 +14980,11 @@
      "id": "compute.regionAutoscalers.get",
      "path": "{project}/regions/{region}/autoscalers/{autoscaler}",
      "httpMethod": "GET",
-     "description": "Returns the specified autoscaler resource.",
+     "description": "Returns the specified autoscaler.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the persistent autoscaler resource to return.",
+       "description": "Name of the autoscaler to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -14974,7 +15022,7 @@
      "id": "compute.regionAutoscalers.insert",
      "path": "{project}/regions/{region}/autoscalers",
      "httpMethod": "POST",
-     "description": "Creates a autoscaler resource in the specified project using the data included in the request.",
+     "description": "Creates an autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -15010,7 +15058,7 @@
      "id": "compute.regionAutoscalers.list",
      "path": "{project}/regions/{region}/autoscalers",
      "httpMethod": "GET",
-     "description": "Retrieves a list of autoscaler resources contained within the specified region.",
+     "description": "Retrieves a list of autoscalers contained within the specified region.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -15068,11 +15116,11 @@
      "id": "compute.regionAutoscalers.patch",
      "path": "{project}/regions/{region}/autoscalers",
      "httpMethod": "PATCH",
-     "description": "Updates a autoscaler resource in the specified project using the data included in the request. This method supports patch semantics.",
+     "description": "Updates a autoscaler in the specified project using the data included in the request. This method supports patch semantics.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
@@ -15108,15 +15156,60 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "testIamPermissions": {
+     "id": "compute.regionAutoscalers.testIamPermissions",
+     "path": "{project}/regions/{region}/autoscalers/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "update": {
      "id": "compute.regionAutoscalers.update",
      "path": "{project}/regions/{region}/autoscalers",
      "httpMethod": "PUT",
-     "description": "Updates a autoscaler resource in the specified project using the data included in the request.",
+     "description": "Updates a autoscaler in the specified project using the data included in the request.",
      "parameters": {
       "autoscaler": {
        "type": "string",
-       "description": "Name of the autoscaler resource to update.",
+       "description": "Name of the autoscaler to update.",
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "query"
       },
@@ -15664,6 +15757,51 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
      ]
+    },
+    "testIamPermissions": {
+     "id": "compute.regionInstanceGroupManagers.testIamPermissions",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
     }
    }
   },
@@ -15873,6 +16011,51 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.regionInstanceGroups.testIamPermissions",
+     "path": "{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }
@@ -17517,7 +17700,7 @@
       },
       "targetHttpProxy": {
        "type": "string",
-       "description": "The name of the TargetHttpProxy resource to set a URL map for.",
+       "description": "Name of the TargetHttpProxy to set a URL map for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -17739,7 +17922,7 @@
       },
       "targetHttpsProxy": {
        "type": "string",
-       "description": "Name of the TargetHttpsProxy resource to set an SSL certificate for.",
+       "description": "Name of the TargetHttpsProxy resource to set an SSLCertificate resource for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"

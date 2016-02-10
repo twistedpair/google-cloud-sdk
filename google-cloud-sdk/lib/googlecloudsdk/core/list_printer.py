@@ -274,6 +274,12 @@ COLLECTION_COLUMNS = {
         ('DONE', _Select('done', _Boolean)),
     ),
 
+    # DEBUG
+    'debug.targets': (
+        ('NAME', _Select('name')),
+        ('ID', _Select('debuggee_id')),
+    ),
+
     # DNS
     'dns.changes': (
         ('ID', _Select('id')),

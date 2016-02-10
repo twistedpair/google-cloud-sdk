@@ -20,6 +20,7 @@ import operator
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_transform
 
 
 # Table output column padding.
@@ -32,6 +33,8 @@ def _Stringify(value):
     return ''
   elif isinstance(value, (basestring, console_attr.Colorizer)):
     return value
+  elif isinstance(value, float):
+    return resource_transform.TransformFloat(value)
   elif hasattr(value, '__str__'):
     return str(value)
   else:

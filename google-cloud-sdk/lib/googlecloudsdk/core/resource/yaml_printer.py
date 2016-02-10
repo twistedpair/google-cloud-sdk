@@ -15,6 +15,7 @@
 """YAML format printer."""
 
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_transform
 
 
 class YamlPrinter(resource_printer_base.ResourcePrinter):
@@ -50,7 +51,13 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     def LiteralPresenter(dumper, data):
       return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
 
+    def FloatPresenter(unused_dumper, data):
+      return yaml.nodes.ScalarNode('tag:yaml.org,2002:float',
+                                   resource_transform.TransformFloat(data))
+
     self._yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
+                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.add_representer(float, FloatPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralString(str):
