@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Utilities for subcommands that need to SSH into virtual machine guests."""
+import getpass
 import logging
 import os
 import re
@@ -69,6 +70,41 @@ class SshLikeCmdFailed(core_exceptions.Error):
         'https://cloud.google.com/compute/docs/troubleshooting#ssherrors '
         'for troubleshooting hints.'.format(self.cmd, why_failed),
         exit_code=return_code)
+
+
+def _IsValidSshUsername(user):
+  # All characters must be ASCII, and no spaces are allowed
+  # This may grant false positives, but will prevent backwards-incompatible
+  # behavior.
+  return all(ord(c) < 128 and c != ' ' for c in user)
+
+
+def GetDefaultSshUsername(warn_on_account_user=False):
+  """Returns the default username for ssh.
+
+  The default username is the local username, unless that username is invalid.
+  In that case, the default username is the username portion of the current
+  account.
+
+  Emits a warning if it's not using the local account username.
+
+  Args:
+    warn_on_account_user: bool, whether to warn if using the current account
+      instead of the local username.
+
+  Returns:
+    str, the default SSH username.
+  """
+  user = getpass.getuser()
+  if not _IsValidSshUsername(user):
+    full_account = properties.VALUES.core.account.Get(required=True)
+    account_user = gaia_utils.MapGaiaEmailToDefaultAccountName(full_account)
+    if warn_on_account_user:
+      log.warn('Invalid characters in local username [{0}]. '
+               'Using username corresponding to active account: [{1}]'.format(
+                   user, account_user))
+    user = account_user
+  return user
 
 
 def UserHost(user, host):
@@ -138,15 +174,30 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
       stdout, stderr = None, None
     else:
       stdout, stderr = devnull, devnull
+    if _IsRunningOnWindows():
+      # TODO(user): b/25126583 will drop StrictHostKeyChecking=no and 'y'.
+      # PuTTY and friends always prompt on fingerprint mismatch. A 'y' response
+      # adds/updates the fingerprint registry entry and proceeds. The prompt
+      # will appear once for each new/changed host. Redirecting stdin is not a
+      # problem. Even interactive ssh is not a problem because a separate PuTTY
+      # term is used and it ignores the calling process stdin.
+      stdin = subprocess.PIPE
+    else:
+      stdin = None
     try:
-      subprocess.check_call(cmd_args, stdout=stdout, stderr=stderr)
+      proc = subprocess.Popen(
+          cmd_args, stdin=stdin, stdout=stdout, stderr=stderr)
+      if _IsRunningOnWindows():
+        # Max one prompt per host and there can't be more hosts than args.
+        proc.communicate('y\n' * len(cmd_args))
+      returncode = proc.wait()
     except OSError as e:
       raise SshLikeCmdFailed(cmd_args[0], message=e.strerror)
     except subprocess.CalledProcessError as e:
       if strict_error_checking or e.returncode == _SSH_ERROR_EXIT_CODE:
         raise SshLikeCmdFailed(cmd_args[0], return_code=e.returncode)
       return e.returncode
-    return 0
+    return returncode
 
 
 def _GetMetadataKey(iam_ssh_keys):

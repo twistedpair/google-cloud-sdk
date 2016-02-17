@@ -14,11 +14,18 @@
 
 """Utilities for dealing with service resources."""
 
+from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import text
 
 
 class ServiceValidationError(exceptions.Error):
+  pass
+
+
+class ServicesDeleteError(exceptions.Error):
   pass
 
 
@@ -179,3 +186,27 @@ def ParseTrafficAllocations(args_allocations, split_method):
 
   allocations[sorted(allocations.keys())[0]] -= difference
   return allocations
+
+
+def DeleteServices(api_client, services):
+  """Delete the given services."""
+  errors = {}
+  for service in services:
+    try:
+      with console_io.ProgressTracker('Deleting [{0}]'.format(service.id)):
+        api_client.DeleteService(service.id)
+    except (calliope_exceptions.HttpException, operations.OperationError,
+            operations.OperationTimeoutError) as err:
+      errors[service.id] = str(err)
+
+  if errors:
+    printable_errors = {}
+    for service_id, error_msg in errors.items():
+      printable_errors[service_id] = '[{0}]: {1}'.format(service_id,
+                                                         error_msg)
+    raise ServicesDeleteError(
+        'Issue deleting {0}: [{1}]\n\n'.format(
+            text.Pluralize(len(printable_errors), 'service'),
+            ', '.join(printable_errors.keys())) +
+        '\n\n'.join(printable_errors.values()))
+

@@ -17,7 +17,6 @@
 
 from googlecloudsdk.api_lib.app import ext_runtime
 from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
-from googlecloudsdk.api_lib.app.runtimes import aspnet
 from googlecloudsdk.api_lib.app.runtimes import go
 from googlecloudsdk.api_lib.app.runtimes import java
 from googlecloudsdk.api_lib.app.runtimes import python
@@ -34,7 +33,6 @@ RUNTIMES = [
     ext_runtime.CoreRuntimeLoader('nodejs', 'Node.js', ['nodejs', 'custom']),
     java,
     python_compat,
-    aspnet,
     python,  # python is last because it passes if there are any .py files.
 ]
 

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160202",
+ "revision": "20160210",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -2798,7 +2798,7 @@
     },
     "tags": {
      "$ref": "Tags",
-     "description": "A list of tags to appy to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035."
+     "description": "A list of tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035."
     },
     "zone": {
      "type": "string",
@@ -3005,7 +3005,7 @@
     },
     "failoverAction": {
      "type": "string",
-     "description": "The action to perform in case of zone failure (only valid for RegionalInstanceGroupManager).",
+     "description": "The action to perform in case of zone failure (set only for Regional instance group managers).",
      "enum": [
       "NO_FAILOVER",
       "UNKNOWN"
@@ -4913,6 +4913,10 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "defaultServiceAccount": {
+     "type": "string",
+     "description": "[Output Only] Default service account used by VMs running in this project."
+    },
     "description": {
      "type": "string",
      "description": "An optional textual description of the resource."
@@ -6597,7 +6601,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for targetHttpProxy resources.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpProxy for target HTTP proxies.",
      "default": "compute#targetHttpProxy"
     },
     "name": {
@@ -6633,7 +6637,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource. Always compute#targetHttpProxyList for lists of targetHttpProxy resources.",
+     "description": "Type of resource. Always compute#targetHttpProxyList for lists of target HTTP proxies.",
      "default": "compute#targetHttpProxyList"
     },
     "nextPageToken": {
@@ -6652,7 +6656,7 @@
    "properties": {
     "sslCertificates": {
      "type": "array",
-     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SSLcertificate resource must be specified.",
+     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SslCertificate resource must be specified.",
      "items": {
       "type": "string"
      }
@@ -6679,7 +6683,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#targetHttpsProxy for targetHttpsproxy resources.",
+     "description": "[Output Only] Type of resource. Always compute#targetHttpsProxy for target HTTPS proxies.",
      "default": "compute#targetHttpsProxy"
     },
     "name": {
@@ -6722,7 +6726,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Type of resource. Always compute#targetHttpsProxyList for lists of targetHttpsProxy resources.",
+     "description": "Type of resource. Always compute#targetHttpsProxyList for lists of target HTTPS proxies.",
      "default": "compute#targetHttpsProxyList"
     },
     "nextPageToken": {
@@ -7750,6 +7754,7 @@
      "type": "string",
      "description": "[Output Only] The status of the VPN tunnel.",
      "enum": [
+      "ALLOCATING_RESOURCES",
       "AUTHORIZATION_ERROR",
       "DEPROVISIONING",
       "ESTABLISHED",
@@ -7763,6 +7768,7 @@
       "WAITING_FOR_FULL_CONFIG"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -8429,7 +8435,7 @@
      "id": "compute.autoscalers.get",
      "path": "{project}/zones/{zone}/autoscalers/{autoscaler}",
      "httpMethod": "GET",
-     "description": "Returns the specified autoscaler.",
+     "description": "Returns the specified autoscaler resource. Get a list of available autoscalers by making a list() request.",
      "parameters": {
       "autoscaler": {
        "type": "string",
@@ -8733,7 +8739,7 @@
      "id": "compute.backendBuckets.get",
      "path": "{project}/global/backendBuckets/{backendBucket}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendBucket resource.",
+     "description": "Returns the specified BackendBucket resource. Get a list of available backend buckets by making a list() request.",
      "parameters": {
       "backendBucket": {
        "type": "string",
@@ -9062,7 +9068,7 @@
      "id": "compute.backendServices.get",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendService resource.",
+     "description": "Returns the specified BackendService resource. Get a list of available backend services by making a list() request.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -9373,7 +9379,7 @@
      "id": "compute.diskTypes.get",
      "path": "{project}/zones/{zone}/diskTypes/{diskType}",
      "httpMethod": "GET",
-     "description": "Returns the specified disk type.",
+     "description": "Returns the specified disk type. Get a list of available disk types by making a list() request.",
      "parameters": {
       "diskType": {
        "type": "string",
@@ -9612,7 +9618,7 @@
      "id": "compute.disks.get",
      "path": "{project}/zones/{zone}/disks/{disk}",
      "httpMethod": "GET",
-     "description": "Returns a specified persistent disk.",
+     "description": "Returns a specified persistent disk. Get a list of available persistent disks by making a list() request.",
      "parameters": {
       "disk": {
        "type": "string",
@@ -10501,7 +10507,7 @@
      "id": "compute.globalAddresses.get",
      "path": "{project}/global/addresses/{address}",
      "httpMethod": "GET",
-     "description": "Returns the specified address resource.",
+     "description": "Returns the specified address resource. Get a list of available addresses by making a list() request.",
      "parameters": {
       "address": {
        "type": "string",
@@ -10687,7 +10693,7 @@
      "id": "compute.globalForwardingRules.get",
      "path": "{project}/global/forwardingRules/{forwardingRule}",
      "httpMethod": "GET",
-     "description": "Returns the specified ForwardingRule resource.",
+     "description": "Returns the specified ForwardingRule resource. Get a list of available forwarding rules by making a list() request.",
      "parameters": {
       "forwardingRule": {
        "type": "string",
@@ -10956,7 +10962,7 @@
      "id": "compute.globalOperations.get",
      "path": "{project}/global/operations/{operation}",
      "httpMethod": "GET",
-     "description": "Retrieves the specified Operations resource.",
+     "description": "Retrieves the specified Operations resource. Get a list of operations by making a list() request.",
      "parameters": {
       "operation": {
        "type": "string",
@@ -11077,7 +11083,7 @@
      "id": "compute.healthChecks.get",
      "path": "{project}/global/healthChecks/{healthCheck}",
      "httpMethod": "GET",
-     "description": "Returns the specified HealthCheck resource.",
+     "description": "Returns the specified HealthCheck resource. Get a list of available health checks by making a list() request.",
      "parameters": {
       "healthCheck": {
        "type": "string",
@@ -11335,7 +11341,7 @@
      "id": "compute.httpHealthChecks.get",
      "path": "{project}/global/httpHealthChecks/{httpHealthCheck}",
      "httpMethod": "GET",
-     "description": "Returns the specified HttpHealthCheck resource.",
+     "description": "Returns the specified HttpHealthCheck resource. Get a list of available HTTP health checks by making a list() request.",
      "parameters": {
       "httpHealthCheck": {
        "type": "string",
@@ -11593,7 +11599,7 @@
      "id": "compute.httpsHealthChecks.get",
      "path": "{project}/global/httpsHealthChecks/{httpsHealthCheck}",
      "httpMethod": "GET",
-     "description": "Returns the specified HttpsHealthCheck resource.",
+     "description": "Returns the specified HttpsHealthCheck resource. Get a list of available HTTPS health checks by making a list() request.",
      "parameters": {
       "httpsHealthCheck": {
        "type": "string",
@@ -11887,7 +11893,7 @@
      "id": "compute.images.get",
      "path": "{project}/global/images/{image}",
      "httpMethod": "GET",
-     "description": "Returns the specified image.",
+     "description": "Returns the specified image. Get a list of available images by making a list() request.",
      "parameters": {
       "image": {
        "type": "string",
@@ -12286,7 +12292,7 @@
      "id": "compute.instanceGroupManagers.get",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
      "httpMethod": "GET",
-     "description": "Returns all of the details about the specified managed instance group.",
+     "description": "Returns all of the details about the specified managed instance group. Get a list of available managed instance groups by making a list() request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -12895,7 +12901,7 @@
      "id": "compute.instanceGroups.get",
      "path": "{project}/zones/{zone}/instanceGroups/{instanceGroup}",
      "httpMethod": "GET",
-     "description": "Returns the specified instance group resource.",
+     "description": "Returns the specified instance group. Get a list of available instance groups by making a list() request.",
      "parameters": {
       "instanceGroup": {
        "type": "string",
@@ -13260,7 +13266,7 @@
      "id": "compute.instanceTemplates.get",
      "path": "{project}/global/instanceTemplates/{instanceTemplate}",
      "httpMethod": "GET",
-     "description": "Returns the specified instance template resource.",
+     "description": "Returns the specified instance template. Get a list of available instance templates by making a list() request.",
      "parameters": {
       "instanceTemplate": {
        "type": "string",
@@ -13703,7 +13709,7 @@
      "id": "compute.instances.get",
      "path": "{project}/zones/{zone}/instances/{instance}",
      "httpMethod": "GET",
-     "description": "Returns the specified Instance resource.",
+     "description": "Returns the specified Instance resource. Get a list of available instances by making a list() request.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -14378,47 +14384,6 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
-    "suspend": {
-     "id": "compute.instances.suspend",
-     "path": "{project}/zones/{zone}/instances/{instance}/suspend",
-     "httpMethod": "POST",
-     "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.",
-     "parameters": {
-      "instance": {
-       "type": "string",
-       "description": "Name of the instance resource to suspend.",
-       "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
-       "location": "path"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "zone": {
-       "type": "string",
-       "description": "The name of the zone for this request.",
-       "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "zone",
-      "instance"
-     ],
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
-     ]
-    },
     "testIamPermissions": {
      "id": "compute.instances.testIamPermissions",
      "path": "{project}/zones/{zone}/instances/{resource}/testIamPermissions",
@@ -14472,7 +14437,7 @@
      "id": "compute.licenses.get",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "GET",
-     "description": "Returns the specified license resource.",
+     "description": "Returns the specified License resource. Get a list of available licenses by making a list() request.",
      "parameters": {
       "license": {
        "type": "string",
@@ -14560,7 +14525,7 @@
      "id": "compute.machineTypes.get",
      "path": "{project}/zones/{zone}/machineTypes/{machineType}",
      "httpMethod": "GET",
-     "description": "Returns the specified machine type.",
+     "description": "Returns the specified machine type. Get a list of available machine types by making a list() request.",
      "parameters": {
       "machineType": {
        "type": "string",
@@ -14697,7 +14662,7 @@
      "id": "compute.networks.get",
      "path": "{project}/global/networks/{network}",
      "httpMethod": "GET",
-     "description": "Returns the specified network.",
+     "description": "Returns the specified network. Get a list of available networks by making a list() request.",
      "parameters": {
       "network": {
        "type": "string",
@@ -14850,7 +14815,7 @@
      "id": "compute.projects.get",
      "path": "{project}",
      "httpMethod": "GET",
-     "description": "Returns the specified project resource.",
+     "description": "Returns the specified Project resource.",
      "parameters": {
       "project": {
        "type": "string",
@@ -16208,7 +16173,7 @@
      "id": "compute.regions.get",
      "path": "{project}/regions/{region}",
      "httpMethod": "GET",
-     "description": "Returns the specified region resource.",
+     "description": "Returns the specified Region resource. Get a list of available regions by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -16387,7 +16352,7 @@
      "id": "compute.routers.get",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "GET",
-     "description": "Returns the specified Router resource.",
+     "description": "Returns the specified Router resource. Get a list of available routers by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -16735,7 +16700,7 @@
      "id": "compute.routes.get",
      "path": "{project}/global/routes/{route}",
      "httpMethod": "GET",
-     "description": "Returns the specified route resource.",
+     "description": "Returns the specified Route resource. Get a list of available routes by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -16797,7 +16762,7 @@
      "id": "compute.routes.list",
      "path": "{project}/global/routes",
      "httpMethod": "GET",
-     "description": "Retrieves the list of route resources available to the specified project.",
+     "description": "Retrieves the list of Route resources available to the specified project.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -16921,7 +16886,7 @@
      "id": "compute.snapshots.get",
      "path": "{project}/global/snapshots/{snapshot}",
      "httpMethod": "GET",
-     "description": "Returns the specified Snapshot resource.",
+     "description": "Returns the specified Snapshot resource. Get a list of available snapshots by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17115,7 +17080,7 @@
      "id": "compute.sslCertificates.get",
      "path": "{project}/global/sslCertificates/{sslCertificate}",
      "httpMethod": "GET",
-     "description": "Returns the specified SslCertificate resource.",
+     "description": "Returns the specified SslCertificate resource. Get a list of available SSL certificates by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17359,7 +17324,7 @@
      "id": "compute.subnetworks.get",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "GET",
-     "description": "Returns the specified subnetwork.",
+     "description": "Returns the specified subnetwork. Get a list of available subnetworks by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17577,7 +17542,7 @@
      "id": "compute.targetHttpProxies.get",
      "path": "{project}/global/targetHttpProxies/{targetHttpProxy}",
      "httpMethod": "GET",
-     "description": "Returns the specified TargetHttpProxy resource.",
+     "description": "Returns the specified TargetHttpProxy resource. Get a list of available target HTTP proxies by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17799,7 +17764,7 @@
      "id": "compute.targetHttpsProxies.get",
      "path": "{project}/global/targetHttpsProxies/{targetHttpsProxy}",
      "httpMethod": "GET",
-     "description": "Returns the specified TargetHttpsProxy resource.",
+     "description": "Returns the specified TargetHttpsProxy resource. Get a list of available target HTTPS proxies by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17922,7 +17887,7 @@
       },
       "targetHttpsProxy": {
        "type": "string",
-       "description": "Name of the TargetHttpsProxy resource to set an SSLCertificate resource for.",
+       "description": "Name of the TargetHttpsProxy resource to set an SslCertificates resource for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -18115,7 +18080,7 @@
      "id": "compute.targetInstances.get",
      "path": "{project}/zones/{zone}/targetInstances/{targetInstance}",
      "httpMethod": "GET",
-     "description": "Returns the specified TargetInstance resource.",
+     "description": "Returns the specified TargetInstance resource. Get a list of available target instances by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -18479,7 +18444,7 @@
      "id": "compute.targetPools.get",
      "path": "{project}/regions/{region}/targetPools/{targetPool}",
      "httpMethod": "GET",
-     "description": "Returns the specified target pool.",
+     "description": "Returns the specified target pool. Get a list of available target pools by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -18979,7 +18944,7 @@
      "id": "compute.targetVpnGateways.get",
      "path": "{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}",
      "httpMethod": "GET",
-     "description": "Returns the specified target VPN gateway.",
+     "description": "Returns the specified target VPN gateway. Get a list of available target VPN gateways by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -19197,7 +19162,7 @@
      "id": "compute.urlMaps.get",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "GET",
-     "description": "Returns the specified UrlMap resource.",
+     "description": "Returns the specified UrlMap resource. Get a list of available URL maps by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -19585,7 +19550,7 @@
      "id": "compute.vpnTunnels.get",
      "path": "{project}/regions/{region}/vpnTunnels/{vpnTunnel}",
      "httpMethod": "GET",
-     "description": "Returns the specified VpnTunnel resource.",
+     "description": "Returns the specified VpnTunnel resource. Get a list of available VPN tunnels by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -19912,7 +19877,7 @@
      "id": "compute.zones.get",
      "path": "{project}/zones/{zone}",
      "httpMethod": "GET",
-     "description": "Returns the specified zone resource.",
+     "description": "Returns the specified Zone resource. Get a list of available zones by making a list() request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -19946,7 +19911,7 @@
      "id": "compute.zones.list",
      "path": "{project}/zones",
      "httpMethod": "GET",
-     "description": "Retrieves the list of zone resources available to the specified project.",
+     "description": "Retrieves the list of Zone resources available to the specified project.",
      "parameters": {
       "filter": {
        "type": "string",

@@ -2,6 +2,25 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 97.0.0 (2016/2/17)
+
+### Breaking Changes
+
+`gcloud alpha compute routers` now requires manual configuration of interfaces
+
+### Google Compute Engine
+
+* Added flag `--advertised-route-priority` to `gcloud alpha compute routers create`
+* Added support for regional instance groups in alpha
+
+### Google App Engine
+
+* Ruby runtime now uses the Rack "deployment" environment, instead of "none"
+
+### Google Container Engine
+
+* Added `--master` flag to `gcloud container clusters upgrade`
+
 ## 96.0.0 (2016/2/10)
 
 ### Breaking Changes

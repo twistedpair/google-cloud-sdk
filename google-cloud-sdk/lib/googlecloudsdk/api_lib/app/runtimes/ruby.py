@@ -131,9 +131,9 @@ DOCKERFILE_ENTRYPOINT = textwrap.dedent("""\
     """)
 
 ENTRYPOINT_FOREMAN = 'foreman start web -p 8080'
-ENTRYPOINT_PUMA = 'bundle exec puma -p 8080 -e production'
-ENTRYPOINT_UNICORN = 'bundle exec unicorn -p 8080 -E production'
-ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E production config.ru'
+ENTRYPOINT_PUMA = 'bundle exec puma -p 8080 -e deployment'
+ENTRYPOINT_UNICORN = 'bundle exec unicorn -p 8080 -E deployment'
+ENTRYPOINT_RACKUP = 'bundle exec rackup -p 8080 -E deployment config.ru'
 
 
 class RubyConfigError(exceptions.Error):

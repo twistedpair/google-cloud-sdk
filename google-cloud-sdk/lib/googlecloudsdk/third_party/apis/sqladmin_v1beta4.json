@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20160201",
+ "revision": "20160210",
  "title": "Cloud SQL Administration API",
  "description": "API for Cloud SQL database instance management.",
  "ownerDomain": "google.com",
@@ -437,6 +437,13 @@
     "state": {
      "type": "string",
      "description": "The current serving state of the Cloud SQL instance. This can be one of the following.\nRUNNABLE: The instance is running, or is ready to run when accessed.\nSUSPENDED: The instance is not available, for example due to problems with billing.\nPENDING_CREATE: The instance is being created.\nMAINTENANCE: The instance is down for maintenance.\nFAILED: The instance creation failed.\nUNKNOWN_STATE: The state of the instance is unknown."
+    },
+    "suspensionReason": {
+     "type": "array",
+     "description": "If the instance state is SUSPENDED, the reason for the suspension.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },

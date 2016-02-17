@@ -4247,7 +4247,7 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
       TargetHttpsProxiesSetSslCertificatesRequest resource to be passed as the
       request body.
     targetHttpsProxy: Name of the TargetHttpsProxy resource to set an
-      SSLCertificate resource for.
+      SslCertificates resource for.
   """
 
   project = _messages.StringField(1, required=True)
@@ -6493,7 +6493,7 @@ class Instance(_messages.Message):
       values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
-    tags: A list of tags to appy to this instance. Tags are used to identify
+    tags: A list of tags to apply to this instance. Tags are used to identify
       valid sources or targets for network firewalls and are specified by the
       client during instance creation. The tags can be later modified by the
       setTags method. Each tag within the list must comply with RFC1035.
@@ -9490,7 +9490,7 @@ class TargetHttpProxy(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpProxy for
-      targetHttpProxy resources.
+      target HTTP proxies.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -9520,7 +9520,7 @@ class TargetHttpProxyList(_messages.Message):
       is defined by the server.
     items: A list of TargetHttpProxy resources.
     kind: Type of resource. Always compute#targetHttpProxyList for lists of
-      targetHttpProxy resources.
+      target HTTP proxies.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -9541,7 +9541,7 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of SslCertificate resources to associate with
-      this TargetHttpsProxy resource. Currently exactly one SSLcertificate
+      this TargetHttpsProxy resource. Currently exactly one SslCertificate
       resource must be specified.
   """
 
@@ -9559,7 +9559,7 @@ class TargetHttpsProxy(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
-      targetHttpsproxy resources.
+      target HTTPS proxies.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -9596,7 +9596,7 @@ class TargetHttpsProxyList(_messages.Message):
       is defined by the server.
     items: A list of TargetHttpsProxy resources.
     kind: Type of resource. Always compute#targetHttpsProxyList for lists of
-      targetHttpsProxy resources.
+      target HTTPS proxies.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -10645,6 +10645,7 @@ class VpnTunnel(_messages.Message):
     """[Output Only] The status of the VPN tunnel.
 
     Values:
+      ALLOCATING_RESOURCES: <no description>
       AUTHORIZATION_ERROR: <no description>
       DEPROVISIONING: <no description>
       ESTABLISHED: <no description>
@@ -10657,17 +10658,18 @@ class VpnTunnel(_messages.Message):
       REJECTED: <no description>
       WAITING_FOR_FULL_CONFIG: <no description>
     """
-    AUTHORIZATION_ERROR = 0
-    DEPROVISIONING = 1
-    ESTABLISHED = 2
-    FAILED = 3
-    FIRST_HANDSHAKE = 4
-    NEGOTIATION_FAILURE = 5
-    NETWORK_ERROR = 6
-    NO_INCOMING_PACKETS = 7
-    PROVISIONING = 8
-    REJECTED = 9
-    WAITING_FOR_FULL_CONFIG = 10
+    ALLOCATING_RESOURCES = 0
+    AUTHORIZATION_ERROR = 1
+    DEPROVISIONING = 2
+    ESTABLISHED = 3
+    FAILED = 4
+    FIRST_HANDSHAKE = 5
+    NEGOTIATION_FAILURE = 6
+    NETWORK_ERROR = 7
+    NO_INCOMING_PACKETS = 8
+    PROVISIONING = 9
+    REJECTED = 10
+    WAITING_FOR_FULL_CONFIG = 11
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)

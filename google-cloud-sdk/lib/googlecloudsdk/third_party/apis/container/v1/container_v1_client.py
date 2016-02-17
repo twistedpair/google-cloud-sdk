@@ -37,6 +37,7 @@ class ContainerV1(base_api.BaseApiClient):
     self.masterProjects_zones_tokens = self.MasterProjectsZonesTokensService(self)
     self.masterProjects_zones = self.MasterProjectsZonesService(self)
     self.masterProjects = self.MasterProjectsService(self)
+    self.projects_zones_clusters_nodePools = self.ProjectsZonesClustersNodePoolsService(self)
     self.projects_zones_clusters = self.ProjectsZonesClustersService(self)
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
@@ -147,6 +148,119 @@ to make modifications to its user's project.
 
       self._upload_configs = {
           }
+
+  class ProjectsZonesClustersNodePoolsService(base_api.BaseApiService):
+    """Service class for the projects_zones_clusters_nodePools resource."""
+
+    _NAME = u'projects_zones_clusters_nodePools'
+
+    def __init__(self, client):
+      super(ContainerV1.ProjectsZonesClustersNodePoolsService, self).__init__(client)
+      self._method_configs = {
+          'Create': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'container.projects.zones.clusters.nodePools.create',
+              ordered_params=[u'projectId', u'zone', u'clusterId'],
+              path_params=[u'clusterId', u'projectId', u'zone'],
+              query_params=[],
+              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+              request_field=u'createNodePoolRequest',
+              request_type_name=u'ContainerProjectsZonesClustersNodePoolsCreateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'container.projects.zones.clusters.nodePools.delete',
+              ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+              path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+              query_params=[],
+              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+              request_field='',
+              request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'container.projects.zones.clusters.nodePools.get',
+              ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+              path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+              query_params=[],
+              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+              request_field='',
+              request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
+              response_type_name=u'NodePool',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'container.projects.zones.clusters.nodePools.list',
+              ordered_params=[u'projectId', u'zone', u'clusterId'],
+              path_params=[u'clusterId', u'projectId', u'zone'],
+              query_params=[],
+              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+              request_field='',
+              request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
+              response_type_name=u'ListNodePoolsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a node pool for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes a node pool from a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Retrieves the node pool requested.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Lists the node pools for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersNodePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""

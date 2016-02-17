@@ -16,11 +16,8 @@
 
 from googlecloudsdk.api_lib.debug import errors
 from googlecloudsdk.api_lib.projects import util as project_util
+from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apis.clouddebugger.v2 import clouddebugger_v2_client as debug_client
-from googlecloudsdk.third_party.apis.clouddebugger.v2 import clouddebugger_v2_messages as messages
-from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_client as resource_client
-from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_messages as resource_messages
 
 # Names for default module and version. In App Engine, the default module and
 # version don't report explicit names to the debugger, so use these strings
@@ -35,20 +32,23 @@ DEFAULT_VERSION = 'default'
 class DebugObject(object):
   """Base class for debug api wrappers."""
   _debug_client = None
+  _debug_messages = None
   _resource_client = None
+  _resource_messages = None
   _project_number_cache = {}
   _project_id_cache = {}
 
   def _CheckClient(self):
-    if not self._debug_client:
+    if (not self._debug_client or not self._debug_messages or
+        not self._resource_client or not self._resource_messages):
       raise errors.NoEndpointError()
 
   @classmethod
-  def InitializeApiClients(cls, http, debug_endpoint, resource_endpoint):
-    cls._debug_client = debug_client.ClouddebuggerV2(
-        url=debug_endpoint, get_credentials=False, http=http)
-    cls._resource_client = resource_client.CloudresourcemanagerV1beta1(
-        url=resource_endpoint, get_credentials=False, http=http)
+  def InitializeApiClients(cls, http):
+    cls._debug_client = apis.GetClientInstance('debug', 'v2', http)
+    cls._debug_messages = apis.GetMessagesModule('debug', 'v2')
+    cls._resource_client = apis.GetClientInstance('projects', 'v1beta1', http)
+    cls._resource_messages = apis.GetMessagesModule('projects', 'v1beta1')
 
   @classmethod
   def GetProjectNumber(cls, project_id):
@@ -66,7 +66,7 @@ class DebugObject(object):
     def GetProject(message):
       return cls._resource_client.projects.Get(message)
     project = GetProject(
-        resource_messages.CloudresourcemanagerProjectsGetRequest(
+        cls._resource_messages.CloudresourcemanagerProjectsGetRequest(
             projectId=project_id))
     cls._project_number_cache[project.projectId] = project.projectNumber
     cls._project_id_cache[project.projectNumber] = project.projectId
@@ -109,7 +109,7 @@ class Debugger(DebugObject):
     Returns:
       [Debuggee] A list of debuggees.
     """
-    request = messages.ClouddebuggerDebuggerDebuggeesListRequest(
+    request = self._debug_messages.ClouddebuggerDebuggerDebuggeesListRequest(
         project=self._project_number, includeInactive=include_inactive)
     response = self._debug_client.debugger_debuggees.List(request)
     return [Debuggee(debuggee) for debuggee in response.debuggees]

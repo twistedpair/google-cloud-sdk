@@ -4,7 +4,7 @@
  "id": "toolresults:v1beta3",
  "name": "toolresults",
  "version": "v1beta3",
- "revision": "20160202",
+ "revision": "20160210",
  "title": "Cloud Tool Results API",
  "description": "Read and publish results from tools such as Build and Test.",
  "ownerDomain": "google.com",
@@ -842,6 +842,11 @@
          "description": "A Project id.\n\nRequired.",
          "required": true,
          "location": "path"
+        },
+        "requestId": {
+         "type": "string",
+         "description": "A unique request ID for server to detect duplicated requests. For example, a UUID.\n\nOptional, but strongly recommended.",
+         "location": "query"
         }
        },
        "parameterOrder": [
@@ -947,6 +952,11 @@
            "description": "A Project id.\n\nRequired.",
            "required": true,
            "location": "path"
+          },
+          "requestId": {
+           "type": "string",
+           "description": "A unique request ID for server to detect duplicated requests. For example, a UUID.\n\nOptional, but strongly recommended.",
+           "location": "query"
           }
          },
          "parameterOrder": [
@@ -1064,6 +1074,11 @@
            "description": "A Project id. Required.",
            "required": true,
            "location": "path"
+          },
+          "requestId": {
+           "type": "string",
+           "description": "A unique request ID for server to detect duplicated requests. For example, a UUID.\n\nOptional, but strongly recommended.",
+           "location": "query"
           }
          },
          "parameterOrder": [
@@ -1108,6 +1123,11 @@
              "description": "A Project id.\n\nRequired.",
              "required": true,
              "location": "path"
+            },
+            "requestId": {
+             "type": "string",
+             "description": "A unique request ID for server to detect duplicated requests. For example, a UUID.\n\nOptional, but strongly recommended.",
+             "location": "query"
             }
            },
            "parameterOrder": [
@@ -1240,6 +1260,11 @@
              "description": "A Project id.\n\nRequired.",
              "required": true,
              "location": "path"
+            },
+            "requestId": {
+             "type": "string",
+             "description": "A unique request ID for server to detect duplicated requests. For example, a UUID.\n\nOptional, but strongly recommended.",
+             "location": "query"
             },
             "stepId": {
              "type": "string",

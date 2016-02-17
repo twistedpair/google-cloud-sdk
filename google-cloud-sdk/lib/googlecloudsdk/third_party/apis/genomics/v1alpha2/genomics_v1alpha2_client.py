@@ -171,14 +171,14 @@ service.
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
-              http_method=u'POST',
+              http_method=u'GET',
               method_id=u'genomics.pipelines.list',
               ordered_params=[],
               path_params=[],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines:list',
-              request_field='<request>',
-              request_type_name=u'ListPipelinesRequest',
+              query_params=[u'namePrefix', u'pageSize', u'pageToken', u'projectId'],
+              relative_path=u'v1alpha2/pipelines',
+              request_field='',
+              request_type_name=u'GenomicsPipelinesListRequest',
               response_type_name=u'ListPipelinesResponse',
               supports_download=False,
           ),
@@ -250,7 +250,7 @@ Caller must have READ permission to the project.
 Caller must have READ permission to the project.
 
       Args:
-        request: (ListPipelinesRequest) input message
+        request: (GenomicsPipelinesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListPipelinesResponse) The response message.
@@ -261,8 +261,8 @@ Caller must have READ permission to the project.
 
     def Run(self, request, global_params=None):
       """Runs a pipeline. If pipeline_id is specified in the request, then.
-run a saved pipeline. If a pipeline object is specified, then run
-that pipeline once and then delete it.
+run a saved pipeline. If ephemeral_pipeline is specified, then run
+that pipeline once without saving a copy.
 
 The caller must have READ permission to the project where the pipeline
 is stored and WRITE permission to the project where the pipeline will be

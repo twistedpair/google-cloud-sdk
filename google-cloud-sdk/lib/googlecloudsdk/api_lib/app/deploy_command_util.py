@@ -412,8 +412,11 @@ def GetStopPreviousVersionFromArgs(args):
   log.warn('In a future Cloud SDK release, deployments that promote the new '
            'version to receive all traffic will stop the previous version by '
            'default.\n\n'
+           'To adopt the new behavior early, pass the '
+           '`--stop-previous-version` flag or run the following command:\n\n'
+           '  $ gcloud config set app/stop_previous_version true\n\n'
            'To keep the current behavior (where deployments do not stop the '
-           'previous version, pass the `--no-stop-previous-version` flag, or '
-           'run the following command:'
-           '\n\n  $ gcloud config set app/stop_previous_version false')
-  return True
+           'previous version), pass the `--no-stop-previous-version` flag, or '
+           'run the following command:\n\n'
+           '  $ gcloud config set app/stop_previous_version false')
+  return False

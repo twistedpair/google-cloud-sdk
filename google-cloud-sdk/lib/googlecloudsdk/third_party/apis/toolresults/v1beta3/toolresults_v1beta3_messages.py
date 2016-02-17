@@ -927,10 +927,13 @@ class ToolresultsProjectsHistoriesCreateRequest(_messages.Message):
   Fields:
     history: A History resource to be passed as the request body.
     projectId: A Project id.  Required.
+    requestId: A unique request ID for server to detect duplicated requests.
+      For example, a UUID.  Optional, but strongly recommended.
   """
 
   history = _messages.MessageField('History', 1)
   projectId = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class ToolresultsProjectsHistoriesExecutionsCreateRequest(_messages.Message):
@@ -940,11 +943,14 @@ class ToolresultsProjectsHistoriesExecutionsCreateRequest(_messages.Message):
     execution: A Execution resource to be passed as the request body.
     historyId: A History id.  Required.
     projectId: A Project id.  Required.
+    requestId: A unique request ID for server to detect duplicated requests.
+      For example, a UUID.  Optional, but strongly recommended.
   """
 
   execution = _messages.MessageField('Execution', 1)
   historyId = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ToolresultsProjectsHistoriesExecutionsGetRequest(_messages.Message):
@@ -988,12 +994,15 @@ class ToolresultsProjectsHistoriesExecutionsPatchRequest(_messages.Message):
     executionId: Required.
     historyId: Required.
     projectId: A Project id. Required.
+    requestId: A unique request ID for server to detect duplicated requests.
+      For example, a UUID.  Optional, but strongly recommended.
   """
 
   execution = _messages.MessageField('Execution', 1)
   executionId = _messages.StringField(2, required=True)
   historyId = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message):
@@ -1003,13 +1012,16 @@ class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message
     executionId: A Execution id.  Required.
     historyId: A History id.  Required.
     projectId: A Project id.  Required.
+    requestId: A unique request ID for server to detect duplicated requests.
+      For example, a UUID.  Optional, but strongly recommended.
     step: A Step resource to be passed as the request body.
   """
 
   executionId = _messages.StringField(1, required=True)
   historyId = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
-  step = _messages.MessageField('Step', 4)
+  requestId = _messages.StringField(4)
+  step = _messages.MessageField('Step', 5)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsGetRequest(_messages.Message):
@@ -1056,6 +1068,8 @@ class ToolresultsProjectsHistoriesExecutionsStepsPatchRequest(_messages.Message)
     executionId: A Execution id.  Required.
     historyId: A History id.  Required.
     projectId: A Project id.  Required.
+    requestId: A unique request ID for server to detect duplicated requests.
+      For example, a UUID.  Optional, but strongly recommended.
     step: A Step resource to be passed as the request body.
     stepId: A Step id.  Required.
   """
@@ -1063,8 +1077,9 @@ class ToolresultsProjectsHistoriesExecutionsStepsPatchRequest(_messages.Message)
   executionId = _messages.StringField(1, required=True)
   historyId = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
-  step = _messages.MessageField('Step', 4)
-  stepId = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(4)
+  step = _messages.MessageField('Step', 5)
+  stepId = _messages.StringField(6, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest(_messages.Message):

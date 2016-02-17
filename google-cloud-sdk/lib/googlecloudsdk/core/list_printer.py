@@ -259,9 +259,9 @@ COLLECTION_COLUMNS = {
     'dataproc.clusters': (
         ('NAME', _Select('clusterName')),
         ('WORKER_COUNT', _Select(
-            'configuration.workerConfiguration.numInstances')),
+            'config.workerConfig.numInstances')),
         ('ZONE', _Select(
-            'configuration.gceClusterConfiguration.zoneUri', _NameOnly)),
+            'config.gceClusterConfig.zoneUri', _NameOnly)),
         ('STATUS', _Select('status.state')),
     ),
     'dataproc.jobs': (

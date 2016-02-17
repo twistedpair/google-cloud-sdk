@@ -2983,6 +2983,8 @@ class WorkerPool(_messages.Message):
       the user. Because of this, Google recommends using the TEARDOWN_ALWAYS
       policy except for small, manually supervised test jobs.  If unknown or
       unspecified, the service will attempt to choose a reasonable default.
+    workerHarnessContainerImage: Docker container image that executes Dataflow
+      worker harness, residing in Google Container Registry. Required.
     zone: Zone to run the worker pools in.  If empty or unspecified, the
       service will attempt to choose a reasonable default.
   """
@@ -3099,7 +3101,8 @@ class WorkerPool(_messages.Message):
   poolArgs = _messages.MessageField('PoolArgsValue', 14)
   taskrunnerSettings = _messages.MessageField('TaskRunnerSettings', 15)
   teardownPolicy = _messages.EnumField('TeardownPolicyValueValuesEnum', 16)
-  zone = _messages.StringField(17)
+  workerHarnessContainerImage = _messages.StringField(17)
+  zone = _messages.StringField(18)
 
 
 class WorkerSettings(_messages.Message):

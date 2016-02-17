@@ -15,6 +15,7 @@
 
 # TODO(user): Move the top-level functions in base_classes.py here.
 
+import argparse
 import cStringIO
 import re
 import urlparse
@@ -114,7 +115,8 @@ def RaiseException(problems, exception, error_message=None):
           errors))
 
 
-def AddZoneFlag(parser, resource_type, operation_type):
+def AddZoneFlag(parser, resource_type, operation_type,
+                explanation=constants.ZONE_PROPERTY_EXPLANATION):
   """Adds a --zone flag to the given parser."""
   short_help = 'The zone of the {0} to {1}.'.format(
       resource_type, operation_type)
@@ -124,10 +126,11 @@ def AddZoneFlag(parser, resource_type, operation_type):
       completion_resource='compute.zones',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   zone.detailed_help = '{0} {1}'.format(
-      short_help, constants.ZONE_PROPERTY_EXPLANATION)
+      short_help, explanation)
 
 
-def AddRegionFlag(parser, resource_type, operation_type):
+def AddRegionFlag(parser, resource_type, operation_type,
+                  explanation=constants.REGION_PROPERTY_EXPLANATION):
   """Adds a --region flag to the given parser."""
   short_help = 'The region of the {0} to {1}.'.format(
       resource_type, operation_type)
@@ -137,7 +140,7 @@ def AddRegionFlag(parser, resource_type, operation_type):
       completion_resource='compute.regions',
       action=actions.StoreProperty(properties.VALUES.compute.region))
   region.detailed_help = '{0} {1}'.format(
-      short_help, constants.REGION_PROPERTY_EXPLANATION)
+      short_help, explanation)
 
 
 def PromptForDeletion(refs, scope_name=None, prompt_title=None):
@@ -248,3 +251,30 @@ def UpdateContextEndpointEntries(context, http, api_client_default='v1'):
   context['clouduseraccounts'] = clouduseraccounts
   context['clouduseraccounts-resources'] = (
       resources.REGISTRY.CloneAndSwitchAPIs(clouduseraccounts))
+
+
+def IsValidIPV4(ip):
+  """Accepts an ipv4 address in string form and returns True if valid."""
+  match = re.match(r'^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$', ip)
+  if not match:
+    return False
+
+  octets = [int(x) for x in match.groups()]
+
+  # first octet must not be 0
+  if octets[0] == 0:
+    return False
+
+  for n in octets:
+    if n < 0 or n > 255:
+      return False
+
+  return True
+
+
+def IPV4Argument(value):
+  """Argparse argument type that checks for a valid ipv4 address."""
+  if not IsValidIPV4(value):
+    raise argparse.ArgumentTypeError("invalid ipv4 value: '{0}'".format(value))
+
+  return value

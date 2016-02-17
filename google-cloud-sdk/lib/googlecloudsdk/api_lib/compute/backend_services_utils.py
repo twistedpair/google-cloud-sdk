@@ -104,7 +104,7 @@ def AddUpdatableArgs(parser,
       help='The protocol for incoming requests.')
 
 
-def AddUpdatableBackendArgs(parser, compute_messages):
+def AddUpdatableBackendArgs(parser, compute_messages, multizonal=False):
   """Adds arguments for manipulating backends in a backend service."""
   parser.add_argument(
       '--description',
@@ -123,8 +123,15 @@ def AddUpdatableBackendArgs(parser, compute_messages):
       help=('The name or URI of a Google Cloud Instance Group that can receive'
             ' traffic.'))
 
+  scope_parser = parser
+  if multizonal:
+    scope_parser = parser.add_mutually_exclusive_group()
+    utils.AddRegionFlag(
+        scope_parser,
+        resource_type='instance group',
+        operation_type='add to the backend service')
   utils.AddZoneFlag(
-      parser,
+      scope_parser,
       resource_type='instance group',
       operation_type='add to the backend service')
 

@@ -65,7 +65,11 @@ class Cluster(_messages.Message):
     initialNodeCount: The number of nodes to create in this cluster. You must
       ensure that your Compute Engine <a href="/compute/docs/resource-
       quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota.
+      You must also have available firewall and routes quota. For requests,
+      this field should only be used in lieu of a "node_pool" object, since
+      this configuration (along with the "node_config") will be used to create
+      a "NodePool" object with an auto-generated name. Do not use this and a
+      node_pool at the same time.
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this cluster.
     loggingService: The logging service the cluster should use to write logs.
@@ -88,11 +92,20 @@ class Cluster(_messages.Message):
       /networks-and-firewalls#networks) to which the cluster is connected. If
       left unspecified, the `default` network will be used.
     nodeConfig: Parameters used in creating the cluster's nodes. See
-      `nodeConfig` for the description of its properties.  If unspecified, the
-      defaults are used.
+      `nodeConfig` for the description of its properties. For requests, this
+      field should only be used in lieu of a "node_pool" object, since this
+      configuration (along with the "initial_node_count") will be used to
+      create a "NodePool" object with an auto-generated name. Do not use this
+      and a node_pool at the same time. For responses, this field will be
+      populated with the node configuration of the first node pool.  If
+      unspecified, the defaults are used.
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range.
+    nodePools: The node pools associated with this cluster. When creating a
+      new cluster, only a single node pool should be specified. This field
+      should not be set if "node_config" and "initial_node_count" are
+      specified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -150,12 +163,13 @@ class Cluster(_messages.Message):
   network = _messages.StringField(16)
   nodeConfig = _messages.MessageField('NodeConfig', 17)
   nodeIpv4CidrSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(19)
-  servicesIpv4Cidr = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  subnetwork = _messages.StringField(23)
-  zone = _messages.StringField(24)
+  nodePools = _messages.MessageField('NodePool', 19, repeated=True)
+  selfLink = _messages.StringField(20)
+  servicesIpv4Cidr = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  subnetwork = _messages.StringField(24)
+  zone = _messages.StringField(25)
 
 
 class ClusterUpdate(_messages.Message):
@@ -169,13 +183,17 @@ class ClusterUpdate(_messages.Message):
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
-    desiredMasterVersion: The Kubernetes version to change the master to
-      (typically an upgrade). Use "-" to upgrade to the latest version
-      supported by the server.
+    desiredMasterVersion:  Whitelisted and internal users can change the
+      master to any version.  The Kubernetes version to change the master to.
+      The only valid value is the latest supported version. Use "-" to have
+      the server automatically select the latest version.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
+    desiredNodePoolId: The node pool to be upgraded. This field is mandatory
+      if the "desired_node_version" is specified and there is more than one
+      node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
       supported by the server.
@@ -185,7 +203,8 @@ class ClusterUpdate(_messages.Message):
   desiredMasterMachineType = _messages.StringField(2)
   desiredMasterVersion = _messages.StringField(3)
   desiredMonitoringService = _messages.StringField(4)
-  desiredNodeVersion = _messages.StringField(5)
+  desiredNodePoolId = _messages.StringField(5)
+  desiredNodeVersion = _messages.StringField(6)
 
 
 class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):
@@ -286,6 +305,77 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
   zone = _messages.StringField(2, required=True)
 
 
+class ContainerProjectsZonesClustersNodePoolsCreateRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsCreateRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    createNodePoolRequest: A CreateNodePoolRequest resource to be passed as
+      the request body.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  createNodePoolRequest = _messages.MessageField('CreateNodePoolRequest', 2)
+  projectId = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsDeleteRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    nodePoolId: The name of the node pool to delete.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  nodePoolId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsGetRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    nodePoolId: The name of the node pool.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  nodePoolId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersNodePoolsListRequest object.
+
+  Fields:
+    clusterId: The name of the cluster.
+    projectId: The Google Developers Console [project ID or project
+      number](https://developers.google.com/console/help/new/#projectnumber).
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ContainerProjectsZonesClustersUpdateRequest(_messages.Message):
   """A ContainerProjectsZonesClustersUpdateRequest object.
 
@@ -359,6 +449,21 @@ class CreateClusterRequest(_messages.Message):
   """
 
   cluster = _messages.MessageField('Cluster', 1)
+
+
+class CreateNodePoolRequest(_messages.Message):
+  """CreateNodePoolRequest creates a node pool for a cluster.
+
+  Fields:
+    initialNodeCount: The number of nodes to create in this pool. You must
+      ensure that your Compute Engine <a href="/compute/docs/resource-
+      quotas">resource quota</a> is sufficient for this number of instances.
+      You must also have available firewall and routes quota.
+    nodePool: The node pool to create.
+  """
+
+  initialNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodePool = _messages.MessageField('NodePool', 2)
 
 
 class CreateSignedUrlsRequest(_messages.Message):
@@ -437,6 +542,16 @@ class ListClustersResponse(_messages.Message):
   missingZones = _messages.StringField(2, repeated=True)
 
 
+class ListNodePoolsResponse(_messages.Message):
+  """ListNodePoolsResponse is the result of ListNodePoolsRequest.
+
+  Fields:
+    nodePools: A list of node pools for a cluster.
+  """
+
+  nodePools = _messages.MessageField('NodePool', 1, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   """ListOperationsResponse is the result of ListOperationsRequest.
 
@@ -480,6 +595,13 @@ class NodeConfig(_messages.Message):
   """Parameters that describe the nodes in a cluster.
 
   Messages:
+    LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
+      to each node. These will added in addition to any default label(s) that
+      Kubernetes may apply to the node. In case of conflict in label keys, the
+      applied set may differ depending on the Kubernetes version -- it's best
+      to assume the behavior is undefined and conflicts should be avoided. For
+      more information, including usage and the valid values, see:
+      http://kubernetes.io/v1.1/docs/user-guide/labels.html
     MetadataValue: The metadata key/value pairs assigned to instances in the
       cluster.  Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -495,6 +617,19 @@ class NodeConfig(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
+    image: The image track to use for this node. Note that for a given image
+      track, the latest version of it will be used. TODO(user): This will
+      NOT be exposed to the user in the first iteration, since we're still
+      working through what an "image track" means and what we'll support.
+      Discussion on the possibility of supporting different versions will be
+      done then as well.
+    labels: The map of Kubernetes labels (key/value pairs) to be applied to
+      each node. These will added in addition to any default label(s) that
+      Kubernetes may apply to the node. In case of conflict in label keys, the
+      applied set may differ depending on the Kubernetes version -- it's best
+      to assume the behavior is undefined and conflicts should be avoided. For
+      more information, including usage and the valid values, see:
+      http://kubernetes.io/v1.1/docs/user-guide/labels.html
     machineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-1`).  If
       unspecified, the default machine type is `n1-standard-1`.
@@ -519,6 +654,36 @@ class NodeConfig(_messages.Message):
       Cloud Logging or Cloud Monitoring are enabled, in which case their
       required scopes will be added.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The map of Kubernetes labels (key/value pairs) to be applied to each
+    node. These will added in addition to any default label(s) that Kubernetes
+    may apply to the node. In case of conflict in label keys, the applied set
+    may differ depending on the Kubernetes version -- it's best to assume the
+    behavior is undefined and conflicts should be avoided. For more
+    information, including usage and the valid values, see:
+    http://kubernetes.io/v1.1/docs/user-guide/labels.html
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
@@ -554,9 +719,37 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  oauthScopes = _messages.StringField(4, repeated=True)
+  image = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  machineType = _messages.StringField(4)
+  metadata = _messages.MessageField('MetadataValue', 5)
+  oauthScopes = _messages.StringField(6, repeated=True)
+
+
+class NodePool(_messages.Message):
+  """NodePool contains the name and configuration for a cluster's node pool.
+  Node pools are a set of nodes (i.e. VM's), with a common configuration and
+  specification, under the control of the cluster master. They may have a set
+  of Kubernetes labels applied to them, which may be used to reference them
+  during pod scheduling. They may also be resized up or down, to accommodate
+  the workload.
+
+  Fields:
+    config: The node configuration of the pool.
+    initialNodeCount: The initial node count for the pool.
+    instanceGroupUrl: [Output only] The resource URLs of [instance
+      groups](/compute/docs/instance-groups/) associated with this node pool.
+    name: The name of the node pool.
+    selfLink: Server-defined URL for the resource.
+    version: The version of the Kubernetes of this node.
+  """
+
+  config = _messages.MessageField('NodeConfig', 1)
+  initialNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  instanceGroupUrl = _messages.StringField(3)
+  name = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -592,6 +785,8 @@ class Operation(_messages.Message):
       UPGRADE_NODES: A node upgrade.
       REPAIR_CLUSTER: Cluster repair.
       UPDATE_CLUSTER: Cluster update.
+      CREATE_NODE_POOL: Node pool create.
+      DELETE_NODE_POOL: Node pool delete.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -600,6 +795,8 @@ class Operation(_messages.Message):
     UPGRADE_NODES = 4
     REPAIR_CLUSTER = 5
     UPDATE_CLUSTER = 6
+    CREATE_NODE_POOL = 7
+    DELETE_NODE_POOL = 8
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.

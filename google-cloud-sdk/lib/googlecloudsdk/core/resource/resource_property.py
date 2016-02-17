@@ -14,35 +14,48 @@
 
 """Resource property Get."""
 
+import json
 
-def _GetMetaData(resource, name, value, default=None):
-  """Gets the metadata dict in resource that contains {name: value, ...}.
+
+def _GetMetaDataValue(items, name, deserialize=False, default=None):
+  """Gets the metadata value for the item in items with key == name.
 
   A metadata object is a list of dicts of the form:
     [
-      {'name': key-name-1, 'field_1': field-1-value-2, ...},
-      {'name': key-name-2, 'field_1': field-1-value-2, ...},
+      {'key': key-name-1, 'value': field-1-value-string},
+      {'key': key-name-2, 'value': field-2-value-string},
       ...
     ]
-  Get() on key 'name.foo.field_1' calls _GetMetaData(resource, 'name', 'foo')
-  to find the dict in resource with 'name'=='foo' and then looks up 'field_1' in
-  that dict.
+
+  Examples:
+    x.metadata[windows-keys].email
+      Deserializes the 'windows-keys' metadata value and gets the email value.
+    x.metadata[windows-keys]
+      Gets the 'windows-key' metadata string value.
+    x.metadata[windows-keys][]
+      Gets the deserialized 'windows-key' metadata value.
 
   Args:
-    resource: The metadata resource object.
-    name: The metadata key field name.
-    value: The metadata key field value.
-    default: This value returned if not found or resource is not metadata.
+    items: The metadata items list.
+    name: The metadata name (which must match one of the 'key' values).
+    deserialize: If True then attempt to deserialize a compact JSON string.
+    default: This value returned if not found or items has no metadata.
 
   Returns:
-    The metadata dict containing {name: value, ...} or default if not found or
-    if resource is not a metadata object.
+    The metadata value for name or default if not found or if items is not a
+    metadata dict list.
   """
   try:
-    for item in resource:
-      if item.get(name) == value:
-        return item
-  except (IndexError, TypeError):
+    for item in items:
+      if item['key'] == name:
+        value = item['value']
+        if deserialize:
+          try:
+            return json.loads(value)
+          except (TypeError, ValueError):
+            pass
+        return value
+  except (AttributeError, IndexError, TypeError, ValueError):
     pass
   return default
 
@@ -75,19 +88,12 @@ def Get(resource, key, default=None):
   """
   if isinstance(resource, set):
     resource = sorted(resource)
-  metadata = None
   for i, index in enumerate(key):
-
     # This if-ladder ordering checks builtin object attributes last. For
     # example, with resource = {'items': ...}, Get() treats 'items' as a dict
     # key rather than the builtin 'items' attribute of resource.
 
-    if metadata:
-      # MetaData-like
-      resource = _GetMetaData(resource, metadata, index)
-      metadata = None
-
-    elif resource is None:
+    if resource is None:
       # None is different than an empty dict or list.
       return default
 
@@ -102,11 +108,19 @@ def Get(resource, key, default=None):
           return resource
       elif index in resource:
         resource = resource[index]
+      elif 'items' in resource:
+        # It would be nice if there were a better metadata indicator.
+        # _GetMetaDataValue() returns default if resource['items'] isn't really
+        # metadata, so there is a bit more verification than just 'items' in
+        # resource.
+        resource = _GetMetaDataValue(resource['items'], index,
+                                     deserialize=i + 1 < len(key),
+                                     default=default)
       else:
         return default
 
     elif isinstance(index, basestring) and hasattr(resource, index):
-      # class-like -- done here to catch metadata
+      # class-like
       resource = getattr(resource, index, default)
 
     elif hasattr(resource, '__iter__') or isinstance(resource, basestring):
@@ -119,9 +133,6 @@ def Get(resource, key, default=None):
         else:
           # Trailing slice: *.[]
           return resource
-      elif isinstance(index, basestring):
-        # Try _GetMetaData() index lookup on the next iteration.
-        metadata = index
       elif not isinstance(index, (int, long)):
         # Index mismatch.
         return default
@@ -136,9 +147,6 @@ def Get(resource, key, default=None):
 
     if isinstance(resource, set):
       resource = sorted(resource)
-
-  if metadata:
-    return default
 
   return resource
 

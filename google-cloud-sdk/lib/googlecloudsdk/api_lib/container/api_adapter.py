@@ -18,14 +18,13 @@ import time
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apis.compute import v1 as compute_v1
-from googlecloudsdk.third_party.apis.container import v1 as container_v1
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import http_wrapper
 
@@ -46,39 +45,28 @@ def CheckResponse(response):
   return http_wrapper.CheckResponse(response)
 
 
-def NewAPIAdapter(api_version, endpoint_url, compute_endpoint_url, http):
+def NewAPIAdapter(http):
   """Initialize an api adapter for the given api_version.
 
   Args:
-    api_version: str, version to create api adapter for.
-    endpoint_url: str, endpoint url for the api client.
-    compute_endpoint_url: str, endpoint url for the compute api client.
     http: httplib2.Http object for api client to use.
 
   Returns:
     APIAdapter object.
   """
-  if api_version == 'v1':
-    api = container_v1
-    api_compute = compute_v1
-    api_client = api.ContainerV1
-    api_compute_client = api_compute.ComputeV1
-    zone_field = 'zone'
-    adapter = V1Adapter
-  else:
-    raise exceptions.InvalidArgumentException(
-        'api_client_overrides/container',
-        '{0} is not a valid api version'.format(api_version))
-
-  api_client = api_client(url=endpoint_url, get_credentials=False, http=http)
+  api_client = core_apis.GetClientInstance('container', 'v1', http)
   api_client.check_response_func = CheckResponse
-  api_compute_client = api_compute_client(url=compute_endpoint_url,
-                                          get_credentials=False, http=http)
+  messages = core_apis.GetMessagesModule('container', 'v1')
+
+  api_compute_client = core_apis.GetClientInstance('compute', 'v1', http)
   api_compute_client.check_response_func = CheckResponse
-  messages = api
-  compute_messages = api_compute
-  registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(api_client,
-                                                         api_compute_client)
+  compute_messages = core_apis.GetMessagesModule('compute', 'v1')
+
+  registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(
+      api_client, api_compute_client)
+
+  adapter = V1Adapter
+
   registry.SetParamDefault(
       api='compute', collection=None, param='project',
       resolver=resolvers.FromProperty(properties.VALUES.core.project))
@@ -86,11 +74,11 @@ def NewAPIAdapter(api_version, endpoint_url, compute_endpoint_url, http):
       api='container', collection=None, param='projectId',
       resolver=resolvers.FromProperty(properties.VALUES.core.project))
   registry.SetParamDefault(
-      api='container', collection=None, param=zone_field,
+      api='container', collection=None, param='zone',
       resolver=resolvers.FromProperty(properties.VALUES.compute.zone))
 
-  return adapter(api_version, registry, api_client, messages,
-                 api_compute_client, compute_messages)
+  return adapter(registry, api_client, messages, api_compute_client,
+                 compute_messages)
 
 
 _REQUIRED_SCOPES = [
@@ -131,9 +119,8 @@ def ExpandScopeURIs(scopes):
 class APIAdapter(object):
   """Handles making api requests in a version-agnostic way."""
 
-  def __init__(self, api_version, registry, client, messages, compute_client,
+  def __init__(self, registry, client, messages, compute_client,
                compute_messages):
-    self.api_version = api_version
     self.registry = registry
     self.client = client
     self.messages = messages

@@ -792,7 +792,7 @@ To update your SDK installation to the latest version [{latest}], run:
     config.EnsureSDKWriteAccess(self.__sdk_root)
     self._RestartIfUsingBundledPython(args=restart_args)
 
-    if self._IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+    if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
       log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     # If explicitly listing components, you are probably installing and not
@@ -975,7 +975,7 @@ Please remove the following to avoid accidentally invoking these old tools:
     config.EnsureSDKWriteAccess(self.__sdk_root)
     self._RestartIfUsingBundledPython()
 
-    if self._IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
+    if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
       log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     message = self._GetDontCancelMessage(disable_backup)
@@ -1025,7 +1025,7 @@ Please remove the following to avoid accidentally invoking these old tools:
     backup_has_bundled_python = (
         BUNDLED_PYTHON_COMPONENT in
         install_state.BackupInstallationState().InstalledComponents())
-    if self._IsPythonBundled() and not backup_has_bundled_python:
+    if self.IsPythonBundled() and not backup_has_bundled_python:
       log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     if not console_io.PromptContinue(
@@ -1206,7 +1206,7 @@ prompt, or run:
     # Restart the original command.
     RestartCommand(command)
 
-  def _IsPythonBundled(self):
+  def IsPythonBundled(self):
     return _IsPythonBundled(self.__sdk_root)
 
   def _RestartIfUsingBundledPython(self, args=None, command=None):
@@ -1261,7 +1261,7 @@ prompt, or run:
                   'to view the failures.')
 
 
-def _CopyPython():
+def CopyPython():
   """Copy the current Python to temporary directory and return its path."""
   # We don't want to clean this up when we're done, because we use it later.
   temp_dir = file_utils.TemporaryDirectory()
@@ -1279,6 +1279,27 @@ def RestartIfUsingBundledPython(sdk_root, args=None, command=None):
   current_os = platforms.OperatingSystem.Current()
   if (current_os is platforms.OperatingSystem.WINDOWS and
       _IsPythonBundled(sdk_root)):
+    if not console_io.CanPrompt():
+      # If we're in non-interactive mode, updates using bundled Python will
+      # usually not work as intended. This process will terminate and not wait
+      # for the child process to finish. This can yield inconsistent state and
+      # mask errors (especially in the context of the installer).
+      gcloud_cmd_path = os.path.realpath(
+          os.path.join(config.Paths().sdk_bin_path or '', 'gcloud.cmd'))
+      log.error('''\
+Cannot use bundled Python installation to update Cloud SDK in
+non-interactive mode. Please run again in interactive mode.\n\n
+
+If you really want to run in non-interactive mode, please run the
+following command before re-running this one:\n\n
+
+  FOR /F "delims=" %i in ( '""{0}"" components copy-bundled-python'
+  ) DO (
+    SET CLOUDSDK_PYTHON=%i
+  )
+
+(Substitute `%%i` for `%i` if in a .bat script.)'''.format(gcloud_cmd_path))
+      sys.exit(1)
     # On Windows, you can't use a Python installed within a directory to move
     # that directory, which means that with a bundled Python, updates will
     # fail. To get around this, we copy the Python interpreter to a temporary
@@ -1286,7 +1307,7 @@ def RestartIfUsingBundledPython(sdk_root, args=None, command=None):
     # There's no issue if the `.py` files themselves are inside the install
     # directory, because the Python interpreter loads them into memory and
     # closes them immediately.
-    RestartCommand(args=args, command=command, python=_CopyPython(),
+    RestartCommand(args=args, command=command, python=CopyPython(),
                    block=False)
     sys.exit(0)
 

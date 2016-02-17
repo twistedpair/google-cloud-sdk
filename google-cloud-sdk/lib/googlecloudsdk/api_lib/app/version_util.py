@@ -17,11 +17,19 @@
 import datetime
 import re
 
+from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import timezone
 
 
 class VersionValidationError(exceptions.Error):
+  pass
+
+
+class VersionsDeleteError(exceptions.Error):
   pass
 
 
@@ -32,6 +40,11 @@ class Version(object):
   Versions don't have traffic split, project, or last_deployed_time as a
   datetime object.
   """
+
+  # The smallest allowed traffic split is 1e-3. Because of floating point
+  # peculiarities, we use 1e-4 as our max allowed epsilon when testing whether a
+  # version is receiving all traffic.
+  _ALL_TRAFFIC_EPSILON = 1e-4
 
   _RESOURCE_PATH_PARTS = 3  # project/service/version
 
@@ -78,6 +91,10 @@ class Version(object):
       pass
     return cls(project, service_id, version.id, traffic_split=traffic_split,
                last_deployed_time=last_deployed, version_resource=version)
+
+  @property
+  def is_receiving_all_traffic(self):
+    return abs(self.traffic_split - 1.0) < self._ALL_TRAFFIC_EPSILON
 
   def __eq__(self, other):
     return (type(other) is Version and
@@ -209,3 +226,27 @@ def GetMatchingVersions(all_versions, args_versions, args_service, project):
   else:
     versions = _FilterVersions(all_versions, args_service, args_versions)
   return versions
+
+
+def DeleteVersions(api_client, versions):
+  """Delete the given version of the given services."""
+  errors = {}
+  for version in versions:
+    version_path = '{0}/{1}'.format(version.service, version.id)
+    try:
+      with console_io.ProgressTracker('Deleting [{0}]'.format(version_path)):
+        api_client.DeleteVersion(version.service, version.id)
+    except (calliope_exceptions.HttpException, operations.OperationError,
+            operations.OperationTimeoutError) as err:
+      errors[version_path] = str(err)
+
+  if errors:
+    printable_errors = {}
+    for version_path, error_msg in errors.items():
+      printable_errors[version_path] = '[{0}]: {1}'.format(version_path,
+                                                           error_msg)
+    raise VersionsDeleteError(
+        'Issue deleting {0}: [{1}]\n\n'.format(
+            text.Pluralize(len(printable_errors), 'version'),
+            ', '.join(printable_errors.keys())) +
+        '\n\n'.join(printable_errors.values()))

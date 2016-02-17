@@ -26,6 +26,15 @@ IF "%CLOUDSDK_PYTHON%"=="" (
   echo to the location of your Python executable.
   "%COMSPEC%" /C exit 1
 ) ELSE (
+  rem copy_bundled_python.py will make a copy of the Python interpreter if it's
+  rem bundled in the Cloud SDK installation and report the location of the new
+  rem interpreter. We want to use this copy to install the Cloud SDK, since the
+  rem bundled copy can't modify itself.
+  FOR /F "delims=" %%i in (
+    '""%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\lib\gcloud.py""" components copy-bundled-python'
+  ) DO (
+    SET CLOUDSDK_PYTHON=%%i
+  )
   "%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\bin\bootstrapping\install.py" %*"
 )
 

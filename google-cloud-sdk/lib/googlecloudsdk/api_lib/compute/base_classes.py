@@ -1056,7 +1056,12 @@ class BaseAsyncMutator(BaseCommand):
       args: The command-line arguments.
 
     Returns:
-      A list of request protobufs.
+      A list of requests. Request could be one of:
+        * protobuf - protobuf will be sent to self.service and self.method
+        * (method, protobuf) - protobuf will be sent to self.service and
+            provided method
+        * (service, method, protobuf) - protobuf will be sent to
+            provided service and method
     """
 
   def Run(self, args, request_protobufs=None, service=None):
@@ -1069,8 +1074,10 @@ class BaseAsyncMutator(BaseCommand):
     # default
     for request in request_protobufs:
       if isinstance(request, tuple):
-        method = request[0]
-        proto = request[1]
+        if len(request) == 2:
+          method, proto = request
+        elif len(request) == 3:
+          service, method, proto = request
       else:
         method = self.method
         proto = request

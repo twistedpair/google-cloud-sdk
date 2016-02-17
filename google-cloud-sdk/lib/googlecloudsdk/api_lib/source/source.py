@@ -15,11 +15,14 @@
 """Source apis layer."""
 import os
 
+from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apis.source.v1 import source_v1_messages as messages
-from googlecloudsdk.third_party.apis.source.v1.source_v1_client import SourceV1 as client
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
+
+
+# TODO(user): Avoid initializing this at import time.
+messages = apis.GetMessagesModule('source', 'v1')
 
 
 def _NormalizeToSourceAPIPath(path):
@@ -70,8 +73,8 @@ class Source(object):
       raise NoEndpointException()
 
   @classmethod
-  def SetApiEndpoint(cls, http, endpoint):
-    cls._client = client(url=endpoint, get_credentials=False, http=http)
+  def SetApiEndpoint(cls, http):
+    cls._client = apis.GetClientInstance('source', 'v1', http)
 
   @classmethod
   def SetResourceParser(cls, parser):

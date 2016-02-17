@@ -25,9 +25,9 @@ from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
 
-CLOUDBUILD_BUILDER = 'gcr.io/cloud-builders/dockerizer'
 CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
     'https://console.developers.google.com/logs?project={project_id}'
@@ -116,6 +116,8 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
   Raises:
     BuildFailedError: when the build fails.
   """
+  builder = properties.VALUES.app.container_builder_image.Get()
+  log.debug('Using builder image: [{0}]'.format(builder))
   (source_bucket, source_object) = cloud_storage.ParseGcsUri(source_uri)
   logs_bucket = source_bucket
   build_op = cloudbuild_client.projects_builds.Create(
@@ -129,7 +131,7 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
                   ),
               ),
               steps=[cloudbuild_v1.BuildStep(
-                  name=CLOUDBUILD_BUILDER,
+                  name=builder,
                   args=[output_image]
               )],
               images=[output_image],

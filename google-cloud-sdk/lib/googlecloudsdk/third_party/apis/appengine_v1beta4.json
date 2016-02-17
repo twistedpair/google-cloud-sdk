@@ -1493,6 +1493,40 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
+                },
+                "patch": {
+                  "id": "appengine.apps.modules.versions.patch",
+                  "path": "v1beta4/{+name}",
+                  "flatPath": "v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}",
+                  "httpMethod": "PATCH",
+                  "description": "Updates an existing version.",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the resource to update. For example:\n\"apps\/myapp\/modules\/default\/versions\/1\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^apps\/[^\/]*\/modules\/[^\/]*\/versions\/[^\/]*$",
+                      "type": "string"
+                    },
+                    "mask": {
+                      "description": "Standard field mask for the set of fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Version"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
             }

@@ -121,7 +121,9 @@ class GenomicsV1(base_api.BaseApiClient):
     def Create(self, request, global_params=None):
       """Creates a new call set.
 
-For the definitions of call sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of call sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (CallSet) input message
@@ -136,7 +138,9 @@ For the definitions of call sets and other genomics resources, see [Fundamentals
     def Delete(self, request, global_params=None):
       """Deletes a call set.
 
-For the definitions of call sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of call sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsCallsetsDeleteRequest) input message
@@ -151,7 +155,9 @@ For the definitions of call sets and other genomics resources, see [Fundamentals
     def Get(self, request, global_params=None):
       """Gets a call set by ID.
 
-For the definitions of call sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of call sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsCallsetsGetRequest) input message
@@ -166,7 +172,9 @@ For the definitions of call sets and other genomics resources, see [Fundamentals
     def Patch(self, request, global_params=None):
       """Updates a call set.
 
-For the definitions of call sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of call sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 This method supports patch semantics.
 
@@ -183,9 +191,12 @@ This method supports patch semantics.
     def Search(self, request, global_params=None):
       """Gets a list of call sets matching the criteria.
 
-For the definitions of call sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of call sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchCallSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L178).
+Implements
+[GlobalAllianceApi.searchCallSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L178).
 
       Args:
         request: (SearchCallSetsRequest) input message
@@ -321,7 +332,9 @@ Implements [GlobalAllianceApi.searchCallSets](https://github.com/ga4gh/schemas/b
     def Create(self, request, global_params=None):
       """Creates a new dataset.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (Dataset) input message
@@ -336,7 +349,9 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
     def Delete(self, request, global_params=None):
       """Deletes a dataset.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsDeleteRequest) input message
@@ -351,7 +366,9 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
     def Get(self, request, global_params=None):
       """Gets a dataset by ID.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsGetRequest) input message
@@ -370,7 +387,9 @@ policy or resource does not exist.
 See <a href="/iam/docs/managing-policies#getting_a_policy">Getting a
 Policy</a> for more information.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsGetIamPolicyRequest) input message
@@ -385,7 +404,9 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
     def List(self, request, global_params=None):
       """Lists datasets within a project.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsListRequest) input message
@@ -400,7 +421,9 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
     def Patch(self, request, global_params=None):
       """Updates a dataset.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 This method supports patch semantics.
 
@@ -418,7 +441,9 @@ This method supports patch semantics.
       """Sets the access control policy on the specified dataset. Replaces any.
 existing policy.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 See <a href="/iam/docs/managing-policies#setting_a_policy">Setting a
 Policy</a> for more information.
@@ -438,7 +463,9 @@ Policy</a> for more information.
 See <a href="/iam/docs/managing-policies#testing_permissions">Testing
 Permissions</a> for more information.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsDatasetsTestIamPermissionsRequest) input message
@@ -453,7 +480,9 @@ For the definitions of datasets and other genomics resources, see [Fundamentals 
     def Undelete(self, request, global_params=None):
       """Undeletes a dataset by restoring a dataset which was deleted via this API.
 
-For the definitions of datasets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of datasets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 This operation is only possible for a week after the deletion occurred.
 
@@ -587,7 +616,9 @@ service.
 correspond to a range of a reference sequence. Each bucket summarizes
 coverage information across its corresponding genomic range.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 Coverage is defined as the number of reads which are aligned to a given
 base in the reference sequence. Coverage buckets are available at several
@@ -693,7 +724,9 @@ set.
     def Delete(self, request, global_params=None):
       """Deletes a read group set.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsReadgroupsetsDeleteRequest) input message
@@ -708,7 +741,9 @@ For the definitions of read group sets and other genomics resources, see [Fundam
     def Export(self, request, global_params=None):
       """Exports a read group set to a BAM file in Google Cloud Storage.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 Note that currently there may be some differences between exported BAM
 files and the original BAM file at the time of import. See
@@ -728,7 +763,9 @@ for caveats.
     def Get(self, request, global_params=None):
       """Gets a read group set by ID.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsReadgroupsetsGetRequest) input message
@@ -744,7 +781,9 @@ For the definitions of read group sets and other genomics resources, see [Fundam
       """Creates read group sets by asynchronously importing the provided.
 information.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 The caller must have WRITE permissions to the dataset.
 
@@ -771,7 +810,9 @@ and position)
     def Patch(self, request, global_params=None):
       """Updates a read group set.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 This method supports patch semantics.
 
@@ -788,9 +829,12 @@ This method supports patch semantics.
     def Search(self, request, global_params=None):
       """Searches for read group sets matching the criteria.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchReadGroupSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/readmethods.avdl#L135).
+Implements
+[GlobalAllianceApi.searchReadGroupSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/readmethods.avdl#L135).
 
       Args:
         request: (SearchReadGroupSetsRequest) input message
@@ -842,7 +886,9 @@ Implements [GlobalAllianceApi.searchReadGroupSets](https://github.com/ga4gh/sche
     def Search(self, request, global_params=None):
       """Gets a list of reads for one or more read group sets.
 
-For the definitions of read group sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of read group sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 Reads search operates over a genomic coordinate space of reference sequence
 & position defined over the reference sequences to which the requested
@@ -860,7 +906,8 @@ order is consistent, such that two queries for the same content (regardless
 of page size) yield reads in the same order across their respective streams
 of paginated responses.
 
-Implements [GlobalAllianceApi.searchReads](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/readmethods.avdl#L85).
+Implements
+[GlobalAllianceApi.searchReads](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/readmethods.avdl#L85).
 
       Args:
         request: (SearchReadsRequest) input message
@@ -914,9 +961,12 @@ by reference name, position, and ID.
     def List(self, request, global_params=None):
       """Lists the bases in a reference, optionally restricted to a range.
 
-For the definitions of references and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of references and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.getReferenceBases](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L221).
+Implements
+[GlobalAllianceApi.getReferenceBases](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L221).
 
       Args:
         request: (GenomicsReferencesBasesListRequest) input message
@@ -968,9 +1018,12 @@ Implements [GlobalAllianceApi.getReferenceBases](https://github.com/ga4gh/schema
     def Get(self, request, global_params=None):
       """Gets a reference.
 
-For the definitions of references and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of references and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.getReference](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L158).
+Implements
+[GlobalAllianceApi.getReference](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L158).
 
       Args:
         request: (GenomicsReferencesGetRequest) input message
@@ -985,9 +1038,12 @@ Implements [GlobalAllianceApi.getReference](https://github.com/ga4gh/schemas/blo
     def Search(self, request, global_params=None):
       """Searches for references which match the given criteria.
 
-For the definitions of references and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of references and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchReferences](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L146).
+Implements
+[GlobalAllianceApi.searchReferences](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L146).
 
       Args:
         request: (SearchReferencesRequest) input message
@@ -1039,9 +1095,12 @@ Implements [GlobalAllianceApi.searchReferences](https://github.com/ga4gh/schemas
     def Get(self, request, global_params=None):
       """Gets a reference set.
 
-For the definitions of references and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of references and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.getReferenceSet](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L83).
+Implements
+[GlobalAllianceApi.getReferenceSet](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L83).
 
       Args:
         request: (GenomicsReferencesetsGetRequest) input message
@@ -1056,9 +1115,12 @@ Implements [GlobalAllianceApi.getReferenceSet](https://github.com/ga4gh/schemas/
     def Search(self, request, global_params=None):
       """Searches for reference sets which match the given criteria.
 
-For the definitions of references and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of references and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchReferenceSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L71)
+Implements
+[GlobalAllianceApi.searchReferenceSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L71)
 
       Args:
         request: (SearchReferenceSetsRequest) input message
@@ -1170,7 +1232,9 @@ Implements [GlobalAllianceApi.searchReferenceSets](https://github.com/ga4gh/sche
     def Create(self, request, global_params=None):
       """Creates a new variant.
 
-For the definitions of variants and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (Variant) input message
@@ -1185,7 +1249,9 @@ For the definitions of variants and other genomics resources, see [Fundamentals 
     def Delete(self, request, global_params=None):
       """Deletes a variant.
 
-For the definitions of variants and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsDeleteRequest) input message
@@ -1200,7 +1266,9 @@ For the definitions of variants and other genomics resources, see [Fundamentals 
     def Get(self, request, global_params=None):
       """Gets a variant by ID.
 
-For the definitions of variants and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsGetRequest) input message
@@ -1215,7 +1283,9 @@ For the definitions of variants and other genomics resources, see [Fundamentals 
     def Import(self, request, global_params=None):
       """Creates variant data by asynchronously importing the provided information.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 The variants for import will be merged with any existing variant that
 matches its reference sequence, start, end, reference bases, and
@@ -1244,9 +1314,12 @@ Imported VCF headers are appended to the metadata already in a variant set.
     def Patch(self, request, global_params=None):
       """Updates a variant.
 
-For the definitions of variants and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-This method supports patch semantics. Returns the modified variant without its calls.
+This method supports patch semantics. Returns the modified variant without
+its calls.
 
       Args:
         request: (GenomicsVariantsPatchRequest) input message
@@ -1261,9 +1334,12 @@ This method supports patch semantics. Returns the modified variant without its c
     def Search(self, request, global_params=None):
       """Gets a list of variants matching the criteria.
 
-For the definitions of variants and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchVariants](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L126).
+Implements
+[GlobalAllianceApi.searchVariants](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L126).
 
       Args:
         request: (SearchVariantsRequest) input message
@@ -1377,7 +1453,9 @@ by reference name, position, and ID.
     def Create(self, request, global_params=None):
       """Creates a new variant set.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 The provided variant set must have a valid `datasetId` set - all other
 fields are optional. Note that the `id` field will be ignored, as this is
@@ -1397,7 +1475,9 @@ assigned by the server.
       """Deletes the contents of a variant set. The variant set object is not.
 deleted.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsetsDeleteRequest) input message
@@ -1412,7 +1492,9 @@ For the definitions of variant sets and other genomics resources, see [Fundament
     def Export(self, request, global_params=None):
       """Exports variant set data to an external destination.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsetsExportRequest) input message
@@ -1427,7 +1509,9 @@ For the definitions of variant sets and other genomics resources, see [Fundament
     def Get(self, request, global_params=None):
       """Gets a variant set by ID.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsetsGetRequest) input message
@@ -1442,7 +1526,9 @@ For the definitions of variant sets and other genomics resources, see [Fundament
     def Patch(self, request, global_params=None):
       """Updates a variant set using patch semantics.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
       Args:
         request: (GenomicsVariantsetsPatchRequest) input message
@@ -1457,9 +1543,12 @@ For the definitions of variant sets and other genomics resources, see [Fundament
     def Search(self, request, global_params=None):
       """Returns a list of all variant sets matching search criteria.
 
-For the definitions of variant sets and other genomics resources, see [Fundamentals of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+For the definitions of variant sets and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
-Implements [GlobalAllianceApi.searchVariantSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L49).
+Implements
+[GlobalAllianceApi.searchVariantSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L49).
 
       Args:
         request: (SearchVariantSetsRequest) input message

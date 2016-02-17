@@ -237,6 +237,8 @@ class DatabaseInstance(_messages.Message):
       created. MAINTENANCE: The instance is down for maintenance. FAILED: The
       instance creation failed. UNKNOWN_STATE: The state of the instance is
       unknown.
+    suspensionReason: If the instance state is SUSPENDED, the reason for the
+      suspension.
   """
 
   class FailoverReplicaValue(_messages.Message):
@@ -275,6 +277,7 @@ class DatabaseInstance(_messages.Message):
   serviceAccountEmailAddress = _messages.StringField(20)
   settings = _messages.MessageField('Settings', 21)
   state = _messages.StringField(22)
+  suspensionReason = _messages.StringField(23, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):

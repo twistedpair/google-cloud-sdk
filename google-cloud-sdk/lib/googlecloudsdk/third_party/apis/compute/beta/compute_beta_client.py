@@ -333,7 +333,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified autoscaler.
+      """Returns the specified autoscaler resource. Get a list of available autoscalers by making a list() request.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -508,7 +508,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified BackendService resource.
+      """Returns the specified BackendService resource. Get a list of available backend services by making a list() request.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -648,7 +648,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified disk type.
+      """Returns the specified disk type. Get a list of available disk types by making a list() request.
 
       Args:
         request: (ComputeDiskTypesGetRequest) input message
@@ -810,7 +810,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns a specified persistent disk.
+      """Returns a specified persistent disk. Get a list of available persistent disks by making a list() request.
 
       Args:
         request: (ComputeDisksGetRequest) input message
@@ -1262,7 +1262,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified address resource.
+      """Returns the specified address resource. Get a list of available addresses by making a list() request.
 
       Args:
         request: (ComputeGlobalAddressesGetRequest) input message
@@ -1387,7 +1387,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified ForwardingRule resource.
+      """Returns the specified ForwardingRule resource. Get a list of available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -1526,7 +1526,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Retrieves the specified Operations resource.
+      """Retrieves the specified Operations resource. Get a list of operations by making a list() request.
 
       Args:
         request: (ComputeGlobalOperationsGetRequest) input message
@@ -1650,7 +1650,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified HttpHealthCheck resource.
+      """Returns the specified HttpHealthCheck resource. Get a list of available HTTP health checks by making a list() request.
 
       Args:
         request: (ComputeHttpHealthChecksGetRequest) input message
@@ -1813,7 +1813,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified HttpsHealthCheck resource.
+      """Returns the specified HttpsHealthCheck resource. Get a list of available HTTPS health checks by making a list() request.
 
       Args:
         request: (ComputeHttpsHealthChecksGetRequest) input message
@@ -1991,7 +1991,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified image.
+      """Returns the specified image. Get a list of available images by making a list() request.
 
       Args:
         request: (ComputeImagesGetRequest) input message
@@ -2266,7 +2266,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns all of the details about the specified managed instance group.
+      """Returns all of the details about the specified managed instance group. Get a list of available managed instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupManagersGetRequest) input message
@@ -2543,7 +2543,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified instance group resource.
+      """Returns the specified instance group. Get a list of available instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -2695,7 +2695,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified instance template resource.
+      """Returns the specified instance template. Get a list of available instance templates by making a list() request.
 
       Args:
         request: (ComputeInstanceTemplatesGetRequest) input message
@@ -3053,7 +3053,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified Instance resource.
+      """Returns the specified Instance resource. Get a list of available instances by making a list() request.
 
       Args:
         request: (ComputeInstancesGetRequest) input message
@@ -3247,7 +3247,7 @@ See Accessing images for more information.
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified license resource.
+      """Returns the specified License resource. Get a list of available licenses by making a list() request.
 
       Args:
         request: (ComputeLicensesGetRequest) input message
@@ -3322,7 +3322,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified machine type.
+      """Returns the specified machine type. Get a list of available machine types by making a list() request.
 
       Args:
         request: (ComputeMachineTypesGetRequest) input message
@@ -3422,7 +3422,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified network.
+      """Returns the specified network. Get a list of available networks by making a list() request.
 
       Args:
         request: (ComputeNetworksGetRequest) input message
@@ -3510,7 +3510,7 @@ See Accessing images for more information.
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified project resource.
+      """Returns the specified Project resource.
 
       Args:
         request: (ComputeProjectsGetRequest) input message
@@ -3674,7 +3674,7 @@ See Accessing images for more information.
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified region resource.
+      """Returns the specified Region resource. Get a list of available regions by making a list() request.
 
       Args:
         request: (ComputeRegionsGetRequest) input message
@@ -3835,7 +3835,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified Router resource.
+      """Returns the specified Router resource. Get a list of available routers by making a list() request.
 
       Args:
         request: (ComputeRoutersGetRequest) input message
@@ -3987,7 +3987,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified route resource.
+      """Returns the specified Route resource. Get a list of available routes by making a list() request.
 
       Args:
         request: (ComputeRoutesGetRequest) input message
@@ -4013,7 +4013,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of route resources available to the specified project.
+      """Retrieves the list of Route resources available to the specified project.
 
       Args:
         request: (ComputeRoutesListRequest) input message
@@ -4090,7 +4090,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified Snapshot resource.
+      """Returns the specified Snapshot resource. Get a list of available snapshots by making a list() request.
 
       Args:
         request: (ComputeSnapshotsGetRequest) input message
@@ -4190,7 +4190,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified SslCertificate resource.
+      """Returns the specified SslCertificate resource. Get a list of available SSL certificates by making a list() request.
 
       Args:
         request: (ComputeSslCertificatesGetRequest) input message
@@ -4328,7 +4328,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified subnetwork.
+      """Returns the specified subnetwork. Get a list of available subnetworks by making a list() request.
 
       Args:
         request: (ComputeSubnetworksGetRequest) input message
@@ -4453,7 +4453,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetHttpProxy resource.
+      """Returns the specified TargetHttpProxy resource. Get a list of available target HTTP proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpProxiesGetRequest) input message
@@ -4603,7 +4603,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetHttpsProxy resource.
+      """Returns the specified TargetHttpsProxy resource. Get a list of available target HTTPS proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpsProxiesGetRequest) input message
@@ -4767,7 +4767,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetInstance resource.
+      """Returns the specified TargetInstance resource. Get a list of available target instances by making a list() request.
 
       Args:
         request: (ComputeTargetInstancesGetRequest) input message
@@ -5003,7 +5003,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified target pool.
+      """Returns the specified target pool. Get a list of available target pools by making a list() request.
 
       Args:
         request: (ComputeTargetPoolsGetRequest) input message
@@ -5193,7 +5193,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified target VPN gateway.
+      """Returns the specified target VPN gateway. Get a list of available target VPN gateways by making a list() request.
 
       Args:
         request: (ComputeTargetVpnGatewaysGetRequest) input message
@@ -5342,7 +5342,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified UrlMap resource.
+      """Returns the specified UrlMap resource. Get a list of available URL maps by making a list() request.
 
       Args:
         request: (ComputeUrlMapsGetRequest) input message
@@ -5519,7 +5519,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified VpnTunnel resource.
+      """Returns the specified VpnTunnel resource. Get a list of available VPN tunnels by making a list() request.
 
       Args:
         request: (ComputeVpnTunnelsGetRequest) input message
@@ -5683,7 +5683,7 @@ For more information, see Deleting snaphots.
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified zone resource.
+      """Returns the specified Zone resource. Get a list of available zones by making a list() request.
 
       Args:
         request: (ComputeZonesGetRequest) input message
@@ -5696,7 +5696,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of zone resources available to the specified project.
+      """Retrieves the list of Zone resources available to the specified project.
 
       Args:
         request: (ComputeZonesListRequest) input message

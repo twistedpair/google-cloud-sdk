@@ -147,6 +147,14 @@ Alternatively, the zone can be stored in the environment variable
 ``CLOUDSDK_COMPUTE_ZONE''.
 """
 
+ZONE_PROPERTY_EXPLANATION_NO_DEFAULT = """\
+If not specified, you will be prompted to select a zone.
+
+A list of zones can be fetched by running:
+
+  $ gcloud compute zones list
+"""
+
 REGION_PROPERTY_EXPLANATION = """\
 If not specified, you will be prompted to select a region.
 
@@ -165,4 +173,12 @@ To unset the property, run:
 
 Alternatively, the region can be stored in the environment
 variable ``CLOUDSDK_COMPUTE_REGION''.
+"""
+
+REGION_PROPERTY_EXPLANATION_NO_DEFAULT = """\
+If not specified, you will be prompted to select a region.
+
+A list of regions can be fetched by running:
+
+  $ gcloud compute regions list
 """

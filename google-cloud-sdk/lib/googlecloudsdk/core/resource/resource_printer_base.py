@@ -42,6 +42,37 @@ from googlecloudsdk.core.resource import resource_property
 STRUCTURED_INDENTATION = 2
 
 
+class _ResourceMarker(object):
+  """A marker that can be injected into resource lists."""
+
+  def Act(self, printer):
+    """Called by ResourcePrinter.Addrecord().
+
+    Args:
+      printer: The printer object.
+    """
+    pass
+
+
+class FinishMarker(_ResourceMarker):
+  """A resource list Finish marker."""
+
+  def Act(self, printer):
+    printer.Finish()
+
+
+class PageMarker(_ResourceMarker):
+  """A resource list Page marker."""
+
+  def Act(self, printer):
+    printer.Page()
+
+
+def IsResourceMarker(resource):
+  """Returns True if resource is a _ResourceMarker."""
+  return isinstance(resource, _ResourceMarker)
+
+
 class ResourcePrinter(object):
   """Base class for printing JSON-serializable Python objects.
 
@@ -52,6 +83,8 @@ class ResourcePrinter(object):
     _console_attr: The console attributes. May be ignored by some printers.
     _empty: True if there are no records.
     _heading: The list of column heading label strings.
+    _is_legend_done: True if AddLegend() has already been called and there have
+      been no more AddRecord() calls since then.
     _name: Format name.
     _out: Output stream.
     _process_record: The function called to process each record passed to
@@ -97,6 +130,7 @@ class ResourcePrinter(object):
     self._console_attr = console_attr
     self._empty = True
     self._heading = None
+    self._is_legend_done = False
     self._name = name
     self._out = out or log.out
     if 'private' in self.attributes:
@@ -140,14 +174,23 @@ class ResourcePrinter(object):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
-    self._empty = False
-    self._AddRecord(self._process_record(record), delimit)
+    if IsResourceMarker(record):
+      record.Act(self)
+    else:
+      self._empty = False
+      # More records enables the legend to be printed multiple times.
+      self._is_legend_done = False
+      self._AddRecord(self._process_record(record), delimit)
 
   def AddLegend(self):
     """Prints the table legend if it was specified.
 
     The legend is one or more lines of text printed after the table data.
     """
+    if self._is_legend_done:
+      return
+    self._is_legend_done = True
+
     writers = {
         'out': lambda x: self._out.write(x + '\n'),
         'status': lambda x: log.status.write(x + '\n'),
@@ -182,6 +225,10 @@ class ResourcePrinter(object):
 
   def Finish(self):
     """Prints the results for non-streaming formats."""
+    pass
+
+  def Page(self):
+    """Flushes intermediate results for streaming formats."""
     pass
 
   def PrintSingleRecord(self, record):

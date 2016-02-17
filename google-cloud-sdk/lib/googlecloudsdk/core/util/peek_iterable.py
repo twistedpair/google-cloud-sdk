@@ -100,10 +100,14 @@ class Tapper(object):
     _iterable: The original iterable.
     _call_on_each: If not None a method called on each item as it is fetched.
       If _call_on_each returns True then the item is returned to the caller,
-      otherwise it is consumed by the tapper and not returned to the caller.
+      if it returns False or None then it is consumed by the tapper and not
+      returned to the caller, otherwise the return value is an item that is
+      injected into iterable list and returned to the caller.
     _call_after_last: If not None a method called after the last item.
     _stop: If True then the object is not iterable and it has already been
       returned.
+    _injected: The previous call_on_each injected a new item and this is the
+      next item to return.
   """
 
   def __init__(self, iterable, call_on_each=None, call_after_last=None):
@@ -111,12 +115,17 @@ class Tapper(object):
     self._call_on_each = call_on_each
     self._call_after_last = call_after_last
     self._stop = False
+    self._injected = None
 
   def __iter__(self):
     return self
 
   def _NextItem(self):
     """Returns the next item in self._iterable."""
+    if self._injected:
+      item = self._injected
+      self._injected = None
+      return item
     try:
       # Object is a generator or iterator.
       return self._iterable.next()
@@ -147,5 +156,11 @@ class Tapper(object):
     """Gets the next item, calls _call_on_each on it, and returns it."""
     while True:
       item = self._NextItem()
-      if not self._call_on_each or self._call_on_each(item):
+      if not self._call_on_each:
+        return item
+      inject_or_keep = self._call_on_each(item)
+      if inject_or_keep not in (True, False, None):
+        self._injected = item
+        return inject_or_keep
+      if inject_or_keep:
         return item

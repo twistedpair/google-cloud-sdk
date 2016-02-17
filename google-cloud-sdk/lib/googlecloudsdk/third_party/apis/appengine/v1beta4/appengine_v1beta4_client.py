@@ -94,6 +94,18 @@ class AppengineV1beta4(base_api.BaseApiClient):
               response_type_name=u'ListVersionsResponse',
               supports_download=False,
           ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'appengine.apps.modules.versions.patch',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[u'mask'],
+              relative_path=u'v1beta4/{+name}',
+              request_field=u'version',
+              request_type_name=u'AppengineAppsModulesVersionsPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -148,6 +160,19 @@ class AppengineV1beta4(base_api.BaseApiClient):
         (ListVersionsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Updates an existing version.
+
+      Args:
+        request: (AppengineAppsModulesVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
 

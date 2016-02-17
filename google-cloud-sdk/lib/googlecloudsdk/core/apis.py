@@ -36,11 +36,25 @@ class UnknownVersionError(exceptions.Error):
             api_name, api_version))
 
 
-# Map of API name alias to API name.
-# All api_name inputs should be transalted using this map before usage.
+# This is the map of API name aliases to actual API names.
+# The apis_map uses the actual API names. The rest of the Cloud SDK, including
+# property sections, and command surfaces use the API name alias.
+
+# The general rule for this module is: all apis_map lookups should use the real
+# API name, and all property lookups should use the alias. Any api_name argument
+# expects to receive the name alias (if one exists). The _GetApiNameAndAlias
+# helper method can be used to convert it into a (name, alias) tuple.
 _API_NAME_ALIASES = {
-    'sql': 'sqladmin'
+    'bigtable': 'bigtableclusteradmin',
+    'debug': 'clouddebugger',
+    'functions': 'cloudfunctions',
+    'projects': 'cloudresourcemanager',
+    'sql': 'sqladmin',
 }
+
+
+def _GetApiNameAndAlias(api_name):
+  return (_API_NAME_ALIASES.get(api_name, api_name), api_name)
 
 
 def _CamelCase(snake_case):
@@ -55,7 +69,7 @@ def ConstructApiDef(api_name,
   """Creates and returns the APIDef specified by the given arguments.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     is_default: bool, Whether this API version is the default.
     base_pkg: str, Base package from which generated API files are accessed.
@@ -63,7 +77,7 @@ def ConstructApiDef(api_name,
   Returns:
     APIDef, The APIDef created using the given args.
   """
-  api_name = _API_NAME_ALIASES.get(api_name, api_name)
+  api_name, _ = _GetApiNameAndAlias(api_name)
   client_cls_name = _CamelCase(api_name) + _CamelCase(api_version)
   common_fmt = '{base}.{api_name}.{api_version}.{api_name}_{api_version}_'
 
@@ -89,12 +103,12 @@ def AddToApisMap(api_name, api_version, is_default,
   for each API.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     is_default: bool, Whether this API version is the default.
     base_pkg: str, Base package from which generated API files are accessed.
   """
-  api_name = _API_NAME_ALIASES.get(api_name, api_name)
+  api_name, _ = _GetApiNameAndAlias(api_name)
   api_def = ConstructApiDef(api_name, api_version, is_default, base_pkg)
   api_versions = apis_map.MAP.get(api_name, {})
   api_versions[api_version] = api_def
@@ -102,7 +116,7 @@ def AddToApisMap(api_name, api_version, is_default,
 
 
 def GetDefaultVersion(api_name):
-  api_name = _API_NAME_ALIASES.get(api_name, api_name)
+  api_name, _ = _GetApiNameAndAlias(api_name)
   api_vers = apis_map.MAP.get(api_name, {})
   for ver, api_def in api_vers.iteritems():
     if api_def.default_version:
@@ -114,7 +128,7 @@ def ResolveVersion(api_name, default_override=None):
   """Resolves the version for an API based on the APIs map and API overrides.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     default_override: str, The override for the default version.
 
   Raises:
@@ -123,12 +137,12 @@ def ResolveVersion(api_name, default_override=None):
   Returns:
     str, The resolved version.
   """
-  api_name = _API_NAME_ALIASES.get(api_name, api_name)
+  api_name, api_name_alias = _GetApiNameAndAlias(api_name)
   if api_name not in apis_map.MAP:
     raise UnknownAPIError(api_name)
 
   version_overrides = properties.VALUES.api_client_overrides.AllValues()
-  version_override = version_overrides.get(api_name, None)
+  version_override = version_overrides.get(api_name_alias, None)
   return version_override or default_override or GetDefaultVersion(api_name)
 
 
@@ -136,7 +150,7 @@ def _GetApiDef(api_name, api_version=None):
   """Returns the APIDef for the specified API and version.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
 
   Raises:
@@ -147,13 +161,13 @@ def _GetApiDef(api_name, api_version=None):
   Returns:
     APIDef, The APIDef for the specified API and version.
   """
-  api_name = _API_NAME_ALIASES.get(api_name, api_name)
+  api_name, api_name_alias = _GetApiNameAndAlias(api_name)
   if api_name not in apis_map.MAP:
     raise UnknownAPIError(api_name)
 
   version_overrides = properties.VALUES.api_client_overrides.AllValues()
-  version_override = version_overrides.get(api_name, None)
-  api_version = api_version or version_override
+  version_override = version_overrides.get(api_name_alias, None)
+  api_version = version_override or api_version
 
   api_versions = apis_map.MAP[api_name]
   if api_version is None:
@@ -170,7 +184,7 @@ def GetClientClass(api_name, api_version=None):
   """Returns the client class for the API specified in the args.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
 
   Returns:
@@ -187,7 +201,7 @@ def GetClientInstance(api_name, api_version=None, http=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     http: httplib2.Http, Object to be used by the client to perform requests.
 
@@ -205,7 +219,7 @@ def GetMessagesModule(api_name, api_version=None):
   """Returns the messages module for the API specified in the args.
 
   Args:
-    api_name: str, The name of the API.
+    api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
 
   Returns:

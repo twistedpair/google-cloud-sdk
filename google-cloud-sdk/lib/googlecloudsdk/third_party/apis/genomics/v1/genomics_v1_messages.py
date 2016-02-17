@@ -1610,8 +1610,8 @@ class ReferenceBound(_messages.Message):
   variants in a particular reference.
 
   Fields:
-    referenceName: The name of the reference associated with this
-      ReferenceBound.
+    referenceName: The name of the reference associated with this reference
+      bound.
     upperBound: An upper bound (inclusive) on the starting coordinate of any
       variant in the reference sequence.
   """
@@ -1965,9 +1965,9 @@ class SearchVariantsRequest(_messages.Message):
     end: The end of the window, 0-based exclusive. If unspecified or 0,
       defaults to the length of the reference.
     maxCalls: The maximum number of calls to return in a single page. Note
-      that this limit may be exceeded; at least one variant is always returned
-      per page, even if it has more calls than this limit. If unspecified,
-      defaults to 5000. The maximum value is 10000.
+      that this limit may be exceeded in the event that a matching variant
+      contains more calls than the requested maximum. If unspecified, defaults
+      to 5000. The maximum value is 10000.
     pageSize: The maximum number of variants to return in a single page. If
       unspecified, defaults to 5000. The maximum value is 10000.
     pageToken: The continuation token, which is used to page through large

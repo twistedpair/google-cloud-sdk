@@ -102,13 +102,14 @@ def WaitForOperation(
   client = context['dataproc_client']
   messages = context['dataproc_messages']
 
-  request = messages.DataprocOperationsGetRequest(name=operation.name)
+  request = messages.DataprocProjectsRegionsOperationsGetRequest(
+      name=operation.name)
   log.status.Print('Waiting on operation [{0}].'.format(operation.name))
   start_time = time.time()
   with console_io.ProgressTracker(message, autotick=True):
     while timeout_s > (time.time() - start_time):
       try:
-        operation = client.operations.Get(request)
+        operation = client.projects_regions_operations.Get(request)
         if operation.done:
           break
       except apitools_exceptions.HttpError as error:
@@ -237,7 +238,7 @@ def WaitForJobTermination(
       if regular_job_poll or expecting_output_stream or expecting_job_done:
         last_job_poll_time = now
         try:
-          job = client.projects_jobs.Get(request)
+          job = client.projects_regions_jobs.Get(request)
           if (stream_driver_log
               and not driver_log_stream
               and job.driverOutputResourceUri):
@@ -272,13 +273,13 @@ def WaitForJobTermination(
 
 def ParseCluster(name, context):
   resources = context['resources']
-  ref = resources.Parse(name, collection='dataproc.projects.clusters')
+  ref = resources.Parse(name, collection='dataproc.projects.regions.clusters')
   return ref
 
 
 def ParseJob(job_id, context):
   resources = context['resources']
-  ref = resources.Parse(job_id, collection='dataproc.projects.jobs')
+  ref = resources.Parse(job_id, collection='dataproc.projects.regions.jobs')
   return ref
 
 

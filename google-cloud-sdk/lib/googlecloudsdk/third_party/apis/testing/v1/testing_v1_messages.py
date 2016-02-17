@@ -707,15 +707,14 @@ class RegularFile(_messages.Message):
 
   Fields:
     content: A FileReference attribute.
-    devicePath: Where to put the content on the device, must be a full,
-      whitelisted path. If it exists, it will be completely replaced. The
-      following path substitutions are available: <p> ${EXTERNAL_STORAGE} -
-      the external storage mount point (/sdcard) <p> ${ANDROID_DATA} - the
-      userdata partition mount point (/data) Note: /data/local/tmp is
-      whitelisted, but /data is not.  <p> The corresponding paths (in
-      parentheses) will be made available and treated as implicit path
-      substitutions, so the user may use them interchangeably. E.g. if /sdcard
-      on a particular device does not map to external storage, the system will
+    devicePath: Where to put the content on the device. Must be an absolute,
+      whitelisted path. If it exists, it will be replaced. The following
+      device-side directories and any of their subdirectories are whitelisted:
+      <p>${EXTERNAL_STORAGE}, or /sdcard</p> <p>${ANDROID_DATA}/local/tmp, or
+      /data/local/tmp</p> <p>Specifying a path outside of these directory
+      trees is invalid.  <p> The paths /sdcard and /data will be made
+      available and treated as implicit path substitutions. E.g. if /sdcard on
+      a particular device does not map to external storage, the system will
       replace it with the external storage path prefix for that device and
       copy the file there.  <p> It is strongly advised to use the <a href=
       "http://developer.android.com/reference/android/os/Environment.html">
@@ -999,10 +998,14 @@ class TestSetup(_messages.Message):
   """A description of how to set up the device prior to running the test
 
   Fields:
+    directoriesToPull: The directories on the device to upload to GCS at the
+      end of the test; they must be absolute, whitelisted paths. Refer to
+      RegularFile for whitelisted paths.
     filesToPush: A DeviceFile attribute.
   """
 
-  filesToPush = _messages.MessageField('DeviceFile', 1, repeated=True)
+  directoriesToPull = _messages.StringField(1, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 2, repeated=True)
 
 
 class TestSpecification(_messages.Message):

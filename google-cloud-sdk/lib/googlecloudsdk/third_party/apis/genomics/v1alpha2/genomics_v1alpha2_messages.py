@@ -28,13 +28,21 @@ class Disk(_messages.Message):
     autoDelete: Specifies whether or not to delete the disk when the pipeline
       completes. This field is applicable only for newly created disks. See ht
       tps://cloud.google.com/compute/docs/reference/latest/instances#resource
-      for more details.
+      for more details. Optional. At create time means that an auto delete
+      disk may be used. At run time, means it should be used. Cannot be true
+      at run time if false at create time.
+    mountPoint: Required at create time, but can't be specified at run time.
+      Specifies the path in the docker container where files on this disk
+      should be located. For example, if mount_point is /mnt/disk, and the
+      parameter has local_path foo/file.txt, the docker container can access
+      the data at /mnt/disk/foo/file.txt.
     name: Required. The name of the disk that can be used in the pipeline
       parameters. Must be 1 - 63 characters and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])?
+      [a-z]([-a-z0-9]*[a-z0-9])? The name "boot" is reserved for system use.
     readOnly: Specifies how a sourced-base persistent disk will be mounted.
       See https://cloud.google.com/compute/docs/disks/persistent-
-      disks#use_multi_instances for more details.
+      disks#use_multi_instances for more details. Can only be set at create
+      time.
     sizeGb: The size of the disk. This field is not applicable for local SSD.
     source: The full or partial URL of the persistent disk to attach. See
       https://cloud.google.com/compute/docs/reference/latest/instances#resourc
@@ -63,19 +71,20 @@ class Disk(_messages.Message):
     LOCAL_SSD = 3
 
   autoDelete = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  readOnly = _messages.BooleanField(3)
-  sizeGb = _messages.IntegerField(4)
-  source = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  mountPoint = _messages.StringField(2)
+  name = _messages.StringField(3)
+  readOnly = _messages.BooleanField(4)
+  sizeGb = _messages.IntegerField(5)
+  source = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class DockerExecutor(_messages.Message):
   """The Docker execuctor specification.
 
   Fields:
-    cmd: The command string to run.
-    imageName: Image name from either Docker Hub or Google Container
+    cmd: Required. The command string to run.
+    imageName: Required. Image name from either Docker Hub or Google Container
       Repository. Users that run pipelines must have READ access to the image.
   """
 
@@ -164,6 +173,27 @@ class GenomicsPipelinesGetRequest(_messages.Message):
   pipelineId = _messages.StringField(1, required=True)
 
 
+class GenomicsPipelinesListRequest(_messages.Message):
+  """A GenomicsPipelinesListRequest object.
+
+  Fields:
+    namePrefix: Optional. Pipelines with names that match this prefix should
+      be returned. If unspecified, all pipelines in the project, up to
+      page_size, will be returned.
+    pageSize: Optional. Number of pipelines to return at once. Defaults to
+      256, and max is 2048.
+    pageToken: Optional. Token to use to indicate where to start getting
+      results. If unspecified, returns the first page of results.
+    projectId: Required. The name of the project to search for pipelines.
+      Caller must have READ access to this project.
+  """
+
+  namePrefix = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+
+
 class ImportReadGroupSetsResponse(_messages.Message):
   """The read group set import response.
 
@@ -197,32 +227,11 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class ListPipelinesRequest(_messages.Message):
-  """A request to list pipelines in a given project. Pipelines can be filtered
-  by name using name_prefix: all pipelines with names that begin with
-  name_prefix will be returned. Uses standard pagination: page_size indicates
-  how many pipelines to return, and page_token comes from a previous
-  ListPipelinesResponse to indicate offset.
-
-  Fields:
-    namePrefix: Pipelines with names that match this prefix should be
-      returned.
-    pageSize: Number of pipelines to return at once.
-    pageToken: Token to use to indicate where to start getting results.
-    projectId: Required. The name of the project to search for pipelines.
-      Caller must have READ access to this project.
-  """
-
-  namePrefix = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-
-
 class ListPipelinesResponse(_messages.Message):
   """The response of ListPipelines. Contains at most page_size pipelines. If
   it contains page_size pipelines, and more pipelines exist, then
-  next_page_token will be populated.
+  next_page_token will be populated and should be used as the page_token
+  argument to a subsequent ListPipelines request.
 
   Fields:
     nextPageToken: The token to use to get the next page of results.
@@ -231,6 +240,23 @@ class ListPipelinesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   pipelines = _messages.MessageField('Pipeline', 2, repeated=True)
+
+
+class LocalCopy(_messages.Message):
+  """LocalCopy defines how a remote file should be copied to and from the VM.
+
+  Fields:
+    disk: Required. The name of the disk where this parameter is located. Can
+      be the name of one of the disks specified in the Resources field, or
+      "boot", which represents the Docker instance\u2019s boot disk and has a mount
+      point of \u201c/\u201d.
+    path: Required. The path within the user's docker container where this
+      input should be localized to and from, relative to the specified disk's
+      mount point. For example: file.txt,
+  """
+
+  disk = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 class LoggingOptions(_messages.Message):
@@ -405,91 +431,81 @@ class Pipeline(_messages.Message):
   """The pipeline object.
 
   Fields:
-    description: Optional user-specified description.
+    description: Optional. User-specified description.
     docker: A DockerExecutor attribute.
-    name: Required. User-specified pipeline name. Note this does not have to
-      be unique.
-    parameters: Parameters that pipeline uses to run.
+    inputParameters: Input parameters of the pipeline.
+    name: Required. A user specified pipeline name that does not have to be
+      unique. This name can be used for filtering Pipelines in ListPipelines.
+    outputParameters: Output parameters of the pipeline.
     pipelineId: Unique pipeline id that is generated by the service when
-      CreatePipeline is called.
+      CreatePipeline is called. Cannot be specified in the Pipeline used in
+      the CreatePipelineRequest, and will be populated in the response to
+      CreatePipeline and all subsequent Get and List calls. Indicates that the
+      service has registered this pipeline.
     projectId: Required. The project in which to create the pipeline. The
       caller must have WRITE access.
     resources: Required. Specifies resource requirements for the pipeline run.
-      Minimally CPU and RAM must be specified.
+      Required fields:  * minimumCpuCores. * minimumRamGb.
   """
 
   description = _messages.StringField(1)
   docker = _messages.MessageField('DockerExecutor', 2)
-  name = _messages.StringField(3)
-  parameters = _messages.MessageField('PipelineParameter', 4, repeated=True)
-  pipelineId = _messages.StringField(5)
-  projectId = _messages.StringField(6)
-  resources = _messages.MessageField('PipelineResources', 7)
+  inputParameters = _messages.MessageField('PipelineParameter', 3, repeated=True)
+  name = _messages.StringField(4)
+  outputParameters = _messages.MessageField('PipelineParameter', 5, repeated=True)
+  pipelineId = _messages.StringField(6)
+  projectId = _messages.StringField(7)
+  resources = _messages.MessageField('PipelineResources', 8)
 
 
 class PipelineParameter(_messages.Message):
   """Parameters facilitate setting and delivering data into the pipeline\u2019s
-  execution environment. They are specified as either inputs or outputs to the
-  pipeline when it is run. A parameter can be defined either as a literal or a
-  reference type. A literal parameter is one whose value, either the default
-  provided at creation time or provided by the user at runtime, is passed as-
-  is into the pipeline. A reference parameter is one whose value is
-  interpreted as a data source or sink. Reference parameters are almost always
-  required to be provided by the user at runtime. The following types of
-  reference parameters are supported:  GCS objects  ==========  value =
-  \u201cgs://bucket/[path]\u201d  If the parameter is a pipeline input, the value is
-  interpreted as a data  source and the object(s) described by the GCS path
-  will be copied into  the pipeline. Likewise, if the parameter is a pipeline
-  output, it is  interpreted as a data source, and the applicable contents
-  will be copied  to the GCS path indicated.   GCE disks  =================
-  value = \u201cdisk://disk_name/[path]\u201d  Indicates that a persistent disk should
-  be mounted into the pipeline\u2019s execution environment. The disk_name refers
-  to Disk entry in the PipelineResources.Disks field of the
-  RunPipelineRequest.
-
-  Enums:
-    TypeValueValuesEnum: The type of the parameter indicates how it should be
-      interpreted.
+  execution environment. They are defined at create time, with optional
+  defaults, and can be overridden at run time.  If local_copy is unset, then
+  the parameter specifies a string that is passed as-is into the pipeline, as
+  the value of the environment variable with the given name.  A default value
+  can be optionally specified at create time. The default can be overridden at
+  run time using the inputs map. If no default is given, a value must be
+  supplied at runtime.  If local_copy is defined, then the parameter specifies
+  a data source or sink, both in GCS and on the Docker container where the
+  pipeline computation is run. At run time, the GCS paths can be overridden if
+  a default was provided at create time, or must be set otherwise. The
+  pipeline runner should add a key/value pair to either the inputs or outputs
+  map. The indicated data copies will be carried out before/after pipeline
+  execution, just as if the corresponding arguments were provided to \u201cgsutil
+  cp\u201d.  For example: Given PiplineParameter foo, specified in the
+  input_parameters list:  ```   { name: "foo",     local_copy:     { path:
+  "file.txt",       disk: "pd1"}   } ```  where Disk is defined as:  ```   {
+  name: "pd1",     mount_point: "/mnt/disk/"} ```  We create a disk named pd1,
+  mount it on the host VM, and map /mnt/pd1 to /mnt/disk in the docker
+  container. At runtime, an entry for \u201cfoo\u201d would be required in the inputs
+  map, such as:  ```   inputs["foo"] = "gs://my-bucket/bar.txt" ```  This
+  would generate the following gsutil call:  ```   gsutil cp gs://my-
+  bucket/bar.txt /mnt/pd1/file.txt ```  /mnt/pd1/file.txt maps to
+  /mnt/disk/file.txt in the Docker container. Note that we do not use cp -r,
+  so for inputs, the GCS path (runtime value) must be a file or a glob, while
+  the local path must be a file or a directory, respectively. For outputs, the
+  direction of the copy is reversed:  ```   gsutil cp /mnt/disk/file.txt gs
+  ://my-bucket/bar.txt ```  Again note that there is no -r, so the GCS path
+  (runtime value) must be a file or a directory, while the local path can be a
+  file or a glob, respectively. One restriction, due to docker limitations, is
+  that for outputs that are found on the boot disk, the local path cannot be a
+  glob and must be a file.
 
   Fields:
-    description: Optional human-readable description, for eventual use in
-      friendly documentation and error messages.
+    defaultValue: The default value for this parameter. Can be overridden at
+      runtime. If local_copy is present, then this must be a GCS path
+      beginning with 'gs://'.
+    description: Optional. Human-readable description.
+    localCopy: A LocalCopy attribute.
     name: Required. Name of the parameter - the pipeline runner uses this
-      string as the key to the input and output maps in RunPipeline. It is
-      also used for passing the parameter into execution environments, e.g.
-      the Docker executor uppercases the name and uses it as ab environment
-      variable. Some execution environments may restrict the allowed
-      characters.
-    type: The type of the parameter indicates how it should be interpreted.
-    value: Value of the parameter. If this is a LITERAL parameter, this field
-      is treated as a default value to be passed to the pipeline in the
-      absence of the runner providing a value for it. If this is a REFERENCE
-      parameter, this field is required as it is considered the target of the
-      reference provided by the pipeline runner.
+      string as the key to the input and output maps in RunPipeline.
   """
 
-  class TypeValueValuesEnum(_messages.Enum):
-    """The type of the parameter indicates how it should be interpreted.
-
-    Values:
-      TYPE_UNSPECIFIED: <no description>
-      LITERAL: A literal parameter is passed as-is into the pipeline\u2019s
-        execution environment. For example, literals makes sense for setting
-        environment variables in a Docker container.
-      REFERENCE: A reference parameter is a means for pipeline runners to
-        provide data at fixed locations in the pipeline\u2019s execution
-        environment. For example, references enable users to provide data from
-        sources like GCS objects and GCE persistent disks to a Docker
-        container for processing.
-    """
-    TYPE_UNSPECIFIED = 0
-    LITERAL = 1
-    REFERENCE = 2
-
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-  value = _messages.StringField(4)
+  defaultValue = _messages.StringField(1)
+  description = _messages.StringField(2)
+  localCopy = _messages.MessageField('LocalCopy', 3)
+  name = _messages.StringField(4)
 
 
 class PipelineResources(_messages.Message):
@@ -497,11 +513,15 @@ class PipelineResources(_messages.Message):
 
   Fields:
     disks: Disks to attach.
-    minimumCpuCores: The minimum number of cores to use.
-    minimumRamGb: The minimum amount of RAM to use.
-    preemptible: If applicable, preemptible machines may be used for the run.
+    minimumCpuCores: Required at create time; optional at run time. The
+      minimum number of cores to use.
+    minimumRamGb: Required at create time; optional at run time. The minimum
+      amount of RAM to use.
+    preemptible: Optional. At create time means that preemptible machines may
+      be used for the run. At run time, means they should be used. Cannot be
+      true at run time if false at create time.
     zones: List of Google Compute Engine availability zones to which resource
-      creation will restricted.
+      creation will restricted. If empty, any zone may be chosen.
   """
 
   disks = _messages.MessageField('Disk', 1, repeated=True)
@@ -516,19 +536,27 @@ class RunPipelineArgs(_messages.Message):
 
   Messages:
     InputsValue: Pipeline input arguments; keys are defined in the pipeline
-      documentation.
+      documentation. All input parameters that do not have default values
+      must be specified. If parameters with defaults are specified here, the
+      defaults will be overridden.
     OutputsValue: Pipeline output arguments; keys are defined in the pipeline
-      documentation.
+      documentation.  All output parameters of without default values must be
+      specified.  If parameters with defaults are specified here, the defaults
+      will be overridden.
 
   Fields:
-    clientId: Optional for callers to use in filtering operations returned by
+    clientId: Optional. For callers to use in filtering operations returned by
       this request.
     inputs: Pipeline input arguments; keys are defined in the pipeline
-      documentation.
+      documentation. All input parameters that do not have default values
+      must be specified. If parameters with defaults are specified here, the
+      defaults will be overridden.
     logging: Required. Logging options. Used by the service to communicate
       results to the user.
     outputs: Pipeline output arguments; keys are defined in the pipeline
-      documentation.
+      documentation.  All output parameters of without default values must be
+      specified.  If parameters with defaults are specified here, the defaults
+      will be overridden.
     projectId: Required. The project in which to run the pipeline. The caller
       must have WRITER access to all Google Cloud services and resources (e.g.
       Google Compute Engine) will be used.
@@ -540,7 +568,9 @@ class RunPipelineArgs(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputsValue(_messages.Message):
     """Pipeline input arguments; keys are defined in the pipeline
-    documentation.
+    documentation. All input parameters that do not have default values  must
+    be specified. If parameters with defaults are specified here, the defaults
+    will be overridden.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -565,7 +595,9 @@ class RunPipelineArgs(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
     """Pipeline output arguments; keys are defined in the pipeline
-    documentation.
+    documentation.  All output parameters of without default values must be
+    specified.  If parameters with defaults are specified here, the defaults
+    will be overridden.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -599,8 +631,8 @@ class RunPipelineArgs(_messages.Message):
 class RunPipelineRequest(_messages.Message):
   """The request to run a pipeline. If pipeline_id is specified, it refers to
   a saved pipeline created with CreatePipeline and set as the pipeline_id of
-  the returned Pipeline object. If a pipeline object is specified, that
-  pipeline is run once with the given args and then deleted. It is an error to
+  the returned Pipeline object. If ephemeral_pipeline is specified, that
+  pipeline is run once with the given args and not saved. It is an error to
   specify both pipeline_id and pipeline. RunPipelineArgs must be specified.
 
   Fields:
@@ -618,9 +650,11 @@ class ServiceAccount(_messages.Message):
   """A Google Cloud Service Account.
 
   Fields:
-    email: Required. Email address of the service account.
+    email: Required. Email address of the service account. 'default' is a
+      valid option and uses the compute service account associated with the
+      project.
     scopes: Required. List of scopes to be made available for this service
-      account.
+      account. Should include genomics, compute and devstorage.full_control.
   """
 
   email = _messages.StringField(1)

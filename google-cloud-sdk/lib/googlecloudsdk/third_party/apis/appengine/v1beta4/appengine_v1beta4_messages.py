@@ -268,6 +268,21 @@ class AppengineAppsModulesVersionsListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class AppengineAppsModulesVersionsPatchRequest(_messages.Message):
+  """A AppengineAppsModulesVersionsPatchRequest object.
+
+  Fields:
+    mask: Standard field mask for the set of fields to be updated.
+    name: Name of the resource to update. For example:
+      "apps/myapp/modules/default/versions/1".
+    version: A Version resource to be passed as the request body.
+  """
+
+  mask = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  version = _messages.MessageField('Version', 3)
+
+
 class AppengineAppsOperationsGetRequest(_messages.Message):
   """A AppengineAppsOperationsGetRequest object.
 

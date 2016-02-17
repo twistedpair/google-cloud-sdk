@@ -15,6 +15,7 @@
 import abc
 import sys
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
@@ -24,6 +25,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources as resource_exceptions
 
 
 def ValidateInstanceInZone(instances, zone):
@@ -55,7 +57,11 @@ def GetSortKey(sort_by, columns):
       sort_by = sort_by[1:]
       descending = True
     sort_key_fn = dict(columns).get(sort_by, None)
-    sort_key_fn = sort_key_fn.Get if sort_key_fn else None
+    if sort_key_fn is not None:
+      if isinstance(sort_key_fn, property_selector.PropertyGetter):
+        sort_key_fn = sort_key_fn.Get
+    else:
+      sort_key_fn = None
   return sort_key_fn, descending
 
 
@@ -106,7 +112,7 @@ class InstanceGroupListInstancesBase(base_classes.BaseCommand):
   _FIELD_TRANSFORMS = []
 
   @staticmethod
-  def Args(parser):
+  def ListInstancesArgs(parser, multizonal=False):
     parser.add_argument(
         'name',
         help='The name of the instance group.')
@@ -135,10 +141,23 @@ class InstanceGroupListInstancesBase(base_classes.BaseCommand):
         data.
         """
 
-    utils.AddZoneFlag(
-        parser,
-        resource_type='instance group',
-        operation_type='list instances in')
+    if multizonal:
+      scope_parser = parser.add_mutually_exclusive_group()
+      utils.AddRegionFlag(
+          scope_parser,
+          resource_type='instance group',
+          operation_type='list instances in',
+          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      utils.AddZoneFlag(
+          scope_parser,
+          resource_type='instance group',
+          operation_type='list instances in',
+          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+    else:
+      utils.AddZoneFlag(
+          parser,
+          resource_type='instance group',
+          operation_type='list instances in')
 
   @property
   def service(self):
@@ -216,7 +235,7 @@ class InstanceGroupListInstances(InstanceGroupListInstancesBase):
 
   @staticmethod
   def Args(parser):
-    InstanceGroupListInstancesBase.Args(parser)
+    InstanceGroupListInstancesBase.ListInstancesArgs(parser, multizonal=False)
     regexp = parser.add_argument(
         '--regexp', '-r',
         help='A regular expression to filter the names of the results on.')
@@ -253,6 +272,54 @@ class InstanceGroupListInstances(InstanceGroupListInstancesBase):
     return results, errors
 
 
+class InstanceGroupReferenceMixin(object):
+  """Mixin with method resolving instance group references."""
+
+  def CreateInstanceGroupReferences(
+      self, names, region, zone,
+      zonal_resource_type='instanceGroupManagers',
+      regional_resource_type='regionInstanceGroupManagers'):
+    """Creates references to instance group (zonal or regional)."""
+    resolved_refs = {}
+    unresolved_names = []
+    for name in names:
+      try:
+        ref = self.resources.Parse(name,
+                                   params={'region': region, 'zone': zone})
+        resolved_refs[name] = ref
+      except resource_exceptions.UnknownCollectionException:
+        unresolved_names.append(name)
+        resolved_refs[name] = None
+
+      if unresolved_names:
+        if region is not None:
+          refs = self.CreateRegionalReferences(
+              unresolved_names, region, resource_type=regional_resource_type)
+        elif zone is not None:
+          refs = self.CreateZonalReferences(
+              unresolved_names, zone, resource_type=zonal_resource_type)
+        else:
+          refs = self.PromptForMultiScopedReferences(
+              unresolved_names,
+              scope_names=['zone', 'region'],
+              scope_services=[self.compute.zones, self.compute.regions],
+              resource_types=[zonal_resource_type, regional_resource_type],
+              flag_names=['--zone', '--region'])
+        for (name, ref) in zip(unresolved_names, refs):
+          resolved_refs[name] = ref
+
+    return [resolved_refs[name] for name in names]
+
+  def CreateInstanceGroupReference(
+      self, name, region, zone,
+      zonal_resource_type='instanceGroupManagers',
+      regional_resource_type='regionInstanceGroupManagers'):
+    """Creates reference to instance group (zonal or regional)."""
+    return self.CreateInstanceGroupReferences([name], region, zone,
+                                              zonal_resource_type,
+                                              regional_resource_type)[0]
+
+
 class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
   """Get named ports in Google Compute Engine instance groups."""
 
@@ -261,7 +328,7 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
       ('PORT', property_selector.PropertyGetter('port'))]
 
   @staticmethod
-  def Args(parser):
+  def AddArgs(parser, multizonal):
     parser.add_argument(
         'name',
         help='The name of the instance group.')
@@ -279,10 +346,23 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
         the value of this flag with a tilde (``~'').
         """
 
-    utils.AddZoneFlag(
-        parser,
-        resource_type='instance or instance group',
-        operation_type='get named ports for')
+    if multizonal:
+      scope_parser = parser.add_mutually_exclusive_group()
+      utils.AddRegionFlag(
+          scope_parser,
+          resource_type='instance or instance group',
+          operation_type='get named ports for',
+          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      utils.AddZoneFlag(
+          scope_parser,
+          resource_type='instance or instance group',
+          operation_type='get named ports for',
+          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+    else:
+      utils.AddZoneFlag(
+          parser,
+          resource_type='instance or instance group',
+          operation_type='get named ports for')
 
   @property
   def service(self):
@@ -302,7 +382,7 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
         transformations=[])
 
     sort_key_fn, descending = GetSortKey(args.sort_by, self._COLUMNS)
-    responses, errors = self._GetResources(args)
+    responses, errors = self.GetResources(args)
     if errors:
       utils.RaiseToolException(errors)
     return lister.ProcessResults(
@@ -312,7 +392,7 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
         reverse_sort=descending,
         limit=args.limit)
 
-  def _GetResources(self, args):
+  def GetResources(self, args):
     """Retrieves response with named ports."""
     group_ref = self.CreateZonalReference(args.name, args.zone)
     request = self.service.GetRequestType('Get')(
@@ -364,7 +444,7 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
   """Sets named ports for instance groups."""
 
   @staticmethod
-  def Args(parser):
+  def AddArgs(parser, multizonal):
     parser.add_argument(
         'group',
         help='The name of the instance group.')
@@ -385,10 +465,23 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
               $ {command} example-instance-group --named-ports ""
             """)
 
-    utils.AddZoneFlag(
-        parser,
-        resource_type='instance group',
-        operation_type='set named ports for')
+    if multizonal:
+      scope_parser = parser.add_mutually_exclusive_group()
+      utils.AddRegionFlag(
+          scope_parser,
+          resource_type='instance group',
+          operation_type='set named ports for',
+          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      utils.AddZoneFlag(
+          scope_parser,
+          resource_type='instance group',
+          operation_type='set named ports for',
+          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+    else:
+      utils.AddZoneFlag(
+          parser,
+          resource_type='instance group',
+          operation_type='set named ports for')
 
   @property
   def service(self):
@@ -403,8 +496,7 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
     return 'instanceGroups'
 
   def CreateRequests(self, args):
-    group_ref = self.CreateZonalReference(args.group, args.zone)
-
+    group_ref = self.GetGroupReference(args)
     ports = []
     for named_port in args.named_ports:
       if named_port.count(':') != 1:
@@ -420,10 +512,20 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
     # modification of instance group changes the fingerprint. This request will
     # fail if instance group fingerprint does not match fingerprint sent in
     # request.
-    fingerprint = self._GetGroupFingerprint(
-        name=group_ref.Name(),
-        zone=group_ref.zone)
+    fingerprint = self.GetGroupFingerprint(group=group_ref)
+    request = self.CreateRequestForGroup(group_ref, ports, fingerprint)
+    service = self.GetServiceForGroup(group_ref)
 
+    return [(service, self.method, request)]
+
+  def GetGroupReference(self, args):
+    return self.CreateZonalReference(args.group, args.zone)
+
+  def GetServiceForGroup(self, group_ref):
+    _ = group_ref
+    return self.compute.instanceGroups
+
+  def CreateRequestForGroup(self, group_ref, ports, fingerprint):
     request_body = self.messages.InstanceGroupsSetNamedPortsRequest(
         fingerprint=fingerprint,
         namedPorts=ports)
@@ -434,13 +536,13 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
         zone=group_ref.zone,
         project=self.project)
 
-    return [request]
+    return request
 
-  def _GetGroupFingerprint(self, name, zone):
+  def GetGroupFingerprint(self, group):
     """Gets fingerprint of given instance group."""
     get_request = self.messages.ComputeInstanceGroupsGetRequest(
-        instanceGroup=name,
-        zone=zone,
+        instanceGroup=group.Name(),
+        zone=group.zone,
         project=self.project)
 
     errors = []
@@ -490,3 +592,29 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
             $ {command} example-instance-group --named-ports "" --zone us-central1-a
           """,
   }
+
+
+class InstancesReferenceMixin(object):
+  """Creates reference to instances in instance group (zonal or regional)."""
+
+  def CreateInstanceReferences(self, group_ref, instance_names, errors):
+    if group_ref.Collection() == 'compute.instanceGroupManagers':
+      instances_refs = self.CreateZonalReferences(
+          instance_names, group_ref.zone, resource_type='instances')
+      return [instance_ref.SelfLink() for instance_ref in instances_refs]
+    else:
+      service = self.compute.regionInstanceGroupManagers
+      request = service.GetRequestType('ListManagedInstances')(
+          instanceGroupManager=group_ref.Name(),
+          region=group_ref.region,
+          project=self.context['project'])
+      results = list(request_helper.MakeRequests(
+          requests=[(service, 'ListManagedInstances', request)],
+          http=self.http,
+          batch_url=self.batch_url,
+          errors=errors,
+          custom_get_requests=None))[0].managedInstances
+      # here we assume that instances are uniquely named within RMIG
+      return [instance_ref.instance for instance_ref in results
+              if path_simplifier.Name(instance_ref.instance) in instance_names
+              or instance_ref.instance in instance_names]

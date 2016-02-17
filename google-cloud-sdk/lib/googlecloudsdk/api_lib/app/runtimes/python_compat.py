@@ -32,7 +32,13 @@ PYTHON_APP_YAML = textwrap.dedent("""\
     vm: true
     api_version: 1
     threadsafe: false
+    # You must add a handlers section here.  Example:
+    # handlers:
+    # - url: .*
+    #   script: main.app
     """)
+APP_YAML_WARNING = ('app.yaml has been generated, but needs to be provided a '
+                    '"handlers" section.')
 DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore
     Dockerfile
@@ -84,7 +90,9 @@ class PythonConfigurator(fingerprinting.Configurator):
     else:
       dockerfile_preamble = PYTHON27_DOCKERFILE_PREAMBLE
 
-    # Generate app.yaml.
+    # Generate app.yaml.  Note: this is not a recommended use-case,
+    # python-compat users likely have an existing app.yaml.  But users can
+    # still get here with the --runtime flag.
     cleaner = fingerprinting.Cleaner()
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
@@ -94,6 +102,7 @@ class PythonConfigurator(fingerprinting.Configurator):
         with open(app_yaml, 'w') as f:
           f.write(PYTHON_APP_YAML.format(runtime=runtime))
         cleaner.Add(app_yaml)
+        log.warn(APP_YAML_WARNING)
 
     if self.params.custom or self.params.deploy:
       dockerfile = os.path.join(self.root, config.DOCKERFILE)

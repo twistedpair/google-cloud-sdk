@@ -128,27 +128,32 @@ def ValidateAutoscalerArgs(args):
           '--target-load-balancing-utilization', 'less than 0.')
 
 
-def AssertInstanceGroupManagerExists(igm_ref, project, messages, compute,
+def AssertInstanceGroupManagerExists(igm_ref, project, compute,
                                      http, batch_url):
   """Makes sure the given Instance Group Manager exists.
 
   Args:
     igm_ref: reference to the Instance Group Manager.
     project: project owning resources.
-    messages: module containing message classes.
     compute: module representing compute api.
     http: communication channel.
     batch_url: batch url.
   """
-  request = messages.ComputeInstanceGroupManagersGetRequest(project=project)
-  request.zone = igm_ref.zone
+  if hasattr(igm_ref, 'region'):
+    service = compute.regionInstanceGroupManagers
+    request = service.GetRequestType('Get')(project=project)
+    request.region = igm_ref.region
+  if hasattr(igm_ref, 'zone'):
+    service = compute.instanceGroupManagers
+    request = service.GetRequestType('Get')(project=project)
+    request.zone = igm_ref.zone
   request.instanceGroupManager = igm_ref.Name()
 
   errors = []
   # Run throught the generator to actually make the requests and get potential
   # errors.
   igm_details = list(request_helper.MakeRequests(
-      requests=[(compute.instanceGroupManagers, 'Get', request)],
+      requests=[(service, 'Get', request)],
       http=http,
       batch_url=batch_url,
       errors=errors,
@@ -414,13 +419,18 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource):
 
 
 def BuildAutoscaler(args, messages, autoscaler_ref, igm_ref):
-  return messages.Autoscaler(
+  """Builds autoscaler message protocol buffer."""
+  autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(args, messages),
       description=args.description,
       name=autoscaler_ref.Name(),
       target=igm_ref.SelfLink(),
-      zone=autoscaler_ref.zone,
   )
+  if hasattr(igm_ref, 'zone'):
+    autoscaler.zone = autoscaler_ref.zone
+  if hasattr(igm_ref, 'region'):
+    autoscaler.region = autoscaler_ref.region
+  return autoscaler
 
 
 def AddAutohealingArgs(parser):

@@ -956,6 +956,13 @@ class JobConfigurationQuery(_messages.Message):
       of BigQuery, describes the data format, location and other properties of
       the data source. By defining these properties, the data source can then
       be queried as if it were a standard BigQuery table.
+    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
+      SQL dialect for this query. The default value is true. If set to false,
+      the query will use BigQuery's updated SQL dialect with improved
+      standards compliance. When using BigQuery's updated SQL, the values of
+      allowLargeResults and flattenResults are ignored. Queries with
+      useLegacySql set to false will be run as if allowLargeResults is true
+      and flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
@@ -1013,9 +1020,10 @@ class JobConfigurationQuery(_messages.Message):
   priority = _messages.StringField(8)
   query = _messages.StringField(9)
   tableDefinitions = _messages.MessageField('TableDefinitionsValue', 10)
-  useQueryCache = _messages.BooleanField(11, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 12, repeated=True)
-  writeDisposition = _messages.StringField(13)
+  useLegacySql = _messages.BooleanField(11)
+  useQueryCache = _messages.BooleanField(12, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 13, repeated=True)
+  writeDisposition = _messages.StringField(14)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -1148,8 +1156,9 @@ class JobStatistics2(_messages.Message):
       query cache.
     queryPlan: [Output-only, Experimental] Describes execution plan for the
       query as a list of stages.
-    referencedTables: [Output-only] Referenced tables for the job. Queries
-      that reference more than 50 tables will not have a complete list.
+    referencedTables: [Output-only, Experimental] Referenced tables for the
+      job. Queries that reference more than 50 tables will not have a complete
+      list.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
   """
@@ -1318,6 +1327,13 @@ class QueryRequest(_messages.Message):
       results and with the 'jobComplete' flag set to false. You can call
       GetQueryResults() to wait for the query to complete and read the
       results. The default value is 10000 milliseconds (10 seconds).
+    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
+      SQL dialect for this query. The default value is true. If set to false,
+      the query will use BigQuery's updated SQL dialect with improved
+      standards compliance. When using BigQuery's updated SQL, the values of
+      allowLargeResults and flattenResults are ignored. Queries with
+      useLegacySql set to false will be run as if allowLargeResults is true
+      and flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.
@@ -1330,7 +1346,8 @@ class QueryRequest(_messages.Message):
   preserveNulls = _messages.BooleanField(5)
   query = _messages.StringField(6)
   timeoutMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
-  useQueryCache = _messages.BooleanField(8, default=True)
+  useLegacySql = _messages.BooleanField(8)
+  useQueryCache = _messages.BooleanField(9, default=True)
 
 
 class QueryResponse(_messages.Message):

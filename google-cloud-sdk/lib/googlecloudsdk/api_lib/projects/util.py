@@ -18,12 +18,16 @@ from datetime import datetime
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
-from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1.cloudresourcemanager_v1beta1_messages import Project
+from googlecloudsdk.core import apis
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 
-lifecycle = Project.LifecycleStateValueValuesEnum
 
+def GetMessages():
+  """Import and return the appropriate projects messages module."""
+  return apis.GetMessagesModule('projects', 'v1beta1')
+
+
+lifecycle = GetMessages().Project.LifecycleStateValueValuesEnum
 lifecycle_description = {
     lifecycle.LIFECYCLE_STATE_UNSPECIFIED: 'unknown',
     lifecycle.ACTIVE: 'active',
@@ -136,16 +140,5 @@ def GetClient(http):
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  # pylint: disable=g-import-not-at-top, Import here for load performance
-  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_client
-  return cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1(
-      url=properties.VALUES.api_endpoint_overrides.cloudresourcemanager.Get(),
-      get_credentials=False,
-      http=http)
+  return apis.GetClientInstance('projects', 'v1beta1', http)
 
-
-def GetMessages():
-  """Import and return the appropriate projects messages module."""
-  # pylint: disable=g-import-not-at-top, Import here for load performance
-  from googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1 import cloudresourcemanager_v1beta1_messages
-  return cloudresourcemanager_v1beta1_messages

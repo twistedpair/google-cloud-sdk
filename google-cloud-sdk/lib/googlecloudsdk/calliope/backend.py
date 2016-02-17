@@ -716,11 +716,7 @@ class ArgumentInterceptor(object):
 class ConfigHooks(object):
   """This class holds function hooks for context and config loading/saving."""
 
-  def __init__(
-      self,
-      load_context=None,
-      context_filters=None,
-      group_class=None):
+  def __init__(self, load_context=None, context_filters=None):
     """Create a new object with the given hooks.
 
     Args:
@@ -728,11 +724,9 @@ class ConfigHooks(object):
       context_filters: a list of functions that take (contex, args),
           that will be called in order before a command is run. They are
           described in the README under the heading GROUP SPECIFICATION.
-      group_class: base.Group, The class that this config hooks object is for.
     """
     self.load_context = load_context if load_context else lambda: {}
     self.context_filters = context_filters if context_filters else []
-    self.group_class = group_class
 
   def OverrideWithBase(self, group_base):
     """Get a new ConfigHooks object with overridden functions based on module.
@@ -756,8 +750,7 @@ class ConfigHooks(object):
     # a change.
     new_context_filters = self.context_filters + [ContextFilter]
     return ConfigHooks(load_context=self.load_context,
-                       context_filters=new_context_filters,
-                       group_class=group_base)
+                       context_filters=new_context_filters)
 
 
 class CommandCommon(object):
@@ -802,7 +795,6 @@ class CommandCommon(object):
     self._cli_generator = cli_generator
 
     self._common_type = common_type
-    self._common_type.group_class = config_hooks.group_class
     self._common_type._cli_generator = cli_generator
     self._common_type._release_track = release_track
 

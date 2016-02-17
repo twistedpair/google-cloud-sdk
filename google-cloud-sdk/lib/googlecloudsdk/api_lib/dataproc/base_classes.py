@@ -63,7 +63,7 @@ class JobSubmitter(base.Command):
     request = cluster_ref.Request()
 
     try:
-      cluster = client.projects_clusters.Get(request)
+      cluster = client.projects_regions_clusters.Get(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.FormatHttpError(error))
 
@@ -79,13 +79,14 @@ class JobSubmitter(base.Command):
 
     self.ConfigureJob(job, args)
 
-    request = messages.DataprocProjectsJobsSubmitRequest(
-        projectId=job.reference.projectId,
+    request = messages.DataprocProjectsRegionsJobsSubmitRequest(
+        projectId=job_ref.projectId,
+        region=job_ref.region,
         submitJobRequest=messages.SubmitJobRequest(
             job=job))
 
     try:
-      job = client.projects_jobs.Submit(request)
+      job = client.projects_regions_jobs.Submit(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(util.FormatHttpError(error))
 
@@ -145,22 +146,22 @@ class JobSubmitter(base.Command):
   def GetStagingDir(self, cluster):
     """Determine the GCS directory to stage job resources in."""
     # Get bucket from cluster.
-    bucket = cluster.configuration.configurationBucket
+    bucket = cluster.config.configBucket
     staging_dir = 'gs://{0}/{1}/{2}/'.format(
         bucket, constants.GCS_STAGING_PREFIX, cluster.clusterUuid)
     return staging_dir
 
-  def BuildLoggingConfiguration(self, driver_logging):
-    """Build LoggingConfiguration from parameters."""
+  def BuildLoggingConfig(self, driver_logging):
+    """Build LoggingConfig from parameters."""
     if not driver_logging:
       return None
 
     messages = self.context['dataproc_messages']
 
-    return messages.LoggingConfiguration(
+    return messages.LoggingConfig(
         driverLogLevels=encoding.DictToMessage(
             driver_logging,
-            messages.LoggingConfiguration.DriverLogLevelsValue))
+            messages.LoggingConfig.DriverLogLevelsValue))
 
   @abc.abstractmethod
   def ConfigureJob(self, job, args):

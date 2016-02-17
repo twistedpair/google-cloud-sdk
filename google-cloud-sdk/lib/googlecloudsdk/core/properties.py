@@ -513,6 +513,10 @@ class _SectionApp(_Section):
         'builds, rather than a temporary VM. See '
         'https://cloud.google.com/container-builder/docs/ for more '
         'information.')
+    self.container_builder_image = self._Add(
+        'container_builder_image',
+        callbacks=[lambda: 'gcr.io/cloud-builders/dockerizer'],
+        hidden=True)
     self.hosted_build_image = self._Add(
         'hosted_build_image',
         callbacks=[lambda: 'gae-builder-vm'],
@@ -797,8 +801,7 @@ class _SectionApiEndpointOverrides(_Section):
         'api_endpoint_overrides', hidden=True)
     self.appengine = self._Add('appengine')
     self.bigquery = self._Add('bigquery')
-    self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
-    self.cloudresourcemanager = self._Add('cloudresourcemanager')
+    self.bigtable = self._Add('bigtable')
     self.compute = self._Add('compute')
     self.cloudbuild = self._Add('cloudbuild')
     self.clouduseraccounts = self._Add('clouduseraccounts')
@@ -807,12 +810,13 @@ class _SectionApiEndpointOverrides(_Section):
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
     self.debug = self._Add('debug')
+    self.deploymentmanager = self._Add('deploymentmanager')
     self.dns = self._Add('dns')
     self.functions = self._Add('functions')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
-    self.loasproject = self._Add('loasproject')
     self.logging = self._Add('logging')
+    self.projects = self._Add('projects')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
     self.source = self._Add('source')

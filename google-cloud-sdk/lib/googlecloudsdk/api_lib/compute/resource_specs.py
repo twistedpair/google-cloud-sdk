@@ -114,6 +114,26 @@ def _QuotaToCell(metric, is_integer=True):
   return QuotaToCell
 
 
+def _LocationName(instance_group):
+  """Returns a location name, could be region name or zone name."""
+  if 'zone' in instance_group:
+    return path_simplifier.Name(instance_group['zone'])
+  elif 'region' in instance_group:
+    return path_simplifier.Name(instance_group['region'])
+  else:
+    return None
+
+
+def _LocationScopeType(instance_group):
+  """Returns a location scope type, could be region or zone."""
+  if 'zone' in instance_group:
+    return 'zone'
+  elif 'region' in instance_group:
+    return 'region'
+  else:
+    return None
+
+
 def _MachineTypeMemoryToCell(machine_type):
   """Returns the memory of the given machine type in GB."""
   memory = machine_type.get('memoryMb')
@@ -874,6 +894,24 @@ _SPECS_ALPHA['routers'] = _InternalSpec(
     ],
     editables=None,
 )
+_SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(
+    message_class_name='InstanceGroupManager',
+    table_cols=[
+        ('NAME', 'name'),
+        ('LOCATION', _LocationName),
+        ('SCOPE', _LocationScopeType),
+        ('BASE_INSTANCE_NAME', 'baseInstanceName'),
+        ('SIZE', 'size'),
+        ('TARGET_SIZE', 'targetSize'),
+        ('INSTANCE_TEMPLATE', 'instanceTemplate'),
+        ('AUTOSCALED', 'autoscaled'),
+    ],
+    transformations=[
+        ('instanceGroup', path_simplifier.Name),
+        ('instanceTemplate', path_simplifier.Name),
+    ],
+    editables=None,
+    )
 
 
 def _GetSpecsForVersion(api_version):

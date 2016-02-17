@@ -15,7 +15,7 @@
 """Constants for the dataproc tool."""
 
 # TODO(user): Move defaults to the server
-from googlecloudsdk.third_party.apis.dataproc.v1beta1 import dataproc_v1beta1_messages as messages
+from googlecloudsdk.third_party.apis.dataproc.v1 import dataproc_v1_messages as messages
 
 # Job Status states that do not change.
 TERMINAL_JOB_STATES = [

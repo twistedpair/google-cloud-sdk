@@ -438,6 +438,13 @@
           "items": {
             "$ref": "DeviceFile"
           }
+        },
+        "directoriesToPull": {
+          "description": "The directories on the device to upload to GCS at the end of the test;\nthey must be absolute, whitelisted paths.\nRefer to RegularFile for whitelisted paths.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -511,7 +518,7 @@
           "$ref": "FileReference"
         },
         "devicePath": {
-          "description": "Where to put the content on the device, must be a full, whitelisted path.\nIf it exists, it will be completely replaced.\nThe following path substitutions are available:\n<p> ${EXTERNAL_STORAGE} - the external storage mount point (\/sdcard)\n<p> ${ANDROID_DATA} - the userdata partition mount point (\/data)\nNote: \/data\/local\/tmp is whitelisted, but \/data is not.\n\n<p> The corresponding paths (in parentheses) will be made available and\ntreated as implicit path substitutions, so the user may use them\ninterchangeably. E.g. if \/sdcard on a particular device does not map to\nexternal storage, the system will replace it with the external storage path\nprefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.",
+          "description": "Where to put the content on the device. Must be an absolute, whitelisted\npath. If it exists, it will be replaced.\nThe following device-side directories and any of their subdirectories are\nwhitelisted:\n<p>${EXTERNAL_STORAGE}, or \/sdcard<\/p>\n<p>${ANDROID_DATA}\/local\/tmp, or \/data\/local\/tmp<\/p>\n<p>Specifying a path outside of these directory trees is invalid.\n\n<p> The paths \/sdcard and \/data will be made available and treated as\nimplicit path substitutions. E.g. if \/sdcard on a particular device does\nnot map to external storage, the system will replace it with the external\nstorage path prefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.",
           "type": "string"
         }
       }

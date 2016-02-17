@@ -434,9 +434,13 @@ class AppengineClient(object):
       missing = list(set(self.oauth_scopes).difference(vm_scopes))
       if missing:
         raise Error(
-            'Required scopes %s missing from %s. '
-            'This VM instance probably needs to be recreated '
-            'with the missing scopes.' % (missing, vm_scopes))
+            'You are currently logged into gcloud using a service account '
+            'which does not have the appropriate access to [{0}]. The account '
+            'has the following scopes: [{1}].  It needs [{2}] in order to '
+            'succeed.\nPlease recreate this VM instance with the missing '
+            'scopes. You may also log into a standard account that has the '
+            'appropriate access by using `gcloud auth login`.'
+            .format(self.project, ', '.join(vm_scopes), ', '.join(missing)))
       return '%s/%s/token' % (METADATA_BASE, SERVICE_ACCOUNT_BASE)
     else:
       return None
