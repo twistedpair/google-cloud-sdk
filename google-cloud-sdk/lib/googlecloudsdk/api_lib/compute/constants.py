@@ -94,7 +94,8 @@ PREVIEW_IMAGE_PROJECTS = []
 # SSH-related constants.
 DEFAULT_SSH_KEY_FILE = os.path.join('~', '.ssh', 'google_compute_engine')
 SSH_KEYS_METADATA_KEY = 'sshKeys'
-SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'additional-ssh-keys'
+SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'ssh-keys'
+SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 

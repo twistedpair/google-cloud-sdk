@@ -268,7 +268,7 @@ def CreateContextFiles(output_dir, source_contexts, overwrite=False,
   except IOError as e:
     log.warn('Could not generate [{0}]: {1}'.format(context_filename, e))
   except GenerateSourceContextError as e:
-    log.warn('Could not select best source context [{0}]: {1}'.format(
+    log.info('Could not select best source context [{0}]: {1}'.format(
         source_contexts, e))
 
   return created
@@ -453,7 +453,7 @@ def _GetContextFileCreator(output_dir, contexts):
   try:
     context = BestSourceContext(contexts, output_dir)
   except GenerateSourceContextError as e:
-    log.warn('Could not generate [{0}]: {1}'.format(name, e))
+    log.info('Could not generate [{0}]: {1}'.format(name, e))
     # Return a no-op creator function with a no-op cleaner.
     return lambda: (lambda: None)
   return _GetJsonFileCreator(name, context)

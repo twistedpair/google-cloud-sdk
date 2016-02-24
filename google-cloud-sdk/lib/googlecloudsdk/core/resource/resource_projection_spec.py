@@ -48,7 +48,7 @@ class ProjectionSpec(object):
     aliases: The short key name alias dictionary.
     _active: The transform active level. Incremented each time Defaults() is
       called. Used to determine active transforms.
-    _attributes: Projection attributes dict indexed by attribute name.
+    attributes: Projection attributes dict indexed by attribute name.
     _columns: A list of (key,_Attribute) tuples used to project a resource to
       a list of columns.
     _compiler: The projection compiler method for nested projections.
@@ -212,6 +212,9 @@ class ProjectionSpec(object):
     Args:
       name: The projection name.
     """
+    if self._name:
+      # Reset the name-specific attributes.
+      self.attributes = {}
     self._name = name
 
   def GetRoot(self):

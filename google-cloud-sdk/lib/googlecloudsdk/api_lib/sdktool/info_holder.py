@@ -110,7 +110,7 @@ class InstallationInfo(object):
   def __str__(self):
     out = StringIO.StringIO()
     out.write('Installation Root: [{0}]\n'.format(
-        self.sdk_root if self.sdk_root else 'Unknown'))
+        self.sdk_root if self.sdk_root else 'N/A'))
     if config.INSTALLATION_CONFIG.IsAlternateReleaseChannel():
       out.write('Release Channel: [{0}]\n'.format(self.release_channel))
       out.write('Repository URL: [{0}]\n'.format(self.repo_url))

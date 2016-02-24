@@ -200,7 +200,10 @@ service.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a pipeline that can be later run.
+      """Creates a pipeline that can be run later. Create takes a Pipeline that.
+has all fields other than `pipelineId` populated, and then returns
+the same pipeline with `pipelineId` populated. This id can be used
+to run the pipeline.
 
 Caller must have WRITE permission to the project.
 
@@ -215,7 +218,7 @@ Caller must have WRITE permission to the project.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes pipeline based on ID.
+      """Deletes a pipeline based on ID.
 
 Caller must have WRITE permission to the project.
 
@@ -260,8 +263,8 @@ Caller must have READ permission to the project.
           config, request, global_params=global_params)
 
     def Run(self, request, global_params=None):
-      """Runs a pipeline. If pipeline_id is specified in the request, then.
-run a saved pipeline. If ephemeral_pipeline is specified, then run
+      """Runs a pipeline. If `pipelineId` is specified in the request, then.
+run a saved pipeline. If `ephemeralPipeline` is specified, then run
 that pipeline once without saving a copy.
 
 The caller must have READ permission to the project where the pipeline

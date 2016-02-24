@@ -216,7 +216,7 @@
     },
     "Pipeline": {
       "id": "Pipeline",
-      "description": "The pipeline object.",
+      "description": "The pipeline object. Represents a transformation from a set of input\nparameters to a set of output parameters. The transformation is defined\nas a docker image and command to run within that image. Each pipeline\nis run on a GCE VM. A pipeline can be created with the `create` method\nand then later run with the `run` method, or a pipeline can be\ndefined and run all at once with the `run` method.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -246,11 +246,11 @@
           }
         },
         "docker": {
-
+          "description": "Specifies the docker run information.",
           "$ref": "DockerExecutor"
         },
         "resources": {
-          "description": "Required. Specifies resource requirements for the pipeline run.\nRequired fields:\n\n*\nminimumCpuCores.\n*\nminimumRamGb.",
+          "description": "Required. Specifies resource requirements for the pipeline run.\nRequired fields:\n\n*\nminimumCpuCores\n\n*\nminimumRamGb",
           "$ref": "PipelineResources"
         },
         "pipelineId": {
@@ -261,7 +261,7 @@
     },
     "PipelineParameter": {
       "id": "PipelineParameter",
-      "description": "Parameters facilitate setting and delivering data into the\npipeline\u2019s execution environment. They are defined at create time,\nwith optional defaults, and can be overridden at run time.\n\nIf local_copy is unset, then the parameter specifies a string that\nis passed as-is into the pipeline, as the value of the environment\nvariable with the given name.  A default value can be optionally\nspecified at create time. The default can be overridden at run time\nusing the inputs map. If no default is given, a value must be\nsupplied at runtime.\n\nIf local_copy is defined, then the parameter specifies a data source or sink,\nboth in GCS and on the Docker container where the pipeline computation is\nrun. At run time, the GCS paths can be overridden if a default was provided\nat create time, or must be set otherwise. The pipeline runner should add a\nkey\/value pair to either the inputs or outputs map. The indicated data copies\nwill be carried out before\/after pipeline execution, just as if the\ncorresponding arguments were provided to \u201Cgsutil cp\u201D.\n\nFor example:\nGiven PiplineParameter foo, specified in the input_parameters list:\n\n```\n  { name: \"foo\",\n    local_copy:\n    { path: \"file.txt\",\n      disk: \"pd1\"}\n  }\n```\n\nwhere Disk is defined as:\n\n```\n  { name: \"pd1\",\n    mount_point: \"\/mnt\/disk\/\"}\n```\n\nWe create a disk named pd1, mount it on the host VM, and map \/mnt\/pd1 to\n\/mnt\/disk in the docker container.\nAt runtime, an entry for \u201Cfoo\u201D would be required in the inputs map, such as:\n\n```\n  inputs[\"foo\"] = \"gs:\/\/my-bucket\/bar.txt\"\n```\n\nThis would generate the following gsutil call:\n\n```\n  gsutil cp gs:\/\/my-bucket\/bar.txt \/mnt\/pd1\/file.txt\n```\n\n\/mnt\/pd1\/file.txt maps to \/mnt\/disk\/file.txt in the Docker container.\nNote that we do not use cp -r, so for inputs, the GCS path (runtime value)\nmust be a file or a glob, while the local path must be a file or a directory,\nrespectively.\nFor outputs, the direction of the copy is reversed:\n\n```\n  gsutil cp \/mnt\/disk\/file.txt gs:\/\/my-bucket\/bar.txt\n```\n\nAgain note that there is no -r, so the GCS path (runtime value) must be a\nfile or a directory, while the local path can be a file or a glob,\nrespectively. One restriction, due to docker limitations, is that for\noutputs that are found on the boot disk, the local path cannot be a glob\nand must be a file.",
+      "description": "Parameters facilitate setting and delivering data into the\npipeline's execution environment. They are defined at create time,\nwith optional defaults, and can be overridden at run time.\n\nIf `localCopy` is unset, then the parameter specifies a string that\nis passed as-is into the pipeline, as the value of the environment\nvariable with the given name.  A default value can be optionally\nspecified at create time. The default can be overridden at run time\nusing the inputs map. If no default is given, a value must be\nsupplied at runtime.\n\nIf `localCopy` is defined, then the parameter specifies a data\nsource or sink, both in GCS and on the Docker container where the\npipeline computation is run. At run time, the GCS paths can be\noverridden if a default was provided at create time, or must be set\notherwise. The pipeline runner should add a key\/value pair to\neither the inputs or outputs map. The indicated data copies will be\ncarried out before\/after pipeline execution, just as if the\ncorresponding arguments were provided to `gsutil cp`.\n\nFor example: Given the following `PipelineParameter`, specified\nin the `inputParameters` list:\n\n```\n{name: \"input_file\", localCopy: {path: \"file.txt\", disk: \"pd1\"}}\n```\n\nwhere `disk` is defined in the `PipelineResources` object as:\n\n```\n{name: \"pd1\", mountPoint: \"\/mnt\/disk\/\"}\n```\n\nWe create a disk named `pd1`, mount it on the host VM, and map\n`\/mnt\/pd1` to `\/mnt\/disk` in the docker container.  At\nruntime, an entry for `input_file` would be required in the inputs\nmap, such as:\n\n```\n  inputs[\"input_file\"] = \"gs:\/\/my-bucket\/bar.txt\"\n```\n\nThis would generate the following gsutil call:\n\n```\n  gsutil cp gs:\/\/my-bucket\/bar.txt \/mnt\/pd1\/file.txt\n```\n\nThe file `\/mnt\/pd1\/file.txt` maps to `\/mnt\/disk\/file.txt` in the\nDocker container.  Note that we do not use `cp -r`, so for\ninputs, the GCS path (runtime value) must be a file or a glob,\nwhile the local path must be a file or a directory, respectively.\nFor outputs, the direction of the copy is reversed:\n\n```\n  gsutil cp \/mnt\/disk\/file.txt gs:\/\/my-bucket\/bar.txt\n```\n\nAgain note that there is no `-r`, so the GCS path (runtime\nvalue) must be a file or a directory, while the local path can be a\nfile or a glob, respectively. One restriction, due to docker\nlimitations, is that for outputs that are found on the boot disk,\nthe local path cannot be a glob and must be a file.",
       "type": "object",
       "properties": {
         "name": {
@@ -273,11 +273,11 @@
           "type": "string"
         },
         "defaultValue": {
-          "description": "The default value for this parameter. Can be overridden at runtime.\nIf local_copy is present, then this must be a GCS path beginning with\n'gs:\/\/'.",
+          "description": "The default value for this parameter. Can be overridden at runtime.\nIf `localCopy` is present, then this must be a GCS path beginning with\n`gs:\/\/`.",
           "type": "string"
         },
         "localCopy": {
-
+          "description": "If present, this parameter is marked for copying to and from the VM.\n`LocalCopy` indicates where on the VM the file should be. The value\ngiven to this parameter (either at runtime or using `defaultValue`)\nmust be the remote path where the file should be.",
           "$ref": "LocalCopy"
         }
       }
@@ -292,7 +292,7 @@
           "type": "string"
         },
         "disk": {
-          "description": "Required. The name of the disk where this parameter is\nlocated. Can be the name of one of the disks specified in the\nResources field, or \"boot\", which represents the Docker\ninstance\u2019s boot disk and has a mount point of \u201C\/\u201D.",
+          "description": "Required. The name of the disk where this parameter is\nlocated. Can be the name of one of the disks specified in the\nResources field, or \"boot\", which represents the Docker\ninstance's boot disk and has a mount point of `\/`.",
           "type": "string"
         }
       }
@@ -307,7 +307,7 @@
           "type": "string"
         },
         "cmd": {
-          "description": "Required. The command string to run.",
+          "description": "Required. The command string to run. Parameters that do not have\n`localCopy` specified should be used as environment variables, while\nthose that do can be accessed at the defined paths.",
           "type": "string"
         }
       }
@@ -319,8 +319,8 @@
       "properties": {
         "minimumCpuCores": {
           "description": "Required at create time; optional at run time. The minimum number of\ncores to use.",
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "preemptible": {
           "description": "Optional. At create time means that preemptible machines may be\nused for the run. At run time, means they should be used. Cannot\nbe true at run time if false at create time.",
@@ -353,13 +353,13 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The name of the disk that can be used in the pipeline\nparameters. Must be 1 - 63 characters and match the regular expression\n[a-z]([-a-z0-9]*[a-z0-9])?\nThe name \"boot\" is reserved for system use.",
+          "description": "Required. The name of the disk that can be used in the pipeline\nparameters. Must be 1 - 63 characters.\nThe name \"boot\" is reserved for system use.",
           "type": "string"
         },
         "type": {
           "description": "The type of the disk to create, if applicable.",
           "enumDescriptions": [
-            "",
+            "Default disk type. Use one of the other options below.",
             "Specifies a Google Compute Engine persistent hard disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#typeofdisks\nfor details.",
             "Specifies a Google Compute Engine persistent solid-state disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#typeofdisks\nfor details.",
             "Specifies a Google Compute Engine local SSD.\nSee https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd for details."
@@ -374,8 +374,8 @@
         },
         "sizeGb": {
           "description": "The size of the disk. This field is not applicable for local SSD.",
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "source": {
           "description": "The full or partial URL of the persistent disk to attach. See\nhttps:\/\/cloud.google.com\/compute\/docs\/reference\/latest\/instances#resource\nand\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#snapshots\nfor more details.",
@@ -390,14 +390,14 @@
           "type": "boolean"
         },
         "mountPoint": {
-          "description": "Required at create time, but can't be specified at run time. Specifies\nthe path in the docker container where files on this disk should\nbe located. For example, if mount_point is \/mnt\/disk, and the parameter\nhas local_path foo\/file.txt, the docker container can access the data\nat \/mnt\/disk\/foo\/file.txt.",
+          "description": "Required at create time and cannot be overridden at run time.\nSpecifies the path in the docker container where files on\nthis disk should be located. For example, if `mountPoint`\nis `\/mnt\/disk`, and the parameter has `localPath`\n`inputs\/file.txt`, the docker container can access the data at\n`\/mnt\/disk\/inputs\/file.txt`.",
           "type": "string"
         }
       }
     },
     "RunPipelineRequest": {
       "id": "RunPipelineRequest",
-      "description": "The request to run a pipeline. If pipeline_id is specified, it refers to\na saved pipeline created with CreatePipeline and set as the pipeline_id\nof the returned Pipeline object. If ephemeral_pipeline is specified, that\npipeline is run once with the given args and not saved. It is an\nerror to specify both pipeline_id and pipeline. RunPipelineArgs must\nbe specified.",
+      "description": "The request to run a pipeline. If `pipelineId` is specified, it\nrefers to a saved pipeline created with CreatePipeline and set as\nthe `pipelineId` of the returned Pipeline object. If\n`ephemeralPipeline` is specified, that pipeline is run once\nwith the given args and not saved. It is an error to specify both\n`pipelineId` and `ephemeralPipeline`. `pipelineArgs`\nmust be specified.",
       "type": "object",
       "properties": {
         "pipelineId": {
@@ -465,7 +465,7 @@
           "type": "string"
         },
         "scopes": {
-          "description": "Required. List of scopes to be made available for this service account.\nShould include genomics, compute and devstorage.full_control.",
+          "description": "Required. List of scopes to be made available for this service\naccount. Should include\n* https:\/\/www.googleapis.com\/auth\/genomics\n* https:\/\/www.googleapis.com\/auth\/compute\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"
@@ -479,14 +479,14 @@
       "type": "object",
       "properties": {
         "gcsPath": {
-          "description": "The location in Google Cloud Storage to which the pipeline logs will be\ncopied. Can be specified as a fully qualified directory path, in which\ncase logs will be output with a unique identifier as the filename\nin that directory, or as a fully specified path, which must end in\n\".log\", in which case that path will be used, and the user must ensure\nthat logs are not overwritten. Stdout and stderr logs from the run\nare also generated and output as \"-stdout.log\" and \"-stderr.log\".",
+          "description": "The location in Google Cloud Storage to which the pipeline logs\nwill be copied. Can be specified as a fully qualified directory\npath, in which case logs will be output with a unique identifier\nas the filename in that directory, or as a fully specified path,\nwhich must end in `.log`, in which case that path will be\nused, and the user must ensure that logs are not\noverwritten. Stdout and stderr logs from the run are also\ngenerated and output as `-stdout.log` and `-stderr.log`.",
           "type": "string"
         }
       }
     },
     "ListPipelinesResponse": {
       "id": "ListPipelinesResponse",
-      "description": "The response of ListPipelines. Contains at most page_size pipelines. If\nit contains page_size pipelines, and more pipelines exist, then\nnext_page_token will be populated and should be used as the page_token\nargument to a subsequent ListPipelines request.",
+      "description": "The response of ListPipelines. Contains at most `pageSize`\npipelines. If it contains `pageSize` pipelines, and more pipelines\nexist, then `nextPageToken` will be populated and should be\nused as the `pageToken` argument to a subsequent ListPipelines\nrequest.",
       "type": "object",
       "properties": {
         "pipelines": {
@@ -682,7 +682,7 @@
           "path": "v1alpha2/pipelines",
           "flatPath": "v1alpha2/pipelines",
           "httpMethod": "POST",
-          "description": "Creates a pipeline that can be later run.\n\nCaller must have WRITE permission to the project.",
+          "description": "Creates a pipeline that can be run later. Create takes a Pipeline that\nhas all fields other than `pipelineId` populated, and then returns\nthe same pipeline with `pipelineId` populated. This id can be used\nto run the pipeline.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
           },
           "parameterOrder": [
@@ -703,7 +703,7 @@
           "path": "v1alpha2/pipelines:run",
           "flatPath": "v1alpha2/pipelines:run",
           "httpMethod": "POST",
-          "description": "Runs a pipeline. If pipeline_id is specified in the request, then\nrun a saved pipeline. If ephemeral_pipeline is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.",
+          "description": "Runs a pipeline. If `pipelineId` is specified in the request, then\nrun a saved pipeline. If `ephemeralPipeline` is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.",
           "parameters": {
           },
           "parameterOrder": [
@@ -757,7 +757,7 @@
               "type": "string"
             },
             "namePrefix": {
-              "description": "Optional. Pipelines with names that match this prefix should be returned.\nIf unspecified, all pipelines in the project, up to page_size, will be\nreturned.",
+              "description": "Optional. Pipelines with names that match this prefix should be\nreturned.  If unspecified, all pipelines in the project, up to\n`pageSize`, will be returned.",
               "location": "query",
               "type": "string"
             },
@@ -788,7 +788,7 @@
           "path": "v1alpha2/pipelines/{pipelineId}",
           "flatPath": "v1alpha2/pipelines/{pipelineId}",
           "httpMethod": "DELETE",
-          "description": "Deletes pipeline based on ID.\n\nCaller must have WRITE permission to the project.",
+          "description": "Deletes a pipeline based on ID.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
             "pipelineId": {
               "description": "Caller must have WRITE access to the project in which this pipeline\nis defined.",

@@ -19,7 +19,8 @@ import os
 import re
 import textwrap
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 
@@ -55,7 +56,7 @@ DOCKERFILE = textwrap.dedent("""\
     """)
 
 
-class GoConfigurator(fingerprinting.Configurator):
+class GoConfigurator(ext_runtime.Configurator):
   """Generates configuration for a Go app."""
 
   def __init__(self, path, params):
@@ -63,7 +64,7 @@ class GoConfigurator(fingerprinting.Configurator):
 
     Args:
       path: (str) Root path of the source tree.
-      params: (fingerprinting.Params) Parameters passed through to the
+      params: (ext_runtime.Params) Parameters passed through to the
         fingerprinters.
     """
 
@@ -74,7 +75,7 @@ class GoConfigurator(fingerprinting.Configurator):
     """Generate all config files for the module.
 
     Returns:
-      (callable()) fingerprinting.Cleaner instance.
+      (callable()) ext_runtime.Cleaner instance.
     """
     # Write "Writing file" messages to the user or to log depending on whether
     # we're in "deploy."
@@ -84,7 +85,7 @@ class GoConfigurator(fingerprinting.Configurator):
       notify = log.status.Print
 
     # Generate app.yaml.
-    cleaner = fingerprinting.Cleaner()
+    cleaner = ext_runtime.Cleaner()
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
@@ -162,7 +163,7 @@ def Fingerprint(path, params):
 
   Args:
     path: (str) Application path.
-    params: (fingerprinting.Params) Parameters passed through to the
+    params: (ext_runtime.Params) Parameters passed through to the
       fingerprinters.
 
   Returns:

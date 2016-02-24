@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Utilities for subcommands that need to SSH into virtual machine guests."""
+import errno
 import getpass
 import logging
 import os
@@ -77,6 +78,118 @@ def _IsValidSshUsername(user):
   # This may grant false positives, but will prevent backwards-incompatible
   # behavior.
   return all(ord(c) < 128 and c != ' ' for c in user)
+
+
+def _WarnOrReadFirstKeyLine(path, kind):
+  """Returns the first line from the key file path.
+
+  A None return indicates an error and is always accompanied by a log.warn
+  message.
+
+  Args:
+    path: The path of the file to read from.
+    kind: The kind of key file, 'private' or 'public'.
+
+  Returns:
+    None (and prints a log.warn message) if the file does not exist, is not
+    readable, or is empty. Otherwise returns the first line utf8 decoded.
+  """
+  try:
+    with open(path) as f:
+      # Decode to utf8 to handle any unicode characters. Key data is base64
+      # encoded so it cannot contain any unicode. Comments may contain unicode,
+      # but they are ignored in the key file analysis here, so replacing invalid
+      # chars with ? is OK.
+      line = f.readline().strip().decode('utf8', 'replace')
+      if line:
+        return line
+      msg = 'is empty'
+  except IOError as e:
+    if e.errno == errno.ENOENT:
+      msg = 'does not exist'
+    else:
+      msg = 'is not readable'
+  log.warn('The %s SSH key file for Google Compute Engine %s.', kind, msg)
+  return None
+
+
+# TODO(user): This function can be dropped 1Q2017.
+def _IsPublicKeyCorrupt95Through97(key):
+  """Returns True if the encoded public key has the release 95.0.0 corruption.
+
+  Windows corruption checks for release 95.0.0 through 97.0.0.
+  Corrupt Windows encoded keys have these properties:
+    type:       'ssh-rsa'
+    exponent:   65537
+    length:     256
+    next byte:  bit 0x80 set
+  A valid key either has exponent != 65537 or:
+    type:       'ssh-rsa'
+    exponent:   65537
+    length:     257
+    next byte:  0
+
+  Args:
+    key: The base64 encoded public key.
+
+  Returns:
+    True if the encoded public key has the release 95.0.0 corruption.
+  """
+  # The corruption only happened on Windows.
+  if not _IsRunningOnWindows():
+    return False
+
+  # All corrupt encodings have the same encoded prefix (up to the second to
+  # last byte of the modulus size).
+  prefix = 'AAAAB3NzaC1yc2EAAAADAQABAAAB'
+  if not key.startswith(prefix):
+    return False
+
+  # The next 3 base64 chars determine the next 2 encoded bytes.
+  modulus = key[len(prefix):len(prefix) + 3]
+  # The last byte of the size must be 01 and the first byte of the modulus must
+  # be 00, and that corresponds to one of two base64 encodings:
+  if modulus in ('AQC', 'AQD'):
+    return False
+
+  # Looks bad.
+  return True
+
+
+def _KeyFilesAreValid(private=None, public=None):
+  """Returns True if private and public pass minimum key file requirements.
+
+  Args:
+    private: The private key file path.
+    public: The public key file path.
+
+  Returns:
+    True if private and public meet minumum key file requirements.
+  """
+  # The private key file must be readable and non-empty.
+  if not _WarnOrReadFirstKeyLine(private, 'private'):
+    return False
+
+  # The PuTTY PPK key file must be readable and non-empty.
+  if _IsRunningOnWindows() and not _WarnOrReadFirstKeyLine(private + '.ppk',
+                                                           'PuTTY PPK'):
+    return False
+
+  # The public key file must be readable and non-empty.
+  public_line = _WarnOrReadFirstKeyLine(public, 'public')
+  if not public_line:
+    return False
+
+  # The remaining checks are for the public key file.
+
+  # Must have at least 2 space separated fields.
+  fields = public_line.split(' ')
+  if len(fields) < 2 or _IsPublicKeyCorrupt95Through97(fields[1]):
+    log.warn('The public SSH key file for Google Compute Engine is corrupt.')
+    return False
+
+  # Looks OK.
+  return True
 
 
 def GetDefaultSshUsername(warn_on_account_user=False):
@@ -174,7 +287,7 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
       stdout, stderr = None, None
     else:
       stdout, stderr = devnull, devnull
-    if _IsRunningOnWindows():
+    if _IsRunningOnWindows() and not cmd_args[0].endswith('winkeygen.exe'):
       # TODO(user): b/25126583 will drop StrictHostKeyChecking=no and 'y'.
       # PuTTY and friends always prompt on fingerprint mismatch. A 'y' response
       # adds/updates the fingerprint registry entry and proceeds. The prompt
@@ -187,7 +300,7 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
     try:
       proc = subprocess.Popen(
           cmd_args, stdin=stdin, stdout=stdout, stderr=stderr)
-      if _IsRunningOnWindows():
+      if stdin == subprocess.PIPE:
         # Max one prompt per host and there can't be more hosts than args.
         proc.communicate('y\n' * len(cmd_args))
       returncode = proc.wait()
@@ -203,13 +316,16 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
 def _GetMetadataKey(iam_ssh_keys):
   """Get the metadata key name for the desired SSH key metadata.
 
-  There are three SSH key related metadata pairs:
+  There are four SSH key related metadata pairs:
   * Per-project 'sshKeys': this grants SSH access to VMs project-wide.
   * Per-instance 'sshKeys': this is used to grant access to an individual
     instance. For historical reasons, it acts as an override to the
     project-global value.
-  * Per-instance 'additional-ssh-keys': this also grants access to an individual
-   instance, but acts in addition to the per-project 'sshKeys'.
+  * Per-instance 'block-project-ssh-keys': this determines whether 'ssh-keys'
+    overrides or adds to the per-project 'sshKeys'
+  * Per-instance 'ssh-keys': this also grants access to an individual
+     instance, but acts in addition or as an override to the per-project
+     'sshKeys' depending on 'block-project-ssh-keys'
 
   Args:
     iam_ssh_keys: bool. If False, give the name of the original SSH metadata key
@@ -298,6 +414,17 @@ def _IsRunningOnWindows():
 def _SdkHelperBin():
   """Returns the SDK helper executable bin directory."""
   return os.path.join(config.Paths().sdk_root, 'bin', 'sdk')
+
+
+def _MetadataHasBlockProjectSshKeys(metadata):
+  """Return true if the metadata has 'block-project-ssh-keys' set and 'true'."""
+  if not (metadata and metadata.items):
+    return False
+  matching_values = [item.value for item in metadata.items
+                     if item.key == constants.SSH_KEYS_BLOCK_METADATA_KEY]
+  if not matching_values:
+    return False
+  return matching_values[0].lower() == 'true'
 
 
 class BaseSSHCommand(base_classes.BaseCommand,
@@ -471,10 +598,10 @@ class BaseSSHCommand(base_classes.BaseCommand,
     return True
 
   def GetPublicKey(self):
-    """Generates an SSH key using ssh-key (if necessary) and returns it."""
+    """Generates an SSH key using ssh-keygen (if necessary) and returns it."""
     public_ssh_key_file = self.ssh_key_file + '.pub'
-    if (not os.path.exists(self.ssh_key_file) or
-        not os.path.exists(public_ssh_key_file)):
+    if not _KeyFilesAreValid(private=self.ssh_key_file,
+                             public=public_ssh_key_file):
       log.warn('You do not have an SSH key for Google Compute Engine.')
       log.warn('[%s] will be executed to generate a key.',
                self.ssh_keygen_executable)
@@ -487,6 +614,12 @@ class BaseSSHCommand(base_classes.BaseCommand,
           files.MakeDir(ssh_directory, 0700)
         else:
           raise exceptions.ToolException('SSH key generation aborted by user.')
+
+      # Remove the private key file to avoid interactive prompts.
+      try:
+        os.remove(self.ssh_key_file)
+      except OSError:
+        pass
 
       keygen_args = [self.ssh_keygen_executable]
       if _IsRunningOnWindows():
@@ -643,13 +776,13 @@ class BaseSSHCLICommand(BaseSSHCommand):
       arg = cmd_args[i]
       i += 1
       if arg == '-i' and i < n:
-        # -i private_key_file -- use private_key_file.ppk if it exists.
+        # -i private_key_file -- use private_key_file.ppk -- if it doesn't exist
+        # then winkeygen will be called to generate it before attempting to
+        # connect.
         args.append(arg)
         arg = cmd_args[i]
         i += 1
-        ppk_file = arg + '.ppk'
-        if os.path.exists(ppk_file):
-          arg = ppk_file
+        arg += '.ppk'
       elif arg == '-o' and i < n:
         arg = cmd_args[i]
         i += 1
@@ -677,7 +810,8 @@ class BaseSSHCLICommand(BaseSSHCommand):
     return args
 
   def ActuallyRun(self, args, cmd_args, user, instance,
-                  strict_error_checking=True, use_account_service=False):
+                  strict_error_checking=True, use_account_service=False,
+                  wait_for_sshable=True):
     """Runs the scp/ssh command specified in cmd_args.
 
     If the scp/ssh command exits non-zero, this command will exit with the same
@@ -691,6 +825,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
       strict_error_checking: bool, whether to fail on a non-zero, non-255 exit
         code (alternative behavior is to return the exit code
       use_account_service: bool, when false upload ssh keys to project metadata.
+      wait_for_sshable: bool, when false skip the sshability check.
 
     Returns:
       int, the exit code of the command that was run
@@ -704,18 +839,45 @@ class BaseSSHCLICommand(BaseSSHCommand):
       keys_newly_added = self.EnsureSSHKeyExistsForUser(user)
     else:
       # There are two kinds of metadata: project-wide metadata and per-instance
-      # metadata. SSH-like commands work by copying a relevant SSH key to
-      # the 'sshKeys' metadata value. A VM first checks the per-instance
-      # metadata, then the project-wide metadata (if the former exists, it
-      # doesn't check the latter), so the per-instance metadata functions as an
-      # "override" for the project-wide metadata.
-      # If we add a key to project-wide metadata but the per-instance metadata
-      # exists, we won't be able to ssh in because the VM won't check the
-      # project-wide metadata. To avoid this, if the instance has per-instance
-      # SSH key metadata, we add the key there instead.
+      # metadata. There are four SSH-key related metadata keys:
+      #
+      # * project['sshKeys']: shared project-wide
+      # * instance['sshKeys']: legacy. Acts as an override to project['sshKeys']
+      # * instance['block-project-ssh-keys']: If true, instance['ssh-keys']
+      #     overrides project['sshKeys']. Otherwise, keys from both metadata
+      #     pairs are valid.
+      # * instance['ssh-keys']: Acts either in conjunction with or as an
+      #     override to project['sshKeys'], depending on
+      #     instance['block-project-ssh-keys']
+      #
+      # SSH-like commands work by copying a relevant SSH key to
+      # the appropriate metadata value. The VM grabs keys from the metadata as
+      # follows (pseudo-Python):
+      #
+      #   def GetAllSshKeys(project, instance):
+      #       if 'sshKeys' in instance.metadata:
+      #           return (instance.metadata['sshKeys'] +
+      #                   instance.metadata['ssh-keys'])
+      #       elif instance.metadata['block-project-ssh-keys'] == 'true':
+      #           return instance.metadata['ssh-keys']
+      #       else:
+      #           return (instance.metadata['ssh-keys'] +
+      #                   project.metadata['sshKeys'])
+      #
       if _GetSSHKeysFromMetadata(instance.metadata):
+        # If we add a key to project-wide metadata but the per-instance
+        # 'sshKeys' metadata exists, we won't be able to ssh in because the VM
+        # won't check the project-wide metadata. To avoid this, if the instance
+        # has per-instance SSH key metadata, we add the key there instead.
         keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance)
+      elif _MetadataHasBlockProjectSshKeys(instance.metadata):
+        # If the instance 'ssh-keys' metadata overrides the project-wide
+        # 'sshKeys' metadata, we should put our key there.
+        keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
+                                                         iam_keys=True)
       else:
+        # Otherwise, try to add to the project-wide metadata. If we don't have
+        # permissions to do that, add to the instance 'ssh-keys' metadata.
         try:
           keys_newly_added = self.EnsureSSHKeyIsInProject(user)
         except SetProjectMetadataError:
@@ -731,7 +893,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
           keys_newly_added = self.EnsureSSHKeyIsInInstance(user, instance,
                                                            iam_keys=True)
 
-    if keys_newly_added:
+    if keys_newly_added and wait_for_sshable:
       self.WaitUntilSSHable(user, GetExternalIPAddress(instance))
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))

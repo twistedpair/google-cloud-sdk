@@ -861,6 +861,7 @@ class BackendService(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    enableCDN: If true, enable Cloud CDN for this BackendService.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -904,16 +905,17 @@ class BackendService(_messages.Message):
   backends = _messages.MessageField('Backend', 1, repeated=True)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  healthChecks = _messages.StringField(5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#backendService')
-  name = _messages.StringField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(10)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 11)
-  selfLink = _messages.StringField(12)
-  timeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  enableCDN = _messages.BooleanField(4)
+  fingerprint = _messages.BytesField(5)
+  healthChecks = _messages.StringField(6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#backendService')
+  name = _messages.StringField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(11)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
+  selfLink = _messages.StringField(13)
+  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -951,6 +953,16 @@ class BackendServiceList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#backendServiceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class CacheInvalidationRule(_messages.Message):
+  """A CacheInvalidationRule object.
+
+  Fields:
+    path: A string attribute.
+  """
+
+  path = _messages.StringField(1)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -3455,13 +3467,17 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
     instance: Name of the instance scoping this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
+    start: For the initial request, leave this field unspecified. For
+      subsequent calls, this field should be set to the next value that was
+      returned in the previous call.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32, default=1)
   project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
+  start = _messages.IntegerField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesInsertRequest(_messages.Message):
@@ -5464,6 +5480,21 @@ class ComputeUrlMapsInsertRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   urlMap = _messages.MessageField('UrlMap', 2)
+
+
+class ComputeUrlMapsInvalidateCacheRequest(_messages.Message):
+  """A ComputeUrlMapsInvalidateCacheRequest object.
+
+  Fields:
+    cacheInvalidationRule: A CacheInvalidationRule resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    urlMap: Name of the UrlMap scoping this request.
+  """
+
+  cacheInvalidationRule = _messages.MessageField('CacheInvalidationRule', 1)
+  project = _messages.StringField(2, required=True)
+  urlMap = _messages.StringField(3, required=True)
 
 
 class ComputeUrlMapsListRequest(_messages.Message):
@@ -9581,6 +9612,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
@@ -9610,19 +9642,20 @@ class Quota(_messages.Message):
     IN_USE_ADDRESSES = 12
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
-    ROUTES = 15
-    SNAPSHOTS = 16
-    SSD_TOTAL_GB = 17
-    SSL_CERTIFICATES = 18
-    STATIC_ADDRESSES = 19
-    SUBNETWORKS = 20
-    TARGET_HTTPS_PROXIES = 21
-    TARGET_HTTP_PROXIES = 22
-    TARGET_INSTANCES = 23
-    TARGET_POOLS = 24
-    TARGET_VPN_GATEWAYS = 25
-    URL_MAPS = 26
-    VPN_TUNNELS = 27
+    ROUTERS = 15
+    ROUTES = 16
+    SNAPSHOTS = 17
+    SSD_TOTAL_GB = 18
+    SSL_CERTIFICATES = 19
+    STATIC_ADDRESSES = 20
+    SUBNETWORKS = 21
+    TARGET_HTTPS_PROXIES = 22
+    TARGET_HTTP_PROXIES = 23
+    TARGET_INSTANCES = 24
+    TARGET_POOLS = 25
+    TARGET_VPN_GATEWAYS = 26
+    URL_MAPS = 27
+    VPN_TUNNELS = 28
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -10273,12 +10306,22 @@ class SerialPortOutput(_messages.Message):
     contents: [Output Only] The contents of the console output.
     kind: [Output Only] Type of the resource. Always compute#serialPortOutput
       for serial port output.
+    next: [Output Only] The position of the next byte of content from the
+      serial console output. Use this value in the next request as the start
+      parameter.
     selfLink: [Output Only] Server-defined URL for the resource.
+    start: [Output Only] The starting byte position of the output that was
+      returned. This should match the start parameter sent with the request.
+      If the serial console output exceeds the size of the buffer, older
+      output will be overwritten by newer content and the start values will be
+      mismatched.
   """
 
   contents = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'compute#serialPortOutput')
-  selfLink = _messages.StringField(3)
+  next = _messages.IntegerField(3)
+  selfLink = _messages.StringField(4)
+  start = _messages.IntegerField(5)
 
 
 class ServiceAccount(_messages.Message):

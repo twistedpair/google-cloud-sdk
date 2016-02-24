@@ -212,6 +212,13 @@
       "properties": {
       }
     },
+    "UndeleteProjectRequest": {
+      "id": "UndeleteProjectRequest",
+      "description": "The request sent to the UndeleteProject\nmethod.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GetIamPolicyRequest": {
       "id": "GetIamPolicyRequest",
       "description": "Request message for `GetIamPolicy` method.",
@@ -221,7 +228,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n        \"bindings\": [\n         {\n             \"role\": \"roles\/owner\",\n             \"members\": [\n             \"user:mike@example.com\",\n             \"group:admins@example.com\",\n             \"domain:google.com\",\n             \"serviceAccount:my-other-app@appspot.gserviceaccount.com\"]\n         },\n         {\n             \"role\": \"roles\/viewer\",\n             \"members\": [\"user:sean@example.com\"]\n         }\n         ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
       "type": "object",
       "properties": {
         "version": {
@@ -234,13 +241,6 @@
           "type": "array",
           "items": {
             "$ref": "Binding"
-          }
-        },
-        "rules": {
-
-          "type": "array",
-          "items": {
-            "$ref": "Rule"
           }
         },
         "etag": {
@@ -266,194 +266,6 @@
             "type": "string"
           }
         }
-      }
-    },
-    "Rule": {
-      "id": "Rule",
-      "description": "A rule to be applied in a Policy.",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Human-readable description of the rule.",
-          "type": "string"
-        },
-        "permissions": {
-          "description": "A permission is a string of form '<service>.<resource type>.<verb>'\n(e.g., 'storage.buckets.list'). A value of '*' matches all permissions,\nand a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "action": {
-          "description": "Required",
-          "enumDescriptions": [
-            "Default no action.",
-            "Matching 'Entries' grant access.",
-            "Matching 'Entries' grant access and the caller promises to log\nthe request per the returned log_configs.",
-            "Matching 'Entries' deny access.",
-            "Matching 'Entries' deny access and the caller promises to log\nthe request per the returned log_configs.",
-            "Matching 'Entries' tell IAM.Check callers to generate logs."
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ACTION",
-            "ALLOW",
-            "ALLOW_WITH_LOG",
-            "DENY",
-            "DENY_WITH_LOG",
-            "LOG"
-          ]
-        },
-        "in": {
-          "description": "The rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in this\nset of entries.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "notIn": {
-          "description": "The rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is not in this\nset of entries.\nThe format for in and not_in entries is the same as for members in a\nBinding (see google\/iam\/v1\/policy.proto).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "conditions": {
-          "description": "Additional restrictions that must be met",
-          "type": "array",
-          "items": {
-            "$ref": "Condition"
-          }
-        },
-        "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries\nthat match the LOG action.",
-          "type": "array",
-          "items": {
-            "$ref": "LogConfig"
-          }
-        }
-      }
-    },
-    "Condition": {
-      "id": "Condition",
-      "description": "A condition to be met.",
-      "type": "object",
-      "properties": {
-        "iam": {
-          "description": "Trusted attributes supplied by the IAM system.",
-          "enumDescriptions": [
-            "Default non-attribute.",
-            "Either principal or (if present) authority",
-            "selector\nAlways the original principal, but making clear"
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ATTR",
-            "AUTHORITY",
-            "ATTRIBUTION"
-          ]
-        },
-        "sys": {
-          "description": "Trusted attributes supplied by any service that owns resources and uses\nthe IAM system for access control.",
-          "enumDescriptions": [
-            "Default non-attribute type",
-            "Region of the resource",
-            "Service name",
-            "Resource name",
-            "IP address of the caller"
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ATTR",
-            "REGION",
-            "SERVICE",
-            "NAME",
-            "IP"
-          ]
-        },
-        "svc": {
-          "description": "Trusted attributes discharged by the service.",
-          "type": "string"
-        },
-        "op": {
-          "description": "An operator to apply the subject with.",
-          "enumDescriptions": [
-            "Default no-op.",
-            "Equality check.",
-            "Non-equality check.",
-            "Set-inclusion check.",
-            "Set-exclusion check.",
-            "Subject is discharged"
-          ],
-          "type": "string",
-          "enum": [
-            "NO_OP",
-            "EQUALS",
-            "NOT_EQUALS",
-            "IN",
-            "NOT_IN",
-            "DISCHARGED"
-          ]
-        },
-        "value": {
-          "description": "The object of the condition. Exactly one of these must be set.",
-          "type": "string"
-        },
-        "values": {
-          "description": "The objects of the condition. This is mutually exclusive with 'value'.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "LogConfig": {
-      "id": "LogConfig",
-      "description": "Specifies what kind of log the caller must write\nIncrement a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present only \"iam_principal\", corresponding to IAMContext.principal,\nis supported.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
-      "type": "object",
-      "properties": {
-        "counter": {
-          "description": "Counter options.",
-          "$ref": "CounterOptions"
-        },
-        "dataAccess": {
-          "description": "Data access options.",
-          "$ref": "DataAccessOptions"
-        },
-        "cloudAudit": {
-          "description": "Cloud audit options.",
-          "$ref": "CloudAuditOptions"
-        }
-      }
-    },
-    "CounterOptions": {
-      "id": "CounterOptions",
-      "description": "Options for counters",
-      "type": "object",
-      "properties": {
-        "metric": {
-          "description": "The metric to update.",
-          "type": "string"
-        },
-        "field": {
-          "description": "The field value to attribute.",
-          "type": "string"
-        }
-      }
-    },
-    "DataAccessOptions": {
-      "id": "DataAccessOptions",
-      "description": "Write a Data Access (Gin) log",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "CloudAuditOptions": {
-      "id": "CloudAuditOptions",
-      "description": "Write a Cloud Audit log",
-      "type": "object",
-      "properties": {
       }
     },
     "SetIamPolicyRequest": {
@@ -699,6 +511,9 @@
           "parameterOrder": [
             "projectId"
           ],
+          "request": {
+            "$ref": "UndeleteProjectRequest"
+          },
           "response": {
             "$ref": "Empty"
           },

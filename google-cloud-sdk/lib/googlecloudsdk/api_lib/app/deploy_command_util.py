@@ -18,11 +18,12 @@
 import os
 import re
 
+from gae_ext_runtime import ext_runtime
+
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import docker_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
@@ -110,7 +111,7 @@ def _GetDockerfileCreator(info, config_cleanup=None):
           'runtimes.')
 
   # Check the fingerprinting based code.
-  params = fingerprinting.Params(appinfo=info.parsed, deploy=True)
+  params = ext_runtime.Params(appinfo=info.parsed, deploy=True)
   configurator = fingerprinter.IdentifyDirectory(dockerfile_dir, params)
   if configurator:
     return configurator.GenerateConfigs

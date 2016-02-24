@@ -31,6 +31,9 @@ class HttpRequest(_messages.Message):
     cacheHit: Whether or not an entity was served from cache (with or without
       validation).
     cacheLookup: Whether or not a cache lookup was attempted.
+    cacheValidatedWithOriginServer: Whether or not the response was validated
+      with the origin server before being served from cache. This field is
+      only meaningful if `cache_hit` is True.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -49,23 +52,20 @@ class HttpRequest(_messages.Message):
       200, 404.
     userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
       (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
-    validatedWithOriginServer: Whether or not the response was validated with
-      the origin server before being served from cache. This field is only
-      meaningful if `cache_hit` is True.
   """
 
   cacheFillBytes = _messages.IntegerField(1)
   cacheHit = _messages.BooleanField(2)
   cacheLookup = _messages.BooleanField(3)
-  referer = _messages.StringField(4)
-  remoteIp = _messages.StringField(5)
-  requestMethod = _messages.StringField(6)
-  requestSize = _messages.IntegerField(7)
-  requestUrl = _messages.StringField(8)
-  responseSize = _messages.IntegerField(9)
-  status = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(11)
-  validatedWithOriginServer = _messages.BooleanField(12)
+  cacheValidatedWithOriginServer = _messages.BooleanField(4)
+  referer = _messages.StringField(5)
+  remoteIp = _messages.StringField(6)
+  requestMethod = _messages.StringField(7)
+  requestSize = _messages.IntegerField(8)
+  requestUrl = _messages.StringField(9)
+  responseSize = _messages.IntegerField(10)
+  status = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(12)
 
 
 class LabelDescriptor(_messages.Message):
@@ -149,6 +149,10 @@ class ListLogEntriesResponse(_messages.Message):
 
   Fields:
     entries: A list of log entries.
+    lastObservedEntryTimestamp: The timestamp of the last log entry that was
+      examined before returning this response. This can be used to observe
+      progress between successive queries, in particular when only a page
+      token is returned.
     nextPageToken: If there are more results than were returned, then
       `nextPageToken` is included in the response.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
@@ -184,8 +188,9 @@ class ListLogEntriesResponse(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  projectIdErrors = _messages.MessageField('ProjectIdErrorsValue', 3)
+  lastObservedEntryTimestamp = _messages.StringField(2)
+  nextPageToken = _messages.StringField(3)
+  projectIdErrors = _messages.MessageField('ProjectIdErrorsValue', 4)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -310,8 +315,8 @@ class LogEntry(_messages.Message):
     labels: Optional. A set of user-defined (key, value) data that provides
       additional information about the log entry.
     logName: Required. The resource name of the log to which this log entry
-      belongs. The format of the name is `projects/&lt;project-id&gt;/logs/&lt
-      ;log-id%gt;`.  Examples: `"projects/my-projectid/logs/syslog"`,
+      belongs. The format of the name is `"projects/<project-id>/logs/<log-
+      id>"`.  Examples: `"projects/my-projectid/logs/syslog"`,
       `"projects/1234567890/logs/library.googleapis.com%2Fbook_log"`.  The log
       ID part of resource name must be less than 512 characters long and can
       only include the following characters: upper and lower case alphanumeric
@@ -914,37 +919,37 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
 
 class MonitoredResource(_messages.Message):
-  """A monitored resource describes a resource that can be used for monitoring
-  purpose. It can also be used for logging, billing, and other purposes. Each
-  resource has a `type` and a set of `labels`. The labels contain information
-  that identifies the resource and describes attributes of it. For example,
-  you can use monitored resource to describe a normal file, where the resource
-  has `type` as `"file"`, the label `path` identifies the file, and the label
-  `size` describes the file size. The monitoring system can use a set of
-  monitored resources of files to generate file size distribution.
+  """An object representing a resource that can be used for monitoring,
+  logging, billing, or other purposes. Examples include virtual machine
+  instances, databases, and storage devices such as disks. The `type` field
+  identifies a MonitoredResourceDescriptor object that describes the
+  resource's schema. Information in the `labels` field identifies the actual
+  resource and its attributes according to the schema. For example, a
+  particular Compute Engine VM instance could be represented by the following
+  object, because the MonitoredResourceDescriptor for `"gce_instance"` has
+  labels `"instance_id"` and `"zone"`:      { "type": "gce_instance",
+  "labels": { "instance_id": "my-instance",                   "zone": "us-
+  central1-a" }}
 
   Messages:
-    LabelsValue: Values for some or all of the labels listed in the associated
-      monitored resource descriptor. For example, you specify a specific Cloud
-      SQL database by supplying values for both the `"database_id"` and
-      `"zone"` labels.
+    LabelsValue: Required. Values for all of the labels listed in the
+      associated monitored resource descriptor. For example, Cloud SQL
+      databases use the labels `"database_id"` and `"zone"`.
 
   Fields:
-    labels: Values for some or all of the labels listed in the associated
-      monitored resource descriptor. For example, you specify a specific Cloud
-      SQL database by supplying values for both the `"database_id"` and
-      `"zone"` labels.
-    type: The monitored resource type. This field must match the corresponding
-      MonitoredResourceDescriptor.type to this resource. For example,
-      `"cloudsql_database"` represents Cloud SQL databases.
+    labels: Required. Values for all of the labels listed in the associated
+      monitored resource descriptor. For example, Cloud SQL databases use the
+      labels `"database_id"` and `"zone"`.
+    type: Required. The monitored resource type. This field must match the
+      `type` field of a MonitoredResourceDescriptor object. For example, the
+      type of a Cloud SQL database is `"cloudsql_database"`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Values for some or all of the labels listed in the associated monitored
-    resource descriptor. For example, you specify a specific Cloud SQL
-    database by supplying values for both the `"database_id"` and `"zone"`
-    labels.
+    """Required. Values for all of the labels listed in the associated
+    monitored resource descriptor. For example, Cloud SQL databases use the
+    labels `"database_id"` and `"zone"`.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -971,20 +976,31 @@ class MonitoredResource(_messages.Message):
 
 
 class MonitoredResourceDescriptor(_messages.Message):
-  """A descriptor that describes the schema of MonitoredResource.
+  """An object that describes the schema of a MonitoredResource object using a
+  type name and a set of labels.  For example, the monitored resource
+  descriptor for Google Compute Engine VM instances has a type of
+  `"gce_instance"` and specifies the use of the labels `"instance_id"` and
+  `"zone"` to identify particular VM instances.  Different APIs can support
+  different monitored resource types. APIs generally provide a `list` method
+  that returns the monitored resource descriptors used by the API.
 
   Fields:
-    description: A detailed description of the monitored resource type that
-      can be used in documentation.
-    displayName: A concise name for the monitored resource type that can be
-      displayed in user interfaces. For example, `"Google Cloud SQL
+    description: Optional. A detailed description of the monitored resource
+      type that might be used in documentation.
+    displayName: Optional. A concise name for the monitored resource type that
+      might be displayed in user interfaces. For example, `"Google Cloud SQL
       Database"`.
-    labels: A set of labels that can be used to describe instances of this
-      monitored resource type. For example, Google Cloud SQL databases can be
-      labeled with their `"database_id"` and their `"zone"`.
-    name: Resource name of the monitored resource descriptor. For example:
-      projects/{project_id}/monitoredResourceDescriptors/{type}
-    type: The monitored resource type. For example, the type
+    labels: Required. A set of labels used to describe instances of this
+      monitored resource type. For example, an individual Google Cloud SQL
+      database is identified by values for the labels `"database_id"` and
+      `"zone"`.
+    name: Optional. The resource name of the monitored resource descriptor:
+      `"projects/<project_id>/monitoredResourceDescriptors/<type>"` where
+      &lt;type&gt; is the value of the `type` field in this object and
+      &lt;project_id&gt; is a project ID that provides API-specific context
+      for accessing the type.  APIs that do not use project information can
+      use the resource name format `"monitoredResourceDescriptors/<type>"`.
+    type: Required. The monitored resource type. For example, the type
       `"cloudsql_database"` represents databases in Google Cloud SQL.
   """
 
@@ -1032,13 +1048,18 @@ class ReadLogEntriesResponse(_messages.Message):
   Fields:
     entries: A list of log entries. If the list is empty, there are no more
       entries in the stream.
+    lastObservedEntryTimestamp: The timestamp of the last log entry that was
+      examined before returning this response. This can be used to observe
+      progress between successive queries, in particular when only a page
+      token is returned.
     resumeToken: A token to use to resume from this position of the stream.
       Note that even if there are no entries, it might still be possible to
       continue from this point at some later time.
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
-  resumeToken = _messages.StringField(2)
+  lastObservedEntryTimestamp = _messages.StringField(2)
+  resumeToken = _messages.StringField(3)
 
 
 class RequestLog(_messages.Message):

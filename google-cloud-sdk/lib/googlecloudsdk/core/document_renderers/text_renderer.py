@@ -105,7 +105,7 @@ class TextRenderer(renderer.Renderer):
       if not self._fill:
         self._fill = self._indent[self._level] - 1
         self._out.write(' ' * self._fill)
-      width = self._attr.PrintWidth(word)
+      width = self._attr.DisplayWidth(word)
       if self._fill + width + 1 >= self._width and not self._ignore_width:
         self._out.write('\n')
         self._fill = self._indent[self._level]
@@ -293,7 +293,7 @@ class TextRenderer(renderer.Renderer):
     self._out.write(' ' * running_width)
     indent += self._INDENT
     for group in groups:
-      w = self._attr.PrintWidth(group) + 1
+      w = self._attr.DisplayWidth(group) + 1
       if (running_width + w) >= self._width:
         running_width = indent
         self._out.write('\n' + ' ' * running_width)
@@ -301,7 +301,7 @@ class TextRenderer(renderer.Renderer):
           # This group is wider than the max width and must be split into parts.
           sep = ' '
           for part in group.split(' | '):
-            w = self._attr.PrintWidth(part)
+            w = self._attr.DisplayWidth(part)
             if sep != ' ' and (running_width + len(sep) + w) >= self._width:
               running_width = indent + self._SPLIT_INDENT
               self._out.write('\n' + ' ' * running_width)

@@ -412,6 +412,53 @@ class ComponentSnapshot(object):
     return self._ClosureFor(component_ids, dependencies=True, consumers=True,
                             platform_filter=platform_filter)
 
+  def GetEffectiveComponentSize(self, component_id, platform_filter=None):
+    """Computes the effective size of the given component.
+
+    If the component does not exist or does not exist on this platform, the size
+    is 0.
+
+    If it has data, just use the reported size of its data.
+
+    If there is no data, report the total size of all its direct hidden
+    dependencies (that are valid on this platform).  We don't include visible
+    dependencies because they will show up in the list with their own size.
+
+    This is a best effort estimation.  It is not easily possible to accurately
+    report size in all situations because complex dependency graphs (between
+    hidden and visible components, as well as circular dependencies) makes it
+    infeasible to correctly show size when only displaying visible components.
+    The goal is mainly to not show some components as having no size at all
+    when they are wrappers around platform specific components.
+
+    Args:
+      component_id: str, The component to get the size for.
+      platform_filter: platforms.Platform, A platform that components must
+        match in order to be considered for any operations.
+
+    Returns:
+      int, The effective size of the component.
+    """
+    size = 0
+    component = self.ComponentFromId(component_id)
+
+    if component and component.platform.Matches(platform_filter):
+      # This is a valid component for this platform.
+      if component.data:
+        # This component reports its data, just return that size.
+        return component.data.size
+
+      # Get the direct dependencies that are valid on this platform, are hidden,
+      # and that report data.
+      deps = [self.ComponentFromId(d)
+              for d in self.__dependencies[component_id]]
+      deps = [d for d in deps
+              if d.platform.Matches(platform_filter) and d.is_hidden and d.data]
+      for d in deps:
+        size += d.data.size
+
+    return size
+
   def CreateDiff(self, latest_snapshot, platform_filter=None):
     """Creates a ComponentSnapshotDiff based on this snapshot and the given one.
 
@@ -466,8 +513,10 @@ class ComponentSnapshotDiff(object):
 
     self.__all_components = (current.AllComponentIdsMatching(platform_filter) |
                              latest.AllComponentIdsMatching(platform_filter))
-    self.__diffs = [ComponentDiff(component_id, current, latest)
-                    for component_id in self.__all_components]
+    self.__diffs = [
+        ComponentDiff(component_id, current, latest,
+                      platform_filter=platform_filter)
+        for component_id in self.__all_components]
 
     self.__removed_components = set(diff.id for diff in self.__diffs
                                     if diff.state is ComponentState.REMOVED)
@@ -639,51 +688,59 @@ class ComponentDiff(object):
       component between the given snapshots.
   """
 
-  def __init__(self, component_id, current_snapshot, latest_snapshot):
+  def __init__(self, component_id, current_snapshot, latest_snapshot,
+               platform_filter=None):
     """Create a new diff.
 
     Args:
       component_id: str, The id of this component.
       current_snapshot: ComponentSnapshot, The base snapshot to compare against.
       latest_snapshot: ComponentSnapshot, The new snapshot.
+      platform_filter: platforms.Platform, A platform that components must
+        match in order to be considered for any operations.
     """
     self.id = component_id
-    self.current = current_snapshot.ComponentFromId(component_id)
-    self.latest = latest_snapshot.ComponentFromId(component_id)
-    self.__current_version_string = (self.current.version.version_string
-                                     if self.current else 'None')
-    self.__latest_version_string = (self.latest.version.version_string
-                                    if self.latest else 'None')
+    self.__current = current_snapshot.ComponentFromId(component_id)
+    self.__latest = latest_snapshot.ComponentFromId(component_id)
+    self.current_version_string = (self.__current.version.version_string
+                                   if self.__current else None)
+    self.latest_version_string = (self.__latest.version.version_string
+                                  if self.__latest else None)
 
-    data_provider = self.latest if self.latest else self.current
+    data_provider = self.__latest if self.__latest else self.__current
     self.name = data_provider.details.display_name
     self.is_hidden = data_provider.is_hidden
     self.is_configuration = data_provider.is_configuration
-    self.size = data_provider.data.size if data_provider.data else 0
     self.state = self._ComputeState()
+
+    active_snapshot = latest_snapshot if self.__latest else current_snapshot
+    self.size = active_snapshot.GetEffectiveComponentSize(
+        component_id, platform_filter=platform_filter)
 
   def _ComputeState(self):
     """Returns the component state."""
-    if self.current is None:
+    if self.__current is None:
       return ComponentState.NEW
-    elif self.latest is None:
+    elif self.__latest is None:
       return ComponentState.REMOVED
-    elif self.latest.version.build_number > self.current.version.build_number:
+    elif (self.__latest.version.build_number >
+          self.__current.version.build_number):
       return ComponentState.UPDATE_AVAILABLE
     # We have a more recent version than the latest.  This can happen because we
     # don't release updated components if they contained identical code.  Check
     # to see if the checksums match, and suppress the update if they are the
     # same.
-    elif self.latest.version.build_number < self.current.version.build_number:
+    elif (self.__latest.version.build_number <
+          self.__current.version.build_number):
       # Component has no data at all, don't flag it as an update.
-      if self.latest.data is None and self.current.data is None:
+      if self.__latest.data is None and self.__current.data is None:
         return ComponentState.UP_TO_DATE
       # One has data and the other does not.  This is clearly a change.
-      elif bool(self.latest.data) ^ bool(self.current.data):
+      elif bool(self.__latest.data) ^ bool(self.__current.data):
         return ComponentState.UPDATE_AVAILABLE
       # Both have data, check to see if they are the same.
-      elif (self.latest.data.contents_checksum !=
-            self.current.data.contents_checksum):
+      elif (self.__latest.data.contents_checksum !=
+            self.__current.data.contents_checksum):
         return ComponentState.UPDATE_AVAILABLE
     return ComponentState.UP_TO_DATE
 
@@ -691,18 +748,25 @@ class ComponentDiff(object):
     return (
         '[ {status} ]\t{name} ({id})\t[{current_version}]\t[{latest_version}]'
         .format(status=self.state.name, name=self.name, id=self.id,
-                current_version=self.__current_version_string,
-                latest_version=self.__latest_version_string))
+                current_version=self.current_version_string,
+                latest_version=self.latest_version_string))
 
 
 class ComponentState(object):
   """An enum for the available update states."""
-  _COMPONENT_STATE_TUPLE = collections.namedtuple('ComponentStateTuple',
-                                                  ['name'])
-  UP_TO_DATE = _COMPONENT_STATE_TUPLE('Installed')
-  UPDATE_AVAILABLE = _COMPONENT_STATE_TUPLE('Update Available')
-  REMOVED = _COMPONENT_STATE_TUPLE('Deprecated')
-  NEW = _COMPONENT_STATE_TUPLE('Not Installed')
+
+  class _ComponentState(object):
+
+    def __init__(self, name):
+      self.name = name
+
+    def __str__(self):
+      return self.name
+
+  UP_TO_DATE = _ComponentState('Installed')
+  UPDATE_AVAILABLE = _ComponentState('Update Available')
+  REMOVED = _ComponentState('Deprecated')
+  NEW = _ComponentState('Not Installed')
 
   @staticmethod
   def All():

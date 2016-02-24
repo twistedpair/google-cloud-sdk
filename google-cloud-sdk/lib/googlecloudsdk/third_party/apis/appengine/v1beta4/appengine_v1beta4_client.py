@@ -164,7 +164,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates an existing version.
+      """Updates an existing version. Note: UNIMPLEMENTED.
 
       Args:
         request: (AppengineAppsModulesVersionsPatchRequest) input message

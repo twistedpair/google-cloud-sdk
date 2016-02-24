@@ -13,7 +13,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://docs.google.com/document/d/16HutoQJLbqIhXYoz9IcyJ36b4tpD8g2E2isIwK1sbFY/view",
+  "documentationLink": "https://cloud.google.com/functions",
   "protocol": "rest",
   "rootUrl": "https://cloudfunctions.googleapis.com/",
   "servicePath": "",

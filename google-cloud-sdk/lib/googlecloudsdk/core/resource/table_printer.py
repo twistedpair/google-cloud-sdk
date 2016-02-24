@@ -27,8 +27,8 @@ from googlecloudsdk.core.resource import resource_transform
 _TABLE_COLUMN_PAD = 2
 
 
-def _Stringify(value):
-  """Dumps value to JSON if it's not a string."""
+def _Stringify(value):  # pylint: disable=invalid-name
+  """Represents value as a JSON string if it's not a string."""
   if value is None:
     return ''
   elif isinstance(value, (basestring, console_attr.Colorizer)):
@@ -36,9 +36,32 @@ def _Stringify(value):
   elif isinstance(value, float):
     return resource_transform.TransformFloat(value)
   elif hasattr(value, '__str__'):
-    return str(value)
+    return unicode(value)
   else:
     return json.dumps(value, sort_keys=True)
+
+
+class _Justify(object):
+  """Represents a unicode object for justification using display width.
+
+  Attributes:
+    _adjust: The justification width adjustment. The builtin justification
+      functions use len() but unicode data requires console_attr.DisplayWidth().
+    _string: The unicode string to justify.
+  """
+
+  def __init__(self, attr, string):
+    self._adjust = attr.DisplayWidth(string) - len(string)
+    self._string = string
+
+  def ljust(self, width):
+    return self._string.ljust(width - self._adjust)
+
+  def rjust(self, width):
+    return self._string.rjust(width - self._adjust)
+
+  def center(self, width):
+    return self._string.center(width - self._adjust)
 
 
 class SubFormat(object):
@@ -79,9 +102,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     no-heading: Disables the column headings.
     legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
       item if there is at least one item.
-    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
-      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
-      *info*, *warn*, or *error*.
+    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
+      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
+      *debug*, *info*, *warn*, or *error*.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
     page=N: If _N_ > 0 then output is grouped into tables with _N_ rows. The
@@ -216,7 +239,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     col_widths = [0] * max(len(x) for x in rows + heading)
     for row in rows + heading:
       for i in range(len(row)):
-        col_widths[i] = max(col_widths[i], len(row[i]))
+        col_widths[i] = max(col_widths[i],
+                            self._console_attr.DisplayWidth(row[i]))
 
     # Print the title if specified.
     title = self.attributes.get('title') if self._page_count <= 1 else None
@@ -230,9 +254,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         if box:
           line += box.h * (col_widths[i] + sep)
         sep = 3
-      if width < len(title):
+      if width < self._console_attr.DisplayWidth(title):
         # Title is wider than the table => pad each column to make room.
-        pad = (len(title) + len(col_widths) - 1) / len(col_widths)
+        pad = ((self._console_attr.DisplayWidth(title) + len(col_widths) - 1) /
+               len(col_widths))
         width += len(col_widths) * pad
         if box:
           line += box.h * len(col_widths) * pad
@@ -271,15 +296,14 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._out.write(t_rule)
       self._out.write('\n')
       if heading:
-        line = cStringIO.StringIO()
+        line = []
         row = heading[0]
         heading = []
         for i in range(len(row)):
-          line.write(box.v + ' ')
-          line.write(row[i].center(col_widths[i]))
-          line.write(' ')
-        line.write(box.v)
-        self._out.write(line.getvalue())
+          line.append(box.v)
+          line.append(row[i].center(col_widths[i]))
+        line.append(box.v)
+        self._out.write(u' '.join(line))
         self._out.write('\n')
         self._out.write(m_rule)
         self._out.write('\n')
@@ -341,7 +365,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           else:
             pad = table_column_pad
         else:
-          value = justify(cell, width)
+          value = justify(_Justify(self._console_attr, cell), width)
           if box:
             self._out.write(value)
             self._out.write(' ' * table_column_pad)
@@ -351,9 +375,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
               pad = 0
             stripped = value.rstrip()
             self._out.write(stripped)
-            pad = table_column_pad + len(value) - len(stripped)
+            pad = (table_column_pad + self._console_attr.DisplayWidth(value) -
+                   self._console_attr.DisplayWidth(stripped))
           else:
-            pad += table_column_pad + len(value)
+            pad += table_column_pad + self._console_attr.DisplayWidth(value)
       if box:
         self._out.write(box.v)
       if self._nest:

@@ -65,11 +65,11 @@ Usage:
   if c is None:
     print 'EOF\n'
 
-  # Return the print width of a string that may contain FontCode() chars.
-  print_width = con.PrintWidth(string)
+  # Return the display width of a string that may contain FontCode() chars.
+  display_width = con.DisplayWidth(string)
 
   # Reset the memoized state.
-  con = console_attr.GetConsoleAttr(reset=True)
+  con = console_attr.ResetConsoleAttr()
 
   # Print the console width and height in characters.
   width, height = con.GetTermSize()
@@ -88,6 +88,7 @@ Usage:
 
 
 import os
+import unicodedata
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
@@ -101,82 +102,56 @@ class BoxLineCharacters(object):
   """
 
 
-class BoxLineCharactersUtf8(BoxLineCharacters):
-  """UTF-8 Box/line drawing characters."""
-  dl = '┐'
-  dr = '┌'
-  h = '─'
-  hd = '┬'
-  hu = '┴'
-  ul = '┘'
-  ur = '└'
-  v = '│'
-  vh = '┼'
-  vl = '┤'
-  vr = '├'
-  d_dl = '╗'
-  d_dr = '╔'
-  d_h = '═'
-  d_hd = '╦'
-  d_hu = '╩'
-  d_ul = '╝'
-  d_ur = '╚'
-  d_v = '║'
-  d_vh = '╬'
-  d_vl = '╣'
-  d_vr = '╠'
-
-
-class BoxLineCharactersWindows(BoxLineCharacters):
-  """Windows cp437 Box/line drawing characters."""
-  dl = '\xBF'
-  dr = '\xDA'
-  h = '\xC4'
-  hd = '\xC2'
-  hu = '\xC1'
-  ul = '\xD9'
-  ur = '\xC0'
-  v = '\xB3'
-  vh = '\xC5'
-  vl = '\xB4'
-  vr = '\xC3'
-  d_dl = '\xBB'
-  d_dr = '\xC9'
-  d_h = '\xCD'
-  d_hd = '\xCB'
-  d_hu = '\xCA'
-  d_ul = '\xBC'
-  d_ur = '\xC8'
-  d_v = '\xBA'
-  d_vh = '\xCE'
-  d_vl = '\xB9'
-  d_vr = '\xCC'
+class BoxLineCharactersUnicode(BoxLineCharacters):
+  """unicode Box/line drawing characters (cp437 compatible unicode)."""
+  dl = u'┐'
+  dr = u'┌'
+  h = u'─'
+  hd = u'┬'
+  hu = u'┴'
+  ul = u'┘'
+  ur = u'└'
+  v = u'│'
+  vh = u'┼'
+  vl = u'┤'
+  vr = u'├'
+  d_dl = u'╗'
+  d_dr = u'╔'
+  d_h = u'═'
+  d_hd = u'╦'
+  d_hu = u'╩'
+  d_ul = u'╝'
+  d_ur = u'╚'
+  d_v = u'║'
+  d_vh = u'╬'
+  d_vl = u'╣'
+  d_vr = u'╠'
 
 
 class BoxLineCharactersAscii(BoxLineCharacters):
   """ASCII Box/line drawing characters."""
-  dl = '+'
-  dr = '+'
-  h = '-'
-  hd = '+'
-  hu = '+'
-  ul = '+'
-  ur = '+'
-  v = '|'
-  vh = '+'
-  vl = '+'
-  vr = '+'
-  d_dl = '#'
-  d_dr = '#'
-  d_h = '='
-  d_hd = '#'
-  d_hu = '#'
-  d_ul = '#'
-  d_ur = '#'
-  d_v = '#'
-  d_vh = '#'
-  d_vl = '#'
-  d_vr = '#'
+  dl = u'+'
+  dr = u'+'
+  h = u'-'
+  hd = u'+'
+  hu = u'+'
+  ul = u'+'
+  ur = u'+'
+  v = u'|'
+  vh = u'+'
+  vl = u'+'
+  vr = u'+'
+  d_dl = u'#'
+  d_dr = u'#'
+  d_h = u'='
+  d_hd = u'#'
+  d_hu = u'#'
+  d_ul = u'#'
+  d_ur = u'#'
+  d_v = u'#'
+  d_vh = u'#'
+  d_vl = u'#'
+  d_vr = u'#'
 
 
 class ConsoleAttr(object):
@@ -214,8 +189,8 @@ class ConsoleAttr(object):
       }
   _ANSI_COLOR_RESET = '39;0m'
 
-  _BULLETS_UTF8 = ('●', '■', '◆', '○', '□', '◇')
-  _BULLETS_WINDOWS = ('\x07', '\xFE', '\x04')
+  _BULLETS_UNICODE = (u'▪', u'◆', u'▸', u'▫', u'◇', u'▹')
+  _BULLETS_WINDOWS = (u'■', u'≡', u'∞', u'Φ', u'·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
   def __init__(self, encoding=None, out=None):
@@ -230,15 +205,17 @@ class ConsoleAttr(object):
     """
     self._out = out or log.out
     # Normalize the encoding name.
+    console_encoding = None
     if not encoding:
-      encoding = 'ascii'
       if hasattr(self._out, 'encoding') and self._out.encoding:
         console_encoding = self._out.encoding.lower()
         if 'utf-8' in console_encoding:
           encoding = 'utf8'
         elif 'cp437' in console_encoding:
-          encoding = 'win'
-    self._encoding = encoding
+          encoding = 'cp437'
+    elif encoding == 'win':
+      encoding = 'cp437'
+    self._encoding = encoding or 'ascii'
     self._term = os.getenv('TERM', '').lower()
 
     # ANSI "standard" attributes.
@@ -257,10 +234,10 @@ class ConsoleAttr(object):
 
     # Encoded character attributes.
     if self._encoding == 'utf8':
-      self._box_line_characters = BoxLineCharactersUtf8()
-      self._bullets = self._BULLETS_UTF8
-    elif self._encoding == 'win':
-      self._box_line_characters = BoxLineCharactersWindows()
+      self._box_line_characters = BoxLineCharactersUnicode()
+      self._bullets = self._BULLETS_UNICODE
+    elif self._encoding == 'cp437':
+      self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
     else:
       self._box_line_characters = BoxLineCharactersAscii()
@@ -287,9 +264,25 @@ class ConsoleAttr(object):
           color_code=self._ANSI_COLOR[color],
           reset_code=self._ANSI_COLOR_RESET,
           string=string))
-      # TODO(user): Add elif self._encoding == 'win': code here.
+      # TODO(user): Add elif self._encoding == 'cp437': code here.
     else:
       self._out.write(string)
+
+  def ConvertOutputToUnicode(self, buf):
+    """Converts a console output string buf to unicode.
+
+    Mainly used for testing. Allows test comparisons in unicode while ensuring
+    that unicode => encoding => unicode works.
+
+    Args:
+      buf: The console output string to convert.
+
+    Returns:
+      The console output string buf converted to unicode.
+    """
+    if isinstance(buf, unicode):
+      buf = buf.encode(self._encoding)
+    return unicode(buf, self._encoding, 'replace')
 
   def GetBoxLineCharacters(self):
     """Returns the box/line drawing characters object.
@@ -326,7 +319,7 @@ class ConsoleAttr(object):
   def GetControlSequenceLen(self, buf):
     """Returns the control sequence length at the beginning of buf.
 
-    Used in print width computations. Control sequences have print width 0.
+    Used in display width computations. Control sequences have display width 0.
 
     Args:
       buf: The string to check for a control sequence.
@@ -387,26 +380,26 @@ class ConsoleAttr(object):
     """
     return self._term_size
 
-  def PrintWidth(self, buf):
-    """Returns the print width of buf which may contain ANSI control sequences.
+  def DisplayWidth(self, buf):
+    """Returns the display width of buf, handling unicode and ANSI controls.
 
     Args:
       buf: The string to count from.
 
     Returns:
-      The print width of buf.
+      The display width of buf, handling unicode and ANSI controls.
     """
-    if not self._csi:
+    if not isinstance(buf, basestring):
+      # Handle non-string objects like Colorizer().
       return len(buf)
     width = 0
     i = 0
     while i < len(buf):
-      csi_index = buf.find(self._csi, i)
-      if csi_index < 0:
-        width += len(buf) - i
-        break
-      width += csi_index - i
-      i = csi_index + self.GetControlSequenceLen(buf[csi_index:])
+      if self._csi and buf[i:].startswith(self._csi):
+        i += self.GetControlSequenceLen(buf[i:])
+      else:
+        width += GetCharacterDisplayWidth(buf[i])
+        i += 1
     return width
 
   def SplitIntoNormalAndControl(self, buf):
@@ -442,7 +435,7 @@ class ConsoleAttr(object):
         width.
 
     Returns:
-      A list of chunks, all but the last with print width == width.
+      A list of chunks, all but the last with display width == width.
     """
     lines = []
     chunk = ''
@@ -500,7 +493,7 @@ class Colorizer(object):
     return 0
 
   def __len__(self):
-    return len(self._string)
+    return self._con.DisplayWidth(self._string)
 
   def __str__(self):
     return self._string
@@ -515,7 +508,7 @@ class Colorizer(object):
 
 
 def GetConsoleAttr(encoding=None, out=None, reset=False):
-  """Get the console attribute state.
+  """Gets the console attribute state.
 
   If this is the first call or reset is True or encoding is not None and does
   not match the current encoding or out is not None and does not match the
@@ -548,3 +541,47 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
     attr = ConsoleAttr(encoding=encoding, out=out)
     ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
   return attr
+
+
+def ResetConsoleAttr():
+  """Resets the console attribute state to the console default.
+
+  Returns:
+    The global ConsoleAttr state object.
+  """
+  return GetConsoleAttr(reset=True)
+
+
+def GetCharacterDisplayWidth(char):
+  """Returns the monospaced terminal display width of char.
+
+  Assumptions:
+    - monospaced display
+    - ambiguous or unknown chars default to width 1
+    - ASCII control char width is 1 => don't use this for control chars
+
+  Args:
+    char: The character to determine the display width of.
+
+  Returns:
+    The monospaced terminal display width of char: either 0, 1, or 2.
+  """
+  if not isinstance(char, unicode):
+    # Non-unicode chars have width 1. Don't use this function on control chars.
+    return 1
+
+  # Normalize to avoid special cases.
+  char = unicodedata.normalize('NFC', char)
+
+  if unicodedata.combining(char) != 0:
+    # Modifies the previous character and does not move the cursor.
+    return 0
+  elif unicodedata.category(char) == 'Cf':
+    # Unprintable formatting char.
+    return 0
+  elif unicodedata.east_asian_width(char) in 'FW':
+    # Fullwidth or Wide chars take 2 character positions.
+    return 2
+  else:
+    # Don't use this function on control chars.
+    return 1

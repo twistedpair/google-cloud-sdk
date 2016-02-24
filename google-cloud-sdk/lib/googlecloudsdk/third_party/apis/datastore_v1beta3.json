@@ -1371,11 +1371,11 @@
       "type": "object",
       "properties": {
         "partitionId": {
-          "description": "The partition id to watch.",
+          "description": "The partition ID to watch.",
           "$ref": "PartitionId"
         },
         "targetId": {
-          "description": "A previously assigned target id. Used to preserve target ids\nwhen restarting a stream. All targets with previously assigned target ids\nmust be added before any new targets.",
+          "description": "A previously assigned target ID. Used to preserve target IDs\nwhen restarting a stream. All targets with previously assigned target IDs\nmust be added before any new targets.",
           "type": "integer",
           "format": "int32"
         },
@@ -1396,11 +1396,11 @@
     },
     "WatchChange": {
       "id": "WatchChange",
-      "description": "A change to a set of targets being watched.\nUsually a change to an individual entity,\nbut sometimes a change to the set of entities being watched.\n\nIf a change was requested (for example removing a target) but rejected,\na change will be returned with\n`change_type=NO_CHANGE`, `target_ids=<relevant ids>`, and `cause=<error>`.\n.",
+      "description": "A change indicates that an event has occurred that affects the targets\nbeing watched",
       "type": "object",
       "properties": {
         "noChange": {
-          "description": "No change has occurred. Supports providing an updated\n`resume_token` or returning an error.",
+          "description": "No change has occurred. Used to send an updated resume_token.",
           "enumDescriptions": [
             "Null value."
           ],
@@ -1409,43 +1409,45 @@
             "NULL_VALUE"
           ]
         },
-        "entity": {
-          "description": "The most recent state of an entity that matches the given `target_ids`.",
-          "$ref": "EntityResult"
+        "targetChange": {
+          "description": "The targets being watched have changed.",
+          "$ref": "TargetChange"
         },
-        "entityRemoved": {
-          "description": "An entity no longer matches the given `target_ids`. Only `entity.key` and\n`version` are populated.",
-          "$ref": "EntityResult"
+        "entityChange": {
+          "description": "An entity has changed.",
+          "$ref": "EntityChange"
         },
         "filter": {
-          "description": "A filter to apply to the *set* of entities previously returned for the\ngiven `target_ids`. Returned when entities may no longer match the given\n`target_ids` but the exact keys are unknown.",
+          "description": "A filter to apply to the *set* of entities previously returned.\nReturned when entities may no longer match the given targets\nbut the exact entity keys are unknown.",
           "$ref": "ExistenceFilter"
         },
-        "targetChange": {
-          "description": "The targets associate with this stream have changed.\nThe affected targets are listed in `target_ids`.",
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
+        "snapshotVersion": {
+          "description": "The consistent snapshot version reflected by the stream for all targets.\nThe version is 0 when the stream does not reflect a consistent snapshot.",
           "type": "string",
-          "enum": [
-            "TARGET_CHANGE_UNSPECIFIED",
-            "TARGET_ADDED",
-            "TARGET_REMOVED"
-          ]
-        },
-        "continued": {
-          "description": "If true, more changes are needed to construct a consistent snapshot.",
-          "type": "boolean"
+          "format": "int64"
         },
         "resumeToken": {
-          "description": "A token that provides a compact representation of all the changes that\nhave been received by the caller up to this point (including this one)\nthat can be used to resume the stream. May not be set on every change.\nOnly valid for the targets specified in `target_ids`.",
+          "description": "A token that provides a compact representation of all the changes that\nhave been received by the caller up to this point (including this one)\nthat can be used to resume the stream.\n\nMay not be set on every change.\n\nWhen WatchChange.snapshot_version is not 0, applies to all\ntargets.\nWhen WatchChange.snapshot_version is 0, this token is valid only for\nthe targets referenced in the change, specifically in the fields:\nEntityChange.targets and EntityChange.removed_targets,\nTargetChange.added_targets and TargetChange.removed_targets,\nor ExistanceFilter.targets.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "TargetChange": {
+      "id": "TargetChange",
+      "description": "The set of targets being watched has changed.",
+      "type": "object",
+      "properties": {
+        "addedTargetIds": {
+          "description": "The IDs of targets that have been added. Matches the order of the requests\nto add the targets.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
-        "targetIds": {
-          "description": "The set of targets to which this change applies. When empty, the change\napplies to all targets.",
+        "removedTargetIds": {
+          "description": "The IDs of targets that have been removed.",
           "type": "array",
           "items": {
             "type": "integer",
@@ -1458,13 +1460,49 @@
         }
       }
     },
+    "EntityChange": {
+      "id": "EntityChange",
+      "description": "An entity being watched has changed.\n\nA single change to an entity may result in multiple EntityChange messages,\nso the targets specified in this message cannot be relied upon to be\nexhaustive. When a consistent snapshot is reached, all EntityChanges\nfor all entities in that snapshot are guaranteed to have been returned.",
+      "type": "object",
+      "properties": {
+        "entity": {
+          "description": "The most recent state of an entity.\nWhen `delete` is true, only `key` is set.",
+          "$ref": "Entity"
+        },
+        "version": {
+          "description": "The version number for the new entity value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "delete": {
+          "description": "True when the entity was deleted.",
+          "type": "boolean"
+        },
+        "targetIds": {
+          "description": "A set of target IDs of targets that match this entity.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "removedTargetIds": {
+          "description": "A set of target IDs of targets that no longer match this entity.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
     "ExistenceFilter": {
       "id": "ExistenceFilter",
-      "description": "An existence filter that must be applied and verified locally to resolve\npossible delete mutations.",
+      "description": "An existence filter that must be applied and verified locally to resolve\nentities that no longer match the given ExistenceFilter.targets.",
       "type": "object",
       "properties": {
         "strategy": {
-          "description": "The strategy used to map a key to the filter bits.",
+          "description": "The strategy used to map an entity key to the filter bits.",
           "enumDescriptions": [
             "",
             ""
@@ -1486,9 +1524,17 @@
           "format": "int32"
         },
         "count": {
-          "description": "The total number of keys represented in this filter. Used to detect\nthe presence of false positives.",
+          "description": "The total number of unique entity keys represented in this filter. Used to\ndetect the presence of false positives.",
           "type": "integer",
           "format": "int32"
+        },
+        "targetIds": {
+          "description": "The set of target IDs for targets to which this filter applies.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -1501,20 +1547,14 @@
           "description": "Database ID against which to make the request.",
           "type": "string"
         },
-        "addTargets": {
-          "description": "TODO(arfuller): Switch to a non-batching API.\nThe set of watch targets to add to this stream.\nchanges will be returned with\nserver assigned `target_ids` in the same order as targets are specified\nhere.",
-          "type": "array",
-          "items": {
-            "$ref": "WatchTarget"
-          }
+        "addTarget": {
+          "description": "A watch target to add to this stream.",
+          "$ref": "WatchTarget"
         },
-        "removeTargets": {
-          "description": "The IDs of watch targets to remove from this stream.",
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
+        "removeTarget": {
+          "description": "The ID of a watch target to remove from this stream.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

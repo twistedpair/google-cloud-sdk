@@ -504,13 +504,13 @@ class Policy(_messages.Message):
   consists of a list of `bindings`. A `Binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {         "bindings": [          {
-  "role": "roles/owner",              "members": [
-  "user:mike@example.com",              "group:admins@example.com",
-  "domain:google.com",              "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"]          },          {
-  "role": "roles/viewer",              "members": ["user:sean@example.com"]
-  }          ]     }  For a description of IAM and its features, see the [IAM
+  defined by IAM.  **Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com",           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  For a description of IAM and its features, see the [IAM
   developer's guide](https://cloud.google.com/iam).
 
   Fields:

@@ -18,7 +18,9 @@ import os
 import re
 import textwrap
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
+from googlecloudsdk.api_lib.app import ext_runtime_adapter
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -148,7 +150,7 @@ class StaleBundleError(RubyConfigError):
   """Bundle is stale and needs a bundle install."""
 
 
-class RubyConfigurator(fingerprinting.Configurator):
+class RubyConfigurator(ext_runtime.Configurator):
   """Generates configuration for a Ruby app."""
 
   def __init__(self, path, params, ruby_version, entrypoint, packages):
@@ -156,7 +158,7 @@ class RubyConfigurator(fingerprinting.Configurator):
 
     Args:
       path: (str) Root path of the source tree.
-      params: (fingerprinting.Params) Parameters passed through to the
+      params: (ext_runtime.Params) Parameters passed through to the
         fingerprinters.
       ruby_version: (str) The ruby interpreter in rbenv format
       entrypoint: (str) The entrypoint command
@@ -180,11 +182,11 @@ class RubyConfigurator(fingerprinting.Configurator):
     """Generates all config files for the module.
 
     Returns:
-      (fingerprinting.Cleaner) A cleaner populated with the generated files
+      (ext_runtime.Cleaner) A cleaner populated with the generated files
     """
     self.notify('')
 
-    cleaner = fingerprinting.Cleaner()
+    cleaner = ext_runtime.Cleaner()
 
     if not self.params.appinfo:
       self._GenerateAppYaml(cleaner)
@@ -201,7 +203,7 @@ class RubyConfigurator(fingerprinting.Configurator):
     """Generates an app.yaml file appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
     """
     app_yaml = os.path.join(self.root, 'app.yaml')
     if not os.path.exists(app_yaml):
@@ -215,7 +217,7 @@ class RubyConfigurator(fingerprinting.Configurator):
     """Generates a Dockerfile appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
     """
     dockerfile = os.path.join(self.root, config.DOCKERFILE)
     if not os.path.exists(dockerfile):
@@ -244,7 +246,7 @@ class RubyConfigurator(fingerprinting.Configurator):
     """Generates a .dockerignore file appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
     """
     dockerignore = os.path.join(self.root, '.dockerignore')
     if not os.path.exists(dockerignore):
@@ -259,7 +261,7 @@ def Fingerprint(path, params):
 
   Args:
     path: (str) Application path.
-    params: (fingerprinting.Params) Parameters passed through to the
+    params: (ext_runtime.Params) Parameters passed through to the
       fingerprinters.
 
   Returns:
@@ -490,7 +492,7 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
            'interactively and cannot ask for the entrypoint{0}. Please either '
            'run gcloud interactively, or create an app.yaml with '
            '"runtime:ruby" and an "entrypoint" field.'.
-           format(fingerprinting.GetNonInteractiveErrorMessage()))
+           format(ext_runtime_adapter.GetNonInteractiveErrorMessage()))
     raise RubyConfigError(msg)
 
 

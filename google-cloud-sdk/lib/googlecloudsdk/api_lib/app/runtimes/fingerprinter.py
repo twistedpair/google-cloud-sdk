@@ -15,8 +15,9 @@
 """Package containing fingerprinting for all runtimes.
 """
 
-from googlecloudsdk.api_lib.app import ext_runtime
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
+from googlecloudsdk.api_lib.app import ext_runtime_adapter
 from googlecloudsdk.api_lib.app.runtimes import go
 from googlecloudsdk.api_lib.app.runtimes import java
 from googlecloudsdk.api_lib.app.runtimes import python
@@ -30,7 +31,8 @@ RUNTIMES = [
     # relative positions need to be tested carefully.
     go,  # Go's position is relatively flexible due to its orthogonal nature.
     ruby,
-    ext_runtime.CoreRuntimeLoader('nodejs', 'Node.js', ['nodejs', 'custom']),
+    ext_runtime_adapter.CoreRuntimeLoader('nodejs', 'Node.js',
+                                          ['nodejs', 'custom']),
     java,
     python_compat,
     python,  # python is last because it passes if there are any .py files.
@@ -49,6 +51,10 @@ class UnidentifiedDirectoryError(exceptions.Error):
     super(UnidentifiedDirectoryError, self).__init__(
         'Unrecognized directory type: [{0}]'.format(path))
     self.path = path
+
+
+class ExtRuntimeError(exceptions.Error):
+  """ext_runtime.Error errors are converted to this."""
 
 
 class ConflictingConfigError(exceptions.Error):
@@ -72,15 +78,15 @@ def IdentifyDirectory(path, params=None):
 
   Args:
     path: (basestring) Root directory to identify.
-    params: (fingerprinting.Params or None) Parameters passed through to the
+    params: (ext_runtime.Params or None) Parameters passed through to the
       fingerprinters.  Uses defaults if not provided.
 
   Returns:
-    (fingerprinting.Module or None) Returns a module if we've identified it,
-    None if not.
+    (ext_runtime.Configurator or None) Returns a module if we've identified
+    it, None if not.
   """
   if not params:
-    params = fingerprinting.Params()
+    params = ext_runtime.Params()
 
   # Parameter runtime has precedence
   if params.runtime:
@@ -103,7 +109,10 @@ def IdentifyDirectory(path, params=None):
                (runtime.NAME, specified_runtime))
       continue
 
-    configurator = runtime.Fingerprint(path, params)
+    try:
+      configurator = runtime.Fingerprint(path, params)
+    except ext_runtime.Error as ex:
+      raise ExtRuntimeError(ex.message)
     if configurator:
       return configurator
   return None
@@ -117,7 +126,7 @@ def GenerateConfigs(path, params=None, config_filename=None):
 
   Args:
     path: (basestring) Root directory to identify.
-    params: (fingerprinting.Params or None) Parameters passed through to the
+    params: (ext_runtime.Params or None) Parameters passed through to the
       fingerprinters.  Uses defaults if not provided.
     config_filename: (str or None) Filename of the config file (app.yaml).
 
@@ -129,7 +138,7 @@ def GenerateConfigs(path, params=None, config_filename=None):
     (callable()) Function to remove all generated files (if desired).
   """
   if not params:
-    params = fingerprinting.Params()
+    params = ext_runtime.Params()
 
   config = params.appinfo
   # An app.yaml exists, results in a lot more cases
@@ -160,4 +169,9 @@ def GenerateConfigs(path, params=None, config_filename=None):
   if not module:
     raise UnidentifiedDirectoryError(path)
 
-  return module.GenerateConfigs()
+  try:
+    return module.GenerateConfigs()
+  except ext_runtime.Error as ex:
+    raise ExtRuntimeError(ex.message)
+
+

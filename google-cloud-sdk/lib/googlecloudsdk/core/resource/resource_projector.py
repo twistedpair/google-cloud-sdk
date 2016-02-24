@@ -175,7 +175,7 @@ class Projector(object):
         val = self._ProjectAttribute(val, self._projection.GetEmpty(), flag)
       if val is not None:
         # Only record successful projections.
-        res[str(key)] = val
+        res[unicode(key)] = val
     return res or None
 
   def _ProjectList(self, obj, projection, flag):
@@ -313,7 +313,7 @@ class Projector(object):
       pass
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
-      obj = str(obj)
+      obj = unicode(obj)
     else:
       self._been_here_done_that.append(obj)
       if isinstance(obj, messages.Message):

@@ -31,6 +31,9 @@ class HttpRequest(_messages.Message):
     cacheHit: Whether or not an entity was served from cache (with or without
       validation).
     cacheLookup: Whether or not a cache lookup was attempted.
+    cacheValidatedWithOriginServer: Whether or not the response was validated
+      with the origin server before being served from cache. This field is
+      only meaningful if `cache_hit` is True.
     referer: The referer URL of the request, as defined in [HTTP/1.1 Header
       Field
       Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -49,23 +52,20 @@ class HttpRequest(_messages.Message):
       200, 404.
     userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
       (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
-    validatedWithOriginServer: Whether or not the response was validated with
-      the origin server before being served from cache. This field is only
-      meaningful if `cache_hit` is True.
   """
 
   cacheFillBytes = _messages.IntegerField(1)
   cacheHit = _messages.BooleanField(2)
   cacheLookup = _messages.BooleanField(3)
-  referer = _messages.StringField(4)
-  remoteIp = _messages.StringField(5)
-  requestMethod = _messages.StringField(6)
-  requestSize = _messages.IntegerField(7)
-  requestUrl = _messages.StringField(8)
-  responseSize = _messages.IntegerField(9)
-  status = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(11)
-  validatedWithOriginServer = _messages.BooleanField(12)
+  cacheValidatedWithOriginServer = _messages.BooleanField(4)
+  referer = _messages.StringField(5)
+  remoteIp = _messages.StringField(6)
+  requestMethod = _messages.StringField(7)
+  requestSize = _messages.IntegerField(8)
+  requestUrl = _messages.StringField(9)
+  responseSize = _messages.IntegerField(10)
+  status = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(12)
 
 
 class ListLogEntriesRequest(_messages.Message):

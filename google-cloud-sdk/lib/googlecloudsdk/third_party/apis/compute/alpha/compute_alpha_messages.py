@@ -868,6 +868,15 @@ class Backend(_messages.Message):
       are allowed to use same Instance Group resource.  Note that you must
       specify an Instance Group resource using the fully-qualified URL, rather
       than a partial URL.
+    maxConnections: The max number of simultaneous connections for the group.
+      Can be used with either CONNECTION or UTILIZATION balancing modes. For
+      CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
+      be set.
+    maxConnectionsPerInstance: The max number of simultaneous connections that
+      a single backend instance can handle. This is used to calculate the
+      capacity of the group. Can be used in either CONNECTION or UTILIZATION
+      balancing modes. For CONNECTION mode, either maxConnections or
+      maxConnectionsPerInstance must be set.
     maxRate: The max requests per second (RPS) of the group. Can be used with
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
       For RATE mode, either maxRate or maxRatePerInstance must be set.
@@ -886,19 +895,23 @@ class Backend(_messages.Message):
     RATE.
 
     Values:
+      CONNECTION: <no description>
       RATE: <no description>
       UTILIZATION: <no description>
     """
-    RATE = 0
-    UTILIZATION = 1
+    CONNECTION = 0
+    RATE = 1
+    UTILIZATION = 2
 
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
   group = _messages.StringField(4)
-  maxRate = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class BackendBucket(_messages.Message):
@@ -9516,8 +9529,6 @@ class InstanceGroupManager(_messages.Message):
   Enums:
     FailoverActionValueValuesEnum: The action to perform in case of zone
       failure (set only for Regional instance group managers).
-    RegionalStatusValueValuesEnum: Instance group manager status (set only for
-      Regional instance group managers).
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -9552,10 +9563,6 @@ class InstanceGroupManager(_messages.Message):
       to this Instance Group Manager.
     region: [Output Only] URL of the region where the managed instance group
       resides.
-    regionalStatus: Instance group manager status (set only for Regional
-      instance group managers).
-    regionalStatusDetails: Human-readable status description of the current
-      instance group manager (set only for Regional instance group managers).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -9578,23 +9585,6 @@ class InstanceGroupManager(_messages.Message):
     NO_FAILOVER = 0
     UNKNOWN = 1
 
-  class RegionalStatusValueValuesEnum(_messages.Enum):
-    """Instance group manager status (set only for Regional instance group
-    managers).
-
-    Values:
-      ACTIVE: <no description>
-      CREATING: <no description>
-      DELETING: <no description>
-      ERROR: <no description>
-      PENDING: <no description>
-    """
-    ACTIVE = 0
-    CREATING = 1
-    DELETING = 2
-    ERROR = 3
-    PENDING = 4
-
   autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
   baseInstanceName = _messages.StringField(2)
   creationTimestamp = _messages.StringField(3)
@@ -9609,12 +9599,10 @@ class InstanceGroupManager(_messages.Message):
   name = _messages.StringField(12)
   namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
   region = _messages.StringField(14)
-  regionalStatus = _messages.EnumField('RegionalStatusValueValuesEnum', 15)
-  regionalStatusDetails = _messages.MessageField('InstanceGroupManagerStatusDetails', 16, repeated=True)
-  selfLink = _messages.StringField(17)
-  targetPools = _messages.StringField(18, repeated=True)
-  targetSize = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(20)
+  selfLink = _messages.StringField(15)
+  targetPools = _messages.StringField(16, repeated=True)
+  targetSize = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(18)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -9754,16 +9742,6 @@ class InstanceGroupManagerList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-
-
-class InstanceGroupManagerStatusDetails(_messages.Message):
-  """A InstanceGroupManagerStatusDetails object.
-
-  Fields:
-    message: A string attribute.
-  """
-
-  message = _messages.StringField(1)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -11521,7 +11499,7 @@ class Policy(_messages.Message):
   defined by IAM.  **Example**  { "bindings": [ { "role": "roles/owner",
   "members": [ "user:mike@example.com", "group:admins@example.com",
   "domain:google.com", "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"] }, { "role": "roles/viewer", "members":
+  app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
   see the [IAM developer's guide](https://cloud.google.com/iam).
 
@@ -14358,6 +14336,10 @@ class VpnTunnel(_messages.Message):
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway.
     region: [Output Only] URL of the region where the VPN tunnel resides.
+    remoteTrafficSelectors: Remote traffic selectors to use when establishing
+      the VPN tunnel with peer VPN gateway. The value should be a CIDR
+      formatted string, for example: 192.168.0.0/16. The ranges should be
+      disjoint.
     router: URL of Router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
@@ -14408,12 +14390,13 @@ class VpnTunnel(_messages.Message):
   name = _messages.StringField(8)
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
-  router = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  sharedSecret = _messages.StringField(13)
-  sharedSecretHash = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  targetVpnGateway = _messages.StringField(16)
+  remoteTrafficSelectors = _messages.StringField(11, repeated=True)
+  router = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  sharedSecret = _messages.StringField(14)
+  sharedSecretHash = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  targetVpnGateway = _messages.StringField(17)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

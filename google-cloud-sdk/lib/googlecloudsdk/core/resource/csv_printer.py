@@ -14,8 +14,6 @@
 
 """CSV resource printer."""
 
-import csv
-
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 
@@ -33,8 +31,29 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     super(CsvPrinter, self).__init__(*args, by_columns=True, **kwargs)
     self._heading_printed = False
-    self._add_csv_row = csv.writer(self._out, dialect='excel',
-                                   delimiter=',', lineterminator='\n').writerow
+    self._separator = ','
+    self._quote = None if self.attributes.get('no-quote', 0) else '"'
+
+  def _QuoteField(self, field):
+    """Returns field quoted by self._quote if necessary.
+
+    The Python 2.7 csv module does not support unicode "yet". What are they
+    waiting for?
+
+    Args:
+      field: The unicode string to quote.
+
+    Returns:
+      field quoted by self._quote if necessary.
+    """
+    if not self._quote:
+      return field
+    if not (self._separator in field or self._quote in field or '\n' in field or
+            field[0].isspace() or field[-1].isspace()):
+      return field
+    return (self._quote +
+            field.replace(self._quote, self._quote * 2) +
+            self._quote)
 
   def _AddRecord(self, record, delimit=False):
     """Prints the current record as CSV.
@@ -63,26 +82,27 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
           if labels:
             labels = [x.lower() for x in labels]
         if labels:
-          self._add_csv_row(labels)
+          self._out.write(self._separator.join(
+              [self._QuoteField(label) for label in labels]) + '\n')
     line = []
     for col in record:
       if isinstance(col, dict):
-        val = ';'.join([str(k) + '=' + str(v)
+        val = ';'.join([unicode(k) + '=' + unicode(v)
                         for k, v in sorted(col.iteritems())])
       elif isinstance(col, list):
-        val = ';'.join([str(x) for x in col])
+        val = ';'.join([unicode(x) for x in col])
       elif isinstance(col, float):
         val = resource_transform.TransformFloat(col)
       else:
-        val = str(col)
-      line.append(val)
-    self._add_csv_row(line)
+        val = unicode(col)
+      line.append(self._QuoteField(val))
+    self._out.write(self._separator.join(line) + '\n')
 
 
 class ValuePrinter(CsvPrinter):
   """A printer for printing value data.
 
-  CSV with no heading and <TAB> delimiter instead of <COMMA>, and a legend. Used
+  CSV with no heading and <TAB> separator instead of <COMMA>, and a legend. Used
   to retrieve individual resource values. This format requires a projection to
   define the value(s) to be printed.
 
@@ -92,24 +112,17 @@ class ValuePrinter(CsvPrinter):
       *no-empty-legend* disables the default.
     legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
       item if there is at least one item.
-    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
-      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
-      *info*, *warn*, or *error*.
+    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
+      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
+      *debug*, *info*, *warn*, or *error*.
     no-quote: Prints NEWLINE terminated TAB delimited values with no quoting.
   """
-
-  def _WriteRow(self, row):
-    self._out.write('\t'.join(row) + '\n')
 
   def __init__(self, *args, **kwargs):
     super(ValuePrinter, self).__init__(*args, **kwargs)
     self._heading_printed = True
-    if self.attributes.get('no-quote', 0):
-      self._add_csv_row = self._WriteRow
-    else:
-      self._add_csv_row = csv.writer(
-          self._out, dialect='excel', delimiter='\t',
-          lineterminator='\n').writerow
+    self._separator = '\t'
+    self._quote = None if self.attributes.get('no-quote', 0) else '"'
 
   def Finish(self):
     """Prints the legend if any."""

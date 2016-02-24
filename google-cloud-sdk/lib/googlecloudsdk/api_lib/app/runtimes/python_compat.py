@@ -17,7 +17,8 @@
 import os
 import textwrap
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 
@@ -59,7 +60,7 @@ DOCKERFILE_INSTALL_REQUIREMENTS_TXT = (
     'fi\n')
 
 
-class PythonConfigurator(fingerprinting.Configurator):
+class PythonConfigurator(ext_runtime.Configurator):
   """Generates configuration for a Python application."""
 
   def __init__(self, path, params, runtime):
@@ -67,7 +68,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
     Args:
       path: (str) Root path of the source tree.
-      params: (fingerprinting.Params) Parameters passed through to the
+      params: (ext_runtime.Params) Parameters passed through to the
         fingerprinters.
       runtime: (str) The runtime name.
     """
@@ -93,7 +94,7 @@ class PythonConfigurator(fingerprinting.Configurator):
     # Generate app.yaml.  Note: this is not a recommended use-case,
     # python-compat users likely have an existing app.yaml.  But users can
     # still get here with the --runtime flag.
-    cleaner = fingerprinting.Cleaner()
+    cleaner = ext_runtime.Cleaner()
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
@@ -135,7 +136,7 @@ def Fingerprint(path, params):
 
   Args:
     path: (str) Application path.
-    params: (fingerprinting.Params) Parameters passed through to the
+    params: (ext_runtime.Params) Parameters passed through to the
       fingerprinters.
 
   Returns:

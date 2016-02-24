@@ -304,7 +304,7 @@ existing policy.
               path_params=[u'projectId'],
               query_params=[],
               relative_path=u'v1beta1/projects/{projectId}:undelete',
-              request_field='',
+              request_field=u'undeleteProjectRequest',
               request_type_name=u'CloudresourcemanagerProjectsUndeleteRequest',
               response_type_name=u'Empty',
               supports_download=False,

@@ -527,6 +527,30 @@ class Entity(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 2)
 
 
+class EntityChange(_messages.Message):
+  """An entity being watched has changed.  A single change to an entity may
+  result in multiple EntityChange messages, so the targets specified in this
+  message cannot be relied upon to be exhaustive. When a consistent snapshot
+  is reached, all EntityChanges for all entities in that snapshot are
+  guaranteed to have been returned.
+
+  Fields:
+    delete: True when the entity was deleted.
+    entity: The most recent state of an entity. When `delete` is true, only
+      `key` is set.
+    removedTargetIds: A set of target IDs of targets that no longer match this
+      entity.
+    targetIds: A set of target IDs of targets that match this entity.
+    version: The version number for the new entity value.
+  """
+
+  delete = _messages.BooleanField(1)
+  entity = _messages.MessageField('Entity', 2)
+  removedTargetIds = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+  targetIds = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(5)
+
+
 class EntityFilter(_messages.Message):
   """Identifies a subset of Entities in a Project.  This is specified as
   combinations of Kind + Namespace (either or both of which may be all as
@@ -572,22 +596,23 @@ class EntityResult(_messages.Message):
 
 class ExistenceFilter(_messages.Message):
   """An existence filter that must be applied and verified locally to resolve
-  possible delete mutations.
+  entities that no longer match the given ExistenceFilter.targets.
 
   Enums:
-    StrategyValueValuesEnum: The strategy used to map a key to the filter
-      bits.
+    StrategyValueValuesEnum: The strategy used to map an entity key to the
+      filter bits.
 
   Fields:
     bits: The filter bits.
-    count: The total number of keys represented in this filter. Used to detect
-      the presence of false positives.
+    count: The total number of unique entity keys represented in this filter.
+      Used to detect the presence of false positives.
     hashCount: The number of hashes used in `bits`.
-    strategy: The strategy used to map a key to the filter bits.
+    strategy: The strategy used to map an entity key to the filter bits.
+    targetIds: The set of target IDs for targets to which this filter applies.
   """
 
   class StrategyValueValuesEnum(_messages.Enum):
-    """The strategy used to map a key to the filter bits.
+    """The strategy used to map an entity key to the filter bits.
 
     Values:
       STRATEGY_NOT_SPECIFIED: <no description>
@@ -600,6 +625,7 @@ class ExistenceFilter(_messages.Message):
   count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   hashCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
+  targetIds = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
 
 
 class ExportMetadata(_messages.Message):
@@ -1143,16 +1169,14 @@ class MultiWatchRequest(_messages.Message):
   """A request for google.datastore.v1beta3.DatastoreWatcher.MultiWatch
 
   Fields:
-    addTargets: TODO(user): Switch to a non-batching API. The set of watch
-      targets to add to this stream. changes will be returned with server
-      assigned `target_ids` in the same order as targets are specified here.
+    addTarget: A watch target to add to this stream.
     databaseId: Database ID against which to make the request.
-    removeTargets: The IDs of watch targets to remove from this stream.
+    removeTarget: The ID of a watch target to remove from this stream.
   """
 
-  addTargets = _messages.MessageField('WatchTarget', 1, repeated=True)
+  addTarget = _messages.MessageField('WatchTarget', 1)
   databaseId = _messages.StringField(2)
-  removeTargets = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+  removeTarget = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Mutation(_messages.Message):
@@ -1846,6 +1870,21 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TargetChange(_messages.Message):
+  """The set of targets being watched has changed.
+
+  Fields:
+    addedTargetIds: The IDs of targets that have been added. Matches the order
+      of the requests to add the targets.
+    cause: The error that resulted in this change, if applicable.
+    removedTargetIds: The IDs of targets that have been removed.
+  """
+
+  addedTargetIds = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  cause = _messages.MessageField('Status', 2)
+  removedTargetIds = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+
+
 class TransactionOptions(_messages.Message):
   """Options for beginning a new transaction. Transactions can be created
   explicitly with calls to google.datastore.v1beta3.Datastore.BeginTransaction
@@ -1933,73 +1972,48 @@ class Value(_messages.Message):
 
 
 class WatchChange(_messages.Message):
-  """A change to a set of targets being watched. Usually a change to an
-  individual entity, but sometimes a change to the set of entities being
-  watched.  If a change was requested (for example removing a target) but
-  rejected, a change will be returned with `change_type=NO_CHANGE`,
-  `target_ids=<relevant ids>`, and `cause=<error>`. .
+  """A change indicates that an event has occurred that affects the targets
+  being watched
 
   Enums:
-    NoChangeValueValuesEnum: No change has occurred. Supports providing an
-      updated `resume_token` or returning an error.
-    TargetChangeValueValuesEnum: The targets associate with this stream have
-      changed. The affected targets are listed in `target_ids`.
+    NoChangeValueValuesEnum: No change has occurred. Used to send an updated
+      resume_token.
 
   Fields:
-    cause: The error that resulted in this change, if applicable.
-    continued: If true, more changes are needed to construct a consistent
-      snapshot.
-    entity: The most recent state of an entity that matches the given
-      `target_ids`.
-    entityRemoved: An entity no longer matches the given `target_ids`. Only
-      `entity.key` and `version` are populated.
-    filter: A filter to apply to the *set* of entities previously returned for
-      the given `target_ids`. Returned when entities may no longer match the
-      given `target_ids` but the exact keys are unknown.
-    noChange: No change has occurred. Supports providing an updated
-      `resume_token` or returning an error.
+    entityChange: An entity has changed.
+    filter: A filter to apply to the *set* of entities previously returned.
+      Returned when entities may no longer match the given targets but the
+      exact entity keys are unknown.
+    noChange: No change has occurred. Used to send an updated resume_token.
     resumeToken: A token that provides a compact representation of all the
       changes that have been received by the caller up to this point
-      (including this one) that can be used to resume the stream. May not be
-      set on every change. Only valid for the targets specified in
-      `target_ids`.
-    targetChange: The targets associate with this stream have changed. The
-      affected targets are listed in `target_ids`.
-    targetIds: The set of targets to which this change applies. When empty,
-      the change applies to all targets.
+      (including this one) that can be used to resume the stream.  May not be
+      set on every change.  When WatchChange.snapshot_version is not 0,
+      applies to all targets. When WatchChange.snapshot_version is 0, this
+      token is valid only for the targets referenced in the change,
+      specifically in the fields: EntityChange.targets and
+      EntityChange.removed_targets, TargetChange.added_targets and
+      TargetChange.removed_targets, or ExistanceFilter.targets.
+    snapshotVersion: The consistent snapshot version reflected by the stream
+      for all targets. The version is 0 when the stream does not reflect a
+      consistent snapshot.
+    targetChange: The targets being watched have changed.
   """
 
   class NoChangeValueValuesEnum(_messages.Enum):
-    """No change has occurred. Supports providing an updated `resume_token` or
-    returning an error.
+    """No change has occurred. Used to send an updated resume_token.
 
     Values:
       NULL_VALUE: Null value.
     """
     NULL_VALUE = 0
 
-  class TargetChangeValueValuesEnum(_messages.Enum):
-    """The targets associate with this stream have changed. The affected
-    targets are listed in `target_ids`.
-
-    Values:
-      TARGET_CHANGE_UNSPECIFIED: <no description>
-      TARGET_ADDED: <no description>
-      TARGET_REMOVED: <no description>
-    """
-    TARGET_CHANGE_UNSPECIFIED = 0
-    TARGET_ADDED = 1
-    TARGET_REMOVED = 2
-
-  cause = _messages.MessageField('Status', 1)
-  continued = _messages.BooleanField(2)
-  entity = _messages.MessageField('EntityResult', 3)
-  entityRemoved = _messages.MessageField('EntityResult', 4)
-  filter = _messages.MessageField('ExistenceFilter', 5)
-  noChange = _messages.EnumField('NoChangeValueValuesEnum', 6)
-  resumeToken = _messages.BytesField(7)
-  targetChange = _messages.EnumField('TargetChangeValueValuesEnum', 8)
-  targetIds = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+  entityChange = _messages.MessageField('EntityChange', 1)
+  filter = _messages.MessageField('ExistenceFilter', 2)
+  noChange = _messages.EnumField('NoChangeValueValuesEnum', 3)
+  resumeToken = _messages.BytesField(4)
+  snapshotVersion = _messages.IntegerField(5)
+  targetChange = _messages.MessageField('TargetChange', 6)
 
 
 class WatchRequest(_messages.Message):
@@ -2021,13 +2035,13 @@ class WatchTarget(_messages.Message):
 
   Fields:
     gqlQuery: The GQL query to watch.
-    partitionId: The partition id to watch.
+    partitionId: The partition ID to watch.
     query: The query to watch.
     resumeToken: A resume token from a stream containing an identical watch
       target.
-    targetId: A previously assigned target id. Used to preserve target ids
+    targetId: A previously assigned target ID. Used to preserve target IDs
       when restarting a stream. All targets with previously assigned target
-      ids must be added before any new targets.
+      IDs must be added before any new targets.
   """
 
   gqlQuery = _messages.MessageField('GqlQuery', 1)

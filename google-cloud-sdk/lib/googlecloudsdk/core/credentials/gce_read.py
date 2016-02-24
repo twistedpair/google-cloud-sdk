@@ -16,6 +16,7 @@
 
 import urllib2
 
+from googlecloudsdk.core import properties
 
 GOOGLE_GCE_METADATA_URI = 'http://metadata.google.internal/computeMetadata/v1'
 
@@ -43,5 +44,7 @@ GOOGLE_GCE_METADATA_HEADERS = {'Metadata-Flavor': 'Google'}
 def ReadNoProxy(uri):
   """Opens a URI with metadata headers, without a proxy, and reads all data.."""
   request = urllib2.Request(uri, headers=GOOGLE_GCE_METADATA_HEADERS)
+  timeout_property = (
+      properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt())
   return urllib2.build_opener(urllib2.ProxyHandler({})).open(
-      request, timeout=1).read()
+      request, timeout=timeout_property).read()

@@ -24,8 +24,6 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import named_configs
 from googlecloudsdk.core.credentials import devshell as c_devshell
-from googlecloudsdk.core.credentials import gce as c_gce
-from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import files
 from googlecloudsdk.third_party.py27 import py27_collections as collections
@@ -491,6 +489,10 @@ class _SectionCompute(_Section):
         ' Engine resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set.',
         resource='compute.regions')
+    self.gce_metadata_read_timeout_sec = self._Add(
+        'gce_metadata_read_timeout_sec',
+        callbacks=[lambda: 1],
+        hidden=True)
 
 
 class _SectionApp(_Section):
@@ -569,11 +571,15 @@ class _SectionContainer(_Section):
 
 def _GetGCEAccount():
   if VALUES.core.check_gce_metadata.GetBool():
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import gce as c_gce
     return c_gce.Metadata().DefaultAccount()
 
 
 def _GetGCEProject():
   if VALUES.core.check_gce_metadata.GetBool():
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import gce as c_gce
     return c_gce.Metadata().Project()
 
 
@@ -1525,6 +1531,9 @@ def GetMetricsEnvironment():
   # No explicit environment defined, try to deduce it.
   if c_devshell.IsDevshellEnvironment():
     return 'devshell'
+
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import gce_cache
   if gce_cache.GetOnGCE(check_age=False):
     return 'GCE'
 

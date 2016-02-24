@@ -48,20 +48,22 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     import yaml
     self._yaml = yaml
 
-    def LiteralPresenter(dumper, data):
-      return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-
-    def FloatPresenter(unused_dumper, data):
+    def _FloatPresenter(unused_dumper, data):
       return yaml.nodes.ScalarNode('tag:yaml.org,2002:float',
                                    resource_transform.TransformFloat(data))
 
-    self._yaml.add_representer(YamlPrinter._LiteralString, LiteralPresenter,
+    def _LiteralLinesPresenter(dumper, data):
+      return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+    self._yaml.add_representer(float,
+                               _FloatPresenter,
                                Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(float, FloatPresenter,
+    self._yaml.add_representer(YamlPrinter._LiteralLines,
+                               _LiteralLinesPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
-  class _LiteralString(str):
-    """A type used to inform the yaml printer about how it should look."""
+  class _LiteralLines(str):
+    """A yaml representer hook for literal strings containing newlines."""
 
   def _UpdateTypesForOutput(self, val):
     """Dig through a dict of list of primitives to help yaml output.
@@ -73,7 +75,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       An updated version of val.
     """
     if isinstance(val, basestring) and '\n' in val:
-      return YamlPrinter._LiteralString(val)
+      return YamlPrinter._LiteralLines(val)
     if isinstance(val, list):
       for i in range(len(val)):
         val[i] = self._UpdateTypesForOutput(val[i])

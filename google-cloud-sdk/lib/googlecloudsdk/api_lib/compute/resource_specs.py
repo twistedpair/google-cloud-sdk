@@ -855,6 +855,20 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
+_SPECS_BETA['routers'] = _InternalSpec(
+    message_class_name='Router',
+    table_cols=[
+        ('NAME', 'name'),
+        ('REGION', 'region'),
+        ('NETWORK', 'network'),
+    ],
+    transformations=[
+        ('network', path_simplifier.Name),
+        ('region', path_simplifier.Name),
+    ],
+    editables=None,
+)
+
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
@@ -879,19 +893,6 @@ _SPECS_ALPHA['healthChecks'] = _InternalSpec(
         ('PROTOCOL', 'type'),
     ],
     transformations=[],
-    editables=None,
-)
-_SPECS_ALPHA['routers'] = _InternalSpec(
-    message_class_name='Router',
-    table_cols=[
-        ('NAME', 'name'),
-        ('REGION', 'region'),
-        ('NETWORK', 'network'),
-    ],
-    transformations=[
-        ('network', path_simplifier.Name),
-        ('region', path_simplifier.Name),
-    ],
     editables=None,
 )
 _SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(

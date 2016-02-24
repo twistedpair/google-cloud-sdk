@@ -635,7 +635,7 @@ class ExternalDataConfiguration(_messages.Message):
   Fields:
     compression: [Optional] The compression type of the data source. Possible
       values include GZIP and NONE. The default value is NONE. This setting is
-      ignored for Google Cloud Datastore backups.
+      ignored for Google Cloud Datastore backups and Avro.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
@@ -644,17 +644,20 @@ class ExternalDataConfiguration(_messages.Message):
       returned in the job result. The default value is false. The sourceFormat
       property determines what BigQuery treats as an extra value: CSV:
       Trailing columns JSON: Named values that don't match any column names
-      Google Cloud Datastore backups: This setting is ignored.
+      Google Cloud Datastore backups: This setting is ignored. Avro: This
+      setting is ignored.
     maxBadRecords: [Optional] The maximum number of bad records that BigQuery
       can ignore when reading data. If the number of bad records exceeds this
       value, an invalid error is returned in the job result. The default value
       is 0, which requires that all records are valid. This setting is ignored
-      for Google Cloud Datastore backups.
+      for Google Cloud Datastore backups and Avro.
     schema: [Optional] The schema for the data. Schema is required for CSV and
-      JSON formats. Schema is disallowed for Google Cloud Datastore backups.
+      JSON formats. Schema is disallowed for Google Cloud Datastore backups
+      and Avro.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
       For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Google
-      Cloud Datastore backups, specify "DATASTORE_BACKUP".
+      Cloud Datastore backups, specify "DATASTORE_BACKUP". For Avro files,
+      specify "AVRO".
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud Storage. Each URI can contain one '*' wildcard character
       and it must come after the 'bucket' name. Size limits related to load

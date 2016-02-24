@@ -17,7 +17,9 @@
 import os
 import textwrap
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
+from googlecloudsdk.api_lib.app import ext_runtime_adapter
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -29,7 +31,7 @@ DEFAULT_PYTHON_INTERPRETER_VERSION = '2'
 VALID_PYTHON_INTERPRETER_VERSIONS = ['2', '3']
 
 # TODO(user): We'll move these into directories once we externalize
-# fingerprinting.
+# ext_runtime.
 PYTHON_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
     env: 2
@@ -60,7 +62,7 @@ DOCKERFILE_REQUIREMENTS_TXT = textwrap.dedent("""\
 DOCKERFILE_INSTALL_APP = 'ADD . /app/\n'
 
 
-class PythonConfigurator(fingerprinting.Configurator):
+class PythonConfigurator(ext_runtime.Configurator):
   """Generates configuration for a Python application."""
 
   def __init__(self, path, params, got_requirements_txt, entrypoint,
@@ -69,7 +71,7 @@ class PythonConfigurator(fingerprinting.Configurator):
 
     Args:
       path: (str) Root path of the source tree.
-      params: (fingerprinting.Params) Parameters passed through to the
+      params: (ext_runtime.Params) Parameters passed through to the
         fingerprinters.
       got_requirements_txt: (bool) True if there's a requirements.txt file.
       entrypoint: (str) Name of the entrypoint to generate.
@@ -92,7 +94,7 @@ class PythonConfigurator(fingerprinting.Configurator):
       notify = log.status.Print
 
     # Generate app.yaml.
-    cleaner = fingerprinting.Cleaner()
+    cleaner = ext_runtime.Cleaner()
     if not self.params.appinfo:
       app_yaml = os.path.join(self.root, 'app.yaml')
       if not os.path.exists(app_yaml):
@@ -144,7 +146,7 @@ def Fingerprint(path, params):
 
   Args:
     path: (str) Application path.
-    params: (fingerprinting.Params) Parameters passed through to the
+    params: (ext_runtime.Params) Parameters passed through to the
       fingerprinters.
 
   Returns:
@@ -193,7 +195,7 @@ def Fingerprint(path, params):
                'command to run the app in production.  Please either run this '
                'interactively%s or create an app.yaml with "runtime: python" '
                'and an "entrypoint" field defining the full command.' %
-               fingerprinting.GetNonInteractiveErrorMessage())
+               ext_runtime_adapter.GetNonInteractiveErrorMessage())
       return None
 
   try:

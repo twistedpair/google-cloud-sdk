@@ -103,7 +103,7 @@ class Pager(object):
       prompt = '{bold}--({{percent}}%)--{normal}'.format(
           bold=self._attr.GetFontCode(bold=True),
           normal=self._attr.GetFontCode())
-    self._clear = '\r{0}\r'.format(' ' * (self._attr.PrintWidth(prompt) - 6))
+    self._clear = '\r{0}\r'.format(' ' * (self._attr.DisplayWidth(prompt) - 6))
     self._prompt = prompt
 
     # Initialize a list of lines with long lines split into separate display

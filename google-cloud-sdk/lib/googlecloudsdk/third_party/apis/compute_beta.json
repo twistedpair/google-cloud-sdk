@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160210",
+ "revision": "20160217",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -805,6 +805,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "enableCDN": {
+     "type": "boolean",
+     "description": "If true, enable Cloud CDN for this BackendService."
+    },
     "fingerprint": {
      "type": "string",
      "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a BackendService. An up-to-date fingerprint must be provided in order to update the BackendService.",
@@ -909,6 +913,15 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "CacheInvalidationRule": {
+   "id": "CacheInvalidationRule",
+   "type": "object",
+   "properties": {
+    "path": {
+     "type": "string"
     }
    }
   },
@@ -4374,6 +4387,7 @@
       "IN_USE_ADDRESSES",
       "LOCAL_SSD_TOTAL_GB",
       "NETWORKS",
+      "ROUTERS",
       "ROUTES",
       "SNAPSHOTS",
       "SSD_TOTAL_GB",
@@ -4389,6 +4403,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -5135,9 +5150,19 @@
      "description": "[Output Only] Type of the resource. Always compute#serialPortOutput for serial port output.",
      "default": "compute#serialPortOutput"
     },
+    "next": {
+     "type": "string",
+     "description": "[Output Only] The position of the next byte of content from the serial console output. Use this value in the next request as the start parameter.",
+     "format": "int64"
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "start": {
+     "type": "string",
+     "description": "[Output Only] The starting byte position of the output that was returned. This should match the start parameter sent with the request. If the serial console output exceeds the size of the buffer, older output will be overwritten by newer content and the start values will be mismatched.",
+     "format": "int64"
     }
    }
   },
@@ -11457,6 +11482,12 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "start": {
+       "type": "string",
+       "description": "For the initial request, leave this field unspecified. For subsequent calls, this field should be set to the next value that was returned in the previous call.",
+       "format": "int64",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -15103,6 +15134,42 @@
      ],
      "request": {
       "$ref": "UrlMap"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "invalidateCache": {
+     "id": "compute.urlMaps.invalidateCache",
+     "path": "{project}/global/urlMaps/{urlMap}/invalidateCache",
+     "httpMethod": "POST",
+     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "urlMap": {
+       "type": "string",
+       "description": "Name of the UrlMap scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "urlMap"
+     ],
+     "request": {
+      "$ref": "CacheInvalidationRule"
      },
      "response": {
       "$ref": "Operation"

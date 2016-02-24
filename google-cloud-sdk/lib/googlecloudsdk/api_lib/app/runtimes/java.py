@@ -16,7 +16,8 @@
 import os
 import textwrap
 
-from googlecloudsdk.api_lib.app.ext_runtimes import fingerprinting
+from gae_ext_runtime import ext_runtime
+
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -53,7 +54,7 @@ class JavaConfigError(exceptions.Error):
   """Errors in Java Application Config."""
 
 
-class JavaConfigurator(fingerprinting.Configurator):
+class JavaConfigurator(ext_runtime.Configurator):
   """Generates configuration for a Java application.
 
      What is supported is:
@@ -100,10 +101,10 @@ class JavaConfigurator(fingerprinting.Configurator):
     """Generates all config files for the module.
 
     Returns:
-      (fingerprinting.Cleaner) A cleaner populated with the generated files
+      (ext_runtime.Cleaner) A cleaner populated with the generated files
     """
 
-    cleaner = fingerprinting.Cleaner()
+    cleaner = ext_runtime.Cleaner()
 
     if not self.appinfo:
       self._GenerateAppYaml(cleaner)
@@ -121,7 +122,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     """Generates an app.yaml file appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
     """
     app_yaml = os.path.join(self.root, 'app.yaml')
     if not os.path.exists(app_yaml):
@@ -134,7 +135,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     """Generates a Dockerfile appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
 
     Raises:
       JavaConfigError: if there is an app.yaml configuration error.
@@ -174,7 +175,7 @@ class JavaConfigurator(fingerprinting.Configurator):
     """Generates a .dockerignore file appropriate to this application.
 
     Args:
-      cleaner: (fingerprinting.Cleaner) A cleaner to populate
+      cleaner: (ext_runtime.Cleaner) A cleaner to populate
     """
     dockerignore = os.path.join(self.root, '.dockerignore')
     if not os.path.exists(dockerignore):
@@ -189,7 +190,7 @@ def Fingerprint(path, params):
 
   Args:
     path: (str) Application path.
-    params: (fingerprinting.Params) Parameters passed through to the
+    params: (ext_runtime.Params) Parameters passed through to the
       fingerprinters.
 
   Returns:

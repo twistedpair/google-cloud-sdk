@@ -38,6 +38,7 @@ GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
     'https://accounts.google.com/o/oauth2/auth')
 GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
     'https://accounts.google.com/o/oauth2/token')
+REDIRECT_URI_AUTH_CODE_IN_TITLE_BAR = 'urn:ietf:wg:oauth:2.0:oob'
 
 
 class Error(exceptions.Error):
@@ -320,6 +321,14 @@ def _GetLegacyGen(account, creds):
       credentials=creds, scopes=config.CLOUDSDK_SCOPES)
 
 
+def RevokeCredentials(creds):
+  # TODO(user): Remove this condition when oauth2client does not crash while
+  # revoking SignedJwtAssertionCredentials.
+  if creds and (not client.HAS_CRYPTO or
+                type(creds) != client.SignedJwtAssertionCredentials):
+    creds.revoke(_Http())
+
+
 def Revoke(account=None):
   """Revoke credentials and clean up related files.
 
@@ -335,6 +344,7 @@ def Revoke(account=None):
   if not account:
     account = properties.VALUES.core.account.Get()
 
+  # TODO(b/26904445): Handle the case where account is None here.
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
@@ -348,11 +358,8 @@ def Revoke(account=None):
         'This comes from your browser session and will not persist outside'
         'of your connected Cloud Shell session.')
 
-  # TODO(user): Remove this condition when oauth2client does not crash while
-  # revoking SignedJwtAssertionCredentials.
-  if creds and (not client.HAS_CRYPTO or
-                type(creds) != client.SignedJwtAssertionCredentials):
-    creds.revoke(_Http())
+  RevokeCredentials(creds)
+
   store = _StorageForAccount(account)
   if store:
     store.delete()
@@ -363,13 +370,20 @@ def Revoke(account=None):
 
 def AcquireFromWebFlow(launch_browser=True,
                        auth_uri=None,
-                       token_uri=None):
+                       token_uri=None,
+                       scopes=None,
+                       client_id=None,
+                       client_secret=None):
   """Get credentials via a web flow.
 
   Args:
     launch_browser: bool, Open a new web browser window for authorization.
     auth_uri: str, URI to open for authorization.
     token_uri: str, URI to use for refreshing.
+    scopes: string or iterable of strings, scope(s) of the credentials being
+      requested.
+    client_id: str, id of the client requesting authorization
+    client_secret: str, client secret of the client requesting authorization
 
   Returns:
     client.Credentials, Newly acquired credentials from the web flow.
@@ -381,15 +395,56 @@ def AcquireFromWebFlow(launch_browser=True,
     auth_uri = properties.VALUES.auth.auth_host.Get(required=True)
   if token_uri is None:
     token_uri = properties.VALUES.auth.token_host.Get(required=True)
+  if scopes is None:
+    scopes = config.CLOUDSDK_SCOPES
+  if client_id is None:
+    client_id = properties.VALUES.auth.client_id.Get(required=True)
+  if client_secret is None:
+    client_secret = properties.VALUES.auth.client_secret.Get(required=True)
 
   webflow = client.OAuth2WebServerFlow(
-      client_id=properties.VALUES.auth.client_id.Get(required=True),
-      client_secret=properties.VALUES.auth.client_secret.Get(required=True),
-      scope=config.CLOUDSDK_SCOPES,
+      client_id=client_id,
+      client_secret=client_secret,
+      scope=scopes,
       user_agent=config.CLOUDSDK_USER_AGENT,
       auth_uri=auth_uri,
       token_uri=token_uri,
       prompt='select_account')
+
+  # pylint:disable=g-import-not-at-top, This is imported on demand for
+  # performance reasons.
+  from googlecloudsdk.core.credentials import flow
+
+  try:
+    cred = flow.Run(
+        webflow, launch_browser=launch_browser,
+        http=_Http())
+  except flow.Error as e:
+    raise FlowError(e)
+  return cred
+
+
+def AcquireFromWebFlowAndClientIdFile(client_id_file,
+                                      scopes,
+                                      launch_browser=True):
+  """Get credentials via a web flow.
+
+  Args:
+    client_id_file: str, file path with client id information
+    scopes: string or iterable of strings, scope(s) of the credentials being
+      requested.
+    launch_browser: bool, Open a new web browser window for authorization.
+
+  Returns:
+    client.Credentials, Newly acquired credentials from the web flow.
+
+  Raises:
+    FlowError: If there is a problem with the web flow.
+  """
+  webflow = client.flow_from_clientsecrets(
+      filename=client_id_file,
+      scope=scopes,
+      redirect_uri=REDIRECT_URI_AUTH_CODE_IN_TITLE_BAR)
 
   # pylint:disable=g-import-not-at-top, This is imported on demand for
   # performance reasons.

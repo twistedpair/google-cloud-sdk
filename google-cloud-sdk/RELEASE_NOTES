@@ -2,6 +2,37 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 98.0.0 (2016/2/24)
+
+* Release 95.0.0 introduced a bug that generated corrupt keys for Windows gcloud
+  compute ssh|copy-files. Any keys generated on Windows between 95.0.0 and
+  97.0.0 inclusive are rejected by ssh servers. `gcloud compute` has been
+  changed to:
+  * Fix the winkeygen Windows key generator.
+  * Recognize corrupt Windows keys and automatically regenerate them.
+
+* Fixed [#538](https://code.google.com/p/google-cloud-sdk/issues/detail?id=538).
+  Users should no longer get "gsutil ImportError: No module named google"
+  errors.
+
+### Google App Engine
+
+* MySqldb "latest" version changed from 1.24b4 to 1.2.5.
+
+### Emulators
+
+* Improves Pub/Sub emulator's ability to handle requests concurrent with HTTP
+  pull requests.
+* The Pub/Sub emulator attempts to detect and inform users when an unsupported
+  API version is used.
+* The Pub/Sub emulator now correctly handles absolute URIs in HTTP/Json
+  requests.
+
+### Windows support
+
+* Google Cloud SDK no longer needs Python installed when using the Windows
+  Installer. The SDK for Windows comes with Python bundled.
+
 ## 97.0.0 (2016/2/17)
 
 ### Breaking Changes

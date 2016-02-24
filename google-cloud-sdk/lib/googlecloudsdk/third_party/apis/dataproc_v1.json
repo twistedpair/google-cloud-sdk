@@ -215,15 +215,15 @@
       "type": "object",
       "properties": {
         "zoneUri": {
-          "description": "[Required] The zone where the Google Compute Engine cluster will be located.\nExample: `compute.googleapis.com\/projects\/[project_id]\/zones\/us-east1-a`.",
+          "description": "[Required] The zone where the Google Compute Engine cluster will be located.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]`.",
           "type": "string"
         },
         "networkUri": {
-          "description": "The Google Compute Engine network to be used for machine communications.\nCannot be specified with subnetwork_uri. If neither network_uri nor\nsubnetwork_uri is specified, the \"default\" network of the project is\nused, if it exists. Cannot be a \"Custom Subnet Network\" (see\nhttps:\/\/cloud.google.com\/compute\/docs\/subnetworks for more information).\nExample: `compute.googleapis.com\/projects\/[project_id]\/regions\/global\/default`.",
+          "description": "The Google Compute Engine network to be used for machine communications.\nCannot be specified with subnetwork_uri. If neither network_uri nor\nsubnetwork_uri is specified, the \"default\" network of the project is\nused, if it exists. Cannot be a \"Custom Subnet Network\" (see\nhttps:\/\/cloud.google.com\/compute\/docs\/subnetworks for more information).\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default`.",
           "type": "string"
         },
         "subnetworkUri": {
-          "description": "The Google Compute Engine subnetwork to be used for machine communications.\nCannot be specified with network_uri.\nExample: `compute.googleapis.com\/projects\/[project_id]\/regions\/us-east1\/sub0`.",
+          "description": "The Google Compute Engine subnetwork to be used for machine communications.\nCannot be specified with network_uri.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0`.",
           "type": "string"
         },
         "serviceAccountScopes": {
@@ -267,11 +267,11 @@
           }
         },
         "imageUri": {
-          "description": "[Output-only] The Google Compute Engine image resource used for cluster\ninstances. Inferred from `SoftwareConfig.image_version`.\nExample: `compute.googleapis.com\/projects\/debian-cloud\/global\/images\/backports-debian-7-wheezy-v20140904`.",
+          "description": "[Output-only] The Google Compute Engine image resource used for cluster\ninstances. Inferred from `SoftwareConfig.image_version`.",
           "type": "string"
         },
         "machineTypeUri": {
-          "description": "The Google Compute Engine machine type used for cluster instances.\nExample: `compute.googleapis.com\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2`.",
+          "description": "The Google Compute Engine machine type used for cluster instances.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2`.",
           "type": "string"
         },
         "diskConfig": {
@@ -535,17 +535,6 @@
           "items": {
             "$ref": "JobStatus"
           }
-        },
-        "yarnApplications": {
-          "description": "[Output-only] The collection of YARN applications spun up by this job.",
-          "type": "array",
-          "items": {
-            "$ref": "YarnApplication"
-          }
-        },
-        "submittedBy": {
-          "description": "[Output-only] The email address of the user submitting the job. For jobs\nsubmitted on the cluster, the address is <code>username@hostname<\/code>.",
-          "type": "string"
         },
         "driverOutputResourceUri": {
           "description": "[Output-only] A URI pointing to the location of the stdout of the job's\ndriver program.",
@@ -957,52 +946,6 @@
         }
       }
     },
-    "YarnApplication": {
-      "id": "YarnApplication",
-      "description": "A YARN application created by a job. Application information is a subset of\n<code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto<\/code>.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "[Required] The application name.",
-          "type": "string"
-        },
-        "state": {
-          "description": "[Required] The application state.",
-          "enumDescriptions": [
-            "Status is unspecified.",
-            "Status is NEW.",
-            "Status is NEW_SAVING.",
-            "Status is SUBMITTED.",
-            "Status is ACCEPTED.",
-            "Status is RUNNING.",
-            "Status is FINISHED.",
-            "Status is FAILED.",
-            "Status is KILLED."
-          ],
-          "type": "string",
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "NEW",
-            "NEW_SAVING",
-            "SUBMITTED",
-            "ACCEPTED",
-            "RUNNING",
-            "FINISHED",
-            "FAILED",
-            "KILLED"
-          ]
-        },
-        "progress": {
-          "description": "[Required] The numerical progress of the application, from 1 to 100.",
-          "type": "number",
-          "format": "float"
-        },
-        "trackingUrl": {
-          "description": "[Optional] The HTTP URL of the ApplicationMaster, HistoryServer, or\nTimelineServer that provides application-specific information. The URL uses\nthe internal hostname, and requires a proxy server for resolution and,\npossibly, access.",
-          "type": "string"
-        }
-      }
-    },
     "ListJobsResponse": {
       "id": "ListJobsResponse",
       "description": "A list of jobs in a project.",
@@ -1266,7 +1209,7 @@
           "description": "Method for media upload. Upload is supported on\nthe URI `\/upload\/v1\/media\/{+name}`.",
           "parameters": {
             "resourceName": {
-              "description": "Name of the media that is being downloaded.  See\n[][ByteStream.ReadRequest.resource_name].",
+              "description": "Name of the media that is being downloaded.  See\nByteStream.ReadRequest.resource_name.",
               "location": "path",
               "required": true,
               "pattern": "^.*$",
@@ -1309,7 +1252,7 @@
           "description": "Method for media download. Download is supported\non the URI `\/v1\/media\/{+name}?alt=media`.",
           "parameters": {
             "resourceName": {
-              "description": "Name of the media that is being downloaded.  See\n[][ByteStream.ReadRequest.resource_name].",
+              "description": "Name of the media that is being downloaded.  See\nByteStream.ReadRequest.resource_name.",
               "location": "path",
               "required": true,
               "pattern": "^.*$",

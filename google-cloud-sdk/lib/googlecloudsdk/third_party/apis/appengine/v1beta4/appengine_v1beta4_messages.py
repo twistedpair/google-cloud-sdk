@@ -314,12 +314,19 @@ class Application(_messages.Message):
   application.
 
   Fields:
+    authDomain: If set, only users from the specified Google Apps
+      authentication domain may access the application. If not set, any Google
+      Account may access the application.
     codeBucket: A Google Cloud Storage bucket which can be used for storing
       files associated with an application. This bucket is associated with the
       application and can be used by the gcloud deployment commands.
       @OutputOnly
     defaultBucket: A Google Cloud Storage bucket which can be used by the
       application to store content.  @OutputOnly
+    defaultCookieExpiration: Determines the cookie expiration policy for the
+      application.
+    defaultHostname: The hostname used to reach the application, as resolved
+      by App Engine.  @OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the app that do
       not explicitly target a module or version. The rules are order-
       dependent.
@@ -333,12 +340,15 @@ class Application(_messages.Message):
       @OutputOnly
   """
 
-  codeBucket = _messages.StringField(1)
-  defaultBucket = _messages.StringField(2)
-  dispatchRules = _messages.MessageField('UrlDispatchRule', 3, repeated=True)
-  id = _messages.StringField(4)
-  location = _messages.StringField(5)
-  name = _messages.StringField(6)
+  authDomain = _messages.StringField(1)
+  codeBucket = _messages.StringField(2)
+  defaultBucket = _messages.StringField(3)
+  defaultCookieExpiration = _messages.StringField(4)
+  defaultHostname = _messages.StringField(5)
+  dispatchRules = _messages.MessageField('UrlDispatchRule', 6, repeated=True)
+  id = _messages.StringField(7)
+  location = _messages.StringField(8)
+  name = _messages.StringField(9)
 
 
 class AutomaticScaling(_messages.Message):

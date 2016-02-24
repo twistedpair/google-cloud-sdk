@@ -750,7 +750,8 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [log=status,empty-legend="No Deployments were found in your project!"]
+          [legend-log=status,
+           empty-legend="No Deployments were found in your project!"]
           value(
             name
           )
@@ -768,7 +769,8 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [log=status,empty-legend="No Operations were found in your project!"]
+          [legend-log=status,
+           empty-legend="No Operations were found in your project!"]
           value(
             name
           )
@@ -785,7 +787,7 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [log=status,
+          [legend-log=status,
            empty-legend="No Resources were found in your deployment!"]
           value(
             name

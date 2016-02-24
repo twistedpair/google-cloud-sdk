@@ -154,11 +154,14 @@ class ScopePrompter(object):
     # _PromptForScopeList ensures this.
     assert selected_resource_name is not None
     assert selected_attribute is not None
+    result = []
 
     for _, resource_ref in ambiguous_refs:
-      setattr(resource_ref, selected_attribute, selected_resource_name)
+      if hasattr(resource_ref, selected_attribute):
+        setattr(resource_ref, selected_attribute, selected_resource_name)
+        result.append(resource_ref)
 
-    return selected_attribute
+    return result
 
   def _PromptDidYouMeanScope(self, ambiguous_refs, attribute, resource_type,
                              suggested_resource, raise_on_prompt_failure):
@@ -235,14 +238,19 @@ class ScopePrompter(object):
               collection=self.GetCollection(resource_type),
               params={},
               resolve=False)
-          resource_refs.append(resource_ref)
+          # TODO(user): resource_ref is created right above, so scope_name
+          # is None. Check with gjaskiewicz and simplify the code (add
+          # resource_ref to ambiguous_refs without checking if scope_name is
+          # None.
           if not getattr(resource_ref, scope_name):
             ambiguous_refs.append((resource_name, resource_ref))
+          else:
+            resource_refs.append(resource_ref)
         except resources.WrongResourceCollectionException:
           pass
 
     if ambiguous_refs:
-      self.PromptForScope(
+      resource_refs += self.PromptForScope(
           ambiguous_refs=ambiguous_refs,
           attributes=scope_names,
           services=scope_services,

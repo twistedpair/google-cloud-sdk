@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "beta",
- "revision": "20160210",
+ "revision": "20160217",
  "title": "Cloud User Accounts API",
  "description": "API for the Google Cloud User Accounts service.",
  "ownerDomain": "google.com",

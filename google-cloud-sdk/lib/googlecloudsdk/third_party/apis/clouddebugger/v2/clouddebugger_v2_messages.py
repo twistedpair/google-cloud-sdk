@@ -111,7 +111,7 @@ class Breakpoint(_messages.Message):
       reference to it.  The variable `var_table_index` field is an index into
       this repeated field. The stored objects are nameless and get their name
       from the referencing variable. The effective variable is a merge of the
-      referencing veariable and the referenced variable.
+      referencing variable and the referenced variable.
   """
 
   class ActionValueValuesEnum(_messages.Enum):

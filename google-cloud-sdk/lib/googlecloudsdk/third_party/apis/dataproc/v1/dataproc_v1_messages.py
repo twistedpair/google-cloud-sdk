@@ -175,7 +175,7 @@ class DataprocMediaDownloadRequest(_messages.Message):
 
   Fields:
     resourceName: Name of the media that is being downloaded.  See
-      [][ByteStream.ReadRequest.resource_name].
+      ByteStream.ReadRequest.resource_name.
   """
 
   resourceName = _messages.StringField(1, required=True)
@@ -509,8 +509,8 @@ class GceClusterConfig(_messages.Message):
       network_uri nor subnetwork_uri is specified, the "default" network of
       the project is used, if it exists. Cannot be a "Custom Subnet Network"
       (see https://cloud.google.com/compute/docs/subnetworks for more
-      information). Example:
-      `compute.googleapis.com/projects/[project_id]/regions/global/default`.
+      information). Example: `https://www.googleapis.com/compute/v1/projects/[
+      project_id]/regions/global/default`.
     serviceAccountScopes: The URIs of service account scopes to be included in
       Google Compute Engine instances. The following base set of scopes is
       always included: -
@@ -524,11 +524,12 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/devstorage.full_control
     subnetworkUri: The Google Compute Engine subnetwork to be used for machine
       communications. Cannot be specified with network_uri. Example:
-      `compute.googleapis.com/projects/[project_id]/regions/us-east1/sub0`.
+      `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
+      east1/sub0`.
     tags: The Google Compute Engine tags to add to all instances.
     zoneUri: [Required] The zone where the Google Compute Engine cluster will
-      be located. Example: `compute.googleapis.com/projects/[project_id]/zones
-      /us-east1-a`.
+      be located. Example: `https://www.googleapis.com/compute/v1/projects/[pr
+      oject_id]/zones/[zone]`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -737,16 +738,15 @@ class InstanceGroupConfig(_messages.Message):
     diskConfig: Disk option config settings.
     imageUri: [Output-only] The Google Compute Engine image resource used for
       cluster instances. Inferred from `SoftwareConfig.image_version`.
-      Example: `compute.googleapis.com/projects/debian-cloud/global/images
-      /backports-debian-7-wheezy-v20140904`.
     instanceNames: The list of instance names. Dataproc derives the names from
       `cluster_name`, `num_instances`, and the instance group if not set by
       user (recommended practice is to let Dataproc derive the name).
     isPreemptible: Specifies that this instance group contains Preemptible
       Instances.
     machineTypeUri: The Google Compute Engine machine type used for cluster
-      instances. Example: `compute.googleapis.com/projects/[project_id]/zones
-      /us-east1-a/machineTypes/n1-standard-2`.
+      instances. Example:
+      `https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2`.
     managedGroupConfig: [Output-only] The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
@@ -789,11 +789,6 @@ class Job(_messages.Message):
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
     statusHistory: [Output-only] The previous job status.
-    submittedBy: [Output-only] The email address of the user submitting the
-      job. For jobs submitted on the cluster, the address is
-      <code>username@hostname</code>.
-    yarnApplications: [Output-only] The collection of YARN applications spun
-      up by this job.
   """
 
   driverControlFilesUri = _messages.StringField(1)
@@ -808,8 +803,6 @@ class Job(_messages.Message):
   sparkSqlJob = _messages.MessageField('SparkSqlJob', 10)
   status = _messages.MessageField('JobStatus', 11)
   statusHistory = _messages.MessageField('JobStatus', 12, repeated=True)
-  submittedBy = _messages.StringField(13)
-  yarnApplications = _messages.MessageField('YarnApplication', 14, repeated=True)
 
 
 class JobPlacement(_messages.Message):
@@ -1769,55 +1762,6 @@ class SubmitJobRequest(_messages.Message):
   """
 
   job = _messages.MessageField('Job', 1)
-
-
-class YarnApplication(_messages.Message):
-  """A YARN application created by a job. Application information is a subset
-  of
-  <code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto</code>.
-
-  Enums:
-    StateValueValuesEnum: [Required] The application state.
-
-  Fields:
-    name: [Required] The application name.
-    progress: [Required] The numerical progress of the application, from 1 to
-      100.
-    state: [Required] The application state.
-    trackingUrl: [Optional] The HTTP URL of the ApplicationMaster,
-      HistoryServer, or TimelineServer that provides application-specific
-      information. The URL uses the internal hostname, and requires a proxy
-      server for resolution and, possibly, access.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """[Required] The application state.
-
-    Values:
-      STATE_UNSPECIFIED: Status is unspecified.
-      NEW: Status is NEW.
-      NEW_SAVING: Status is NEW_SAVING.
-      SUBMITTED: Status is SUBMITTED.
-      ACCEPTED: Status is ACCEPTED.
-      RUNNING: Status is RUNNING.
-      FINISHED: Status is FINISHED.
-      FAILED: Status is FAILED.
-      KILLED: Status is KILLED.
-    """
-    STATE_UNSPECIFIED = 0
-    NEW = 1
-    NEW_SAVING = 2
-    SUBMITTED = 3
-    ACCEPTED = 4
-    RUNNING = 5
-    FINISHED = 6
-    FAILED = 7
-    KILLED = 8
-
-  name = _messages.StringField(1)
-  progress = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  trackingUrl = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

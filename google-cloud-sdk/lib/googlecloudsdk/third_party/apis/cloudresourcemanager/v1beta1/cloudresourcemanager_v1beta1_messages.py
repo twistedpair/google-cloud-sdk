@@ -37,10 +37,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(2)
 
 
-class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log"""
-
-
 class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerOrganizationsGetIamPolicyRequest object.
 
@@ -231,100 +227,12 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
 
   Fields:
     projectId: The project ID (for example, `foo-bar-123`).  Required.
+    undeleteProjectRequest: A UndeleteProjectRequest resource to be passed as
+      the request body.
   """
 
   projectId = _messages.StringField(1, required=True)
-
-
-class Condition(_messages.Message):
-  """A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    value: The object of the condition. Exactly one of these must be set.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority
-      ATTRIBUTION: selector Always the original principal, but making clear
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-
-  class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: Equality check.
-      NOT_EQUALS: Non-equality check.
-      IN: Set-inclusion check.
-      NOT_IN: Set-exclusion check.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
-
-
-class CounterOptions(_messages.Message):
-  """Options for counters
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
-class DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log"""
+  undeleteProjectRequest = _messages.MessageField('UndeleteProjectRequest', 2)
 
 
 class Empty(_messages.Message):
@@ -380,31 +288,6 @@ class ListProjectsResponse(_messages.Message):
   projects = _messages.MessageField('Project', 2, repeated=True)
 
 
-class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present only
-  "iam_principal", corresponding to IAMContext.principal, is supported.
-  Examples:   counter { metric: "/debug_access_count"  field: "iam_principal"
-  }   ==> increment counter /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
-
-
 class Organization(_messages.Message):
   """The root node in the resource hierarchy to which a particular entity's
   (e.g., company) resources belong.
@@ -447,13 +330,13 @@ class Policy(_messages.Message):
   consists of a list of `bindings`. A `Binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {         "bindings": [          {
-  "role": "roles/owner",              "members": [
-  "user:mike@example.com",              "group:admins@example.com",
-  "domain:google.com",              "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"]          },          {
-  "role": "roles/viewer",              "members": ["user:sean@example.com"]
-  }          ]     }  For a description of IAM and its features, see the [IAM
+  defined by IAM.  **Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com",           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  For a description of IAM and its features, see the [IAM
   developer's guide](https://cloud.google.com/iam).
 
   Fields:
@@ -469,14 +352,12 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    rules: A Rule attribute.
     version: Version of the `Policy`. The default version is 0.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
-  rules = _messages.MessageField('Rule', 3, repeated=True)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Project(_messages.Message):
@@ -601,58 +482,6 @@ class ResourceId(_messages.Message):
   type = _messages.StringField(2)
 
 
-class Rule(_messages.Message):
-  """A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met
-    description: Human-readable description of the rule.
-    in_: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set
-      of entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in this
-      set of entries. The format for in and not_in entries is the same as for
-      members in a Binding (see google/iam/v1/policy.proto).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
-
-
 class SetIamPolicyRequest(_messages.Message):
   """Request message for `SetIamPolicy` method.
 
@@ -756,9 +585,11 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'cloudresourcemanager')
+class UndeleteProjectRequest(_messages.Message):
+  """The request sent to the UndeleteProject
+method."""
+
+
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv',
     package=u'cloudresourcemanager')

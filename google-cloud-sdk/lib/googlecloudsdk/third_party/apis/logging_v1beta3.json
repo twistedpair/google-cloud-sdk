@@ -367,7 +367,7 @@
           "description": "Whether or not an entity was served from cache\n(with or without validation).",
           "type": "boolean"
         },
-        "validatedWithOriginServer": {
+        "cacheValidatedWithOriginServer": {
           "description": "Whether or not the response was validated with the origin server before\nbeing served from cache. This field is only meaningful if `cache_hit` is\nTrue.",
           "type": "boolean"
         },

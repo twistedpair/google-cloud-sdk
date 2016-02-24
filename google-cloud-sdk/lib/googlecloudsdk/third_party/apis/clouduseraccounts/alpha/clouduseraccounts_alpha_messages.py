@@ -1016,7 +1016,7 @@ class Policy(_messages.Message):
   defined by IAM.  **Example**  { "bindings": [ { "role": "roles/owner",
   "members": [ "user:mike@example.com", "group:admins@example.com",
   "domain:google.com", "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"] }, { "role": "roles/viewer", "members":
+  app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
   see the [IAM developer's guide](https://cloud.google.com/iam).
 

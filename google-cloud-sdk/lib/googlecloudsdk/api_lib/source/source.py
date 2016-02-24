@@ -13,8 +13,11 @@
 # limitations under the License.
 
 """Source apis layer."""
+import json
 import os
+import sys
 
+from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import exceptions
@@ -63,6 +66,64 @@ class FileTooBigException(Exception):
             self.name, self.size, self.max_size)
 
 
+def _GetViolationsFromError(error_info):
+  """Looks for violations descriptions in error message.
+
+  Args:
+    error_info: json containing error information.
+  Returns:
+    List of violations descriptions.
+  """
+  result = ''
+  details = None
+  try:
+    if 'details' in error_info:
+      details = error_info['details']
+    for field in details:
+      if 'fieldViolations' in field:
+        violations = field['fieldViolations']
+        for violation in violations:
+          if 'description' in violation:
+            result += violation['description'] + '\n'
+  except (ValueError, TypeError):
+    pass
+  return result
+
+
+# TODO(b/26202997): make this more general to be used by other library code.
+def GetHttpErrorMessage(error):
+  """Returns a human readable string representation from the http response.
+
+  Args:
+    error: HttpException representing the error response.
+
+  Returns:
+    A human readable string representation of the error.
+  """
+  status = error.response.status
+  code = error.response.reason
+  message = ''
+  try:
+    data = json.loads(error.content)
+  except ValueError:
+    data = error.content
+
+  if 'error' in data:
+    try:
+      error_info = data['error']
+      if 'message' in error_info:
+        message = error_info['message']
+    except (ValueError, TypeError):
+      message = data
+    violations = _GetViolationsFromError(error_info)
+    if violations:
+      message += '\nProblems:\n' + violations
+  else:
+    message = data
+  return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
+      status, code, message)
+
+
 class Source(object):
   """Base class for source api wrappers."""
   _client = None
@@ -91,7 +152,12 @@ class Project(Source):
   def ListRepos(self):
     """Returns list of repos."""
     request = messages.SourceProjectsReposListRequest(projectId=self._id)
-    return self._client.projects_repos.List(request).repos
+    try:
+      return self._client.projects_repos.List(request).repos
+    except exceptions.HttpError as error:
+      msg = GetHttpErrorMessage(error)
+      unused_type, unused_value, traceback = sys.exc_info()
+      raise base_exceptions.HttpException, msg, traceback
 
   def GetRepo(self, repo_name):
     """Finds details on the named repo, if it exists.

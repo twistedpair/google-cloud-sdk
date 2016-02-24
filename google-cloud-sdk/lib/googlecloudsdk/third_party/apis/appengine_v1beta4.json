@@ -137,12 +137,25 @@
             "$ref": "UrlDispatchRule"
           }
         },
+        "authDomain": {
+          "description": "If set, only users from the specified Google Apps authentication\ndomain may access the application. If not set, any Google\nAccount may access the application.",
+          "type": "string"
+        },
         "location": {
           "description": "The location from which the application will be run. Choices are\n\"us-central\" for United States and \"europe-west\" for European Union.\nApplication instances will run out of data centers in the chosen location\nand all of the application's End User Content will be stored at rest\nin the chosen location. The default is \"us-central\".",
           "type": "string"
         },
         "codeBucket": {
           "description": "A Google Cloud Storage bucket which can be used for storing files\nassociated with an application. This bucket is associated with the\napplication and can be used by the gcloud deployment commands.\n\n@OutputOnly",
+          "type": "string"
+        },
+        "defaultCookieExpiration": {
+          "description": "Determines the cookie expiration policy for the application.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "defaultHostname": {
+          "description": "The hostname used to reach the application, as resolved by App Engine.\n\n@OutputOnly",
           "type": "string"
         },
         "defaultBucket": {
@@ -1499,7 +1512,7 @@
                   "path": "v1beta4/{+name}",
                   "flatPath": "v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates an existing version.",
+                  "description": "Updates an existing version. Note: UNIMPLEMENTED.",
                   "parameters": {
                     "name": {
                       "description": "Name of the resource to update. For example:\n\"apps\/myapp\/modules\/default\/versions\/1\".",

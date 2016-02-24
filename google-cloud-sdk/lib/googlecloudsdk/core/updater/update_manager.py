@@ -490,94 +490,33 @@ version [{1}].  To clear your fixed version setting, run:
       last_update_check.Notify(command_path)
       return last_update_check.UpdatesAvailable()
 
-  def List(self, show_versions=False):
+  def List(self):
     """Lists all of the components and their current state.
 
     This pretty prints the list of components along with whether they are up
     to date, require an update, etc.
 
-    Args:
-      show_versions: bool, True to print versions in the table.  Defaults to
-        False.
-
     Returns:
-      The list of snapshots.ComponentDiffs for all components.
+      The list of snapshots.ComponentDiffs for all components that are not
+      hidden.
     """
     try:
       _, diff = self._GetStateAndDiff(command_path='components.list')
     except snapshots.IncompatibleSchemaVersionError as e:
-      return self._ReinstallOnError(e)
+      self._ReinstallOnError(e)
+      return ([], None, None)
 
     # Only show the latest version if we are not pinned.
     latest_msg = ('The latest available version is: '
                   if not self.__fixed_version else None)
     current_version, latest_version = self._PrintVersions(
         diff, latest_msg=latest_msg)
-    to_print = [diff.AvailableUpdates(), diff.Removed(),
-                diff.AvailableToInstall(), diff.UpToDate()]
 
-    self._PrintTable('Packages', show_versions=False, to_print=to_print,
-                     func=lambda x: x.is_configuration, ignore_if_empty=True)
-    self._PrintTable('Components', show_versions=show_versions,
-                     to_print=to_print, func=lambda x: not x.is_configuration,
-                     ignore_if_empty=False)
+    to_print = (diff.AvailableUpdates() + diff.Removed() +
+                diff.AvailableToInstall() + diff.UpToDate())
+    to_print = [c for c in to_print if not c.is_hidden]
 
-    self.__Write(
-        log.status,
-        """\
-To install or remove components at your current SDK version [{current}], run:
-  $ gcloud components install COMPONENT_ID
-  $ gcloud components remove COMPONENT_ID
-
-To update your SDK installation to the latest version [{latest}], run:
-  $ gcloud components update
-""".format(current=current_version, latest=latest_version), word_wrap=False)
-    return diff.AllDiffs()
-
-  def _PrintTable(self, title, show_versions, to_print, func, ignore_if_empty):
-    """Prints a table of updatable components.
-
-    Args:
-      title: str, The title for the table.
-      show_versions: bool, True to print versions in the table.
-      to_print: list(list(snapshots.ComponentDiff)), The available components
-        divided by state.
-      func: func(snapshots.ComponentDiff) -> bool, Decides whether the component
-        should be printed.
-      ignore_if_empty: bool, True to not show the table at all if there are no
-        matching components.
-    """
-    attributes = [
-        'box',
-        'legend=" "',
-        ]
-    if ignore_if_empty:
-      attributes.append('no-empty-legend')
-    else:
-      attributes.append('empty-legend="No updates."')
-    if title:
-      attributes.append('title="{title}"'.format(title=title))
-    columns = [
-        'state.name:label=Status',
-        'name:label=Name',
-        ]
-    if show_versions:
-      columns.extend([
-          'current.version.version_string:label=Installed:align=right',
-          'latest.version.version_string:label=Latest:align=right',
-          ])
-    columns.extend([
-        'id:label=ID',
-        'size.size(zero="",min=1048576):label=Size:align=right',
-        ])
-    fmt = 'table[{attributes}]({columns})'.format(
-        attributes=','.join(attributes), columns=','.join(columns))
-    printer = resource_printer.Printer(fmt)
-    for components in to_print:
-      for c in components:
-        if not c.is_hidden and func(c):
-          printer.AddRecord(c)
-    printer.Finish()
+    return (to_print, current_version, latest_version)
 
   def _PrintVersions(self, diff, latest_msg=None):
     """Prints the current and latest version.
@@ -644,7 +583,7 @@ To update your SDK installation to the latest version [{latest}], run:
         ]
     fmt = 'table[{attributes}]({columns})'.format(
         attributes=','.join(attributes), columns=','.join(columns))
-    resource_printer.Print(components, fmt)
+    resource_printer.Print(components, fmt, out=log.status)
 
   def _UpdateWithProgressBar(self, components, action, action_func, first=False,
                              last=False):

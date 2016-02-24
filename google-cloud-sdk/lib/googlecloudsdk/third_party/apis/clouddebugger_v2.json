@@ -565,7 +565,7 @@
           }
         },
         "variableTable": {
-          "description": "The `variable_table` exists to aid with computation, memory and network\ntraffic optimization.  It enables storing a variable once and reference\nit from multiple variables, including variables stored in the\n`variable_table` itself.\nFor example, the same `this` object, which may appear at many levels of\nthe stack, can have all of its data stored once in this table.  The\nstack frame variables then would hold only a reference to it.\n\nThe variable `var_table_index` field is an index into this repeated field.\nThe stored objects are nameless and get their name from the referencing\nvariable. The effective variable is a merge of the referencing veariable\nand the referenced variable.",
+          "description": "The `variable_table` exists to aid with computation, memory and network\ntraffic optimization.  It enables storing a variable once and reference\nit from multiple variables, including variables stored in the\n`variable_table` itself.\nFor example, the same `this` object, which may appear at many levels of\nthe stack, can have all of its data stored once in this table.  The\nstack frame variables then would hold only a reference to it.\n\nThe variable `var_table_index` field is an index into this repeated field.\nThe stored objects are nameless and get their name from the referencing\nvariable. The effective variable is a merge of the referencing variable\nand the referenced variable.",
           "type": "array",
           "items": {
             "$ref": "Variable"

@@ -593,17 +593,20 @@ def PrintExtendedList(items, col_fetchers):
         row.append(value)
     rows.append(row)
 
+  attr = console_attr.GetConsoleAttr()
   max_col_widths = [0] * len(col_fetchers)
   for row in rows:
     for col in range(len(row)):
-      max_col_widths[col] = max(max_col_widths[col], len(unicode(row[col]))+2)
+      max_col_widths[col] = max(max_col_widths[col],
+                                attr.DisplayWidth(unicode(row[col]))+2)
 
   for row in rows:
     for col in range(len(row)):
       width = max_col_widths[col]
       item = unicode(row[col])
-      if len(item) < width and col != len(row)-1:
-        item += ' ' * (width - len(item))
+      item_width = attr.DisplayWidth(item)
+      if item_width < width and col != len(row) - 1:
+        item += u' ' * (width - item_width)
       log.out.write(item)
     log.out.write('\n')
   if not total_items:
@@ -852,15 +855,15 @@ class ProgressBar(object):
       label += ' ' * diff
     left = self._box.d_vr + self._box.d_h
     right = self._box.d_h + self._box.d_vl
-    self._label = '{left} {label} {right}'.format(left=left, label=label,
-                                                  right=right)
+    self._label = u'{left} {label} {right}'.format(left=left, label=label,
+                                                   right=right)
 
   def Start(self):
     """Starts the progress bar by writing the top rule and label."""
     if self._first or self._redraw:
       left = self._box.d_dr if self._first else self._box.d_vr
       right = self._box.d_dl if self._first else self._box.d_vl
-      rule = '{left}{middle}{right}\n'.format(
+      rule = u'{left}{middle}{right}\n'.format(
           left=left, middle=self._box.d_h * self._total_ticks, right=right)
       self._stream.write(rule)
     self._stream.write(self._label + '\n')

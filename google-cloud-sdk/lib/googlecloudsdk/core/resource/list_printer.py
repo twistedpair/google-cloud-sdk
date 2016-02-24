@@ -28,9 +28,9 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       *no-empty-legend* disables the default.
     legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
       item if there is at least one item.
-    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
-      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
-      *info*, *warn*, or *error*.
+    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
+      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
+      *debug*, *info*, *warn*, or *error*.
   """
 
   def __init__(self, *args, **kwargs):
@@ -47,7 +47,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     if isinstance(record, dict):
-      record = ['{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())]
+      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())]
     elif not isinstance(record, list):
       record = [record]
     self._out.write(' - ' + '\n   '.join(record) + '\n')

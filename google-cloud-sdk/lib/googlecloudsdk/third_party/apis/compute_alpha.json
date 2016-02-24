@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160210",
+ "revision": "20160217",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -801,10 +801,12 @@
      "type": "string",
      "description": "Specifies the balancing mode for this backend. For global HTTP(S) load balancing, the default is UTILIZATION. Valid values are UTILIZATION and RATE.",
      "enum": [
+      "CONNECTION",
       "RATE",
       "UTILIZATION"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -821,6 +823,16 @@
     "group": {
      "type": "string",
      "description": "The fully-qualified URL of a zonal Instance Group resource. This instance group defines the list of instances that serve traffic. Member virtual machine instances from each instance group must live in the same zone as the instance group itself. No two backends in a backend service are allowed to use same Instance Group resource.\n\nNote that you must specify an Instance Group resource using the fully-qualified URL, rather than a partial URL."
+    },
+    "maxConnections": {
+     "type": "integer",
+     "description": "The max number of simultaneous connections for the group. Can be used with either CONNECTION or UTILIZATION balancing modes. For CONNECTION mode, either maxConnections or maxConnectionsPerInstance must be set.",
+     "format": "int32"
+    },
+    "maxConnectionsPerInstance": {
+     "type": "integer",
+     "description": "The max number of simultaneous connections that a single backend instance can handle. This is used to calculate the capacity of the group. Can be used in either CONNECTION or UTILIZATION balancing modes. For CONNECTION mode, either maxConnections or maxConnectionsPerInstance must be set.",
+     "format": "int32"
     },
     "maxRate": {
      "type": "integer",
@@ -3064,31 +3076,6 @@
      "type": "string",
      "description": "[Output Only] URL of the region where the managed instance group resides."
     },
-    "regionalStatus": {
-     "type": "string",
-     "description": "Instance group manager status (set only for Regional instance group managers).",
-     "enum": [
-      "ACTIVE",
-      "CREATING",
-      "DELETING",
-      "ERROR",
-      "PENDING"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      "",
-      "",
-      ""
-     ]
-    },
-    "regionalStatusDetails": {
-     "type": "array",
-     "description": "Human-readable status description of the current instance group manager (set only for Regional instance group managers).",
-     "items": {
-      "$ref": "InstanceGroupManagerStatusDetails"
-     }
-    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this managed instance group. The server defines this URL."
@@ -3236,15 +3223,6 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this resource type. The server generates this URL."
-    }
-   }
-  },
-  "InstanceGroupManagerStatusDetails": {
-   "id": "InstanceGroupManagerStatusDetails",
-   "type": "object",
-   "properties": {
-    "message": {
-     "type": "string"
     }
    }
   },
@@ -4861,7 +4839,7 @@
   "Policy": {
    "id": "Policy",
    "type": "object",
-   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\"] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam).",
+   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\", ] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam).",
    "properties": {
     "auditConfigs": {
      "type": "array",
@@ -7733,6 +7711,13 @@
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the VPN tunnel resides."
+    },
+    "remoteTrafficSelectors": {
+     "type": "array",
+     "description": "Remote traffic selectors to use when establishing the VPN tunnel with peer VPN gateway. The value should be a CIDR formatted string, for example: 192.168.0.0/16. The ranges should be disjoint.",
+     "items": {
+      "type": "string"
+     }
     },
     "router": {
      "type": "string",

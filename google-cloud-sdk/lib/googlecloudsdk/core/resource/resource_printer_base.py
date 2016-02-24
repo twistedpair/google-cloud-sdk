@@ -98,9 +98,9 @@ class ResourcePrinter(object):
       *no-empty-legend* disables the default.
     legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
       item if there is at least one item.
-    log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the default.
-      _TYPE_ may be: *out* (the default), *status* (standard error), *debug*,
-      *info*, *warn*, or *error*.
+    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
+      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
+      *debug*, *info*, *warn*, or *error*.
   """
 
   def __init__(self, out=None, name=None, attributes=None,
@@ -200,7 +200,13 @@ class ResourcePrinter(object):
         'error': log.error,
         }
 
-    log_type = self.attributes.get('log', None)
+    log_type = self.attributes.get('legend-log')
+    # TODO(user): drop the 'log' check when the log=TYPE attribute is added.
+    if not log_type:
+      log_type = self.attributes.get('log')
+      if log_type:
+        log.warn('[log={0}] is deprecated. '
+                 'Use [legend-log={0}] instead.'.format(log_type))
     if self._empty:
       if not log_type:
         log_type = 'status'
