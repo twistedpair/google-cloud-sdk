@@ -97,7 +97,10 @@ def UploadSource(source_dir, target_object):
     if cloud_storage.Copy(f.name, target_object) != 0:  # For cli, 0 is success.
       raise UploadFailedError('Failed to upload source code.')
   finally:
-    shutil.rmtree(temp_dir)
+    try:
+      shutil.rmtree(temp_dir)
+    except OSError:
+      log.warn('Could not remove temporary directory [{0}]'.format(temp_dir))
 
 
 def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,

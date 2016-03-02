@@ -72,12 +72,16 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
         'compute', None, 'zone', resolvers.FromProperty(zone_prop))
     return cls(batch_url, compute, http, project, resources)
 
-  def _GetResourceUri(self, resource_name, resource_type, zone=None):
+  def _GetResourceUri(
+      self, resource_name, resource_type, region=None, zone=None):
     """Convert a GCE resource short-name into a URI."""
     if not resource_name:
       # Resource must be optional and server-specified. Ignore it.
       return resource_name
-    if zone:
+    if region:
+      resource_ref = self.CreateRegionalReference(
+          resource_name, region, resource_type=resource_type)
+    elif zone:
       resource_ref = self.CreateZonalReference(
           resource_name, zone, resource_type=resource_type)
     else:
@@ -110,16 +114,23 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
       image,
       master_machine_type,
       worker_machine_type,
-      network):
+      network,
+      subnetwork):
     """Build dict of GCE URIs for Dataproc cluster request."""
     zone_ref = self._GetZoneRef(cluster_name)
+    zone = zone_ref.Name()
+    region = compute_utils.ZoneNameToRegionName(zone)
     uris = {
         'image': self._GetResourceUri(image, 'images'),
-        'master_machine_type': self._GetResourceUri(
-            master_machine_type, 'machineTypes', zone=zone_ref.Name()),
-        'worker_machine_type': self._GetResourceUri(
-            worker_machine_type, 'machineTypes', zone=zone_ref.Name()),
+        'master_machine_type':
+            self._GetResourceUri(
+                master_machine_type, 'machineTypes', zone=zone),
+        'worker_machine_type':
+            self._GetResourceUri(
+                worker_machine_type, 'machineTypes', zone=zone),
         'network': self._GetResourceUri(network, 'networks'),
+        'subnetwork':
+            self._GetResourceUri(subnetwork, 'subnetworks', region=region),
         'zone': zone_ref.SelfLink(),
     }
     return uris

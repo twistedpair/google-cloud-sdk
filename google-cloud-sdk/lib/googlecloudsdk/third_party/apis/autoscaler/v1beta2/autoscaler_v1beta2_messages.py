@@ -330,7 +330,7 @@ class Operation(_messages.Message):
     id: A string attribute.
     insertTime: A string attribute.
     kind: [Output Only] Type of the resource. Always compute#operation for
-      Operation resources.
+      operation resources.
     name: A string attribute.
     operationType: A string attribute.
     progress: A integer attribute.

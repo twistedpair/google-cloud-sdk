@@ -44,9 +44,10 @@ class InvalidSDKRootError(Error):
 
   def __init__(self):
     super(InvalidSDKRootError, self).__init__(
-        'The update action could not be performed because the installation root'
-        ' of the Cloud SDK could not be located.  Please re-install the Cloud '
-        'SDK and try again.')
+        'The components management action could not be performed because the '
+        'installation root of the Cloud SDK could not be located. '
+        'If you previously used the Cloud SDK installer, '
+        'you could re-install the the SDK and retry again.')
 
 
 class InvalidDownloadError(Error):

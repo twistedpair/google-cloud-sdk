@@ -5442,7 +5442,7 @@ See Accessing images for more information.
           }
 
     def AggregatedList(self, request, global_params=None):
-      """Retrieves an aggregated list of Routers.
+      """Retrieves an aggregated list of routers.
 
       Args:
         request: (ComputeRoutersAggregatedListRequest) input message
@@ -5481,7 +5481,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def GetRouterStatus(self, request, global_params=None):
-      """Retrieves runtime information of the specified Router.
+      """Retrieves runtime information of the specified router.
 
       Args:
         request: (ComputeRoutersGetRouterStatusRequest) input message
@@ -5520,7 +5520,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the Router resource. This method supports patch semantics.
+      """Updates the entire content of the Router resource. This method supports patch semantics.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -5546,7 +5546,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the Router resource.
+      """Updates the entire content of the Router resource.
 
       Args:
         request: (ComputeRoutersUpdateRequest) input message
@@ -5632,7 +5632,7 @@ See Accessing images for more information.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified route resource.
+      """Deletes the specified Route resource.
 
       Args:
         request: (ComputeRoutesDeleteRequest) input message
@@ -5658,7 +5658,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a route resource in the specified project using the data included in the request.
+      """Creates a Route resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRoutesInsertRequest) input message

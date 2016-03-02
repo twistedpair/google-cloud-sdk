@@ -69,8 +69,6 @@ if hasattr(signal, 'SIGPIPE'):
 def _DoStartupChecks():
   if not platforms.PythonVersion().IsCompatible():
     sys.exit(1)
-  if not platforms.Platform.Current().IsSupported():
-    sys.exit(1)
 
 _DoStartupChecks()
 

@@ -17,15 +17,27 @@ import os
 
 from gae_ext_runtime import ext_runtime
 
+from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
+class NoRuntimeRootError(exceptions.Error):
+  """Raised when we can't determine where the runtimes are."""
+
+
 def _GetRuntimeDefDir():
-  return os.path.join(os.path.dirname(__file__), 'ext_runtimes',
-                      'runtime_defs')
+  runtime_root = properties.VALUES.app.runtime_root.Get()
+  if runtime_root:
+    return runtime_root
+
+  raise NoRuntimeRootError('Unable to determine the root directory where '
+                           'GAE runtimes are stored.  Please define '
+                           'the CLOUDSDK_APP_RUNTIME_ROOT environmnent '
+                           'variable.')
 
 
 class GCloudExecutionEnvironment(ext_runtime.ExecutionEnvironment):

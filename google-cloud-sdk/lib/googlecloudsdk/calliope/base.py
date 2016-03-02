@@ -158,14 +158,15 @@ LIMIT_FLAG = Argument(
     """)
 
 PAGE_FLAG = Argument(
-    '--page',
+    '--page-size',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
-    help='The maximum resources list page size.',
+    help='The service resource list page size.',
     detailed_help="""\
-    The maximum resources list page size. The default is determined by
-    the service if it supports paging, otherwise it is *unlimited*. If
-    *--filter* or *--limit** are also specified then less than the maximum may
-    be listed in each resource page.
+    Some services group resource list output into pages. This flag specifies
+    the maximum number of resources per page. The default is determined by the
+    service if it supports paging, otherwise it is *unlimited* (no paging).
+    Paging may be applied before or after *--filter* and *--limit* depending
+    on the service.
     """)
 
 SORT_BY_FLAG = Argument(
@@ -181,13 +182,7 @@ SORT_BY_FLAG = Argument(
 URI_FLAG = Argument(
     '--uri',
     action='store_true',
-    help='If provided, a list of URIs is printed instead of a table.',
-    detailed_help="""\
-    If provided, the list command will only print URIs for the resources
-    returned.  If this flag is not provided, the list
-    command will print a human-readable table of useful resource
-    data.
-    """)
+    help='Print a list of resource URIs instead of the default output.')
 
 
 class _Common(object):
@@ -578,6 +573,7 @@ class ListCommand(CacheCommand):
 
     FILTER_FLAG.AddToParser(parser)
     LIMIT_FLAG.AddToParser(parser)
+    PAGE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)
 
   def Format(self, args):

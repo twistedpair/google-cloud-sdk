@@ -190,7 +190,7 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
       filtering by (string, number, boolean). For string fields, the literal
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
-      instances whose name is not equal to example-instance, you would use
+      instances that do not have a name of example-instance, you would use
       filter=name ne example-instance.  Compute Engine Beta API Only: If you
       use filtering in the Beta API, you can also filter on nested fields. For
       example, you could filter on instances that have set the
@@ -200,7 +200,7 @@ class DeploymentmanagerDeploymentsListRequest(_messages.Message):
       filtering on multiple expressions by providing each separate expression
       within parentheses. For example, (scheduling.automaticRestart eq true)
       (zone eq us-central1-f). Multiple expressions are treated as AND
-      expressions meaning that resources must match all expressions to pass
+      expressions, meaning that resources must match all expressions to pass
       the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
@@ -374,7 +374,7 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
       filtering by (string, number, boolean). For string fields, the literal
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
-      instances whose name is not equal to example-instance, you would use
+      instances that do not have a name of example-instance, you would use
       filter=name ne example-instance.  Compute Engine Beta API Only: If you
       use filtering in the Beta API, you can also filter on nested fields. For
       example, you could filter on instances that have set the
@@ -384,7 +384,7 @@ class DeploymentmanagerManifestsListRequest(_messages.Message):
       filtering on multiple expressions by providing each separate expression
       within parentheses. For example, (scheduling.automaticRestart eq true)
       (zone eq us-central1-f). Multiple expressions are treated as AND
-      expressions meaning that resources must match all expressions to pass
+      expressions, meaning that resources must match all expressions to pass
       the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
@@ -429,7 +429,7 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
       filtering by (string, number, boolean). For string fields, the literal
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
-      instances whose name is not equal to example-instance, you would use
+      instances that do not have a name of example-instance, you would use
       filter=name ne example-instance.  Compute Engine Beta API Only: If you
       use filtering in the Beta API, you can also filter on nested fields. For
       example, you could filter on instances that have set the
@@ -439,7 +439,7 @@ class DeploymentmanagerOperationsListRequest(_messages.Message):
       filtering on multiple expressions by providing each separate expression
       within parentheses. For example, (scheduling.automaticRestart eq true)
       (zone eq us-central1-f). Multiple expressions are treated as AND
-      expressions meaning that resources must match all expressions to pass
+      expressions, meaning that resources must match all expressions to pass
       the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
@@ -486,7 +486,7 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
       filtering by (string, number, boolean). For string fields, the literal
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
-      instances whose name is not equal to example-instance, you would use
+      instances that do not have a name of example-instance, you would use
       filter=name ne example-instance.  Compute Engine Beta API Only: If you
       use filtering in the Beta API, you can also filter on nested fields. For
       example, you could filter on instances that have set the
@@ -496,7 +496,7 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
       filtering on multiple expressions by providing each separate expression
       within parentheses. For example, (scheduling.automaticRestart eq true)
       (zone eq us-central1-f). Multiple expressions are treated as AND
-      expressions meaning that resources must match all expressions to pass
+      expressions, meaning that resources must match all expressions to pass
       the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
@@ -529,7 +529,7 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
       filtering by (string, number, boolean). For string fields, the literal
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
-      instances whose name is not equal to example-instance, you would use
+      instances that do not have a name of example-instance, you would use
       filter=name ne example-instance.  Compute Engine Beta API Only: If you
       use filtering in the Beta API, you can also filter on nested fields. For
       example, you could filter on instances that have set the
@@ -539,7 +539,7 @@ class DeploymentmanagerTypesListRequest(_messages.Message):
       filtering on multiple expressions by providing each separate expression
       within parentheses. For example, (scheduling.automaticRestart eq true)
       (zone eq us-central1-f). Multiple expressions are treated as AND
-      expressions meaning that resources must match all expressions to pass
+      expressions, meaning that resources must match all expressions to pass
       the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
@@ -688,7 +688,7 @@ class Operation(_messages.Message):
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
-      Operation resources.
+      operation resources.
     name: [Output Only] Name of the resource.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
@@ -735,8 +735,8 @@ class Operation(_messages.Message):
 
       Fields:
         code: [Output Only] The error type identifier for this error.
-        location: [Output Only] Indicates the field in the request which
-          caused the error. This property is optional.
+        location: [Output Only] Indicates the field in the request that caused
+          the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
@@ -769,7 +769,7 @@ class Operation(_messages.Message):
           being returned. For example, for warnings where there are no results
           in a list request for a particular zone, this key might be scope and
           the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource, and a suggested replacement, or a
+          indicating a deprecated resource and a suggested replacement, or a
           warning about invalid network settings (for example, if an instance
           attempts to perform IP forwarding but is not enabled for IP
           forwarding).
@@ -876,7 +876,7 @@ class Resource(_messages.Message):
           being returned. For example, for warnings where there are no results
           in a list request for a particular zone, this key might be scope and
           the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource, and a suggested replacement, or a
+          indicating a deprecated resource and a suggested replacement, or a
           warning about invalid network settings (for example, if an instance
           attempts to perform IP forwarding but is not enabled for IP
           forwarding).
@@ -944,8 +944,8 @@ class ResourceUpdate(_messages.Message):
 
       Fields:
         code: [Output Only] The error type identifier for this error.
-        location: [Output Only] Indicates the field in the request which
-          caused the error. This property is optional.
+        location: [Output Only] Indicates the field in the request that caused
+          the error. This property is optional.
         message: [Output Only] An optional, human-readable error message.
       """
 
@@ -978,7 +978,7 @@ class ResourceUpdate(_messages.Message):
           being returned. For example, for warnings where there are no results
           in a list request for a particular zone, this key might be scope and
           the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource, and a suggested replacement, or a
+          indicating a deprecated resource and a suggested replacement, or a
           warning about invalid network settings (for example, if an instance
           attempts to perform IP forwarding but is not enabled for IP
           forwarding).

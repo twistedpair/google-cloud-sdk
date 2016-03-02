@@ -1188,6 +1188,18 @@ Implements
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'Merge': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.variants.merge',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/variants:merge',
+              request_field='<request>',
+              request_type_name=u'MergeVariantsRequest',
+              response_type_name=u'Empty',
+              supports_download=False,
+          ),
           'Patch': base_api.ApiMethodInfo(
               http_method=u'PATCH',
               method_id=u'genomics.variants.patch',
@@ -1308,6 +1320,32 @@ Imported VCF headers are appended to the metadata already in a variant set.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Merge(self, request, global_params=None):
+      """Merges the given variants with existing variants.
+
+For the definitions of variants and other genomics resources, see
+[Fundamentals of Google
+Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+
+Each variant will be
+merged with an existing variant that matches its reference sequence,
+start, end, reference bases, and alternative bases. If no such variant
+exists, a new one will be created.
+
+When variants are merged, the call information from the new variant
+is added to the existing variant, and other fields (such as key/value
+pairs) are discarded.
+
+      Args:
+        request: (MergeVariantsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Merge')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1472,8 +1510,8 @@ assigned by the server.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the contents of a variant set. The variant set object is not.
-deleted.
+      """Deletes a variant set including all variants, call sets, and calls within.
+This is not reversible.
 
 For the definitions of variant sets and other genomics resources, see
 [Fundamentals of Google

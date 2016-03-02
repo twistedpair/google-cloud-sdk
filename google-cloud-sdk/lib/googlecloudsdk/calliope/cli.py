@@ -518,6 +518,12 @@ class CLILoader(object):
             properties.VALUES.auth.authorization_token_file),
         help=argparse.SUPPRESS)
 
+    top_element.ai.add_argument(
+        '--credential-file-override',
+        action=actions.StoreProperty(
+            properties.VALUES.auth.credential_file_override),
+        help=argparse.SUPPRESS)
+
     # Timeout value for HTTP requests.
     top_element.ai.add_argument(
         '--http-timeout',
@@ -685,11 +691,11 @@ class CLI(object):
     """
     try:
       return str(exc)
-    except UnicodeEncodeError:
+    except UnicodeError:
       # Handle errors that have unprintable unicode BOM markers (eg html).
       # See http://bugs.python.org/issue2517.
       # See http://stackoverflow.com/questions/3715865/unicodeencodeerror-ascii.
-      return unicode(exc).encode('ascii', 'ignore')
+      return unicode(exc).encode('utf-8', 'replace')
 
   def _HandleKnownError(self, command_path_string, exc, flag_names,
                         print_error=True):
@@ -697,7 +703,7 @@ class CLI(object):
 
     Args:
       command_path_string: str, The command that was run.
-      exc: Exception, The exeption that was raised.
+      exc: Exception, The exception that was raised.
       flag_names: [str], The names of the flags that were used during this
         execution.
       print_error: bool, True to print an error message, False to just exit with
@@ -705,8 +711,9 @@ class CLI(object):
     """
     # If this is a known error, we may have an additional message suffix.
     message_suffix = KNOWN_ERRORS.get(type(exc), '')
-    msg = u'({0}) {1} {2}'.format(command_path_string, unicode(exc),
-                                  message_suffix)
+    msg = '({0}) {1} {2}'.format(
+        command_path_string, self.SafeExceptionToString(exc),
+        message_suffix).rstrip()
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)

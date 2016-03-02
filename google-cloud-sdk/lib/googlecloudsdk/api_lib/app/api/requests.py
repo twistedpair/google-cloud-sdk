@@ -15,7 +15,7 @@
 """Utilities for making requests using a given client and handling errors.
 """
 
-import cStringIO
+import io
 import json
 
 from googlecloudsdk.calliope import exceptions
@@ -62,15 +62,25 @@ def TransformKnownErrors(error):
 
 
 def ExtractErrorMessage(error_details):
-  """Extracts error details from an apitools_exceptions.HttpError."""
-  error_message = cStringIO.StringIO()
-  error_message.write('Error Response: [{code}] {message}'.format(
-      code=error_details.get('code', 'UNKNOWN'),
-      message=error_details.get('message', '')))
-  if 'url' in error_details:
-    error_message.write('\n{url}'.format(url=error_details['url']))
+  """Extracts error details from an apitools_exceptions.HttpError.
 
-  if error_details.get('details'):
+  Args:
+    error_details: a python dictionary returned from decoding an error that
+        was serialized to json.
+
+  Returns:
+    Multiline string containing a detailed error message suitable to show to a
+    user.
+  """
+  error_message = io.BytesIO()
+  error_message.write('Error Response: [{code}] {message}'.format(
+      code=error_details.get('code', 'UNKNOWN'),  # error_details.code is an int
+      message=error_details.get('message', u'').encode('utf-8')))
+
+  if 'url' in error_details:
+    error_message.write('\n' + error_details['url'].encode('utf-8'))
+
+  if 'details' in error_details:
     error_message.write('\n\nDetails: ')
     resource_printer.Print(
         resources=[error_details['details']],

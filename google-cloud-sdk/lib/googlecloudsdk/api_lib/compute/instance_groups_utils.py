@@ -291,22 +291,22 @@ class InstanceGroupReferenceMixin(object):
         unresolved_names.append(name)
         resolved_refs[name] = None
 
-      if unresolved_names:
-        if region is not None:
-          refs = self.CreateRegionalReferences(
-              unresolved_names, region, resource_type=regional_resource_type)
-        elif zone is not None:
-          refs = self.CreateZonalReferences(
-              unresolved_names, zone, resource_type=zonal_resource_type)
-        else:
-          refs = self.PromptForMultiScopedReferences(
-              unresolved_names,
-              scope_names=['zone', 'region'],
-              scope_services=[self.compute.zones, self.compute.regions],
-              resource_types=[zonal_resource_type, regional_resource_type],
-              flag_names=['--zone', '--region'])
-        for (name, ref) in zip(unresolved_names, refs):
-          resolved_refs[name] = ref
+    if unresolved_names:
+      if region is not None:
+        refs = self.CreateRegionalReferences(
+            unresolved_names, region, resource_type=regional_resource_type)
+      elif zone is not None:
+        refs = self.CreateZonalReferences(
+            unresolved_names, zone, resource_type=zonal_resource_type)
+      else:
+        refs = self.PromptForMultiScopedReferences(
+            unresolved_names,
+            scope_names=['zone', 'region'],
+            scope_services=[self.compute.zones, self.compute.regions],
+            resource_types=[zonal_resource_type, regional_resource_type],
+            flag_names=['--zone', '--region'])
+      for (name, ref) in zip(unresolved_names, refs):
+        resolved_refs[name] = ref
 
     return [resolved_refs[name] for name in names]
 

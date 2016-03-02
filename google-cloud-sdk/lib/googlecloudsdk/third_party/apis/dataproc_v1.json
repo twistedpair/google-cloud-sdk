@@ -147,7 +147,7 @@
           "type": "string"
         },
         "clusterName": {
-          "description": "[Required] The cluster name. Cluster names within a project must be\nunique. Names from deleted clusters can be reused.",
+          "description": "[Required] The cluster name. Cluster names within a project must be\nunique. Names of deleted clusters can be reused.",
           "type": "string"
         },
         "config": {
@@ -159,7 +159,7 @@
           "$ref": "ClusterStatus"
         },
         "statusHistory": {
-          "description": "[Output-only] Previous cluster statuses.",
+          "description": "[Output-only] The previous cluster status.",
           "type": "array",
           "items": {
             "$ref": "ClusterStatus"
@@ -181,7 +181,7 @@
           "type": "string"
         },
         "gceClusterConfig": {
-          "description": "[Optional] The shared Google Compute Engine config settings for\nall instances in a cluster.",
+          "description": "[Required] The shared Google Compute Engine config settings for\nall instances in a cluster.",
           "$ref": "GceClusterConfig"
         },
         "masterConfig": {
@@ -227,7 +227,7 @@
           "type": "string"
         },
         "serviceAccountScopes": {
-          "description": "The URIs of service account scopes to be included in Google Compute Engine\ninstances. The following base set of scopes is always included:\n- https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n- https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n- https:\/\/www.googleapis.com\/auth\/logging.write\nIf no scopes are specfied, the following defaults are also provided:\n- https:\/\/www.googleapis.com\/auth\/bigquery\n- https:\/\/www.googleapis.com\/auth\/bigtable.admin.table\n- https:\/\/www.googleapis.com\/auth\/bigtable.data\n- https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "The URIs of service account scopes to be included in Google Compute Engine\ninstances. The following base set of scopes is always included:\n\n* https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n* https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n* https:\/\/www.googleapis.com\/auth\/logging.write\n\nIf no scopes are specfied, the following defaults are also provided:\n\n* https:\/\/www.googleapis.com\/auth\/bigquery\n* https:\/\/www.googleapis.com\/auth\/bigtable.admin.table\n* https:\/\/www.googleapis.com\/auth\/bigtable.data\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"
@@ -260,7 +260,7 @@
           "format": "int32"
         },
         "instanceNames": {
-          "description": "The list of instance names. Dataproc derives the names from\n`cluster_name`, `num_instances`, and the instance group if not set by user\n(recommended practice is to let Dataproc derive the name).",
+          "description": "The list of instance names. Cloud Dataproc derives the names from\n`cluster_name`, `num_instances`, and the instance group if not set by user\n(recommended practice is to let Cloud Dataproc derive the name).",
           "type": "array",
           "items": {
             "type": "string"
@@ -330,7 +330,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "[Optional] The properties to set on daemon config files.\n\nProperty keys are specified in \"prefix:property\" format, such as\n\"core:fs.defaultFS\". The following are supported prefixes\nand their mappings:\n  core - core-site.xml\n  hdfs - hdfs-site.xml\n  mapred - mapred-site.xml\n  yarn - yarn-site.xml\n  hive - hive-site.xml\n  pig - pig.properties\n  spark - spark-defaults.conf\n",
+          "description": "[Optional] The properties to set on daemon config files.\n\nProperty keys are specified in `prefix:property` format, such as\n`core:fs.defaultFS`. The following are supported prefixes\nand their mappings:\n\n* core:   `core-site.xml`\n* hdfs:   `hdfs-site.xml`\n* mapred: `mapred-site.xml`\n* yarn:   `yarn-site.xml`\n* hive:   `hive-site.xml`\n* pig:    `pig.properties`\n* spark:  `spark-defaults.conf`\n",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -396,7 +396,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping above, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
           "type": "string"
         },
         "metadata": {
@@ -465,7 +465,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The standard List next-page token.",
+          "description": "[Optional] This token is included in the response if there are more results\nto fetch. To fetch additional results, provide this value as the\n`page_token` in a subsequent <code>ListClustersRequest<\/code>.",
           "type": "string"
         }
       }
@@ -571,7 +571,7 @@
           "type": "string"
         },
         "clusterUuid": {
-          "description": "[Output-only] A cluster UUID generated by the Dataproc service when the job\nis submitted.",
+          "description": "[Output-only] A cluster UUID generated by the Cloud Dataproc service when the job\nis submitted.",
           "type": "string"
         }
       }
@@ -582,7 +582,7 @@
       "type": "object",
       "properties": {
         "mainJarFileUri": {
-          "description": "The Hadoop Compatible Filesystem (HCFS) URI of the jar file containing\nthe main class.\nExamples:\n    'gs:\/\/foo-bucket\/analytics-binaries\/extract-useful-metrics-mr.jar'\n    'hdfs:\/tmp\/test-samples\/custom-wordcount.jar'\n    'file:\/\/\/home\/usr\/lib\/hadoop-mapreduce\/hadoop-mapreduce-examples.jar'",
+          "description": "The HCFS URI of the jar file containing the main class.\nExamples:\n    'gs:\/\/foo-bucket\/analytics-binaries\/extract-useful-metrics-mr.jar'\n    'hdfs:\/tmp\/test-samples\/custom-wordcount.jar'\n    'file:\/\/\/home\/usr\/lib\/hadoop-mapreduce\/hadoop-mapreduce-examples.jar'",
           "type": "string"
         },
         "mainClass": {
@@ -604,7 +604,7 @@
           }
         },
         "fileUris": {
-          "description": "[Optional] HCFS URIs of files to be copied to the working\ndirectory of Hadoop drivers and distributed tasks. Useful for\nnaively parallel tasks.",
+          "description": "[Optional] HCFS (Hadoop Compatible Filesystem) URIs of files to be copied to the working\ndirectory of Hadoop drivers and distributed tasks. Useful for\nnaively parallel tasks.",
           "type": "array",
           "items": {
             "type": "string"
@@ -661,7 +661,7 @@
       "type": "object",
       "properties": {
         "mainJarFileUri": {
-          "description": "The Hadoop Compatible Filesystem (HCFS) URI of the jar file that\ncontains the main class.",
+          "description": "The HCFS URI of the jar file that contains the main class.",
           "type": "string"
         },
         "mainClass": {
@@ -715,7 +715,7 @@
       "type": "object",
       "properties": {
         "mainPythonFileUri": {
-          "description": "[Required] The Hadoop Compatible Filesystem (HCFS) URI of the main\nPython file to use as the driver. Must be a .py file.",
+          "description": "[Required] The HCFS URI of the main Python file to use as the driver. Must be a .py file.",
           "type": "string"
         },
         "args": {
@@ -914,11 +914,11 @@
           "enumDescriptions": [
             "The job state is unknown.",
             "The job is pending; it has been submitted, but is not yet running.",
-            "Job has been received by the service and completed initial setup;\nit will shortly be submitted to the cluster.",
+            "Job has been received by the service and completed initial setup;\nit will soon be submitted to the cluster.",
             "The job is running on the cluster.",
             "A CancelJob request has been received, but is pending.",
             "Transient in-flight resources have been canceled, and the request to\ncancel the running job has been issued to the cluster.",
-            "The job cancelation was successful.",
+            "The job cancellation was successful.",
             "The job has completed successfully.",
             "The job has completed, but encountered an error."
           ],
@@ -1025,7 +1025,7 @@
           "$ref": "ClusterOperationStatus"
         },
         "statusHistory": {
-          "description": "[Output-only] Previous operation status.",
+          "description": "[Output-only] The previous operation status.",
           "type": "array",
           "items": {
             "$ref": "ClusterOperationStatus"
@@ -1295,7 +1295,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1329,7 +1329,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1341,7 +1341,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "[Required] Specifies the path, relative to <code>Cluster<\/code>, of\nthe field to update. For example, to change the number of workers\nin a cluster to 5, the <code>update_mask<\/code> parameter would be\nspecified as <code>config.worker_config.num_instances<\/code>,\nand the `PATCH` request body would specify the new value, as follows:\n\n    {\n      \"config\":{\n        \"workerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\n<strong>Note:<\/strong> Currently, <code>config.worker_config.num_instances<\/code>\nis the only field that can be updated.",
+                      "description": "[Required] Specifies the path, relative to <code>Cluster<\/code>, of\nthe field to update. For example, to change the number of workers\nin a cluster to 5, the <code>update_mask<\/code> parameter would be\nspecified as <code>config.worker_config.num_instances<\/code>,\nand the `PATCH` request body would specify the new value, as follows:\n\n    {\n      \"config\":{\n        \"workerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\nSimilarly, to change the number of preemptible workers in a cluster to 5, the\n<code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>,\nand the `PATCH` request body would be set as follows:\n\n    {\n      \"config\":{\n        \"secondaryWorkerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\n<strong>Note:<\/strong> Currently, <code>config.worker_config.num_instances<\/code>\nand <code>config.secondary_worker_config.num_instances<\/code> are the only fields that can be\nupdated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1376,7 +1376,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1414,7 +1414,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1452,7 +1452,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1494,7 +1494,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1539,7 +1539,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1573,7 +1573,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1611,7 +1611,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1659,7 +1659,7 @@
                   "path": "v1/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel",
                   "flatPath": "v1/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Starts a job cancellation request. To access the job resource\nafter cancellation, call\n[regions\/{region}\/jobs.list](\/dataproc\/reference\/rest\/v1\/projects.regions\/{region}\/jobs\/list) or\n[regions\/{region}\/jobs.get](\/dataproc\/reference\/rest\/v1\/projects.regions\/{region}\/jobs\/get).",
+                  "description": "Starts a job cancellation request. To access the job resource\nafter cancellation, call\n[regions\/{region}\/jobs.list](\/dataproc\/reference\/rest\/v1\/projects.regions.jobs\/list) or\n[regions\/{region}\/jobs.get](\/dataproc\/reference\/rest\/v1\/projects.regions.jobs\/get).",
                   "parameters": {
                     "projectId": {
                       "description": "[Required] The ID of the Google Cloud Platform project that the job\nbelongs to.",
@@ -1668,7 +1668,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1709,7 +1709,7 @@
                       "type": "string"
                     },
                     "region": {
-                      "description": "[Required] The Dataproc region in which to handle the request.",
+                      "description": "[Required] The Cloud Dataproc region in which to handle the request.",
                       "location": "path",
                       "required": true,
                       "type": "string"

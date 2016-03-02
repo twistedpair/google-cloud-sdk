@@ -548,6 +548,8 @@ def ShortHelpText(command, argument_interceptor):
                        spacing='  ', writer=textbuf)
     return textbuf.getvalue()
 
+  command_path = ' '.join(command.GetPath())
+
   if topic:
     all_messages = [
         TextIfExists('topics:', sorted(command_messages)),
@@ -564,7 +566,6 @@ def ShortHelpText(command, argument_interceptor):
     if common_messages:
       all_messages.append(
           TextIfExists('commonly used flags:', sorted(common_messages)))
-      command_path = ' '.join(command.GetPath())
       if optional_messages:
         all_messages.append(
             TextIfExists(
@@ -591,6 +592,9 @@ def ShortHelpText(command, argument_interceptor):
         TextIfExists('commands:', sorted(command_messages)),
     ])
   buf.write('\n'.join([msg for msg in all_messages if msg]))
+  buf.write(
+      '\n\nFor more detailed information on this command and its flags, run:\n'
+      '  {0} --help\n'.format(command_path))
 
   return buf.getvalue()
 

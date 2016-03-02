@@ -62,7 +62,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
                                _LiteralLinesPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
-  class _LiteralLines(str):
+  class _LiteralLines(unicode):
     """A yaml representer hook for literal strings containing newlines."""
 
   def _UpdateTypesForOutput(self, val):

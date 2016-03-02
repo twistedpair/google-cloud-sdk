@@ -274,21 +274,6 @@ class Platform(object):
       args['close_fds'] = True
     return args
 
-  def IsSupported(self):
-    """Ensure that we support the given platform.
-
-    This will print an error message if not supported.
-
-    Returns:
-      bool, True if the platform is valid, False otherwise.
-    """
-    if (self.operating_system == OperatingSystem.CYGWIN and
-        self.architecture == Architecture.x86_64):
-      sys.stderr.write('ERROR: Cygwin 64 bit is not supported by the Google '
-                       'Cloud SDK.  Please use a 32 bit version of Cygwin.')
-      return False
-    return True
-
 
 class PythonVersion(object):
   """Class to validate the Python version we are using.

@@ -33,6 +33,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
@@ -78,7 +79,7 @@ _URI_UPDATER = {
 
 
 class _UriCacher(object):
-  """A Tapper module that caches URIs based on the cache update op.
+  """A Tapper class that caches URIs based on the cache update op.
 
   Attributes:
     _update_cache_op: The non-None return value from UpdateUriCache().
@@ -100,6 +101,8 @@ class _UriCacher(object):
     Returns:
       True - all resources are seen downstream.
     """
+    if resource_printer_base.IsResourceMarker(resource):
+      return True
     if self._uris is not None:
       uri = resource_transform.TransformUri(resource, undefined=None)
       if uri:
@@ -114,7 +117,7 @@ class _UriCacher(object):
 
 
 class _Filterer(object):
-  """A Tapper module that filters out resources not matching an expression.
+  """A Tapper class that filters out resources not matching an expression.
 
   Attributes:
     _match: The resource filter method.
@@ -139,11 +142,13 @@ class _Filterer(object):
     Returns:
       True if resource matches the filter expression.
     """
+    if resource_printer_base.IsResourceMarker(resource):
+      return True
     return self._match(resource)
 
 
 class _Limiter(object):
-  """A Tapper method that filters out resources after a limit is reached.
+  """A Tapper class that filters out resources after a limit is reached.
 
   Attributes:
     _limit: The resource count limit.
@@ -154,17 +159,51 @@ class _Limiter(object):
     self._limit = limit
     self._count = 0
 
-  def LimitResource(self, unused_resource):
-    """Returns True if the limit has not been reached yet.
+  def LimitResource(self, resource):
+    """Returns True if the limit has not been reached yet, None otherwise.
 
     Args:
-      unused_resource: The resource to limit.
+      resource: The resource to limit.
 
     Returns:
-      True if the limit has not been reached yet.
+      True if the limit has not been reached yet, None otherwise to stop
+      iterations.
     """
+    if resource_printer_base.IsResourceMarker(resource):
+      return True
     self._count += 1
-    return self._count <= self._limit
+    return self._count <= self._limit or None
+
+
+class _Pager(object):
+  """A Tapper class that injects a PageMarker after each page of resources.
+
+  Attributes:
+    _page_size: The number of resources per page.
+    _count: The current page resource count.
+  """
+
+  def __init__(self, page_size):
+    self._page_size = page_size
+    self._count = 0
+
+  def PageResource(self, resource):
+    """Injects a PageMarker if the current page limit has been reached.
+
+    Args:
+      resource: The resource to limit.
+
+    Returns:
+      TapInjector(PageMarker) if the page current page limit has been reached,
+      otherwise True to retain the current resource.
+    """
+    if resource_printer_base.IsResourceMarker(resource):
+      return True
+    self._count += 1
+    if self._count > self._page_size:
+      self._count = 0
+      return peek_iterable.TapInjector(resource_printer_base.PageMarker())
+    return True
 
 
 def _GetFlag(args, flag_name):
@@ -241,6 +280,14 @@ class Displayer(object):
     limiter = _Limiter(limit)
     self._resources = peek_iterable.Tapper(self._resources,
                                            limiter.LimitResource)
+
+  def _AddPageTap(self):
+    """Taps a resource pager into self.resources if needed."""
+    page_size = _GetFlag(self._args, 'page_size')
+    if page_size is None or page_size <= 0:
+      return
+    pager = _Pager(page_size)
+    self._resources = peek_iterable.Tapper(self._resources, pager.PageResource)
 
   def _GetResourceInfoFormat(self):
     """Determines the format from the resource registry if any.
@@ -350,6 +397,9 @@ class Displayer(object):
 
     # Add a URI cache update tap if needed.
     self._AddUriCacheTap()
+
+    # Add a resource page tap if needed.
+    self._AddPageTap()
 
     # Add a resource filter tap if needed.
     self._AddFilterTap()

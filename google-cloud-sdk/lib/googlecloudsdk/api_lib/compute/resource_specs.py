@@ -875,16 +875,12 @@ _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
     message_class_name='BackendBucket',
     table_cols=[
         ('NAME', 'name'),
-        ('GCS_BUCKET_NAME', 'bucketName'),
-        ('ENABLE_CDN', 'enableCdn')
+        ('GCS_BUCKET_NAME', 'bucketName')
     ],
-    transformations=[
-        ('enableCdn', lambda x: str(x).lower()),
-    ],
+    transformations=[],
     editables=[
         'bucketName'
         'description',
-        'enableCdn',
     ])
 _SPECS_ALPHA['healthChecks'] = _InternalSpec(
     message_class_name='HealthCheck',

@@ -48,7 +48,14 @@ def BrowseApp(project, service=None, version=None):
     project: str, project ID.
     service: str, (optional) specific service, defaults to 'default'
     version: str, (optional) specific version, defaults to latest
+
+  Raises:
+    UnsupportedAppIdError: If the app is domain scoped.
   """
+  if ':' in project:
+    raise UnsupportedAppIdError(
+        '`browse` command is currently unsupported for app IDs with custom '
+        'domains.')
   url = deploy_command_util.GetAppHostname(
       project, service, version, use_ssl=appinfo.SECURE_HTTPS)
   OpenURL(url)

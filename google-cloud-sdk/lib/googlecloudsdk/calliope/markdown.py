@@ -435,13 +435,20 @@ class MarkdownGenerator(object):
     help_message = help_stuff() if callable(help_stuff) else help_stuff
     # calliope.backend.ArgumentInterceptor.add_argument() sets arg.inverted_help
     # for Boolean flags with auto-generated --no-FLAG inverted counterparts.
+    help_message = textwrap.dedent(help_message)
     inverted_help = getattr(arg, 'inverted_help', None)
     if inverted_help:
-      # Drop trailing space, newlines and periods. A period will be added below.
-      help_message = re.sub('[ .\n]+$', '', help_message)
+      help_message = help_message.rstrip()
       if help_message:
-        help_message += '.' + inverted_help + '\n'
-    return textwrap.dedent(help_message).replace('\n\n', '\n+\n').strip()
+        i = help_message.rfind('\n')
+        if i >= 0 and help_message[i + 1] == ' ':
+          # Preserve example markdown at end of help_message.
+          help_message += '\n\n' + inverted_help.strip() + '\n'
+        else:
+          if not help_message.endswith('.'):
+            help_message += '.'
+          help_message += inverted_help + '\n'
+    return help_message.replace('\n\n', '\n+\n').strip()
 
   def _ExpandFormatReferences(self):
     """Expand {...} references."""

@@ -16,6 +16,7 @@
 
 import os
 
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
@@ -183,7 +184,7 @@ class ModuleYamlInfo(_YamlInfo):
 
     # All env: 2 apps are hermetic. All vm: false apps are not hermetic.
     # vm: true apps are hermetic IFF they don't use static files.
-    if parsed.env == '2':
+    if util.IsFlex(parsed.env):
       self.is_hermetic = True
     elif parsed.vm:
       for urlmap in parsed.handlers:
@@ -233,7 +234,7 @@ class ModuleYamlInfo(_YamlInfo):
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
 
-    if parsed.env == '2' and vm_runtime == 'python27':
+    if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(
           'The "python27" is not a valid runtime in env: 2.  '
           'Please use [python-compat] instead.')

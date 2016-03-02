@@ -3710,7 +3710,7 @@ See Accessing images for more information.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified route resource.
+      """Deletes the specified Route resource.
 
       Args:
         request: (ComputeRoutesDeleteRequest) input message
@@ -3736,7 +3736,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a route resource in the specified project using the data included in the request.
+      """Creates a Route resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRoutesInsertRequest) input message

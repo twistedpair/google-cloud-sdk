@@ -23,6 +23,7 @@ import textwrap
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
@@ -79,6 +80,15 @@ class NoActiveAccountException(AuthenticationException):
   def __init__(self):
     super(NoActiveAccountException, self).__init__(
         'You do not currently have an active account selected.')
+
+
+class InvalidCredentialFileException(Error):
+  """Exception for when an external credential file could not be loaded."""
+
+  def __init__(self, f, e):
+    super(InvalidCredentialFileException, self).__init__(
+        'Failed to load credential file: [{f}].  {message}'
+        .format(f=f, message=str(e)))
 
 
 class FlowError(Error):
@@ -236,6 +246,20 @@ def Load(account=None):
         be reached.
     RefreshError: If the credentials fail to refresh.
   """
+  # If a credential file is set, just use that and ignore the active account
+  # and whatever is in the credential store.
+  cred_file_override = properties.VALUES.auth.credential_file_override.Get()
+  if cred_file_override:
+    log.info('Using alternate credentials from file: [%s]',
+             cred_file_override)
+    try:
+      cred = client.GoogleCredentials.from_stream(cred_file_override)
+      if cred.create_scoped_required():
+        cred = cred.create_scoped(config.CLOUDSDK_SCOPES)
+      return cred
+    except client.Error as e:
+      raise InvalidCredentialFileException(cred_file_override, e)
+
   if not account:
     account = properties.VALUES.core.account.Get()
 

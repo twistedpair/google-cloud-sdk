@@ -19,12 +19,21 @@ from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.third_party.apis.dns.v1 import dns_v1_messages as messages
 import yaml
 
 
 DEFAULT_PATH = 'transaction.yaml'
+
+
+class CorruptedTransactionFileError(core_exceptions.Error):
+
+  def __init__(self):
+    super(CorruptedTransactionFileError, self).__init__(
+        'Corrupted transaction file.\n\n'
+        'Please abort and start a new transaction.')
 
 
 def WriteToYamlFile(yaml_file, change):
@@ -68,8 +77,17 @@ def ChangeFromYamlFile(yaml_file):
 
   Returns:
     Change, the change contained in the given yaml file.
+
+  Raises:
+    CorruptedTransactionFileError: if the record_set_dictionaries are invalid
   """
-  change_dict = yaml.safe_load(yaml_file)
+  try:
+    change_dict = yaml.safe_load(yaml_file) or {}
+  except yaml.error.YAMLError:
+    raise CorruptedTransactionFileError()
+  if (change_dict.get('additions') is None or
+      change_dict.get('deletions') is None):
+    raise CorruptedTransactionFileError()
   change = messages.Change()
   change.additions = _RecordSetsFromDictionaries(change_dict['additions'])
   change.deletions = _RecordSetsFromDictionaries(change_dict['deletions'])

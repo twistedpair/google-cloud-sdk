@@ -262,6 +262,10 @@ def GetUserAgent():
   return ' '.join(product_tokens)
 
 
+def IsFlex(env):
+  return env in ['2', 'flex', 'flexible']
+
+
 class ClientDeployLoggingContext(object):
   """Context for sending and recording server rpc requests.
 

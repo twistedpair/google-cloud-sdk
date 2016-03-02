@@ -542,6 +542,11 @@ class _SectionApp(_Section):
     self.suppress_change_warning = self._AddBool(
         'suppress_change_warning',
         hidden=True)
+    self.runtime_root = self._Add(
+        'runtime_root',
+        callbacks=[lambda: os.path.join(config.Paths().sdk_root, 'platform',
+                                        'ext-runtime')],
+        hidden=True)
 
     def DockerBuildValidator(docker_build):
       if docker_build is None:
@@ -699,6 +704,8 @@ class _SectionAuth(_Section):
         'authority_selector', hidden=True)
     self.authorization_token_file = self._Add(
         'authorization_token_file', hidden=True)
+    self.credential_file_override = self._Add(
+        'credential_file_override', hidden=True)
 
 
 class _SectionMetrics(_Section):
@@ -1108,19 +1115,8 @@ class Scope(object):
       'current user of the system.  It will override any values from the '
       'installation configuration.',
       get_file=named_configs.GetEffectiveNamedConfigFile)
-  WORKSPACE = _SCOPE_TUPLE(
-      id='workspace',
-      description='The workspace based configuration file is based on your '
-      'current working directory.  You can set project specific configuration '
-      'here that will only take effect when working within that project\'s '
-      'directory.  You cannot set this value if you are not currently within a '
-      'gcloud workspace.  This will override all values from any other '
-      'configuration files.\n'
-      'Workspace configurations are deprecated and will be removed from a'
-      'future version of gcloud.',
-      get_file=lambda: config.Paths().workspace_properties_path)
 
-  _ALL = [WORKSPACE, USER, INSTALLATION]
+  _ALL = [USER, INSTALLATION]
   _ALL_SCOPE_NAMES = [s.id for s in _ALL]
 
   @staticmethod
@@ -1176,10 +1172,9 @@ def PersistProperty(prop, value, scope=None, properties_file=None):
     value: str, The value to set for the property. If None, the property is
       removed.
     scope: Scope, The config location to set the property in.  If given, only
-      this location will be udpated and it is an error if that location does
+      this location will be updated and it is an error if that location does
       not exist.  If not given, it will attempt to update the property in the
       first of the following places that exists:
-        - the workspace config
         - the active named config
         - user level config
       It will never fall back to installation properties; you must
@@ -1207,23 +1202,23 @@ def PersistProperty(prop, value, scope=None, properties_file=None):
       if not properties_file:
         raise MissingConfigLocationError(scope)
     else:
-      properties_file = Scope.WORKSPACE.get_file()
-      if not properties_file:
-        properties_file = named_configs.GetEffectiveNamedConfigFile()
-        if properties_file is None:
-          # Should be dead code.
-          raise exceptions.InternalError('Unexpected None properties file.')
-        if properties_file == os.path.devnull:
-          # Refuse to write and fail with an informative error
-          # TODO(b/22817095) Simplify control flow and update
-          # messaging when moving to automatic upgrade scenario
-          # on all release tracks.
-          if (named_configs.GetNameOfActiveNamedConfig() ==
-              named_configs.RESERVED_NAMED_CONFIG_NAME_NONE):
-            raise ReadOnlyNamedConfigNotSettableError(
-                named_configs.RESERVED_NAMED_CONFIG_NAME_NONE)
-          if not Scope.USER.get_file():
-            raise MissingConfigLocationError(Scope.USER)
+      # This will auto convert legacy credentials to named configurations.
+      named_configs.TryEnsureWriteableNamedConfig()
+      properties_file = named_configs.GetEffectiveNamedConfigFile()
+      if properties_file is None:
+        # Should be dead code.
+        raise exceptions.InternalError('Unexpected None properties file.')
+      if properties_file == os.path.devnull:
+        # Refuse to write and fail with an informative error
+        # TODO(b/22817095) Simplify control flow and update
+        # messaging when moving to automatic upgrade scenario
+        # on all release tracks.
+        if (named_configs.GetNameOfActiveNamedConfig() ==
+            named_configs.RESERVED_NAMED_CONFIG_NAME_NONE):
+          raise ReadOnlyNamedConfigNotSettableError(
+              named_configs.RESERVED_NAMED_CONFIG_NAME_NONE)
+        if not Scope.USER.get_file():
+          raise MissingConfigLocationError(Scope.USER)
 
   parsed_config = ConfigParser.ConfigParser()
   parsed_config.read(properties_file)
@@ -1396,8 +1391,7 @@ class PropertiesFile(object):
         config_paths = config.Paths()
         named_configs.WarnOnActiveNamedConfigMissing()
         paths = [config_paths.installation_properties_path,
-                 named_configs.GetEffectiveNamedConfigFile(),
-                 config_paths.workspace_properties_path]
+                 named_configs.GetEffectiveNamedConfigFile()]
         # Filter out None elements in paths
         paths = [p for p in paths if p]
         PropertiesFile._PROPERTIES = PropertiesFile(paths)
@@ -1430,13 +1424,6 @@ settings.  You can find more information on named configurations by running:
 
 """.format(config_paths.user_properties_path))
 
-          if ((config_paths.workspace_properties_path in paths) and
-              os.path.isfile(config_paths.workspace_properties_path)):
-            sys.stderr.write(
-                'Loading workspace configuration file: [{0}].\n'
-                'Workspace configuration files are deprecated and will '
-                'not be read in a future gcloud release.\n'.format(
-                    config_paths.workspace_properties_path))
     finally:
       PropertiesFile._LOCK.release()
     return PropertiesFile._PROPERTIES

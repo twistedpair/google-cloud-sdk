@@ -939,7 +939,8 @@ def More(contents, out=None, prompt=None, check_pager=True):
       if less is None:
         os.environ['LESS'] = '-R'
       p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
-      p.communicate(input=contents)
+      encoding = console_attr.GetConsoleAttr().GetEncoding()
+      p.communicate(input=contents.encode(encoding))
       p.wait()
       if less is None:
         os.environ.pop('LESS')

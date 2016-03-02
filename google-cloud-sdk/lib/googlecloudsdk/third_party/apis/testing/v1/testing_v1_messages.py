@@ -297,19 +297,21 @@ class Browser(_messages.Message):
 
 
 class CancelTestMatrixResponse(_messages.Message):
-  """Response containing the state of a cancelled test matrix.
+  """Response containing the current state of the specified test matrix.
 
   Enums:
-    TestStateValueValuesEnum: The rolled-up state of the test matrix just
-      before it was cancelled.
+    TestStateValueValuesEnum: The current rolled-up state of the test matrix.
+      If this state is already final, then the cancelation request will have
+      no effect.
 
   Fields:
-    testState: The rolled-up state of the test matrix just before it was
-      cancelled.
+    testState: The current rolled-up state of the test matrix. If this state
+      is already final, then the cancelation request will have no effect.
   """
 
   class TestStateValueValuesEnum(_messages.Enum):
-    """The rolled-up state of the test matrix just before it was cancelled.
+    """The current rolled-up state of the test matrix. If this state is
+    already final, then the cancelation request will have no effect.
 
     Values:
       TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.

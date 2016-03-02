@@ -16,8 +16,8 @@
 """
 
 import argparse
-import cStringIO
 import os
+import StringIO
 import sys
 
 from googlecloudsdk.calliope import markdown
@@ -395,8 +395,8 @@ def RenderDocumentAction(command, default_style=None):
       # '--help' is set by the --help flag, the others by gcloud <style> ... .
       if style in ('--help', 'help', 'topic'):
         style = 'text'
-      md = cStringIO.StringIO(markdown.Markdown(command))
-      out = (cStringIO.StringIO() if console_io.IsInteractive(output=True)
+      md = StringIO.StringIO(markdown.Markdown(command))
+      out = (StringIO.StringIO() if console_io.IsInteractive(output=True)
              else None)
       render_document.RenderDocument(style, md, out=out, notes=notes,
                                      title=title)

@@ -38,9 +38,8 @@ Example usage:
       default='10GB',
       type=arg_parsers.BinarySize(lower_bound='1GB', upper_bound='10TB')
 
-  # will emit a warning about space-separated metadata
   res = parser.parse_args(
-      '--names --metadata x=y,a=b c=d --delay 1s --disk-size 10gb'.split())
+      '--names --metadata x=y,a=b,c=d --delay 1s --disk-size 10gb'.split())
 
   assert res.metadata == {'a': 'b', 'c': 'd', 'x': 'y'}
   assert res.delay == 1
@@ -51,8 +50,6 @@ Example usage:
 import argparse
 import datetime
 import re
-
-from googlecloudsdk.core import log
 
 __all__ = ['Duration', 'BinarySize']
 
@@ -670,16 +667,7 @@ def FloatingListValuesCatcher(
                 values=','.join(suggestions),
                 extras=', '.join(extras))
 
-        # TODO(user): stop warning when we're ready
-        warn_only = True
-
-        if not warn_only:
-          raise argparse.ArgumentError(ArgShell(option_string), msg)
-        else:
-          log.warn(msg)
-
-        super(FloatingListValuesCatcherAction, self).__call__(
-            parser, namespace, aggregate_value, option_string=option_string)
+        raise argparse.ArgumentError(ArgShell(option_string), msg)
       else:
         super(FloatingListValuesCatcherAction, self).__call__(
             parser, namespace, values[0], option_string=option_string)

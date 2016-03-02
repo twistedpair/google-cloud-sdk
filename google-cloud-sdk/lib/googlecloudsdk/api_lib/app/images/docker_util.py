@@ -141,7 +141,7 @@ class _Vm(object):
     self._teardown_thread = None
     # We have to do relpath here because SCP doesn't handle "c:\" paths
     # correctly on Windows.
-    self.cert_dir = os.path.relpath(tempfile.mkdtemp(dir=os.getcwd()))
+    self.cert_dir = tempfile.mkdtemp()
     self._ip = vm_info['networkInterfaces'][0]['accessConfigs'][0]['natIP']
     self._name = vm_info['name']
     self._zone = vm_info['zone']
@@ -150,6 +150,14 @@ class _Vm(object):
   @property
   def host(self):
     return 'tcp://{ip}:2376'.format(ip=self._ip)
+
+  def _CertsExist(self):
+    for file_name in ('ca.pem', 'cert.pem', 'key.pem'):
+      file_path = os.path.join(self.cert_dir, file_name)
+      if not os.path.isfile(file_path):
+        log.debug('File [f] does not exist locally.'.format(f=file_path))
+        return False
+    return True
 
   def CopyCerts(self):
     """Copies certificates from the VM for secure access.
@@ -168,13 +176,16 @@ class _Vm(object):
              '--verbosity', 'none', '--no-user-output-enabled', '--quiet',
              '--project', self._project,
              _REMOTE_CERT_FORMAT.format(name=self._name), self.cert_dir])
-        break
+        # copy-files won't always throw errors if the files aren't copied. We
+        # also have to verify the files exist before continuing.
+        if self._CertsExist():
+          break
       except (SystemExit, exceptions.ToolException):
         log.debug(
             'Error copying certificates. Retry {retry} of {retries}.'.format(
                 retry=i, retries=_RETRIES))
-        time.sleep(_RETRY_TIME)
-        continue
+      # If we didn't break earlier, wait before retrying.
+      time.sleep(_RETRY_TIME)
     else:
       raise exceptions.ToolException('Unable to copy certificates.')
 

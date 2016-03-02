@@ -937,6 +937,16 @@
           "description": "The end position of the range on the reference, 0-based exclusive. If\nspecified, `referenceName` must also be specified.",
           "type": "string",
           "format": "int64"
+        },
+        "shard": {
+          "description": "Restricts results to a shard containing approximately `1\/totalShards`\nof the normal response payload for this query. Results from a sharded\nrequest are disjoint from those returned by all queries which differ only\nin their shard parameter. A shard may yield 0 results; this is especially\nlikely for large values of `totalShards`.\n\nValid values are `[0, totalShards)`.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalShards": {
+          "description": "Specifying `totalShards` causes a disjoint subset of the normal response\npayload to be returned for each query with a unique `shard` parameter\nspecified. A best effort is made to yield equally sized shards. Sharding\ncan be used to distribute processing amongst workers, where each worker is\nassigned a unique `shard` number and all workers specify the same\n`totalShards` number. The union of reads returned for all sharded queries\n`[0, totalShards)` is equal to those returned by a single unsharded query.\n\nQueries for different values of `totalShards` with common divisors will\nshare shard boundaries. For example, streaming `shard` 2 of 5\n`totalShards` yields the same results as streaming `shard`s 4 and 5 of 10\n`totalShards`. This property can be leveraged for adaptive retries.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1578,6 +1588,24 @@
             "items": {
               "type": "any"
             }
+          }
+        }
+      }
+    },
+    "MergeVariantsRequest": {
+      "id": "MergeVariantsRequest",
+
+      "type": "object",
+      "properties": {
+        "variantSetId": {
+          "description": "The destination variant set.",
+          "type": "string"
+        },
+        "variants": {
+          "description": "The variants to be merged with existing variants.",
+          "type": "array",
+          "items": {
+            "$ref": "Variant"
           }
         }
       }
@@ -2739,6 +2767,27 @@
             "https://www.googleapis.com/auth/genomics.readonly"
           ]
         },
+        "merge": {
+          "id": "genomics.variants.merge",
+          "path": "v1/variants:merge",
+          "flatPath": "v1/variants:merge",
+          "httpMethod": "POST",
+          "description": "Merges the given variants with existing variants.\n\nFor the definitions of variants and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)\n\nEach variant will be\nmerged with an existing variant that matches its reference sequence,\nstart, end, reference bases, and alternative bases. If no such variant\nexists, a new one will be created.\n\nWhen variants are merged, the call information from the new variant\nis added to the existing variant, and other fields (such as key\/value\npairs) are discarded.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "MergeVariantsRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
         "stream": {
           "id": "genomics.variants.stream",
           "path": "v1/variants:stream",
@@ -2867,7 +2916,7 @@
           "path": "v1/variantsets/{variantSetId}",
           "flatPath": "v1/variantsets/{variantSetId}",
           "httpMethod": "DELETE",
-          "description": "Deletes the contents of a variant set. The variant set object is not\ndeleted.\n\nFor the definitions of variant sets and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)",
+          "description": "Deletes a variant set including all variants, call sets, and calls within.\nThis is not reversible.\n\nFor the definitions of variant sets and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)",
           "parameters": {
             "variantSetId": {
               "description": "The ID of the variant set to be deleted.",

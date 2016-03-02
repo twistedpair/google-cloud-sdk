@@ -361,8 +361,8 @@ contains `DiagnoseClusterOutputLocation`.
     def Cancel(self, request, global_params=None):
       """Starts a job cancellation request. To access the job resource.
 after cancellation, call
-[regions/{region}/jobs.list](/dataproc/reference/rest/v1/projects.regions/{region}/jobs/list) or
-[regions/{region}/jobs.get](/dataproc/reference/rest/v1/projects.regions/{region}/jobs/get).
+[regions/{region}/jobs.list](/dataproc/reference/rest/v1/projects.regions.jobs/list) or
+[regions/{region}/jobs.get](/dataproc/reference/rest/v1/projects.regions.jobs/get).
 
       Args:
         request: (DataprocProjectsRegionsJobsCancelRequest) input message

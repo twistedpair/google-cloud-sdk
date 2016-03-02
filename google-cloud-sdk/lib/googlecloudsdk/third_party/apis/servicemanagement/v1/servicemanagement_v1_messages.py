@@ -1099,8 +1099,8 @@ class MetricDescriptor(_messages.Message):
       value, etc.
     name: Resource name. The format of the name may vary between different
       implementations. For examples:
-      projects/{project_id}/metricDescriptors/{type}
-      metricDescriptors/{type}
+      projects/{project_id}/metricDescriptors/{type=**}
+      metricDescriptors/{type=**}
     type: The metric type including a DNS name prefix, for example
       `"compute.googleapis.com/instance/cpu/utilization"`. Metric types should
       use a natural hierarchical grouping such as the following:
@@ -1377,9 +1377,8 @@ class Operation(_messages.Message):
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
-      service that originally returns it. If you use the default HTTP mapping
-      above, the `name` should have the format of
-      `operations/some/unique/name`.
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should have the format of `operations/some/unique/name`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -2196,7 +2195,11 @@ class ServiceAccessList(_messages.Message):
   Fields:
     members: Members that are granted access.  - "user:{$user_email}" - Grant
       access to an individual user - "group:{$group_email}" - Grant access to
-      direct members of the group
+      direct members of the group - "domain:{$domain}" - Grant access to all
+      members of the domain. For now,      domain membership check will be
+      similar to Devconsole/TT check:      compare domain part of the user
+      email to configured domain name.      When IAM integration is complete,
+      this will be replaced with IAM      check.
   """
 
   members = _messages.StringField(1, repeated=True)

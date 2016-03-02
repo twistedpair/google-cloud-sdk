@@ -919,6 +919,18 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class MergeVariantsRequest(_messages.Message):
+  """A MergeVariantsRequest object.
+
+  Fields:
+    variantSetId: The destination variant set.
+    variants: The variants to be merged with existing variants.
+  """
+
+  variantSetId = _messages.StringField(1)
+  variants = _messages.MessageField('Variant', 2, repeated=True)
+
+
 class Operation(_messages.Message):
   """This resource represents a long-running operation that is the result of a
   network API call.
@@ -2004,15 +2016,35 @@ class StreamReadsRequest(_messages.Message):
     readGroupSetId: The ID of the read group set from which to stream reads.
     referenceName: The reference sequence name, for example `chr1`, `1`, or
       `chrX`. If set to *, only unmapped reads are returned.
+    shard: Restricts results to a shard containing approximately
+      `1/totalShards` of the normal response payload for this query. Results
+      from a sharded request are disjoint from those returned by all queries
+      which differ only in their shard parameter. A shard may yield 0 results;
+      this is especially likely for large values of `totalShards`.  Valid
+      values are `[0, totalShards)`.
     start: The start position of the range on the reference, 0-based
       inclusive. If specified, `referenceName` must also be specified.
+    totalShards: Specifying `totalShards` causes a disjoint subset of the
+      normal response payload to be returned for each query with a unique
+      `shard` parameter specified. A best effort is made to yield equally
+      sized shards. Sharding can be used to distribute processing amongst
+      workers, where each worker is assigned a unique `shard` number and all
+      workers specify the same `totalShards` number. The union of reads
+      returned for all sharded queries `[0, totalShards)` is equal to those
+      returned by a single unsharded query.  Queries for different values of
+      `totalShards` with common divisors will share shard boundaries. For
+      example, streaming `shard` 2 of 5 `totalShards` yields the same results
+      as streaming `shard`s 4 and 5 of 10 `totalShards`. This property can be
+      leveraged for adaptive retries.
   """
 
   end = _messages.IntegerField(1)
   projectId = _messages.StringField(2)
   readGroupSetId = _messages.StringField(3)
   referenceName = _messages.StringField(4)
-  start = _messages.IntegerField(5)
+  shard = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  start = _messages.IntegerField(6)
+  totalShards = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class StreamReadsResponse(_messages.Message):

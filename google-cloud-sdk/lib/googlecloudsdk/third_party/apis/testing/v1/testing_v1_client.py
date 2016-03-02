@@ -282,6 +282,8 @@ May return any of the following canonical error codes:
 
     def Cancel(self, request, global_params=None):
       """Cancels unfinished test executions in a test matrix.
+This call returns immediately and cancellation proceeds asychronously.
+If the matrix is already final, this operation will have no effect.
 
 May return any of the following canonical error codes:
 

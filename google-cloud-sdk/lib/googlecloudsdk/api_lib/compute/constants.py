@@ -103,10 +103,13 @@ _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
 _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
+_SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
+_SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management'
 
-DEFAULT_SCOPES = [
-    _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE
-]
+DEFAULT_SCOPES = sorted([
+    _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
+    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE,
+])
 
 SCOPES = {
     'bigquery': 'https://www.googleapis.com/auth/bigquery',
@@ -119,6 +122,8 @@ SCOPES = {
     'logging-write': _LOGGING_WRITE,
     'monitoring': 'https://www.googleapis.com/auth/monitoring',
     'monitoring-write': _MONITORING_WRITE,
+    'service-control': _SERVICE_CONTROL_SCOPE,
+    'service-management': _SERVICE_MANAGEMENT_SCOPE,
     'sql': 'https://www.googleapis.com/auth/sqlservice',
     'sql-admin': 'https://www.googleapis.com/auth/sqlservice.admin',
     'storage-full': 'https://www.googleapis.com/auth/devstorage.full_control',

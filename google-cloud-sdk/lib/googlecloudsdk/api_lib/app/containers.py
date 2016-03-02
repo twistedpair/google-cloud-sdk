@@ -91,13 +91,24 @@ def KwargsFromEnv(host, cert_path, tls_verify):
   if tls_verify and cert_path:
     # assert_hostname=False is needed for boot2docker to work with our custom
     # registry.
-    params['tls'] = docker.tls.TLSConfig(
-        client_cert=(os.path.join(cert_path, 'cert.pem'),
-                     os.path.join(cert_path, 'key.pem')),
-        ca_cert=os.path.join(cert_path, 'ca.pem'),
-        verify=True,
-        ssl_version=ssl.PROTOCOL_TLSv1,
-        assert_hostname=False)
+    try:
+      params['tls'] = docker.tls.TLSConfig(
+          client_cert=(os.path.join(cert_path, 'cert.pem'),
+                       os.path.join(cert_path, 'key.pem')),
+          ca_cert=os.path.join(cert_path, 'ca.pem'),
+          verify=True,
+          ssl_version=ssl.PROTOCOL_TLSv1,
+          assert_hostname=False)
+    # See b/27257962. Debug info for when cert files are incomplete or malformed
+    except docker.tls.errors.TLSParameterError as e:
+      for f_name in ['cert.pem', 'key.pem', 'ca.pem']:
+        f_path = os.path.join(cert_path, f_name)
+        try:
+          with open(f_path, 'r') as f:
+            log.debug('Contents of [{}]:\n{}'.format(f_path, f.read()))
+        except IOError as f_err:
+          log.error('Could not open {}: {}'.format(f_path, f_err))
+      raise e
   return params
 
 

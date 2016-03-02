@@ -18,6 +18,7 @@ import textwrap
 
 from gae_ext_runtime import ext_runtime
 
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -69,7 +70,7 @@ class JavaConfigurator(ext_runtime.Configurator):
   """
 
   def __init__(self, path, appinfo, deploy, entrypoint, server,
-               artifact_to_deploy, custom):
+               openjdk, artifact_to_deploy, custom):
     """Constructor.
 
     Args:
@@ -79,6 +80,7 @@ class JavaConfigurator(ext_runtime.Configurator):
       deploy: (bool) True if run in deployment mode.
       entrypoint: (str) Name of the entrypoint to generate.
       server: (str) Name of the server to use (jetty9 or None for now).
+      openjdk: (str) Name of the jdk to use (openjdk8 or None for now).
       artifact_to_deploy: (str) Name of the file or directory to deploy.
       custom: (bool) True if it is a custom runtime.
     """
@@ -89,6 +91,7 @@ class JavaConfigurator(ext_runtime.Configurator):
     self.custom = custom
     self.entrypoint = entrypoint
     self.server = server
+    self.openjdk = openjdk
     self.artifact_to_deploy = artifact_to_deploy
     # Write messages to the console or to the log depending on whether we're
     # doing a "deploy."
@@ -140,7 +143,6 @@ class JavaConfigurator(ext_runtime.Configurator):
     Raises:
       JavaConfigError: if there is an app.yaml configuration error.
     """
-    env2 = self.appinfo and self.appinfo.env == '2'
     dockerfile = os.path.join(self.root, config.DOCKERFILE)
     if not os.path.exists(dockerfile):
       self.notify('Writing [%s] to [%s].' % (config.DOCKERFILE, self.root))
@@ -156,7 +158,9 @@ class JavaConfigurator(ext_runtime.Configurator):
           out.write(DOCKERFILE_JAVA8_PREAMBLE)
           out.write(DOCKERFILE_INSTALL_APP.format(self.artifact_to_deploy))
         if self.artifact_to_deploy == '.':
-          if env2:
+          if self.appinfo and util.IsFlex(self.appinfo.env):
+            out.write(DOCKERFILE_COMPAT_PREAMBLE)
+          elif self.openjdk == 'openjdk8':
             out.write(DOCKERFILE_COMPAT_PREAMBLE)
           else:
             out.write(DOCKERFILE_LEGACY_PREAMBLE)
@@ -202,6 +206,7 @@ def Fingerprint(path, params):
   """
   entrypoint = None
   server = None
+  openjdk = None
   appinfo = params.appinfo
   if appinfo and appinfo.entrypoint:
     entrypoint = appinfo.entrypoint
@@ -218,6 +223,7 @@ def Fingerprint(path, params):
         elif key == 'jdk':
           if value != 'openjdk8':
             raise JavaConfigError('Unknown JDK : %s.' % value)
+          openjdk = value
         else:
           raise JavaConfigError('Unknown runtime_config entry : %s.' % key)
 
@@ -243,4 +249,4 @@ def Fingerprint(path, params):
                           '(.jar, .war, or Java Web App).')
 
   return JavaConfigurator(path, appinfo, params.deploy, entrypoint, server,
-                          artifact_to_deploy, params.custom)
+                          openjdk, artifact_to_deploy, params.custom)

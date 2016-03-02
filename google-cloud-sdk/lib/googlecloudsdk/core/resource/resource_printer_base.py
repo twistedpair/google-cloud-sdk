@@ -262,7 +262,7 @@ class ResourcePrinter(object):
     try:
       if resources:
         if single or not resource_property.IsListLike(resources):
-          self.AddRecord(resources, delimit=False)
+          self.AddRecord(resources, delimit=intermediate)
         else:
           for resource in resources:
             self.AddRecord(resource)

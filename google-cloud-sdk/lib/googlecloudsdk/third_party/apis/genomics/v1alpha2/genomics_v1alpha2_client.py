@@ -34,6 +34,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
+    self.pipelines_controller_config = self.PipelinesControllerConfigService(self)
     self.pipelines = self.PipelinesService(self)
 
   class OperationsService(base_api.BaseApiService):
@@ -126,6 +127,45 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class PipelinesControllerConfigService(base_api.BaseApiService):
+    """Service class for the pipelines_controller_config resource."""
+
+    _NAME = u'pipelines_controller_config'
+
+    def __init__(self, client):
+      super(GenomicsV1alpha2.PipelinesControllerConfigService, self).__init__(client)
+      self._method_configs = {
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'genomics.pipelines.controller_config.get',
+              ordered_params=[u'operationId'],
+              path_params=[u'operationId'],
+              query_params=[u'validationToken'],
+              relative_path=u'v1alpha2/pipelines/controller_config/{operationId}',
+              request_field='',
+              request_type_name=u'GenomicsPipelinesControllerConfigGetRequest',
+              response_type_name=u'ControllerConfig',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets controller configuration information. Should only be called.
+by VMs created by the Pipelines Service and not by end users.
+
+      Args:
+        request: (GenomicsPipelinesControllerConfigGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ControllerConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class PipelinesService(base_api.BaseApiService):
     """Service class for the pipelines resource."""
 
@@ -192,6 +232,18 @@ service.
               request_field='<request>',
               request_type_name=u'RunPipelineRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'UpdateStatus': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'genomics.pipelines.update_status',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1alpha2/pipelines:update_status',
+              request_field='<request>',
+              request_type_name=u'UpdateStatusRequest',
+              response_type_name=u'Empty',
               supports_download=False,
           ),
           }
@@ -278,5 +330,19 @@ run, as VMs will be created and storage will be used.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def UpdateStatus(self, request, global_params=None):
+      """Updates status of a given operation. Should only be called.
+by VMs created by the Pipelines Service and not by end users.
+
+      Args:
+        request: (UpdateStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('UpdateStatus')
       return self._RunMethod(
           config, request, global_params=global_params)

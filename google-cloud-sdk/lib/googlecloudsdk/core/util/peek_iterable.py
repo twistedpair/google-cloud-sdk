@@ -84,11 +84,34 @@ class Peeker(object):
     return self._peek
 
 
+class TapInjector(object):
+  """Tap object injector."""
+
+  def __init__(self, value, replace=False):
+    self._value = value
+    self._is_replacement = replace
+
+  @property
+  def value(self):
+    return self._value
+
+  @property
+  def is_replacement(self):
+    return self._is_replacement
+
+
 class Tapper(object):
-  """Taps an iterable by calling a method on each item and another when done.
+  """Taps an iterable by calling a method for each item and after the last item.
 
   The returned object is another iterable that is equivalent to the original.
   If the object is not iterable then the first item is the object itself.
+
+  Tappers may be used when it is not efficient or possible to completely drain
+  a resource generator before the resources are finally consumed. For example,
+  a paged resource may return the first page of resources immediately but have a
+  significant delay between subsequent pages. A tapper allows the first page to
+  be examined and consumed without waiting for the next page. If the tapper is a
+  filter then it can filter and display a page before waiting for the next page.
 
   Example:
     iterable = Tapper(iterable, call_on_each, call_after_last)
@@ -98,16 +121,19 @@ class Tapper(object):
 
   Attributes:
     _iterable: The original iterable.
-    _call_on_each: If not None a method called on each item as it is fetched.
-      If _call_on_each returns True then the item is returned to the caller,
-      if it returns False or None then it is consumed by the tapper and not
-      returned to the caller, otherwise the return value is an item that is
-      injected into iterable list and returned to the caller.
-    _call_after_last: If not None a method called after the last item.
+    _call_on_each: A method called on each item as it is fetched. The return
+      value determines what happens to the current item:
+        True: The item is retained in the iterable.
+        False: The item is deleted from the iterable.
+        None: The item is deleted from the iterable and the iteration stops.
+        Injector(): Injector.value is injected into the iterable. If
+          Injector.is_replacement then the item is deleted from the iterable,
+          otherwise the item appears in the iterable after the injected value.
+    _call_after_last: A method called after the last item.
     _stop: If True then the object is not iterable and it has already been
       returned.
-    _injected: The previous call_on_each injected a new item and this is the
-      next item to return.
+    _injected: True if the previous _call_on_each injected a new item.
+    _injected_value: The value to return next.
   """
 
   def __init__(self, iterable, call_on_each=None, call_after_last=None):
@@ -115,7 +141,8 @@ class Tapper(object):
     self._call_on_each = call_on_each
     self._call_after_last = call_after_last
     self._stop = False
-    self._injected = None
+    self._injected = False
+    self._injected_value = None
 
   def __iter__(self):
     return self
@@ -123,9 +150,8 @@ class Tapper(object):
   def _NextItem(self):
     """Returns the next item in self._iterable."""
     if self._injected:
-      item = self._injected
-      self._injected = None
-      return item
+      self._injected = False
+      return self._injected_value
     try:
       # Object is a generator or iterator.
       return self._iterable.next()
@@ -159,8 +185,14 @@ class Tapper(object):
       if not self._call_on_each:
         return item
       inject_or_keep = self._call_on_each(item)
-      if inject_or_keep not in (True, False, None):
-        self._injected = item
-        return inject_or_keep
+      if inject_or_keep is None:
+        if self._call_after_last:
+          self._call_after_last()
+        raise StopIteration
+      if isinstance(inject_or_keep, TapInjector):
+        if not inject_or_keep.is_replacement:
+          self._injected = True
+          self._injected_value = item
+        return inject_or_keep.value
       if inject_or_keep:
         return item

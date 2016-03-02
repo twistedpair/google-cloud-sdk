@@ -1414,7 +1414,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name. The format of the name may vary between different\nimplementations. For examples:\n\n    projects\/{project_id}\/metricDescriptors\/{type}\n    metricDescriptors\/{type}",
+          "description": "Resource name. The format of the name may vary between different\nimplementations. For examples:\n\n    projects\/{project_id}\/metricDescriptors\/{type=**}\n    metricDescriptors\/{type=**}",
           "type": "string"
         },
         "type": {
@@ -1710,7 +1710,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping above, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
           "type": "string"
         },
         "metadata": {
@@ -2085,7 +2085,7 @@
       "type": "object",
       "properties": {
         "members": {
-          "description": "Members that are granted access.\n\n- \"user:{$user_email}\" - Grant access to an individual user\n- \"group:{$group_email}\" - Grant access to direct members of the group",
+          "description": "Members that are granted access.\n\n- \"user:{$user_email}\" - Grant access to an individual user\n- \"group:{$group_email}\" - Grant access to direct members of the group\n- \"domain:{$domain}\" - Grant access to all members of the domain. For now,\n     domain membership check will be similar to Devconsole\/TT check:\n     compare domain part of the user email to configured domain name.\n     When IAM integration is complete, this will be replaced with IAM\n     check.",
           "type": "array",
           "items": {
             "type": "string"

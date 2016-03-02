@@ -366,6 +366,106 @@ class BigqueryTablesUpdateRequest(_messages.Message):
   tableId = _messages.StringField(4, required=True)
 
 
+class BigtableColumn(_messages.Message):
+  """A BigtableColumn object.
+
+  Fields:
+    encoding: [Optional] The encoding of the values when the type is not
+      STRING. Acceptable encoding values are: TEXT - indicates values are
+      alphanumeric text strings. BINARY - indicates values are encoded using
+      HBase Bytes.toBytes family of functions. 'encoding' can also be set at
+      the column family level. However, the setting at this level takes
+      precedence if 'encoding' is set at both levels.
+    fieldName: [Optional] If the qualifier is not a valid BigQuery field
+      identifier i.e. does not match [a-zA-Z][a-zA-Z0-9_]*, a valid identifier
+      must be provided as the column field name and is used as field name in
+      queries.
+    onlyReadLatest: [Optional] If this is set, only the latest version of
+      value in this column are exposed. 'onlyReadLatest' can also be set at
+      the column family level. However, the setting at this level takes
+      precedence if 'onlyReadLatest' is set at both levels.
+    qualifierEncoded: [Required] Qualifier of the column. Columns in the
+      parent column family that has this exact qualifier are exposed as .
+      field. If the qualifier is valid UTF-8 string, it can be specified in
+      the qualifier_string field. Otherwise, a base-64 encoded value must be
+      set to qualifier_encoded. The column field name is the same as the
+      column qualifier. However, if the qualifier is not a valid BigQuery
+      field identifier i.e. does not match [a-zA-Z][a-zA-Z0-9_]*, a valid
+      identifier must be provided as field_name.
+    qualifierString: A string attribute.
+    type: [Optional] The type to convert the value in cells of this column.
+      The values are expected to be encoded using HBase Bytes.toBytes function
+      when using the BINARY encoding value. Following BigQuery types are
+      allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Defaut
+      type is BYTES. 'type' can also be set at the column family level.
+      However, the setting at this level takes precedence if 'type' is set at
+      both levels.
+  """
+
+  encoding = _messages.StringField(1)
+  fieldName = _messages.StringField(2)
+  onlyReadLatest = _messages.BooleanField(3)
+  qualifierEncoded = _messages.BytesField(4)
+  qualifierString = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
+class BigtableColumnFamily(_messages.Message):
+  """A BigtableColumnFamily object.
+
+  Fields:
+    columns: [Optional] Lists of columns that should be exposed as individual
+      fields as opposed to a list of (column name, value) pairs. All columns
+      whose qualifier matches a qualifier in this list can be accessed as ..
+      Other columns can be accessed as a list through .Column field.
+    encoding: [Optional] The encoding of the values when the type is not
+      STRING. Acceptable encoding values are: TEXT - indicates values are
+      alphanumeric text strings. BINARY - indicates values are encoded using
+      HBase Bytes.toBytes family of functions. This can be overridden for a
+      specific column by listing that column in 'columns' and specifying an
+      encoding for it.
+    familyId: Identifier of the column family.
+    onlyReadLatest: [Optional] If this is set only the latest version of value
+      are exposed for all columns in this column family. This can be
+      overridden for a specific column by listing that column in 'columns' and
+      specifying a different setting for that column.
+    type: [Optional] The type to convert the value in cells of this column
+      family. The values are expected to be encoded using HBase Bytes.toBytes
+      function when using the BINARY encoding value. Following BigQuery types
+      are allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Defaut
+      type is BYTES. This can be overridden for a specific column by listing
+      that column in 'columns' and specifying a type for it.
+  """
+
+  columns = _messages.MessageField('BigtableColumn', 1, repeated=True)
+  encoding = _messages.StringField(2)
+  familyId = _messages.StringField(3)
+  onlyReadLatest = _messages.BooleanField(4)
+  type = _messages.StringField(5)
+
+
+class BigtableOptions(_messages.Message):
+  """A BigtableOptions object.
+
+  Fields:
+    columnFamilies: [Optional] List of column families to expose in the table
+      schema along with their types. This list restricts the column families
+      that can be referenced in queries and specifies their value types. You
+      can use this list to do type conversions - see the 'type' field for more
+      details. If you leave this list empty, all column families are present
+      in the table schema and their values are read as BYTES. During a query
+      only the column families referenced in that query are read from
+      Bigtable.
+    ignoreUnspecifiedColumnFamilies: [Optional] If field is true, then the
+      column families that are not specified in columnFamilies list are not
+      exposed in the table schema. Otherwise, they are read with BYTES type
+      values. The default value is false.
+  """
+
+  columnFamilies = _messages.MessageField('BigtableColumnFamily', 1, repeated=True)
+  ignoreUnspecifiedColumnFamilies = _messages.BooleanField(2)
+
+
 class CsvOptions(_messages.Message):
   """A CsvOptions object.
 
@@ -633,9 +733,14 @@ class ExternalDataConfiguration(_messages.Message):
   """A ExternalDataConfiguration object.
 
   Fields:
+    autodetect: [Experimental] Try to detect schema and format options
+      automatically. Any option specified explicitly will be honored.
+    bigtableOptions: [Optional] Additional options if sourceFormat is set to
+      BIGTABLE.
     compression: [Optional] The compression type of the data source. Possible
       values include GZIP and NONE. The default value is NONE. This setting is
-      ignored for Google Cloud Datastore backups and Avro.
+      ignored for Google Cloud Bigtable, Google Cloud Datastore backups and
+      Avro formats.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
@@ -644,36 +749,45 @@ class ExternalDataConfiguration(_messages.Message):
       returned in the job result. The default value is false. The sourceFormat
       property determines what BigQuery treats as an extra value: CSV:
       Trailing columns JSON: Named values that don't match any column names
-      Google Cloud Datastore backups: This setting is ignored. Avro: This
-      setting is ignored.
+      Google Cloud Bigtable: This setting is ignored. Google Cloud Datastore
+      backups: This setting is ignored. Avro: This setting is ignored.
     maxBadRecords: [Optional] The maximum number of bad records that BigQuery
       can ignore when reading data. If the number of bad records exceeds this
       value, an invalid error is returned in the job result. The default value
       is 0, which requires that all records are valid. This setting is ignored
-      for Google Cloud Datastore backups and Avro.
+      for Google Cloud Bigtable, Google Cloud Datastore backups and Avro
+      formats.
     schema: [Optional] The schema for the data. Schema is required for CSV and
-      JSON formats. Schema is disallowed for Google Cloud Datastore backups
-      and Avro.
+      JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
+      Datastore backups, and Avro formats.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
-      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Google
-      Cloud Datastore backups, specify "DATASTORE_BACKUP". For Avro files,
-      specify "AVRO".
+      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro
+      files, specify "AVRO". For Google Cloud Datastore backups, specify
+      "DATASTORE_BACKUP". [Experimental] For Google Cloud Bigtable, specify
+      "BIGTABLE". Please note that reading from Google Cloud Bigtable is
+      experimental and has to be enabled for your project. Please contact
+      Google Cloud Support to enable this for your project.
     sourceUris: [Required] The fully-qualified URIs that point to your data in
-      Google Cloud Storage. Each URI can contain one '*' wildcard character
-      and it must come after the 'bucket' name. Size limits related to load
-      jobs apply to external data sources, plus an additional limit of 10 GB
-      maximum size across all URIs. For Google Cloud Datastore backups,
-      exactly one URI can be specified, and it must end with '.backup_info'.
-      Also, the '*' wildcard character is not allowed.
+      Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
+      '*' wildcard character and it must come after the 'bucket' name. Size
+      limits related to load jobs apply to external data sources, plus an
+      additional limit of 10 GB maximum size across all URIs. For Google Cloud
+      Bigtable URIs: Exactly one URI can be specified and it has be a fully
+      specified and valid HTTPS URL for a Google Cloud Bigtable table. For
+      Google Cloud Datastore backups, exactly one URI can be specified, and it
+      must end with '.backup_info'. Also, the '*' wildcard character is not
+      allowed.
   """
 
-  compression = _messages.StringField(1)
-  csvOptions = _messages.MessageField('CsvOptions', 2)
-  ignoreUnknownValues = _messages.BooleanField(3)
-  maxBadRecords = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 5)
-  sourceFormat = _messages.StringField(6)
-  sourceUris = _messages.StringField(7, repeated=True)
+  autodetect = _messages.BooleanField(1)
+  bigtableOptions = _messages.MessageField('BigtableOptions', 2)
+  compression = _messages.StringField(3)
+  csvOptions = _messages.MessageField('CsvOptions', 4)
+  ignoreUnknownValues = _messages.BooleanField(5)
+  maxBadRecords = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  schema = _messages.MessageField('TableSchema', 7)
+  sourceFormat = _messages.StringField(8)
+  sourceUris = _messages.StringField(9, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):

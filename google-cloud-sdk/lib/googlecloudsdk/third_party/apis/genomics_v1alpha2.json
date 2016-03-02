@@ -216,7 +216,7 @@
     },
     "Pipeline": {
       "id": "Pipeline",
-      "description": "The pipeline object. Represents a transformation from a set of input\nparameters to a set of output parameters. The transformation is defined\nas a docker image and command to run within that image. Each pipeline\nis run on a GCE VM. A pipeline can be created with the `create` method\nand then later run with the `run` method, or a pipeline can be\ndefined and run all at once with the `run` method.",
+      "description": "The pipeline object. Represents a transformation from a set of input\nparameters to a set of output parameters. The transformation is defined\nas a docker image and command to run within that image. Each pipeline\nis run on a Google Compute Engine VM. A pipeline can be created with the\n`create` method and then later run with the `run` method, or a pipeline can\nbe defined and run all at once with the `run` method.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -261,7 +261,7 @@
     },
     "PipelineParameter": {
       "id": "PipelineParameter",
-      "description": "Parameters facilitate setting and delivering data into the\npipeline's execution environment. They are defined at create time,\nwith optional defaults, and can be overridden at run time.\n\nIf `localCopy` is unset, then the parameter specifies a string that\nis passed as-is into the pipeline, as the value of the environment\nvariable with the given name.  A default value can be optionally\nspecified at create time. The default can be overridden at run time\nusing the inputs map. If no default is given, a value must be\nsupplied at runtime.\n\nIf `localCopy` is defined, then the parameter specifies a data\nsource or sink, both in GCS and on the Docker container where the\npipeline computation is run. At run time, the GCS paths can be\noverridden if a default was provided at create time, or must be set\notherwise. The pipeline runner should add a key\/value pair to\neither the inputs or outputs map. The indicated data copies will be\ncarried out before\/after pipeline execution, just as if the\ncorresponding arguments were provided to `gsutil cp`.\n\nFor example: Given the following `PipelineParameter`, specified\nin the `inputParameters` list:\n\n```\n{name: \"input_file\", localCopy: {path: \"file.txt\", disk: \"pd1\"}}\n```\n\nwhere `disk` is defined in the `PipelineResources` object as:\n\n```\n{name: \"pd1\", mountPoint: \"\/mnt\/disk\/\"}\n```\n\nWe create a disk named `pd1`, mount it on the host VM, and map\n`\/mnt\/pd1` to `\/mnt\/disk` in the docker container.  At\nruntime, an entry for `input_file` would be required in the inputs\nmap, such as:\n\n```\n  inputs[\"input_file\"] = \"gs:\/\/my-bucket\/bar.txt\"\n```\n\nThis would generate the following gsutil call:\n\n```\n  gsutil cp gs:\/\/my-bucket\/bar.txt \/mnt\/pd1\/file.txt\n```\n\nThe file `\/mnt\/pd1\/file.txt` maps to `\/mnt\/disk\/file.txt` in the\nDocker container.  Note that we do not use `cp -r`, so for\ninputs, the GCS path (runtime value) must be a file or a glob,\nwhile the local path must be a file or a directory, respectively.\nFor outputs, the direction of the copy is reversed:\n\n```\n  gsutil cp \/mnt\/disk\/file.txt gs:\/\/my-bucket\/bar.txt\n```\n\nAgain note that there is no `-r`, so the GCS path (runtime\nvalue) must be a file or a directory, while the local path can be a\nfile or a glob, respectively. One restriction, due to docker\nlimitations, is that for outputs that are found on the boot disk,\nthe local path cannot be a glob and must be a file.",
+      "description": "Parameters facilitate setting and delivering data into the\npipeline's execution environment. They are defined at create time,\nwith optional defaults, and can be overridden at run time.\n\nIf `localCopy` is unset, then the parameter specifies a string that\nis passed as-is into the pipeline, as the value of the environment\nvariable with the given name.  A default value can be optionally\nspecified at create time. The default can be overridden at run time\nusing the inputs map. If no default is given, a value must be\nsupplied at runtime.\n\nIf `localCopy` is defined, then the parameter specifies a data\nsource or sink, both in Google Cloud Storage and on the Docker container\nwhere the pipeline computation is run. At run time, the Google Cloud Storage\npaths can be overridden if a default was provided at create time, or must be\nset otherwise. The pipeline runner should add a key\/value pair to\neither the inputs or outputs map. The indicated data copies will be\ncarried out before\/after pipeline execution, just as if the\ncorresponding arguments were provided to `gsutil cp`.\n\nFor example: Given the following `PipelineParameter`, specified\nin the `inputParameters` list:\n\n```\n{name: \"input_file\", localCopy: {path: \"file.txt\", disk: \"pd1\"}}\n```\n\nwhere `disk` is defined in the `PipelineResources` object as:\n\n```\n{name: \"pd1\", mountPoint: \"\/mnt\/disk\/\"}\n```\n\nWe create a disk named `pd1`, mount it on the host VM, and map\n`\/mnt\/pd1` to `\/mnt\/disk` in the docker container.  At\nruntime, an entry for `input_file` would be required in the inputs\nmap, such as:\n\n```\n  inputs[\"input_file\"] = \"gs:\/\/my-bucket\/bar.txt\"\n```\n\nThis would generate the following gsutil call:\n\n```\n  gsutil cp gs:\/\/my-bucket\/bar.txt \/mnt\/pd1\/file.txt\n```\n\nThe file `\/mnt\/pd1\/file.txt` maps to `\/mnt\/disk\/file.txt` in the\nDocker container.  Note that we do not use `cp -r`, so for\ninputs, the Google Cloud Storage path (runtime value) must be a file or a\nglob, while the local path must be a file or a directory, respectively.\nFor outputs, the direction of the copy is reversed:\n\n```\n  gsutil cp \/mnt\/disk\/file.txt gs:\/\/my-bucket\/bar.txt\n```\n\nAgain note that there is no `-r`, so the Google Cloud Storage path (runtime\nvalue) must be a file or a directory, while the local path can be a\nfile or a glob, respectively. One restriction, due to docker\nlimitations, is that for outputs that are found on the boot disk,\nthe local path cannot be a glob and must be a file.",
       "type": "object",
       "properties": {
         "name": {
@@ -273,7 +273,7 @@
           "type": "string"
         },
         "defaultValue": {
-          "description": "The default value for this parameter. Can be overridden at runtime.\nIf `localCopy` is present, then this must be a GCS path beginning with\n`gs:\/\/`.",
+          "description": "The default value for this parameter. Can be overridden at runtime.\nIf `localCopy` is present, then this must be a Google Cloud Storage path\nbeginning with `gs:\/\/`.",
           "type": "string"
         },
         "localCopy": {
@@ -357,7 +357,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type of the disk to create, if applicable.",
+          "description": "Required. The type of the disk to create.",
           "enumDescriptions": [
             "Default disk type. Use one of the other options below.",
             "Specifies a Google Compute Engine persistent hard disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#typeofdisks\nfor details.",
@@ -499,6 +499,156 @@
         "nextPageToken": {
           "description": "The token to use to get the next page of results.",
           "type": "string"
+        }
+      }
+    },
+    "ControllerConfig": {
+      "id": "ControllerConfig",
+      "description": "Stores the information that the controller will fetch from the\nserver in order to run. Should only be used by VMs created by the\nPipelines Service and not by end users.",
+      "type": "object",
+      "properties": {
+        "image": {
+
+          "type": "string"
+        },
+        "cmd": {
+
+          "type": "string"
+        },
+        "gcsLogPath": {
+
+          "type": "string"
+        },
+        "machineType": {
+
+          "type": "string"
+        },
+        "vars": {
+
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "disks": {
+
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "gcsSources": {
+
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RepeatedString"
+          }
+        },
+        "gcsSinks": {
+
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RepeatedString"
+          }
+        }
+      }
+    },
+    "RepeatedString": {
+      "id": "RepeatedString",
+
+      "type": "object",
+      "properties": {
+        "values": {
+
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "UpdateStatusRequest": {
+      "id": "UpdateStatusRequest",
+      "description": "Request to update operation status. Should only be used by VMs\ncreated by the Pipelines Service and not by end users.",
+      "type": "object",
+      "properties": {
+        "operationId": {
+
+          "type": "string"
+        },
+        "timestampEvents": {
+
+          "type": "array",
+          "items": {
+            "$ref": "TimestampEvent"
+          }
+        },
+        "errorCode": {
+
+          "enumDescriptions": [
+            "Not an error; returned on success\n\nHTTP Mapping: 200 OK",
+            "The operation was cancelled, typically by the caller.\n\nHTTP Mapping: 499 Client Closed Request",
+            "Unknown error.  For example, this error may be returned when\na `Status` value received from another address space belongs to\nan error space that is not known in this address space.  Also\nerrors raised by APIs that do not return enough error information\nmay be converted to this error.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The client specified an invalid argument.  Note that this differs\nfrom `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments\nthat are problematic regardless of the state of the system\n(e.g., a malformed file name).\n\nHTTP Mapping: 400 Bad Request",
+            "The deadline expired before the operation could complete. For operations\nthat change the state of the system, this error may be returned\neven if the operation has completed successfully.  For example, a\nsuccessful response from a server could have been delayed long\nenough for the deadline to expire.\n\nHTTP Mapping: 504 Gateway Timeout",
+            "Some requested entity (e.g., file or directory) was not found.\nFor privacy reasons, this code *may* be returned when the client\ndoes not have the access rights to the entity, though such usage is\ndiscouraged.\n\nHTTP Mapping: 404 Not Found",
+            "The entity that a client attempted to create (e.g., file or directory)\nalready exists.\n\nHTTP Mapping: 409 Conflict",
+            "The caller does not have permission to execute the specified\noperation. `PERMISSION_DENIED` must not be used for rejections\ncaused by exhausting some resource (use `RESOURCE_EXHAUSTED`\ninstead for those errors). `PERMISSION_DENIED` must not be\nused if the caller can not be identified (use `UNAUTHENTICATED`\ninstead for those errors).\n\nHTTP Mapping: 403 Forbidden",
+            "The request does not have valid authentication credentials for the\noperation.\n\nHTTP Mapping: 401 Unauthorized",
+            "Some resource has been exhausted, perhaps a per-user quota, or\nperhaps the entire file system is out of space.\n\nHTTP Mapping: 429 Too Many Requests",
+            "The operation was rejected because the system is not in a state\nrequired for the operation's execution.  For example, the directory\nto be deleted is non-empty, an rmdir operation is applied to\na non-directory, etc.\n\nService implementors can use the following guidelines to decide\nbetween `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`:\n (a) Use `UNAVAILABLE` if the client can retry just the failing call.\n (b) Use `ABORTED` if the client should retry at a higher level\n     (e.g., restarting a read-modify-write sequence).\n (c) Use `FAILED_PRECONDITION` if the client should not retry until\n     the system state has been explicitly fixed.  E.g., if an \"rmdir\"\n     fails because the directory is non-empty, `FAILED_PRECONDITION`\n     should be returned since the client should not retry unless\n     the files are deleted from the directory.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation was aborted, typically due to a concurrency issue such as\na sequencer check failure or transaction abort.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 409 Conflict",
+            "The operation was attempted past the valid range.  E.g., seeking or\nreading past end-of-file.\n\nUnlike `INVALID_ARGUMENT`, this error indicates a problem that may\nbe fixed if the system state changes. For example, a 32-bit file\nsystem will generate `INVALID_ARGUMENT` if asked to read at an\noffset that is not in the range [0,2^32-1], but it will generate\n`OUT_OF_RANGE` if asked to read from an offset past the current\nfile size.\n\nThere is a fair bit of overlap between `FAILED_PRECONDITION` and\n`OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific\nerror) when it applies so that callers who are iterating through\na space can easily look for an `OUT_OF_RANGE` error to detect when\nthey are done.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation is not implemented or is not supported\/enabled in this\nservice.\n\nHTTP Mapping: 501 Not Implemented",
+            "Internal errors.  This means that some invariants expected by the\nunderlying system have been broken.  This error code is reserved\nfor serious errors.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The service is currently unavailable.  This is most likely a\ntransient condition, which can be corrected by retrying with\na backoff.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 503 Service Unavailable",
+            "Unrecoverable data loss or corruption.\n\nHTTP Mapping: 500 Internal Server Error"
+          ],
+          "type": "string",
+          "enum": [
+            "OK",
+            "CANCELLED",
+            "UNKNOWN",
+            "INVALID_ARGUMENT",
+            "DEADLINE_EXCEEDED",
+            "NOT_FOUND",
+            "ALREADY_EXISTS",
+            "PERMISSION_DENIED",
+            "UNAUTHENTICATED",
+            "RESOURCE_EXHAUSTED",
+            "FAILED_PRECONDITION",
+            "ABORTED",
+            "OUT_OF_RANGE",
+            "UNIMPLEMENTED",
+            "INTERNAL",
+            "UNAVAILABLE",
+            "DATA_LOSS"
+          ]
+        },
+        "errorMessage": {
+
+          "type": "string"
+        },
+        "validationToken": {
+
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "TimestampEvent": {
+      "id": "TimestampEvent",
+      "description": "Stores the list of events and times they occured for major events in job\nexecution.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "String indicating the type of event",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "The time this event occured.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -807,6 +957,64 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
           ]
+        },
+        "update_status": {
+          "id": "genomics.pipelines.update_status",
+          "path": "v1alpha2/pipelines:update_status",
+          "flatPath": "v1alpha2/pipelines:update_status",
+          "httpMethod": "PUT",
+          "description": "Updates status of a given operation. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "UpdateStatusRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        }
+      }
+      ,
+      "resources": {
+        "controller_config": {
+          "methods": {
+            "get": {
+              "id": "genomics.pipelines.controller_config.get",
+              "path": "v1alpha2/pipelines/controller_config/{operationId}",
+              "flatPath": "v1alpha2/pipelines/controller_config/{operationId}",
+              "httpMethod": "GET",
+              "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
+              "parameters": {
+                "operationId": {
+                  "description": "The operation to retrieve controller configuration for.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "validationToken": {
+                  "location": "query",
+                  "type": "string",
+                  "format": "uint64"
+                }
+              },
+              "parameterOrder": [
+                "operationId"
+              ],
+              "response": {
+                "$ref": "ControllerConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/genomics"
+              ]
+            }
+          }
         }
       }
     }

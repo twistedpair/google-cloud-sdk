@@ -854,11 +854,11 @@
     },
     "CancelTestMatrixResponse": {
       "id": "CancelTestMatrixResponse",
-      "description": "Response containing the state of a cancelled test matrix.",
+      "description": "Response containing the current state of the specified test matrix.",
       "type": "object",
       "properties": {
         "testState": {
-          "description": "The rolled-up state of the test matrix just before it was cancelled.",
+          "description": "The current rolled-up state of the test matrix.\nIf this state is already final, then the cancelation request will\nhave no effect.",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
             "The execution or matrix is being validated.",
@@ -1694,7 +1694,7 @@
               "path": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
               "flatPath": "v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel",
               "httpMethod": "POST",
-              "description": "Cancels unfinished test executions in a test matrix.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+              "description": "Cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asychronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
               "parameters": {
                 "projectId": {
                   "description": "Cloud project that owns the test.",

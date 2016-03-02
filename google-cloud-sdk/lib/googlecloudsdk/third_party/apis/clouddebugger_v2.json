@@ -867,6 +867,11 @@
                   "description": "When set to `true`, the result includes all debuggees. Otherwise, the\nresult includes only debuggees that are active.",
                   "location": "query",
                   "type": "boolean"
+                },
+                "clientVersion": {
+                  "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -895,6 +900,11 @@
                       "description": "ID of the debuggee where the breakpoint is to be set.",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "clientVersion": {
+                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "location": "query",
                       "type": "string"
                     }
                   },
@@ -930,6 +940,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "clientVersion": {
+                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -961,6 +976,11 @@
                       "description": "ID of the breakpoint to delete.",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "clientVersion": {
+                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "location": "query",
                       "type": "string"
                     }
                   },
@@ -1015,6 +1035,11 @@
                     },
                     "waitToken": {
                       "description": "A wait token that, if specified, blocks the call until the breakpoints\nlist has changed, or a server selected timeout has expired.  The value\nshould be set from the last response. The error code\n`google.rpc.Code.ABORTED` (RPC) is returned on wait timeout, which\nshould be called again with the same `wait_token`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "clientVersion": {
+                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                       "location": "query",
                       "type": "string"
                     }

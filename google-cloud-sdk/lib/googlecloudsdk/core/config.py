@@ -439,9 +439,8 @@ class Paths(object):
       current workspace, or None if not in a workspace.
   """
   # Name of the directory that roots a cloud SDK workspace.
-  _CLOUDSDK_WORKSPACE_CONFIG_WORD = ('gcloud' +
-                                     INSTALLATION_CONFIG.config_suffix)
-  CLOUDSDK_WORKSPACE_CONFIG_DIR_NAME = '.%s' % _CLOUDSDK_WORKSPACE_CONFIG_WORD
+  _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME = ('gcloud' +
+                                      INSTALLATION_CONFIG.config_suffix)
 
   CLOUDSDK_STATE_DIR = '.install'
 
@@ -460,35 +459,17 @@ class Paths(object):
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       try:
         default_config_path = os.path.join(
-            os.environ['APPDATA'], Paths._CLOUDSDK_WORKSPACE_CONFIG_WORD)
+            os.environ['APPDATA'], Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
       except KeyError:
         # This should never happen unless someone is really messing with things.
         drive = os.environ.get('SystemDrive', 'C:')
         default_config_path = os.path.join(
-            drive, '\\', Paths._CLOUDSDK_WORKSPACE_CONFIG_WORD)
+            drive, '\\', Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
     else:
       default_config_path = os.path.join(
           os.path.expanduser('~'), '.config',
-          Paths._CLOUDSDK_WORKSPACE_CONFIG_WORD)
+          Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
     self.global_config_dir = os.getenv(CLOUDSDK_CONFIG, default_config_path)
-
-    try:
-      # It is possible for some filesystems (like fakefs) to not report current
-      # working directories.  In the event this happens, just don't try
-      # searching for a workspace.
-      cwd = os.getcwd()
-    except OSError:
-      cwd = None
-
-    self.workspace_dir = None
-    if cwd:
-      self.workspace_dir = file_utils.FindDirectoryContaining(
-          cwd, Paths.CLOUDSDK_WORKSPACE_CONFIG_DIR_NAME)
-
-    self.workspace_config_dir = None
-    if self.workspace_dir:
-      self.workspace_config_dir = os.path.join(
-          self.workspace_dir, Paths.CLOUDSDK_WORKSPACE_CONFIG_DIR_NAME)
 
   @property
   def sdk_root(self):
@@ -597,18 +578,6 @@ class Paths(object):
     """
     return os.path.join(self.global_config_dir,
                         self.CLOUDSDK_NAMED_CONFIG_ACTIVATOR_FILE_NAME)
-
-  @property
-  def workspace_properties_path(self):
-    """Gets the path to the properties file in your local workspace.
-
-    Returns:
-      str, The path to the file, or None if there is no local workspace.
-    """
-    if not self.workspace_config_dir:
-      return None
-    return os.path.join(self.workspace_config_dir,
-                        self.CLOUDSDK_PROPERTIES_NAME)
 
   @property
   def container_config_path(self):

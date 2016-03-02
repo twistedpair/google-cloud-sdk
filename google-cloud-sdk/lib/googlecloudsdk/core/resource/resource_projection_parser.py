@@ -194,7 +194,7 @@ class Parser(object):
 
     # Add or update the terminal node.
     tree = projection.tree
-    # self.key == [] => a function on the entire object.
+    # self.key == [] => . or a function on the entire object.
     name = key[-1] if key else ''
     name_in_tree = name in tree
     if name_in_tree:
@@ -207,7 +207,8 @@ class Parser(object):
     else:
       # New projection.
       attribute = attribute_add
-      tree[name] = self._Tree(attribute)
+      if key or attribute.transform:
+        tree[name] = self._Tree(attribute)
 
     # Propagate non-default values from attribute_add to attribute.
     if attribute_add.order is not None:

@@ -18,11 +18,139 @@ class CancelOperationRequest(_messages.Message):
   """The request message for Operations.CancelOperation."""
 
 
+class ControllerConfig(_messages.Message):
+  """Stores the information that the controller will fetch from the server in
+  order to run. Should only be used by VMs created by the Pipelines Service
+  and not by end users.
+
+  Messages:
+    DisksValue: A DisksValue object.
+    GcsSinksValue: A GcsSinksValue object.
+    GcsSourcesValue: A GcsSourcesValue object.
+    VarsValue: A VarsValue object.
+
+  Fields:
+    cmd: A string attribute.
+    disks: A DisksValue attribute.
+    gcsLogPath: A string attribute.
+    gcsSinks: A GcsSinksValue attribute.
+    gcsSources: A GcsSourcesValue attribute.
+    image: A string attribute.
+    machineType: A string attribute.
+    vars: A VarsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DisksValue(_messages.Message):
+    """A DisksValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DisksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a DisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GcsSinksValue(_messages.Message):
+    """A GcsSinksValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a GcsSinksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type GcsSinksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a GcsSinksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RepeatedString attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RepeatedString', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GcsSourcesValue(_messages.Message):
+    """A GcsSourcesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a GcsSourcesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type GcsSourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a GcsSourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RepeatedString attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RepeatedString', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VarsValue(_messages.Message):
+    """A VarsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a VarsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VarsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a VarsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cmd = _messages.StringField(1)
+  disks = _messages.MessageField('DisksValue', 2)
+  gcsLogPath = _messages.StringField(3)
+  gcsSinks = _messages.MessageField('GcsSinksValue', 4)
+  gcsSources = _messages.MessageField('GcsSourcesValue', 5)
+  image = _messages.StringField(6)
+  machineType = _messages.StringField(7)
+  vars = _messages.MessageField('VarsValue', 8)
+
+
 class Disk(_messages.Message):
   """A Google Compute Engine disk resource specification.
 
   Enums:
-    TypeValueValuesEnum: The type of the disk to create, if applicable.
+    TypeValueValuesEnum: Required. The type of the disk to create.
 
   Fields:
     autoDelete: Specifies whether or not to delete the disk when the pipeline
@@ -48,11 +176,11 @@ class Disk(_messages.Message):
       https://cloud.google.com/compute/docs/reference/latest/instances#resourc
       e and https://cloud.google.com/compute/docs/disks/persistent-
       disks#snapshots for more details.
-    type: The type of the disk to create, if applicable.
+    type: Required. The type of the disk to create.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of the disk to create, if applicable.
+    """Required. The type of the disk to create.
 
     Values:
       TYPE_UNSPECIFIED: Default disk type. Use one of the other options below.
@@ -151,6 +279,18 @@ class GenomicsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GenomicsPipelinesControllerConfigGetRequest(_messages.Message):
+  """A GenomicsPipelinesControllerConfigGetRequest object.
+
+  Fields:
+    operationId: The operation to retrieve controller configuration for.
+    validationToken: A string attribute.
+  """
+
+  operationId = _messages.StringField(1, required=True)
+  validationToken = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
 
 
 class GenomicsPipelinesDeleteRequest(_messages.Message):
@@ -433,9 +573,9 @@ class Pipeline(_messages.Message):
   """The pipeline object. Represents a transformation from a set of input
   parameters to a set of output parameters. The transformation is defined as a
   docker image and command to run within that image. Each pipeline is run on a
-  GCE VM. A pipeline can be created with the `create` method and then later
-  run with the `run` method, or a pipeline can be defined and run all at once
-  with the `run` method.
+  Google Compute Engine VM. A pipeline can be created with the `create` method
+  and then later run with the `run` method, or a pipeline can be defined and
+  run all at once with the `run` method.
 
   Fields:
     description: Optional. User-specified description.
@@ -474,36 +614,37 @@ class PipelineParameter(_messages.Message):
   can be optionally specified at create time. The default can be overridden at
   run time using the inputs map. If no default is given, a value must be
   supplied at runtime.  If `localCopy` is defined, then the parameter
-  specifies a data source or sink, both in GCS and on the Docker container
-  where the pipeline computation is run. At run time, the GCS paths can be
-  overridden if a default was provided at create time, or must be set
-  otherwise. The pipeline runner should add a key/value pair to either the
-  inputs or outputs map. The indicated data copies will be carried out
-  before/after pipeline execution, just as if the corresponding arguments were
-  provided to `gsutil cp`.  For example: Given the following
-  `PipelineParameter`, specified in the `inputParameters` list:  ``` {name:
-  "input_file", localCopy: {path: "file.txt", disk: "pd1"}} ```  where `disk`
-  is defined in the `PipelineResources` object as:  ``` {name: "pd1",
-  mountPoint: "/mnt/disk/"} ```  We create a disk named `pd1`, mount it on the
-  host VM, and map `/mnt/pd1` to `/mnt/disk` in the docker container.  At
-  runtime, an entry for `input_file` would be required in the inputs map, such
-  as:  ```   inputs["input_file"] = "gs://my-bucket/bar.txt" ```  This would
-  generate the following gsutil call:  ```   gsutil cp gs://my-bucket/bar.txt
-  /mnt/pd1/file.txt ```  The file `/mnt/pd1/file.txt` maps to
+  specifies a data source or sink, both in Google Cloud Storage and on the
+  Docker container where the pipeline computation is run. At run time, the
+  Google Cloud Storage paths can be overridden if a default was provided at
+  create time, or must be set otherwise. The pipeline runner should add a
+  key/value pair to either the inputs or outputs map. The indicated data
+  copies will be carried out before/after pipeline execution, just as if the
+  corresponding arguments were provided to `gsutil cp`.  For example: Given
+  the following `PipelineParameter`, specified in the `inputParameters` list:
+  ``` {name: "input_file", localCopy: {path: "file.txt", disk: "pd1"}} ```
+  where `disk` is defined in the `PipelineResources` object as:  ``` {name:
+  "pd1", mountPoint: "/mnt/disk/"} ```  We create a disk named `pd1`, mount it
+  on the host VM, and map `/mnt/pd1` to `/mnt/disk` in the docker container.
+  At runtime, an entry for `input_file` would be required in the inputs map,
+  such as:  ```   inputs["input_file"] = "gs://my-bucket/bar.txt" ```  This
+  would generate the following gsutil call:  ```   gsutil cp gs://my-
+  bucket/bar.txt /mnt/pd1/file.txt ```  The file `/mnt/pd1/file.txt` maps to
   `/mnt/disk/file.txt` in the Docker container.  Note that we do not use `cp
-  -r`, so for inputs, the GCS path (runtime value) must be a file or a glob,
-  while the local path must be a file or a directory, respectively. For
-  outputs, the direction of the copy is reversed:  ```   gsutil cp
-  /mnt/disk/file.txt gs://my-bucket/bar.txt ```  Again note that there is no
-  `-r`, so the GCS path (runtime value) must be a file or a directory, while
-  the local path can be a file or a glob, respectively. One restriction, due
-  to docker limitations, is that for outputs that are found on the boot disk,
-  the local path cannot be a glob and must be a file.
+  -r`, so for inputs, the Google Cloud Storage path (runtime value) must be a
+  file or a glob, while the local path must be a file or a directory,
+  respectively. For outputs, the direction of the copy is reversed:  ```
+  gsutil cp /mnt/disk/file.txt gs://my-bucket/bar.txt ```  Again note that
+  there is no `-r`, so the Google Cloud Storage path (runtime value) must be a
+  file or a directory, while the local path can be a file or a glob,
+  respectively. One restriction, due to docker limitations, is that for
+  outputs that are found on the boot disk, the local path cannot be a glob and
+  must be a file.
 
   Fields:
     defaultValue: The default value for this parameter. Can be overridden at
-      runtime. If `localCopy` is present, then this must be a GCS path
-      beginning with `gs://`.
+      runtime. If `localCopy` is present, then this must be a Google Cloud
+      Storage path beginning with `gs://`.
     description: Optional. Human-readable description.
     localCopy: If present, this parameter is marked for copying to and from
       the VM. `LocalCopy` indicates where on the VM the file should be. The
@@ -540,6 +681,16 @@ class PipelineResources(_messages.Message):
   minimumRamGb = _messages.FloatField(3)
   preemptible = _messages.BooleanField(4)
   zones = _messages.StringField(5, repeated=True)
+
+
+class RepeatedString(_messages.Message):
+  """A RepeatedString object.
+
+  Fields:
+    values: A string attribute.
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class RunPipelineArgs(_messages.Message):
@@ -818,6 +969,142 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimestampEvent(_messages.Message):
+  """Stores the list of events and times they occured for major events in job
+  execution.
+
+  Fields:
+    description: String indicating the type of event
+    timestamp: The time this event occured.
+  """
+
+  description = _messages.StringField(1)
+  timestamp = _messages.StringField(2)
+
+
+class UpdateStatusRequest(_messages.Message):
+  """Request to update operation status. Should only be used by VMs created by
+  the Pipelines Service and not by end users.
+
+  Enums:
+    ErrorCodeValueValuesEnum:
+
+  Fields:
+    errorCode: A ErrorCodeValueValuesEnum attribute.
+    errorMessage: A string attribute.
+    operationId: A string attribute.
+    timestampEvents: A TimestampEvent attribute.
+    validationToken: A string attribute.
+  """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    """ErrorCodeValueValuesEnum enum type.
+
+    Values:
+      OK: Not an error; returned on success  HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller.  HTTP
+        Mapping: 499 Client Closed Request
+      UNKNOWN: Unknown error.  For example, this error may be returned when a
+        `Status` value received from another address space belongs to an error
+        space that is not known in this address space.  Also errors raised by
+        APIs that do not return enough error information may be converted to
+        this error.  HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument.  Note that
+        this differs from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates
+        arguments that are problematic regardless of the state of the system
+        (e.g., a malformed file name).  HTTP Mapping: 400 Bad Request
+      DEADLINE_EXCEEDED: The deadline expired before the operation could
+        complete. For operations that change the state of the system, this
+        error may be returned even if the operation has completed
+        successfully.  For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire.  HTTP
+        Mapping: 504 Gateway Timeout
+      NOT_FOUND: Some requested entity (e.g., file or directory) was not
+        found. For privacy reasons, this code *may* be returned when the
+        client does not have the access rights to the entity, though such
+        usage is discouraged.  HTTP Mapping: 404 Not Found
+      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
+        or directory) already exists.  HTTP Mapping: 409 Conflict
+      PERMISSION_DENIED: The caller does not have permission to execute the
+        specified operation. `PERMISSION_DENIED` must not be used for
+        rejections caused by exhausting some resource (use
+        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
+        must not be used if the caller can not be identified (use
+        `UNAUTHENTICATED` instead for those errors).  HTTP Mapping: 403
+        Forbidden
+      UNAUTHENTICATED: The request does not have valid authentication
+        credentials for the operation.  HTTP Mapping: 401 Unauthorized
+      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
+        quota, or perhaps the entire file system is out of space.  HTTP
+        Mapping: 429 Too Many Requests
+      FAILED_PRECONDITION: The operation was rejected because the system is
+        not in a state required for the operation's execution.  For example,
+        the directory to be deleted is non-empty, an rmdir operation is
+        applied to a non-directory, etc.  Service implementors can use the
+        following guidelines to decide between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`:  (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call.  (b) Use `ABORTED` if the client should
+        retry at a higher level      (e.g., restarting a read-modify-write
+        sequence).  (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until      the system state has been explicitly fixed.  E.g., if
+        an "rmdir"      fails because the directory is non-empty,
+        `FAILED_PRECONDITION`      should be returned since the client should
+        not retry unless      the files are deleted from the directory.  HTTP
+        Mapping: 400 Bad Request
+      ABORTED: The operation was aborted, typically due to a concurrency issue
+        such as a sequencer check failure or transaction abort.  See the
+        guidelines above for deciding between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range.  E.g.,
+        seeking or reading past end-of-file.  Unlike `INVALID_ARGUMENT`, this
+        error indicates a problem that may be fixed if the system state
+        changes. For example, a 32-bit file system will generate
+        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
+        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
+        from an offset past the current file size.  There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`.  We
+        recommend using `OUT_OF_RANGE` (the more specific error) when it
+        applies so that callers who are iterating through a space can easily
+        look for an `OUT_OF_RANGE` error to detect when they are done.  HTTP
+        Mapping: 400 Bad Request
+      UNIMPLEMENTED: The operation is not implemented or is not
+        supported/enabled in this service.  HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors.  This means that some invariants expected by
+        the underlying system have been broken.  This error code is reserved
+        for serious errors.  HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable.  This is most likely
+        a transient condition, which can be corrected by retrying with a
+        backoff.  See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping:
+        503 Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption.  HTTP Mapping: 500
+        Internal Server Error
+    """
+    OK = 0
+    CANCELLED = 1
+    UNKNOWN = 2
+    INVALID_ARGUMENT = 3
+    DEADLINE_EXCEEDED = 4
+    NOT_FOUND = 5
+    ALREADY_EXISTS = 6
+    PERMISSION_DENIED = 7
+    UNAUTHENTICATED = 8
+    RESOURCE_EXHAUSTED = 9
+    FAILED_PRECONDITION = 10
+    ABORTED = 11
+    OUT_OF_RANGE = 12
+    UNIMPLEMENTED = 13
+    INTERNAL = 14
+    UNAVAILABLE = 15
+    DATA_LOSS = 16
+
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
+  errorMessage = _messages.StringField(2)
+  operationId = _messages.StringField(3)
+  timestampEvents = _messages.MessageField('TimestampEvent', 4, repeated=True)
+  validationToken = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
 
 
 encoding.AddCustomJsonFieldMapping(

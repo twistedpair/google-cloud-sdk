@@ -2,6 +2,57 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+
+## 99.0.0 (2016/3/2)
+
+### Breaking Changes
+
+* Support for the deprecated workspace configurations feature has been removed.
+  If you are using gcloud in a workspace, those properties will no longer be
+  read.  See `gcloud topic configurations` for information on how to use
+  configurations instead.
+
+### Cloud SDK
+
+* Enable gcloud to run in Cygwin 64 bit environments.
+
+* Fail gracefully on unreadable Google Compute Engine credential file. Fixes
+  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=460>.
+
+### Google App Engine
+
+* App Engine components updated to 1.9.33. Please visit
+  <https://cloud.google.com/appengine/docs/python/release-notes> for the Python
+  release notes and
+  <https://cloud.google.com/appengine/docs/java/release-notes> for the Java
+  release notes.
+
+* Added `gcloud preview app browse` command.
+
+* Fixed a race condition that caused errors while deploying App Engine Managed
+  VM applications.
+
+* Fixed a TLS-related error during gcloud preview app deploy. Alleviates the
+  problem in <https://code.google.com/p/google-cloud-sdk/issues/detail?id=559>.
+
+### Google Compute Engine
+
+* `routers` surface moved to beta and is now accessible via
+  `gcloud beta compute routers`
+
+### Google Cloud Dataproc
+
+* Add `--subnet` flag to `gcloud dataproc clusters create`.
+
+### Google Cloud Genomics
+
+* `genomics alpha operations cancel` assumes the `operations/` prefix if not present.
+
+### Google Cloud Storage
+
+* Update gsutil component to 4.17
+
+
 ## 98.0.0 (2016/2/24)
 
 * Release 95.0.0 introduced a bug that generated corrupt keys for Windows gcloud

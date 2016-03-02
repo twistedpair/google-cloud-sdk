@@ -383,6 +383,11 @@ class Lexer(object):
         else:
           key.append(name)
       elif not self.IsCharacter('[', peek=True):
+        # A single . is a valid key that names the top level resource.
+        if (not key and self.IsCharacter('.') and (
+            self.EndOfInput() or self.IsCharacter(
+                _RESERVED_OPERATOR_CHARS, peek=True, eoi_ok=True))):
+          break
         raise resource_exceptions.ExpressionSyntaxError(
             'Non-empty key name expected [{0}].'.format(self.Annotate(here)))
       if self.EndOfInput():
@@ -390,12 +395,12 @@ class Lexer(object):
       if self.IsCharacter(']'):
         raise resource_exceptions.ExpressionSyntaxError(
             'Unmatched ] in key [{0}].'.format(self.Annotate(here)))
-      while self.IsCharacter('['):
+      while self.IsCharacter('[', eoi_ok=True):
         # [] slice or [NUMBER] array index.
         index = self.Token(']', convert=True)
         self.IsCharacter(']')
         key.append(index)
-      if not self.IsCharacter('.'):
+      if not self.IsCharacter('.', eoi_ok=True):
         break
       if self.EndOfInput():
         # Dangling '.' is not allowed.
@@ -441,4 +446,4 @@ def GetKeyName(key):
       part = part.replace('"', '\\"')
       part = '"{part}"'.format(part=part)
     parts.append(part)
-  return '.'.join(parts)
+  return '.'.join(parts) if parts else '.'

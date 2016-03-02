@@ -35,6 +35,7 @@ from googlecloudsdk.third_party.apitools.base.py import exceptions as api_except
 GSUTIL_BUCKET_REGEX = r'^gs://.*$'
 
 LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
+LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
 OUTPUT_LINE_CHAR = '-'
 GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
@@ -197,7 +198,7 @@ class LogTailer(object):
       if self.cursor == 0:
         self._PrintFirstLine()
       self.cursor += len(body)
-      self._PrintLogContent(body)
+      self._PrintLogLine(body.rstrip('\n'))
       if is_last:
         self._PrintLastLine()
       return
@@ -208,23 +209,28 @@ class LogTailer(object):
     # exponential retry system.
     if res.status == 429:  # Too Many Requests
       log.warning('Reading GCS logfile: 429 (server is throttling us)')
+      if is_last:
+        self._PrintLastLine(LOG_OUTPUT_INCOMPLETE)
       return
 
     if res.status == 503:  # Service Unavailable
       log.warning('Reading GCS logfile: 503 (service unavailable)')
+      if is_last:
+        self._PrintLastLine(LOG_OUTPUT_INCOMPLETE)
       return
 
     # Default: any other codes are treated as errors.
     raise api_exceptions.HttpError(res, body, self.url)
 
-  def _PrintLogContent(self, text):
+  def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""
-    log.status.Print(text.rstrip('\n'))
+    log.status.Print(text)
 
   def _PrintFirstLine(self):
     width, _ = console_attr_os.GetTermSize()
-    log.status.Print(LOG_OUTPUT_BEGIN.center(width, OUTPUT_LINE_CHAR))
+    self._PrintLogLine(LOG_OUTPUT_BEGIN.center(width, OUTPUT_LINE_CHAR))
 
-  def _PrintLastLine(self):
+  def _PrintLastLine(self, msg=''):
     width, _ = console_attr_os.GetTermSize()
-    log.status.Print(OUTPUT_LINE_CHAR * width + '\n')
+    # We print an extra blank visually separating the log from other output.
+    self._PrintLogLine(msg.center(width, OUTPUT_LINE_CHAR) + '\n')

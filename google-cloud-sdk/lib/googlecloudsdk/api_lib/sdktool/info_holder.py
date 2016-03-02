@@ -149,9 +149,6 @@ class ConfigInfo(object):
         Installation Properties: [{installation_properties}]
         User Config Directory: [{global_config}]
         User Properties: [{user_properties}]
-        Current Workspace: [{workspace}]
-        Workspace Config Directory: [{workspace_config}]
-        Workspace Properties: [{workspace_properties}]
 
         Account: [{account}]
         Project: [{project}]
@@ -160,9 +157,6 @@ class ConfigInfo(object):
             installation_properties=self.paths.installation_properties_path,
             global_config=self.paths.global_config_dir,
             user_properties=self.paths.user_properties_path,
-            workspace=self.paths.workspace_dir,
-            workspace_config=self.paths.workspace_config_dir,
-            workspace_properties=self.paths.workspace_properties_path,
             account=self.account,
             project=self.project)))
 

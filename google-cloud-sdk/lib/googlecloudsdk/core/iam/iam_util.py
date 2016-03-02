@@ -191,8 +191,7 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id):
           of 'roles/editor' for the user 'test-user@gmail.com' on a {0} with
           identifier '{1}'
 
-            $ {{command}} {1} --member='user:test-user@gmail.com'
-            --role='roles/editor'
+            $ {{command}} {1} --member='user:test-user@gmail.com' --role='roles/editor'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
@@ -217,8 +216,7 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id):
           of 'roles/editor' for the user 'test-user@gmail.com' on {0} with
           identifier '{1}'
 
-            $ {{command}} {1} --member='user:test-user@gmail.com'
-            --role='roles/editor'
+            $ {{command}} {1} --member='user:test-user@gmail.com' --role='roles/editor'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.

@@ -40,16 +40,22 @@ class _OnGCECache(object):
   if more than _GCE_CACHE_MAX_AGE passed since it was updated.
   """
 
-  def __init__(self):
-    self.connected = None
-    self.mtime = None
+  def __init__(self, connected=None, expiration_time=None):
+    self.connected = connected
+    self.expiration_time = expiration_time
     self.file_lock = Lock()
 
   def GetOnGCE(self, check_age=True):
     """Check if we are on a GCE machine.
 
-    Check the memory cache if we're on GCE. If the cache is not populated,
-    update it.
+    Checks, in order:
+    * in-memory cache
+    * on-disk cache
+    * metadata server
+
+    If we read from one of these sources, update all of the caches above it in
+    the list.
+
     If check_age is True, then update all caches if the information we have is
     older than _GCE_CACHE_MAX_AGE. In most cases, age should be respected. It
     was added for reporting metrics.
@@ -61,30 +67,57 @@ class _OnGCECache(object):
     Returns:
       bool, if we are on GCE or not.
     """
-    if self.connected is None or self.mtime is None:
-      self._UpdateMemory()
-    if check_age and time.time() - self.mtime > _GCE_CACHE_MAX_AGE:
-      self._UpdateFileCache()
-      self._UpdateMemory()
-    return self.connected
+    on_gce = self._CheckMemory(check_age=check_age)
+    if on_gce is not None:
+      return on_gce
 
-  def _UpdateMemory(self):
-    """Read from file and store in memory."""
-    gce_cache_path = config.Paths().GCECachePath()
-    if not os.path.exists(gce_cache_path):
-      self._UpdateFileCache()
-    with self.file_lock:
-      self.mtime = os.stat(gce_cache_path).st_mtime
-      with open(gce_cache_path) as gcecache_file:
-        self.connected = gcecache_file.read() == str(True)
+    self._WriteMemory(*self._CheckDisk())
+    on_gce = self._CheckMemory(check_age=check_age)
+    if on_gce is not None:
+      return on_gce
 
-  def _UpdateFileCache(self):
-    """Check server if connected, write the result to file."""
-    gce_cache_path = config.Paths().GCECachePath()
     on_gce = self._CheckServer()
+    self._WriteDisk(on_gce)
+    self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
+    return on_gce
+
+  def _CheckMemory(self, check_age):
+    if not (check_age and self.expiration_time < time.time()):
+      return self.connected
+
+  def _WriteMemory(self, on_gce, expiration_time):
+    self.connected = on_gce
+    self.expiration_time = expiration_time
+
+  def _CheckDisk(self):
+    gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
-      with files.OpenForWritingPrivate(gce_cache_path) as gcecache_file:
-        gcecache_file.write(str(on_gce))
+      try:
+        with open(gce_cache_path) as gcecache_file:
+          mtime = os.stat(gce_cache_path).st_mtime
+          expiration_time = mtime + _GCE_CACHE_MAX_AGE
+          return gcecache_file.read() == str(True), expiration_time
+      except (OSError, IOError):
+        # Failed to read Google Compute Engine credential cache file.
+        # This could be due to permission reasons, or because it doesn't yet
+        # exist.
+        # Can't log here because the log module depends (indirectly) on this
+        # one.
+        return None, None
+
+  def _WriteDisk(self, on_gce):
+    gce_cache_path = config.Paths().GCECachePath()
+    with self.file_lock:
+      try:
+        with files.OpenForWritingPrivate(gce_cache_path) as gcecache_file:
+          gcecache_file.write(str(on_gce))
+      except (OSError, IOError):
+        # Failed to write Google Compute Engine credential cache file.
+        # This could be due to permission reasons, or because it doesn't yet
+        # exist.
+        # Can't log here because the log module depends (indirectly) on this
+        # one.
+        pass
 
   def _CheckServer(self):
     try:

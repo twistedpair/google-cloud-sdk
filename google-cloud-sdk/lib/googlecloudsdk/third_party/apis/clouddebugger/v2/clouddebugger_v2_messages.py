@@ -269,11 +269,14 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest(_messages.Message):
 
   Fields:
     breakpointId: ID of the breakpoint to delete.
+    clientVersion: The client version making the call. Following:
+      `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoint to delete.
   """
 
   breakpointId = _messages.StringField(1, required=True)
-  debuggeeId = _messages.StringField(2, required=True)
+  clientVersion = _messages.StringField(2)
+  debuggeeId = _messages.StringField(3, required=True)
 
 
 class ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest(_messages.Message):
@@ -281,11 +284,14 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest(_messages.Message):
 
   Fields:
     breakpointId: ID of the breakpoint to get.
+    clientVersion: The client version making the call. Following:
+      `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoint to get.
   """
 
   breakpointId = _messages.StringField(1, required=True)
-  debuggeeId = _messages.StringField(2, required=True)
+  clientVersion = _messages.StringField(2)
+  debuggeeId = _messages.StringField(3, required=True)
 
 
 class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
@@ -298,6 +304,8 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
   Fields:
     action_value: Only breakpoints with the specified action will pass the
       filter.
+    clientVersion: The client version making the call. Following:
+      `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoints to list.
     includeAllUsers: When set to `true`, the response includes the list of
       breakpoints set by any user. Otherwise, it includes only breakpoints set
@@ -325,11 +333,12 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
     LOG = 1
 
   action_value = _messages.EnumField('ActionValueValueValuesEnum', 1)
-  debuggeeId = _messages.StringField(2, required=True)
-  includeAllUsers = _messages.BooleanField(3)
-  includeInactive = _messages.BooleanField(4)
-  stripResults = _messages.BooleanField(5)
-  waitToken = _messages.StringField(6)
+  clientVersion = _messages.StringField(2)
+  debuggeeId = _messages.StringField(3, required=True)
+  includeAllUsers = _messages.BooleanField(4)
+  includeInactive = _messages.BooleanField(5)
+  stripResults = _messages.BooleanField(6)
+  waitToken = _messages.StringField(7)
 
 
 class ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest(_messages.Message):
@@ -337,24 +346,30 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest(_messages.Message):
 
   Fields:
     breakpoint: A Breakpoint resource to be passed as the request body.
+    clientVersion: The client version making the call. Following:
+      `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee where the breakpoint is to be set.
   """
 
   breakpoint = _messages.MessageField('Breakpoint', 1)
-  debuggeeId = _messages.StringField(2, required=True)
+  clientVersion = _messages.StringField(2)
+  debuggeeId = _messages.StringField(3, required=True)
 
 
 class ClouddebuggerDebuggerDebuggeesListRequest(_messages.Message):
   """A ClouddebuggerDebuggerDebuggeesListRequest object.
 
   Fields:
+    clientVersion: The client version making the call. Following:
+      `domain/type/version` (e.g., `google.com/intellij/v1`).
     includeInactive: When set to `true`, the result includes all debuggees.
       Otherwise, the result includes only debuggees that are active.
     project: Project number of a Google Cloud project whose debuggees to list.
   """
 
-  includeInactive = _messages.BooleanField(1)
-  project = _messages.StringField(2)
+  clientVersion = _messages.StringField(1)
+  includeInactive = _messages.BooleanField(2)
+  project = _messages.StringField(3)
 
 
 class Debuggee(_messages.Message):

@@ -604,8 +604,10 @@ class ComponentSnapshotDiff(object):
     """
     # Get the full set of everything that needs to be updated together that we
     # currently have installed
-    connected = self.current.ConnectedComponents(update_seed)
-    connected |= self.latest.ConnectedComponents(connected | set(update_seed))
+    connected = self.current.ConnectedComponents(
+        update_seed, platform_filter=self.__platform_filter)
+    connected |= self.latest.ConnectedComponents(
+        connected | set(update_seed), platform_filter=self.__platform_filter)
     removal_candidates = connected & set(self.current.components.keys())
     # We need to remove anything that no longer exists or that has been updated
     return (self.__removed_components |
@@ -629,7 +631,8 @@ class ComponentSnapshotDiff(object):
       set of str, The component ids that should be removed.
     """
     installed_components = self.current.components.keys()
-    local_connected = self.current.ConnectedComponents(update_seed)
+    local_connected = self.current.ConnectedComponents(
+        update_seed, platform_filter=self.__platform_filter)
     all_required = self.latest.DependencyClosureForComponents(
         local_connected | set(update_seed),
         platform_filter=self.__platform_filter)

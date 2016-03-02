@@ -18,6 +18,7 @@ import cStringIO
 import json
 import operator
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
@@ -91,6 +92,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   (first.name, last.name) produce the default column heading
   ('NAME', 'LAST_NAME').
 
+  If *--page-size*=_N_ is specified then output is grouped into tables with
+  at most _N_ rows. Headings, alignment and sorting are done per-page. The
+  title, if any, is printed before the first table. The legend, if any, is
+  printed after the last table.
+
   Printer attributes:
     box: Prints a box around the entire table and each cell, including the
       title if any.
@@ -107,18 +113,16 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       *debug*, *info*, *warn*, or *error*.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
-    page=N: If _N_ > 0 then output is grouped into tables with _N_ rows. The
-      last table may have less rows. Headings, alignment and sorting are done
-      per-page. The title, if any, is printed before the first table. The
-      legend, if any, is printed after the last table.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
       the table box if *box* is enabled.
 
   Attributes:
     _page_count: The output page count, incremented before each page.
-    _rows_per_page: The number of rows in each resource page. 0 mean no paging.
+    _rows_per_page: The number of rows in each resource page. 0 for no paging.
     _rows: The list of all resource columns indexed by row.
   """
+
+  # TODO(user): Drop TablePrinter._rows_per_page 3Q2016.
 
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
@@ -134,6 +138,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
                                                        out=self._out)
     self._rows_per_page = self.attributes.get('page', 0)
+    if self._rows_per_page:
+      log.warn('The [page=N] printer attribute is deprecated. '
+               'Use the --page-size=N flag instead.')
     self._page_count = 0
 
     # Check for subformat columns.
@@ -170,10 +177,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     if self._rows_per_page and len(self._rows) >= self._rows_per_page:
-      self._page_count += 1
-      self.Finish(last_page=False)
-      self._rows = []
-      self._nest = []
+      self.Page()
     if self._subformats and not self._aggregate:
       row = []
       for subformat in self._subformats:
@@ -190,9 +194,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     Args:
       last_page: True if this is the last resource page.
     """
-    if last_page and not self._rows:
-      # Table is empty but there might be an empty legend.
-      self.AddLegend()
+    if not self._rows:
+      # Table is empty.
+      if last_page:
+        # There might be an empty legend.
+        self.AddLegend()
       return
 
     if self._aggregate:
@@ -408,3 +414,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     # Print the legend if any.
     if last_page:
       self.AddLegend()
+
+  def Page(self):
+    """Flushes the current resource page output."""
+    self._page_count += 1
+    self.Finish(last_page=False)
+    self._rows = []
+    self._nest = []

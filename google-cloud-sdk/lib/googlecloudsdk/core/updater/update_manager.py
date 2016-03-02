@@ -230,6 +230,13 @@ class UpdateManager(object):
       local_state.InvalidSDKRootError: If the Cloud SDK root cannot be found.
       MissingUpdateURLError: If we don't know what manifest to download.
     """
+    # Check sdk root before URL, as error about non-installed gcloud is more
+    # informative.
+    self.__sdk_root = sdk_root
+    if not self.__sdk_root:
+      self.__sdk_root = config.Paths().sdk_root
+    if not self.__sdk_root:
+      raise local_state.InvalidSDKRootError()
 
     if not url:
       url = properties.VALUES.component_manager.snapshot_url.Get()
@@ -241,11 +248,6 @@ class UpdateManager(object):
     if not url:
       raise MissingUpdateURLError()
 
-    self.__sdk_root = sdk_root
-    if not self.__sdk_root:
-      self.__sdk_root = config.Paths().sdk_root
-    if not self.__sdk_root:
-      raise local_state.InvalidSDKRootError()
     self.__sdk_root = os.path.realpath(self.__sdk_root)
     self.__base_url = url
     self.__platform_filter = platform_filter
@@ -818,7 +820,7 @@ version [{1}].  To clear your fixed version setting, run:
           log.status,
           """\
 To revert your SDK to the previously installed version, you may run:
-  $ gcloud components update --version [{current}]
+  $ gcloud components update --version {current}
 """.format(current=current_version), word_wrap=False)
 
     if self.__warn:

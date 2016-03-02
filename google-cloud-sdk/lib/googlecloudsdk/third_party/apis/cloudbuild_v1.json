@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "cloudbuild:v1",
   "name": "cloudbuild",
+  "canonicalName": "Cloud Build",
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Container Builder API",
@@ -293,7 +294,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping above, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
           "type": "string"
         },
         "metadata": {

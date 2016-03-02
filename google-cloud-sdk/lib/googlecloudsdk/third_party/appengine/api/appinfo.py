@@ -272,21 +272,27 @@ SOURCE_REVISION_RE_STRING = r'^[0-9a-fA-F]+$'
 SOURCE_REFERENCES_MAX_SIZE = 2048
 
 INSTANCE_CLASS = 'instance_class'
-# Attributes for AutomaticScaling
+
+# Attributes for Standard App Engine (only) AutomaticScaling.
 MINIMUM_PENDING_LATENCY = 'min_pending_latency'
 MAXIMUM_PENDING_LATENCY = 'max_pending_latency'
 MINIMUM_IDLE_INSTANCES = 'min_idle_instances'
 MAXIMUM_IDLE_INSTANCES = 'max_idle_instances'
 MAXIMUM_CONCURRENT_REQUEST = 'max_concurrent_requests'
 
-# Attributes for VM-based AutomaticScaling.
-# See AutoscalingConfig in
+# Attributes for Managed VMs (only) AutomaticScaling. These are very
+# different than Standard App Engine because scaling settings are
+# mapped to Cloud Autoscaler (as opposed to the clone scheduler). See
+# AutoscalingConfig in
 MIN_NUM_INSTANCES = 'min_num_instances'
 MAX_NUM_INSTANCES = 'max_num_instances'
 COOL_DOWN_PERIOD_SEC = 'cool_down_period_sec'
 CPU_UTILIZATION = 'cpu_utilization'
 CPU_UTILIZATION_UTILIZATION = 'target_utilization'
 CPU_UTILIZATION_AGGREGATION_WINDOW_LENGTH_SEC = 'aggregation_window_length_sec'
+# Managed VMs Richer Autoscaling. These (MVMs only) scaling settings
+# are supported for both vm:true and env:2|flex, but are not yet
+# publicly documented.
 TARGET_NETWORK_SENT_BYTES_PER_SEC = 'target_network_sent_bytes_per_sec'
 TARGET_NETWORK_SENT_PACKETS_PER_SEC = 'target_network_sent_packets_per_sec'
 TARGET_NETWORK_RECEIVED_BYTES_PER_SEC = 'target_network_received_bytes_per_sec'
