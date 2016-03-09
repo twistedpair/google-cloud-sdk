@@ -30,6 +30,9 @@ CLOUDBUILD_EXECUTE = _APPENGINE_PREFIX + 'cloudbuild_execute'
 # Time to copy application files to the application code bucket
 COPY_APP_FILES = _APPENGINE_PREFIX + 'copy_app_files'
 
+# Time to copy application files to the application code bucket without gsutil.
+COPY_APP_FILES_NO_GSUTIL = _APPENGINE_PREFIX + 'copy_app_files_no_gsutil'
+
 # Time for a docker build on client machine
 DOCKER_BUILD = _APPENGINE_PREFIX + 'docker_build'
 

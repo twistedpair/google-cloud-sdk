@@ -6,7 +6,7 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Genomics API",
-  "description": "An API to store, process, explore, and share genomic data. It supports reference-based alignments, genetic variants, and reference genomes. This API provides an implementation of the Global Alliance for Genomics and Health (GA4GH) v0.5.1 API as well as several extensions.",
+  "description": "Stores, processes, explores and shares genomic data. This API implements the Global Alliance for Genomics and Health (GA4GH) v0.5.1 API as well as several extensions.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -567,9 +567,9 @@
         }
       }
     },
-    "UpdateStatusRequest": {
-      "id": "UpdateStatusRequest",
-      "description": "Request to update operation status. Should only be used by VMs\ncreated by the Pipelines Service and not by end users.",
+    "SetOperationStatusRequest": {
+      "id": "SetOperationStatusRequest",
+      "description": "Request to set operation status. Should only be used by VMs\ncreated by the Pipelines Service and not by end users.",
       "type": "object",
       "properties": {
         "operationId": {
@@ -649,6 +649,75 @@
           "description": "The time this event occured.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateStatusRequest": {
+      "id": "UpdateStatusRequest",
+      "description": "Request to update operation status. Should only be used by VMs\ncreated by the Pipelines Service and not by end users.",
+      "type": "object",
+      "properties": {
+        "operationId": {
+
+          "type": "string"
+        },
+        "timestampEvents": {
+
+          "type": "array",
+          "items": {
+            "$ref": "TimestampEvent"
+          }
+        },
+        "errorCode": {
+
+          "enumDescriptions": [
+            "Not an error; returned on success\n\nHTTP Mapping: 200 OK",
+            "The operation was cancelled, typically by the caller.\n\nHTTP Mapping: 499 Client Closed Request",
+            "Unknown error.  For example, this error may be returned when\na `Status` value received from another address space belongs to\nan error space that is not known in this address space.  Also\nerrors raised by APIs that do not return enough error information\nmay be converted to this error.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The client specified an invalid argument.  Note that this differs\nfrom `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments\nthat are problematic regardless of the state of the system\n(e.g., a malformed file name).\n\nHTTP Mapping: 400 Bad Request",
+            "The deadline expired before the operation could complete. For operations\nthat change the state of the system, this error may be returned\neven if the operation has completed successfully.  For example, a\nsuccessful response from a server could have been delayed long\nenough for the deadline to expire.\n\nHTTP Mapping: 504 Gateway Timeout",
+            "Some requested entity (e.g., file or directory) was not found.\nFor privacy reasons, this code *may* be returned when the client\ndoes not have the access rights to the entity, though such usage is\ndiscouraged.\n\nHTTP Mapping: 404 Not Found",
+            "The entity that a client attempted to create (e.g., file or directory)\nalready exists.\n\nHTTP Mapping: 409 Conflict",
+            "The caller does not have permission to execute the specified\noperation. `PERMISSION_DENIED` must not be used for rejections\ncaused by exhausting some resource (use `RESOURCE_EXHAUSTED`\ninstead for those errors). `PERMISSION_DENIED` must not be\nused if the caller can not be identified (use `UNAUTHENTICATED`\ninstead for those errors).\n\nHTTP Mapping: 403 Forbidden",
+            "The request does not have valid authentication credentials for the\noperation.\n\nHTTP Mapping: 401 Unauthorized",
+            "Some resource has been exhausted, perhaps a per-user quota, or\nperhaps the entire file system is out of space.\n\nHTTP Mapping: 429 Too Many Requests",
+            "The operation was rejected because the system is not in a state\nrequired for the operation's execution.  For example, the directory\nto be deleted is non-empty, an rmdir operation is applied to\na non-directory, etc.\n\nService implementors can use the following guidelines to decide\nbetween `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`:\n (a) Use `UNAVAILABLE` if the client can retry just the failing call.\n (b) Use `ABORTED` if the client should retry at a higher level\n     (e.g., restarting a read-modify-write sequence).\n (c) Use `FAILED_PRECONDITION` if the client should not retry until\n     the system state has been explicitly fixed.  E.g., if an \"rmdir\"\n     fails because the directory is non-empty, `FAILED_PRECONDITION`\n     should be returned since the client should not retry unless\n     the files are deleted from the directory.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation was aborted, typically due to a concurrency issue such as\na sequencer check failure or transaction abort.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 409 Conflict",
+            "The operation was attempted past the valid range.  E.g., seeking or\nreading past end-of-file.\n\nUnlike `INVALID_ARGUMENT`, this error indicates a problem that may\nbe fixed if the system state changes. For example, a 32-bit file\nsystem will generate `INVALID_ARGUMENT` if asked to read at an\noffset that is not in the range [0,2^32-1], but it will generate\n`OUT_OF_RANGE` if asked to read from an offset past the current\nfile size.\n\nThere is a fair bit of overlap between `FAILED_PRECONDITION` and\n`OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific\nerror) when it applies so that callers who are iterating through\na space can easily look for an `OUT_OF_RANGE` error to detect when\nthey are done.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation is not implemented or is not supported\/enabled in this\nservice.\n\nHTTP Mapping: 501 Not Implemented",
+            "Internal errors.  This means that some invariants expected by the\nunderlying system have been broken.  This error code is reserved\nfor serious errors.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The service is currently unavailable.  This is most likely a\ntransient condition, which can be corrected by retrying with\na backoff.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 503 Service Unavailable",
+            "Unrecoverable data loss or corruption.\n\nHTTP Mapping: 500 Internal Server Error"
+          ],
+          "type": "string",
+          "enum": [
+            "OK",
+            "CANCELLED",
+            "UNKNOWN",
+            "INVALID_ARGUMENT",
+            "DEADLINE_EXCEEDED",
+            "NOT_FOUND",
+            "ALREADY_EXISTS",
+            "PERMISSION_DENIED",
+            "UNAUTHENTICATED",
+            "RESOURCE_EXHAUSTED",
+            "FAILED_PRECONDITION",
+            "ABORTED",
+            "OUT_OF_RANGE",
+            "UNIMPLEMENTED",
+            "INTERNAL",
+            "UNAVAILABLE",
+            "DATA_LOSS"
+          ]
+        },
+        "errorMessage": {
+
+          "type": "string"
+        },
+        "validationToken": {
+
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -958,12 +1027,61 @@
             "https://www.googleapis.com/auth/genomics"
           ]
         },
+        "getControllerConfig": {
+          "id": "genomics.pipelines.getControllerConfig",
+          "path": "v1alpha2/pipelines:getControllerConfig",
+          "flatPath": "v1alpha2/pipelines:getControllerConfig",
+          "httpMethod": "GET",
+          "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
+          "parameters": {
+            "operationId": {
+              "description": "The operation to retrieve controller configuration for.",
+              "location": "query",
+              "type": "string"
+            },
+            "validationToken": {
+              "location": "query",
+              "type": "string",
+              "format": "uint64"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ControllerConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "setOperationStatus": {
+          "id": "genomics.pipelines.setOperationStatus",
+          "path": "v1alpha2/pipelines:setOperationStatus",
+          "flatPath": "v1alpha2/pipelines:setOperationStatus",
+          "httpMethod": "PUT",
+          "description": "Sets status of a given operation. All timestamps are sent on each\ncall, and the whole series of events is replaced, in case\nintermediate calls are lost. Should only be called by VMs created\nby the Pipelines Service and not by end users.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "SetOperationStatusRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
         "update_status": {
           "id": "genomics.pipelines.update_status",
           "path": "v1alpha2/pipelines:update_status",
           "flatPath": "v1alpha2/pipelines:update_status",
           "httpMethod": "PUT",
-          "description": "Updates status of a given operation. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
+          "description": "TODO (tovanadler): Delete this method once code is switched to use\nSetOperationStatus.\nUpdates status of a given operation. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
           "parameters": {
           },
           "parameterOrder": [
@@ -978,43 +1096,6 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
           ]
-        }
-      }
-      ,
-      "resources": {
-        "controller_config": {
-          "methods": {
-            "get": {
-              "id": "genomics.pipelines.controller_config.get",
-              "path": "v1alpha2/pipelines/controller_config/{operationId}",
-              "flatPath": "v1alpha2/pipelines/controller_config/{operationId}",
-              "httpMethod": "GET",
-              "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
-              "parameters": {
-                "operationId": {
-                  "description": "The operation to retrieve controller configuration for.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "validationToken": {
-                  "location": "query",
-                  "type": "string",
-                  "format": "uint64"
-                }
-              },
-              "parameterOrder": [
-                "operationId"
-              ],
-              "response": {
-                "$ref": "ControllerConfig"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/genomics"
-              ]
-            }
-          }
         }
       }
     }

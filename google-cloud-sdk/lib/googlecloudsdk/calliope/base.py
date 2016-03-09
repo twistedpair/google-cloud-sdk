@@ -21,12 +21,10 @@ import sys
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
+from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
-
-
-ADD_TO_URI_CACHE, DELETE_FROM_URI_CACHE, REPLACE_URI_CACHE = range(1, 4)
 
 
 class LayoutException(Exception):
@@ -508,6 +506,10 @@ class Command(_Common):
     """Returns the default format string."""
     return 'default'
 
+  def Epilog(self, unused_args):
+    """Called after resources are displayed if the default format was used."""
+    pass
+
   def GetUriCacheUpdateOp(self):
     """Returns the URI cache update OP."""
     return None
@@ -581,7 +583,7 @@ class ListCommand(CacheCommand):
     return info.list_format or 'default'
 
   def GetUriCacheUpdateOp(self):
-    return REPLACE_URI_CACHE
+    return remote_completion.ReplaceCacheOp
 
 
 class CreateCommand(CacheCommand):
@@ -590,7 +592,7 @@ class CreateCommand(CacheCommand):
   __metaclass__ = abc.ABCMeta
 
   def GetUriCacheUpdateOp(self):
-    return ADD_TO_URI_CACHE
+    return remote_completion.AddToCacheOp
 
 
 class DeleteCommand(CacheCommand):
@@ -599,7 +601,7 @@ class DeleteCommand(CacheCommand):
   __metaclass__ = abc.ABCMeta
 
   def GetUriCacheUpdateOp(self):
-    return DELETE_FROM_URI_CACHE
+    return remote_completion.DeleteFromCacheOp
 
 
 def Hidden(cmd_class):

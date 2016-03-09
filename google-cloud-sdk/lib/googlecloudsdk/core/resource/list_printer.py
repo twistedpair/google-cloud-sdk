@@ -34,7 +34,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
   """
 
   def __init__(self, *args, **kwargs):
-    super(ListPrinter, self).__init__(*args, **kwargs)
+    super(ListPrinter, self).__init__(*args, by_columns=True, **kwargs)
     # Print the title if specified.
     if 'title' in self.attributes:
       self._out.write(self.attributes['title'] + '\n')
@@ -47,9 +47,11 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     if isinstance(record, dict):
-      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())]
+      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
+                if v is not None]
     elif not isinstance(record, list):
       record = [record]
+    record = [i for i in record if i is not None]
     self._out.write(' - ' + '\n   '.join(record) + '\n')
 
   def Finish(self):

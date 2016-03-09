@@ -43,7 +43,6 @@ class Parser(object):
 
   Attributes:
     __key_attributes_only: Parse projection key list for attributes only.
-    _ordinal: The projection key ordinal counting from 1.
     _projection: The resource_projection_spec.ProjectionSpec to parse into.
     _root: The projection _Tree tree root node.
     _snake_headings: Dict used to disambiguate key attribute labels.
@@ -61,7 +60,6 @@ class Parser(object):
       compiler: The projection compiler method for nested projections.
     """
     self.__key_attributes_only = False
-    self._ordinal = 0
     self._projection = resource_projection_spec.ProjectionSpec(
         defaults=defaults, symbols=symbols, compiler=compiler)
     self._snake_headings = {}
@@ -88,7 +86,6 @@ class Parser(object):
 
     Attributes:
       flag: The projection algorithm flag, one of DEFAULT, INNER, PROJECT.
-      ordinal: The left-to-right column order counting from 1.
       order: The column sort order, None if not ordered. Lower values have
         higher sort precedence.
       label: A string associated with each projection key.
@@ -100,7 +97,6 @@ class Parser(object):
 
     def __init__(self, flag):
       self.flag = flag
-      self.ordinal = None
       self.order = None
       self.label = None
       self.reverse = None
@@ -110,11 +106,9 @@ class Parser(object):
 
     def __str__(self):
       return (
-          '({flag}, {ordinal}, {order}, {label}, {align}, {active},'
+          '({flag}, {order}, {label}, {align}, {active},'
           ' {transform})'.format(
               flag=self.flag,
-              ordinal=('DEFAULT' if self.ordinal is None
-                       else str(self.ordinal)),
               order=('UNORDERED' if self.order is None else str(self.order)),
               label=repr(self.label),
               align=self.align,
@@ -199,7 +193,17 @@ class Parser(object):
     name_in_tree = name in tree
     if name_in_tree:
       # Already added.
-      attribute = tree[name].attribute
+      if (not self.__key_attributes_only and
+          any([col for col in self._projection.Columns() if col.key == key])):
+        # A duplicate column. A projection can only have one attribute object
+        # per key. The first <key, attribute> pair added to the current set of
+        # columns remains in the projection. Projection columns may have
+        # duplicate keys (e.g., table columns with the same key but different
+        # transforms). The attribute copy, with attribute_add merged in, is
+        # added to the projection columns but not the projection tree.
+        attribute = copy.copy(tree[name].attribute)
+      else:
+        attribute = tree[name].attribute
     elif isinstance(name, (int, long)) and None in tree:
       # New projection for explicit name using slice defaults.
       tree[name] = copy.deepcopy(tree[None])
@@ -232,8 +236,6 @@ class Parser(object):
     if not self.__key_attributes_only:
       # This key is in the projection.
       attribute.flag = self._projection.PROJECT
-      self._ordinal += 1
-      attribute.ordinal = self._ordinal
       self._projection.AddKey(key, attribute)
     elif not name_in_tree:
       # This is a new attributes only key.
@@ -462,7 +464,6 @@ class Parser(object):
           if not self.__key_attributes_only:
             defaults = False
             self._projection.Defaults()
-            self._ordinal = 0
           self._ParseKeys()
         elif self._lex.IsCharacter('['):
           self._ParseAttributes()

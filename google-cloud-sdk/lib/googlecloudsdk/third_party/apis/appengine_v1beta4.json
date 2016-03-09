@@ -131,7 +131,7 @@
           "type": "string"
         },
         "dispatchRules": {
-          "description": "HTTP path dispatch rules for requests to the app that do not\nexplicitly target a module or version. The rules are\norder-dependent.",
+          "description": "HTTP path dispatch rules for requests to the app that do not\nexplicitly target a module or version. The rules are\norder-dependent.\n\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "UrlDispatchRule"
@@ -142,7 +142,7 @@
           "type": "string"
         },
         "location": {
-          "description": "The location from which the application will be run. Choices are\n\"us-central\" for United States and \"europe-west\" for European Union.\nApplication instances will run out of data centers in the chosen location\nand all of the application's End User Content will be stored at rest\nin the chosen location. The default is \"us-central\".",
+          "description": "The location from which the application will be run. Application instances\nwill run out of data centers in the chosen location and all of the\napplication's End User Content will be stored at rest. The default is\n\"us-central\". Choices are:\n\n\"us-central\" - Central US\n\n\"europe-west\" - Western Europe\n\n\"us-east1\" - Eastern US",
           "type": "string"
         },
         "codeBucket": {
@@ -150,7 +150,7 @@
           "type": "string"
         },
         "defaultCookieExpiration": {
-          "description": "Determines the cookie expiration policy for the application.",
+          "description": "Determines the cookie expiration policy for the application.\n\n@OutputOnly",
           "type": "string",
           "format": "google-duration"
         },

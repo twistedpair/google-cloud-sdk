@@ -163,8 +163,9 @@ class AppengineApiClient(object):
     services = []
     for s in response.modules:
       traffic_split = {}
-      for split in s.split.allocations.additionalProperties:
-        traffic_split[split.key] = split.value
+      if s.split:
+        for split in s.split.allocations.additionalProperties:
+          traffic_split[split.key] = split.value
       service = service_util.Service(self.project, s.id, traffic_split)
       services.append(service)
 

@@ -128,7 +128,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     """Creates a new TablePrinter."""
     self._rows = []
     self._nest = []
-    super(TablePrinter, self).__init__(*args, by_columns=True, **kwargs)
+    super(TablePrinter, self).__init__(*args, by_columns=True,
+                                       non_empty_projection_required=True,
+                                       **kwargs)
     encoding = None
     for name in ['ascii', 'utf8', 'win']:
       if name in self.attributes:

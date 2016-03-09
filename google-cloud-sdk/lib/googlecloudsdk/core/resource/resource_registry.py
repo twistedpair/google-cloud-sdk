@@ -675,6 +675,18 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'container.projects.zones.nodePools': ResourceInfo(
+        list_format="""
+          table(
+            name,
+            zone,
+            machineType,
+            diskSizeGb,
+            version
+          )
+        """,
+    ),
+
     'container.projects.zones.operations': ResourceInfo(
         list_format="""
           table(

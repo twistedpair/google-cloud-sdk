@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Remote resource completion and caching."""
+
+import abc
 import logging
 import os
 import sys
@@ -20,6 +22,7 @@ import threading
 import time
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
@@ -152,6 +155,53 @@ class Iter(object):
 
   def __iter__(self):
     return self
+
+
+class _UpdateCacheOp(object):
+  """The cache update operation base class."""
+
+  __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  @abc.abstractmethod
+  def UpdateCache(completer, uris):
+    """Updates the completer cache with uris."""
+    pass
+
+
+class AddToCacheOp(_UpdateCacheOp):
+  """An AddToCache operation."""
+
+  __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  def UpdateCache(completer, uris):
+    """Updates the completer cache with uris."""
+    for uri in uris:
+      completer.AddToCache(uri)
+
+
+class DeleteFromCacheOp(_UpdateCacheOp):
+  """An DeleteFromCache operation."""
+
+  __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  def UpdateCache(completer, uris):
+    """Updates the completer cache with uris."""
+    for uri in uris:
+      completer.DeleteFromCache(uri)
+
+
+class ReplaceCacheOp(_UpdateCacheOp):
+  """An ReplaceCache operation."""
+
+  __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  def UpdateCache(completer, uris):
+    """Updates the completer cache with uris."""
+    completer.StoreInCache(uris)
 
 
 class RemoteCompletion(object):
@@ -406,6 +456,22 @@ class RemoteCompletion(object):
       None
     """
     self.AddToCache(self_link, delete=True)
+
+  def UpdateCache(self, operation, uris):
+    """Updates the cache using operation on uris.
+
+    Args:
+      operation: AddToCacheOp, DeleteFromCacheOp, or ReplaceCacheOp.
+      uris: The list of uris for the operation.
+
+    Raises:
+      InternalError: if operation is invalid.
+    """
+    if operation not in (AddToCacheOp, DeleteFromCacheOp, ReplaceCacheOp):
+      raise exceptions.InternalError(
+          'RemoteCompletion.UpdateCache operation [{0}] must be an '
+          '_UpdateCacheOp.'.format(operation))
+    operation().UpdateCache(self, uris)
 
   @staticmethod
   def GetTickerStream():

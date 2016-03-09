@@ -4,7 +4,7 @@
  "id": "autoscaler:v1beta2",
  "name": "autoscaler",
  "version": "v1beta2",
- "revision": "20160224",
+ "revision": "20160302",
  "title": "Google Compute Engine Autoscaler API",
  "description": "The Google Compute Engine Autoscaler API provides autoscaling for groups of Cloud VMs.",
  "ownerDomain": "google.com",
@@ -418,26 +418,6 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#zone for zones.",
      "default": "autoscaler#zone"
-    },
-    "maintenanceWindows": {
-     "type": "array",
-     "items": {
-      "type": "object",
-      "properties": {
-       "beginTime": {
-        "type": "string"
-       },
-       "description": {
-        "type": "string"
-       },
-       "endTime": {
-        "type": "string"
-       },
-       "name": {
-        "type": "string"
-       }
-      }
-     }
     },
     "name": {
      "type": "string"

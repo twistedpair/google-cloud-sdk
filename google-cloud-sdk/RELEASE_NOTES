@@ -3,6 +3,41 @@
 Copyright 2014-2016 Google Inc. All rights reserved.
 
 
+## 100.0.0 (2016/03/09)
+
+### Breaking Changes
+
+* `gcloud preview app deploy` deployments that promote the new version to
+  receive all traffic will stop the previous version by default.
+
+  To keep the previous behavior, pass the `--no-stop-previous-version` flag,
+  or run the following command:
+
+    $ gcloud config set app/stop_previous_version false
+
+### Cloud SDK
+
+* Providing no argument for list- and dict-type flags now results in a warning.
+  Instead, please explicitly provide an empty string value. For instance,
+  `gcloud command --flag` becomes `gcloud command --flag ''` (for list- and
+  dict-type flags only).
+
+### IAM
+
+* Added `gcloud beta iam list-grantable-roles` command for given
+  cloud resource.
+
+### Google App Engine
+
+* Fixed `WindowsError: [Error 32]` in the `gcloud preview app deploy` command
+  on Windows. Fixes
+  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=554>.
+
+### Google Container Engine
+
+* Added node pool support to enable heterogeneous clusters (alpha).
+
+
 ## 99.0.0 (2016/3/2)
 
 ### Breaking Changes

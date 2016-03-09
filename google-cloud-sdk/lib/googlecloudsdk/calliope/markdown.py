@@ -508,7 +508,7 @@ class MarkdownGenerator(object):
   def _AddManPageLinkMarkdown(self):
     """Add gcloud ...(1) man page link markdown."""
     top = self._command_path[0]
-    pat = re.compile(r'(\*?(' + top + r'((?:[-_ a-z])*))\*?)\(1\)')
+    pat = re.compile(r'(\*?(' + top + r'(?:[-_ a-z])*)\*?)\(1\)')
     pos = 0
     rep = ''
     while True:
@@ -516,10 +516,7 @@ class MarkdownGenerator(object):
       if not match:
         break
       cmd = match.group(2).replace('_', ' ')
-      ref = match.group(3).replace('_', ' ')
-      if ref:
-        ref = ref[1:]
-      ref = '/'.join(ref.split(' '))
+      ref = cmd.replace(' ', '/')
       lnk = '*link:' + ref + '[' + cmd + ']*'
       rep += self._doc[pos:match.start(2)] + lnk
       pos = match.end(1)

@@ -324,18 +324,18 @@ class Application(_messages.Message):
     defaultBucket: A Google Cloud Storage bucket which can be used by the
       application to store content.  @OutputOnly
     defaultCookieExpiration: Determines the cookie expiration policy for the
-      application.
+      application.  @OutputOnly
     defaultHostname: The hostname used to reach the application, as resolved
       by App Engine.  @OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the app that do
       not explicitly target a module or version. The rules are order-
-      dependent.
+      dependent.  @OutputOnly
     id: The relative name/path of the application. Example: "myapp".
-    location: The location from which the application will be run. Choices are
-      "us-central" for United States and "europe-west" for European Union.
-      Application instances will run out of data centers in the chosen
-      location and all of the application's End User Content will be stored at
-      rest in the chosen location. The default is "us-central".
+    location: The location from which the application will be run. Application
+      instances will run out of data centers in the chosen location and all of
+      the application's End User Content will be stored at rest. The default
+      is "us-central". Choices are:  "us-central" - Central US  "europe-west"
+      - Western Europe  "us-east1" - Eastern US
     name: The full path to the application in the API. Example: "apps/myapp".
       @OutputOnly
   """

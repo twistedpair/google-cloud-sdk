@@ -6,7 +6,7 @@
   "version": "v1beta3",
   "revision": "0",
   "title": "Google Cloud Logging API",
-  "description": "The Google Cloud Logging API lets you write log entries and manage your logs, log sinks and logs-based metrics.",
+  "description": "Writes log entries and manages your logs, log sinks, and logs-based metrics.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

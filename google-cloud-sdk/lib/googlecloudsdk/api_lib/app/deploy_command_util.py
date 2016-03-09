@@ -142,8 +142,9 @@ def _GetImageName(project, module, version):
 def BuildAndPushDockerImages(module_configs,
                              version_id,
                              cloudbuild_client,
+                             storage_client,
                              http,
-                             code_bucket,
+                             code_bucket_ref,
                              cli,
                              remote,
                              source_contexts,
@@ -154,8 +155,10 @@ def BuildAndPushDockerImages(module_configs,
     module_configs: A map of module name to parsed config.
     version_id: The version id to deploy these modules under.
     cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
+    storage_client: An instance of the storage_v1.StorageV1 client.
     http: a http provider that can be used to create API clients
-    code_bucket: The name of the GCS bucket where the source will be uploaded.
+    code_bucket_ref: The reference to the GCS bucket where the source will be
+      uploaded.
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     remote: Whether the user specified a remote build.
     source_contexts: A list of json-serializable source contexts to place in
@@ -187,7 +190,8 @@ def BuildAndPushDockerImages(module_configs,
 
   if use_cloud_build:
     return _BuildImagesWithCloudBuild(project, modules, version_id,
-                                      code_bucket, cloudbuild_client, http)
+                                      code_bucket_ref, cloudbuild_client,
+                                      storage_client, http)
 
   # Update docker client's credentials.
   for registry_host in constants.ALL_SUPPORTED_REGISTRIES:
@@ -218,8 +222,8 @@ def BuildAndPushDockerImages(module_configs,
   return images
 
 
-def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
-                               cloudbuild_client, http):
+def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket_ref,
+                               cloudbuild_client, storage_client, http):
   """Build multiple modules with Cloud Build."""
   images = {}
   for module, info, ensure_dockerfile, ensure_context in modules:
@@ -233,11 +237,11 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket,
           dockerfile_dir=os.path.dirname(info.file),
           tag=_GetImageName(project, module, version_id),
           nocache=False)
-      source_gcs_uri = '/'.join([code_bucket.rstrip('/'), image.tag])
-      cloud_build.UploadSource(image.dockerfile_dir, source_gcs_uri)
+      cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
+                               image.tag, storage_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-      cloud_build.ExecuteCloudBuild(project, source_gcs_uri, image.repo_tag,
-                                    cloudbuild_client, http)
+      cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tag,
+                                    image.repo_tag, cloudbuild_client, http)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
       images[module] = image.repo_tag
     finally:
@@ -410,14 +414,4 @@ def GetStopPreviousVersionFromArgs(args):
     return stop_previous_version
 
   # 3. Default value
-  log.warn('In a future Cloud SDK release, deployments that promote the new '
-           'version to receive all traffic will stop the previous version by '
-           'default.\n\n'
-           'To adopt the new behavior early, pass the '
-           '`--stop-previous-version` flag or run the following command:\n\n'
-           '  $ gcloud config set app/stop_previous_version true\n\n'
-           'To keep the current behavior (where deployments do not stop the '
-           'previous version), pass the `--no-stop-previous-version` flag, or '
-           'run the following command:\n\n'
-           '  $ gcloud config set app/stop_previous_version false')
-  return False
+  return True

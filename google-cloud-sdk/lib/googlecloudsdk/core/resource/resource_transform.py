@@ -137,6 +137,14 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
   except (TypeError, ValueError):
     pass
 
+  # Check if it is a date/time string.
+  try:
+    from dateutil import parser  # pylint: disable=g-import-not-at-top, for startup efficiency
+    dt = parser.parse(r)
+    return dt.strftime(format)
+  except (AttributeError, ImportError, TypeError, ValueError):
+    pass
+
   def _FormatFromParts():
     """Returns the formatted time from broken down time parts in r.
 

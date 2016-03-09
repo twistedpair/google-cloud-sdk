@@ -29,7 +29,9 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
   """
 
   def __init__(self, *args, **kwargs):
-    super(CsvPrinter, self).__init__(*args, by_columns=True, **kwargs)
+    super(CsvPrinter, self).__init__(*args, by_columns=True,
+                                     non_empty_projection_required=True,
+                                     **kwargs)
     self._heading_printed = False
     self._separator = ','
     self._quote = None if self.attributes.get('no-quote', 0) else '"'
@@ -46,7 +48,7 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
     Returns:
       field quoted by self._quote if necessary.
     """
-    if not self._quote:
+    if not field or not self._quote:
       return field
     if not (self._separator in field or self._quote in field or '\n' in field or
             field[0].isspace() or field[-1].isspace()):
@@ -86,7 +88,9 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
               [self._QuoteField(label) for label in labels]) + '\n')
     line = []
     for col in record:
-      if isinstance(col, dict):
+      if col is None:
+        val = ''
+      elif isinstance(col, dict):
         val = ';'.join([unicode(k) + '=' + unicode(v)
                         for k, v in sorted(col.iteritems())])
       elif isinstance(col, list):

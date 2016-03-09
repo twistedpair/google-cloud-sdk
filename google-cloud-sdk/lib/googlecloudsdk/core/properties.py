@@ -519,6 +519,10 @@ class _SectionApp(_Section):
         'container_builder_image',
         callbacks=[lambda: 'gcr.io/cloud-builders/dockerizer'],
         hidden=True)
+    self.use_gsutil = self._AddBool(
+        'use_gsutil',
+        callbacks=[lambda: True],
+        hidden=True)
     self.hosted_build_image = self._Add(
         'hosted_build_image',
         callbacks=[lambda: 'gae-builder-vm'],
@@ -542,10 +546,17 @@ class _SectionApp(_Section):
     self.suppress_change_warning = self._AddBool(
         'suppress_change_warning',
         hidden=True)
+
+    def GetRuntimeRoot():
+      sdk_root = config.Paths().sdk_root
+      if sdk_root is None:
+        return None
+      else:
+        return os.path.join(config.Paths().sdk_root, 'platform', 'ext-runtime')
+
     self.runtime_root = self._Add(
         'runtime_root',
-        callbacks=[lambda: os.path.join(config.Paths().sdk_root, 'platform',
-                                        'ext-runtime')],
+        callbacks=[GetRuntimeRoot],
         hidden=True)
 
     def DockerBuildValidator(docker_build):

@@ -25,10 +25,7 @@ import threading
 import httplib2
 import oauth2client
 import oauth2client.client
-import oauth2client.gce
-import oauth2client.locked_file
-import oauth2client.multistore_file
-import oauth2client.service_account
+from oauth2client import service_account
 from oauth2client import tools  # for gflags declarations
 from six.moves import http_client
 from six.moves import urllib
@@ -36,8 +33,17 @@ from six.moves import urllib
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.apitools.base.py import util
 
+# Note: we try the oauth2client imports two ways, to accomodate layout
+# changes in oauth2client 2.0+. We can remove these once we no longer
+# support oauth2client < 2.0.
+#
+# pylint: disable=wrong-import-order,ungrouped-imports
 try:
-    # pylint: disable=wrong-import-order
+    from oauth2client import gce, locked_file, multistore_file
+except ImportError:
+    from oauth2client.contrib import gce, locked_file, multistore_file
+
+try:
     import gflags
     FLAGS = gflags.FLAGS
 except ImportError:
@@ -50,7 +56,6 @@ __all__ = [
     'GceAssertionCredentials',
     'GetCredentials',
     'GetUserinfo',
-    'ServiceAccountCredentials',
     'ServiceAccountCredentialsFromFile',
 ]
 
@@ -124,21 +129,57 @@ def GetCredentials(package_name, scopes, client_id, client_secret, user_agent,
     raise exceptions.CredentialsError('Could not create valid credentials')
 
 
-def ServiceAccountCredentialsFromFile(
-        service_account_name, private_key_filename, scopes,
-        service_account_kwargs=None):
-    with open(private_key_filename) as key_file:
-        return ServiceAccountCredentials(
-            service_account_name, key_file.read(), scopes,
-            service_account_kwargs=service_account_kwargs)
+def ServiceAccountCredentialsFromFile(filename, scopes, user_agent=None):
+    """Use the credentials in filename to create a token for scopes."""
+    filename = os.path.expanduser(filename)
+    # We have two options, based on our version of oauth2client.
+    if oauth2client.__version__ > '1.5.2':
+        # oauth2client >= 2.0.0
+        credentials = (
+            service_account.ServiceAccountCredentials.from_json_keyfile_name(
+                filename, scopes=scopes))
+        if credentials is not None:
+            if user_agent is not None:
+                credentials.user_agent = user_agent
+        return credentials
+    else:
+        # oauth2client < 2.0.0
+        with open(filename) as keyfile:
+            service_account_info = json.load(keyfile)
+        account_type = service_account_info.get('type')
+        if account_type != oauth2client.client.SERVICE_ACCOUNT:
+            raise exceptions.CredentialsError(
+                'Invalid service account credentials: %s' % (filename,))
+        # pylint: disable=protected-access
+        credentials = service_account._ServiceAccountCredentials(
+            service_account_id=service_account_info['client_id'],
+            service_account_email=service_account_info['client_email'],
+            private_key_id=service_account_info['private_key_id'],
+            private_key_pkcs8_text=service_account_info['private_key'],
+            scopes=scopes, user_agent=user_agent)
+        # pylint: enable=protected-access
+        return credentials
 
 
-def ServiceAccountCredentials(service_account_name, private_key, scopes,
-                              service_account_kwargs=None):
-    service_account_kwargs = service_account_kwargs or {}
+def ServiceAccountCredentialsFromP12File(
+        service_account_name, private_key_filename, scopes, user_agent):
+    """Create a new credential from the named .p12 keyfile."""
+    private_key_filename = os.path.expanduser(private_key_filename)
     scopes = util.NormalizeScopes(scopes)
-    return oauth2client.client.SignedJwtAssertionCredentials(
-        service_account_name, private_key, scopes, **service_account_kwargs)
+    if oauth2client.__version__ > '1.5.2':
+        # oauth2client >= 2.0.0
+        credentials = (
+            service_account.ServiceAccountCredentials.from_p12_keyfile(
+                service_account_name, private_key_filename, scopes=scopes))
+        if credentials is not None:
+            credentials.user_agent = user_agent
+        return credentials
+    else:
+        # oauth2client < 2.0.0
+        with open(private_key_filename) as key_file:
+            return oauth2client.client.SignedJwtAssertionCredentials(
+                service_account_name, key_file.read(), scopes,
+                user_agent=user_agent)
 
 
 def _EnsureFileExists(filename):
@@ -174,7 +215,7 @@ def _GceMetadataRequest(relative_url, use_metadata_ip=False):
     return response
 
 
-class GceAssertionCredentials(oauth2client.gce.AppAssertionCredentials):
+class GceAssertionCredentials(gce.AppAssertionCredentials):
 
     """Assertion credentials for GCE instances."""
 
@@ -231,11 +272,11 @@ class GceAssertionCredentials(oauth2client.gce.AppAssertionCredentials):
         }
         with cache_file_lock:
             if _EnsureFileExists(cache_filename):
-                locked_file = oauth2client.locked_file.LockedFile(
+                cache_file = locked_file.LockedFile(
                     cache_filename, 'r+b', 'rb')
                 try:
-                    locked_file.open_and_lock()
-                    cached_creds_str = locked_file.file_handle().read()
+                    cache_file.open_and_lock()
+                    cached_creds_str = cache_file.file_handle().read()
                     if cached_creds_str:
                         # Cached credentials metadata dict.
                         cached_creds = json.loads(cached_creds_str)
@@ -245,7 +286,7 @@ class GceAssertionCredentials(oauth2client.gce.AppAssertionCredentials):
                                     (None, cached_creds['scopes'])):
                                 scopes = cached_creds['scopes']
                 finally:
-                    locked_file.unlock_and_close()
+                    cache_file.unlock_and_close()
         return scopes
 
     def _WriteCacheFile(self, cache_filename, scopes):
@@ -260,21 +301,21 @@ class GceAssertionCredentials(oauth2client.gce.AppAssertionCredentials):
         """
         with cache_file_lock:
             if _EnsureFileExists(cache_filename):
-                locked_file = oauth2client.locked_file.LockedFile(
+                cache_file = locked_file.LockedFile(
                     cache_filename, 'r+b', 'rb')
                 try:
-                    locked_file.open_and_lock()
-                    if locked_file.is_locked():
+                    cache_file.open_and_lock()
+                    if cache_file.is_locked():
                         creds = {  # Credentials metadata dict.
                             'scopes': sorted(list(scopes)),
                             'svc_acct_name': self.__service_account_name}
-                        locked_file.file_handle().write(
+                        cache_file.file_handle().write(
                             json.dumps(creds, encoding='ascii'))
                         # If it's not locked, the locking process will
                         # write the same data to the file, so just
                         # continue.
                 finally:
-                    locked_file.unlock_and_close()
+                    cache_file.unlock_and_close()
 
     def _ScopesFromMetadataServer(self, scopes):
         if not util.DetectGce():
@@ -449,7 +490,7 @@ def _GetRunFlowFlags(args=None):
 # TODO(craigcitro): Switch this from taking a path to taking a stream.
 def CredentialsFromFile(path, client_info, oauth2client_args=None):
     """Read credentials from a file."""
-    credential_store = oauth2client.multistore_file.get_credential_storage(
+    credential_store = multistore_file.get_credential_storage(
         path,
         client_info['client_id'],
         client_info['user_agent'],
@@ -518,30 +559,14 @@ def _GetServiceAccountCredentials(
             'Service account name or keyfile provided without the other')
     scopes = client_info['scope'].split()
     user_agent = client_info['user_agent']
+    # Use the .json credentials, if provided.
     if service_account_json_keyfile:
-        with open(service_account_json_keyfile) as keyfile:
-            service_account_info = json.load(keyfile)
-        account_type = service_account_info.get('type')
-        if account_type != oauth2client.client.SERVICE_ACCOUNT:
-            raise exceptions.CredentialsError(
-                'Invalid service account credentials: %s' % (
-                    service_account_json_keyfile,))
-        # pylint: disable=protected-access
-        credentials = oauth2client.service_account._ServiceAccountCredentials(
-            service_account_id=service_account_info['client_id'],
-            service_account_email=service_account_info['client_email'],
-            private_key_id=service_account_info['private_key_id'],
-            private_key_pkcs8_text=service_account_info['private_key'],
-            scopes=scopes, user_agent=user_agent)
-        # pylint: enable=protected-access
-        return credentials
+        return ServiceAccountCredentialsFromFile(
+            service_account_json_keyfile, scopes, user_agent=user_agent)
+    # Fall back to .p12 if there's no .json credentials.
     if service_account_name is not None:
-        # pylint: disable=redefined-variable-type
-        credentials = ServiceAccountCredentialsFromFile(
-            service_account_name, service_account_keyfile, scopes,
-            service_account_kwargs={'user_agent': user_agent})
-        if credentials is not None:
-            return credentials
+        return ServiceAccountCredentialsFromP12File(
+            service_account_name, service_account_keyfile, scopes, user_agent)
 
 
 @_RegisterCredentialsMethod

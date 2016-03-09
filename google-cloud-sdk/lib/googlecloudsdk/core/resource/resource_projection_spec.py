@@ -125,7 +125,6 @@ class ProjectionSpec(object):
       projection: A node in the original projection _Tree.
     """
     projection.attribute.flag = self.DEFAULT
-    projection.attribute.ordinal = None
     for node in projection.tree.values():
       self._Defaults(node)
 
@@ -143,30 +142,6 @@ class ProjectionSpec(object):
           key=key,
           attribute=projection.tree[key].attribute))
       self._Print(projection.tree[key], out, level + 1)
-
-  def _Ordering(self):
-    """Collects PROJECT (ordinal, order, attribute) from projection.
-
-    Returns:
-      A list of (ordinal, order, attribute) tuples.
-    """
-
-    def _DFSOrdering(projection, ordering):
-      """Ordering DFS per-node helper.
-
-      Args:
-        projection: A _Tree node in the original projection.
-        ordering: The list of (ordinal, order, attribute) tuples.
-      """
-      attribute = projection.attribute
-      if attribute.flag == self.PROJECT:
-        ordering.append((attribute.ordinal, attribute.order, attribute))
-      for p in projection.tree.values():
-        _DFSOrdering(p, ordering)
-
-    ordering = []
-    _DFSOrdering(self._tree, ordering)
-    return ordering
 
   def AddAttribute(self, name, value):
     """Adds name=value to the attributes.
@@ -305,8 +280,7 @@ class ProjectionSpec(object):
       The ordered list of alignment functions, where each function is one of
         ljust [default], center, or rjust.
     """
-    return [ALIGNMENTS[attribute.align] for _, _, attribute in
-            sorted(self._Ordering())]
+    return [ALIGNMENTS[col.attribute.align] for col in self._columns]
 
   def Labels(self):
     """Returns the ordered list of projection labels.
@@ -315,8 +289,7 @@ class ProjectionSpec(object):
       The ordered list of projection label strings, None if all labels are
         empty.
     """
-    labels = [attribute.label or '' for _, _, attribute in
-              sorted(self._Ordering())]
+    labels = [col.attribute.label or '' for col in self._columns]
     return labels if any(labels) else None
 
   def Name(self):
@@ -342,9 +315,12 @@ class ProjectionSpec(object):
       The list of (sort-key-index, reverse), [] if projection is None
       or if all sort order indices in the projection are None (unordered).
     """
-    return [(column - 1, attr.reverse) for column, order, attr in
-            sorted(self._Ordering(), key=lambda x: x[1])
-            if order is not None]
+    ordering = []
+    for i, col in enumerate(self._columns):
+      if col.attribute.order or col.attribute.reverse:
+        ordering.append(
+            (col.attribute.order or sys.maxint, i, col.attribute.reverse))
+    return [(i, reverse) for _, i, reverse in sorted(ordering)]
 
   def Print(self, out=sys.stdout):
     """Prints the projection with indented nesting.

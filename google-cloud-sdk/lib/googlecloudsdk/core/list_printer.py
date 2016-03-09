@@ -237,6 +237,15 @@ COLLECTION_COLUMNS = {
         ('STATUS', _Select('status')),
     ),
 
+    'container.projects.zones.clusters.nodePools': (
+        ('NAME', _Select('name')),
+        ('MACHINE_TYPE', _Select(
+            'config', transform=lambda x: x.machineType)),
+        ('DISK_SIZE_GB', _Select(
+            'config', transform=lambda x: x.diskSizeGb)),
+        ('NODE_VERSION', _Select('version')),
+    ),
+
     'container.projects.zones.operations': (
         ('NAME', _Select('name')),
         ('TYPE', _Select('operationType')),

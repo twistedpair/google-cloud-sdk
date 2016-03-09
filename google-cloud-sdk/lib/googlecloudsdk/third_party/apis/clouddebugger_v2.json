@@ -6,7 +6,7 @@
   "version": "v2",
   "revision": "0",
   "title": "Google Cloud Debugger API",
-  "description": "Lets you examine the stack and variables of your running application without stopping or slowing it down.\n",
+  "description": "Examines the call stack and variables of a running application without stopping or slowing it down.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

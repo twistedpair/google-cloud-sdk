@@ -28,7 +28,6 @@ are left-to-right composable. Each format expression is a string tuple
 where only one of the three elements need be present.
 """
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_filter
@@ -39,50 +38,11 @@ from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
 
 
-# TODO(user): The URI list functions should be part of remote_completion.
-def _AddToUriCache(uris):
-  """Add the uris list to the URI cache.
-
-  Args:
-    uris: The list of URIs to add.
-  """
-  update = remote_completion.RemoteCompletion().AddToCache
-  for uri in uris:
-    update(uri)
-
-
-def _DeleteFromUriCache(uris):
-  """Deletes the uris list from the URI cache.
-
-  Args:
-    uris: The list of URIs to delete.
-  """
-  update = remote_completion.RemoteCompletion().DeleteFromCache
-  for uri in uris:
-    update(uri)
-
-
-def _ReplaceUriCache(uris):
-  """Replaces the URI cache with the uris list.
-
-  Args:
-    uris: The list of URIs that replaces the cache.
-  """
-  remote_completion.RemoteCompletion().StoreInCache(uris)
-
-
-_URI_UPDATER = {
-    base.ADD_TO_URI_CACHE: _AddToUriCache,
-    base.DELETE_FROM_URI_CACHE: _DeleteFromUriCache,
-    base.REPLACE_URI_CACHE: _ReplaceUriCache,
-}
-
-
 class _UriCacher(object):
   """A Tapper class that caches URIs based on the cache update op.
 
   Attributes:
-    _update_cache_op: The non-None return value from UpdateUriCache().
+    _update_cache_op: The non-None return value from GetUriCacheUpdateOp().
     _uris: The list of changed URIs, None if it is corrupt.
   """
 
@@ -113,7 +73,8 @@ class _UriCacher(object):
 
   def Update(self):
     if self._uris is not None:
-      _URI_UPDATER[self._update_cache_op](self._uris)
+      remote_completion.RemoteCompletion().UpdateCache(self._update_cache_op,
+                                                       self._uris)
 
 
 class _Filterer(object):
@@ -245,6 +206,7 @@ class Displayer(object):
     """
     self._args = args
     self._command = command
+    self._default_format_used = False
     self._defaults = None
     self._resources = resources
 
@@ -348,6 +310,10 @@ class Displayer(object):
     default_fmt = self._GetDefaultFormat()
     fmt = self._GetExplicitFormat()
 
+    if not fmt:
+      self._default_format_used = True
+      return default_fmt
+
     if default_fmt:
       # The rightmost format in fmt takes precedence. Appending gives higher
       # precendence to the explicit format over the default format. Appending
@@ -363,7 +329,7 @@ class Displayer(object):
       #
       #   table(foo.bar:alias=b, state:alias=s)
       #
-      fmt = default_fmt + ' ' + fmt if fmt else default_fmt
+      fmt = default_fmt + ' ' + fmt
 
     if fmt and _GetFlag(self._args, 'sort_by'):
       # :(...) adds key only attributes that don't affect the projection.
@@ -416,3 +382,7 @@ class Displayer(object):
       # This will eventually be rare.
       log.info('Explict Display.')
       self._command.Display(self._args, self._resources)
+
+    # If the default format was used then display the epilog.
+    if self._default_format_used:
+      self._command.Epilog(self._args)

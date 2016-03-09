@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta3",
- "revision": "20160223",
+ "revision": "20160302",
  "title": "Cloud SQL Administration API",
  "description": "API for Cloud SQL database instance management.",
  "ownerDomain": "google.com",

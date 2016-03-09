@@ -486,48 +486,27 @@ class StandardQueryParameters(_messages.Message):
 class Zone(_messages.Message):
   """A Zone object.
 
-  Messages:
-    MaintenanceWindowsValueListEntry: A MaintenanceWindowsValueListEntry
-      object.
-
   Fields:
     creationTimestamp: A string attribute.
     deprecated: A DeprecationStatus attribute.
     description: A string attribute.
     id: A string attribute.
     kind: [Output Only] Type of the resource. Always compute#zone for zones.
-    maintenanceWindows: A MaintenanceWindowsValueListEntry attribute.
     name: A string attribute.
     region: A string attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: A string attribute.
   """
 
-  class MaintenanceWindowsValueListEntry(_messages.Message):
-    """A MaintenanceWindowsValueListEntry object.
-
-    Fields:
-      beginTime: A string attribute.
-      description: A string attribute.
-      endTime: A string attribute.
-      name: A string attribute.
-    """
-
-    beginTime = _messages.StringField(1)
-    description = _messages.StringField(2)
-    endTime = _messages.StringField(3)
-    name = _messages.StringField(4)
-
   creationTimestamp = _messages.StringField(1)
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'autoscaler#zone')
-  maintenanceWindows = _messages.MessageField('MaintenanceWindowsValueListEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.StringField(10)
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.StringField(9)
 
 
 class ZoneList(_messages.Message):

@@ -474,7 +474,7 @@ class Documentation(_messages.Message):
   resource of a collection in REST view. If it is not specified, tools attempt
   to infer the resource from the operations in a collection:
   <pre><code>&#40;== resource_for v1.shelves.books ==&#41;</code></pre> The
-  directive `suppress_warning` is not directly effecting documentation and is
+  directive `suppress_warning` does not directly affect documentation and is
   documented together with service config validation.
 
   Fields:
@@ -503,8 +503,10 @@ class DocumentationRule(_messages.Message):
   """A documentation rule provides information about individual API elements.
 
   Fields:
+    deprecationDescription: Deprecation description of the selected
+      element(s). It can be provided if an element is marked as `deprecated`.
     description: Description of the selected API(s).
-    selector: The selector is a comma-separated list of pattern. Each parttern
+    selector: The selector is a comma-separated list of patterns. Each pattern
       is a qualified name of the element which may end in "*", indicating a
       wildcard. Wildcards are only allowed at the end and for a whole
       component of the qualified name, i.e. "foo.*" is ok, but not "foo.b*" or
@@ -512,8 +514,9 @@ class DocumentationRule(_messages.Message):
       pattern "*" is used.
   """
 
-  description = _messages.StringField(1)
-  selector = _messages.StringField(2)
+  deprecationDescription = _messages.StringField(1)
+  description = _messages.StringField(2)
+  selector = _messages.StringField(3)
 
 
 class EffectiveQuotaGroup(_messages.Message):
@@ -1167,7 +1170,7 @@ class MetricDescriptor(_messages.Message):
       DOUBLE: The value is a double precision floating point number.
       STRING: The value is a text string. This value type can be used only if
         the metric kind is `GAUGE`.
-      DISTRIBUTION: The value is a distribution.
+      DISTRIBUTION: The value is a `Distribution`.
       MONEY: The value is money.
     """
     VALUE_TYPE_UNSPECIFIED = 0
@@ -2117,9 +2120,9 @@ class Service(_messages.Message):
     backend: API backend configuration.
     billing: Billing configuration of the service.
     configVersion: The version of the service configuration. The config
-      version may influence interpretation of the configuration, for example
-      determine defaults. This is documented together with applicable options.
-      The current default for the config version itself is `2`.
+      version may influence interpretation of the configuration, for example,
+      to determine defaults. This is documented together with applicable
+      options. The current default for the config version itself is `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.
@@ -2894,7 +2897,7 @@ class Usage(_messages.Message):
       PUBLIC: The service can be seen/used by anyone.  If the service has not
         been whitelisted by your domain administrator for out-of-org
         publishing, then this mode will be treated like ORG_PUBLIC.  The
-        discovery document for the service will also be public and allow allow
+        discovery document for the service will also be public and allow
         unregistered access.
       ORG_RESTRICTED: The service can be seen/used by users identified in the
         service's access control policy.  Access is further constrained to the

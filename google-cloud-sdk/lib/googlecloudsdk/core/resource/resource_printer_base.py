@@ -86,6 +86,8 @@ class ResourcePrinter(object):
     _is_legend_done: True if AddLegend() has already been called and there have
       been no more AddRecord() calls since then.
     _name: Format name.
+    _non_empty_projection_required: True if the printer requires a non-empty
+      projection.
     _out: Output stream.
     _process_record: The function called to process each record passed to
       AddRecord() before calling _AddRecord(). It is called like this:
@@ -105,7 +107,8 @@ class ResourcePrinter(object):
 
   def __init__(self, out=None, name=None, attributes=None,
                column_attributes=None, by_columns=False, process_record=None,
-               printer=None, console_attr=None):
+               non_empty_projection_required=False, printer=None,
+               console_attr=None):
     """Constructor.
 
     Args:
@@ -119,6 +122,8 @@ class ResourcePrinter(object):
       process_record: The function called to process each record passed to
         AddRecord() before calling _AddRecord(). It is called like this:
           record = process_record(record)
+      non_empty_projection_required: True if the printer requires a non-empty
+        projection.
       printer: The resource_printer.Printer method for nested formats.
       console_attr: The console attributes for the output stream. Ignored by
         some printers. If None then printers that require it will initialize it
@@ -132,6 +137,7 @@ class ResourcePrinter(object):
     self._heading = None
     self._is_legend_done = False
     self._name = name
+    self._non_empty_projection_required = non_empty_projection_required
     self._out = out or log.out
     if 'private' in self.attributes:
       try:
@@ -228,6 +234,15 @@ class ResourcePrinter(object):
       True if AddRecord() expects a list of columns.
     """
     return self._by_columns
+
+  def NonEmptyProjectionRequired(self):
+    """Returns True if the printer requires a non-empty projection.
+
+    Returns:
+      True if the printer requires a non-empty projection.
+    """
+    return (self._non_empty_projection_required and
+            not self.column_attributes.Columns())
 
   def Finish(self):
     """Prints the results for non-streaming formats."""

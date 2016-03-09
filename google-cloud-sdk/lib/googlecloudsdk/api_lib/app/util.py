@@ -110,14 +110,12 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   return datetime_getter().isoformat().lower().translate(None, ':-')[:15]
 
 
-def FileIterator(base, skip_files, runtime, separator=os.path.sep):
+def FileIterator(base, skip_files, separator=os.path.sep):
   """Walks a directory tree, returning all the files. Follows symlinks.
 
   Args:
     base: The base path to search for files under.
     skip_files: A regular expression object for files/directories to skip.
-    runtime: The name of the runtime e.g. "python". If "python27" then .pyc
-      files with matching .py files will be skipped.
     separator: Path separator used by the running system's platform.
 
   Yields:
@@ -136,13 +134,6 @@ def FileIterator(base, skip_files, runtime, separator=os.path.sep):
       # To handle this, we'll replace '\' characters with '/' characters.
       if separator == '\\':
         name = name.replace('\\', '/')
-
-      if runtime == 'python27' and not skip_files.match(name):
-        root, extension = os.path.splitext(entry)
-        if extension == '.pyc' and (root + '.py') in entries:
-          log.warn('Ignoring file [%s]: Cannot upload both '
-                   '<filename>.py and <filename>.pyc', name)
-          continue
 
       if os.path.isfile(fullname):
         if skip_files.match(name):

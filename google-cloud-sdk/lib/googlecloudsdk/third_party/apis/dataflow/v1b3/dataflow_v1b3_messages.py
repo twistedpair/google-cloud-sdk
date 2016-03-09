@@ -2969,6 +2969,8 @@ class WorkerPool(_messages.Message):
       the Google Compute Engine API.
     packages: Packages to be installed on workers.
     poolArgs: Extra arguments for this worker pool.
+    subnetwork: Subnetwork to which VMs will be assigned, if desired.
+      Expected to be of the form "zones/ZONE/subnetworks/SUBNETWORK".
     taskrunnerSettings: Settings passed through to Google Compute Engine
       workers when using the standard Dataflow task runner.  Users should
       ignore this field.
@@ -3099,10 +3101,11 @@ class WorkerPool(_messages.Message):
   onHostMaintenance = _messages.StringField(12)
   packages = _messages.MessageField('Package', 13, repeated=True)
   poolArgs = _messages.MessageField('PoolArgsValue', 14)
-  taskrunnerSettings = _messages.MessageField('TaskRunnerSettings', 15)
-  teardownPolicy = _messages.EnumField('TeardownPolicyValueValuesEnum', 16)
-  workerHarnessContainerImage = _messages.StringField(17)
-  zone = _messages.StringField(18)
+  subnetwork = _messages.StringField(15)
+  taskrunnerSettings = _messages.MessageField('TaskRunnerSettings', 16)
+  teardownPolicy = _messages.EnumField('TeardownPolicyValueValuesEnum', 17)
+  workerHarnessContainerImage = _messages.StringField(18)
+  zone = _messages.StringField(19)
 
 
 class WorkerSettings(_messages.Message):

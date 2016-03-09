@@ -179,7 +179,7 @@
       "type": "object",
       "properties": {
         "configVersion": {
-          "description": "The version of the service configuration. The config version may\ninfluence interpretation of the configuration, for example\ndetermine defaults. This is documented together with applicable\noptions. The current default for the config version itself is `2`.",
+          "description": "The version of the service configuration. The config version may\ninfluence interpretation of the configuration, for example, to\ndetermine defaults. This is documented together with applicable\noptions. The current default for the config version itself is `3`.",
           "type": "integer",
           "format": "uint32"
         },
@@ -669,7 +669,7 @@
     },
     "Documentation": {
       "id": "Documentation",
-      "description": "`Documentation` provides the information for describing a service.\n\nExample:\n<pre><code>documentation:\n  summary: >\n    The Google Calendar API gives access\n    to most calendar features.\n  pages:\n  - name: Overview\n    content: &#40;== include google\/foo\/overview.md ==&#41;\n  - name: Tutorial\n    content: &#40;== include google\/foo\/tutorial.md ==&#41;\n    subpages;\n    - name: Java\n      content: &#40;== include google\/foo\/tutorial_java.md ==&#41;\n  rules:\n  - selector: google.calendar.Calendar.Get\n    description: >\n      ...\n  - selector: google.calendar.Calendar.Put\n    description: >\n      ...\n<\/code><\/pre>\nDocumentation is provided in markdown syntax. In addition to\nstandard markdown features, definition lists, tables and fenced\ncode blocks are supported. Section headers can be provided and are\ninterpreted relative to the section nesting of the context where\na documentation fragment is embedded.\n\nDocumentation from the IDL is merged with documentation defined\nvia the config at normalization time, where documentation provided\nby config rules overrides IDL provided.\n\nA number of constructs specific to the API platform are supported\nin documentation text.\n\nIn order to reference a proto element, the following\nnotation can be used:\n<pre><code>&#91;fully.qualified.proto.name]&#91;]<\/code><\/pre>\nTo override the display text used for the link, this can be used:\n<pre><code>&#91;display text]&#91;fully.qualified.proto.name]<\/code><\/pre>\nText can be excluded from doc using the following notation:\n<pre><code>&#40;-- internal comment --&#41;<\/code><\/pre>\nComments can be made conditional using a visibility label. The below\ntext will be only rendered if the `BETA` label is available:\n<pre><code>&#40;--BETA: comment for BETA users --&#41;<\/code><\/pre>\nA few directives are available in documentation. Note that\ndirectives must appear on a single line to be properly\nidentified. The `include` directive includes a markdown file from\nan external source:\n<pre><code>&#40;== include path\/to\/file ==&#41;<\/code><\/pre>\nThe `resource_for` directive marks a message to be the resource of\na collection in REST view. If it is not specified, tools attempt\nto infer the resource from the operations in a collection:\n<pre><code>&#40;== resource_for v1.shelves.books ==&#41;<\/code><\/pre>\nThe directive `suppress_warning` is not directly effecting documentation\nand is documented together with service config validation.",
+      "description": "`Documentation` provides the information for describing a service.\n\nExample:\n<pre><code>documentation:\n  summary: >\n    The Google Calendar API gives access\n    to most calendar features.\n  pages:\n  - name: Overview\n    content: &#40;== include google\/foo\/overview.md ==&#41;\n  - name: Tutorial\n    content: &#40;== include google\/foo\/tutorial.md ==&#41;\n    subpages;\n    - name: Java\n      content: &#40;== include google\/foo\/tutorial_java.md ==&#41;\n  rules:\n  - selector: google.calendar.Calendar.Get\n    description: >\n      ...\n  - selector: google.calendar.Calendar.Put\n    description: >\n      ...\n<\/code><\/pre>\nDocumentation is provided in markdown syntax. In addition to\nstandard markdown features, definition lists, tables and fenced\ncode blocks are supported. Section headers can be provided and are\ninterpreted relative to the section nesting of the context where\na documentation fragment is embedded.\n\nDocumentation from the IDL is merged with documentation defined\nvia the config at normalization time, where documentation provided\nby config rules overrides IDL provided.\n\nA number of constructs specific to the API platform are supported\nin documentation text.\n\nIn order to reference a proto element, the following\nnotation can be used:\n<pre><code>&#91;fully.qualified.proto.name]&#91;]<\/code><\/pre>\nTo override the display text used for the link, this can be used:\n<pre><code>&#91;display text]&#91;fully.qualified.proto.name]<\/code><\/pre>\nText can be excluded from doc using the following notation:\n<pre><code>&#40;-- internal comment --&#41;<\/code><\/pre>\nComments can be made conditional using a visibility label. The below\ntext will be only rendered if the `BETA` label is available:\n<pre><code>&#40;--BETA: comment for BETA users --&#41;<\/code><\/pre>\nA few directives are available in documentation. Note that\ndirectives must appear on a single line to be properly\nidentified. The `include` directive includes a markdown file from\nan external source:\n<pre><code>&#40;== include path\/to\/file ==&#41;<\/code><\/pre>\nThe `resource_for` directive marks a message to be the resource of\na collection in REST view. If it is not specified, tools attempt\nto infer the resource from the operations in a collection:\n<pre><code>&#40;== resource_for v1.shelves.books ==&#41;<\/code><\/pre>\nThe directive `suppress_warning` does not directly affect documentation\nand is documented together with service config validation.",
       "type": "object",
       "properties": {
         "summary": {
@@ -728,11 +728,15 @@
       "type": "object",
       "properties": {
         "selector": {
-          "description": "The selector is a comma-separated list of pattern. Each parttern is a\nqualified name of the element which may end in \"*\", indicating a wildcard.\nWildcards are only allowed at the end and for a whole component of the\nqualified name, i.e. \"foo.*\" is ok, but not \"foo.b*\" or \"foo.*.bar\". To\nspecify a default for all applicable elements, the whole pattern \"*\"\nis used.",
+          "description": "The selector is a comma-separated list of patterns. Each pattern is a\nqualified name of the element which may end in \"*\", indicating a wildcard.\nWildcards are only allowed at the end and for a whole component of the\nqualified name, i.e. \"foo.*\" is ok, but not \"foo.b*\" or \"foo.*.bar\". To\nspecify a default for all applicable elements, the whole pattern \"*\"\nis used.",
           "type": "string"
         },
         "description": {
           "description": "Description of the selected API(s).",
+          "type": "string"
+        },
+        "deprecationDescription": {
+          "description": "Deprecation description of the selected element(s). It can be provided if an\nelement is marked as `deprecated`.",
           "type": "string"
         }
       }
@@ -1195,7 +1199,7 @@
           "description": "Controls which users can see or activate the service.",
           "enumDescriptions": [
             "The service can only be seen\/used by users identified in the service's\naccess control policy.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_RESTRICTED.",
-            "The service can be seen\/used by anyone.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_PUBLIC.\n\nThe discovery document for the service will also be public and allow\nallow unregistered access.",
+            "The service can be seen\/used by anyone.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_PUBLIC.\n\nThe discovery document for the service will also be public and allow\nunregistered access.",
             "The service can be seen\/used by users identified in the service's\naccess control policy.  Access is further constrained to the group\ncontrolled by the administrator of the project\/org that owns the\nservice.",
             "The service can be seen\/used by the group of users controlled by the\nadministrator of the project\/org that owns the service."
           ],
@@ -1452,7 +1456,7 @@
             "The value is a signed 64-bit integer.",
             "The value is a double precision floating point number.",
             "The value is a text string.\nThis value type can be used only if the metric kind is `GAUGE`.",
-            "The value is a distribution.",
+            "The value is a `Distribution`.",
             "The value is money."
           ],
           "type": "string",

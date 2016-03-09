@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Utility methods to upload source to GCS and call Argo Cloud Build service."""
+"""Utility methods to upload source to GCS and call Cloud Build service."""
 
 import gzip
 import os
-import shutil
 import tempfile
 
 from docker import docker
@@ -26,7 +25,9 @@ from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
+
 
 CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
@@ -57,14 +58,16 @@ class _GzipFileIgnoreSeek(gzip.GzipFile):
     return self.offset
 
 
-def UploadSource(source_dir, target_object):
+def UploadSource(source_dir, bucket, obj, storage_client):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
 
   Args:
     source_dir: the directory to be archived.
-    target_object: the GCS location where the tarball will be stored.
+    bucket: the GCS bucket where the tarball will be stored.
+    obj: the GCS object where the tarball will be stored, in the above bucket.
+    storage_client: An instance of the storage_v1.StorageV1 client.
 
   Raises:
     UploadFailedError: when the source fails to upload to GCS.
@@ -94,26 +97,25 @@ def UploadSource(source_dir, target_object):
     with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
       docker.utils.tar(source_dir, exclude, fileobj=gz)
     f.close()
-    if cloud_storage.Copy(f.name, target_object) != 0:  # For cli, 0 is success.
-      raise UploadFailedError('Failed to upload source code.')
+    cloud_storage.CopyFileToGCS(bucket, f.name, obj, storage_client)
   finally:
     try:
-      shutil.rmtree(temp_dir)
+      files.RmTree(temp_dir)
     except OSError:
       log.warn('Could not remove temporary directory [{0}]'.format(temp_dir))
 
 
-def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
-                      http):
-  """Execute a call to Argo CloudBuild service and wait for it to finish.
+def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
+                      cloudbuild_client, http):
+  """Execute a call to CloudBuild service and wait for it to finish.
 
   Args:
     project: the cloud project ID.
-    source_uri: GCS object containing source to build;
-                eg, gs://my-bucket/v1/foo/some.version.stuff.
+    bucket_ref: Reference to GCS bucket containing source to build.
+    object_name: GCS object name containing source to build.
     output_image: GCR location for the output docker image;
-                  eg, gcr.io/test-argo/hardcoded-output-tag.
-    cloudbuild_client: client to the Argo Cloud Build service.
+                  eg, gcr.io/test-gae/hardcoded-output-tag.
+    cloudbuild_client: client to the Cloud Build service.
     http: an http provider that can be used to create api clients.
 
   Raises:
@@ -121,16 +123,15 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
   """
   builder = properties.VALUES.app.container_builder_image.Get()
   log.debug('Using builder image: [{0}]'.format(builder))
-  (source_bucket, source_object) = cloud_storage.ParseGcsUri(source_uri)
-  logs_bucket = source_bucket
+  logs_bucket = bucket_ref.bucket
   build_op = cloudbuild_client.projects_builds.Create(
       cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
           projectId=project,
           build=cloudbuild_v1.Build(
               source=cloudbuild_v1.Source(
                   storageSource=cloudbuild_v1.StorageSource(
-                      bucket=source_bucket,
-                      object=source_object,
+                      bucket=bucket_ref.bucket,
+                      object=object_name,
                   ),
               ),
               steps=[cloudbuild_v1.BuildStep(
@@ -173,7 +174,8 @@ def ExecuteCloudBuild(project, source_uri, output_image, cloudbuild_client,
       retry_callback=log_tailer.Poll)
   # Poll the logs one final time to ensure we have everything. We know this
   # final poll will get the full log contents because GCS is strongly consistent
-  # and Argo waits for logs to finish pushing before marking the build complete.
+  # and Container Builder waits for logs to finish pushing before marking the
+  # build complete.
   log_tailer.Poll(is_last=True)
   final_status = _GetStatusFromOp(op)
   if final_status != CLOUDBUILD_SUCCESS:

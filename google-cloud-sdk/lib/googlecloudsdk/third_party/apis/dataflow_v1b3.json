@@ -433,6 +433,10 @@
           "description": "Network to which VMs will be assigned.  If empty or unspecified,\nthe service will use the network \"default\".",
           "type": "string"
         },
+        "subnetwork": {
+          "description": "Subnetwork to which VMs will be assigned, if desired.  Expected to be of\nthe form \"zones\/ZONE\/subnetworks\/SUBNETWORK\".",
+          "type": "string"
+        },
         "workerHarnessContainerImage": {
           "description": "Docker container image that executes Dataflow worker harness, residing in\nGoogle Container Registry. Required.\n",
           "type": "string"

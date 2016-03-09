@@ -20,6 +20,7 @@ as listing the contents. We use the API for checking ACLs.
 """
 
 import argparse
+import mimetypes
 import os
 import re
 
@@ -27,10 +28,14 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
+
 
 GSUTIL_BUCKET_REGEX = r'^gs://.*$'
 
@@ -41,6 +46,113 @@ GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
 
+class Error(Exception):
+  """Base exception for cloud_storage module."""
+
+
+class UploadError(Error):
+  """Error raised when there are problems uploading files."""
+
+
+class BucketReference(object):
+  """A wrapper class to make working with GCS bucket names easier."""
+
+  def __init__(self, bucket_url):
+    """Constructor for BucketReference.
+
+    Args:
+      bucket_url: str, The bucket to reference. Format: gs://<bucket_name>
+    """
+    self._bucket_url = bucket_url
+    bucket_name = bucket_url.replace('gs://', '').rstrip('/')
+    self._ref = resources.Parse(bucket_name, collection='storage.buckets')
+
+  @property
+  def bucket(self):
+    return self._ref.bucket
+
+  def ToAppEngineApiReference(self):
+    return 'https://storage.googleapis.com/{0}'.format(self._ref.bucket)
+
+  def ToBucketUrl(self):
+    return self._bucket_url
+
+
+def _GetMimetype(local_path):
+  mime_type, _ = mimetypes.guess_type(local_path)
+  return mime_type or 'application/octet-stream'
+
+
+def _GetFileSize(local_path):
+  try:
+    return os.path.getsize(local_path)
+  except os.error:
+    raise exceptions.BadFileException('[{0}] not found or not accessible'
+                                      .format(local_path))
+
+
+def CopyFileToGCS(bucket_ref, local_path, target_path, storage_client):
+  """Upload a file to the GCS results bucket using the storage API.
+
+  Args:
+    bucket_ref: The user-specified bucket to upload to.
+    local_path: str, the path of the file to upload. File must be on the local
+      filesystem.
+    target_path: str, the path of the file on GCS.
+    storage_client: A storage_v1 client object.
+
+  Raises:
+    BadFileException if the file upload is not successful.
+  """
+  file_size = _GetFileSize(local_path)
+  src_obj = storage_v1.Object(size=file_size)
+  mime_type = _GetMimetype(local_path)
+
+  upload = transfer.Upload.FromFile(local_path, mime_type=mime_type)
+  insert_req = storage_v1.StorageObjectsInsertRequest(
+      bucket=bucket_ref.bucket,
+      name=target_path,
+      object=src_obj)
+
+  log.info('Uploading [{f}] to [{gcs}]'.format(f=local_path, gcs=target_path))
+  try:
+    response = storage_client.objects.Insert(insert_req, upload=upload)
+  except api_exceptions.HttpError as err:
+    raise exceptions.BadFileException(
+        'Could not copy [{f}] to [{gcs}] {e}. Please retry.'
+        .format(f=local_path, gcs=target_path, e=err))
+
+  if response.size != file_size:
+    log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(
+        response.size, file_size))
+    raise exceptions.BadFileException(
+        'Cloud storage upload failure. Uploaded file does not match local '
+        'file: {0}. Please retry.'.format(local_path))
+
+
+def ListBucket(bucket_ref, client):
+  """Lists the contents of a cloud storage bucket.
+
+  Args:
+    bucket_ref: The reference to the bucket.
+    client: A storage_v1 client.
+  Returns:
+    A set of names of items.
+  """
+  request = storage_v1.StorageObjectsListRequest(bucket=bucket_ref.bucket)
+  try:
+    response = client.objects.List(request)
+  except api_exceptions.HttpError as e:
+    # TODO(user): Refactor the exception handling before treating this as a
+    # shared library.
+    raise UploadError('Error uploading files: {e}'.format(e=e))
+
+  items = set()
+  for item in response.items:
+    items.add(item.name)
+  return items
+
+
 def GcsBucketArgument(string):
   """Validates that the argument is a reference to a GCS bucket."""
   if not re.match(GSUTIL_BUCKET_REGEX, string):
@@ -49,26 +161,6 @@ def GcsBucketArgument(string):
                                       '[gs://somebucket]'))
 
   return string
-
-
-def ParseGcsUri(gcs_uri):
-  """Parses a gs://bucket/path uri into (bucket, object).
-
-  Args:
-    gcs_uri: the uri to be parsed.
-
-  Returns:
-    Tuple of two strings: (bucket, object).
-  """
-  GcsBucketArgument(gcs_uri)
-  return gcs_uri[len('gs://'):].split('/', 1)
-
-
-def GsutilReferenceToApiReference(bucket):
-  # TODO(user) Consider using the JSON API version of bucket urls:
-  # http://www.googleapis.com/storage/v1/b/
-  # If we do this, we can use resources.Parse() to auto-generate references.
-  return bucket.replace('gs://', 'https://storage.googleapis.com/')
 
 
 def _GetGsutilPath():
@@ -116,20 +208,6 @@ def _RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
   return execution_utils.Exec(gsutil_args, no_exit=True,
                               pipe_output_through_logger=True,
                               file_only_logger=True)
-
-
-def Copy(source_file, dest_obj):
-  """Copies a file from the specified file system directory to a GCS bucket.
-
-  Args:
-    source_file: The file to be copied.
-    dest_obj: The destination location.
-
-  Returns:
-    The exit code of the call to "gsutil cp".
-  """
-  command_arg_str = ' '.join([source_file, dest_obj])
-  return _RunGsutilCommand('cp', command_arg_str)
 
 
 def Rsync(source_dir, dest_dir, exclude_pattern=None):
@@ -213,8 +291,8 @@ class LogTailer(object):
         self._PrintLastLine(LOG_OUTPUT_INCOMPLETE)
       return
 
-    if res.status == 503:  # Service Unavailable
-      log.warning('Reading GCS logfile: 503 (service unavailable)')
+    if res.status >= 500 and res.status < 600:  # Server Error
+      log.warning('Reading GCS logfile: got {0}, retrying'.format(res.status))
       if is_last:
         self._PrintLastLine(LOG_OUTPUT_INCOMPLETE)
       return

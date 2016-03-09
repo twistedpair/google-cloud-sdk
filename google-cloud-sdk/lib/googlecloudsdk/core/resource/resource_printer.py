@@ -211,7 +211,7 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
   if 'disable' in printer.attributes:
     # Disables formatted output and does not consume the resources.
     return
-  if printer.ByColumns() and not printer.column_attributes.Columns():
+  if printer.NonEmptyProjectionRequired():
     raise ProjectionRequiredError(
         'Format [{0}] requires a non-empty projection.'.format(
             printer.column_attributes.Name()))

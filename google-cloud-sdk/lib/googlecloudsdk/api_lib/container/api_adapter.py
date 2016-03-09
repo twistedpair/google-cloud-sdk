@@ -86,6 +86,11 @@ _REQUIRED_SCOPES = [
     constants.SCOPES['storage-ro'],
 ]
 
+_ENDPOINTS_SCOPES = [
+    constants.SCOPES['service-control'],
+    constants.SCOPES['service-management'],
+]
+
 
 def ExpandScopeURIs(scopes):
   """Expand scope names to the fully qualified uris.
@@ -145,14 +150,30 @@ class APIAdapter(object):
   def PrintOperations(self, operations):
     raise NotImplementedError('PrintOperations is not overriden')
 
+  def PrintNodePools(self, node_pools):
+    raise NotImplementedError('PrintNodePools is not overriden')
+
   def ParseOperation(self, operation_id):
     properties.VALUES.compute.zone.Get(required=True)
     properties.VALUES.core.project.Get(required=True)
     return self.registry.Parse(
         operation_id, collection='container.projects.zones.operations')
 
+  def ParseNodePool(self, node_pool_id):
+    properties.VALUES.compute.zone.Get(required=True)
+    properties.VALUES.core.project.Get(required=True)
+    properties.VALUES.container.cluster.Get(required=True)
+    cluster_id = properties.VALUES.container.cluster.Get(required=True)
+    return self.registry.Parse(
+        node_pool_id,
+        params={'clusterId': cluster_id},
+        collection='container.projects.zones.clusters.nodePools')
+
   def CreateCluster(self, cluster_ref, **options):
     raise NotImplementedError('CreateCluster is not overriden')
+
+  def CreateNodePool(self, node_pool_ref, **options):
+    raise NotImplementedError('CreateNodePool is not overriden')
 
   def DeleteCluster(self, cluster_ref):
     raise NotImplementedError('DeleteCluster is not overriden')
@@ -195,6 +216,12 @@ class APIAdapter(object):
 
   def ListClusters(self, project, zone=None):
     raise NotImplementedError('ListClusters is not overriden')
+
+  def ListNodePools(self, project, zone, cluster):
+    raise NotImplementedError('ListNodePools is not overriden')
+
+  def GetNodePool(self, node_pool_ref):
+    raise NotImplementedError('GetNodePool is not overriden')
 
   def UpdateCluster(self, cluster_ref, options):
     raise NotImplementedError('Update requires a v1 client.')
@@ -246,12 +273,12 @@ class APIAdapter(object):
       while timeout_s > (time.clock() - start_time):
         try:
           operation = self.GetOperation(operation_ref)
-          detail_message = operation.detail
           if self.IsOperationFinished(operation):
             # Success!
             log.info('Operation %s succeeded after %.3f seconds',
                      operation, (time.clock() - start_time))
             break
+          detail_message = operation.detail
         except apitools_exceptions.HttpError as error:
           log.debug('GetOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
@@ -329,6 +356,7 @@ class CreateClusterOptions(object):
                node_source_image=None,
                node_disk_size_gb=None,
                scopes=None,
+               enable_cloud_endpoints=None,
                num_nodes=None,
                user=None,
                password=None,
@@ -342,6 +370,7 @@ class CreateClusterOptions(object):
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
     self.scopes = scopes
+    self.enable_cloud_endpoints = enable_cloud_endpoints
     self.num_nodes = num_nodes
     self.user = user
     self.password = password
@@ -359,13 +388,28 @@ class UpdateClusterOptions(object):
                version=None,
                update_master=None,
                update_nodes=None,
+               node_pool=None,
                update_cluster=None,
                monitoring_service=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
+    self.node_pool = node_pool
     self.update_cluster = bool(update_cluster)
     self.monitoring_service = str(monitoring_service)
+
+
+class CreateNodePoolOptions(object):
+
+  def __init__(self,
+               machine_type=None,
+               disk_size_gb=None,
+               scopes=None,
+               num_nodes=None):
+    self.machine_type = machine_type
+    self.disk_size_gb = disk_size_gb
+    self.scopes = scopes
+    self.num_nodes = num_nodes
 
 
 class V1Adapter(APIAdapter):
@@ -385,6 +429,10 @@ class V1Adapter(APIAdapter):
     list_printer.PrintResourceList(
         'container.projects.zones.operations', operations)
 
+  def PrintNodePools(self, node_pools):
+    list_printer.PrintResourceList(
+        'container.projects.zones.clusters.nodePools', node_pools)
+
   def CreateCluster(self, cluster_ref, options):
     node_config = self.messages.NodeConfig()
     if options.node_machine_type:
@@ -395,6 +443,8 @@ class V1Adapter(APIAdapter):
     if options.node_source_image:
       raise util.Error('cannot specify node source image in container v1 api')
     scope_uris = ExpandScopeURIs(options.scopes)
+    if options.enable_cloud_endpoints:
+      scope_uris += _ENDPOINTS_SCOPES
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
 
     cluster = self.messages.Cluster(
@@ -430,7 +480,8 @@ class V1Adapter(APIAdapter):
       options.version = '-'
     if options.update_nodes:
       update = self.messages.ClusterUpdate(
-          desiredNodeVersion=options.version)
+          desiredNodeVersion=options.version,
+          desiredNodePoolId=options.node_pool)
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
@@ -461,6 +512,52 @@ class V1Adapter(APIAdapter):
     req = self.messages.ContainerProjectsZonesClustersListRequest(
         projectId=project, zone=zone)
     return self.client.projects_zones_clusters.List(req)
+
+  def CreateNodePool(self, node_pool_ref, options):
+    node_config = self.messages.NodeConfig()
+    if options.machine_type:
+      node_config.machineType = options.machine_type
+    if options.disk_size_gb:
+      node_config.diskSizeGb = options.disk_size_gb
+    scope_uris = ExpandScopeURIs(options.scopes)
+    node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+
+    pool = self.messages.NodePool(
+        name=node_pool_ref.nodePoolId,
+        config=node_config)
+    create_node_pool_req = self.messages.CreateNodePoolRequest(
+        nodePool=pool,
+        initialNodeCount=options.num_nodes)
+
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsCreateRequest(
+        projectId=node_pool_ref.projectId,
+        zone=node_pool_ref.zone,
+        clusterId=node_pool_ref.clusterId,
+        createNodePoolRequest=create_node_pool_req)
+    operation = self.client.projects_zones_clusters_nodePools.Create(req)
+    return self.ParseOperation(operation.name)
+
+  def ListNodePools(self, project, zone, cluster_id):
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsListRequest(
+        projectId=project, zone=zone, clusterId=cluster_id)
+    return self.client.projects_zones_clusters_nodePools.List(req)
+
+  def GetNodePool(self, node_pool_ref):
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsGetRequest(
+        projectId=node_pool_ref.projectId,
+        zone=node_pool_ref.zone,
+        clusterId=node_pool_ref.clusterId,
+        nodePoolId=node_pool_ref.nodePoolId)
+    return self.client.projects_zones_clusters_nodePools.Get(req)
+
+  def DeleteNodePool(self, node_pool_ref):
+    operation = self.client.projects_zones_clusters_nodePools.Delete(
+        self.messages.ContainerProjectsZonesClustersNodePoolsDeleteRequest(
+            clusterId=node_pool_ref.clusterId,
+            zone=node_pool_ref.zone,
+            projectId=node_pool_ref.projectId,
+            nodePoolId=node_pool_ref.nodePoolId))
+    return self.ParseOperation(operation.name)
 
   def IsRunning(self, cluster):
     return (cluster.status ==
