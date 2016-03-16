@@ -76,28 +76,19 @@ def MakeUserAgentString(cmd_path):
 
 
 def GetDefaultTimeout():
-  return 300
+  return properties.VALUES.core.http_timeout.GetInt() or 300
 
 
-def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
-         auth=True, creds=None, timeout='unset', log_http=False,
-         authority_selector=None, authorization_token_file=None):
+def Http(auth=True, creds=None, timeout='unset'):
   """Get an httplib2.Http object for working with the Google API.
 
   Args:
-    cmd_path: str, Path of command that will use the httplib2.Http object.
-    trace_token: str, Token to be used to route service request traces.
-    trace_email: str, username to which service request traces should be sent.
-    trace_log: bool, Enable/disable server side logging of service requests.
     auth: bool, True if the http object returned should be authorized.
     creds: oauth2client.client.Credentials, If auth is True and creds is not
         None, use those credentials to authorize the httplib2.Http object.
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
-    log_http: bool, Enable/disable client side logging of service requests.
-    authority_selector: str, The IAM authority selector to pass as a header,
-        or None to not pass anything.
 
   Returns:
     An authorized httplib2.Http object, or a regular httplib2.Http object if no
@@ -119,20 +110,25 @@ def Http(cmd_path=None, trace_token=None, trace_email=None, trace_log=False,
       timeout=effective_timeout, proxy_info=_GetHttpProxyInfo())
 
   # Wrap first to dump any data added by other wrappers.
-  if log_http:
+  if properties.VALUES.core.log_http.GetBool():
     http = _WrapRequestForLogging(http)
 
   # Wrap the request method to put in our own user-agent, and trace reporting.
-  gcloud_ua = MakeUserAgentString(cmd_path)
+  gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
 
-  http = _WrapRequestForUserAgentAndTracing(http, trace_token,
-                                            trace_email,
-                                            trace_log,
-                                            gcloud_ua)
+  http = _WrapRequestForUserAgentAndTracing(
+      http,
+      properties.VALUES.core.trace_token.Get(),
+      properties.VALUES.core.trace_email.Get(),
+      properties.VALUES.core.trace_log.GetBool(),
+      gcloud_ua)
 
+  authority_selector = properties.VALUES.auth.authority_selector.Get()
+  authorization_token_file = (
+      properties.VALUES.auth.authorization_token_file.Get())
   if authority_selector or authorization_token_file:
-    http = _WrapRequestForIAMAuth(http, authority_selector,
-                                  authorization_token_file)
+    http = _WrapRequestForIAMAuth(
+        http, authority_selector, authorization_token_file)
 
   if auth:
     if not creds:

@@ -3,6 +3,26 @@
 Copyright 2014-2016 Google Inc. All rights reserved.
 
 
+## 101.0.0 (2016/03/16)
+
+### Billing
+
+* Added [`gcloud alpha billing`](https://cloud.google.com/sdk/gcloud/reference/alpha/billing/)
+command surface.
+
+### Google App Engine
+
+* App Engine components updated to 1.9.34. Please visit
+  <https://cloud.google.com/appengine/docs/python/release-notes> for the Python
+  release notes and <https://cloud.google.com/appengine/docs/java/release-notes>
+  for the Java release notes.
+
+### Google BigQuery
+
+* Updated the `bq` tool to version v2.0.24. Also includes fix for
+  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=632>.
+
+
 ## 100.0.0 (2016/03/09)
 
 ### Breaking Changes

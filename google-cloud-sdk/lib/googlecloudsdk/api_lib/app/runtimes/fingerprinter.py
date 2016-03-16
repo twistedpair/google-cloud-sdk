@@ -29,6 +29,11 @@ from googlecloudsdk.core import log
 RUNTIMES = [
     # Note that ordering of runtimes here is very important and changes to the
     # relative positions need to be tested carefully.
+
+    # Custom comes first, if we've got a Dockerfile this is a custom runtime.
+    ext_runtime_adapter.CoreRuntimeLoader('custom', 'Custom',
+                                          ['custom']),
+
     go,  # Go's position is relatively flexible due to its orthogonal nature.
     ruby,
     ext_runtime_adapter.CoreRuntimeLoader('nodejs', 'Node.js',

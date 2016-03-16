@@ -25,11 +25,16 @@ Pythonicness of the Transform*() methods:
   (1) The docstrings are used to generate external user documentation.
   (2) The method prototypes are included in the documentation. In particular the
       prototype formal parameter names are stylized for the documentation.
-  (3) The types of some args, like r, are not fixed until runtime. Other args
+  (3) The 'r', 'kwargs', and 'projection' args are not included in the external
+      documentation. Docstring descriptions, other than the Args: line for the
+      arg itself, should not mention these args. Assume the reader knows the
+      specific item the transform is being applied to. When in doubt refer to
+      the output of $ gcloud topic projections.
+  (4) The types of some args, like r, are not fixed until runtime. Other args
       may have either a base type value or string representation of that type.
       It is up to the transform implementation to silently do the string=>type
       conversions. That's why you may see e.g. int(arg) in some of the methods.
-  (4) Unless it is documented to do so, a transform function must not raise any
+  (5) Unless it is documented to do so, a transform function must not raise any
       exceptions related to the resource r. The `undefined' arg is used to
       handle all unusual conditions, including ones that would raise exceptions.
       Exceptions for arguments explicitly under the caller's control are OK.
@@ -39,10 +44,12 @@ import cStringIO
 import datetime
 import re
 
+from googlecloudsdk.core import apis as core_apis
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
-from googlecloudsdk.core.util import timezone
+from googlecloudsdk.core.util import times
 
 
 def TransformAlways(r):
@@ -66,11 +73,11 @@ def TransformAlways(r):
 
 
 def TransformBaseName(r, undefined=''):
-  """Returns the last path component in r.
+  """Returns the last path component.
 
   Args:
     r: A URI or unix/windows file path.
-    undefined: This value is returned if r or the basename is empty.
+    undefined: Returns this value if the resource or basename is empty.
 
   Returns:
     The last path component.
@@ -85,10 +92,24 @@ def TransformBaseName(r, undefined=''):
   return s or undefined
 
 
-def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
-  """Colorizes the string value of r.
+def TransformCollection(r, undefined=''):  # pylint: disable=unused-argument
+  """Returns the current resource collection.
 
-  The resource string is searched for an re pattern match in Roy.G.Biv order.
+  Args:
+    r: A JSON-serializable object.
+    undefined: This value is returned if r or the collection is empty.
+
+  Returns:
+    The current resource collection, undefined if unknown.
+  """
+  # This method will most likely be overridden by a resource printer.
+  return undefined
+
+
+def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
+  """Colorizes the resource string value.
+
+  The resource string is searched for an RE pattern match in Roy.G.Biv order.
   The first pattern that matches colorizes the resource string with that color.
 
   Args:
@@ -113,35 +134,39 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
 
 # pylint: disable=redefined-builtin, external expression expects format kwarg.
 def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
-  """Formats r to a strftime() format.
+  """Formats the resource as a strftime() format.
 
   Args:
     r: A timestamp number or an object with 3 or more of these fields: year,
       month, day, hour, minute, second, millisecond, microsecond, nanosecond.
     format: The strftime(3) format.
-    unit: Timestamp r divided by unit yields seconds.
-    undefined: Returns this if r does not contain a valid time.
-    tz: Fixed timezone string, local timezone if None. For example, EST5EDT,
-      US/Pacific, UTC, WEST.
+    unit: If the resource is a Timestamp then divide by _unit_ to yield seconds.
+    undefined: Returns this value if the resource is not a valid time.
+    tz: Fixed timezone string, local timezone if not specified. For example,
+      EST5EDT, US/Pacific, UTC, WEST.
 
   Returns:
     The strftime() date format for r or undefined if r does not contain a valid
     time.
   """
-  tz = timezone.GetTimeZone(tz)
+  tzinfo = times.GetTimeZone(tz) if tz else None
+  # Check if r has an isoformat() method.
+  try:
+    r = r.isoformat()
+  except (AttributeError, TypeError, ValueError):
+    pass
   # Check if r is a timestamp.
   try:
     timestamp = float(r) / float(unit)
-    dt = datetime.datetime.fromtimestamp(timestamp, tz)
-    return dt.strftime(format)
+    dt = times.GetDateTimeFromTimeStamp(timestamp, tzinfo)
+    return times.FormatDateTime(dt, format)
   except (TypeError, ValueError):
     pass
 
-  # Check if it is a date/time string.
+  # Check if r is a date/time string.
   try:
-    from dateutil import parser  # pylint: disable=g-import-not-at-top, for startup efficiency
-    dt = parser.parse(r)
-    return dt.strftime(format)
+    dt = times.ParseDateTime(r, tzinfo)
+    return times.FormatDateTime(dt, format)
   except (AttributeError, ImportError, TypeError, ValueError):
     pass
 
@@ -157,7 +182,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
     """
     valid = 0
     parts = []
-    now = datetime.datetime.now(tz)
+    now = datetime.datetime.now(tzinfo)
     for part in ('year', 'month', 'day', 'hour', 'minute', 'second'):
       value = resource_property.Get(r, [part], None)
       if value is None:
@@ -177,9 +202,9 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
     # combination of 3 non-subsecond date/time parts.
     if valid < 3:
       raise ValueError
-    parts.append(tz)
+    parts.append(tzinfo)
     dt = datetime.datetime(*parts)
-    return dt.strftime(format)
+    return times.FormatDateTime(dt, format)
 
   try:
     return _FormatFromParts()
@@ -191,12 +216,12 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
 
 
 def TransformDuration(r, unit=1, undefined=''):
-  """Formats r to a duration string.
+  """Formats the resource as a duration string.
 
   Args:
     r: A JSON-serializable object.
-    unit: r divided by unit yields seconds.
-    undefined: Returns this if r/unit is not a valid timestamp.
+    unit: Divide the resource numeric value by _unit_ to yield seconds.
+    undefined: Returns this value if the resource is not a valid timestamp.
 
   Returns:
     The duration string for r or undefined if r is not a duration.
@@ -214,7 +239,8 @@ def TransformError(r, message=None):
 
   Args:
     r: A JSON-serializable object.
-    message: An error message. If None then r is formatted as the error message.
+    message: An error message. If not specified then the resource is formatted
+      as the error message.
 
   Raises:
     Error: This will not generate a stack trace.
@@ -227,7 +253,8 @@ def TransformFatal(r, message=None):
 
   Args:
     r: A JSON-serializable object.
-    message: An error message. If None then r is formatted as the error message.
+    message: An error message. If not specified then the resource is formatted
+      as the error message.
 
   Raises:
     InternalError: This generates a stack trace.
@@ -237,11 +264,11 @@ def TransformFatal(r, message=None):
 
 
 def TransformFirstOf(r, *args):
-  """Returns the first non-empty r.name value for name in args.
+  """Returns the first non-empty .name attribute value for name in args.
 
   Args:
     r: A JSON-serializable object.
-    *args: Names to check for values in r.
+    *args: Names to check for resource attribute values,
 
   Returns:
     The first non-empty r.name value for name in args, '' otherwise.
@@ -258,10 +285,10 @@ def TransformFirstOf(r, *args):
 
 
 def TransformFloat(r, precision=6, spec=None):
-  """Returns the string representation of the floating point number r.
+  """Returns the string representation of a floating point number.
 
   One of these formats is used (1) ". _precision_ _spec_" if _spec_ is specified
-  (2) ". _precision_" unless 1e-04 <= abs(r) < 1e+09 (3) ".1f" otherwise.
+  (2) ". _precision_" unless 1e-04 <= abs(number) < 1e+09 (3) ".1f" otherwise.
 
   Args:
     r: A JSON-serializable object.
@@ -304,15 +331,15 @@ def TransformFloat(r, precision=6, spec=None):
 # The 'format' transform is special: it has no kwargs and the second argument
 # is the ProjectionSpec of the calling projection.
 def TransformFormat(r, projection, fmt, *args):
-  """Formats a sub-projection of r.
+  """Formats resource key values.
 
   Args:
     r: A JSON-serializable object.
     projection: The parent ProjectionSpec.
     fmt: The format string with {0} ... {nargs-1} references to the resource
-      key arg values.
-    *args: The resource key args to format. The args values form a projection on
-      r. The projection symbols and aliases are available in the sub-projection.
+      attribute name arg values.
+    *args: The resource attribute key expression to format. The printer
+      projection symbols and aliases may be used in key expressions.
 
   Returns:
     The formatted string.
@@ -369,11 +396,12 @@ def TransformGroup(r, *args):
 
 
 def TransformIso(r, undefined='T'):
-  """Formats r to the numeric ISO time format.
+  """Formats the resource to numeric ISO time format.
 
   Args:
     r: A JSON-serializable object.
-    undefined: Returns this if r does not have an isoformat() attribute.
+    undefined: Returns this value if the resource does not have an isoformat()
+      attribute.
 
   Returns:
     The numeric ISO time format for r or undefined if r is not a time.
@@ -382,7 +410,7 @@ def TransformIso(r, undefined='T'):
 
 
 def TransformLen(r):
-  """Returns the length of r if r is non-empty, 0 otherwise.
+  """Returns the length of the resource if it is non-empty, 0 otherwise.
 
   Args:
     r: A JSON-serializable object.
@@ -401,7 +429,7 @@ def TransformList(r, undefined='', separator=','):
 
   Args:
     r: A JSON-serializable object.
-    undefined: Return this if r is empty.
+    undefined: Return this if the resource is empty.
     separator: The list item separator string.
 
   Returns:
@@ -418,7 +446,7 @@ def TransformList(r, undefined='', separator=','):
 
 
 def TransformMap(r):
-  """Applies the next transform in the sequence to each item in list resource r.
+  """Applies the next transform in the sequence to each resource list item.
 
   Example:
     list_field.map().foo().bar() applies foo() to each item in list_field and
@@ -442,7 +470,7 @@ def TransformResolution(r, undefined='', transpose=False):
 
   Args:
     r: object, A JSON-serializable object containing an x/y resolution.
-    undefined: Returns this if a recognizable resolution was not found.
+    undefined: Returns this value if a recognizable resolution was not found.
     transpose: Returns the y/x resolution if True.
 
   Returns:
@@ -491,7 +519,7 @@ def TransformResolution(r, undefined='', transpose=False):
 
 
 def TransformScope(r, *args):
-  """Gets the /args/ suffix from URI r.
+  """Gets the /args/ suffix from a URI.
 
   Args:
     r: A URI.
@@ -503,8 +531,8 @@ def TransformScope(r, *args):
       component in r if none found.
 
   Example:
-    scope('https://abc/foo/projects/bar/zyx', 'projects') returns 'bar/xyz'.
-    scope("https://abc/foo/rergions/abc") returns 'abc'.
+    "https://abc/foo/projects/bar/xyz".scope("projects") returns "bar/xyz".
+    "https://xyz/foo/regions/abc".scope() returns "abc".
   """
   if not r:
     return ''
@@ -521,12 +549,12 @@ def TransformScope(r, *args):
 
 
 def TransformSegment(r, index=-1, undefined=''):
-  """Returns the index-th URI path segment in r.
+  """Returns the index-th URI path segment.
 
   Args:
     r: A URI path.
     index: The path segment index to return counting from 0.
-    undefined: This value is returned if r or segment index is empty.
+    undefined: Returns this value if the resource or segment index is empty.
 
   Returns:
     The index-th URI path segment in r
@@ -547,12 +575,12 @@ def TransformSize(r, zero='0', units_in=None, units_out=None, min=0):
 
   Args:
     r: A size in bytes.
-    zero: Returns this if size==0. Ignored if None.
+    zero: Returns this value if size==0. Ignored if not specified.
     units_in: A unit suffix (only the first character is checked) or unit size.
-      The size of r is multiplied by this size. The defaults is 1.0.
+      The size is multiplied by this. The default is 1.0.
     units_out: A unit suffix (only the first character is checked) or unit size.
-      The size of r is divided by this size. The defaults is 1.0.
-    min: Sizes < min will be listed as "< MIN".
+      The size is divided by this. The default is 1.0.
+    min: Sizes < _min_ will be listed as "< _min_".
 
   Returns:
     A human readable scaled size in bytes.
@@ -619,18 +647,19 @@ def TransformSize(r, zero='0', units_in=None, units_out=None, min=0):
     return '{0}{1:.1f}{2}'.format(prefix, size, the_unit)
 
 
-def TransformUri(r, undefined='.'):
-  """Gets the URI for r.
+def TransformUri(r, projection, undefined='.'):
+  """Gets the resource URI.
 
   Args:
     r: A JSON-serializable object.
+    projection: The parent ProjectionSpec.
     undefined: Returns this if a the URI for r cannot be determined.
 
   Returns:
     The URI for r or undefined if not defined.
   """
 
-  names = ('selfLink', 'SelfLink', 'instance')
+  names = ('selfLink', 'SelfLink')
 
   def _GetAttr(attr):
     """Returns the string value for attr or None if the value is not a string.
@@ -651,20 +680,37 @@ def TransformUri(r, undefined='.'):
     if r.startswith('https://'):
       return r
   elif r:
+    # Low hanging fruit first.
     for name in names:
-      attr = _GetAttr(resource_property.Get(r, [name], None))
-      if attr:
-        return attr
+      uri = _GetAttr(resource_property.Get(r, [name], None))
+      if uri:
+        return uri
+    if projection:
+      collection_func = projection.symbols.get('collection', None)
+      collection = collection_func(r) if collection_func else None
+      if collection:
+        # Generate the URI from the collection and a few params.
+        instance = _GetAttr(resource_property.Get(r, ['instance'], None))
+        project = _GetAttr(resource_property.Get(r, ['project'], None))
+        try:
+          uri = resources.Create(
+              collection, project=project, instance=instance).SelfLink()
+        except (resources.InvalidCollectionException, core_apis.UnknownAPIError,
+                resources.UnknownCollectionException):
+          uri = None
+        if uri:
+          return uri
   return undefined
 
 
 def TransformYesNo(r, yes=None, no='No'):
-  """Returns no if r is empty, yes or r otherwise.
+  """Returns no if the resource is empty, yes or the resource itself otherwise.
 
   Args:
     r: A JSON-serializable object.
-    yes: If r is not empty then returns yes or r.
-    no: Returns this string if r is empty.
+    yes: If the resource is not empty then returns _yes_ or the resource itself
+      if _yes_ is not defined.
+    no: Returns this value if the resource is empty.
 
   Returns:
     yes or r if r is not empty, no otherwise.
@@ -676,6 +722,7 @@ def TransformYesNo(r, yes=None, no='No'):
 _BUILTIN_TRANSFORMS = {
     'always': TransformAlways,
     'basename': TransformBaseName,
+    'collection': TransformCollection,
     'color': TransformColor,
     'date': TransformDate,
     'duration': TransformDuration,

@@ -408,14 +408,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType
-    sourceImage: A source image used to create the disk. You can provide a
-      private (custom) image, and Compute Engine will use the corresponding
-      image from your project. For example:  global/images/my-private-image
-      Or you can provide an image from a publicly-available project. For
-      example, to use a Debian image from the debian-cloud project, make sure
-      to include the project in the URL:  projects/debian-
-      cloud/global/images/debian-7-wheezy-vYYYYMMDD   where vYYYYMMDD is the
-      image version. The fully-qualified URL will also work in both cases.
+    sourceImage: The source image used to create this disk.  To create a disk
+      with a private image, specify the image name in the following format:
+      global/images/my-private-image   To create a disk with a public image,
+      specify the image name and the project that owns the image. For example,
+      you can use a Debian image from the debian-cloud project:  projects
+      /debian-cloud/global/images/debian-8-jessie-vYYYYMMDD   The vYYYYMMDD
+      value is the image version. The fully-qualified URL also works in both
+      examples.
   """
 
   diskName = _messages.StringField(1)
@@ -451,6 +451,8 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
     target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides.
@@ -462,9 +464,10 @@ class Autoscaler(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#autoscaler')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  target = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  target = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -5231,22 +5234,17 @@ class Disk(_messages.Message):
       sourceSnapshot, the value of sizeGb must not be less than the size of
       the sourceImage or the size of the snapshot.
     sourceImage: The source image used to create this disk. If the source
-      image is deleted from the system, this field will not be set, even if an
-      image with the same name has been re-created.  When creating a disk, you
-      can provide a private (custom) image using the following input, and
-      Compute Engine will use the corresponding image from your project. For
-      example:  global/images/my-private-image   Or you can provide an image
-      from a publicly-available project. For example, to use a Debian image
-      from the debian-cloud project, make sure to include the project in the
-      URL:  projects/debian-cloud/global/images/debian-7-wheezy-vYYYYMMDD
-      where vYYYYMMDD is the image version. The fully-qualified URL will also
-      work in both cases.  You can also specify the latest image for a private
-      image family by replacing the image name suffix with family/family-name.
-      For example:  global/images/family/my-private-family   Or you can
-      specify an image family from a publicly-available project. For example,
-      to use the latest Debian 7 from the debian-cloud project, make sure to
-      include the project in the URL:  projects/debian-
-      cloud/global/images/family/debian-7
+      image is deleted, this field will not be set.  To create a disk with one
+      of the public operating system images, specify the image by its family
+      name. For example, specify family/debian-8 to use the latest Debian 8
+      image:  projects/debian-cloud/global/images/family/debian-8
+      Alternatively, use a specific version of a public operating system
+      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      To create a disk with a private image that you created, specify the
+      image name in the following format:  global/images/my-private-image
+      You can also specify a private image by its image family, which returns
+      the latest version of the image in that family. Replace the image name
+      with family/family-name:  global/images/family/my-private-family
     sourceImageId: [Output Only] The ID value of the image used to create this
       disk. This value identifies the exact image that was used to create this
       persistent disk. For example, if you created the persistent disk from an
@@ -6620,6 +6618,8 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
@@ -6637,10 +6637,11 @@ class InstanceGroup(_messages.Message):
   name = _messages.StringField(6)
   namedPorts = _messages.MessageField('NamedPort', 7, repeated=True)
   network = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class InstanceGroupAggregatedList(_messages.Message):
@@ -6752,6 +6753,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -6774,10 +6777,11 @@ class InstanceGroupManager(_messages.Message):
   kind = _messages.StringField(9, default=u'compute#instanceGroupManager')
   name = _messages.StringField(10)
   namedPorts = _messages.MessageField('NamedPort', 11, repeated=True)
-  selfLink = _messages.StringField(12)
-  targetPools = _messages.StringField(13, repeated=True)
-  targetSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(15)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  targetPools = _messages.StringField(14, repeated=True)
+  targetSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(16)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -8182,7 +8186,7 @@ class Operation(_messages.Message):
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
-      operation resources.
+      Operation resources.
     name: [Output Only] Name of the resource.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
@@ -10869,10 +10873,6 @@ class Zone(_messages.Message):
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or
       DOWN.
 
-  Messages:
-    MaintenanceWindowsValueListEntry: A MaintenanceWindowsValueListEntry
-      object.
-
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -10882,10 +10882,6 @@ class Zone(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#zone for zones.
-    maintenanceWindows: [Output Only] Any scheduled maintenance windows for
-      this zone. When the zone is in a maintenance window, all resources which
-      reside in the zone will be unavailable. For more information, see
-      Maintenance Windows
     name: [Output Only] Name of the resource.
     region: [Output Only] Full URL reference to the region which hosts the
       zone.
@@ -10903,34 +10899,15 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  class MaintenanceWindowsValueListEntry(_messages.Message):
-    """A MaintenanceWindowsValueListEntry object.
-
-    Fields:
-      beginTime: [Output Only] Starting time of the maintenance window, in
-        RFC3339 format.
-      description: [Output Only] Textual description of the maintenance
-        window.
-      endTime: [Output Only] Ending time of the maintenance window, in RFC3339
-        format.
-      name: [Output Only] Name of the maintenance window.
-    """
-
-    beginTime = _messages.StringField(1)
-    description = _messages.StringField(2)
-    endTime = _messages.StringField(3)
-    name = _messages.StringField(4)
-
   creationTimestamp = _messages.StringField(1)
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#zone')
-  maintenanceWindows = _messages.MessageField('MaintenanceWindowsValueListEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class ZoneList(_messages.Message):

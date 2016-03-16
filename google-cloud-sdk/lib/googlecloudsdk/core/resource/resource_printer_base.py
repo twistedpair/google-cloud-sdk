@@ -33,6 +33,7 @@ Example:
       --format='table[box](name, networkInterfaces[0].networkIP)'
 """
 
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
@@ -40,6 +41,14 @@ from googlecloudsdk.core.resource import resource_property
 
 # Structured output indentation.
 STRUCTURED_INDENTATION = 2
+
+
+class Error(core_exceptions.Error):
+  """Exceptions for this module."""
+
+
+class ProjectionRequiredError(Error):
+  """Format missing required projection exception."""
 
 
 class _ResourceMarker(object):
@@ -235,15 +244,6 @@ class ResourcePrinter(object):
     """
     return self._by_columns
 
-  def NonEmptyProjectionRequired(self):
-    """Returns True if the printer requires a non-empty projection.
-
-    Returns:
-      True if the printer requires a non-empty projection.
-    """
-    return (self._non_empty_projection_required and
-            not self.column_attributes.Columns())
-
   def Finish(self):
     """Prints the results for non-streaming formats."""
     pass
@@ -269,7 +269,19 @@ class ResourcePrinter(object):
       single: If True then resources is a single item and not a list.
         For example, use this to print a single object as JSON.
       intermediate: This is an intermediate call, do not call Finish().
+
+    Raises:
+      ProjectionRequiredError: If the projection is empty and the format
+        requires a non-empty projection.
     """
+    if 'disable' in self.attributes:
+      # Disable formatted output and do not consume the resources.
+      return
+    if (self._non_empty_projection_required and
+        not self.column_attributes.Columns()):
+      raise ProjectionRequiredError(
+          'Format [{0}] requires a non-empty projection.'.format(
+              self.column_attributes.Name()))
     # Resources may be a generator and since generators can raise exceptions, we
     # have to call Finish() in the finally block to make sure that the resources
     # we've been able to pull out of the generator are printed before control is

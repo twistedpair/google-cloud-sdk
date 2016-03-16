@@ -510,12 +510,15 @@ class StorageSource(_messages.Message):
     bucket: Google Cloud Storage bucket containing source (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
+    generation: Google Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing source.  This object must
       be a gzipped archive file (.tar.gz) containing source to build.
   """
 
   bucket = _messages.StringField(1)
-  object = _messages.StringField(2)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

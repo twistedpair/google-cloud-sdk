@@ -104,7 +104,10 @@ class Lexer(object):
     """
     self._expr = expression or ''
     self._position = 0
-    self._aliases = aliases or {}
+    # There is a subtle difference betwee None and {} here.
+    # If aliases is {} then it is a dict to add more aliases to.
+    # If aliases is None then use a local dict and discard it when done.
+    self._aliases = {} if aliases is None else aliases
 
   def EndOfInput(self, position=None):
     """Checks if the current expression string position is at the end of input.

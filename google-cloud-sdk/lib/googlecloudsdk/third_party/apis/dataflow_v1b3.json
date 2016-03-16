@@ -6,7 +6,7 @@
   "version": "v1b3",
   "revision": "0",
   "title": "Google Dataflow API",
-  "description": "Google Dataflow API.",
+  "description": "Google Cloud Dataflow is a simple, flexible, and powerful system you can use to perform data processing tasks.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -1863,6 +1863,11 @@
         },
         "forwardingKeyBits": {
           "description": "The size (in bits) of keys that will be assigned to source messages.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "persistentStateVersion": {
+          "description": "Version number for persistent state.",
           "type": "integer",
           "format": "int32"
         }

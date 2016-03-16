@@ -425,14 +425,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType
-    sourceImage: A source image used to create the disk. You can provide a
-      private (custom) image, and Compute Engine will use the corresponding
-      image from your project. For example:  global/images/my-private-image
-      Or you can provide an image from a publicly-available project. For
-      example, to use a Debian image from the debian-cloud project, make sure
-      to include the project in the URL:  projects/debian-
-      cloud/global/images/debian-7-wheezy-vYYYYMMDD   where vYYYYMMDD is the
-      image version. The fully-qualified URL will also work in both cases.
+    sourceImage: The source image used to create this disk.  To create a disk
+      with a private image, specify the image name in the following format:
+      global/images/my-private-image   To create a disk with a public image,
+      specify the image name and the project that owns the image. For example,
+      you can use a Debian image from the debian-cloud project:  projects
+      /debian-cloud/global/images/debian-8-jessie-vYYYYMMDD   The vYYYYMMDD
+      value is the image version. The fully-qualified URL also works in both
+      examples.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. This key is required if the source image is protected by a
       customer-supplied encryption key.  If the incorrect key is provided, the
@@ -484,6 +484,8 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
     target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides.
@@ -495,9 +497,10 @@ class Autoscaler(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#autoscaler')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  target = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  target = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -1111,6 +1114,23 @@ class ComputeAddressesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeAddressesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeAddressesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeAutoscalersAggregatedListRequest(_messages.Message):
   """A ComputeAutoscalersAggregatedListRequest object.
 
@@ -1274,6 +1294,23 @@ class ComputeAutoscalersPatchRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeAutoscalersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeAutoscalersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeAutoscalersUpdateRequest(_messages.Message):
   """A ComputeAutoscalersUpdateRequest object.
 
@@ -1408,6 +1445,21 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
+
+
+class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeBackendServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeBackendServicesUpdateRequest(_messages.Message):
@@ -1741,6 +1793,23 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
   zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 4)
 
 
+class ComputeDisksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeDisksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeFirewallsDeleteRequest(_messages.Message):
   """A ComputeFirewallsDeleteRequest object.
 
@@ -1840,6 +1909,21 @@ class ComputeFirewallsPatchRequest(_messages.Message):
   firewall = _messages.StringField(1, required=True)
   firewallResource = _messages.MessageField('Firewall', 2)
   project = _messages.StringField(3, required=True)
+
+
+class ComputeFirewallsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeFirewallsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeFirewallsUpdateRequest(_messages.Message):
@@ -2021,6 +2105,23 @@ class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   targetReference = _messages.MessageField('TargetReference', 4)
 
 
+class ComputeForwardingRulesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeForwardingRulesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeGlobalAddressesDeleteRequest(_messages.Message):
   """A ComputeGlobalAddressesDeleteRequest object.
 
@@ -2106,6 +2207,21 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeGlobalAddressesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeGlobalAddressesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
@@ -2210,6 +2326,21 @@ class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
   forwardingRule = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   targetReference = _messages.MessageField('TargetReference', 3)
+
+
+class ComputeGlobalForwardingRulesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeGlobalForwardingRulesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
@@ -2445,6 +2576,21 @@ class ComputeHttpHealthChecksPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class ComputeHttpHealthChecksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeHttpHealthChecksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeHttpHealthChecksUpdateRequest(_messages.Message):
   """A ComputeHttpHealthChecksUpdateRequest object.
 
@@ -2561,6 +2707,21 @@ class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
   httpsHealthCheck = _messages.StringField(1, required=True)
   httpsHealthCheckResource = _messages.MessageField('HttpsHealthCheck', 2)
   project = _messages.StringField(3, required=True)
+
+
+class ComputeHttpsHealthChecksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeHttpsHealthChecksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
@@ -2705,6 +2866,21 @@ class ComputeImagesSetLabelsRequest(_messages.Message):
   globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
+
+
+class ComputeImagesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeImagesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -2996,6 +3172,23 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceGroupsAddInstancesRequest(_messages.Message):
   """A ComputeInstanceGroupsAddInstancesRequest object.
 
@@ -3256,6 +3449,23 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstanceGroupsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInstanceGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   """A ComputeInstanceTemplatesDeleteRequest object.
 
@@ -3342,6 +3552,21 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceTemplatesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInstanceTemplatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeInstancesAddAccessConfigRequest(_messages.Message):
@@ -3721,6 +3946,23 @@ class ComputeInstancesStopRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeInstancesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   """A ComputeLicensesGetRequest object.
 
@@ -3936,6 +4178,21 @@ class ComputeNetworksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeNetworksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeProjectsGetRequest(_messages.Message):
@@ -4297,6 +4554,23 @@ class ComputeRoutersPatchRequest(_messages.Message):
   routerResource = _messages.MessageField('Router', 4)
 
 
+class ComputeRoutersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRoutersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRoutersUpdateRequest(_messages.Message):
   """A ComputeRoutersUpdateRequest object.
 
@@ -4400,6 +4674,21 @@ class ComputeRoutesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRoutesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeSnapshotsDeleteRequest(_messages.Message):
   """A ComputeSnapshotsDeleteRequest object.
 
@@ -4490,6 +4779,21 @@ class ComputeSnapshotsSetLabelsRequest(_messages.Message):
   resource = _messages.StringField(3, required=True)
 
 
+class ComputeSnapshotsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
   """A ComputeSslCertificatesDeleteRequest object.
 
@@ -4576,6 +4880,21 @@ class ComputeSslCertificatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSslCertificatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeSubnetworksAggregatedListRequest(_messages.Message):
@@ -4724,6 +5043,23 @@ class ComputeSubnetworksListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSubnetworksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
   """A ComputeTargetHttpProxiesDeleteRequest object.
 
@@ -4825,6 +5161,21 @@ class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   targetHttpProxy = _messages.StringField(2, required=True)
   urlMapReference = _messages.MessageField('UrlMapReference', 3)
+
+
+class ComputeTargetHttpProxiesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetHttpProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -4946,6 +5297,21 @@ class ComputeTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   targetHttpsProxy = _messages.StringField(2, required=True)
   urlMapReference = _messages.MessageField('UrlMapReference', 3)
+
+
+class ComputeTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
@@ -5093,6 +5459,23 @@ class ComputeTargetInstancesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeTargetInstancesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetInstancesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeTargetPoolsAddHealthCheckRequest(_messages.Message):
@@ -5346,6 +5729,23 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
   targetReference = _messages.MessageField('TargetReference', 5)
 
 
+class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetPoolsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -5493,6 +5893,23 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeTargetVpnGatewaysTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetVpnGatewaysTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeUrlMapsDeleteRequest(_messages.Message):
   """A ComputeUrlMapsDeleteRequest object.
 
@@ -5607,6 +6024,21 @@ class ComputeUrlMapsPatchRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   urlMap = _messages.StringField(2, required=True)
   urlMapResource = _messages.MessageField('UrlMap', 3)
+
+
+class ComputeUrlMapsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeUrlMapsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeUrlMapsUpdateRequest(_messages.Message):
@@ -5782,6 +6214,23 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeVpnTunnelsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeZoneOperationsDeleteRequest(_messages.Message):
@@ -6019,8 +6468,13 @@ class Disk(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -6043,13 +6497,18 @@ class Disk(_messages.Message):
     labelFingerprint: A fingerprint for the labels being applied to this disk,
       which is essentially a hash of the labels set used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to the
-      disk.
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      a disk.
     labels: Labels to apply to this disk. These can be later modified by the
-      setLabels method. Each label key & value must comply with RFC1035. Label
-      values may be empty.
+      setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
@@ -6072,22 +6531,17 @@ class Disk(_messages.Message):
       sourceSnapshot, the value of sizeGb must not be less than the size of
       the sourceImage or the size of the snapshot.
     sourceImage: The source image used to create this disk. If the source
-      image is deleted from the system, this field will not be set, even if an
-      image with the same name has been re-created.  When creating a disk, you
-      can provide a private (custom) image using the following input, and
-      Compute Engine will use the corresponding image from your project. For
-      example:  global/images/my-private-image   Or you can provide an image
-      from a publicly-available project. For example, to use a Debian image
-      from the debian-cloud project, make sure to include the project in the
-      URL:  projects/debian-cloud/global/images/debian-7-wheezy-vYYYYMMDD
-      where vYYYYMMDD is the image version. The fully-qualified URL will also
-      work in both cases.  You can also specify the latest image for a private
-      image family by replacing the image name suffix with family/family-name.
-      For example:  global/images/family/my-private-family   Or you can
-      specify an image family from a publicly-available project. For example,
-      to use the latest Debian 7 from the debian-cloud project, make sure to
-      include the project in the URL:  projects/debian-
-      cloud/global/images/family/debian-7
+      image is deleted, this field will not be set.  To create a disk with one
+      of the public operating system images, specify the image by its family
+      name. For example, specify family/debian-8 to use the latest Debian 8
+      image:  projects/debian-cloud/global/images/family/debian-8
+      Alternatively, use a specific version of a public operating system
+      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      To create a disk with a private image that you created, specify the
+      image name in the following format:  global/images/my-private-image
+      You can also specify a private image by its image family, which returns
+      the latest version of the image in that family. Replace the image name
+      with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. This key is required if the source image is protected by a
       customer-supplied encryption key.  If the incorrect key is provided, the
@@ -6151,8 +6605,12 @@ class Disk(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this disk. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -6951,17 +7409,21 @@ class GlobalSetLabelsRequest(_messages.Message):
   """A GlobalSetLabelsRequest object.
 
   Messages:
-    LabelsValue: The new labels for the resource.
+    LabelsValue: The labels to set for this resource.
 
   Fields:
-    labelFingerprint: Fingerprint of the previous set of labels for this
-      resource, used to detect conflicts.
-    labels: The new labels for the resource.
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash
+      when updating or changing labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The new labels for the resource.
+    """The labels to set for this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -7216,8 +7678,13 @@ class Image(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this image. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
@@ -7230,8 +7697,10 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
-    family: Image family for the resource; provided by the client when the
-      resource is created.
+    family: The name of the image family to which this image belongs. You can
+      create disks by specifying an image family instead of a specific image
+      name. The image family always returns its latest image that is not
+      deprecated.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -7246,15 +7715,20 @@ class Image(_messages.Message):
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
     labelFingerprint: A fingerprint for the labels being applied to this
-      image, which is essentially a hash of the labels set used for optimistic
+      image, which is essentially a hash of the labels used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to
-      retrieve the image.
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      an image.
     labels: Labels to apply to this image. These can be later modified by the
-      setLabels method. Each label key & value must comply with RFC1035. Label
-      values may be empty.
+      setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     licenses: Any applicable publicly visible licenses.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -7313,8 +7787,12 @@ class Image(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this image. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -7644,6 +8122,8 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
@@ -7661,10 +8141,11 @@ class InstanceGroup(_messages.Message):
   name = _messages.StringField(6)
   namedPorts = _messages.MessageField('NamedPort', 7, repeated=True)
   network = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  size = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class InstanceGroupAggregatedList(_messages.Message):
@@ -7778,6 +8259,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -7801,10 +8284,11 @@ class InstanceGroupManager(_messages.Message):
   kind = _messages.StringField(10, default=u'compute#instanceGroupManager')
   name = _messages.StringField(11)
   namedPorts = _messages.MessageField('NamedPort', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  targetPools = _messages.StringField(14, repeated=True)
-  targetSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(16)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  targetPools = _messages.StringField(15, repeated=True)
+  targetSize = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(17)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -9239,7 +9723,7 @@ class Operation(_messages.Message):
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
-      operation resources.
+      Operation resources.
     name: [Output Only] Name of the resource.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
@@ -9641,6 +10125,8 @@ class Project(_messages.Message):
       information.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultServiceAccount: [Output Only] Default service account used by VMs
+      running in this project.
     description: An optional textual description of the resource.
     enabledFeatures: Restricted features enabled for use on this project.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -9658,14 +10144,15 @@ class Project(_messages.Message):
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enabledFeatures = _messages.StringField(4, repeated=True)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#project')
-  name = _messages.StringField(7)
-  quotas = _messages.MessageField('Quota', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 10)
+  defaultServiceAccount = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enabledFeatures = _messages.StringField(5, repeated=True)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#project')
+  name = _messages.StringField(8)
+  quotas = _messages.MessageField('Quota', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
 
 
 class Quota(_messages.Message):
@@ -10107,10 +10594,10 @@ class RouterBgp(_messages.Message):
   """A RouterBgp object.
 
   Fields:
-    asn: Local BGP Autonomous System Number (ASN). Can be a constant public
-      ASN value for Google, or a customer-specified private ASN. In either
-      case, the value will be fixed for this router resource. All VPN tunnels
-      that link to this router will have the same local ASN.
+    asn: Local BGP Autonomous System Number (ASN). Must be an RFC6996 private
+      ASN, either 16-bit or 32-bit. The value will be fixed for this router
+      resource. All VPN tunnels that link to this router will have the same
+      local ASN.
   """
 
   asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -10147,9 +10634,10 @@ class RouterInterface(_messages.Message):
   (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
 
   Fields:
-    ipRange: IP address and range of the interface. The value should be a
-      CIDR-formatted string, for example: 169.254.0.1/30. NOTE: Do NOT
-      truncate address, as it represents IP address of interface.
+    ipRange: IP address and range of the interface. The IP range must be in
+      the RFC3927 link-local IP space. The value must be a CIDR-formatted
+      string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
+      as it represents the IP address of the interface.
     linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
       as the router. Each interface can have at most one linked resource.
     name: Name of this interface entry. The name must be 1-63 characters long
@@ -10208,7 +10696,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     ipAddress: IP address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
-    name: Name of this BGP peer. Unique within the routes resource.
+    name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
     state: BGP state as specified in RFC1771.
@@ -10443,8 +10931,13 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this snapshot. These can be later modified
-      by the setLabels method. Each label key & value must comply with
-      RFC1035. Label values may be empty.
+      by the setLabels() method. Each label key & value must comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -10459,13 +10952,18 @@ class Snapshot(_messages.Message):
     labelFingerprint: A fingerprint for the labels being applied to this
       snapshot, which is essentially a hash of the labels set used for
       optimistic locking. The fingerprint is initially generated by Compute
-      Engine and changes after every request to modify or update metadata. You
+      Engine and changes after every request to modify or update labels. You
       must always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to the
-      snapshot.
+      change labels.  To see the latest fingerprint, make a get() request to
+      retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -10541,8 +11039,12 @@ class Snapshot(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this snapshot. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -11911,6 +12413,28 @@ class TestFailure(_messages.Message):
   path = _messages.StringField(4)
 
 
+class TestPermissionsRequest(_messages.Message):
+  """A TestPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the 'resource'.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestPermissionsResponse(_messages.Message):
+  """A TestPermissionsResponse object.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class UrlMap(_messages.Message):
   """A UrlMap resource. This resource defines the mapping from URL to the
   BackendService resource, based on the "longest-match" of the URL's host and
@@ -12338,10 +12862,6 @@ class Zone(_messages.Message):
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or
       DOWN.
 
-  Messages:
-    MaintenanceWindowsValueListEntry: A MaintenanceWindowsValueListEntry
-      object.
-
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -12351,10 +12871,6 @@ class Zone(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#zone for zones.
-    maintenanceWindows: [Output Only] Any scheduled maintenance windows for
-      this zone. When the zone is in a maintenance window, all resources which
-      reside in the zone will be unavailable. For more information, see
-      Maintenance Windows
     name: [Output Only] Name of the resource.
     region: [Output Only] Full URL reference to the region which hosts the
       zone.
@@ -12372,34 +12888,15 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  class MaintenanceWindowsValueListEntry(_messages.Message):
-    """A MaintenanceWindowsValueListEntry object.
-
-    Fields:
-      beginTime: [Output Only] Starting time of the maintenance window, in
-        RFC3339 format.
-      description: [Output Only] Textual description of the maintenance
-        window.
-      endTime: [Output Only] Ending time of the maintenance window, in RFC3339
-        format.
-      name: [Output Only] Name of the maintenance window.
-    """
-
-    beginTime = _messages.StringField(1)
-    description = _messages.StringField(2)
-    endTime = _messages.StringField(3)
-    name = _messages.StringField(4)
-
   creationTimestamp = _messages.StringField(1)
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#zone')
-  maintenanceWindows = _messages.MessageField('MaintenanceWindowsValueListEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class ZoneList(_messages.Message):
@@ -12429,17 +12926,21 @@ class ZoneSetLabelsRequest(_messages.Message):
   """A ZoneSetLabelsRequest object.
 
   Messages:
-    LabelsValue: The new labels for the resource.
+    LabelsValue: The labels to set for this resource.
 
   Fields:
-    labelFingerprint: Fingerprint of the previous set of labels for this
-      resource, used to detect conflicts.
-    labels: The new labels for the resource.
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash in
+      order to update or change labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The new labels for the resource.
+    """The labels to set for this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

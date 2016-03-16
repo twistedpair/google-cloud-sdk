@@ -424,6 +424,11 @@
           "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of entries, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogEntries`.\nIf `nextPageToken` is empty, then there are no more results.",
           "type": "string",
           "format": "byte"
+        },
+        "lastObservedEntryTimestamp": {
+          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

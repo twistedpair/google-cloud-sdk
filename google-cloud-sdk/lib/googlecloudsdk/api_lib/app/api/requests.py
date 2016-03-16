@@ -19,46 +19,10 @@ import io
 import json
 
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 import httplib2
-
-
-def TransformKnownErrors(error):
-  """Modify common error responses for friendly presentation to users.
-
-  Currently transforms:
-
-  * API not enabled: instructions on enabling the API
-
-  Args:
-    error: dict, parsed JSON error
-
-  Returns:
-    error, possibly modified to present better to users
-  """
-  log.debug(error)
-
-  if (error.get('status') == 'PERMISSION_DENIED' and
-      'Project has not enabled the API' in error.get('message', '')):
-    url = 'https://console.developers.google.com/'
-    try:
-      # 'details' is a list of details for the error; with this message, there's
-      # only one. 'links' is a list of relevant links; in this message, there's
-      # only one.
-      url = error['details'][0]['links'][0]['url']
-    except (IndexError, KeyError):
-      pass
-    error['message'] = (
-        'You must enable the "App Engine Admin API" in the Developers Console '
-        'in order to use this command:\n\n'
-        '1. Go to <{0}>.\n'
-        '2. Find and enable the "App Engine Admin API" in the '
-        '"APIs and Auth > APIs" view.').format(url)
-
-  return error
 
 
 def ExtractErrorMessage(error_details):
@@ -96,7 +60,6 @@ def MakeRequest(service_method, request_message):
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
     error_json = _ExtractErrorJsonFromHttpError(error)
-    error_json = TransformKnownErrors(error_json)
     raise exceptions.HttpException(ExtractErrorMessage(error_json))
   except httplib2.HttpLib2Error as error:
     raise exceptions.HttpException('Response error: %s' % error.message)

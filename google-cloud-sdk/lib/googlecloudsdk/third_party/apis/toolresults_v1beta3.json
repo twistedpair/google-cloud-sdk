@@ -4,16 +4,16 @@
  "id": "toolresults:v1beta3",
  "name": "toolresults",
  "version": "v1beta3",
- "revision": "20160302",
+ "revision": "20160308",
  "title": "Cloud Tool Results API",
- "description": "Read and publish results from tools such as Build and Test.",
+ "description": "Read and publish results from Cloud Test Lab.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
   "x16": "http://www.google.com/images/icons/product/search-16.gif",
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
- "documentationLink": "http://code.google.com/apis/cloud/toolresults/v1/using_rest.html",
+ "documentationLink": "https://developers.google.com/cloud-test-lab/",
  "protocol": "rest",
  "baseUrl": "https://www.googleapis.com/toolresults/v1beta3/projects/",
  "basePath": "/toolresults/v1beta3/projects/",
@@ -808,7 +808,7 @@
      "id": "toolresults.projects.initializeSettings",
      "path": "{projectId}:initializeSettings",
      "httpMethod": "POST",
-     "description": "Creates resources for settings which have not yet been set.\n\nCurrently, this creates a single resource: a Google Cloud Storage bucket, to be used as the default bucket for this project. The bucket is created in the name of the user calling. Except in rare cases, calling this method in parallel from multiple clients will only create a single bucket. In order to avoid unnecessary storage charges, the bucket is configured to automatically delete objects older than 90 days.\n\nThe bucket is created with the project-private ACL: All project team members are given permissions to the bucket and objects created within it according to their roles. Project owners have owners rights, and so on. The default ACL on objects created in the bucket is project-private as well. See Google Cloud Storage documentation for more details.\n\nIf there is already a default bucket set, this call does nothing.\n\nMay return any canonical error codes, including the following:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project - Any error code raised by Google Cloud Storage",
+     "description": "Creates resources for settings which have not yet been set.\n\nCurrently, this creates a single resource: a Google Cloud Storage bucket, to be used as the default bucket for this project. The bucket is created in the name of the user calling. Except in rare cases, calling this method in parallel from multiple clients will only create a single bucket. In order to avoid unnecessary storage charges, the bucket is configured to automatically delete objects older than 90 days.\n\nThe bucket is created with the project-private ACL: All project team members are given permissions to the bucket and objects created within it according to their roles. Project owners have owners rights, and so on. The default ACL on objects created in the bucket is project-private as well. See Google Cloud Storage documentation for more details.\n\nIf there is already a default bucket set and the project can access the bucket, this call does nothing. However, if the project doesn't have the permission to access the bucket or the bucket is deteleted, a new bucket will be created.\n\nMay return any canonical error codes, including the following:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project - Any error code raised by Google Cloud Storage",
      "parameters": {
       "projectId": {
        "type": "string",

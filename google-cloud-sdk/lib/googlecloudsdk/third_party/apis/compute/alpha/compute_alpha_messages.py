@@ -425,14 +425,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType
-    sourceImage: A source image used to create the disk. You can provide a
-      private (custom) image, and Compute Engine will use the corresponding
-      image from your project. For example:  global/images/my-private-image
-      Or you can provide an image from a publicly-available project. For
-      example, to use a Debian image from the debian-cloud project, make sure
-      to include the project in the URL:  projects/debian-
-      cloud/global/images/debian-7-wheezy-vYYYYMMDD   where vYYYYMMDD is the
-      image version. The fully-qualified URL will also work in both cases.
+    sourceImage: The source image used to create this disk.  To create a disk
+      with a private image, specify the image name in the following format:
+      global/images/my-private-image   To create a disk with a public image,
+      specify the image name and the project that owns the image. For example,
+      you can use a Debian image from the debian-cloud project:  projects
+      /debian-cloud/global/images/debian-8-jessie-vYYYYMMDD   The vYYYYMMDD
+      value is the image version. The fully-qualified URL also works in both
+      examples.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. This key is required if the source image is protected by a
       customer-supplied encryption key.  If the incorrect key is provided, the
@@ -505,8 +505,8 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    region: [Output Only] URL of the region where the instance group resides
-      (for autoscalers living in regional scope).
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the autoscaler configuration.
     statusDetails: [Output Only] Human-readable details about the current
@@ -980,7 +980,8 @@ class BackendService(_messages.Message):
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds if session_affinity
       is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
-      only until the end of the browser session (or equivalent).
+      only until the end of the browser session (or equivalent). The maximum
+      allowed value for TTL is one day.
     backends: The list of backends that serve this BackendService.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -6811,6 +6812,145 @@ class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetSslProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesGetRequest(_messages.Message):
+  """A ComputeTargetSslProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetSslProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: A TargetSslProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.MessageField('TargetSslProxy', 2)
+
+
+class ComputeTargetSslProxiesListRequest(_messages.Message):
+  """A ComputeTargetSslProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: If you
+      use filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. In particular, use filtering
+      on nested fields to take advantage of instance labels to organize and
+      filter results based on label values.  The Beta API also supports
+      filtering on multiple expressions by providing each separate expression
+      within parentheses. For example, (scheduling.automaticRestart eq true)
+      (zone eq us-central1-f). Multiple expressions are treated as AND
+      expressions, meaning that resources must match all expressions to pass
+      the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetBackendServiceRequest: A
+      TargetSslProxiesSetBackendServiceRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose BackendService
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetProxyHeaderRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetProxyHeaderRequest: A
+      TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose ProxyHeader is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetProxyHeaderRequest = _messages.MessageField('TargetSslProxiesSetProxyHeaderRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetSslCertificatesRequest: A
+      TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose SslCertificate
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
 class ComputeTargetSslProxiesTestIamPermissionsRequest(_messages.Message):
   """A ComputeTargetSslProxiesTestIamPermissionsRequest object.
 
@@ -7623,8 +7763,13 @@ class Disk(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -7647,13 +7792,18 @@ class Disk(_messages.Message):
     labelFingerprint: A fingerprint for the labels being applied to this disk,
       which is essentially a hash of the labels set used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to the
-      disk.
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      a disk.
     labels: Labels to apply to this disk. These can be later modified by the
-      setLabels method. Each label key & value must comply with RFC1035. Label
-      values may be empty.
+      setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
@@ -7676,22 +7826,17 @@ class Disk(_messages.Message):
       sourceSnapshot, the value of sizeGb must not be less than the size of
       the sourceImage or the size of the snapshot.
     sourceImage: The source image used to create this disk. If the source
-      image is deleted from the system, this field will not be set, even if an
-      image with the same name has been re-created.  When creating a disk, you
-      can provide a private (custom) image using the following input, and
-      Compute Engine will use the corresponding image from your project. For
-      example:  global/images/my-private-image   Or you can provide an image
-      from a publicly-available project. For example, to use a Debian image
-      from the debian-cloud project, make sure to include the project in the
-      URL:  projects/debian-cloud/global/images/debian-7-wheezy-vYYYYMMDD
-      where vYYYYMMDD is the image version. The fully-qualified URL will also
-      work in both cases.  You can also specify the latest image for a private
-      image family by replacing the image name suffix with family/family-name.
-      For example:  global/images/family/my-private-family   Or you can
-      specify an image family from a publicly-available project. For example,
-      to use the latest Debian 7 from the debian-cloud project, make sure to
-      include the project in the URL:  projects/debian-
-      cloud/global/images/family/debian-7
+      image is deleted, this field will not be set.  To create a disk with one
+      of the public operating system images, specify the image by its family
+      name. For example, specify family/debian-8 to use the latest Debian 8
+      image:  projects/debian-cloud/global/images/family/debian-8
+      Alternatively, use a specific version of a public operating system
+      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      To create a disk with a private image that you created, specify the
+      image name in the following format:  global/images/my-private-image
+      You can also specify a private image by its image family, which returns
+      the latest version of the image in that family. Replace the image name
+      with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. This key is required if the source image is protected by a
       customer-supplied encryption key.  If the incorrect key is provided, the
@@ -7755,8 +7900,12 @@ class Disk(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this disk. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -8555,17 +8704,21 @@ class GlobalSetLabelsRequest(_messages.Message):
   """A GlobalSetLabelsRequest object.
 
   Messages:
-    LabelsValue: The new labels for the resource.
+    LabelsValue: The labels to set for this resource.
 
   Fields:
-    labelFingerprint: Fingerprint of the previous set of labels for this
-      resource, used to detect conflicts.
-    labels: The new labels for the resource.
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash
+      when updating or changing labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The new labels for the resource.
+    """The labels to set for this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -8991,8 +9144,13 @@ class Image(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this image. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
@@ -9005,8 +9163,10 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
-    family: Image family for the resource; provided by the client when the
-      resource is created.
+    family: The name of the image family to which this image belongs. You can
+      create disks by specifying an image family instead of a specific image
+      name. The image family always returns its latest image that is not
+      deprecated.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -9021,15 +9181,20 @@ class Image(_messages.Message):
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
     labelFingerprint: A fingerprint for the labels being applied to this
-      image, which is essentially a hash of the labels set used for optimistic
+      image, which is essentially a hash of the labels used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to
-      retrieve the image.
+      changes after every request to modify or update labels. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      labels.  To see the latest fingerprint, make a get() request to retrieve
+      an image.
     labels: Labels to apply to this image. These can be later modified by the
-      setLabels method. Each label key & value must comply with RFC1035. Label
-      values may be empty.
+      setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     licenses: Any applicable publicly visible licenses.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -9088,8 +9253,12 @@ class Image(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this image. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -9218,6 +9387,16 @@ class Instance(_messages.Message):
       be created before you can assign them.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    instanceEncryptionKey: Encrypts or decrypts data associated with an
+      instance with a customer-supplied encryption key.  If you are creating a
+      new instance, this field encrypts the Local SSD and RAM contents of the
+      instance using a customer-supplied encryption key.  If you are starting
+      an instance protected with a customer-supplied encryption key then you
+      must provide the correct key otherwise the instance start will not
+      succeed.  If no customer-supplied encryption key is provided at
+      creation, then the Local SSD and RAM will be encrypted using an
+      automatically generated key and you do not need to provide a key to
+      start the instance later.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -9326,20 +9505,21 @@ class Instance(_messages.Message):
   description = _messages.StringField(4)
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  machineType = _messages.StringField(10)
-  metadata = _messages.MessageField('Metadata', 11)
-  name = _messages.StringField(12)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 14)
-  selfLink = _messages.StringField(15)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  tags = _messages.MessageField('Tags', 19)
-  zone = _messages.StringField(20)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  kind = _messages.StringField(8, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  machineType = _messages.StringField(11)
+  metadata = _messages.MessageField('Metadata', 12)
+  name = _messages.StringField(13)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 14, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 15)
+  selfLink = _messages.StringField(16)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  tags = _messages.MessageField('Tags', 20)
+  zone = _messages.StringField(21)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -9419,7 +9599,8 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
-    region: The URL of the region where the instance group is located.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
@@ -9561,8 +9742,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    region: [Output Only] URL of the region where the managed instance group
-      resides.
+    region: The name of the region where the multi-zonal managed instance
+      group is located.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -10536,6 +10717,7 @@ class MachineType(_messages.Message):
       the instance.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    isSharedCpu: [Output Only] Whether this machine type has a shared CPU.
     kind: [Output Only] The type of the resource. Always compute#machineType
       for machine types.
     maximumPersistentDisks: [Output Only] Maximum persistent disks allowed.
@@ -10554,13 +10736,14 @@ class MachineType(_messages.Message):
   description = _messages.StringField(3)
   guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(8)
-  memoryMb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  isSharedCpu = _messages.BooleanField(6)
+  kind = _messages.StringField(7, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(9)
+  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -10787,6 +10970,9 @@ class ManagedInstance(_messages.Message):
       the instance has not yet been created.
     instanceStatus: [Output Only] The status of the instance. This field is
       empty when the instance does not exist.
+    instanceTemplate: [Output Only] The intended template of the instance.
+      This field is empty when current_action is one of { DELETING, ABANDONING
+      }.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
   """
@@ -10857,7 +11043,8 @@ class ManagedInstance(_messages.Message):
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
+  instanceTemplate = _messages.StringField(5)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -11099,7 +11286,7 @@ class Operation(_messages.Message):
     insertTime: [Output Only] The time that this operation was requested. This
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always compute#operation for
-      operation resources.
+      Operation resources.
     name: [Output Only] Name of the resource.
     operationType: [Output Only] The type of operation, such as insert,
       update, or delete, and so on.
@@ -11521,7 +11708,13 @@ class Policy(_messages.Message):
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
     iamOwned:
-    rules:
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Version of the `Policy`. The default version is 0.
   """
 
@@ -12236,10 +12429,10 @@ class RouterBgp(_messages.Message):
   """A RouterBgp object.
 
   Fields:
-    asn: Local BGP Autonomous System Number (ASN). Can be a constant public
-      ASN value for Google, or a customer-specified private ASN. In either
-      case, the value will be fixed for this router resource. All VPN tunnels
-      that link to this router will have the same local ASN.
+    asn: Local BGP Autonomous System Number (ASN). Must be an RFC6996 private
+      ASN, either 16-bit or 32-bit. The value will be fixed for this router
+      resource. All VPN tunnels that link to this router will have the same
+      local ASN.
   """
 
   asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -12276,9 +12469,10 @@ class RouterInterface(_messages.Message):
   (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
 
   Fields:
-    ipRange: IP address and range of the interface. The value should be a
-      CIDR-formatted string, for example: 169.254.0.1/30. NOTE: Do NOT
-      truncate address, as it represents IP address of interface.
+    ipRange: IP address and range of the interface. The IP range must be in
+      the RFC3927 link-local IP space. The value must be a CIDR-formatted
+      string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
+      as it represents the IP address of the interface.
     linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
       as the router. Each interface can have at most one linked resource.
     name: Name of this interface entry. The name must be 1-63 characters long
@@ -12337,7 +12531,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     ipAddress: IP address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
-    name: Name of this BGP peer. Unique within the routes resource.
+    name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
     state: BGP state as specified in RFC1771.
@@ -12643,8 +12837,13 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to this snapshot. These can be later modified
-      by the setLabels method. Each label key & value must comply with
-      RFC1035. Label values may be empty.
+      by the setLabels() method. Each label key & value must comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -12659,13 +12858,18 @@ class Snapshot(_messages.Message):
     labelFingerprint: A fingerprint for the labels being applied to this
       snapshot, which is essentially a hash of the labels set used for
       optimistic locking. The fingerprint is initially generated by Compute
-      Engine and changes after every request to modify or update metadata. You
+      Engine and changes after every request to modify or update labels. You
       must always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make get() request to the
-      snapshot.
+      change labels.  To see the latest fingerprint, make a get() request to
+      retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
-      the setLabels method. Each label key & value must comply with RFC1035.
-      Label values may be empty.
+      the setLabels() method. Each label key & value must comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash. A label value can also be empty (e.g. "example-label":
+      "").
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -12741,8 +12945,12 @@ class Snapshot(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this snapshot. These can be later modified by the
-    setLabels method. Each label key & value must comply with RFC1035. Label
-    values may be empty.
+    setLabels() method. Each label key & value must comply with RFC1035.
+    Specifically, the name must be 1-63 characters long and match the regular
+    expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must
+    be a lowercase letter, and all following characters must be a dash,
+    lowercase letter, or digit, except the last character, which cannot be a
+    dash. A label value can also be empty (e.g. "example-label": "").
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -13880,6 +14088,133 @@ class TargetReference(_messages.Message):
   target = _messages.StringField(1)
 
 
+class TargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A TargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    service: The URL of the new BackendService resource for the
+      targetSslProxy.
+  """
+
+  service = _messages.StringField(1)
+
+
+class TargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A TargetSslProxiesSetProxyHeaderRequest object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: The new type of proxy header to append before
+      sending data to the backend. NONE or PROXY_V1 are allowed.
+
+  Fields:
+    proxyHeader: The new type of proxy header to append before sending data to
+      the backend. NONE or PROXY_V1 are allowed.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """The new type of proxy header to append before sending data to the
+    backend. NONE or PROXY_V1 are allowed.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 1)
+
+
+class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A TargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    sslCertificates: New set of URLs to SslCertificate resources to associate
+      with this TargetSslProxy. Currently exactly one ssl certificate must be
+      specified.
+  """
+
+  sslCertificates = _messages.StringField(1, repeated=True)
+
+
+class TargetSslProxy(_messages.Message):
+  """A TargetSslProxy resource. This resource defines an SSL proxy.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#targetSslProxy
+      for target SSL proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    service: URL to the BackendService resource.
+    sslCertificates: URLs to SslCertificate resources that are used to
+      authenticate connections to Backends. Currently exactly one SSL
+      certificate must be specified.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetSslProxy')
+  name = _messages.StringField(5)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  service = _messages.StringField(8)
+  sslCertificates = _messages.StringField(9, repeated=True)
+
+
+class TargetSslProxyList(_messages.Message):
+  """Contains a list of TargetSslProxy resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of TargetSslProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetSslProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetSslProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class TargetVpnGateway(_messages.Message):
   """Represents a Target VPN gateway resource.
 
@@ -14588,10 +14923,6 @@ class Zone(_messages.Message):
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or
       DOWN.
 
-  Messages:
-    MaintenanceWindowsValueListEntry: A MaintenanceWindowsValueListEntry
-      object.
-
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -14601,10 +14932,6 @@ class Zone(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#zone for zones.
-    maintenanceWindows: [Output Only] Any scheduled maintenance windows for
-      this zone. When the zone is in a maintenance window, all resources which
-      reside in the zone will be unavailable. For more information, see
-      Maintenance Windows
     name: [Output Only] Name of the resource.
     region: [Output Only] Full URL reference to the region which hosts the
       zone.
@@ -14622,34 +14949,15 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  class MaintenanceWindowsValueListEntry(_messages.Message):
-    """A MaintenanceWindowsValueListEntry object.
-
-    Fields:
-      beginTime: [Output Only] Starting time of the maintenance window, in
-        RFC3339 format.
-      description: [Output Only] Textual description of the maintenance
-        window.
-      endTime: [Output Only] Ending time of the maintenance window, in RFC3339
-        format.
-      name: [Output Only] Name of the maintenance window.
-    """
-
-    beginTime = _messages.StringField(1)
-    description = _messages.StringField(2)
-    endTime = _messages.StringField(3)
-    name = _messages.StringField(4)
-
   creationTimestamp = _messages.StringField(1)
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#zone')
-  maintenanceWindows = _messages.MessageField('MaintenanceWindowsValueListEntry', 6, repeated=True)
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class ZoneList(_messages.Message):
@@ -14679,17 +14987,21 @@ class ZoneSetLabelsRequest(_messages.Message):
   """A ZoneSetLabelsRequest object.
 
   Messages:
-    LabelsValue: The new labels for the resource.
+    LabelsValue: The labels to set for this resource.
 
   Fields:
-    labelFingerprint: Fingerprint of the previous set of labels for this
-      resource, used to detect conflicts.
-    labels: The new labels for the resource.
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash in
+      order to update or change labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The new labels for the resource.
+    """The labels to set for this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

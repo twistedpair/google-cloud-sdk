@@ -2960,6 +2960,8 @@ class MemcacheFlushResponse(ProtocolBuffer.ProtocolMessage):
 class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
   has_override_ = 0
   override_ = None
+  has_max_hotkey_count_ = 0
+  max_hotkey_count_ = 0
 
   def __init__(self, contents=None):
     self.lazy_init_lock_ = thread.allocate_lock()
@@ -2984,15 +2986,31 @@ class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
 
   def has_override(self): return self.has_override_
 
+  def max_hotkey_count(self): return self.max_hotkey_count_
+
+  def set_max_hotkey_count(self, x):
+    self.has_max_hotkey_count_ = 1
+    self.max_hotkey_count_ = x
+
+  def clear_max_hotkey_count(self):
+    if self.has_max_hotkey_count_:
+      self.has_max_hotkey_count_ = 0
+      self.max_hotkey_count_ = 0
+
+  def has_max_hotkey_count(self): return self.has_max_hotkey_count_
+
 
   def MergeFrom(self, x):
     assert x is not self
     if (x.has_override()): self.mutable_override().MergeFrom(x.override())
+    if (x.has_max_hotkey_count()): self.set_max_hotkey_count(x.max_hotkey_count())
 
   def Equals(self, x):
     if x is self: return 1
     if self.has_override_ != x.has_override_: return 0
     if self.has_override_ and self.override_ != x.override_: return 0
+    if self.has_max_hotkey_count_ != x.has_max_hotkey_count_: return 0
+    if self.has_max_hotkey_count_ and self.max_hotkey_count_ != x.max_hotkey_count_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -3003,27 +3021,36 @@ class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     n = 0
     if (self.has_override_): n += 1 + self.lengthString(self.override_.ByteSize())
+    if (self.has_max_hotkey_count_): n += 1 + self.lengthVarInt64(self.max_hotkey_count_)
     return n
 
   def ByteSizePartial(self):
     n = 0
     if (self.has_override_): n += 1 + self.lengthString(self.override_.ByteSizePartial())
+    if (self.has_max_hotkey_count_): n += 1 + self.lengthVarInt64(self.max_hotkey_count_)
     return n
 
   def Clear(self):
     self.clear_override()
+    self.clear_max_hotkey_count()
 
   def OutputUnchecked(self, out):
     if (self.has_override_):
       out.putVarInt32(10)
       out.putVarInt32(self.override_.ByteSize())
       self.override_.OutputUnchecked(out)
+    if (self.has_max_hotkey_count_):
+      out.putVarInt32(16)
+      out.putVarInt32(self.max_hotkey_count_)
 
   def OutputPartial(self, out):
     if (self.has_override_):
       out.putVarInt32(10)
       out.putVarInt32(self.override_.ByteSizePartial())
       self.override_.OutputPartial(out)
+    if (self.has_max_hotkey_count_):
+      out.putVarInt32(16)
+      out.putVarInt32(self.max_hotkey_count_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -3033,6 +3060,9 @@ class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
         tmp = ProtocolBuffer.Decoder(d.buffer(), d.pos(), d.pos() + length)
         d.skip(length)
         self.mutable_override().TryMerge(tmp)
+        continue
+      if tt == 16:
+        self.set_max_hotkey_count(d.getVarInt32())
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -3046,6 +3076,7 @@ class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
       res+=prefix+"override <\n"
       res+=self.override_.__str__(prefix + "  ", printElemNumber)
       res+=prefix+">\n"
+    if self.has_max_hotkey_count_: res+=prefix+("max_hotkey_count: %s\n" % self.DebugFormatInt32(self.max_hotkey_count_))
     return res
 
 
@@ -3053,16 +3084,19 @@ class MemcacheStatsRequest(ProtocolBuffer.ProtocolMessage):
     return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
 
   koverride = 1
+  kmax_hotkey_count = 2
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
     1: "override",
-  }, 1)
+    2: "max_hotkey_count",
+  }, 2)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
     1: ProtocolBuffer.Encoder.STRING,
-  }, 1, ProtocolBuffer.Encoder.MAX_TYPE)
+    2: ProtocolBuffer.Encoder.NUMERIC,
+  }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -3085,6 +3119,7 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
   oldest_item_age_ = 0
 
   def __init__(self, contents=None):
+    self.hotkeys_ = []
     if contents is not None: self.MergeFromString(contents)
 
   def hits(self): return self.hits_
@@ -3165,6 +3200,22 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
 
   def has_oldest_item_age(self): return self.has_oldest_item_age_
 
+  def hotkeys_size(self): return len(self.hotkeys_)
+  def hotkeys_list(self): return self.hotkeys_
+
+  def hotkeys(self, i):
+    return self.hotkeys_[i]
+
+  def mutable_hotkeys(self, i):
+    return self.hotkeys_[i]
+
+  def add_hotkeys(self):
+    x = MemcacheHotKey()
+    self.hotkeys_.append(x)
+    return x
+
+  def clear_hotkeys(self):
+    self.hotkeys_ = []
 
   def MergeFrom(self, x):
     assert x is not self
@@ -3174,6 +3225,7 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     if (x.has_items()): self.set_items(x.items())
     if (x.has_bytes()): self.set_bytes(x.bytes())
     if (x.has_oldest_item_age()): self.set_oldest_item_age(x.oldest_item_age())
+    for i in xrange(x.hotkeys_size()): self.add_hotkeys().CopyFrom(x.hotkeys(i))
 
   def Equals(self, x):
     if x is self: return 1
@@ -3189,6 +3241,9 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     if self.has_bytes_ and self.bytes_ != x.bytes_: return 0
     if self.has_oldest_item_age_ != x.has_oldest_item_age_: return 0
     if self.has_oldest_item_age_ and self.oldest_item_age_ != x.oldest_item_age_: return 0
+    if len(self.hotkeys_) != len(x.hotkeys_): return 0
+    for e1, e2 in zip(self.hotkeys_, x.hotkeys_):
+      if e1 != e2: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -3217,6 +3272,8 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
       initialized = 0
       if debug_strs is not None:
         debug_strs.append('Required field: oldest_item_age not set.')
+    for p in self.hotkeys_:
+      if not p.IsInitialized(debug_strs): initialized=0
     return initialized
 
   def ByteSize(self):
@@ -3226,6 +3283,8 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     n += self.lengthVarInt64(self.byte_hits_)
     n += self.lengthVarInt64(self.items_)
     n += self.lengthVarInt64(self.bytes_)
+    n += 1 * len(self.hotkeys_)
+    for i in xrange(len(self.hotkeys_)): n += self.lengthString(self.hotkeys_[i].ByteSize())
     return n + 10
 
   def ByteSizePartial(self):
@@ -3247,6 +3306,8 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
       n += self.lengthVarInt64(self.bytes_)
     if (self.has_oldest_item_age_):
       n += 5
+    n += 1 * len(self.hotkeys_)
+    for i in xrange(len(self.hotkeys_)): n += self.lengthString(self.hotkeys_[i].ByteSizePartial())
     return n
 
   def Clear(self):
@@ -3256,6 +3317,7 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     self.clear_items()
     self.clear_bytes()
     self.clear_oldest_item_age()
+    self.clear_hotkeys()
 
   def OutputUnchecked(self, out):
     out.putVarInt32(8)
@@ -3270,6 +3332,10 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     out.putVarUint64(self.bytes_)
     out.putVarInt32(53)
     out.put32(self.oldest_item_age_)
+    for i in xrange(len(self.hotkeys_)):
+      out.putVarInt32(58)
+      out.putVarInt32(self.hotkeys_[i].ByteSize())
+      self.hotkeys_[i].OutputUnchecked(out)
 
   def OutputPartial(self, out):
     if (self.has_hits_):
@@ -3290,6 +3356,10 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     if (self.has_oldest_item_age_):
       out.putVarInt32(53)
       out.put32(self.oldest_item_age_)
+    for i in xrange(len(self.hotkeys_)):
+      out.putVarInt32(58)
+      out.putVarInt32(self.hotkeys_[i].ByteSizePartial())
+      self.hotkeys_[i].OutputPartial(out)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -3312,6 +3382,12 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
       if tt == 53:
         self.set_oldest_item_age(d.get32())
         continue
+      if tt == 58:
+        length = d.getVarInt32()
+        tmp = ProtocolBuffer.Decoder(d.buffer(), d.pos(), d.pos() + length)
+        d.skip(length)
+        self.add_hotkeys().TryMerge(tmp)
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
@@ -3326,6 +3402,14 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     if self.has_items_: res+=prefix+("items: %s\n" % self.DebugFormatInt64(self.items_))
     if self.has_bytes_: res+=prefix+("bytes: %s\n" % self.DebugFormatInt64(self.bytes_))
     if self.has_oldest_item_age_: res+=prefix+("oldest_item_age: %s\n" % self.DebugFormatFixed32(self.oldest_item_age_))
+    cnt=0
+    for e in self.hotkeys_:
+      elm=""
+      if printElemNumber: elm="(%d)" % cnt
+      res+=prefix+("hotkeys%s <\n" % elm)
+      res+=e.__str__(prefix + "  ", printElemNumber)
+      res+=prefix+">\n"
+      cnt+=1
     return res
 
 
@@ -3338,6 +3422,7 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
   kitems = 4
   kbytes = 5
   koldest_item_age = 6
+  khotkeys = 7
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -3347,7 +3432,8 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     4: "items",
     5: "bytes",
     6: "oldest_item_age",
-  }, 6)
+    7: "hotkeys",
+  }, 7)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -3357,7 +3443,8 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
     4: ProtocolBuffer.Encoder.NUMERIC,
     5: ProtocolBuffer.Encoder.NUMERIC,
     6: ProtocolBuffer.Encoder.FLOAT,
-  }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
+    7: ProtocolBuffer.Encoder.STRING,
+  }, 7, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -3365,6 +3452,179 @@ class MergedNamespaceStats(ProtocolBuffer.ProtocolMessage):
   _STYLE_CONTENT_TYPE = \
    """"""
   _PROTO_DESCRIPTOR_NAME = 'apphosting.MergedNamespaceStats'
+class MemcacheHotKey(ProtocolBuffer.ProtocolMessage):
+  has_key_ = 0
+  key_ = ""
+  has_qps_ = 0
+  qps_ = 0.0
+  has_name_space_ = 0
+  name_space_ = ""
+
+  def __init__(self, contents=None):
+    if contents is not None: self.MergeFromString(contents)
+
+  def key(self): return self.key_
+
+  def set_key(self, x):
+    self.has_key_ = 1
+    self.key_ = x
+
+  def clear_key(self):
+    if self.has_key_:
+      self.has_key_ = 0
+      self.key_ = ""
+
+  def has_key(self): return self.has_key_
+
+  def qps(self): return self.qps_
+
+  def set_qps(self, x):
+    self.has_qps_ = 1
+    self.qps_ = x
+
+  def clear_qps(self):
+    if self.has_qps_:
+      self.has_qps_ = 0
+      self.qps_ = 0.0
+
+  def has_qps(self): return self.has_qps_
+
+  def name_space(self): return self.name_space_
+
+  def set_name_space(self, x):
+    self.has_name_space_ = 1
+    self.name_space_ = x
+
+  def clear_name_space(self):
+    if self.has_name_space_:
+      self.has_name_space_ = 0
+      self.name_space_ = ""
+
+  def has_name_space(self): return self.has_name_space_
+
+
+  def MergeFrom(self, x):
+    assert x is not self
+    if (x.has_key()): self.set_key(x.key())
+    if (x.has_qps()): self.set_qps(x.qps())
+    if (x.has_name_space()): self.set_name_space(x.name_space())
+
+  def Equals(self, x):
+    if x is self: return 1
+    if self.has_key_ != x.has_key_: return 0
+    if self.has_key_ and self.key_ != x.key_: return 0
+    if self.has_qps_ != x.has_qps_: return 0
+    if self.has_qps_ and self.qps_ != x.qps_: return 0
+    if self.has_name_space_ != x.has_name_space_: return 0
+    if self.has_name_space_ and self.name_space_ != x.name_space_: return 0
+    return 1
+
+  def IsInitialized(self, debug_strs=None):
+    initialized = 1
+    if (not self.has_key_):
+      initialized = 0
+      if debug_strs is not None:
+        debug_strs.append('Required field: key not set.')
+    if (not self.has_qps_):
+      initialized = 0
+      if debug_strs is not None:
+        debug_strs.append('Required field: qps not set.')
+    return initialized
+
+  def ByteSize(self):
+    n = 0
+    n += self.lengthString(len(self.key_))
+    if (self.has_name_space_): n += 1 + self.lengthString(len(self.name_space_))
+    return n + 10
+
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_key_):
+      n += 1
+      n += self.lengthString(len(self.key_))
+    if (self.has_qps_):
+      n += 9
+    if (self.has_name_space_): n += 1 + self.lengthString(len(self.name_space_))
+    return n
+
+  def Clear(self):
+    self.clear_key()
+    self.clear_qps()
+    self.clear_name_space()
+
+  def OutputUnchecked(self, out):
+    out.putVarInt32(10)
+    out.putPrefixedString(self.key_)
+    out.putVarInt32(17)
+    out.putDouble(self.qps_)
+    if (self.has_name_space_):
+      out.putVarInt32(26)
+      out.putPrefixedString(self.name_space_)
+
+  def OutputPartial(self, out):
+    if (self.has_key_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.key_)
+    if (self.has_qps_):
+      out.putVarInt32(17)
+      out.putDouble(self.qps_)
+    if (self.has_name_space_):
+      out.putVarInt32(26)
+      out.putPrefixedString(self.name_space_)
+
+  def TryMerge(self, d):
+    while d.avail() > 0:
+      tt = d.getVarInt32()
+      if tt == 10:
+        self.set_key(d.getPrefixedString())
+        continue
+      if tt == 17:
+        self.set_qps(d.getDouble())
+        continue
+      if tt == 26:
+        self.set_name_space(d.getPrefixedString())
+        continue
+      # tag 0 is special: it's used to indicate an error.
+      # so if we see it we raise an exception.
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      d.skipData(tt)
+
+
+  def __str__(self, prefix="", printElemNumber=0):
+    res=""
+    if self.has_key_: res+=prefix+("key: %s\n" % self.DebugFormatString(self.key_))
+    if self.has_qps_: res+=prefix+("qps: %s\n" % self.DebugFormat(self.qps_))
+    if self.has_name_space_: res+=prefix+("name_space: %s\n" % self.DebugFormatString(self.name_space_))
+    return res
+
+
+  def _BuildTagLookupTable(sparse, maxtag, default=None):
+    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+
+  kkey = 1
+  kqps = 2
+  kname_space = 3
+
+  _TEXT = _BuildTagLookupTable({
+    0: "ErrorCode",
+    1: "key",
+    2: "qps",
+    3: "name_space",
+  }, 3)
+
+  _TYPES = _BuildTagLookupTable({
+    0: ProtocolBuffer.Encoder.NUMERIC,
+    1: ProtocolBuffer.Encoder.STRING,
+    2: ProtocolBuffer.Encoder.DOUBLE,
+    3: ProtocolBuffer.Encoder.STRING,
+  }, 3, ProtocolBuffer.Encoder.MAX_TYPE)
+
+  # stylesheet for XML output
+  _STYLE = \
+   """"""
+  _STYLE_CONTENT_TYPE = \
+   """"""
+  _PROTO_DESCRIPTOR_NAME = 'apphosting.MemcacheHotKey'
 class MemcacheStatsResponse(ProtocolBuffer.ProtocolMessage):
   has_stats_ = 0
   stats_ = None
@@ -3898,4 +4158,4 @@ class MemcacheGrabTailResponse(ProtocolBuffer.ProtocolMessage):
 if _extension_runtime:
   pass
 
-__all__ = ['MemcacheServiceError','AppOverride','MemcacheGetRequest','MemcacheGetResponse','MemcacheGetResponse_Item','MemcacheSetRequest','MemcacheSetRequest_Item','MemcacheSetResponse','MemcacheDeleteRequest','MemcacheDeleteRequest_Item','MemcacheDeleteResponse','MemcacheIncrementRequest','MemcacheIncrementResponse','MemcacheBatchIncrementRequest','MemcacheBatchIncrementResponse','MemcacheFlushRequest','MemcacheFlushResponse','MemcacheStatsRequest','MergedNamespaceStats','MemcacheStatsResponse','MemcacheGrabTailRequest','MemcacheGrabTailResponse','MemcacheGrabTailResponse_Item']
+__all__ = ['MemcacheServiceError','AppOverride','MemcacheGetRequest','MemcacheGetResponse','MemcacheGetResponse_Item','MemcacheSetRequest','MemcacheSetRequest_Item','MemcacheSetResponse','MemcacheDeleteRequest','MemcacheDeleteRequest_Item','MemcacheDeleteResponse','MemcacheIncrementRequest','MemcacheIncrementResponse','MemcacheBatchIncrementRequest','MemcacheBatchIncrementResponse','MemcacheFlushRequest','MemcacheFlushResponse','MemcacheStatsRequest','MergedNamespaceStats','MemcacheHotKey','MemcacheStatsResponse','MemcacheGrabTailRequest','MemcacheGrabTailResponse','MemcacheGrabTailResponse_Item']

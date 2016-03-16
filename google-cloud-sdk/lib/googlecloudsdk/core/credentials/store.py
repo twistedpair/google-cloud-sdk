@@ -31,8 +31,8 @@ from googlecloudsdk.core.credentials import legacy
 from googlecloudsdk.core.util import files
 import httplib2
 from oauth2client import client
-from oauth2client import gce as oauth2client_gce
 from oauth2client import multistore_file
+from oauth2client.contrib import gce as oauth2client_gce
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -530,6 +530,6 @@ def AcquireFromGCE(account=None):
   # inability is not currently a problem, because the metadata server does not
   # yet provide multiple service accounts.
 
-  creds = oauth2client_gce.AppAssertionCredentials(config.CLOUDSDK_SCOPES)
+  creds = oauth2client_gce.AppAssertionCredentials()
   Refresh(creds)
   return creds

@@ -61,17 +61,6 @@ def _FirewallTargetTagsToCell(firewall):
   return ','.join(firewall.get('targetTags', []))
 
 
-def _NextMaintenanceToCell(zone):
-  """Returns the timestamps of the next maintenance or ''."""
-  maintenance_events = zone.get('maintenanceWindows', [])
-  if maintenance_events:
-    next_event = min(maintenance_events, key=lambda x: x.get('beginTime'))
-    return '{0}--{1}'.format(next_event.get('beginTime'),
-                             next_event.get('endTime'))
-  else:
-    return ''
-
-
 def _StatusToCell(zone_or_region):
   """Returns status of a machine with deprecation information if applicable."""
   deprecated = zone_or_region.get('deprecated', '')
@@ -829,7 +818,6 @@ _SPECS_V1 = {
             ('NAME', 'name'),
             ('REGION', 'region'),
             ('STATUS', _StatusToCell),
-            ('NEXT_MAINTENANCE', _NextMaintenanceToCell),
             ('TURNDOWN_DATE', _DeprecatedDateTimeToCell),
         ],
         transformations=[

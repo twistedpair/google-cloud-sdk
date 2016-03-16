@@ -227,6 +227,11 @@
         "object": {
           "description": "Google Cloud Storage object containing source.\n\nThis object must be a gzipped archive file (.tar.gz) containing source to\nbuild.",
           "type": "string"
+        },
+        "generation": {
+          "description": "Google Cloud Storage generation for the object. If the generation is\nomitted, the latest generation will be used.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

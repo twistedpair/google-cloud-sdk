@@ -998,8 +998,8 @@ class JobConfigurationLoad(_messages.Message):
       be skipped.
     sourceFormat: [Optional] The format of the data files. For CSV files,
       specify "CSV". For datastore backups, specify "DATASTORE_BACKUP". For
-      newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". The default
-      value is CSV.
+      newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro,
+      specify "AVRO". The default value is CSV.
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud Storage. Each URI can contain one '*' wildcard character
       and it must come after the 'bucket' name.

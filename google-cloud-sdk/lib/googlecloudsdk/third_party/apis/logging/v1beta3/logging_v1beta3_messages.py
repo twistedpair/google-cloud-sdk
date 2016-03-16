@@ -101,6 +101,10 @@ class ListLogEntriesResponse(_messages.Message):
   Fields:
     entries: A list of log entries.  Fewer than `pageSize` entries may be
       returned, but that is not an indication that there are no more entries.
+    lastObservedEntryTimestamp: The timestamp of the last log entry that was
+      examined before returning this response. This can be used to observe
+      progress between successive queries, in particular when only a page
+      token is returned.
     nextPageToken: If there are more results, then `nextPageToken` is returned
       in the response.  To get the next batch of entries, use the value of
       `nextPageToken` as `pageToken` in the next call of `ListLogEntries`. If
@@ -108,7 +112,8 @@ class ListLogEntriesResponse(_messages.Message):
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
-  nextPageToken = _messages.BytesField(2)
+  lastObservedEntryTimestamp = _messages.StringField(2)
+  nextPageToken = _messages.BytesField(3)
 
 
 class ListLogMetricsResponse(_messages.Message):

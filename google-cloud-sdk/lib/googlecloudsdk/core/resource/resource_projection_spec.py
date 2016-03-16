@@ -19,6 +19,8 @@ import sys
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
+PROJECTION_ARG_DOC = ' projection: The parent ProjectionSpec.'
+
 ALIGN_DEFAULT = 'left'
 ALIGNMENTS = {'left': lambda s, w: s.ljust(w),
               'center': lambda s, w: s.center(w),

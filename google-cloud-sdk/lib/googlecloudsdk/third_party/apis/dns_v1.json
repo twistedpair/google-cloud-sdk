@@ -4,9 +4,9 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20160302",
+ "revision": "20160308",
  "title": "Google Cloud DNS API",
- "description": "The Google Cloud DNS API provides services for configuring and serving authoritative DNS records.",
+ "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {

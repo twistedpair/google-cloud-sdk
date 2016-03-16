@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -202,6 +202,29 @@ RESOURCE_REGISTRY = {
           table(
             id,
             type:label=TABLE_OR_VIEW
+          )
+        """,
+    ),
+
+    # cloud billing
+
+    'cloudbilling.billingAccounts': ResourceInfo(
+        cache_command='billing accounts list',
+        list_format="""
+          table(
+            name[16:],
+            displayName,
+            open,
+          )
+        """,
+    ),
+
+    'cloudbilling.billingAccounts_projects': ResourceInfo(
+        list_format="""
+          table(
+            projectId,
+            billingAccountName[16:],
+            billingEnabled,
           )
         """,
     ),

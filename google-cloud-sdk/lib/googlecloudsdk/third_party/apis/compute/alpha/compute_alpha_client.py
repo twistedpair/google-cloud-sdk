@@ -1166,7 +1166,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 200 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message
@@ -2735,7 +2735,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def GetFromFamily(self, request, global_params=None):
-      """Returns the latest undeprecated image for an image family.
+      """Returns the latest image that is part of an image family and is not deprecated.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message
@@ -6972,6 +6972,90 @@ For more information, see Deleting snaphots.
     def __init__(self, client):
       super(ComputeAlpha.TargetSslProxiesService, self).__init__(client)
       self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.targetSslProxies.delete',
+              ordered_params=[u'project', u'targetSslProxy'],
+              path_params=[u'project', u'targetSslProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}',
+              request_field='',
+              request_type_name=u'ComputeTargetSslProxiesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.targetSslProxies.get',
+              ordered_params=[u'project', u'targetSslProxy'],
+              path_params=[u'project', u'targetSslProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}',
+              request_field='',
+              request_type_name=u'ComputeTargetSslProxiesGetRequest',
+              response_type_name=u'TargetSslProxy',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetSslProxies.insert',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies',
+              request_field=u'targetSslProxy',
+              request_type_name=u'ComputeTargetSslProxiesInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.targetSslProxies.list',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/global/targetSslProxies',
+              request_field='',
+              request_type_name=u'ComputeTargetSslProxiesListRequest',
+              response_type_name=u'TargetSslProxyList',
+              supports_download=False,
+          ),
+          'SetBackendService': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetSslProxies.setBackendService',
+              ordered_params=[u'project', u'targetSslProxy'],
+              path_params=[u'project', u'targetSslProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setBackendService',
+              request_field=u'targetSslProxiesSetBackendServiceRequest',
+              request_type_name=u'ComputeTargetSslProxiesSetBackendServiceRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetProxyHeader': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetSslProxies.setProxyHeader',
+              ordered_params=[u'project', u'targetSslProxy'],
+              path_params=[u'project', u'targetSslProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setProxyHeader',
+              request_field=u'targetSslProxiesSetProxyHeaderRequest',
+              request_type_name=u'ComputeTargetSslProxiesSetProxyHeaderRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetSslCertificates': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetSslProxies.setSslCertificates',
+              ordered_params=[u'project', u'targetSslProxy'],
+              path_params=[u'project', u'targetSslProxy'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
+              request_field=u'targetSslProxiesSetSslCertificatesRequest',
+              request_type_name=u'ComputeTargetSslProxiesSetSslCertificatesRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.targetSslProxies.testIamPermissions',
@@ -6988,6 +7072,97 @@ For more information, see Deleting snaphots.
 
       self._upload_configs = {
           }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified TargetSslProxy resource.
+
+      Args:
+        request: (ComputeTargetSslProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified TargetSslProxy resource. Get a list of available target SSL proxies by making a list() request.
+
+      Args:
+        request: (ComputeTargetSslProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetSslProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a TargetSslProxy resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeTargetSslProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of TargetSslProxy resources available to the specified project.
+
+      Args:
+        request: (ComputeTargetSslProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetSslProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetBackendService(self, request, global_params=None):
+      """Changes the BackendService for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetBackendServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetBackendService')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetProxyHeader(self, request, global_params=None):
+      """Changes the ProxyHeaderType for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetProxyHeaderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetProxyHeader')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetSslCertificates(self, request, global_params=None):
+      """Changes SslCertificates for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetSslCertificatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslCertificates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.

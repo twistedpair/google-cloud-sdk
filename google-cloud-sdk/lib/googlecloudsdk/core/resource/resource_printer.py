@@ -55,10 +55,6 @@ class UnknownFormatError(Error):
   """Unknown format name exception."""
 
 
-class ProjectionRequiredError(Error):
-  """Format missing required projection exception."""
-
-
 class ProjectionFormatRequiredError(Error):
   """Projection key missing required format attribute."""
 
@@ -202,17 +198,5 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
     defaults: Optional resource_projection_spec.ProjectionSpec defaults.
     single: If True then resources is a single item and not a list.
       For example, use this to print a single object as JSON.
-
-  Raises:
-    ProjectionRequiredError: If a format requires a projection and one is not
-      provided.
   """
-  printer = Printer(print_format, out=out, defaults=defaults)
-  if 'disable' in printer.attributes:
-    # Disables formatted output and does not consume the resources.
-    return
-  if printer.NonEmptyProjectionRequired():
-    raise ProjectionRequiredError(
-        'Format [{0}] requires a non-empty projection.'.format(
-            printer.column_attributes.Name()))
-  printer.Print(resources, single)
+  Printer(print_format, out=out, defaults=defaults).Print(resources, single)

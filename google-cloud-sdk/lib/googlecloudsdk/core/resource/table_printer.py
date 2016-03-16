@@ -390,10 +390,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       if box:
         self._out.write(box.v)
       if self._nest:
+        self._out.write('\n')
         if heading:
           heading = []
           continue
-        self._out.write('\n')
         if box:
           self._out.write(b_rule)
           self._out.write('\n')

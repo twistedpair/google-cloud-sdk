@@ -32,7 +32,6 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import cli as core_cli
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
@@ -1361,38 +1360,21 @@ class Command(CommandCommon):
     """
     metrics.Loaded()
 
-    def Http(**kwargs):
-      # Possibly override timeout, making sure to leave kwargs[timeout]
-      # undefined (as opposed to None) if args.http_timout is not set.
-      if args.http_timeout:
-        kwargs['timeout'] = args.http_timeout
-
-      return core_cli.Http(
-          cmd_path=self.dotted_name,
-          trace_token=args.trace_token,
-          trace_email=args.trace_email,
-          trace_log=args.trace_log,
-          log_http=properties.VALUES.core.log_http.GetBool(),
-          authority_selector=properties.VALUES.auth.authority_selector.Get(),
-          authorization_token_file=(
-              properties.VALUES.auth.authorization_token_file.Get()),
-          **kwargs)
-
     tool_context = self._config_hooks.load_context()
     last_group = None
     for context_filter in self._config_hooks.context_filters:
-      last_group = context_filter(tool_context, Http, args)
+      last_group = context_filter(tool_context, core_cli.Http, args)
 
     command_instance = self._common_type(
         cli=cli,
         context=tool_context,
         group=last_group,
-        http_func=Http,
+        http_func=core_cli.Http,
         format_string=args.format or 'yaml')
 
     log.debug('Running %s with %s.', self.dotted_name, args)
     resources = command_instance.Run(args)
-    display.Displayer(command_instance, args, resources).Display()
+    resources = display.Displayer(command_instance, args, resources).Display()
     metrics.Ran()
 
     if command_instance.exit_code != 0:

@@ -26,7 +26,6 @@ from googlecloudsdk.core import named_configs
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 named_configs.FLAG_OVERRIDE_STACK.Push(named_configs.AdhocConfigFlagParse())
 
@@ -643,11 +642,19 @@ class _SectionCore(_Section):
         help_text='If True, log http requests and responses to the logs.  '
         'You may need to adjust your `verbosity` setting if you want to see '
         'in the terminal, otherwise it is available in the log files.')
+    self.http_timeout = self._Add('http_timeout', hidden=True)
     self.check_gce_metadata = self._AddBool(
         'check_gce_metadata', hidden=True,
         callbacks=[lambda: True])
     self.print_unhandled_tracebacks = self._AddBool(
         'print_unhandled_tracebacks', hidden=True)
+    self.trace_token = self._Add(
+        'trace_token',
+        help_text='Token used to route traces of service requests for '
+        'investigation of issues. This token will be provided by Google '
+        'support.')
+    self.trace_email = self._Add('trace_email', hidden=True)
+    self.trace_log = self._Add('trace_log', hidden=True)
 
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
@@ -725,6 +732,7 @@ class _SectionMetrics(_Section):
   def __init__(self):
     super(_SectionMetrics, self).__init__('metrics', hidden=True)
     self.environment = self._Add('environment', hidden=True)
+    self.command_name = self._Add('command_name', hidden=True)
 
 
 class _SectionComponentManager(_Section):
@@ -843,6 +851,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.projects = self._Add('projects')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
+    self.servicemanagement = self._Add('servicemanagement')
     self.source = self._Add('source')
     self.sql = self._Add('sql')
     self.pubsub = self._Add('pubsub')
@@ -1108,19 +1117,27 @@ def ParsePropertyString(property_string):
   return section, prop
 
 
+class _ScopeInfo(object):
+
+  # pylint: disable=redefined-builtin
+  def __init__(self, id, description, get_file):
+    self.id = id
+    self.description = description
+    self.get_file = get_file
+
+
 class Scope(object):
   """An enum class for the different types of property files that can be used.
   """
-  _SCOPE_TUPLE = collections.namedtuple('_ScopeTuple',
-                                        ['id', 'description', 'get_file'])
-  INSTALLATION = _SCOPE_TUPLE(
+
+  INSTALLATION = _ScopeInfo(
       id='installation',
       description='The installation based configuration file applies to all '
       'users on the system that use this version of the Cloud SDK.  If the SDK '
       'was installed by an administrator, you will need administrator rights '
       'to make changes to this file.',
       get_file=lambda: config.Paths().installation_properties_path)
-  USER = _SCOPE_TUPLE(
+  USER = _ScopeInfo(
       id='user',
       description='The user based configuration file applies only to the '
       'current user of the system.  It will override any values from the '

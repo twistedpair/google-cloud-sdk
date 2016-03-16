@@ -28,156 +28,12 @@ are left-to-right composable. Each format expression is a string tuple
 where only one of the three elements need be present.
 """
 
+from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import log
-from googlecloudsdk.core import remote_completion
-from googlecloudsdk.core.resource import resource_filter
+from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_parser
-from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
-
-
-class _UriCacher(object):
-  """A Tapper class that caches URIs based on the cache update op.
-
-  Attributes:
-    _update_cache_op: The non-None return value from GetUriCacheUpdateOp().
-    _uris: The list of changed URIs, None if it is corrupt.
-  """
-
-  def __init__(self, update_cache_op):
-    self._update_cache_op = update_cache_op
-    self._uris = []
-
-  def AddResource(self, resource):
-    """Appends the URI for resource to the list of cache changes.
-
-    Sets self._uris to None if a URI could not be retrieved for any resource.
-
-    Args:
-      resource: The resource from which the URI is extracted.
-
-    Returns:
-      True - all resources are seen downstream.
-    """
-    if resource_printer_base.IsResourceMarker(resource):
-      return True
-    if self._uris is not None:
-      uri = resource_transform.TransformUri(resource, undefined=None)
-      if uri:
-        self._uris.append(uri)
-      else:
-        self._uris = None
-    return True
-
-  def Update(self):
-    if self._uris is not None:
-      remote_completion.RemoteCompletion().UpdateCache(self._update_cache_op,
-                                                       self._uris)
-
-
-class _Filterer(object):
-  """A Tapper class that filters out resources not matching an expression.
-
-  Attributes:
-    _match: The resource filter method.
-  """
-
-  def __init__(self, expression, defaults):
-    """Constructor.
-
-    Args:
-      expression: The resource filter expression string.
-      defaults: The resource format and filter default projection.
-    """
-    self._match = resource_filter.Compile(
-        expression, defaults=defaults).Evaluate
-
-  def FilterResource(self, resource):
-    """Returns True if resource matches the filter expression.
-
-    Args:
-      resource: The resource to filter.
-
-    Returns:
-      True if resource matches the filter expression.
-    """
-    if resource_printer_base.IsResourceMarker(resource):
-      return True
-    return self._match(resource)
-
-
-class _Limiter(object):
-  """A Tapper class that filters out resources after a limit is reached.
-
-  Attributes:
-    _limit: The resource count limit.
-    _count: The resource count.
-  """
-
-  def __init__(self, limit):
-    self._limit = limit
-    self._count = 0
-
-  def LimitResource(self, resource):
-    """Returns True if the limit has not been reached yet, None otherwise.
-
-    Args:
-      resource: The resource to limit.
-
-    Returns:
-      True if the limit has not been reached yet, None otherwise to stop
-      iterations.
-    """
-    if resource_printer_base.IsResourceMarker(resource):
-      return True
-    self._count += 1
-    return self._count <= self._limit or None
-
-
-class _Pager(object):
-  """A Tapper class that injects a PageMarker after each page of resources.
-
-  Attributes:
-    _page_size: The number of resources per page.
-    _count: The current page resource count.
-  """
-
-  def __init__(self, page_size):
-    self._page_size = page_size
-    self._count = 0
-
-  def PageResource(self, resource):
-    """Injects a PageMarker if the current page limit has been reached.
-
-    Args:
-      resource: The resource to limit.
-
-    Returns:
-      TapInjector(PageMarker) if the page current page limit has been reached,
-      otherwise True to retain the current resource.
-    """
-    if resource_printer_base.IsResourceMarker(resource):
-      return True
-    self._count += 1
-    if self._count > self._page_size:
-      self._count = 0
-      return peek_iterable.TapInjector(resource_printer_base.PageMarker())
-    return True
-
-
-def _GetFlag(args, flag_name):
-  """Returns the value of flag_name in args, None if it is unknown or unset.
-
-  Args:
-    args: The argparse.Namespace given to command.Run().
-    flag_name: The flag name string sans leading '--'.
-
-  Returns:
-    The flag value or None if it is unknown or unset.
-  """
-  return getattr(args, flag_name, None)
 
 
 class Displayer(object):
@@ -190,6 +46,7 @@ class Displayer(object):
     _args: The argparse.Namespace given to command.Run().
     _command: The Command object that generated the resources to display.
     _defaults: The resource format and filter default projection.
+    _info: The resource info or None if not registered.
     _resources: The resources to display, returned by command.Run().
   """
 
@@ -208,7 +65,22 @@ class Displayer(object):
     self._command = command
     self._default_format_used = False
     self._defaults = None
+    self._info = command.ResourceInfo(args)
     self._resources = resources
+    symbols = {'collection':
+               lambda x: self._info.collection if self._info else None}
+    self._defaults = resource_projection_parser.Parse(None, symbols=symbols)
+
+  def _GetFlag(self, flag_name):
+    """Returns the value of flag_name in args, None if it is unknown or unset.
+
+    Args:
+      flag_name: The flag name string sans leading '--'.
+
+    Returns:
+      The flag value or None if it is unknown or unset.
+    """
+    return getattr(self._args, flag_name, None)
 
   def _AddUriCacheTap(self):
     """Taps a resource Uri cache updater into self.resources if needed."""
@@ -217,39 +89,58 @@ class Displayer(object):
     if not cache_update_op:
       return
 
-    if any([_GetFlag(self._args, flag) for flag in self._CORRUPT_FLAGS]):
+    if any([self._GetFlag(flag) for flag in self._CORRUPT_FLAGS]):
       return
 
-    cacher = _UriCacher(cache_update_op)
-    self._resources = peek_iterable.Tapper(self._resources,
-                                           cacher.AddResource,
-                                           cacher.Update)
+    cacher = display_taps.UriCacher(cache_update_op, self._defaults)
+    self._resources = peek_iterable.Tapper(
+        self._resources, cacher.Tap, cacher.Done)
 
   def _AddFilterTap(self):
     """Taps a resource filter into self.resources if needed."""
-    expression = _GetFlag(self._args, 'filter')
+    expression = self._GetFlag('filter')
     if not expression:
       return
-    filterer = _Filterer(expression, self._defaults)
-    self._resources = peek_iterable.Tapper(self._resources,
-                                           filterer.FilterResource)
+    filterer = display_taps.Filterer(expression, self._defaults)
+    self._resources = peek_iterable.Tapper(
+        self._resources, filterer.Tap, filterer.Done)
+
+  def _AddFlattenTap(self):
+    """Taps one or more resource flatteners into self.resources if needed."""
+    keys = self._GetFlag('flatten')
+    if not keys:
+      return
+    for key in keys:
+      flattened_key = []
+      for k in resource_lex.Lexer(key).Key():
+        if k is None:
+          # None represents a [] slice in resource keys.
+          flattener = display_taps.Flattener(flattened_key)
+          # Apply the flatteners from left to right so the innermost flattener
+          # flattens the leftmost slice. The outer flatteners can then access
+          # the flattened keys to the left.
+          self._resources = peek_iterable.Tapper(
+              self._resources, flattener.Tap, flattener.Done)
+        else:
+          flattened_key.append(k)
 
   def _AddLimitTap(self):
     """Taps a resource limit into self.resources if needed."""
-    limit = _GetFlag(self._args, 'limit')
+    limit = self._GetFlag('limit')
     if limit is None or limit < 0:
       return
-    limiter = _Limiter(limit)
-    self._resources = peek_iterable.Tapper(self._resources,
-                                           limiter.LimitResource)
+    limiter = display_taps.Limiter(limit)
+    self._resources = peek_iterable.Tapper(
+        self._resources, limiter.Tap, limiter.Done)
 
   def _AddPageTap(self):
     """Taps a resource pager into self.resources if needed."""
-    page_size = _GetFlag(self._args, 'page_size')
+    page_size = self._GetFlag('page_size')
     if page_size is None or page_size <= 0:
       return
-    pager = _Pager(page_size)
-    self._resources = peek_iterable.Tapper(self._resources, pager.PageResource)
+    pager = display_taps.Pager(page_size)
+    self._resources = peek_iterable.Tapper(
+        self._resources, pager.Tap, pager.Done)
 
   def _GetResourceInfoFormat(self):
     """Determines the format from the resource registry if any.
@@ -258,23 +149,22 @@ class Displayer(object):
       format: The format string, None if there is no resource registry info
           for the command.
     """
-    info = self._command.ResourceInfo(self._args)
-    if not info:
+    if not self._info:
       return None
     styles = ['list']
-    if _GetFlag(self._args, 'simple_list'):
+    if self._GetFlag('simple_list'):
       styles.insert(0, 'simple')
     for style in styles:
       attr = '{0}_format'.format(style)
-      fmt = getattr(info, attr, None)
+      fmt = getattr(self._info, attr, None)
       if fmt:
         break
     else:
       return None
-    symbols = info.GetTransforms()
-    if symbols or info.defaults:
+    symbols = self._info.GetTransforms()
+    if symbols or self._info.defaults:
       self._defaults = resource_projection_parser.Parse(
-          info.defaults, defaults=self._defaults, symbols=symbols)
+          self._info.defaults, defaults=self._defaults, symbols=symbols)
     return fmt
 
   def _GetExplicitFormat(self):
@@ -304,7 +194,7 @@ class Displayer(object):
     Returns:
       format: The display format string.
     """
-    if _GetFlag(self._args, 'uri'):
+    if self._GetFlag('uri'):
       return 'value(uri())'
 
     default_fmt = self._GetDefaultFormat()
@@ -331,7 +221,7 @@ class Displayer(object):
       #
       fmt = default_fmt + ' ' + fmt
 
-    if fmt and _GetFlag(self._args, 'sort_by'):
+    if fmt and self._GetFlag('sort_by'):
       # :(...) adds key only attributes that don't affect the projection.
       names = (self._args.sort_by if isinstance(self._args.sort_by, list)
                else [self._args.sort_by])
@@ -342,9 +232,10 @@ class Displayer(object):
           name = name.lstrip('~')
           if not order:
             reverse = True
+        # Slices default to the first list element for consistency.
+        name = name.replace('[]', '[0]')
         orders.append('{name}:sort={order}{reverse}'.format(
-            name=name, order=order + 1,
-            reverse=':reverse' if reverse else ''))
+            name=name, order=order + 1, reverse=':reverse' if reverse else ''))
       fmt += ':({orders})'.format(orders=','.join(orders))
 
     return fmt
@@ -356,7 +247,7 @@ class Displayer(object):
       log.info('Display disabled.')
       # NOTICE: Do not consume resources here. Some commands use this case to
       # access the results of Run() via the return value of Execute().
-      return
+      return self._resources
 
     # Determine the format.
     fmt = self._GetFormat()
@@ -366,6 +257,9 @@ class Displayer(object):
 
     # Add a resource page tap if needed.
     self._AddPageTap()
+
+    # Add a resource flatten tap if needed.
+    self._AddFlattenTap()
 
     # Add a resource filter tap if needed.
     self._AddFilterTap()
@@ -386,3 +280,5 @@ class Displayer(object):
     # If the default format was used then display the epilog.
     if self._default_format_used:
       self._command.Epilog(self._args)
+
+    return self._resources

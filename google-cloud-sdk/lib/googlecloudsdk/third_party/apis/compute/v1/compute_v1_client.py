@@ -810,7 +810,7 @@ class ComputeV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 200 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message

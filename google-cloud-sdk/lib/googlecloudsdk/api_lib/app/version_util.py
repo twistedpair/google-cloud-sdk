@@ -14,7 +14,6 @@
 
 """Utilities for dealing with version resources."""
 
-import datetime
 import re
 
 from googlecloudsdk.api_lib.app.api import operations
@@ -22,7 +21,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import text
-from googlecloudsdk.core.util import timezone
+from googlecloudsdk.core.util import times
 
 
 class VersionValidationError(exceptions.Error):
@@ -81,12 +80,9 @@ class Version(object):
     last_deployed = None
     try:
       if version.creationTime:
-        last_deployed_utc = datetime.datetime.strptime(
-            version.creationTime,
-            '%Y-%m-%dT%H:%M:%S.%fZ').replace(microsecond=0,
-                                             tzinfo=timezone.GetTimeZone('UTC'))
-        last_deployed = last_deployed_utc.astimezone(
-            timezone.GetTimeZone('local'))
+        last_deployed_dt = times.ParseDateTime(version.creationTime).replace(
+            microsecond=0)
+        last_deployed = times.LocalizeDateTime(last_deployed_dt)
     except ValueError:
       pass
     return cls(project, service_id, version.id, traffic_split=traffic_split,

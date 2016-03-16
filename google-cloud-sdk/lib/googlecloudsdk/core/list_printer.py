@@ -1,4 +1,4 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -212,6 +212,21 @@ COLLECTION_COLUMNS = {
     'bigquery.tables.list': (
         ('ID', _Select('id')),
         ('TABLE_OR_VIEW', _Select('type')),
+    ),
+
+    # CLOUD BILLING
+    'cloudbilling.billingAccount': (
+        ('ID', _Select('name', transform=lambda x: x[16:])),
+        ('NAME', _Select('displayName')),
+        ('OPEN', _Select('open')),
+    ),
+
+    'cloudbilling.projectBillingInfo': (
+        ('PROJECT_ID', _Select('projectId')),
+        ('BILLING_ACCOUNT_ID', _Select('billingAccountName',
+                                       # Strip "billingAccounts/"
+                                       transform=lambda x: x[16:])),
+        ('BILLING_ENABLED', _Select('billingEnabled')),
     ),
 
     # COMPUTE

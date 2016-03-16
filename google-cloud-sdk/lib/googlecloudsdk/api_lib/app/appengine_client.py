@@ -31,17 +31,15 @@ from googlecloudsdk.core.credentials import service_account as c_service_account
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
-from oauth2client import gce as oauth2client_gce
+from oauth2client.contrib import gce as oauth2client_gce
 import yaml
 
 
-APPCFG_SCOPES = ('https://www.googleapis.com/auth/appengine.admin',
-                 'https://www.googleapis.com/auth/cloud-platform')
+APPCFG_SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 
 # Parameters for reading from the GCE metadata service.
 METADATA_BASE = 'http://metadata.google.internal'
-SERVICE_ACCOUNT_BASE = (
-    'computeMetadata/v1beta1/instance/service-accounts/default')
+SERVICE_ACCOUNT_BASE = ('computeMetadata/v1/instance/service-accounts/default')
 
 RpcServerClass = appengine_rpc_httplib2.HttpRpcServerOAuth2  # pylint: disable=invalid-name
 
@@ -375,6 +373,11 @@ class AppengineClient(object):
     """
     log.debug('Host: {0}'.format(self.server))
 
+    if self._IsGceEnvironment():
+      credentials = oauth2client_gce.AppAssertionCredentials()
+    else:
+      credentials = None
+
     # In this case, the get_user_credentials parameters to the RPC server
     # constructor is actually an OAuth2Parameters.
     get_user_credentials = (
@@ -385,7 +388,8 @@ class AppengineClient(object):
             scope=APPCFG_SCOPES,
             refresh_token=self.oauth2_refresh_token,
             credential_file=None,
-            token_uri=self._GetTokenUri()))
+            token_uri=None,
+            credentials=credentials))
     # Also set gflags flag... this is a bit of a hack.
     if hasattr(appengine_rpc_httplib2.tools, 'FLAGS'):
       appengine_rpc_httplib2.tools.FLAGS.auth_local_webserver = True
@@ -407,11 +411,11 @@ class AppengineClient(object):
     server.cert_file_available = not self.ignore_bad_certs
     return util.RPCServer(server)
 
-  def _GetTokenUri(self):
-    """Returns the OAuth2 token_uri, or None to use the default URI.
+  def _IsGceEnvironment(self):
+    """Determine if we are running in a GCE environment.
 
     Returns:
-      A string that is the token_uri, or None.
+      True if we are running in a GCE environment.
 
     Raises:
       Error: The user has requested authentication for a service account but the
@@ -423,7 +427,7 @@ class AppengineClient(object):
       # with access to the appengine.admin scope.
       url = '%s/%s/scopes' % (METADATA_BASE, SERVICE_ACCOUNT_BASE)
       try:
-        req = urllib2.Request(url)
+        req = urllib2.Request(url, headers={'Metadata-Flavor': 'Google'})
         vm_scopes_string = urllib2.urlopen(req).read()
       except urllib2.URLError, e:
         raise Error(
@@ -441,6 +445,6 @@ class AppengineClient(object):
             'scopes. You may also log into a standard account that has the '
             'appropriate access by using `gcloud auth login`.'
             .format(self.project, ', '.join(vm_scopes), ', '.join(missing)))
-      return '%s/%s/token' % (METADATA_BASE, SERVICE_ACCOUNT_BASE)
+      return True
     else:
-      return None
+      return False

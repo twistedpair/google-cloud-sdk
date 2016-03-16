@@ -539,7 +539,7 @@ Currently, this creates a single resource: a Google Cloud Storage bucket, to be 
 
 The bucket is created with the project-private ACL: All project team members are given permissions to the bucket and objects created within it according to their roles. Project owners have owners rights, and so on. The default ACL on objects created in the bucket is project-private as well. See Google Cloud Storage documentation for more details.
 
-If there is already a default bucket set, this call does nothing.
+If there is already a default bucket set and the project can access the bucket, this call does nothing. However, if the project doesn't have the permission to access the bucket or the bucket is deteleted, a new bucket will be created.
 
 May return any canonical error codes, including the following:
 

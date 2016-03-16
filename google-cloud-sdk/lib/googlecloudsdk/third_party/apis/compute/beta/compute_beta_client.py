@@ -139,6 +139,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'AddressList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.addresses.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/addresses/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeAddressesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -206,6 +218,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (AddressList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeAddressesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -287,6 +312,18 @@ class ComputeBeta(base_api.BaseApiClient):
               request_field=u'autoscalerResource',
               request_type_name=u'ComputeAutoscalersPatchRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.autoscalers.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/autoscalers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeAutoscalersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -384,6 +421,19 @@ class ComputeBeta(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeAutoscalersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Updates an autoscaler in the specified project using the data included in the request.
 
@@ -475,6 +525,18 @@ class ComputeBeta(base_api.BaseApiClient):
               request_field=u'backendServiceResource',
               request_type_name=u'ComputeBackendServicesPatchRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.backendServices.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/backendServices/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeBackendServicesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -569,6 +631,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeBackendServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -777,6 +852,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.disks.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeDisksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -835,7 +922,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Insert(self, request, global_params=None):
-      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 200 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
+      """Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message
@@ -883,6 +970,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeDisksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -952,6 +1052,18 @@ class ComputeBeta(base_api.BaseApiClient):
               request_field=u'firewallResource',
               request_type_name=u'ComputeFirewallsPatchRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.firewalls.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/firewalls/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeFirewallsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -1033,6 +1145,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeFirewallsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1129,6 +1254,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.forwardingRules.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/forwardingRules/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeForwardingRulesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -1212,6 +1349,19 @@ class ComputeBeta(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeForwardingRulesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class GlobalAddressesService(base_api.BaseApiService):
     """Service class for the globalAddresses resource."""
 
@@ -1268,6 +1418,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'AddressList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.globalAddresses.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/addresses/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeGlobalAddressesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -1322,6 +1484,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (AddressList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeGlobalAddressesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1393,6 +1568,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.globalForwardingRules.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/forwardingRules/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeGlobalForwardingRulesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -1460,6 +1647,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetTarget')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeGlobalForwardingRulesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1644,6 +1844,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.httpHealthChecks.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpHealthChecks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeHttpHealthChecksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'compute.httpHealthChecks.update',
@@ -1723,6 +1935,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHttpHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1807,6 +2032,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.httpsHealthChecks.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/httpsHealthChecks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeHttpsHealthChecksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'compute.httpsHealthChecks.update',
@@ -1886,6 +2123,19 @@ class ComputeBeta(base_api.BaseApiClient):
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHttpsHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -1994,6 +2244,18 @@ class ComputeBeta(base_api.BaseApiClient):
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.images.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/images/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeImagesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -2041,7 +2303,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def GetFromFamily(self, request, global_params=None):
-      """Returns the latest undeprecated image for an image family.
+      """Returns the latest image that is part of an image family and is not deprecated.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message
@@ -2091,6 +2353,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeImagesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2256,6 +2531,18 @@ See Accessing images for more information.
               request_field=u'instanceGroupManagersSetTargetPoolsRequest',
               request_type_name=u'ComputeInstanceGroupManagersSetTargetPoolsRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instanceGroupManagers.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeInstanceGroupManagersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -2432,6 +2719,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstanceGroupManagersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class InstanceGroupsService(base_api.BaseApiService):
     """Service class for the instanceGroups resource."""
 
@@ -2546,6 +2846,18 @@ See Accessing images for more information.
               request_field=u'instanceGroupsSetNamedPortsRequest',
               request_type_name=u'ComputeInstanceGroupsSetNamedPortsRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instanceGroups.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instanceGroups/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeInstanceGroupsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -2670,6 +2982,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstanceGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class InstanceTemplatesService(base_api.BaseApiService):
     """Service class for the instanceTemplates resource."""
 
@@ -2726,6 +3051,18 @@ See Accessing images for more information.
               response_type_name=u'InstanceTemplateList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instanceTemplates.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/instanceTemplates/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeInstanceTemplatesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -2780,6 +3117,19 @@ See Accessing images for more information.
         (InstanceTemplateList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstanceTemplatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3017,6 +3367,18 @@ See Accessing images for more information.
               request_field='',
               request_type_name=u'ComputeInstancesStopRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeInstancesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -3271,6 +3633,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class LicensesService(base_api.BaseApiService):
     """Service class for the licenses resource."""
 
@@ -3453,6 +3828,18 @@ See Accessing images for more information.
               response_type_name=u'NetworkList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.networks.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/networks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeNetworksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -3507,6 +3894,19 @@ See Accessing images for more information.
         (NetworkList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNetworksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3841,6 +4241,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routers.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRoutersTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'compute.routers.update',
@@ -3949,6 +4361,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRoutersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Updates the entire content of the Router resource.
 
@@ -4018,6 +4443,18 @@ See Accessing images for more information.
               response_type_name=u'RouteList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routes.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/routes/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRoutesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -4075,6 +4512,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class SnapshotsService(base_api.BaseApiService):
     """Service class for the snapshots resource."""
 
@@ -4129,6 +4579,18 @@ See Accessing images for more information.
               request_field=u'globalSetLabelsRequest',
               request_type_name=u'ComputeSnapshotsSetLabelsRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.snapshots.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/snapshots/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeSnapshotsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -4190,6 +4652,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class SslCertificatesService(base_api.BaseApiService):
     """Service class for the sslCertificates resource."""
 
@@ -4246,6 +4721,18 @@ For more information, see Deleting snaphots.
               response_type_name=u'SslCertificateList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.sslCertificates.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/sslCertificates/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeSslCertificatesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -4300,6 +4787,19 @@ For more information, see Deleting snaphots.
         (SslCertificateList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSslCertificatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4369,6 +4869,18 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeSubnetworksListRequest',
               response_type_name=u'SubnetworkList',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeSubnetworksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -4441,6 +4953,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSubnetworksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the targetHttpProxies resource."""
 
@@ -4507,6 +5032,18 @@ For more information, see Deleting snaphots.
               request_field=u'urlMapReference',
               request_type_name=u'ComputeTargetHttpProxiesSetUrlMapRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetHttpProxies.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetHttpProxies/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeTargetHttpProxiesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -4576,6 +5113,19 @@ For more information, see Deleting snaphots.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('SetUrlMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetHttpProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4657,6 +5207,18 @@ For more information, see Deleting snaphots.
               request_field=u'urlMapReference',
               request_type_name=u'ComputeTargetHttpsProxiesSetUrlMapRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetHttpsProxies.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/targetHttpsProxies/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeTargetHttpsProxiesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -4742,6 +5304,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetInstancesService(base_api.BaseApiService):
     """Service class for the targetInstances resource."""
 
@@ -4808,6 +5383,18 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetInstancesListRequest',
               response_type_name=u'TargetInstanceList',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetInstances.testIamPermissions',
+              ordered_params=[u'project', u'zone', u'resource'],
+              path_params=[u'project', u'resource', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/targetInstances/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeTargetInstancesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -4877,6 +5464,19 @@ For more information, see Deleting snaphots.
         (TargetInstanceList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5018,6 +5618,18 @@ For more information, see Deleting snaphots.
               request_field=u'targetReference',
               request_type_name=u'ComputeTargetPoolsSetBackupRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetPools.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/targetPools/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeTargetPoolsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -5168,6 +5780,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetPoolsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class TargetVpnGatewaysService(base_api.BaseApiService):
     """Service class for the targetVpnGateways resource."""
 
@@ -5234,6 +5859,18 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeTargetVpnGatewaysListRequest',
               response_type_name=u'TargetVpnGatewayList',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.targetVpnGateways.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeTargetVpnGatewaysTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -5303,6 +5940,19 @@ For more information, see Deleting snaphots.
         (TargetVpnGatewayList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetVpnGatewaysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5384,6 +6034,18 @@ For more information, see Deleting snaphots.
               request_field=u'urlMapResource',
               request_type_name=u'ComputeUrlMapsPatchRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.urlMaps.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/urlMaps/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeUrlMapsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -5493,6 +6155,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeUrlMapsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Update(self, request, global_params=None):
       """Updates the entire content of the UrlMap resource.
 
@@ -5587,6 +6262,18 @@ For more information, see Deleting snaphots.
               response_type_name=u'VpnTunnelList',
               supports_download=False,
           ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.vpnTunnels.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeVpnTunnelsTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -5654,6 +6341,19 @@ For more information, see Deleting snaphots.
         (VpnTunnelList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeVpnTunnelsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

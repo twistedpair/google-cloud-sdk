@@ -528,7 +528,7 @@ class CLILoader(object):
     top_element.ai.add_argument(
         '--http-timeout',
         default=None,
-        type=float,
+        action=actions.StoreProperty(properties.VALUES.core.http_timeout),
         help=argparse.SUPPRESS)
 
   def __MakeCLI(self, top_element):
@@ -643,6 +643,8 @@ class CLI(object):
       log.SetVerbosity(None)
 
       command_path_string = '.'.join(args.command_path)
+      properties.VALUES.SetInvocationValue(
+          properties.VALUES.metrics.command_name, command_path_string, None)
       metrics.Commands(command_path_string, config.CLOUD_SDK_VERSION,
                        flag_names)
 

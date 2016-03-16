@@ -218,18 +218,6 @@ service.
               response_type_name=u'Empty',
               supports_download=False,
           ),
-          'UpdateStatus': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'genomics.pipelines.update_status',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines:update_status',
-              request_field='<request>',
-              request_type_name=u'UpdateStatusRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
           }
 
       self._upload_configs = {
@@ -344,21 +332,5 @@ by the Pipelines Service and not by end users.
         (Empty) The response message.
       """
       config = self.GetMethodConfig('SetOperationStatus')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def UpdateStatus(self, request, global_params=None):
-      """TODO (tovanadler): Delete this method once code is switched to use.
-SetOperationStatus.
-Updates status of a given operation. Should only be called
-by VMs created by the Pipelines Service and not by end users.
-
-      Args:
-        request: (UpdateStatusRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('UpdateStatus')
       return self._RunMethod(
           config, request, global_params=global_params)

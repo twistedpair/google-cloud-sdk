@@ -55,11 +55,22 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     def _LiteralLinesPresenter(dumper, data):
       return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
 
+    def _UndefinedPresenter(dumper, data):
+      r = repr(data)
+      if r == '[]':
+        return dumper.represent_list([])
+      if r == '{}':
+        return dumper.represent_dict({})
+      dumper.represent_undefined(data)
+
     self._yaml.add_representer(float,
                                _FloatPresenter,
                                Dumper=yaml.dumper.SafeDumper)
     self._yaml.add_representer(YamlPrinter._LiteralLines,
                                _LiteralLinesPresenter,
+                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.add_representer(None,
+                               _UndefinedPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralLines(unicode):

@@ -193,6 +193,16 @@ def FormatRegistryDescriptions():
   return '\n'.join(descriptions)
 
 
+def _StripUnusedNotation(string):
+  """Returns string with Pythonic unused notation stripped."""
+  if string.startswith('_'):
+    return string.lstrip('_')
+  unused = 'unused_'
+  if string.startswith(unused):
+    return string[len(unused):]
+  return string
+
+
 def _ParseTransformDocString(func):
   """Parses the doc string for func.
 
@@ -212,8 +222,8 @@ def _ParseTransformDocString(func):
     Another skipped line.
 
     Args:
-      r: The resource arg is always sepcified.
-      arg-2-name[=default-2]: The description for arg-1-name.
+      r: The resource arg is always sepcified but omitted from the docs.
+      arg-2-name[=default-2]: The description for arg-2-name.
       arg-N-name[=default-N]: The description for arg-N-name.
       kwargs: Omitted from the description.
 
@@ -221,7 +231,7 @@ def _ParseTransformDocString(func):
       One or more example lines for the 'For example:' section.
     '''
   """
-  defaults = func.__defaults__
+  hidden_args = ('kwargs', 'projection', 'r')
   if not func.__doc__:
     return '', '', '', ''
   description, _, doc = func.__doc__.partition('\n')
@@ -231,7 +241,6 @@ def _ParseTransformDocString(func):
   example = []
   args = []
   arg_description = []
-  formals = []
   for line in textwrap.dedent(doc).split('\n'):
     if line == 'Args:':
       # Now collecting Args: section lines.
@@ -253,18 +262,9 @@ def _ParseTransformDocString(func):
       example.append(line.strip())
     else:
       # The current arg description is done.
-      if arg and arg not in ('kwargs', 'projection'):
-        # Add arg to the function formal formal arguments.
-        # Internal *args and **kwargs are skipped.
-        if args and defaults and len(defaults) >= len(args):
-          default = defaults[len(args) - 1]
-        else:
-          default = None
-        if default is not None:
-          formals.append('{arg}={default}'.format(
-              arg=arg, default=repr(default)).replace("'", '"'))
-        else:
-          formals.append(arg)
+      if arg:
+        arg = _StripUnusedNotation(arg)
+      if arg and arg not in hidden_args:
         args.append((arg, ' '.join(arg_description)))
       if not line.startswith(' ') and line.endswith(':'):
         # The start of a new section.
@@ -275,7 +275,28 @@ def _ParseTransformDocString(func):
       arg = arg.strip()
       arg = arg.lstrip('*')
       arg_description = [text.strip()]
+
+  # Collect the formal arg list with defaults for the function prototype.
+  import inspect  # pylint: disable=g-import-not-at-top, For startup efficiency.
+  argspec = inspect.getargspec(func)
+  default_index_start = len(argspec.args) - len(argspec.defaults or [])
+  formals = []
+  for formal_index, formal in enumerate(argspec.args):
+    if formal:
+      formal = _StripUnusedNotation(formal)
+    if formal in hidden_args:
+      continue
+    default_index = formal_index - default_index_start
+    default = argspec.defaults[default_index] if default_index >= 0 else None
+    if default is not None:
+      formals.append('{formal}={default}'.format(
+          formal=formal, default=repr(default)).replace("'", '"'))
+    else:
+      formals.append(formal)
+  if argspec.varargs:
+    formals.append(argspec.varargs)
   prototype = '({formals})'.format(formals=', '.join(formals))
+
   return ' '.join(descriptions), prototype, args, example
 
 

@@ -262,18 +262,24 @@ class Parser(object):
       raise resource_exceptions.ExpressionSyntaxError(
           'Unknown transform function {0} [{1}].'.format(
               func_name, self._lex.Annotate(here)))
-    kwargs = {}
     func = self._projection.symbols[func_name]
-    if func == self._builtin_transforms.TransformFormat:
-      args = [self._projection] + self._lex.Args()
-    else:
-      args = []
+    args = []
+    kwargs = {}
+    doc = func.func_doc
+    if doc and resource_projection_spec.PROJECTION_ARG_DOC in doc:
+      # The second transform arg is the parent ProjectionSpec.
+      args.append(self._projection)
+    if func.func_defaults:
+      # Separate the args from the kwargs.
       for arg in self._lex.Args():
         name, sep, val = arg.partition('=')
         if sep:
           kwargs[name] = val
         else:
           args.append(arg)
+    else:
+      # No kwargs.
+      args += self._lex.Args()
     return self._Transform(func_name, func, active, map_transform, args, kwargs)
 
   def _ParseKeyAttributes(self, key, attribute):

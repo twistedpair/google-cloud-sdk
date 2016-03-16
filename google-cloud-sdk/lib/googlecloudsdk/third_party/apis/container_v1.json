@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Container Engine API",
-  "description": "The Google Container Engine API is used for building and managing clusters that run container-based applications, powered by open source Kubernetes technology.",
+  "description": "Builds and manages clusters that run container-based applications, powered by open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -302,7 +302,7 @@
           }
         },
         "image": {
-          "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.",
+          "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.\nTODO(fabioy): This will NOT be exposed to the user in the first iteration,\nsince we're still working through what an \"image track\" means and what\nwe'll support. Discussion on the possibility of supporting different\nversions will be done then as well.",
           "type": "string"
         },
         "labels": {

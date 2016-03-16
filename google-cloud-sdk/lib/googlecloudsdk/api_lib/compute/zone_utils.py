@@ -50,41 +50,19 @@ class ZoneResourceFetcher(object):
       return res
 
   def WarnForZonalCreation(self, resource_refs):
-    """Warns the user if a zone has upcoming maintanence or deprecation."""
+    """Warns the user if a zone has upcoming deprecation."""
     zones = self.GetZones(resource_refs)
     if not zones:
       return
 
     prompts = []
-    zones_with_upcoming_maintenance = []
     zones_with_deprecated = []
     for zone in zones:
-      if zone.maintenanceWindows:
-        zones_with_upcoming_maintenance.append(zone)
       if zone.deprecated:
         zones_with_deprecated.append(zone)
 
-    if not zones_with_upcoming_maintenance and not zones_with_deprecated:
+    if not zones_with_deprecated:
       return
-
-    if zones_with_upcoming_maintenance:
-      phrases = []
-      if len(zones_with_upcoming_maintenance) == 1:
-        phrases = ('a zone', 'window is')
-      else:
-        phrases = ('zones', 'windows are')
-      title = ('You have selected {0} with upcoming '
-               'maintenance. During maintenance, resources are '
-               'temporarily unavailible. The next scheduled '
-               '{1} as follows:'.format(phrases[0], phrases[1]))
-      printable_maintenance_zones = []
-      for zone in zones_with_upcoming_maintenance:
-        next_event = min(zone.maintenanceWindows, key=lambda x: x.beginTime)
-        window = '[{0}]: {1} -- {2}'.format(zone.name,
-                                            next_event.beginTime,
-                                            next_event.endTime)
-        printable_maintenance_zones.append(window)
-      prompts.append(utils.ConstructList(title, printable_maintenance_zones))
 
     if zones_with_deprecated:
       phrases = []
