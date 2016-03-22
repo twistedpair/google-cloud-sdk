@@ -192,7 +192,7 @@ class AppengineClient(object):
 
   def PrepareVmRuntime(self):
     """Prepare the application for vm runtimes and return state."""
-    rpcserver = self._GetRpcServer()
+    rpcserver = self._GetRpcServer(timeout_max_errors=5)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
 
   def SetManagedByGoogle(self, module, version, instance=None, wait=True):
@@ -365,9 +365,11 @@ class AppengineClient(object):
     self._GetRpcServer().Send('/api/queue/update',
                               app_id=self.project, payload=queue_yaml.ToYAML())
 
-  def _GetRpcServer(self):
+  def _GetRpcServer(self, timeout_max_errors=2):
     """Returns an instance of an AbstractRpcServer.
 
+    Args:
+      timeout_max_errors: How many timeout errors to retry.
     Returns:
       A new AbstractRpcServer, on which RPC calls can be made.
     """
@@ -402,6 +404,7 @@ class AppengineClient(object):
         host_override=None,
         save_cookies=True,
         auth_tries=3,
+        timeout_max_errors=timeout_max_errors,
         account_type='HOSTED_OR_GOOGLE',
         secure=True,
         ignore_certs=self.ignore_bad_certs)

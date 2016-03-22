@@ -116,7 +116,7 @@ PROPERTY_NAME_KEY = '__key__'
 
 DEFAULT_GAIA_ID = 0
 
-# See com.google.apphosting.datastore.shared.EntityV1Validator.
+# See com.google.apphosting.datastore.shared.ValidationUtils.
 RFC_3339_MIN_MICROSECONDS_INCLUSIVE = -62135596800 * 1000 * 1000
 RFC_3339_MAX_MICROSECONDS_INCLUSIVE = 253402300799 * 1000 * 1000 + 999999
 
@@ -1186,7 +1186,8 @@ class _EntityConverter(object):
     elif v3_property_value.has_booleanvalue():
       v1_value.boolean_value = v3_property_value.booleanvalue()
     elif v3_property_value.has_int64value():
-      if v3_meaning == entity_pb.Property.GD_WHEN:
+      if (v3_meaning == entity_pb.Property.GD_WHEN
+          and is_in_rfc_3339_bounds(v3_property_value.int64value())):
         googledatastore.helper.micros_to_timestamp(
             v3_property_value.int64value(), v1_value.timestamp_value)
         v3_meaning = None

@@ -115,8 +115,7 @@ class Cluster(_messages.Message):
       status of this cluster, if available.
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
-      connected.  Specification of subnetworks is an alpha feature, and
-      require that the Google Compute Engine alpha API be enabled.
+      connected.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides.
   """

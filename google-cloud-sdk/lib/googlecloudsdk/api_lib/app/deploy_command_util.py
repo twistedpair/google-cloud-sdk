@@ -55,7 +55,7 @@ class NoDockerfileError(exceptions.Error):
   """No Dockerfile found."""
 
 
-class UnsupportedRuntimeError(exceptions.Error):
+class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
@@ -74,7 +74,8 @@ def _GetDockerfileCreator(info, config_cleanup=None):
       runtime.
     NoDockerfileError: Raised if a user didn't supply a Dockerfile and chose a
       custom runtime.
-    UnsupportedRuntimeError: Raised if we can't detect a runtime.
+    UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
+      satisfy the requirements of the specified runtime type.
   Returns:
     callable(), a function that can be used to create the correct Dockerfile
     later on.
@@ -117,10 +118,10 @@ def _GetDockerfileCreator(info, config_cleanup=None):
     return configurator.GenerateConfigs
   # Then throw an error.
   else:
-    raise UnsupportedRuntimeError(
-        'We were unable to detect the runtime to use for this application. '
-        'Please specify the [runtime] field in your application yaml file '
-        'or check that your application is configured correctly.')
+    raise UnsatisfiedRequirementsError(
+        'Your application does not satisfy all of the requirements for a '
+        'runtime of type [{0}].  Please correct the errors and try '
+        'again.'.format(info.runtime))
 
 
 def _GetDomainAndDisplayId(project_id):
@@ -172,6 +173,8 @@ def BuildAndPushDockerImages(module_configs,
   """
   project = properties.VALUES.core.project.Get(required=True)
   use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool()
+  if use_cloud_build is None:
+    use_cloud_build = True
 
   # Prepare temporary dockerfile creators for all modules that need them
   # before doing the heavy lifting so we can fail fast if there are errors.

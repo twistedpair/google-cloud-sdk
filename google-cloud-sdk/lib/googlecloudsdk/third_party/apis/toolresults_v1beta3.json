@@ -4,7 +4,7 @@
  "id": "toolresults:v1beta3",
  "name": "toolresults",
  "version": "v1beta3",
- "revision": "20160308",
+ "revision": "20160314",
  "title": "Cloud Tool Results API",
  "description": "Read and publish results from Cloud Test Lab.",
  "ownerDomain": "google.com",

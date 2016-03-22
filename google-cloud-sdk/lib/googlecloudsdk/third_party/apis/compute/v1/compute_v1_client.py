@@ -752,6 +752,18 @@ class ComputeV1(base_api.BaseApiClient):
               response_type_name=u'DiskList',
               supports_download=False,
           ),
+          'Resize': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.disks.resize',
+              ordered_params=[u'project', u'zone', u'disk'],
+              path_params=[u'disk', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/disks/{disk}/resize',
+              request_field=u'disksResizeRequest',
+              request_type_name=u'ComputeDisksResizeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -832,6 +844,19 @@ class ComputeV1(base_api.BaseApiClient):
         (DiskList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Resize(self, request, global_params=None):
+      """Resizes the specified persistent disk.
+
+      Args:
+        request: (ComputeDisksResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
       return self._RunMethod(
           config, request, global_params=global_params)
 

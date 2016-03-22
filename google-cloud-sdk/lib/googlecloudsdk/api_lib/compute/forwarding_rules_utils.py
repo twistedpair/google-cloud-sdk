@@ -93,7 +93,7 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
   """Base class for modifying forwarding rule targets."""
 
   @staticmethod
-  def Args(parser):
+  def BaseArgs(parser, include_alpha_targets):
     """Adds common flags for mutating forwarding rule targets."""
     ForwardingRulesMutator.Args(parser)
 
@@ -126,6 +126,11 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
         '--target-https-proxy',
         help='The target HTTPS proxy that will receive the traffic.')
 
+    if include_alpha_targets:
+      target.add_argument(
+          '--target-ssl-proxy',
+          help='The target SSL proxy that will receive the traffic.')
+
     target.add_argument(
         '--target-vpn-gateway',
         help='The target VPN gateway that will receive forwarded traffic.')
@@ -155,7 +160,7 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
       return self.CreateGlobalReference(
           args.target_http_proxy, resource_type='targetHttpProxies')
 
-    if getattr(args, 'target_https_proxy', None):
+    if args.target_https_proxy:
       return self.CreateGlobalReference(
           args.target_https_proxy, resource_type='targetHttpsProxies')
 
@@ -173,6 +178,10 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
     if getattr(args, 'target_https_proxy', None):
       raise exceptions.ToolException(
           'You cannot specify [--target-https-proxy] for a regional '
+          'forwarding rule.')
+    if getattr(args, 'target_ssl_proxy', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--target-ssl-proxy] for a regional '
           'forwarding rule.')
     if args.target_instance_zone and not args.target_instance:
       raise exceptions.ToolException(

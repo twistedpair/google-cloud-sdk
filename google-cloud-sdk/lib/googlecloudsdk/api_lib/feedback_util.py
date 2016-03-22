@@ -28,7 +28,6 @@ NEW_ISSUE_URL = 'https://code.google.com/p/google-cloud-sdk/issues/entry'
 # pre-filled form fields
 MAX_URL_LENGTH = 2106
 
-
 COMMENT_TEMPLATE = """\
 {formatted_command}What steps will reproduce the problem?
 
@@ -44,8 +43,22 @@ Please provide any additional information below.
 {gcloud_info}\
 """
 
-
 TRUNCATED_INFO_MESSAGE = '[output truncated]'
+
+STACKTRACE_LINES_PER_ENTRY = 2
+
+# Pattern for splitting the formatted issue comment into the parts that fall
+# before and after the stacktrace, as well as the stacktrace itself.
+EXTRACT_STACKTRACE_PATTERN = (
+    r'(?P<pre_stacktrace>(?:.|\n)*Trace:\n)'
+    r'(?P<stacktrace>(?:.|\n)*?)'
+    r'(?P<exception>\n\w(?:.|\n)*)')
+
+TRACEBACK_ENTRY_REGEXP = (
+    r'File "(?P<file>.*)", line (?P<line>\d+), in (?P<function>.+)\n'
+    r'(?P<code_snippet>.+)\n')
+
+MAX_CODE_SNIPPET_LENGTH = 20
 
 
 def _FormatNewIssueUrl(comment, status='New', summary=''):
@@ -75,9 +88,6 @@ def _UrlEncodeLen(string):
 
 def _FormatStackTrace(first_entry, rest):
   return '\n'.join([first_entry, '  [...]'] + rest)
-
-
-_STACKTRACE_LINES_PER_ENTRY = 2
 
 
 def _ShortenStacktrace(stacktrace, url_encoded_length):
@@ -121,8 +131,8 @@ def _ShortenStacktrace(stacktrace, url_encoded_length):
   # in the source.
   stacktrace = stacktrace.strip('\n')
   lines = stacktrace.split('\n')
-  entries = ['\n'.join(lines[i:i+_STACKTRACE_LINES_PER_ENTRY]) for i in
-             range(0, len(lines), _STACKTRACE_LINES_PER_ENTRY)]
+  entries = ['\n'.join(lines[i:i+STACKTRACE_LINES_PER_ENTRY]) for i in
+             range(0, len(lines), STACKTRACE_LINES_PER_ENTRY)]
 
   if _UrlEncodeLen(stacktrace) <= url_encoded_length:
     return stacktrace
@@ -135,14 +145,6 @@ def _ShortenStacktrace(stacktrace, url_encoded_length):
   # longer than the max allowed length, nothing we can do beyond that. We'll
   # return the short-as-possible stacktrace and let the caller deal with it.
   return _FormatStackTrace(entries[0], rest)
-
-
-# Pattern for splitting the formatted issue comment into the parts that fall
-# before and after the stacktrace, as well as the stacktrace itself.
-EXTRACT_STACKTRACE_PATTERN = (
-    r'(?P<pre_stacktrace>(?:.|\n)*Traceback \(most recent call last\):\n)'
-    r'(?P<stacktrace>(?:.|\n)*?)'
-    r'(?P<exception>\n\w(?:.|\n)*)')
 
 
 def _ShortenIssueBody(comment, url_encoded_length):
@@ -193,7 +195,8 @@ def _ShortenIssueBody(comment, url_encoded_length):
     shortened_stacktrace = _ShortenStacktrace(stacktrace, max_stacktrace_len)
     included = (pre_stacktrace + shortened_stacktrace + exception +
                 TRUNCATED_INFO_MESSAGE)
-    excluded = ('Full stack trace:\n' + stacktrace + exception + optional_info)
+    excluded = ('Full stack trace (formatted):\n' + stacktrace + exception +
+                optional_info)
     if _UrlEncodeLen(included) > max_str_len:
       included = _UrlTruncateLines(included + optional_info, max_str_len)[0]
     return included, excluded
@@ -244,12 +247,6 @@ def GetDivider(text=''):
   return text.center(width, '=')
 
 
-# Regular expression for extracting files from a traceback
-# We only care about the files that have 'google' somewhere in them, because
-# they're ours
-_TRACEBACK_FILE_REGEXP = r'File "(.*google.*)"'
-
-
 def _CommonPrefix(paths):
   """Given a list of paths, return the longest shared directory prefix.
 
@@ -297,14 +294,69 @@ def _FormatIssueBody(info, log_data=None):
   if log_data and log_data.traceback:
     # Because we have a limited number of characters to work with (see
     # MAX_URL_LENGTH), we reduce the size of the traceback by stripping out the
-    # installation root. We'll still know what files are being talked about.
-    traceback_files = re.findall(_TRACEBACK_FILE_REGEXP, log_data.traceback)
-    common_prefix = _CommonPrefix(traceback_files)
-    formatted_traceback = log_data.traceback.replace(common_prefix, '') + '\n\n'
+    # unnecessary information, such as the runtime root and function names.
+    formatted_traceback = _FormatTraceback(log_data.traceback)
 
   return COMMENT_TEMPLATE.format(formatted_command=formatted_command,
                                  gcloud_info=gcloud_info.strip(),
                                  formatted_traceback=formatted_traceback)
+
+
+def _TracebackEntryReplacement(entry):
+  """Used in re.sub to format a traceback entry to make it more compact.
+
+  File "qux.py", line 13, in run      ===>      qux.py:13
+    foo = math.sqrt(bar) / foo                   foo = math.sqrt(bar)...
+
+  Args:
+    entry: re.MatchObject, the original unformatted traceback entry
+
+  Returns:
+    str, the formatted traceback entry
+  """
+
+  filename = entry.group('file')
+  line_no = entry.group('line')
+  code_snippet = entry.group('code_snippet')
+  formatted_code_snippet = code_snippet.strip()[:MAX_CODE_SNIPPET_LENGTH]
+  if len(code_snippet) > MAX_CODE_SNIPPET_LENGTH:
+    formatted_code_snippet += '...'
+  formatted_entry = '{0}:{1}\n {2}\n'.format(filename, line_no,
+                                             formatted_code_snippet)
+  return formatted_entry
+
+
+def _FormatTraceback(traceback):
+  """Formats traceback to make it more compact, without losing useful info.
+
+  Args:
+    traceback: str, the original unformatted traceback
+
+  Returns:
+    str, the formatted traceback
+  """
+  # Strip trailing whitespace.
+  traceback = '\n'.join(line.strip() for line in traceback.splitlines()) + '\n'
+
+  # Strip out common directory prefix
+  traceback_files = re.findall(r'File "(.*)"', traceback)
+  common_prefix = _CommonPrefix(traceback_files)
+  traceback = traceback.replace(common_prefix, '')
+
+  # Strip out ./lib, lib/googlecloudsdk, and lib/third_party
+  sep = os.path.sep
+  traceback = traceback.replace('.' + sep, '')
+  traceback = traceback.replace('lib' + sep + 'googlecloudsdk' + sep, '')
+  traceback = traceback.replace('lib' + sep + 'third_party' + sep, '')
+  traceback = traceback.replace('lib' + sep, '')
+
+  # Make each stack frame entry more compact
+  traceback = re.sub(TRACEBACK_ENTRY_REGEXP, _TracebackEntryReplacement,
+                     traceback)
+
+  traceback = traceback.replace('Traceback (most recent call last):',
+                                'Trace:')
+  return traceback + '\n\n'
 
 
 def OpenNewIssueInBrowser(info, log_data):

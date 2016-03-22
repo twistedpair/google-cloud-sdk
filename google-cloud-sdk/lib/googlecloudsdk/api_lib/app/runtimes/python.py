@@ -34,7 +34,7 @@ VALID_PYTHON_INTERPRETER_VERSIONS = ['2', '3']
 # ext_runtime.
 PYTHON_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
-    env: 2
+    env: flex
     api_version: 1
     entrypoint: {entrypoint}
     """)

@@ -3,6 +3,56 @@
 Copyright 2014-2016 Google Inc. All rights reserved.
 
 
+## 102.0.0 (2016/03/22)
+
+### Breaking Changes
+
+* The `gcloud alpha container nodepools` commands have been renamed to
+  `node-pools`. Functionality and parameters haven't changed.
+
+* `gcloud beta iam list-grantable-roles` now returns a list of roles instead of
+  a dictionary with a single key 'roles' with the value of a list of roles.
+
+* `gcloud config configuration describe` output has changed to include the
+  configuration `name` and `is_active` fields. All configuration properties are
+  now part of the `properties` field.
+
+### Cloud SDK
+
+* --format=json and --format=yaml now list resource attributes with null values.
+
+### Google App Engine
+
+* Use of the Google Container Builder service is now enabled by default for
+  all managed VMs deployments.
+
+  This change may require you to enable the Container Builder API. Visit
+  https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview?project=<PROJECT_ID>
+  to enable it, where <PROJECT_ID> is your current project ID.
+
+* Updated Google App Engine components to 1.9.34.
+  Please visit the following release notes for details:
+  * Python - https://cloud.google.com/appengine/docs/python/release-notes
+  * Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+### Google Compute Engine
+
+* Added `gcloud compute backend-services` session affinity commands.
+
+* Added `gcloud compute http-health-checks' and `https-health-checks` commands.
+
+* Added `gcloud alpha compute target-ssl-proxies` commands.
+
+* Extended `gcloud compute forwarding-rules` to support `target-ssl-proxies`.
+
+### Google Container Engine
+
+* `gcloud container clusters list` will output a warning if there were zones
+   for which it could not retrieve results.
+
+* Updated kubectl to version 1.2.0.
+
+
 ## 101.0.0 (2016/03/16)
 
 ### Billing

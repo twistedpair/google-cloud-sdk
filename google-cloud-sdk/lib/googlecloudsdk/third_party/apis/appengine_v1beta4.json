@@ -6,7 +6,7 @@
   "version": "v1beta4",
   "revision": "0",
   "title": "Google App Engine Admin API",
-  "description": "The Google App Engine Admin API enables developers to provision and manage their App Engine applications.",
+  "description": "Provisions and manages App Engine applications.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

@@ -28,6 +28,7 @@ class HTMLRenderer(renderer.Renderer):
     _FONT_TAG: A list of font embellishment tag names indexed by font attribute.
     _blank: True if the output already contains a blank line. Used to avoid
       sequences of 2 or more blank lines in the output.
+    _document_ids: The set of html ids unique in the current document.
     _example: True if currently rendering an example.
     _fill: The number of characters in the current output line.
     _heading: A string of HTML tags that closes out a heading section.
@@ -45,6 +46,7 @@ class HTMLRenderer(renderer.Renderer):
   def __init__(self, *args, **kwargs):
     super(HTMLRenderer, self).__init__(*args, **kwargs)
     self._blank = True
+    self._document_ids = set()
     self._example = False
     self._fill = 0
     self._heading = ''
@@ -114,6 +116,40 @@ class HTMLRenderer(renderer.Renderer):
       self._fill = 0
       self._out.write('\n')
       self._blank = False
+
+  def GetDocumentID(self, name):
+    """Returns a unique document id for name."""
+
+    # name might already have HTML tags. The leading tags are stripped out,
+    # along with everything from the first trailing tag to the end of name.
+    #
+    # After stripping name can be:
+    #
+    #   -- .*     Notation for 'the remaining args interpreted verbatim'. The
+    #             -- and next space separated word are retained.
+    #   --.*      A flag. Just the flag name is retained.
+    #   [-.0-9]+  A version number heading.
+    #   .*        A heading or definition list item. All words are retained.
+    #
+    # Finally, any remaining spaces are converted to '-'.
+    m = re.match(r'(-- |\[)*'
+                 '(<[^>]*>)*'
+                 '(?P<anchor>-[-_a-z0-9]+|[_A-Za-z.0-9 ]+|[-.0-9]+)'
+                 '.*',
+                 name)
+    if m:
+      name = m.group('anchor')
+    name = name.strip(' ').replace(' ', '-')
+
+    # Make sure the document_id return value is unique within this document.
+    attempt = name
+    number = 0
+    while True:
+      if attempt not in self._document_ids:
+        self._document_ids.add(attempt)
+        return attempt
+      number += 1
+      attempt = '{name}-{number}'.format(name=name, number=number)
 
   def Entities(self, buf):
     """Escapes special characters to their entity tags.
@@ -312,8 +348,10 @@ class HTMLRenderer(renderer.Renderer):
             self._out.write('<dl>\n')
         else:
           self._out.write('</dd>\n')
-        self._out.write('<dt><span class="normalfont">%s</span></dt>\n<dd>\n' %
-                        definition)
+        self._out.write('<dt id="{document_id}"><span class="normalfont">'
+                        '{definition}</span></dt>\n<dd>\n'.format(
+                            document_id=self.GetDocumentID(definition),
+                            definition=definition))
       else:
         if self._level < level:
           self._level += 1

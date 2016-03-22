@@ -32,7 +32,8 @@ from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
 CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
     'https://console.developers.google.com/logs?project={project_id}'
-    '&service=cloudbuild.googleapis.com&key1={build_id}')
+    '&service=cloudbuild.googleapis.com&key1={build_id}'
+    '&logName=projects/{project_id}/logs/cloudbuild')
 CLOUDBUILD_LOGFILE_FMT_STRING = 'log-{build_id}.txt'
 
 # Paths that shouldn't be ignored client-side.

@@ -49,8 +49,9 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       heading: The heading text.
     """
     self._heading = '</dd>\n</section>\n'
-    self._out.write('\n<section id="{heading}">\n'
+    self._out.write('\n<section id="{document_id}">\n'
                     '<dt>{heading}</dt>\n<dd class="sectionbody">\n'.format(
+                        document_id=self.GetDocumentID(heading),
                         heading=heading))
 
   def Link(self, target, text):

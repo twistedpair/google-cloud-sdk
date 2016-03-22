@@ -505,8 +505,8 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    region: The name of the region where the multi-zonal managed instance
-      group is located.
+    region: [Output Only] URL of the region where the instance group resides
+      (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the autoscaler configuration.
     statusDetails: [Output Only] Human-readable details about the current
@@ -624,11 +624,48 @@ class AutoscalerList(_messages.Message):
 class AutoscalerStatusDetails(_messages.Message):
   """A AutoscalerStatusDetails object.
 
+  Enums:
+    TypeValueValuesEnum:
+
   Fields:
     message: A string attribute.
+    type: A TypeValueValuesEnum attribute.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    """TypeValueValuesEnum enum type.
+
+    Values:
+      ALL_INSTANCES_UNHEALTHY: <no description>
+      BACKEND_SERVICE_DOES_NOT_EXIST: <no description>
+      CAPPED_AT_MAX_NUM_REPLICAS: <no description>
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE: <no description>
+      CUSTOM_METRIC_INVALID: <no description>
+      MIN_EQUALS_MAX: <no description>
+      MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
+      MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
+      MORE_THAN_ONE_BACKEND_SERVICE: <no description>
+      NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
+      SCALING_TARGET_DOES_NOT_EXIST: <no description>
+      UNKNOWN: <no description>
+      UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION: <no description>
+    """
+    ALL_INSTANCES_UNHEALTHY = 0
+    BACKEND_SERVICE_DOES_NOT_EXIST = 1
+    CAPPED_AT_MAX_NUM_REPLICAS = 2
+    CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE = 3
+    CUSTOM_METRIC_INVALID = 4
+    MIN_EQUALS_MAX = 5
+    MISSING_CUSTOM_METRIC_DATA_POINTS = 6
+    MISSING_LOAD_BALANCING_DATA_POINTS = 7
+    MORE_THAN_ONE_BACKEND_SERVICE = 8
+    NOT_ENOUGH_QUOTA_AVAILABLE = 9
+    SCALING_TARGET_DOES_NOT_EXIST = 10
+    UNKNOWN = 11
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 12
+
   message = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class AutoscalersScopedList(_messages.Message):
@@ -4437,6 +4474,24 @@ class ComputeInstancesStartRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A ComputeInstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    instance: Name of the instance resource to start.
+    instancesStartWithEncryptionKeyRequest: A
+      InstancesStartWithEncryptionKeyRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesStartWithEncryptionKeyRequest = _messages.MessageField('InstancesStartWithEncryptionKeyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesStopRequest(_messages.Message):
   """A ComputeInstancesStopRequest object.
 
@@ -7699,6 +7754,20 @@ class CustomerEncryptionKey(_messages.Message):
   sha256 = _messages.StringField(3)
 
 
+class CustomerEncryptionKeyProtectedDisk(_messages.Message):
+  """A CustomerEncryptionKeyProtectedDisk object.
+
+  Fields:
+    diskEncryptionKey: Decrypts data associated with the disk with a customer-
+      supplied encryption key.
+    source: Specifies a valid partial or full URL to an existing Persistent
+      Disk resource. This field is only applicable for persistent disks.
+  """
+
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+  source = _messages.StringField(2)
+
+
 class DeprecationStatus(_messages.Message):
   """Deprecation status for a public resource.
 
@@ -9599,8 +9668,7 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
-    region: The name of the region where the multi-zonal managed instance
-      group is located.
+    region: The URL of the region where the instance group is located.
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
@@ -9742,8 +9810,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    region: The name of the region where the multi-zonal managed instance
-      group is located.
+    region: [Output Only] URL of the region where the managed instance group
+      resides.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -10661,6 +10729,26 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class InstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A InstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to start the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+    instanceEncryptionKey: Decrypts data associated with an instance that is
+      protected with a customer-supplied encryption key.  If the instance you
+      are starting is protected with a customer-supplied encryption key, the
+      correct key must be provided otherwise the instance start will not
+      succeed.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
 
 
 class License(_messages.Message):
@@ -14679,7 +14767,7 @@ class VpnTunnel(_messages.Message):
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway.
     region: [Output Only] URL of the region where the VPN tunnel resides.
-    remoteTrafficSelectors: Remote traffic selectors to use when establishing
+    remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
       disjoint.
@@ -14733,7 +14821,7 @@ class VpnTunnel(_messages.Message):
   name = _messages.StringField(8)
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
-  remoteTrafficSelectors = _messages.StringField(11, repeated=True)
+  remoteTrafficSelector = _messages.StringField(11, repeated=True)
   router = _messages.StringField(12)
   selfLink = _messages.StringField(13)
   sharedSecret = _messages.StringField(14)

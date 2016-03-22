@@ -19,7 +19,6 @@ from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app import ext_runtime_adapter
 from googlecloudsdk.api_lib.app.runtimes import go
-from googlecloudsdk.api_lib.app.runtimes import java
 from googlecloudsdk.api_lib.app.runtimes import python
 from googlecloudsdk.api_lib.app.runtimes import python_compat
 from googlecloudsdk.api_lib.app.runtimes import ruby
@@ -38,7 +37,8 @@ RUNTIMES = [
     ruby,
     ext_runtime_adapter.CoreRuntimeLoader('nodejs', 'Node.js',
                                           ['nodejs', 'custom']),
-    java,
+    ext_runtime_adapter.CoreRuntimeLoader('java', 'Java',
+                                          ['java', 'java7', 'custom']),
     python_compat,
     python,  # python is last because it passes if there are any .py files.
 ]

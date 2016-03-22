@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160308",
+ "revision": "20160314",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -513,7 +513,7 @@
     },
     "region": {
      "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
+     "description": "[Output Only] URL of the region where the instance group resides (for autoscalers living in regional scope)."
     },
     "selfLink": {
      "type": "string",
@@ -620,6 +620,39 @@
    "properties": {
     "message": {
      "type": "string"
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "ALL_INSTANCES_UNHEALTHY",
+      "BACKEND_SERVICE_DOES_NOT_EXIST",
+      "CAPPED_AT_MAX_NUM_REPLICAS",
+      "CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE",
+      "CUSTOM_METRIC_INVALID",
+      "MIN_EQUALS_MAX",
+      "MISSING_CUSTOM_METRIC_DATA_POINTS",
+      "MISSING_LOAD_BALANCING_DATA_POINTS",
+      "MORE_THAN_ONE_BACKEND_SERVICE",
+      "NOT_ENOUGH_QUOTA_AVAILABLE",
+      "SCALING_TARGET_DOES_NOT_EXIST",
+      "UNKNOWN",
+      "UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -1195,6 +1228,20 @@
     "sha256": {
      "type": "string",
      "description": "[Output only] The base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource."
+    }
+   }
+  },
+  "CustomerEncryptionKeyProtectedDisk": {
+   "id": "CustomerEncryptionKeyProtectedDisk",
+   "type": "object",
+   "properties": {
+    "diskEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "Decrypts data associated with the disk with a customer-supplied encryption key."
+    },
+    "source": {
+     "type": "string",
+     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks."
     }
    }
   },
@@ -2903,7 +2950,7 @@
     },
     "region": {
      "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
+     "description": "The URL of the region where the instance group is located."
     },
     "selfLink": {
      "type": "string",
@@ -3078,7 +3125,7 @@
     },
     "region": {
      "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
+     "description": "[Output Only] URL of the region where the managed instance group resides."
     },
     "selfLink": {
      "type": "string",
@@ -3905,6 +3952,23 @@
     "machineType": {
      "type": "string",
      "description": "Full or partial URL of the machine type resource. See Machine Types for a full list of machine types. For example: zones/us-central1-f/machineTypes/n1-standard-1"
+    }
+   }
+  },
+  "InstancesStartWithEncryptionKeyRequest": {
+   "id": "InstancesStartWithEncryptionKeyRequest",
+   "type": "object",
+   "properties": {
+    "disks": {
+     "type": "array",
+     "description": "Array of disks associated with this instance that are protected with a customer-supplied encryption key.\n\nIn order to start the instance, the disk url and its corresponding key must be provided.\n\nIf the disk is not protected with a customer-supplied encryption key it should not be specified.",
+     "items": {
+      "$ref": "CustomerEncryptionKeyProtectedDisk"
+     }
+    },
+    "instanceEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "Decrypts data associated with an instance that is protected with a customer-supplied encryption key.\n\nIf the instance you are starting is protected with a customer-supplied encryption key, the correct key must be provided otherwise the instance start will not succeed."
     }
    }
   },
@@ -7859,7 +7923,7 @@
      "type": "string",
      "description": "[Output Only] URL of the region where the VPN tunnel resides."
     },
-    "remoteTrafficSelectors": {
+    "remoteTrafficSelector": {
      "type": "array",
      "description": "Remote traffic selectors to use when establishing the VPN tunnel with peer VPN gateway. The value should be a CIDR formatted string, for example: 192.168.0.0/16. The ranges should be disjoint.",
      "items": {
@@ -14442,6 +14506,50 @@
       "zone",
       "instance"
      ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "startWithEncryptionKey": {
+     "id": "compute.instances.startWithEncryptionKey",
+     "path": "{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey",
+     "httpMethod": "POST",
+     "description": "Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance resource to start.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesStartWithEncryptionKeyRequest"
+     },
      "response": {
       "$ref": "Operation"
      },

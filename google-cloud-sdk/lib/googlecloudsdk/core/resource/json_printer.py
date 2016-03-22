@@ -41,7 +41,7 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
   _BEGIN_DELIMITER = '[\n'
 
   def __init__(self, *args, **kwargs):
-    super(JsonPrinter, self).__init__(*args, **kwargs)
+    super(JsonPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
     self._buffer = cStringIO.StringIO()
     self._empty = True
     self._delimiter = self._BEGIN_DELIMITER

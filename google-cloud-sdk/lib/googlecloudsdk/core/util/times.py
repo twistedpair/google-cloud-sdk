@@ -94,24 +94,24 @@ def GetTimeZone(name):
 def FormatDateTime(dt, fmt=None):
   """Returns a string of a datetime object formatted by an extended strftime().
 
-  The fmt handles these modifier extensions to the standard formatting chars:
+  fmt handles these modifier extensions to the standard formatting chars:
 
     %Nf   Limit the fractional seconds to N digits. The default is N=6.
-    %#z   Format UTC as 'Z' and +/-HHMM offsets as +/-HH:MM.
-
-  The %z extensions support RFC 3339 timezone offsets (Z or +/-HH:MM).
+    %Ez   Format +/-HHMM offsets as ISO RFC 3339 Z for +0000 otherwise +/-HH:MM.
+    %Oz   Format +/-HHMM offsets as ISO RFC 3339 +/-HH:MM.
 
   Args:
     dt: The datetime object to be formatted.
     fmt: The strftime(3) format string, None for the RFC 3339 format in the dt
-      timezone ('%Y-%m-%dT%H:%M:%S.%3f%#z').
+      timezone ('%Y-%m-%dT%H:%M:%S.%3f%Ez').
 
   Returns:
     A string of a datetime object formatted by an extended strftime().
   """
   if not fmt:
-    fmt = '%Y-%m-%dT%H:%M:%S.%3f%#z'
-  m = re.search('%#?[1-9]?f|%#z', fmt)
+    fmt = '%Y-%m-%dT%H:%M:%S.%3f%Ez'
+  extension = re.compile('%[1-9]?[EO]?[fz]')
+  m = extension.search(fmt)
   if not m:
     return dt.strftime(fmt)
 
@@ -127,16 +127,16 @@ def FormatDateTime(dt, fmt=None):
     # Format the standard variant of the exetended spec. The extensions only
     # have one modifier char.
     match += 1
-    if fmt[match] == '#':
-      alternate = True
-      match += 1
-    else:
-      alternate = False
     if fmt[match].isdigit():
       n = int(fmt[match])
       match += 1
     else:
-      n = 0
+      n = None
+    if fmt[match] in ('E', 'O'):
+      alternate = fmt[match]
+      match += 1
+    else:
+      alternate = None
     spec = fmt[match]
     std_fmt = '%' + spec
     val = dt.strftime(std_fmt)
@@ -148,7 +148,7 @@ def FormatDateTime(dt, fmt=None):
     elif spec == 'z':
       # Convert the time zone offset to RFC 3339 format.
       if alternate:
-        if val == '+0000':
+        if alternate == 'E' and val == '+0000':
           val = 'Z'
         elif len(val) == 5:
           val = val[:3] + ':' + val[3:]
@@ -156,7 +156,7 @@ def FormatDateTime(dt, fmt=None):
       parts.append(val)
 
     start += m.end()
-    m = re.search('%[1-9]f|%#z', fmt[start:])
+    m = extension.search(fmt[start:])
 
   # Format the trailing part if any.
   if start < len(fmt):

@@ -346,7 +346,8 @@ class HttpRpcServerOAuth2(HttpRpcServerHttpLib2):
   def __init__(self, host, oauth2_parameters, user_agent, source,
                host_override=None, extra_headers=None, save_cookies=False,
                auth_tries=None, account_type=None, debug_data=True, secure=True,
-               ignore_certs=False, rpc_tries=3, options=None, http_class=None):
+               ignore_certs=False, rpc_tries=3, timeout_max_errors=2,
+               options=None, http_class=None):
     """Creates a new HttpRpcServerOAuth2.
 
     Args:
@@ -368,6 +369,8 @@ class HttpRpcServerOAuth2(HttpRpcServerHttpLib2):
       ignore_certs: If the certificate mismatches should be ignored.
       rpc_tries: The number of rpc retries upon http server error (i.e.
         Response code >= 500 and < 600) before failing.
+      timeout_max_errors: The number of rpc retries upon http server timeout
+        (i.e. Response code 408) before failing.
       options: the command line options.
       http_class: the httplib2.Http subclass to use. Defaults to httplib2.Http.
     """
@@ -375,7 +378,8 @@ class HttpRpcServerOAuth2(HttpRpcServerHttpLib2):
         host, None, user_agent, source, host_override=host_override,
         extra_headers=extra_headers, auth_tries=auth_tries,
         debug_data=debug_data, secure=secure, ignore_certs=ignore_certs,
-        rpc_tries=rpc_tries, save_cookies=save_cookies, http_class=http_class)
+        rpc_tries=rpc_tries, timeout_max_errors=timeout_max_errors,
+        save_cookies=save_cookies, http_class=http_class)
 
     if not isinstance(oauth2_parameters, self.OAuth2Parameters):
       raise TypeError('oauth2_parameters must be an OAuth2Parameters: %r' %

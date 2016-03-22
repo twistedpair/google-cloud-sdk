@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160308",
+ "revision": "20160314",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -492,10 +492,6 @@
        "compute.instanceGroups.insert"
       ]
      }
-    },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
     },
     "selfLink": {
      "type": "string",
@@ -2458,10 +2454,6 @@
      "type": "string",
      "description": "The URL of the network to which all instances in the instance group belong."
     },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
-    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this instance group. The server generates this URL."
@@ -2620,10 +2612,6 @@
      "items": {
       "$ref": "NamedPort"
      }
-    },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
     },
     "selfLink": {
      "type": "string",

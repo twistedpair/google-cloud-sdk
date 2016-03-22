@@ -87,8 +87,7 @@ class ResourcePrinter(object):
 
   Attributes:
     attributes: Optional printer attribute dict indexed by attribute name.
-    _by_columns: True if AddRecord() expects a list of columns.
-    column_attributes: Projection ColumnAttributes().
+    column_attributes: Projection column attributes.
     _console_attr: The console attributes. May be ignored by some printers.
     _empty: True if there are no records.
     _heading: The list of column heading label strings.
@@ -114,10 +113,9 @@ class ResourcePrinter(object):
       *debug*, *info*, *warn*, or *error*.
   """
 
-  def __init__(self, out=None, name=None, attributes=None,
-               column_attributes=None, by_columns=False, process_record=None,
-               non_empty_projection_required=False, printer=None,
-               console_attr=None):
+  def __init__(self, out=None, name=None, projector=None, by_columns=False,
+               process_record=None, non_empty_projection_required=False,
+               printer=None, console_attr=None, retain_none_values=False):
     """Constructor.
 
     Args:
@@ -125,8 +123,7 @@ class ResourcePrinter(object):
         and the output stream is a log._ConsoleWriter then the underlying stream
         is used instead to disable output to the log file.
       name: The format name.
-      attributes: Optional printer attribute dict indexed by attribute name.
-      column_attributes: Projection ColumnAttributes().
+      projector: Optional resource Projector.
       by_columns: True if AddRecord() expects a list of columns.
       process_record: The function called to process each record passed to
         AddRecord() before calling _AddRecord(). It is called like this:
@@ -137,10 +134,8 @@ class ResourcePrinter(object):
       console_attr: The console attributes for the output stream. Ignored by
         some printers. If None then printers that require it will initialize it
         to match out.
+      retain_none_values: Retain resurce dict entries with None values.
     """
-    self.attributes = attributes or {}
-    self._by_columns = by_columns
-    self.column_attributes = column_attributes
     self._console_attr = console_attr
     self._empty = True
     self._heading = None
@@ -148,15 +143,27 @@ class ResourcePrinter(object):
     self._name = name
     self._non_empty_projection_required = non_empty_projection_required
     self._out = out or log.out
+    self._printer = printer
+
+    if not projector:
+      projector = resource_projector.Compile()
+    self._process_record = process_record or projector.Evaluate
+    projector.SetByColumns(by_columns)
+    projector.SetRetainNoneValues(retain_none_values)
+    projection = projector.Projection()
+    if projection:
+      self.attributes = projection.Attributes() or {}
+      self.column_attributes = projection
+    else:
+      self.attributes = {}
+      self.column_attributes = None
+
     if 'private' in self.attributes:
       try:
         # Disable log file writes by printing directly to the console stream.
         self._out = self._out.GetConsoleWriterStream()
       except AttributeError:
         pass
-    self._process_record = (process_record or
-                            resource_projector.Compile().Evaluate)
-    self._printer = printer
 
   def AddHeading(self, heading):
     """Overrides the default heading.
@@ -236,14 +243,6 @@ class ResourcePrinter(object):
       writer = writers.get(log_type or 'out')
       writer(legend)
 
-  def ByColumns(self):
-    """Returns True if AddRecord() expects a list of columns.
-
-    Returns:
-      True if AddRecord() expects a list of columns.
-    """
-    return self._by_columns
-
   def Finish(self):
     """Prints the results for non-streaming formats."""
     pass
@@ -277,11 +276,10 @@ class ResourcePrinter(object):
     if 'disable' in self.attributes:
       # Disable formatted output and do not consume the resources.
       return
-    if (self._non_empty_projection_required and
-        not self.column_attributes.Columns()):
+    if self._non_empty_projection_required and (
+        not self.column_attributes or not self.column_attributes.Columns()):
       raise ProjectionRequiredError(
-          'Format [{0}] requires a non-empty projection.'.format(
-              self.column_attributes.Name()))
+          'Format [{0}] requires a non-empty projection.'.format(self._name))
     # Resources may be a generator and since generators can raise exceptions, we
     # have to call Finish() in the finally block to make sure that the resources
     # we've been able to pull out of the generator are printed before control is

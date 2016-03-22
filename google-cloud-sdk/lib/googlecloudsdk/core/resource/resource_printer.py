@@ -169,8 +169,7 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
   projector = resource_projector.Compile(
       expression=print_format, defaults=defaults,
       symbols=resource_transform.GetTransforms())
-  projection = projector.Projection()
-  printer_name = projection.Name()
+  printer_name = projector.Projection().Name()
   try:
     printer_class = _FORMATTERS[printer_name]
   except KeyError:
@@ -179,12 +178,9 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
             ', '.join(SupportedFormats()), printer_name))
   printer = printer_class(out=out,
                           name=printer_name,
-                          attributes=projection.Attributes(),
-                          column_attributes=projection,
-                          process_record=projector.Evaluate,
                           printer=Printer,
+                          projector=projector,
                           console_attr=console_attr)
-  projector.SetByColumns(printer.ByColumns())
   return printer
 
 

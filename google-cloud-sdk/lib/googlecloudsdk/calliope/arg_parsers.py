@@ -154,7 +154,8 @@ def GetMultiCompleter(individual_completer):
   return MultiCompleter
 
 
-def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None):
+def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
+                 strict_case=True):
   """A helper that returns a function that can parse values with units.
 
   Casing for all units matters.
@@ -166,6 +167,7 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None):
       missing unit.
     lower_bound: str, An inclusive lower bound.
     upper_bound: str, An inclusive upper bound.
+    strict_case: bool, whether to be strict on case-checking
 
   Returns:
     A function that can parse values.
@@ -188,10 +190,19 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None):
 
     amount = int(match.group('amount'))
     unit = match.group('unit')
-    if unit is None:
-      return amount * scales[default_unit]
-    elif unit in scales:
-      return amount * scales[unit]
+    if strict_case:
+      unit_case = unit
+      default_unit_case = default_unit
+      scales_case = scales
+    else:
+      unit_case = unit and unit.upper()
+      default_unit_case = default_unit.upper()
+      scales_case = dict([(k.upper(), v) for k, v in scales.items()])
+
+    if unit_case is None:
+      return amount * scales_case[default_unit_case]
+    elif unit_case in scales_case:
+      return amount * scales_case[unit_case]
     else:
       raise ArgumentTypeError(_GenerateErrorMessage(
           'unit must be one of {0}'.format(', '.join(UnitsByMagnitude())),
@@ -299,7 +310,8 @@ def BinarySize(lower_bound=None, upper_bound=None):
       parsed.
   """
   return _ValueParser(_BINARY_SIZE_SCALES, default_unit='GB',
-                      lower_bound=lower_bound, upper_bound=upper_bound)
+                      lower_bound=lower_bound, upper_bound=upper_bound,
+                      strict_case=False)
 
 
 _KV_PAIR_DELIMITER = '='

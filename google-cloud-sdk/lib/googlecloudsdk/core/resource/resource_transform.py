@@ -40,9 +40,10 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
-import cStringIO
 import datetime
 import re
+import StringIO
+import urllib2
 
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import resources
@@ -84,7 +85,7 @@ def TransformBaseName(r, undefined=''):
   """
   if not r:
     return undefined
-  s = str(r)
+  s = unicode(r)
   for separator in ('/', '\\'):
     i = s.rfind(separator)
     if i >= 0:
@@ -124,7 +125,7 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
     A console_attr.Colorizer() object if any color substring matches, r
     otherwise.
   """
-  string = str(r)
+  string = unicode(r)
   for color, pattern in (('red', red), ('yellow', yellow), ('green', green),
                          ('blue', blue)):
     if pattern and re.search(pattern, string):
@@ -215,6 +216,26 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
   return undefined
 
 
+def TransformDecode(r, encoding, undefined=''):
+  """Returns the decoded value of the resource that was encoded by encoding.
+
+  Args:
+    r: A JSON-serializable object.
+    encoding: The encoding name. *base64* and *utf-8* are supported.
+    undefined: Returns this value if the decoding fails.
+
+  Returns:
+    The decoded resource.
+  """
+  # Some codecs support 'replace', all support 'strict' (the default).
+  for errors in ('replace', 'strict'):
+    try:
+      return r.decode(encoding, errors)
+    except:  # pylint: disable=bare-except, undefined for any exception
+      pass
+  return undefined
+
+
 def TransformDuration(r, unit=1, undefined=''):
   """Formats the resource as a duration string.
 
@@ -229,9 +250,29 @@ def TransformDuration(r, unit=1, undefined=''):
   try:
     timestamp = float(r) / unit
     d = datetime.timedelta(seconds=timestamp)
-    return str(d).replace(' ', '')
+    return unicode(d).replace(' ', '')
   except (TypeError, ValueError):
     return undefined
+
+
+def TransformEncode(r, encoding, undefined=''):
+  """Returns the encoded value of the resource using encoding.
+
+  Args:
+    r: A JSON-serializable object.
+    encoding: The encoding name. *base64* and *utf-8* are supported.
+    undefined: Returns this value if the encoding fails.
+
+  Returns:
+    The encoded resource.
+  """
+  # Some codecs support 'replace', all support 'strict' (the default).
+  for errors in ('replace', 'strict'):
+    try:
+      return r.encode(encoding, errors).rstrip('\n')
+    except:  # pylint: disable=bare-except, undefined for any exception
+      pass
+  return undefined
 
 
 def TransformError(r, message=None):
@@ -245,7 +286,9 @@ def TransformError(r, message=None):
   Raises:
     Error: This will not generate a stack trace.
   """
-  raise resource_exceptions.Error(message if message is not None else str(r))
+  if message is None:
+    message = unicode(r)
+  raise resource_exceptions.Error(message)
 
 
 def TransformFatal(r, message=None):
@@ -372,7 +415,7 @@ def TransformGroup(r, *args):
   """
   if not r:
     return '[]'
-  buf = cStringIO.StringIO()
+  buf = StringIO.StringIO()
   sep = None
   for item in r:
     if sep:
@@ -536,6 +579,7 @@ def TransformScope(r, *args):
   """
   if not r:
     return ''
+  r = urllib2.unquote(unicode(r))
   if '/' not in r:
     return r
   # Checking for regions and/or zones is the most common use case.
@@ -561,8 +605,8 @@ def TransformSegment(r, index=-1, undefined=''):
   """
   if not r:
     return undefined
-  s = str(r)
-  segments = s.split('/')
+  r = urllib2.unquote(unicode(r))
+  segments = r.split('/')
   try:
     return segments[int(index)] or undefined
   except IndexError:
@@ -725,7 +769,9 @@ _BUILTIN_TRANSFORMS = {
     'collection': TransformCollection,
     'color': TransformColor,
     'date': TransformDate,
+    'decode': TransformDecode,
     'duration': TransformDuration,
+    'encode': TransformEncode,
     'error': TransformError,
     'fatal': TransformFatal,
     'firstof': TransformFirstOf,

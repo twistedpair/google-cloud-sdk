@@ -17,7 +17,34 @@
 import json
 
 
-def _GetMetaDataValue(items, name, deserialize=False, default=None):
+def _GetMetaDict(items, key, value):
+  """Gets the dict in items that contains key==value.
+
+  A metadict object is a list of dicts of the form:
+    [
+      {key: value-1, ...},
+      {key: value-2, ...},
+      ...
+    ]
+
+  Args:
+    items: A list of dicts.
+    key: The dict key name.
+    value: The dict key value.
+
+  Returns:
+    The dict in items that contains key==value or None if no match.
+  """
+  try:
+    for item in items:
+      if item.get(key) == value:
+        return item
+  except (AttributeError, IndexError, TypeError, ValueError):
+    pass
+  return None
+
+
+def _GetMetaDataValue(items, name, deserialize=False):
   """Gets the metadata value for the item in items with key == name.
 
   A metadata object is a list of dicts of the form:
@@ -39,25 +66,21 @@ def _GetMetaDataValue(items, name, deserialize=False, default=None):
     items: The metadata items list.
     name: The metadata name (which must match one of the 'key' values).
     deserialize: If True then attempt to deserialize a compact JSON string.
-    default: This value returned if not found or items has no metadata.
 
   Returns:
-    The metadata value for name or default if not found or if items is not a
+    The metadata value for name or None if not found or if items is not a
     metadata dict list.
   """
-  try:
-    for item in items:
-      if item['key'] == name:
-        value = item['value']
-        if deserialize:
-          try:
-            return json.loads(value)
-          except (TypeError, ValueError):
-            pass
-        return value
-  except (AttributeError, IndexError, TypeError, ValueError):
-    pass
-  return default
+  item = _GetMetaDict(items, 'key', name)
+  if item is None:
+    return None
+  value = item.get('value', None)
+  if deserialize:
+    try:
+      return json.loads(value)
+    except (TypeError, ValueError):
+      pass
+  return value
 
 
 def Get(resource, key, default=None):
@@ -88,6 +111,7 @@ def Get(resource, key, default=None):
   """
   if isinstance(resource, set):
     resource = sorted(resource)
+  meta = None
   for i, index in enumerate(key):
     # This if-ladder ordering checks builtin object attributes last. For
     # example, with resource = {'items': ...}, Get() treats 'items' as a dict
@@ -96,7 +120,9 @@ def Get(resource, key, default=None):
     if resource is None:
       # None is different than an empty dict or list.
       return default
-
+    elif meta:
+      resource = _GetMetaDict(resource, meta, index)
+      meta = None
     elif hasattr(resource, 'iteritems'):
       # dict-like
       if index is None:
@@ -110,12 +136,11 @@ def Get(resource, key, default=None):
         resource = resource[index]
       elif 'items' in resource:
         # It would be nice if there were a better metadata indicator.
-        # _GetMetaDataValue() returns default if resource['items'] isn't really
+        # _GetMetaDataValue() returns None if resource['items'] isn't really
         # metadata, so there is a bit more verification than just 'items' in
         # resource.
-        resource = _GetMetaDataValue(resource['items'], index,
-                                     deserialize=i + 1 < len(key),
-                                     default=default)
+        resource = _GetMetaDataValue(
+            resource['items'], index, deserialize=i + 1 < len(key))
       else:
         return default
 
@@ -134,6 +159,13 @@ def Get(resource, key, default=None):
           # Trailing slice: *.[]
           return resource
       elif not isinstance(index, (int, long)):
+        if (isinstance(index, basestring) and
+            isinstance(resource, list) and
+            len(resource) and
+            isinstance(resource[0], dict)):
+          # Let the next iteration check for a meta dict.
+          meta = index
+          continue
         # Index mismatch.
         return default
       elif index in xrange(-len(resource), len(resource)):

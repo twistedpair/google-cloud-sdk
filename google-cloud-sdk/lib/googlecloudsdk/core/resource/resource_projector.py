@@ -78,21 +78,24 @@ class Projector(object):
     _been_here_done_that: A LIFO of the current objects being projected. Used
       to catch recursive objects like datetime.datetime.max.
     _by_columns: True if Projector projects to a list of columns.
+    _retain_none_values: Retain dict entries with None values.
     _transforms_enabled_attribute: The projection.Attributes()
       transforms_enabled setting.
     _transforms_enabled: Projection attribute transforms enabled if True,
       disabled if False, or set by each Evaluate().
   """
 
-  def __init__(self, projection, by_columns=False):
+  def __init__(self, projection, by_columns=False, retain_none_values=False):
     """Constructor.
 
     Args:
       projection: A ProjectionSpec (parsed resource projection expression).
       by_columns: Project to a list of columns if True.
+      retain_none_values: project dict entries with None values.
     """
     self._projection = projection
     self._by_columns = by_columns
+    self._retain_none_values = retain_none_values
     self._been_here_done_that = []
     if 'transforms' in projection.Attributes():
       self._transforms_enabled_attribute = True
@@ -173,8 +176,7 @@ class Projector(object):
         val = self._Project(val, child_projection, f)
       else:
         val = self._ProjectAttribute(val, self._projection.GetEmpty(), flag)
-      if val is not None:
-        # Only record successful projections.
+      if self._retain_none_values or val is not None:
         res[unicode(key)] = val
     return res or None
 
@@ -189,10 +191,15 @@ class Projector(object):
     Returns:
       The projected obj.
     """
-    if isinstance(obj, set):
-      obj = sorted(obj)
     if not obj:
       return obj
+    if isinstance(obj, set):
+      obj = sorted(obj)
+    # No iterators or generators beyond this point.
+    try:
+      _ = len(obj)
+    except TypeError:
+      obj = list(obj)
     # Determine the explicit indices or slice.
     # If there is a slice index then every index is projected.
     indices = set([])
@@ -322,15 +329,8 @@ class Projector(object):
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):
         # class object or collections.namedtuple() (via the _fields test).
         obj = ClassToDict(obj)
-      if hasattr(obj, 'next'):
-        # Generator object.
-        try:
-          obj = obj.next()
-        except StopIteration:
-          obj = None
-        obj = self._Project(obj, projection, flag, leaf)
-      elif (projection and projection.attribute and
-            projection.attribute.transform):
+      if (projection and projection.attribute and
+          projection.attribute.transform):
         # Transformed nodes prune here.
         obj = self._ProjectTransform(obj, projection.attribute.transform)
       elif ((flag >= self._projection.PROJECT or projection and projection.tree)
@@ -352,6 +352,14 @@ class Projector(object):
       enable: Enables projection to a list-of-columns if True.
     """
     self._by_columns = enable
+
+  def SetRetainNoneValues(self, enable):
+    """Sets the projection to retain-none-values mode.
+
+    Args:
+      enable: Enables projection to a retain-none-values if True.
+    """
+    self._retain_none_values = enable
 
   def Evaluate(self, obj):
     """Serializes/projects/transforms one or more objects.
@@ -392,7 +400,8 @@ class Projector(object):
     return self._projection
 
 
-def Compile(expression='', defaults=None, symbols=None, by_columns=False):
+def Compile(expression='', defaults=None, symbols=None, by_columns=False,
+            retain_none_values=False):
   """Compiles a resource projection expression.
 
   Args:
@@ -400,10 +409,12 @@ def Compile(expression='', defaults=None, symbols=None, by_columns=False):
     defaults: resource_projection_spec.ProjectionSpec defaults.
     symbols: Transform function symbol table dict indexed by function name.
     by_columns: Project to a list of columns if True.
+    retain_none_values: Retain dict entries with None values.
 
   Returns:
     A Projector containing the compiled expression ready for Evaluate().
   """
   projection = resource_projection_parser.Parse(
       expression, defaults=defaults, symbols=symbols, compiler=Compile)
-  return Projector(projection, by_columns=by_columns)
+  return Projector(projection, by_columns=by_columns,
+                   retain_none_values=retain_none_values)

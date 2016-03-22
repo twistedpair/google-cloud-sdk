@@ -28,8 +28,6 @@ else:
   _extension_runtime = False
   _ExtendableProtocolMessage = ProtocolBuffer.ProtocolMessage
 
-from googlecloudsdk.third_party.appengine.api.api_base_pb import *
-import googlecloudsdk.third_party.appengine.api.api_base_pb
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.action_pb import *
 import googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.action_pb
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb import *

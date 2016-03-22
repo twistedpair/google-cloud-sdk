@@ -2282,6 +2282,20 @@ class ServicemanagementServicesAccessPolicyQueryRequest(_messages.Message):
   userEmail = _messages.StringField(2)
 
 
+class ServicemanagementServicesConfigsGetRequest(_messages.Message):
+  """A ServicemanagementServicesConfigsGetRequest object.
+
+  Fields:
+    configId: The id of the service config resource. Optional. If it is not
+      specified, the latest version of config will be returned.
+    serviceName: The name of the service.  See the `ServiceManager` overview
+      for naming requirements.  For example: `example.googleapis.com`.
+  """
+
+  configId = _messages.StringField(1, required=True)
+  serviceName = _messages.StringField(2, required=True)
+
+
 class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):
   """A ServicemanagementServicesCustomerSettingsGetRequest object.
 
@@ -2366,11 +2380,14 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
   """A ServicemanagementServicesGetConfigRequest object.
 
   Fields:
+    configId: The id of the service config resource. Optional. If it is not
+      specified, the latest version of config will be returned.
     serviceName: The name of the service.  See the `ServiceManager` overview
       for naming requirements.  For example: `example.googleapis.com`.
   """
 
-  serviceName = _messages.StringField(1, required=True)
+  configId = _messages.StringField(1)
+  serviceName = _messages.StringField(2, required=True)
 
 
 class ServicemanagementServicesGetRequest(_messages.Message):

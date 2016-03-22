@@ -16,13 +16,16 @@
 
 import cStringIO
 import os
+import re
 import signal
 import sys
+import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import named_configs
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 
@@ -306,3 +309,161 @@ class UninterruptibleSection(object):
 
   def _Handler(self, unused_signal, unused_frame):
     self.__stream.write(self.__message)
+
+
+def KillSubprocess(p):
+  """Kills a subprocess using an OS specific method when python can't do it.
+
+  This also kills all processes rooted in this process.
+
+  Args:
+    p: the Popen or multiprocessing.Process object to kill
+
+  Raises:
+    RuntimeError: if it fails to kill the process
+  """
+
+  # This allows us to kill a Popen object or a multiprocessing.Process object
+  code = None
+  if hasattr(p, 'returncode'):
+    code = p.returncode
+  elif hasattr(p, 'exitcode'):
+    code = p.exitcode
+
+  if code is not None:
+    # already dead
+    return
+
+  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+    # Consume stdout so it doesn't show in the shell
+    taskkill_process = subprocess.Popen(
+        ['taskkill', '/F', '/T', '/PID', str(p.pid)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+    (stdout, stderr) = taskkill_process.communicate()
+    if taskkill_process.returncode != 0 and _IsTaskKillError(stderr):
+      # Sometimes taskkill does things in the wrong order and the processes
+      # disappear before it gets a chance to kill it.  This is exposed as an
+      # error even though it's the outcome we want.
+      raise RuntimeError(
+          'Failed to call taskkill on pid {0}\nstdout: {1}\nstderr: {2}'
+          .format(p.pid, stdout, stderr))
+
+  else:
+    # Create a mapping of ppid to pid for all processes, then kill all
+    # subprocesses from the main process down
+    get_pids_process = subprocess.Popen(['ps', '-e',
+                                         '-o', 'ppid=', '-o', 'pid='],
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE)
+    (stdout, stderr) = get_pids_process.communicate()
+    if get_pids_process.returncode != 0:
+      raise RuntimeError('Failed to get subprocesses of process: {0}'
+                         .format(p.pid))
+
+    # Create the process map
+    pid_map = {}
+    for line in stdout.strip().split('\n'):
+      (ppid, pid) = re.match(r'\s*(\d+)\s+(\d+)', line).groups()
+      ppid = int(ppid)
+      pid = int(pid)
+      children = pid_map.get(ppid)
+      if not children:
+        pid_map[ppid] = [pid]
+      else:
+        children.append(pid)
+
+    # Expand all descendants of the main process
+    all_pids = [p.pid]
+    to_process = [p.pid]
+    while to_process:
+      current = to_process.pop()
+      children = pid_map.get(current)
+      if children:
+        to_process.extend(children)
+        all_pids.extend(children)
+
+    # Kill all the subprocesses we found
+    for pid in all_pids:
+      _KillPID(pid)
+
+    # put this in if you need extra info from the process itself
+    # print p.communicate()
+
+
+def _IsTaskKillError(stderr):
+  """Returns whether the stderr output of taskkill indicates it failed.
+
+  Args:
+    stderr: the string error output of the taskkill command
+
+  Returns:
+    True iff the stderr is considered to represent an actual error.
+  """
+  # The taskkill "reason" string indicates why it fails. We consider the
+  # following reasons to be acceptable. Reason strings differ among different
+  # versions of taskkill. If you know a string is specific to a version, feel
+  # free to document that here.
+  non_error_reasons = (
+      # The process might be in the midst of exiting.
+      'Access is denied.',
+      'The operation attempted is not supported.',
+      'There is no running instance of the task.',
+      'There is no running instance of the task to terminate.')
+  non_error_patterns = (
+      re.compile(r'The process "\d+" not found\.'),)
+  for reason in non_error_reasons:
+    if reason in stderr:
+      return False
+  for pattern in non_error_patterns:
+    if pattern.search(stderr):
+      return False
+
+  return True
+
+
+def _KillPID(pid):
+  """Kills the given process with SIGTERM, then with SIGKILL if it doesn't stop.
+
+  Args:
+    pid: The process id of the process to check.
+  """
+  try:
+    # Try sigterm first.
+    os.kill(pid, signal.SIGTERM)
+
+    # If still running, wait a few seconds to see if it dies.
+    deadline = time.time() + 3
+    while time.time() < deadline:
+      if not _IsStillRunning(pid):
+        return
+      time.sleep(0.1)
+
+    # No luck, just force kill it.
+    os.kill(pid, signal.SIGKILL)
+  except OSError as error:
+    # Raise original stack trace.
+    if 'No such process' not in error.strerror:
+      (_, i, st) = sys.exc_info()
+      raise i, None, st
+
+
+def _IsStillRunning(pid):
+  """Determines if the given pid is still running.
+
+  Args:
+    pid: The process id of the process to check.
+
+  Returns:
+    bool, True if it is still running.
+  """
+  try:
+    (actual_pid, code) = os.waitpid(pid, os.WNOHANG)
+    if (actual_pid, code) == (0, 0):
+      return True
+  except OSError as error:
+    # Raise original stack trace.
+    if 'No child processes' not in error.strerror:
+      (_, i, st) = sys.exc_info()
+      raise i, None, st
+  return False

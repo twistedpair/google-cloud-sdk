@@ -25,9 +25,9 @@ import urllib
 from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
-from tests.lib import exec_utils
 
 
 class BrokerError(exceptions.Error):
@@ -145,7 +145,7 @@ class Broker(object):
     """Shuts down the broker server."""
     if self._process:
       try:
-        exec_utils.KillSubprocess(self._process)
+        execution_utils.KillSubprocess(self._process)
         self._process = None
         if self._comm_thread:
           self._comm_thread.join()

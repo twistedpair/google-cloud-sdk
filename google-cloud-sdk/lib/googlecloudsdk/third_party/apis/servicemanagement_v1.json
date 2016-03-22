@@ -2503,12 +2503,17 @@
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "GET",
-          "description": "Retrieves the service configuration for the specified service.  Equivalent\nto `GetService`, but returns only the `service_config` field.",
+          "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
+              "type": "string"
+            },
+            "configId": {
+              "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
+              "location": "query",
               "type": "string"
             }
           },
@@ -2528,7 +2533,7 @@
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "PUT",
-          "description": "Updates a service resource.  Equivalent to calling `UpdateService` with\nonly the `service_config` field updated.\n\nOperation<response: google.api.Service>",
+          "description": "Updates the specified subset of the service resource. Equivalent to\ncalling `UpdateService` with only the `service_config` field updated.\n\nOperation<response: google.api.Service>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2562,7 +2567,7 @@
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "PATCH",
-          "description": "Updates the specified subset of the service resource.  Equivalent to\ncalling `PatchService` with only the `service_config` field updated.\n\nOperation<response: google.api.Service>",
+          "description": "Updates the specified subset of the service resource. Equivalent to\ncalling `PatchService` with only the `service_config` field updated.\n\nOperation<response: google.api.Service>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2647,6 +2652,42 @@
       }
       ,
       "resources": {
+        "configs": {
+          "methods": {
+            "get": {
+              "id": "servicemanagement.services.configs.get",
+              "path": "v1/services/{serviceName}/configs/{configId}",
+              "flatPath": "v1/services/{serviceName}/configs/{configId}",
+              "httpMethod": "GET",
+              "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "configId": {
+                  "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "serviceName",
+                "configId"
+              ],
+              "response": {
+                "$ref": "Service"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            }
+          }
+        },
         "accessPolicy": {
           "methods": {
             "query": {

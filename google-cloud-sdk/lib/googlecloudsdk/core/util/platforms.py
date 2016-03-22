@@ -42,7 +42,11 @@ class InvalidEnumValue(Error):
 
 
 def GetHomePath():
-  return os.path.expanduser('~')
+  return ExpandHomePath('~')
+
+
+def ExpandHomePath(path):
+  return os.path.expanduser(path)
 
 
 class OperatingSystem(object):

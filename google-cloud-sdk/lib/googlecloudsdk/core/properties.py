@@ -510,8 +510,8 @@ class _SectionApp(_Section):
         'be stopped manually.')
     self.use_cloud_build = self._AddBool(
         'use_cloud_build',
-        help_text='If True, use the Container Builder API to perform docker '
-        'builds, rather than a temporary VM. See '
+        help_text='If False, use a temporary VM rather than the Container '
+        'Builder API to perform docker  builds. See '
         'https://cloud.google.com/container-builder/docs/ for more '
         'information.')
     self.container_builder_image = self._Add(

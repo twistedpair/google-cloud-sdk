@@ -16,6 +16,7 @@
 """
 
 import argparse
+import difflib
 import re
 import StringIO
 import sys
@@ -58,8 +59,6 @@ class CommandChoiceSuggester(object):
   """Utility to suggest mistyped commands.
 
   """
-  TEST_QUOTA = 5000
-  MAX_DISTANCE = 5
   _SYNONYM_SETS = [
       set(['create', 'add']),
       set(['delete', 'remove']),
@@ -68,9 +67,6 @@ class CommandChoiceSuggester(object):
   ]
 
   def __init__(self, choices=None):
-    self.cache = {}
-    self.inf = float('inf')
-    self._quota = self.TEST_QUOTA
     # A mapping of 'thing typed' to the suggestion that should be offered.
     # Often, these will be the same, but this allows for offering more currated
     # suggestions for more commonly misused things.
@@ -116,52 +112,6 @@ class CommandChoiceSuggester(object):
         # aliases for this synonym set.
         self.AddAliases(s_set, choice)
 
-  def _Deletions(self, s):
-    return [s[:i] + s[i + 1:] for i in range(len(s))]
-
-  def _GetDistance(self, longer, shorter):
-    """Get the edit distance between two words.
-
-    They must be in the correct order, since deletions and mutations only happen
-    from 'longer'.
-
-    Args:
-      longer: str, The longer of the two words.
-      shorter: str, The shorter of the two words.
-
-    Returns:
-      int, The number of substitutions or deletions on longer required to get
-      to shorter.
-    """
-
-    if longer == shorter:
-      return 0
-
-    try:
-      return self.cache[(longer, shorter)]
-    except KeyError:
-      pass
-
-    self.cache[(longer, shorter)] = self.inf
-    best_distance = self.inf
-
-    if len(longer) > len(shorter):
-      if self._quota < 0:
-        return self.inf
-      self._quota -= 1
-      for m in self._Deletions(longer):
-        best_distance = min(best_distance, self._GetDistance(m, shorter) + 1)
-
-    if len(longer) == len(shorter):
-      # just count how many letters differ
-      best_distance = 0
-      for i in range(len(longer)):
-        if longer[i] != shorter[i]:
-          best_distance += 1
-
-    self.cache[(longer, shorter)] = best_distance
-    return best_distance
-
   def GetSuggestion(self, arg):
     """Find the item that is closest to what was attempted.
 
@@ -171,33 +121,11 @@ class CommandChoiceSuggester(object):
     Returns:
       str, The closest match.
     """
-
-    min_distance = self.inf
-    bestchoice = None
-    for choice in self._choices:
-      self._quota = self.TEST_QUOTA
-      first, second = arg, choice
-      if len(first) < len(second):
-        first, second = second, first
-      if len(first) - len(second) > self.MAX_DISTANCE:
-        # Don't bother if they're too different.
-        continue
-      d = self._GetDistance(first.lower(), second.lower())
-      if d < min_distance:
-        min_distance = d
-        bestchoice = choice
-
-    if not bestchoice:
-      return None
-    # MAX_DISTANCE doesn't work very well for shorter strings (two strings of
-    # length n can have edit distance of at most n); any length-4 string will
-    # match any length-3 or length-4 string with MAX_DISTANCE 5, which is
-    # confusing. This trick prevents that.
-    if min_distance > min(self.MAX_DISTANCE, len(bestchoice) - 1, len(arg) - 1):
+    if not self._choices:
       return None
 
-    # Return the suggestion for the best choice.
-    return self._choices[bestchoice]
+    match = difflib.get_close_matches(arg.lower(), self._choices, 1)
+    return self._choices[match[0]] if match else None
 
 
 def WrapMessageInNargs(msg, nargs):
@@ -540,7 +468,7 @@ def ShortHelpText(command, argument_interceptor):
       return None
     textbuf = StringIO.StringIO()
     textbuf.write('%s\n' % title)
-    if type(messages) == str:
+    if isinstance(messages, str):
       textbuf.write('  ' + messages + '\n')
     else:
       for (arg, helptxt) in messages:

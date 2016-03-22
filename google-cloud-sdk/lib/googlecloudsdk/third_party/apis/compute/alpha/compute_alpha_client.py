@@ -3838,6 +3838,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'StartWithEncryptionKey': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.startWithEncryptionKey',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey',
+              request_field=u'instancesStartWithEncryptionKeyRequest',
+              request_type_name=u'ComputeInstancesStartWithEncryptionKeyRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Stop': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.stop',
@@ -4124,6 +4136,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def StartWithEncryptionKey(self, request, global_params=None):
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+
+      Args:
+        request: (ComputeInstancesStartWithEncryptionKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartWithEncryptionKey')
       return self._RunMethod(
           config, request, global_params=global_params)
 

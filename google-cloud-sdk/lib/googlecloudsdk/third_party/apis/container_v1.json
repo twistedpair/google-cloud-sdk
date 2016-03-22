@@ -188,7 +188,7 @@
           "$ref": "AddonsConfig"
         },
         "subnetwork": {
-          "description": "The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/subnetworks) to which the\ncluster is connected.  Specification of subnetworks is an alpha feature,\nand require that the Google Compute Engine alpha API be enabled.",
+          "description": "The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/subnetworks) to which the\ncluster is connected.",
           "type": "string"
         },
         "nodePools": {

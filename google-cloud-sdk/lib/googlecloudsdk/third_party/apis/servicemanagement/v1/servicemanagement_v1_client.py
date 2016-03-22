@@ -35,6 +35,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
     self.services_accessPolicy = self.ServicesAccessPolicyService(self)
+    self.services_configs = self.ServicesConfigsService(self)
     self.services_customerSettings = self.ServicesCustomerSettingsService(self)
     self.services_projectSettings = self.ServicesProjectSettingsService(self)
     self.services = self.ServicesService(self)
@@ -122,6 +123,46 @@ the service.
         (QueryUserAccessResponse) The response message.
       """
       config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class ServicesConfigsService(base_api.BaseApiService):
+    """Service class for the services_configs resource."""
+
+    _NAME = u'services_configs'
+
+    def __init__(self, client):
+      super(ServicemanagementV1.ServicesConfigsService, self).__init__(client)
+      self._method_configs = {
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'servicemanagement.services.configs.get',
+              ordered_params=[u'serviceName', u'configId'],
+              path_params=[u'configId', u'serviceName'],
+              query_params=[],
+              relative_path=u'v1/services/{serviceName}/configs/{configId}',
+              request_field='',
+              request_type_name=u'ServicemanagementServicesConfigsGetRequest',
+              response_type_name=u'Service',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Retrieves the [google.api.Service] resource for the given service name.
+and config id. If no config id is specified, the latest service resource
+will be returned.
+
+      Args:
+        request: (ServicemanagementServicesConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -353,7 +394,7 @@ Operation<response: ProjectSettings>
               method_id=u'servicemanagement.services.getConfig',
               ordered_params=[u'serviceName'],
               path_params=[u'serviceName'],
-              query_params=[],
+              query_params=[u'configId'],
               relative_path=u'v1/services/{serviceName}/config',
               request_field='',
               request_type_name=u'ServicemanagementServicesGetConfigRequest',
@@ -498,8 +539,9 @@ the service resource.
           config, request, global_params=global_params)
 
     def GetConfig(self, request, global_params=None):
-      """Retrieves the service configuration for the specified service.  Equivalent.
-to `GetService`, but returns only the `service_config` field.
+      """Retrieves the [google.api.Service] resource for the given service name.
+and config id. If no config id is specified, the latest service resource
+will be returned.
 
       Args:
         request: (ServicemanagementServicesGetConfigRequest) input message
@@ -543,7 +585,7 @@ Operation<response: ManagedService>
           config, request, global_params=global_params)
 
     def PatchConfig(self, request, global_params=None):
-      """Updates the specified subset of the service resource.  Equivalent to.
+      """Updates the specified subset of the service resource. Equivalent to.
 calling `PatchService` with only the `service_config` field updated.
 
 Operation<response: google.api.Service>
@@ -589,8 +631,8 @@ error if the policy is too large (more than 50 entries across all lists).
           config, request, global_params=global_params)
 
     def UpdateConfig(self, request, global_params=None):
-      """Updates a service resource.  Equivalent to calling `UpdateService` with.
-only the `service_config` field updated.
+      """Updates the specified subset of the service resource. Equivalent to.
+calling `UpdateService` with only the `service_config` field updated.
 
 Operation<response: google.api.Service>
 

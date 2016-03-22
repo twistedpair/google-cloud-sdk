@@ -262,10 +262,10 @@ def _RoutesNextHopToCell(route):
     return ''
 
 
-def _TargetHttpsProxySslCertificatesToCell(target_https_proxy):
-  """Joins the names of ssl certificates of the given target https proxy."""
+def _TargetProxySslCertificatesToCell(target_proxy):
+  """Joins the names of ssl certificates of the given HTTPS or SSL proxy."""
   return ','.join(path_simplifier.Name(cert) for cert in
-                  target_https_proxy.get('sslCertificates', []))
+                  target_proxy.get('sslCertificates', []))
 
 
 def _ProtobufDefinitionToFields(message_class):
@@ -714,7 +714,7 @@ _SPECS_V1 = {
         message_class_name='TargetHttpsProxy',
         table_cols=[
             ('NAME', 'name'),
-            ('SSL_CERTIFICATES', _TargetHttpsProxySslCertificatesToCell),
+            ('SSL_CERTIFICATES', _TargetProxySslCertificatesToCell),
             ('URL_MAP', 'urlMap'),
         ],
         transformations=[
@@ -859,6 +859,20 @@ _SPECS_BETA['routers'] = _InternalSpec(
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
+_SPECS_ALPHA['targetSslProxies'] = _InternalSpec(
+    message_class_name='TargetSslProxy',
+    table_cols=[
+        ('NAME', 'name'),
+        ('PROXY_HEADER', 'proxyHeader'),
+        ('SERVICE', 'service'),
+        ('SSL_CERTIFICATES', _TargetProxySslCertificatesToCell)
+    ],
+    transformations=[
+        ('sslCertificates[]', path_simplifier.Name),
+        ('service', path_simplifier.Name),
+    ],
+    editables=None,
+    )
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
     message_class_name='BackendBucket',
     table_cols=[
@@ -897,6 +911,28 @@ _SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(
     ],
     editables=None,
     )
+_SPECS_ALPHA['backendServices'] = _InternalSpec(
+    message_class_name='BackendService',
+    table_cols=[
+        ('NAME', 'name'),
+        ('BACKENDS', _BackendsToCell),
+        ('PROTOCOL', 'protocol'),
+    ],
+    transformations=[
+        ('backends[].group', path_simplifier.ScopedSuffix),
+    ],
+    editables=[
+        'backends',
+        'description',
+        'enableCDN',
+        'sessionAffinity',
+        'affinityCookieTTL',
+        'healthChecks',
+        'port',
+        'portName',
+        'protocol',
+        'timeoutSec',
+    ],)
 
 
 def _GetSpecsForVersion(api_version):

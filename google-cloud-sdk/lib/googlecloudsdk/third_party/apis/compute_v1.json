@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20160308",
+ "revision": "20160314",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -472,10 +472,6 @@
        "compute.instanceGroups.insert"
       ]
      }
-    },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
     },
     "selfLink": {
      "type": "string",
@@ -1307,6 +1303,17 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "DisksResizeRequest": {
+   "id": "DisksResizeRequest",
+   "type": "object",
+   "properties": {
+    "sizeGb": {
+     "type": "string",
+     "description": "The new size of the persistent disk, which is specified in GB.",
+     "format": "int64"
     }
    }
   },
@@ -2319,10 +2326,6 @@
      "type": "string",
      "description": "The URL of the network to which all instances in the instance group belong."
     },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
-    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this instance group. The server generates this URL."
@@ -2474,10 +2477,6 @@
      "items": {
       "$ref": "NamedPort"
      }
-    },
-    "region": {
-     "type": "string",
-     "description": "The name of the region where the multi-zonal managed instance group is located."
     },
     "selfLink": {
      "type": "string",
@@ -7678,6 +7677,50 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "resize": {
+     "id": "compute.disks.resize",
+     "path": "{project}/zones/{zone}/disks/{disk}/resize",
+     "httpMethod": "POST",
+     "description": "Resizes the specified persistent disk.",
+     "parameters": {
+      "disk": {
+       "type": "string",
+       "description": "The name of the persistent disk.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "disk"
+     ],
+     "request": {
+      "$ref": "DisksResizeRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }

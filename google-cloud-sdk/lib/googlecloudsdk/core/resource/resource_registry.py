@@ -599,6 +599,18 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.targetSslProxies': ResourceInfo(
+        cache_command='compute target-ssl-proxies list',
+        list_format="""
+          table(
+            name,
+            sslCertificates.map().basename().list():label=SSL_CERTIFICATES
+            service.basename()
+            proxyHeader
+          )
+        """,
+    ),
+
     'compute.targetInstances': ResourceInfo(
         cache_command='compute target-instances list',
         list_format="""

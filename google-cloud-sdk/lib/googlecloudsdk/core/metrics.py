@@ -329,8 +329,8 @@ class _MetricsCollector(object):
       self._metrics = []
 
     # TODO(user): make this not depend on the file.
-    reporting_script_path = os.path.join(os.path.dirname(__file__),
-                                         'metrics_reporter.py')
+    reporting_script_path = os.path.realpath(
+        os.path.join(os.path.dirname(__file__), 'metrics_reporter.py'))
     execution_args = execution_utils.ArgsForPythonTool(
         reporting_script_path, temp_metrics_file.name)
 
