@@ -92,18 +92,16 @@ class Displayer(object):
     if any([self._GetFlag(flag) for flag in self._CORRUPT_FLAGS]):
       return
 
-    cacher = display_taps.UriCacher(cache_update_op, self._defaults)
-    self._resources = peek_iterable.Tapper(
-        self._resources, cacher.Tap, cacher.Done)
+    tap = display_taps.UriCacher(cache_update_op, self._defaults)
+    self._resources = peek_iterable.Tapper(self._resources, tap)
 
   def _AddFilterTap(self):
     """Taps a resource filter into self.resources if needed."""
     expression = self._GetFlag('filter')
     if not expression:
       return
-    filterer = display_taps.Filterer(expression, self._defaults)
-    self._resources = peek_iterable.Tapper(
-        self._resources, filterer.Tap, filterer.Done)
+    tap = display_taps.Filterer(expression, self._defaults)
+    self._resources = peek_iterable.Tapper(self._resources, tap)
 
   def _AddFlattenTap(self):
     """Taps one or more resource flatteners into self.resources if needed."""
@@ -115,12 +113,11 @@ class Displayer(object):
       for k in resource_lex.Lexer(key).Key():
         if k is None:
           # None represents a [] slice in resource keys.
-          flattener = display_taps.Flattener(flattened_key)
+          tap = display_taps.Flattener(flattened_key)
           # Apply the flatteners from left to right so the innermost flattener
           # flattens the leftmost slice. The outer flatteners can then access
           # the flattened keys to the left.
-          self._resources = peek_iterable.Tapper(
-              self._resources, flattener.Tap, flattener.Done)
+          self._resources = peek_iterable.Tapper(self._resources, tap)
         else:
           flattened_key.append(k)
 
@@ -129,18 +126,16 @@ class Displayer(object):
     limit = self._GetFlag('limit')
     if limit is None or limit < 0:
       return
-    limiter = display_taps.Limiter(limit)
-    self._resources = peek_iterable.Tapper(
-        self._resources, limiter.Tap, limiter.Done)
+    tap = display_taps.Limiter(limit)
+    self._resources = peek_iterable.Tapper(self._resources, tap)
 
   def _AddPageTap(self):
     """Taps a resource pager into self.resources if needed."""
     page_size = self._GetFlag('page_size')
     if page_size is None or page_size <= 0:
       return
-    pager = display_taps.Pager(page_size)
-    self._resources = peek_iterable.Tapper(
-        self._resources, pager.Tap, pager.Done)
+    tap = display_taps.Pager(page_size)
+    self._resources = peek_iterable.Tapper(self._resources, tap)
 
   def _GetResourceInfoFormat(self):
     """Determines the format from the resource registry if any.
@@ -276,6 +271,9 @@ class Displayer(object):
       # This will eventually be rare.
       log.info('Explict Display.')
       self._command.Display(self._args, self._resources)
+
+    # Resource display is done.
+    log.out.flush()
 
     # If the default format was used then display the epilog.
     if self._default_format_used:

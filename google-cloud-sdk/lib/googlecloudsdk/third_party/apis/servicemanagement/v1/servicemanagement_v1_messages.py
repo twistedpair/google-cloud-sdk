@@ -1256,11 +1256,11 @@ class MonitoredResourceDescriptor(_messages.Message):
       database is identified by values for the labels `"database_id"` and
       `"zone"`.
     name: Optional. The resource name of the monitored resource descriptor:
-      `"projects/<project_id>/monitoredResourceDescriptors/<type>"` where
-      &lt;type&gt; is the value of the `type` field in this object and
-      &lt;project_id&gt; is a project ID that provides API-specific context
-      for accessing the type.  APIs that do not use project information can
-      use the resource name format `"monitoredResourceDescriptors/<type>"`.
+      `"projects/{project_id}/monitoredResourceDescriptors/{type}"` where
+      {type} is the value of the `type` field in this object and {project_id}
+      is a project ID that provides API-specific context for accessing the
+      type.  APIs that do not use project information can use the resource
+      name format `"monitoredResourceDescriptors/{type}"`.
     type: Required. The monitored resource type. For example, the type
       `"cloudsql_database"` represents databases in Google Cloud SQL.
   """

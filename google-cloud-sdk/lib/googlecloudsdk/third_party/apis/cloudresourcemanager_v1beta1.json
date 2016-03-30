@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "cloudresourcemanager:v1beta1",
   "name": "cloudresourcemanager",
+  "canonicalName": "Cloud Resource Manager",
   "version": "v1beta1",
   "revision": "0",
   "title": "Google Cloud Resource Manager API",

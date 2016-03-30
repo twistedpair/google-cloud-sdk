@@ -69,7 +69,7 @@ class AndroidInstrumentationTest(_messages.Message):
     testTargets: Each target must be fully qualified with the package name or
       class name, in one of these formats:  - "package package_name"  - "class
       package_name.class_name"  - "class package_name.class_name#method_name"
-      If empty, all targets in the module will be run.
+      Optional, if empty, all targets in the module will be run.
   """
 
   appApk = _messages.MessageField('FileReference', 1)
@@ -171,8 +171,8 @@ class AndroidMonkeyTest(_messages.Message):
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
     eventCount: Number of random monkey events (e.g. clicks, touches) to
-      generate. Defaults to 2000.
-    eventDelay: Fixed delay between events. Defaults to 10ms.
+      generate. Optional, defaults to 2000.
+    eventDelay: Fixed delay between events. Optional, defaults to 10ms.
     randomSeed: Seed value for pseudo-random number generator. Note that,
       although specifying a seed causes the monkey to generate the same
       sequence of events, it does not guarantee that a particular outcome will
@@ -253,13 +253,28 @@ class AndroidVersion(_messages.Message):
   versionString = _messages.StringField(7)
 
 
+class Apk(_messages.Message):
+  """An Android package file to install.
+
+  Fields:
+    location: The path to an APK to be installed on the device before the test
+      begins. Optional
+    packageName: The java package for the APK to be installed. Optional, value
+      is determined by examining the application's manifest.
+  """
+
+  location = _messages.MessageField('FileReference', 1)
+  packageName = _messages.StringField(2)
+
+
 class BlobstoreFile(_messages.Message):
   """Reference to a blob in Blobstore.
 
   Fields:
     blobId: A blob ID. Example: /android_test/blobs/4e9AAT9sqHRY_oBBzIKHSEFgg
+      Required
     md5Hash: The MD5 hash of the referenced blob. (This is necessary to create
-      a Bigstore object directly from the Blobstore reference.)
+      a Bigstore object directly from the Blobstore reference.) Required
   """
 
   blobId = _messages.StringField(1)
@@ -361,7 +376,7 @@ class ClientInfo(_messages.Message):
   """Information about the client which invoked the test.
 
   Fields:
-    name: Client name, such as gcloud.
+    name: Client name, such as gcloud. Required
   """
 
   name = _messages.StringField(1)
@@ -576,7 +591,7 @@ class GoogleCloudStorage(_messages.Message):
   Fields:
     gcsPath: The path to a directory in GCS that will eventually contain the
       results for this test. The requesting user must have write access on the
-      bucket in the supplied path.
+      bucket in the supplied path. Required
   """
 
   gcsPath = _messages.StringField(1)
@@ -678,11 +693,11 @@ class ObbFile(_messages.Message):
   """A ObbFile object.
 
   Fields:
-    obb: Opaque Binary Blob (OBB) file(s) to install on the device
+    obb: Opaque Binary Blob (OBB) file(s) to install on the device Required
     obbFileName: OBB file name which must conform to the format as specified
       by Android e.g. [main|patch].0300110.com.example.android.obb which will
       be installed into   <shared-storage>/Android/obb/<package-name>/ on the
-      device
+      device Required
   """
 
   obb = _messages.MessageField('FileReference', 1)
@@ -708,7 +723,7 @@ class RegularFile(_messages.Message):
   """A file or directory to install on the device before the test starts
 
   Fields:
-    content: A FileReference attribute.
+    content: Required
     devicePath: Where to put the content on the device. Must be an absolute,
       whitelisted path. If it exists, it will be replaced. The following
       device-side directories and any of their subdirectories are whitelisted:
@@ -721,7 +736,7 @@ class RegularFile(_messages.Message):
       copy the file there.  <p> It is strongly advised to use the <a href=
       "http://developer.android.com/reference/android/os/Environment.html">
       Environment API</a> in app and test code to access files on the device
-      in a portable way.
+      in a portable way. Required
   """
 
   content = _messages.MessageField('FileReference', 1)
@@ -736,8 +751,8 @@ class ResultStorage(_messages.Message):
     toolResultsExecution: The tool results execution that results are written
       to. @OutputOnly
     toolResultsHistory: The tool results history that contains the tool
-      results execution that results are written to.  If not provided the
-      service will choose an appropriate value.
+      results execution that results are written to.  Optional, if not
+      provided the service will choose an appropriate value.
   """
 
   googleCloudStorage = _messages.MessageField('GoogleCloudStorage', 1)
@@ -927,7 +942,7 @@ class TestMatrix(_messages.Message):
       (e.g., FINISHED) @OutputOnly
 
   Fields:
-    clientInfo: Information about the client which invoked the test.
+    clientInfo: Information about the client which invoked the test. Optional
     environmentMatrix: How the host machine(s) are configured. Required
     projectId: The cloud project that owns the test matrix. @OutputOnly
     resultStorage: Where the results for the matrix are written. Required
@@ -1000,14 +1015,17 @@ class TestSetup(_messages.Message):
   """A description of how to set up the device prior to running the test
 
   Fields:
+    additionalApks: APKs to install in addition to those being directly
+      tested. Currently capped at three. Optional
     directoriesToPull: The directories on the device to upload to GCS at the
       end of the test; they must be absolute, whitelisted paths. Refer to
-      RegularFile for whitelisted paths.
-    filesToPush: A DeviceFile attribute.
+      RegularFile for whitelisted paths. Optional
+    filesToPush: Optional
   """
 
-  directoriesToPull = _messages.StringField(1, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 2, repeated=True)
+  additionalApks = _messages.MessageField('Apk', 1, repeated=True)
+  directoriesToPull = _messages.StringField(2, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 3, repeated=True)
 
 
 class TestSpecification(_messages.Message):
@@ -1023,9 +1041,9 @@ class TestSpecification(_messages.Message):
       might be reused. Many applications can be tested more effectively in the
       context of such an account. Default is false. Optional
     testSetup: Test setup requirements e.g. files to install, bootstrap
-      scripts
+      scripts Optional
     testTimeout: Max time a test execution is allowed to run before it is
-      automatically cancelled.
+      automatically cancelled. Optional, default is 5 min.
   """
 
   androidInstrumentationTest = _messages.MessageField('AndroidInstrumentationTest', 1)
@@ -1281,8 +1299,8 @@ class ToolResultsHistory(_messages.Message):
   """Represents a tool results history resource.
 
   Fields:
-    historyId: A tool results history ID.
-    projectId: The cloud project that owns the tool results history.
+    historyId: A tool results history ID. Required
+    projectId: The cloud project that owns the tool results history. Required
   """
 
   historyId = _messages.StringField(1)

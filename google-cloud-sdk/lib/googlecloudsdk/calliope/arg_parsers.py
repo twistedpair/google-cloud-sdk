@@ -320,18 +320,27 @@ _KV_PAIR_DELIMITER = '='
 class HostPort(object):
   """A class for holding host and port information."""
 
+  IPV4_OR_HOST_PATTERN = r'^(?P<address>[\w\d\.-]+)?(:|:(?P<port>[\d]+))?$'
+  # includes hostnames
+  IPV6_PATTERN = r'^(\[(?P<address>[\w\d:]+)\])(:|:(?P<port>[\d]+))?$'
+
   def __init__(self, host, port):
     self.host = host
     self.port = port
 
   @staticmethod
-  def Parse(s):
+  def Parse(s, ipv6_enabled=False):
     """Parse the given string into a HostPort object.
 
     This can be used as an argparse type.
 
     Args:
-      s: str, The string to parse.
+      s: str, The string to parse. If ipv6_enabled and host is an IPv6 address,
+      it should be placed in square brackets: e.g.
+        [2001:db8:0:0:0:ff00:42:8329]
+        or
+        [2001:db8:0:0:0:ff00:42:8329]:8080
+      ipv6_enabled: boolean, If True then accept IPv6 addresses.
 
     Raises:
       ArgumentTypeError: If the string is not valid.
@@ -341,13 +350,25 @@ class HostPort(object):
     """
     if not s:
       return HostPort(None, None)
-    if ':' not in s:
-      return HostPort(s, None)
-    parts = s.split(':')
-    if len(parts) > 2:
-      raise ArgumentTypeError(
-          _GenerateErrorMessage('Failed to parse host and port', user_input=s))
-    return HostPort(parts[0] or None, parts[1] or None)
+
+    match = re.match(HostPort.IPV4_OR_HOST_PATTERN, s, re.UNICODE)
+    if ipv6_enabled and not match:
+      match = re.match(HostPort.IPV6_PATTERN, s, re.UNICODE)
+      if not match:
+        raise ArgumentTypeError(_GenerateErrorMessage(
+            'Failed to parse host and port. Expected format \n\n'
+            '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
+            'or\n\n'
+            '  [IPv6_ADDRESS]:PORT\n\n'
+            '(where :PORT is optional).',
+            user_input=s))
+    elif not match:
+      raise ArgumentTypeError(_GenerateErrorMessage(
+          'Failed to parse host and port. Expected format \n\n'
+          '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
+          '(where :PORT is optional).',
+          user_input=s))
+    return HostPort(match.group('address'), match.group('port'))
 
 
 class Day(object):

@@ -782,6 +782,26 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # debug
+    'debug.snapshots': ResourceInfo(
+        list_format="""
+          table(id, location, short_status():label=STATUS,
+                consoleViewUrl:label=VIEW)
+        """
+    ),
+
+    'debug.logpoints': ResourceInfo(
+        list_format="""
+          table(id, location, logLevel:label=LEVEL, short_status():label=STATUS)
+        """
+    ),
+
+    'debug.targets': ResourceInfo(
+        list_format="""
+          table(name, target_id:label=ID, description)
+        """
+    ),
+
     # deployment manager v2
 
     'deploymentmanager.deployments': ResourceInfo(
@@ -950,6 +970,47 @@ RESOURCE_REGISTRY = {
         simple_format="""
           value(
             serviceName
+          )
+        """,
+    ),
+
+    # service registry
+
+    'service_registry.endpoints': ResourceInfo(
+        async_collection='service_registry.operations',
+        list_format="""
+          table[empty-legend="No endpoints were found in your project"](
+            name,
+            description,
+            state,
+            addresses[].address:label=ADDRESSES
+          )
+        """,
+        simple_format="""
+          [legend-log=status,
+           empty-legend="No endpoints were found in your project"],
+           value(
+            name
+          )
+        """,
+    ),
+
+    'service_registry.operations': ResourceInfo(
+        list_format="""
+          table[empty-legend="No operations were found in your project"](
+            name,
+            operationType:label=TYPE,
+            status,
+            targetLink.basename():label=TARGET,
+            insertTime.date(format="%Y-%m-%d"):label=DATE,
+            error.errors.group(code, message)
+          )
+        """,
+        simple_format="""
+          [legend-log=status,
+           empty-legend="No operations were found in your project"]
+          value(
+            name
           )
         """,
     ),

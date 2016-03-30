@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Package marker file."""
+"""Code for dealing with resources: printing, parsing, registry."""

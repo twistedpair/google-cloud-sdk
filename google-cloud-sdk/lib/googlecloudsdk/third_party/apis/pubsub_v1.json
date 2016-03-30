@@ -246,14 +246,14 @@
           ]
         },
         "in": {
-          "description": "The rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in this\nset of entries.",
+          "description": "If one or more 'in' clauses are specified, the rule matches if\nthe PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "notIn": {
-          "description": "The rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is not in this\nset of entries.\nThe format for in and not_in entries is the same as for members in a\nBinding (see google\/iam\/v1\/policy.proto).",
+          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries is the same as for members in a\nBinding (see google\/iam\/v1\/policy.proto).",
           "type": "array",
           "items": {
             "type": "string"

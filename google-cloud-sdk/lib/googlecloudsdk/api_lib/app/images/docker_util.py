@@ -245,7 +245,12 @@ class DockerHost(object):
     """
     if self._remote:
       self._vm = Provision(self._cli, self._name, self._zone, self._project)
-      kwargs = containers.KwargsFromEnv(self._vm.host, self._vm.cert_dir, True)
+      try:
+        kwargs = containers.KwargsFromEnv(self._vm.host, self._vm.cert_dir,
+                                          True)
+      except:
+        self.__exit__(None, None, None)
+        raise
     else:
       kwargs = containers.KwargsFromEnv(os.environ.get('DOCKER_HOST'),
                                         os.environ.get('DOCKER_CERT_PATH'),

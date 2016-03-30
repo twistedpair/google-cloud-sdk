@@ -134,7 +134,8 @@ class HTMLRenderer(renderer.Renderer):
     # Finally, any remaining spaces are converted to '-'.
     m = re.match(r'(-- |\[)*'
                  '(<[^>]*>)*'
-                 '(?P<anchor>-[-_a-z0-9]+|[_A-Za-z.0-9 ]+|[-.0-9]+)'
+                 '(?P<anchor>-[-_a-z0-9]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
+                 '[-.0-9]+)'
                  '.*',
                  name)
     if m:

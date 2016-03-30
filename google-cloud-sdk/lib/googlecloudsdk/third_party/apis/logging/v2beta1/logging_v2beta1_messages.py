@@ -994,11 +994,11 @@ class MonitoredResourceDescriptor(_messages.Message):
       database is identified by values for the labels `"database_id"` and
       `"zone"`.
     name: Optional. The resource name of the monitored resource descriptor:
-      `"projects/<project_id>/monitoredResourceDescriptors/<type>"` where
-      &lt;type&gt; is the value of the `type` field in this object and
-      &lt;project_id&gt; is a project ID that provides API-specific context
-      for accessing the type.  APIs that do not use project information can
-      use the resource name format `"monitoredResourceDescriptors/<type>"`.
+      `"projects/{project_id}/monitoredResourceDescriptors/{type}"` where
+      {type} is the value of the `type` field in this object and {project_id}
+      is a project ID that provides API-specific context for accessing the
+      type.  APIs that do not use project information can use the resource
+      name format `"monitoredResourceDescriptors/{type}"`.
     type: Required. The monitored resource type. For example, the type
       `"cloudsql_database"` represents databases in Google Cloud SQL.
   """
@@ -1018,10 +1018,19 @@ class ReadLogEntriesRequest(_messages.Message):
   completes.  Only the first use case is supported.
 
   Fields:
+    batchSize: Optional. The number of LogEntrys to return in each streamed
+      response. If unspecified, the default will be 10.
     filter: Optional. An [advanced logs
       filter](/logging/docs/view/advanced_filters). The response includes only
       entries that match the filter. If `filter` is empty, then all entries in
       all logs are retrieved.
+    maxResponseInterval: Optional. The maximum time between successive
+      streamed responses. A response will be sent every max_response_interval
+      even if page_size entries have not yet been accumulated provided that
+      either some entries have been accumulated OR the
+      last_observed_entry_timestamp / resume_token has changed. (i.e. a
+      response containg 0 entries is allowed) If unspecified, the default will
+      be 1 second.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
       The first option returns entries in order of increasing values of
@@ -1031,25 +1040,26 @@ class ReadLogEntriesRequest(_messages.Message):
     projectIds: Required. A list of project ids from which to retrieve log
       entries. Example: `"my-project-id"`.
     resumeToken: Optional. If the `resumeToken` parameter is supplied, then
-      the next page of results is retrieved. The `resumeToken` parameter must
+      the next batch of results is retrieved. The `resumeToken` parameter must
       be set to the value from the previous response.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  projectIds = _messages.StringField(3, repeated=True)
-  resumeToken = _messages.StringField(4)
+  batchSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  filter = _messages.StringField(2)
+  maxResponseInterval = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  projectIds = _messages.StringField(5, repeated=True)
+  resumeToken = _messages.StringField(6)
 
 
 class ReadLogEntriesResponse(_messages.Message):
   """Result returned from `ReadLogEntries`.
 
   Fields:
-    entries: A list of log entries. If the list is empty, there are no more
-      entries in the stream.
+    entries: A list of log entries - may be empty.
     lastObservedEntryTimestamp: The timestamp of the last log entry that was
       examined before returning this response. This can be used to observe
-      progress between successive queries, in particular when only a page
+      progress between successive queries, in particular when only a resume
       token is returned.
     resumeToken: A token to use to resume from this position of the stream.
       Note that even if there are no entries, it might still be possible to

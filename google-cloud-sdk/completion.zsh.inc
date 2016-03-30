@@ -1,4 +1,5 @@
-autoload bashcompinit
+autoload -Uz compinit bashcompinit
+compinit
 bashcompinit
 
 _python_argcomplete() {

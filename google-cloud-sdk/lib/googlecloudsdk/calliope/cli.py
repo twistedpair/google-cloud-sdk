@@ -442,7 +442,7 @@ class CLILoader(object):
       top_element.ai.add_argument(
           '-v', '--version',
           do_not_propagate=True,
-          is_common=True,
+          category=calliope_base.COMMONLY_USED_FLAGS,
           action=actions.FunctionExitAction(self.__version_func),
           help='Print version information and exit. This flag is only available'
           ' at the global level.')
@@ -450,7 +450,7 @@ class CLILoader(object):
     configuration_flag = top_element.ai.add_argument(
         '--configuration',
         metavar='CONFIGURATION',
-        is_common=True,
+        category=calliope_base.COMMONLY_USED_FLAGS,
         help='The configuration to use for this command invocation.')
     configuration_flag.detailed_help = (
         'The configuration to use for this command invocation. For more '
@@ -463,7 +463,7 @@ class CLILoader(object):
         '--verbosity',
         choices=log.OrderedVerbosityNames(),
         default=None,
-        is_common=True,
+        category=calliope_base.COMMONLY_USED_FLAGS,
         help=(
             'Override the default verbosity for this command.  This must be '
             'a standard logging verbosity level: [{values}] (Default: '
@@ -490,7 +490,7 @@ class CLILoader(object):
     format_flag = top_element.ai.add_argument(
         '--format',
         default=None,
-        is_common=True,
+        category=calliope_base.COMMONLY_USED_FLAGS,
         help='The format for printing command output resources.')
     format_flag.detailed_help = """\
         Sets the format for printing command output resources. The default is a

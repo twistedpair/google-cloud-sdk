@@ -19,7 +19,7 @@ from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
 
-MAX_WAIT_MS = 380000
+MAX_WAIT_MS = 620000
 WAIT_CEILING_MS = 2000
 SLEEP_MS = 1000
 
@@ -55,7 +55,7 @@ def _WaitForOperation(client, get_request, message):
   * we wait 1s (jitter is also 1s)
   * we query service
   * if the operation is not finished we loop to first point
-  * wait limit is 380s - if we get to that point it means something is wrong
+  * wait limit is 620s - if we get to that point it means something is wrong
         and we can throw an exception
 
   Args:
@@ -67,7 +67,7 @@ def _WaitForOperation(client, get_request, message):
     True if the operation succeeded without error.
 
   Raises:
-    FunctionsError: If the operation takes more than 380s.
+    FunctionsError: If the operation takes more than 620s.
   """
 
   with console_io.ProgressTracker(message, autotick=False) as pt:

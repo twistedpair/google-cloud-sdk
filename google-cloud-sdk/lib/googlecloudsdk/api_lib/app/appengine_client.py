@@ -21,7 +21,6 @@ import urllib2
 from googlecloudsdk.api_lib.app import logs_requestor
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
-from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -77,13 +76,18 @@ class AppengineClient(object):
     self.oauth2_refresh_token = None
     self.oauth_scopes = APPCFG_SCOPES
     self.authenticate_service_account = False
+    self.client_id = None
+    self.client_secret = None
 
     account = properties.VALUES.core.account.Get()
     # This statement will raise a c_store.Error if there is a problem
     # fetching credentials.
     credentials = c_store.Load(account=account)
-    if (isinstance(credentials, c_devshell.DevshellCredentials) or
-        isinstance(credentials, c_service_account.ServiceAccountCredentials)):
+    if isinstance(credentials, c_service_account.ServiceAccountCredentials):
+      self.oauth2_access_token = credentials.access_token
+      self.client_id = credentials.client_id
+      self.client_secret = credentials.client_secret
+    elif isinstance(credentials, c_devshell.DevshellCredentials):
       # TODO(user): This passes the access token to use for API calls to
       # appcfg which means that commands that are longer than the lifetime
       # of the access token may fail - e.g. some long deployments.  The proper
@@ -91,12 +95,18 @@ class AppengineClient(object):
       # this code will go away then and the standard credentials flow will be
       # used.
       self.oauth2_access_token = credentials.access_token
+      self.client_id = None
+      self.client_secret = None
     elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
       # If we are on GCE, use the service account
       self.authenticate_service_account = True
+      self.client_id = None
+      self.client_secret = None
     else:
       # Otherwise use a stored refresh token
       self.oauth2_refresh_token = credentials.refresh_token
+      self.client_id = credentials.client_id
+      self.client_secret = credentials.client_secret
 
   def CleanupIndexes(self, index_yaml):
     """Removes unused datastore indexes.
@@ -382,11 +392,12 @@ class AppengineClient(object):
 
     # In this case, the get_user_credentials parameters to the RPC server
     # constructor is actually an OAuth2Parameters.
+
     get_user_credentials = (
         appengine_rpc_httplib2.HttpRpcServerOAuth2.OAuth2Parameters(
             access_token=self.oauth2_access_token,
-            client_id=config.CLOUDSDK_CLIENT_ID,
-            client_secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
             scope=APPCFG_SCOPES,
             refresh_token=self.oauth2_refresh_token,
             credential_file=None,

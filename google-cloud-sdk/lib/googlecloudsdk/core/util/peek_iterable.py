@@ -85,7 +85,7 @@ class Peeker(object):
 
 
 class TapInjector(object):
-  """Tap object injector."""
+  """Tap item injector."""
 
   def __init__(self, value, replace=False):
     self._value = value
@@ -98,6 +98,31 @@ class TapInjector(object):
   @property
   def is_replacement(self):
     return self._is_replacement
+
+
+class Tap(object):
+  """A Tapper Tap object."""
+
+  def Tap(self, item):
+    """Called on each item as it is fetched.
+
+    Args:
+      item: The current item to be tapped.
+
+    Returns:
+      True: The item is retained in the iterable.
+      False: The item is deleted from the iterable.
+      None: The item is deleted from the iterable and the iteration stops.
+      Injector(): Injector.value is injected into the iterable. If
+        Injector.is_replacement then the item is deleted from the iterable,
+        otherwise the item appears in the iterable after the injected value.
+    """
+    _ = item
+    return True
+
+  def Done(self):
+    """Called after the last item."""
+    pass
 
 
 class Tapper(object):
@@ -114,32 +139,24 @@ class Tapper(object):
   filter then it can filter and display a page before waiting for the next page.
 
   Example:
-    iterable = Tapper(iterable, call_on_each, call_after_last)
-    # The next statement calls call_on_each(item) for each item and
-    # call_after_last() after the last item.
+    tap = Tap()
+    iterable = Tapper(iterable, tap)
+    # The next statement calls tap.Tap(item) for each item and
+    # tap.Done() after the last item.
     list(iterable)
 
   Attributes:
     _iterable: The original iterable.
-    _call_on_each: A method called on each item as it is fetched. The return
-      value determines what happens to the current item:
-        True: The item is retained in the iterable.
-        False: The item is deleted from the iterable.
-        None: The item is deleted from the iterable and the iteration stops.
-        Injector(): Injector.value is injected into the iterable. If
-          Injector.is_replacement then the item is deleted from the iterable,
-          otherwise the item appears in the iterable after the injected value.
-    _call_after_last: A method called after the last item.
+    _tap: The Tap object.
     _stop: If True then the object is not iterable and it has already been
       returned.
     _injected: True if the previous _call_on_each injected a new item.
     _injected_value: The value to return next.
   """
 
-  def __init__(self, iterable, call_on_each=None, call_after_last=None):
+  def __init__(self, iterable, tap):
     self._iterable = iterable
-    self._call_on_each = call_on_each
-    self._call_after_last = call_after_last
+    self._tap = tap
     self._stop = False
     self._injected = False
     self._injected_value = None
@@ -158,8 +175,7 @@ class Tapper(object):
     except AttributeError:
       pass
     except StopIteration:
-      if self._call_after_last:
-        self._call_after_last()
+      self._tap.Done()
       raise
     try:
       # Object is a list.
@@ -167,27 +183,22 @@ class Tapper(object):
     except (AttributeError, KeyError, TypeError):
       pass
     except IndexError:
-      if self._call_after_last:
-        self._call_after_last()
+      self._tap.Done()
       raise StopIteration
     # Object is not iterable -- treat it as the only item.
     if self._iterable is None or self._stop:
-      if self._call_after_last:
-        self._call_after_last()
+      self._tap.Done()
       raise StopIteration
     self._stop = True
     return self._iterable
 
   def next(self):
-    """Gets the next item, calls _call_on_each on it, and returns it."""
+    """Gets the next item, calls _tap.Tap() on it, and returns it."""
     while True:
       item = self._NextItem()
-      if not self._call_on_each:
-        return item
-      inject_or_keep = self._call_on_each(item)
+      inject_or_keep = self._tap.Tap(item)
       if inject_or_keep is None:
-        if self._call_after_last:
-          self._call_after_last()
+        self._tap.Done()
         raise StopIteration
       if isinstance(inject_or_keep, TapInjector):
         if not inject_or_keep.is_replacement:

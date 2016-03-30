@@ -1490,7 +1490,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Optional. The resource name of the monitored resource descriptor:\n`\"projects\/<project_id>\/monitoredResourceDescriptors\/<type>\"` where\n&lt;type&gt; is the value of the `type` field in this object and\n&lt;project_id&gt; is a project ID that provides API-specific context for\naccessing the type.  APIs that do not use project information can use the\nresource name format `\"monitoredResourceDescriptors\/<type>\"`.",
+          "description": "Optional. The resource name of the monitored resource descriptor:\n`\"projects\/{project_id}\/monitoredResourceDescriptors\/{type}\"` where\n{type} is the value of the `type` field in this object and\n{project_id} is a project ID that provides API-specific context for\naccessing the type.  APIs that do not use project information can use the\nresource name format `\"monitoredResourceDescriptors\/{type}\"`.",
           "type": "string"
         },
         "type": {

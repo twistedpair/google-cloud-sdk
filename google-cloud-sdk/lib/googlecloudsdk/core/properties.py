@@ -23,7 +23,6 @@ import threading
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import named_configs
-from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import files
 
@@ -598,6 +597,18 @@ def _GetGCEProject():
     return c_gce.Metadata().Project()
 
 
+def _GetDevshellAccount():
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import devshell as c_devshell
+  return c_devshell.DefaultAccount()
+
+
+def _GetDevshellProject():
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import devshell as c_devshell
+  return c_devshell.Project()
+
+
 class _SectionCore(_Section):
   """Contains the properties for the 'core' section."""
 
@@ -608,7 +619,7 @@ class _SectionCore(_Section):
         help_text='The account gcloud should use for authentication.  You can '
         'run `gcloud auth list` to see the accounts you currently have '
         'available.',
-        callbacks=[c_devshell.DefaultAccount, _GetGCEAccount])
+        callbacks=[_GetDevshellAccount, _GetGCEAccount])
     self.disable_color = self._AddBool(
         'disable_color',
         help_text='If True, color will not be used when printing messages in '
@@ -655,6 +666,10 @@ class _SectionCore(_Section):
         'support.')
     self.trace_email = self._Add('trace_email', hidden=True)
     self.trace_log = self._Add('trace_log', hidden=True)
+    self.pass_credentials_to_gsutil = self._AddBool(
+        'pass_credentials_to_gsutil',
+        help_text='If True, pass the configured Cloud SDK authentication '
+                  'to gsutil.')
 
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
@@ -689,7 +704,7 @@ class _SectionCore(_Section):
         'by default.  This can be overridden by using the global `--project` '
         'flag.',
         validator=ProjectValidator,
-        callbacks=[lambda: c_devshell.Project(), _GetGCEProject],
+        callbacks=[_GetDevshellProject, _GetGCEProject],
         resource='cloudresourcemanager.projects',
         resource_command_path='beta.projects')
     self.credentialed_hosted_repo_domains = self._Add(
@@ -1544,10 +1559,11 @@ def GetMetricsEnvironment():
     return environment
 
   # No explicit environment defined, try to deduce it.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import devshell as c_devshell
   if c_devshell.IsDevshellEnvironment():
     return 'devshell'
 
-  # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core.credentials import gce_cache
   if gce_cache.GetOnGCE(check_age=False):
     return 'GCE'

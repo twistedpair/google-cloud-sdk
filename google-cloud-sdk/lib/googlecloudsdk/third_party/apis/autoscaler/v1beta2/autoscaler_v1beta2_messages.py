@@ -494,7 +494,7 @@ class Zone(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#zone for zones.
     name: A string attribute.
     region: A string attribute.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: A string attribute.
     status: A string attribute.
   """
 

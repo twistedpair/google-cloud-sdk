@@ -6,7 +6,7 @@
   "version": "v1b3",
   "revision": "0",
   "title": "Google Dataflow API",
-  "description": "Google Cloud Dataflow is a simple, flexible, and powerful system you can use to perform data processing tasks.",
+  "description": "Develops and executes data processing patterns like ETL, batch computation, and continuous computation.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -440,6 +440,11 @@
         "workerHarnessContainerImage": {
           "description": "Docker container image that executes Dataflow worker harness, residing in\nGoogle Container Registry. Required.\n",
           "type": "string"
+        },
+        "numThreadsPerWorker": {
+          "description": "The number of threads per worker harness. If empty or unspecified, the\nservice will choose a number of threads (according to the number of cores\non the selected machine type for batch, or 1 by convention for streaming).",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2510,6 +2515,16 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "filter": {
+                  "description": "The kind of filter to use.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "ALL",
+                    "TERMINATED",
+                    "ACTIVE"
+                  ]
                 },
                 "view": {
                   "description": "Level of information requested in response. Default is SUMMARY.",

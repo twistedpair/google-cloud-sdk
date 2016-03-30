@@ -886,6 +886,8 @@ class BackendService(_messages.Message):
       instance groups referenced by this service. Required.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
+    region: [Output Only] URL of the region where the regional backend service
+      resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
     timeoutSec: How many seconds to wait for the backend before considering it
       a failed request. Default is 30 seconds.
@@ -914,8 +916,9 @@ class BackendService(_messages.Message):
   port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   portName = _messages.StringField(11)
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
-  selfLink = _messages.StringField(13)
-  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  timeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):

@@ -188,7 +188,7 @@ class DataflowV1b3(base_api.BaseApiClient):
               method_id=u'dataflow.projects.jobs.list',
               ordered_params=[u'projectId'],
               path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken', u'view'],
+              query_params=[u'filter', u'pageSize', u'pageToken', u'view'],
               relative_path=u'v1b3/projects/{projectId}/jobs',
               request_field='',
               request_type_name=u'DataflowProjectsJobsListRequest',

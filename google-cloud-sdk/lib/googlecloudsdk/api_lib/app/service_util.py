@@ -98,62 +98,24 @@ def _ValidateServicesAreSubset(filtered_services, all_services):
                                                  all_services)
 
 
-def ParseServiceResourcePaths(paths, project):
-  """Parse the list of resource paths specifying services.
-
-  Args:
-    paths: The list of resource paths by which to filter.
-    project: The current project. Used for validation.
-
-  Returns:
-    list of Service
-
-  Raises:
-    ServiceValidationError: If not all services are valid resource paths for the
-      current project.
-  """
-  if not all('/' in path for path in paths):
-    raise ServiceValidationError('If you provide any resource path as an '
-                                 'argument, all arguments must be resource '
-                                 'paths.')
-  services = map(Service.FromResourcePath, paths)
-
-  for service in services:
-    if service.project and service.project != project:
-      raise ServiceValidationError(
-          'All services must be in the current project.')
-    service.project = project
-  return services
-
-
-def GetMatchingServices(all_services, args_services, project):
+def GetMatchingServices(all_services, args_services):
   """Return a list of services to act on based on user arguments.
 
   Args:
     all_services: list of Service representing all services in the project.
-    args_services: list of string, service ID/resource paths to filter for.
+    args_services: list of string, service IDs to filter for.
       If empty, match all services.
-    project: the current project ID
 
   Returns:
     list of matching Service
 
   Raises:
     ServiceValidationError: If an improper combination of arguments is given
-      (ex. a resource path with an incorrect project is provided).
   """
   if not args_services:
     args_services = [s.id for s in all_services]
-  # If resource path(s) are given, use those. Otherwise, filter all available
-  # services based on the given service specifiers.
-  if any('/' in service for service in args_services):
-    services = ParseServiceResourcePaths(args_services, project)
-    _ValidateServicesAreSubset([s.id for s in services],
-                               [s.id for s in all_services])
-  else:
-    _ValidateServicesAreSubset(args_services, [s.id for s in all_services])
-    services = [s for s in all_services if s.id in args_services]
-  return services
+  _ValidateServicesAreSubset(args_services, [s.id for s in all_services])
+  return [s for s in all_services if s.id in args_services]
 
 
 def ParseTrafficAllocations(args_allocations, split_method):

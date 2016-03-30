@@ -106,6 +106,9 @@ if [ -z "$CLOUDSDK_PYTHON" ]; then
   # if python2 exists then plain python may point to a version != 2
   if which python2 >/dev/null; then
     CLOUDSDK_PYTHON=python2
+  elif which python2.7 >/dev/null; then
+    # this is what some OS X versions call their built-in Python
+    CLOUDSDK_PYTHON=python2.7
   else
     CLOUDSDK_PYTHON=python
   fi

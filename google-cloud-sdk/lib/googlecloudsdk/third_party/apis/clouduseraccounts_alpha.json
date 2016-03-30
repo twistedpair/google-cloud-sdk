@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20160314",
+ "revision": "20160323",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -782,7 +782,7 @@
     },
     "ins": {
      "type": "array",
-     "description": "The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set of entries.",
+     "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.",
      "items": {
       "type": "string"
      }
@@ -796,7 +796,7 @@
     },
     "notIns": {
      "type": "array",
-     "description": "The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in this set of entries.",
+     "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.",
      "items": {
       "type": "string"
      }

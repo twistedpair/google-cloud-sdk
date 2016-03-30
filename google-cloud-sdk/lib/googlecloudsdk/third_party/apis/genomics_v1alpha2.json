@@ -13,7 +13,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/genomics/",
   "protocol": "rest",
   "rootUrl": "https://genomics.googleapis.com/",
   "servicePath": "",
@@ -344,6 +344,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "bootDiskSizeGb": {
+          "description": "Optional. The size of the boot disk. Can be overridden at runtime.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

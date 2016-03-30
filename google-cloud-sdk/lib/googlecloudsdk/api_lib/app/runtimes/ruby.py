@@ -124,7 +124,7 @@ DOCKERFILE_NO_MORE_PACKAGES = textwrap.dedent("""\
 DOCKERFILE_GEM_INSTALL = textwrap.dedent("""\
     # Install required gems.
     COPY Gemfile Gemfile.lock /app/
-    RUN bundle install && rbenv rehash
+    RUN bundle install --deployment && rbenv rehash
     """)
 DOCKERFILE_ENTRYPOINT = textwrap.dedent("""\
     # Start application on port 8080.

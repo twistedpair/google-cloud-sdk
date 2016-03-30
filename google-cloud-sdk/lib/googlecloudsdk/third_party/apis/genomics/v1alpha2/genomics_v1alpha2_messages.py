@@ -663,6 +663,8 @@ class PipelineResources(_messages.Message):
   """The system resources for the pipeline run.
 
   Fields:
+    bootDiskSizeGb: Optional. The size of the boot disk. Can be overridden at
+      runtime.
     disks: Disks to attach.
     minimumCpuCores: Required at create time; optional at run time. The
       minimum number of cores to use.
@@ -675,11 +677,12 @@ class PipelineResources(_messages.Message):
       creation will restricted. If empty, any zone may be chosen.
   """
 
-  disks = _messages.MessageField('Disk', 1, repeated=True)
-  minimumCpuCores = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minimumRamGb = _messages.FloatField(3)
-  preemptible = _messages.BooleanField(4)
-  zones = _messages.StringField(5, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  disks = _messages.MessageField('Disk', 2, repeated=True)
+  minimumCpuCores = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimumRamGb = _messages.FloatField(4)
+  preemptible = _messages.BooleanField(5)
+  zones = _messages.StringField(6, repeated=True)
 
 
 class RepeatedString(_messages.Message):

@@ -15,8 +15,17 @@
 """Utilities for building the dataflow CLI."""
 
 import json
+import re
 
 from googlecloudsdk.core import log
+
+# Regular expression to match only metrics from Dataflow. Currently, this should
+# match at least "dataflow" and "dataflow/v1b3". User metrics have an origin set
+# as /^user/.
+DATAFLOW_METRICS_RE = re.compile('^dataflow')
+
+# Regular expression to only match watermark metrics.
+WINDMILL_WATERMARK_RE = re.compile('^(.*)-windmill-(.*)-watermark')
 
 
 def GetErrorMessage(error):

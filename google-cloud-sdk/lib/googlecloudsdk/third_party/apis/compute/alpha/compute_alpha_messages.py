@@ -1020,6 +1020,7 @@ class BackendService(_messages.Message):
       only until the end of the browser session (or equivalent). The maximum
       allowed value for TTL is one day.
     backends: The list of backends that serve this BackendService.
+    connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -1049,6 +1050,8 @@ class BackendService(_messages.Message):
       instance groups referenced by this service. Required.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
+    region: [Output Only] URL of the region where the regional backend service
+      resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use.
     timeoutSec: How many seconds to wait for the backend before considering it
@@ -1084,20 +1087,22 @@ class BackendService(_messages.Message):
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enableCDN = _messages.BooleanField(5)
-  fingerprint = _messages.BytesField(6)
-  healthChecks = _messages.StringField(7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#backendService')
-  name = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(12)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
-  selfLink = _messages.StringField(14)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 15)
-  timeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enableCDN = _messages.BooleanField(6)
+  fingerprint = _messages.BytesField(7)
+  healthChecks = _messages.StringField(8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#backendService')
+  name = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(13)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 17)
+  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -4506,6 +4511,20 @@ class ComputeInstancesStopRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesSuspendRequest(_messages.Message):
+  """A ComputeInstancesSuspendRequest object.
+
+  Fields:
+    instance: Name of the instance resource to suspend.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
   """A ComputeInstancesTestIamPermissionsRequest object.
 
@@ -7729,6 +7748,17 @@ class Condition(_messages.Message):
   sys = _messages.EnumField('SysValueValuesEnum', 4)
   value = _messages.StringField(5)
   values = _messages.StringField(6, repeated=True)
+
+
+class ConnectionDraining(_messages.Message):
+  """Message containing connection draining configuration.
+
+  Fields:
+    drainingTimeoutSec: Time for which instance will be drained (not accept
+      new connections, but still work to finish started).
+  """
+
+  drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class CustomerEncryptionKey(_messages.Message):
@@ -12773,12 +12803,12 @@ class Rule(_messages.Message):
     action: Required
     conditions: Additional restrictions that must be met
     description: Human-readable description of the rule.
-    ins: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set
-      of entries.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
     logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
       any entries that match the LOG action.
-    notIns: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in
-      this set of entries.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
     permissions: A permission is a string of form '..' (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.

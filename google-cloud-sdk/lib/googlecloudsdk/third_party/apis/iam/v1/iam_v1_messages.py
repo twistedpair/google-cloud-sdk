@@ -252,7 +252,7 @@ class IamProjectsServiceAccountsCreateRequest(_messages.Message):
     createServiceAccountRequest: A CreateServiceAccountRequest resource to be
       passed as the request body.
     name: Required. The resource name of the project associated with the
-      service accounts, such as "projects/123"
+      service accounts, such as "projects/my-project-123"
   """
 
   createServiceAccountRequest = _messages.MessageField('CreateServiceAccountRequest', 1)
@@ -382,7 +382,7 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the project associated with the
-      service accounts, such as "projects/123"
+      service accounts, such as "projects/my-project-123"
     pageSize: Optional limit on the number of service accounts to include in
       the response. Further accounts can subsequently be obtained by including
       the [ListServiceAccountsResponse.next_page_token] in a subsequent
@@ -590,6 +590,7 @@ class Role(_messages.Message):
   """A role in the Identity and Access Management API.
 
   Fields:
+    apiTokens: A string attribute.
     description: Optional.  A human-readable description for the role.
     name: The name of the role.  Examples of roles names are: "roles/editor",
       "roles/viewer" and "roles/logging.viewer"
@@ -597,9 +598,10 @@ class Role(_messages.Message):
       limited to 100 UTF-8 bytes.
   """
 
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  title = _messages.StringField(3)
+  apiTokens = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class Rule(_messages.Message):
@@ -612,13 +614,14 @@ class Rule(_messages.Message):
     action: Required
     conditions: Additional restrictions that must be met
     description: Human-readable description of the rule.
-    in_: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set
-      of entries.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
     logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
       any entries that match the LOG action.
-    notIn: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in this
-      set of entries. The format for in and not_in entries is the same as for
-      members in a Binding (see google/iam/v1/policy.proto).
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries is the same as for members in a Binding (see
+      google/iam/v1/policy.proto).
     permissions: A permission is a string of form '<service>.<resource
       type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
       permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches

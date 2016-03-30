@@ -22,7 +22,7 @@ and timestamps:
          <= FormatDateTime <=          <= GetDateTimeFromTimeStamp <=
 
 GetTimeZone(str) returns the tzinfo object for a timezone name. It handles
-abbreviations, IANA timzone names, and on Windows translates timezone names to
+abbreviations, IANA timezone names, and on Windows translates timezone names to
 the closest Windows TimeZone registry equivalent.
 
 LocalizeDateTime(datetime, tzinfo) returns a datetime object relative to the
@@ -171,7 +171,7 @@ class _TzInfoOrOffsetGetter(object):
 
   Attributes:
     _timezone_was_specified: True if the parsed date/time string contained
-      an explicit timzone name or offset.
+      an explicit timezone name or offset.
   """
 
   def __init__(self):
@@ -180,12 +180,12 @@ class _TzInfoOrOffsetGetter(object):
   def Get(self, name, offset):
     """Returns the tzinfo for name or offset.
 
-    Used by dateutil.parser.parser() to convert timzone names and offsets.
+    Used by dateutil.parser.parser() to convert timezone names and offsets.
 
     Args:
       name: A timezone name or None to use offset. If offset is also None then
         the local tzinfo is returned.
-      offset: A signed UTC timzone offset in seconds.
+      offset: A signed UTC timezone offset in seconds.
 
     Returns:
       The tzinfo for name or offset or the local tzinfo if both are None.
@@ -198,7 +198,7 @@ class _TzInfoOrOffsetGetter(object):
 
   @property
   def timezone_was_specified(self):
-    """True if the parsed date/time string contained an explicit timzone."""
+    """True if the parsed date/time string contained an explicit timezone."""
     return self._timezone_was_specified
 
 
@@ -212,7 +212,7 @@ def ParseDateTime(string, tzinfo=None):
   Returns:
     A datetime.datetime object for the given date/time string.
   """
-  # Use tzgetter to determine if string contains an explicit timzone name or
+  # Use tzgetter to determine if string contains an explicit timezone name or
   # offset.
   tzgetter = _TzInfoOrOffsetGetter()
   dt = parser.parse(string, tzinfos=tzgetter.Get)
@@ -257,15 +257,15 @@ def GetTimeStampFromDateTime(dt):
 
 
 def LocalizeDateTime(dt, tzinfo=None):
-  """Returns a datetime object localized to the timzone tzinfo.
+  """Returns a datetime object localized to the timezone tzinfo.
 
   Args:
-    dt: The datetime object to localize. It can be timzone naive or aware.
+    dt: The datetime object to localize. It can be timezone naive or aware.
     tzinfo: The timezone of the localized dt. If None then the result is naive,
       otherwise it is aware.
 
   Returns:
-    A datetime object localized to the timzone tzinfo.
+    A datetime object localized to the timezone tzinfo.
   """
   ts = GetTimeStampFromDateTime(dt)
   return GetDateTimeFromTimeStamp(ts, tzinfo=tzinfo)

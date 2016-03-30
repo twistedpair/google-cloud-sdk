@@ -347,7 +347,12 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes a dataset.
+      """Deletes a dataset and all of its contents (all read group sets,.
+reference sets, variant sets, call sets, annotation sets, etc.)
+This is reversible (up to one week after the deletion) via
+the
+datasets.undelete
+operation.
 
 For the definitions of datasets and other genomics resources, see
 [Fundamentals of Google
@@ -1304,13 +1309,12 @@ matches its reference sequence, start, end, reference bases, and
 alternative bases. If no such variant exists, a new one will be created.
 
 When variants are merged, the call information from the new variant
-is added to the existing variant, and other fields (such as key/value
-pairs) are discarded. In particular, this means for merged VCF variants
-that have conflicting INFO fields, some data will be arbitrarily
-discarded. As a special case, for single-sample VCF files, QUAL and
-FILTER fields will be moved to the call level; these are sometimes
-interpreted in a call-specific context.
-
+is added to the existing variant, and Variant info fields are merged
+as specified in
+InfoMergeConfig.
+As a special case, for single-sample VCF files, QUAL and FILTER fields will
+be moved to the call level; these are sometimes interpreted in a
+call-specific context.
 Imported VCF headers are appended to the metadata already in a variant set.
 
       Args:
@@ -1336,8 +1340,10 @@ start, end, reference bases, and alternative bases. If no such variant
 exists, a new one will be created.
 
 When variants are merged, the call information from the new variant
-is added to the existing variant, and other fields (such as key/value
-pairs) are discarded.
+is added to the existing variant. Variant info fields are merged as
+specified in the
+InfoMergeConfig
+field of the MergeVariantsRequest.
 
       Args:
         request: (MergeVariantsRequest) input message

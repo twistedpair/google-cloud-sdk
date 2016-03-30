@@ -205,7 +205,8 @@ def CopyFilesToCodeBucket(
 
     if any(manifest for manifest in manifests.itervalues()):
       log.status.Print('Copying files to Google Cloud Storage...')
-      log.status.Print('Synchronizing files to [{b}].'.format(b=bucket_ref))
+      log.status.Print('Synchronizing files to [{b}].'
+                       .format(b=bucket_ref.bucket))
       try:
         log.SetUserOutputEnabled(False)
 

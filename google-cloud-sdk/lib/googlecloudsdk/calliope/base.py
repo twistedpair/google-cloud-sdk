@@ -19,12 +19,21 @@ import abc
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
+
+
+# Common markdown.
+MARKDOWN_BOLD = '*'
+MARKDOWN_ITALIC = '_'
+MARKDOWN_CODE = '`'
+
+
+# Common flag categories.
+COMMONLY_USED_FLAGS = 'COMMONLY USED'
 
 
 class LayoutException(Exception):
@@ -63,11 +72,11 @@ class ReleaseTrack(object):
   GA = _TRACK('GA', None, None, None)
   BETA = _TRACK(
       'BETA', 'beta',
-      '{0}(BETA){0} '.format(usage_text.MARKDOWN_BOLD),
+      '{0}(BETA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in BETA and may change without notice.')
   ALPHA = _TRACK(
       'ALPHA', 'alpha',
-      '{0}(ALPHA){0} '.format(usage_text.MARKDOWN_BOLD),
+      '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in ALPHA and may change without notice.')
   _ALL = [GA, BETA, ALPHA]
 
@@ -128,6 +137,8 @@ class Argument(object):
 
 # Common flag definitions for consistency.
 
+LIST_COMMAND_FLAGS = 'LIST COMMAND'
+
 ASYNC_FLAG = Argument(
     '--async',
     action='store_true',
@@ -139,6 +150,7 @@ ASYNC_FLAG = Argument(
 FILTER_FLAG = Argument(
     '--filter',
     metavar='EXPRESSION',
+    category=LIST_COMMAND_FLAGS,
     help='Apply _EXPRESSION_ to select resource items to list.',
     detailed_help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
@@ -150,6 +162,7 @@ FLATTEN_FLAG = Argument(
     '--flatten',
     metavar='KEY',
     type=arg_parsers.ArgList(),
+    category=LIST_COMMAND_FLAGS,
     help=('Flatten _name_[] resource slices in _KEY_ to separate records '
           'for each item in each slice.'),
     detailed_help="""\
@@ -162,6 +175,7 @@ FLATTEN_FLAG = Argument(
 LIMIT_FLAG = Argument(
     '--limit',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    category=LIST_COMMAND_FLAGS,
     help='The maximum number of resources to list.',
     detailed_help="""\
     The maximum number of resources to list. The default is *unlimited*.
@@ -171,6 +185,7 @@ LIMIT_FLAG = Argument(
 PAGE_FLAG = Argument(
     '--page-size',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    category=LIST_COMMAND_FLAGS,
     help='The service resource list page size.',
     detailed_help="""\
     Some services group resource list output into pages. This flag specifies
@@ -183,6 +198,7 @@ PAGE_FLAG = Argument(
 SORT_BY_FLAG = Argument(
     '--sort-by',
     metavar='FIELDS',
+    category=LIST_COMMAND_FLAGS,
     help='A comma-separated list of field key names to sort by.',
     detailed_help="""\
     A comma-separated list of resource field key names to sort by. The
@@ -193,6 +209,7 @@ SORT_BY_FLAG = Argument(
 URI_FLAG = Argument(
     '--uri',
     action='store_true',
+    category=LIST_COMMAND_FLAGS,
     help='Print a list of resource URIs instead of the default output.')
 
 

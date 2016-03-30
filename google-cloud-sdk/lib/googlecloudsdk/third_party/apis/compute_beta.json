@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160314",
+ "revision": "20160324",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -856,6 +856,10 @@
       "",
       ""
      ]
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the regional backend service resides. This field is not applicable to global backend services."
     },
     "selfLink": {
      "type": "string",

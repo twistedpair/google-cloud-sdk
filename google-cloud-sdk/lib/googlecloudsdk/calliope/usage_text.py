@@ -23,19 +23,21 @@ import sys
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core.console import console_io
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
 
-MARKDOWN_BOLD = '*'
-MARKDOWN_ITALIC = '_'
-MARKDOWN_CODE = '`'
+
+def IsSuppressed(arg):
+  """Returns True if arg is suppressed."""
+  return arg.help == argparse.SUPPRESS
 
 
 def FilterOutSuppressed(args):
   """Returns a copy of args containing only non-suppressed arguments."""
-  return [a for a in args if a.help != argparse.SUPPRESS]
+  return [a for a in args if not IsSuppressed(a)]
 
 
 class HelpInfo(object):
@@ -172,7 +174,7 @@ def PositionalDisplayString(arg, markdown=False):
   msg = arg.metavar or arg.dest.upper()
   if markdown:
     msg = re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
-                 MARKDOWN_ITALIC + r'\1' + MARKDOWN_ITALIC, msg)
+                 base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
   return ' ' + WrapMessageInNargs(msg, arg.nargs)
 
 
@@ -198,19 +200,20 @@ def FlagDisplayString(arg, brief=False, markdown=False):
         metavar=GetFlagMetavar(metavar, arg))
   if arg.nargs == 0:
     if markdown:
-      display_string = ', '.join([MARKDOWN_BOLD + x + MARKDOWN_BOLD
+      display_string = ', '.join([base.MARKDOWN_BOLD + x + base.MARKDOWN_BOLD
                                   for x in arg.option_strings])
     else:
       display_string = ', '.join(arg.option_strings)
   else:
     if markdown:
       metavar = re.sub('(\\b[a-zA-Z][-a-zA-Z_0-9]*)',
-                       MARKDOWN_ITALIC + '\\1' + MARKDOWN_ITALIC, metavar)
+                       base.MARKDOWN_ITALIC + '\\1' + base.MARKDOWN_ITALIC,
+                       metavar)
     display_string = ', '.join(
         ['{bb}{flag}{be}{metavar}'.format(
-            bb=MARKDOWN_BOLD if markdown else '',
+            bb=base.MARKDOWN_BOLD if markdown else '',
             flag=option_string,
-            be=MARKDOWN_BOLD if markdown else '',
+            be=base.MARKDOWN_BOLD if markdown else '',
             metavar=GetFlagMetavar(metavar, arg))
          for option_string in arg.option_strings])
     if not arg.required and arg.default:
@@ -307,7 +310,7 @@ def GenerateUsage(command, argument_interceptor, topic=False):
       usage_parts.append(PositionalDisplayString(arg))
 
     for arg in argument_interceptor.flag_args:
-      if arg.help == argparse.SUPPRESS:
+      if IsSuppressed(arg):
         continue
       if not arg.required:
         optional_messages = True
@@ -381,6 +384,107 @@ def ExpandHelpText(command, text):
       description=long_help)
 
 
+def GetFlagHeading(category):
+  """Returns the flag section heading for a flag category."""
+  return category if 'FLAGS' in category else category + ' FLAGS'
+
+
+def GetFlagSections(command, argument_interceptor):
+  """Returns the flag sections in document order.
+
+  Args:
+    command: calliope._CommandCommon, The command object with all subelements
+      already loaded.
+    argument_interceptor: calliope._ArgumentInterceptor, the object that tracks
+        all of the flags for this command or group.
+
+  Returns:
+    ([section], has_global_flags)
+      section - (heading, is_priority, flags)
+        heading - The section heading.
+        is_priority - True if this is a priority section. Priority sections are
+          grouped first. The first 2 priority sections appear in short help.
+        flags - The list of flags in the section.
+      has_global_flags - True if command has global flags not included in the
+        section list.
+  """
+  # Partition the non-GLOBAL flag groups dict into categorized sections. A
+  # group is REQUIRED if any flag in it is required, categorized if any flag
+  # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
+  # over categorized.
+  categories = {}
+  has_global_flags = False
+  is_top_element = command.IsRoot()
+  for arg in (argument_interceptor.flag_args +
+              argument_interceptor.ancestor_flag_args):
+    if not IsSuppressed(arg):
+      if arg.is_global and not is_top_element:
+        has_global_flags = True
+      else:
+        if arg.required:
+          category = 'REQUIRED'
+        elif arg.category:
+          category = arg.category
+        else:
+          category = 'OTHER'
+        if category not in categories:
+          categories[category] = []
+        categories[category].append(arg)
+
+  sections = []
+  other_flags_heading = 'FLAGS'
+
+  # Collect the priority sections first.
+  for category, other in (('REQUIRED', 'OPTIONAL'),
+                          (base.COMMONLY_USED_FLAGS, 'OTHER'),
+                          ('OTHER', None)):
+    if category in categories:
+      if other:
+        other_flags_heading = other
+        heading = category
+      elif len(categories) > 1:
+        heading = 'FLAGS'
+      else:
+        heading = other_flags_heading
+      sections.append(
+          (GetFlagHeading(heading), other is not None, categories[category]))
+      # This prevents the category from being re-added in the loop below.
+      del categories[category]
+
+  # Add the remaining categories in sorted order.
+  for category, flags in sorted(categories.iteritems()):
+    sections.append((GetFlagHeading(category), False, flags))
+
+  return sections, has_global_flags
+
+
+def TextIfExists(title, messages):
+  """Generates the text for the given section.
+
+  This printing is done by collecting a list of rows. If the row is just a
+  string, that means print it without decoration. If the row is a tuple, use
+  WrapWithPrefix to print that tuple in aligned columns.
+
+  Args:
+    title: str, The name of this section.
+    messages: str or [(str, str)], The item or items to print in this section.
+
+  Returns:
+    str, The generated text.
+  """
+  if not messages:
+    return None
+  textbuf = StringIO.StringIO()
+  textbuf.write('%s\n' % title)
+  if isinstance(messages, str):
+    textbuf.write('  ' + messages + '\n')
+  else:
+    for (arg, helptxt) in messages:
+      WrapWithPrefix(arg, helptxt, HELP_INDENT, LINE_WIDTH,
+                     spacing='  ', writer=textbuf)
+  return textbuf.getvalue()
+
+
 def ShortHelpText(command, argument_interceptor):
   """Get a command's short help text.
 
@@ -397,26 +501,6 @@ def ShortHelpText(command, argument_interceptor):
   topic = len(command.GetPath()) >= 2 and command.GetPath()[1] == 'topic'
 
   buf = StringIO.StringIO()
-
-  required_messages = []
-  common_messages = []
-  optional_messages = []
-  has_global_flags = False
-
-  # Sorting for consistency and readability.
-  for arg in (argument_interceptor.flag_args +
-              argument_interceptor.ancestor_flag_args):
-    if arg.help == argparse.SUPPRESS:
-      continue
-    message = (FlagDisplayString(arg), arg.help or '')
-    if arg.is_global and not command.IsRoot():
-      has_global_flags = True
-    elif arg.required:
-      required_messages.append(message)
-    elif arg.is_common:
-      common_messages.append(message)
-    else:
-      optional_messages.append(message)
 
   positional_messages = []
 
@@ -447,34 +531,8 @@ def ShortHelpText(command, argument_interceptor):
   buf.write('\n\n')
 
   # Third, print out the short help for everything that can come on
-  # the command line, grouped into required flags, optional flags,
-  # sub groups, sub commands, and positional arguments.
-
-  def TextIfExists(title, messages):
-    """Generates the text for the given section.
-
-    This printing is done by collecting a list of rows. If the row is just a
-    string, that means print it without decoration. If the row is a tuple, use
-    WrapWithPrefix to print that tuple in aligned columns.
-
-    Args:
-      title: str, The name of this section.
-      messages: str or [(str, str)], The item or items to print in this section.
-
-    Returns:
-      str, The generated text.
-    """
-    if not messages:
-      return None
-    textbuf = StringIO.StringIO()
-    textbuf.write('%s\n' % title)
-    if isinstance(messages, str):
-      textbuf.write('  ' + messages + '\n')
-    else:
-      for (arg, helptxt) in messages:
-        WrapWithPrefix(arg, helptxt, HELP_INDENT, LINE_WIDTH,
-                       spacing='  ', writer=textbuf)
-    return textbuf.getvalue()
+  # the command line, grouped into flag sections, sub groups, sub commands,
+  # and positional arguments.
 
   command_path = ' '.join(command.GetPath())
 
@@ -485,27 +543,23 @@ def ShortHelpText(command, argument_interceptor):
   else:
     all_messages = [
         TextIfExists('positional arguments:', positional_messages),
-        TextIfExists('required flags:', sorted(required_messages)),
     ]
 
-    # If this command has flags tagged as common, only show those flags, and
-    # print a message to use the long help to see all the flags (if there are
-    # others).
-    if common_messages:
-      all_messages.append(
-          TextIfExists('commonly used flags:', sorted(common_messages)))
-      if optional_messages:
-        all_messages.append(
-            TextIfExists(
-                'other flags:',
-                'Run: `{0} --help`\n  for the full list of available flags for '
-                'this command.'.format(command_path)))
-    # If nothing tagged as common, just display all the optional flags as we
-    # normally do.
-    else:
-      optional_flags_tag = 'optional flags:' if required_messages else 'flags:'
-      all_messages.append(
-          TextIfExists(optional_flags_tag, sorted(optional_messages)))
+    sections, has_global_flags = GetFlagSections(command, argument_interceptor)
+
+    # Add the top 2 is_priority sections.
+    for index, (heading, is_priority, flags) in enumerate(sections):
+      if not is_priority or index >= 2:
+        # More sections remain. Long help will list those.
+        all_messages.append(TextIfExists(
+            'flags:' if len(all_messages) == 1 else 'other flags:',
+            'Run `{0} --help`\n  for the full list of available flags for '
+            'this command.'.format(command_path)))
+        break
+      messages = []
+      for flag in flags:
+        messages.append((FlagDisplayString(flag), flag.help or ''))
+      all_messages.append(TextIfExists(heading.lower() + ':', sorted(messages)))
 
     if has_global_flags:
       root_command_name = command.GetPath()[0]

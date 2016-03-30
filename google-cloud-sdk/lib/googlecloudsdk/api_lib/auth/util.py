@@ -30,6 +30,7 @@ from oauth2client import clientsecrets
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_ID = '764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com'
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_SECRET = 'd-FL95Q19q7MQmFpd7hHD0Ty'
 CLOUD_PLATFORM_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
+GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
 
 # A list of results for webbrowser.get().name that indicate we should not
 # attempt to open a web browser for the user.

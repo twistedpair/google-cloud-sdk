@@ -1090,12 +1090,12 @@ class Rule(_messages.Message):
     action: Required
     conditions: Additional restrictions that must be met
     description: Human-readable description of the rule.
-    ins: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set
-      of entries.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
     logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
       any entries that match the LOG action.
-    notIns: The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in
-      this set of entries.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
     permissions: A permission is a string of form '..' (e.g.,
       'storage.buckets.list'). A value of '*' matches all permissions, and a
       verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.

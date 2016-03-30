@@ -32,8 +32,8 @@ zillion items) then the list() statement would instantiate all of the items and
 strain memory. A tapper avoids this by dealing with each item as it is
 generated.
 
-DisplayTappers are tappers used by calliope.display.Displayer. There is a tapper
-for each of the --filter, --flatten, --limit, and --page flags.
+There is a tapper for each of the --filter, --flatten, --limit, and --page
+flags.
 """
 
 from googlecloudsdk.core import remote_completion
@@ -45,19 +45,7 @@ from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
 
 
-class DisplayTapper(object):
-  """Display Tapper helper base class."""
-
-  def Tap(self, unused_resource):
-    """Called on each resource item."""
-    return True
-
-  def Done(self):
-    """Called after the last item."""
-    return True
-
-
-class Filterer(DisplayTapper):
+class Filterer(peek_iterable.Tap):
   """A Tapper class that filters out resources not matching an expression.
 
   Attributes:
@@ -88,7 +76,7 @@ class Filterer(DisplayTapper):
     return self._match(resource)
 
 
-class Flattener(DisplayTapper):
+class Flattener(peek_iterable.Tap):
   """A Tapper class that flattens a resource key slice to separate records.
 
   A serialized copy of the resource is modified in place. This means the same
@@ -145,7 +133,7 @@ class Flattener(DisplayTapper):
     return peek_iterable.TapInjector(self._resource)
 
 
-class Limiter(DisplayTapper):
+class Limiter(peek_iterable.Tap):
   """A Tapper class that filters out resources after a limit is reached.
 
   Attributes:
@@ -173,7 +161,7 @@ class Limiter(DisplayTapper):
     return self._count <= self._limit or None
 
 
-class Pager(DisplayTapper):
+class Pager(peek_iterable.Tap):
   """A Tapper class that injects a PageMarker after each page of resources.
 
   Attributes:
@@ -204,7 +192,7 @@ class Pager(DisplayTapper):
     return True
 
 
-class UriCacher(DisplayTapper):
+class UriCacher(peek_iterable.Tap):
   """A Tapper class that caches URIs based on the cache update op.
 
   Attributes:

@@ -16,14 +16,25 @@
 
 import json
 import sys
+import tempfile
+
 from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
+from googlecloudsdk.api_lib.genomics.exceptions import GenomicsInputFileError
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
+from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
+from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
+from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import extra_types
+from googlecloudsdk.third_party.apitools.base.py import transfer
+
+import yaml
+
+GCS_PREFIX = 'gs://'
 
 
 def ValidateLimitFlag(limit, flag_name='limit'):
@@ -105,7 +116,7 @@ def ReraiseHttpExceptionPager(pager, rewrite_fn=None):
     rewrite_fn: A function that rewrites the returned message.
         If 'None', no rewriting will occur.
 
-  Returns:
+  Yields:
     A generator which raises gcloud-friendly errors, if any.
   """
 
@@ -157,3 +168,77 @@ def GetCallSet(context, call_set_id):
 
 def GetProjectId():
   return properties.VALUES.core.project.Get(required=True)
+
+
+def GetFileAsMessage(path, message, client):
+  """Reads a YAML or JSON object of type message from path (local or GCS).
+
+  Args:
+    path: A local or GCS path to an object specification in YAML or JSON format.
+    message: The message type to be parsed from the file.
+    client: The storage_v1 client to use.
+
+  Returns:
+    Object of type message, if successful.
+  Raises:
+    GenomicsInputFileError
+  """
+  if path.startswith(GCS_PREFIX):
+    # Download remote file to a local temp file
+    tf = tempfile.NamedTemporaryFile(delete=False)
+    tf.close()
+    print tf.name
+    bucket, obj = _SplitBucketAndObject(path)
+    get_request = storage_v1.StorageObjectsGetRequest(bucket=bucket,
+                                                      object=obj)
+    try:
+      download = transfer.Download.FromFile(tf.name, overwrite=True)
+      client.objects.Get(get_request, download=download)
+      del download  # Explicitly close the stream so the results are there
+    except apitools_exceptions.HttpError as e:
+      raise GenomicsInputFileError(
+          'Unable to read remote file [{0}] due to [{1}]'.format(path, str(e)))
+    path = tf.name
+
+  # Read the file.
+  in_text = ''
+  try:
+    with open(path) as in_file:
+      in_text = in_file.read()
+  except EnvironmentError:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise GenomicsInputFileError('Unable to read file [{0}]'.format(path))
+  if not in_text:
+    raise GenomicsInputFileError('Empty file [{0}]'.format(path))
+
+  # Parse it, first trying YAML then JSON.
+  try:
+    result = encoding.PyValueToMessage(message, yaml.load(in_text))
+  except (ValueError, AttributeError, yaml.YAMLError) as e:
+    try:
+      result = encoding.JsonToMessage(message, in_text)
+    except (ValueError, DecodeError) as e:
+      # ValueError is raised when JSON is badly formatted
+      # DecodeError is raised when a tag is badly formatted (not Base64)
+      raise GenomicsInputFileError(
+          'Pipeline file [{0}] is not properly formatted YAML or JSON '
+          'due to [{1}]'.format(path, str(e)))
+  return result
+
+
+def ArgDictToAdditionalPropertiesList(list_of_argdicts, message):
+  result = []
+  for d in list_of_argdicts:
+    for k, v in d.iteritems():
+      result.append(message(key=k, value=v))
+  return result
+
+
+def _SplitBucketAndObject(gcs_path):
+  """Split a GCS path into bucket & object tokens, or raise BadFileException."""
+  tokens = gcs_path[len(GCS_PREFIX):].strip('/').split('/', 1)
+  if len(tokens) != 2:
+    raise exceptions.BadFileException(
+        '[{0}] is not a valid Google Cloud Storage path'.format(gcs_path))
+  return tokens

@@ -325,7 +325,7 @@
           "type": "string"
         },
         "clientInfo": {
-          "description": "Information about the client which invoked the test.",
+          "description": "Information about the client which invoked the test.\nOptional",
           "$ref": "ClientInfo"
         },
         "testSpecification": {
@@ -390,7 +390,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Client name, such as gcloud.",
+          "description": "Client name, such as gcloud.\nRequired",
           "type": "string"
         }
       }
@@ -401,12 +401,12 @@
       "type": "object",
       "properties": {
         "testTimeout": {
-          "description": "Max time a test execution is allowed to run before it is\nautomatically cancelled.",
+          "description": "Max time a test execution is allowed to run before it is\nautomatically cancelled.\nOptional, default is 5 min.",
           "type": "string",
           "format": "google-duration"
         },
         "testSetup": {
-          "description": "Test setup requirements e.g. files to install, bootstrap scripts",
+          "description": "Test setup requirements e.g. files to install, bootstrap scripts\nOptional",
           "$ref": "TestSetup"
         },
         "androidInstrumentationTest": {
@@ -433,17 +433,24 @@
       "type": "object",
       "properties": {
         "filesToPush": {
-
+          "description": "Optional",
           "type": "array",
           "items": {
             "$ref": "DeviceFile"
           }
         },
         "directoriesToPull": {
-          "description": "The directories on the device to upload to GCS at the end of the test;\nthey must be absolute, whitelisted paths.\nRefer to RegularFile for whitelisted paths.",
+          "description": "The directories on the device to upload to GCS at the end of the test;\nthey must be absolute, whitelisted paths.\nRefer to RegularFile for whitelisted paths.\nOptional",
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "additionalApks": {
+          "description": "APKs to install in addition to those being directly tested.\nCurrently capped at three.\nOptional",
+          "type": "array",
+          "items": {
+            "$ref": "Apk"
           }
         }
       }
@@ -469,11 +476,11 @@
       "type": "object",
       "properties": {
         "obbFileName": {
-          "description": "OBB file name which must conform to the format as specified by\nAndroid\ne.g. [main|patch].0300110.com.example.android.obb\nwhich will be installed into\n  <shared-storage>\/Android\/obb\/<package-name>\/\non the device",
+          "description": "OBB file name which must conform to the format as specified by\nAndroid\ne.g. [main|patch].0300110.com.example.android.obb\nwhich will be installed into\n  <shared-storage>\/Android\/obb\/<package-name>\/\non the device\nRequired",
           "type": "string"
         },
         "obb": {
-          "description": "Opaque Binary Blob (OBB) file(s) to install on the device",
+          "description": "Opaque Binary Blob (OBB) file(s) to install on the device\nRequired",
           "$ref": "FileReference"
         }
       }
@@ -499,11 +506,11 @@
       "type": "object",
       "properties": {
         "blobId": {
-          "description": "A blob ID.\nExample: \/android_test\/blobs\/4e9AAT9sqHRY_oBBzIKHSEFgg",
+          "description": "A blob ID.\nExample: \/android_test\/blobs\/4e9AAT9sqHRY_oBBzIKHSEFgg\nRequired",
           "type": "string"
         },
         "md5Hash": {
-          "description": "The MD5 hash of the referenced blob. (This is necessary to create a\nBigstore object directly from the Blobstore reference.)",
+          "description": "The MD5 hash of the referenced blob. (This is necessary to create a\nBigstore object directly from the Blobstore reference.)\nRequired",
           "type": "string"
         }
       }
@@ -514,11 +521,26 @@
       "type": "object",
       "properties": {
         "content": {
-
+          "description": "Required",
           "$ref": "FileReference"
         },
         "devicePath": {
-          "description": "Where to put the content on the device. Must be an absolute, whitelisted\npath. If it exists, it will be replaced.\nThe following device-side directories and any of their subdirectories are\nwhitelisted:\n<p>${EXTERNAL_STORAGE}, or \/sdcard<\/p>\n<p>${ANDROID_DATA}\/local\/tmp, or \/data\/local\/tmp<\/p>\n<p>Specifying a path outside of these directory trees is invalid.\n\n<p> The paths \/sdcard and \/data will be made available and treated as\nimplicit path substitutions. E.g. if \/sdcard on a particular device does\nnot map to external storage, the system will replace it with the external\nstorage path prefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.",
+          "description": "Where to put the content on the device. Must be an absolute, whitelisted\npath. If it exists, it will be replaced.\nThe following device-side directories and any of their subdirectories are\nwhitelisted:\n<p>${EXTERNAL_STORAGE}, or \/sdcard<\/p>\n<p>${ANDROID_DATA}\/local\/tmp, or \/data\/local\/tmp<\/p>\n<p>Specifying a path outside of these directory trees is invalid.\n\n<p> The paths \/sdcard and \/data will be made available and treated as\nimplicit path substitutions. E.g. if \/sdcard on a particular device does\nnot map to external storage, the system will replace it with the external\nstorage path prefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.\nRequired",
+          "type": "string"
+        }
+      }
+    },
+    "Apk": {
+      "id": "Apk",
+      "description": "An Android package file to install.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The path to an APK to be installed on the device before the test begins.\nOptional",
+          "$ref": "FileReference"
+        },
+        "packageName": {
+          "description": "The java package for the APK to be installed.\nOptional, value is determined by examining the application's manifest.",
           "type": "string"
         }
       }
@@ -549,7 +571,7 @@
           "type": "string"
         },
         "testTargets": {
-          "description": "Each target must be fully qualified with the package name or class name,\nin one of these formats:\n - \"package package_name\"\n - \"class package_name.class_name\"\n - \"class package_name.class_name#method_name\"\n\nIf empty, all targets in the module will be run.",
+          "description": "Each target must be fully qualified with the package name or class name,\nin one of these formats:\n - \"package package_name\"\n - \"class package_name.class_name\"\n - \"class package_name.class_name#method_name\"\n\nOptional, if empty, all targets in the module will be run.",
           "type": "array",
           "items": {
             "type": "string"
@@ -604,12 +626,12 @@
           "type": "string"
         },
         "eventCount": {
-          "description": "Number of random monkey events (e.g. clicks, touches) to generate.\nDefaults to 2000.",
+          "description": "Number of random monkey events (e.g. clicks, touches) to generate.\nOptional, defaults to 2000.",
           "type": "integer",
           "format": "int32"
         },
         "eventDelay": {
-          "description": "Fixed delay between events.\nDefaults to 10ms.",
+          "description": "Fixed delay between events.\nOptional, defaults to 10ms.",
           "type": "string",
           "format": "google-duration"
         },
@@ -798,7 +820,7 @@
           "$ref": "GoogleCloudStorage"
         },
         "toolResultsHistory": {
-          "description": "The tool results history that contains the tool results execution that\nresults are written to.\n\nIf not provided the service will choose an appropriate value.",
+          "description": "The tool results history that contains the tool results execution that\nresults are written to.\n\nOptional, if not provided the service will choose an appropriate value.",
           "$ref": "ToolResultsHistory"
         },
         "toolResultsExecution": {
@@ -813,7 +835,7 @@
       "type": "object",
       "properties": {
         "gcsPath": {
-          "description": "The path to a directory in GCS that will\neventually contain the results for this test.\nThe requesting user must have write access on the bucket in the supplied\npath.",
+          "description": "The path to a directory in GCS that will\neventually contain the results for this test.\nThe requesting user must have write access on the bucket in the supplied\npath.\nRequired",
           "type": "string"
         }
       }
@@ -824,11 +846,11 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The cloud project that owns the tool results history.",
+          "description": "The cloud project that owns the tool results history.\nRequired",
           "type": "string"
         },
         "historyId": {
-          "description": "A tool results history ID.",
+          "description": "A tool results history ID.\nRequired",
           "type": "string"
         }
       }

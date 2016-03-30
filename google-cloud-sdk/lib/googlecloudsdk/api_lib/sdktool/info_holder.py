@@ -139,10 +139,17 @@ class ConfigInfo(object):
   """Holds information about where config is stored and what values are set."""
 
   def __init__(self):
-    self.paths = config.Paths()
+    cfg_paths = config.Paths()
+    self.paths = {
+        'installation_properties_path': cfg_paths.installation_properties_path,
+        'global_config_dir': cfg_paths.global_config_dir,
+    }
     self.active_config_name = named_configs.GetNameOfActiveNamedConfig()
     if self.active_config_name is not None:
-      self.active_config_path = named_configs.GetFileForActiveNamedConfig()
+      self.paths['active_config_path'] = (named_configs
+                                          .GetFileForActiveNamedConfig())
+    else:
+      self.paths['user_properties_path'] = cfg_paths.user_properties_path
     self.account = properties.VALUES.core.account.Get(validate=False)
     self.project = properties.VALUES.core.project.Get(validate=False)
     self.properties = properties.VALUES.AllValues()
@@ -150,17 +157,17 @@ class ConfigInfo(object):
   def __str__(self):
     out = StringIO.StringIO()
     out.write('Installation Properties: [{0}]\n'
-              .format(self.paths.installation_properties_path))
+              .format(self.paths['installation_properties_path']))
     out.write('User Config Directory: [{0}]\n'
-              .format(self.paths.global_config_dir))
+              .format(self.paths['global_config_dir']))
     if self.active_config_name is not None:
       out.write('Active Configuration Name: [{0}]\n'
                 .format(self.active_config_name))
       out.write('Active Configuration Path: [{0}]\n\n'
-                .format(self.active_config_path))
+                .format(self.paths['active_config_path']))
     else:
       out.write('User Properties: [{0}]\n\n'
-                .format(self.paths.user_properties_path))
+                .format(self.paths['user_properties_path']))
 
     out.write('Account: [{0}]\n'.format(self.account))
     out.write('Project: [{0}]\n\n'.format(self.project))

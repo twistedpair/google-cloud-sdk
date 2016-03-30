@@ -45,6 +45,7 @@ class Flag(object):
     type: str, The flag value type name {'bool', 'int', 'float', 'string'}.
     name: str, The normalized flag name ('_' => '-').
     hidden: bool, True if the flag is hidden.
+    category: str, Category for help doc flag groupings.
     value: str, The flag value documentation name.
     countmin: int, The minimum number of flag values.
     countmax: int, The maximum number of flag values, 0 for unlimited.
@@ -60,6 +61,7 @@ class Flag(object):
     self.type = 'string'
     self.name = name
     self.hidden = description == argparse.SUPPRESS
+    self.category = None
     self.value = ''
     self.countmin = 0
     self.countmax = 0
@@ -219,6 +221,7 @@ class Command(object):
                 flag.type = 'bool'
               else:
                 flag.choices = choices
+            flag.category = arg.category
             if arg.required:
               flag.required = 1
             flag.resource = getattr(arg, 'completion_resource', '')

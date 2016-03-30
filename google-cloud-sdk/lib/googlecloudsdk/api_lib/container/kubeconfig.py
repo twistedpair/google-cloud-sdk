@@ -15,14 +15,19 @@
 """Utilities for loading and parsing kubeconfig."""
 import os
 
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
 
 import yaml
 
 
-class Error(Exception):
+class Error(core_exceptions.Error):
   """Class for errors raised by kubeconfig utilities."""
+
+
+class MissingEnvVarError(Error):
+  """An exception raised when required environment variables are missing."""
 
 
 # TODO(user): marshal yaml directly into a type with a
@@ -108,9 +113,19 @@ class Kubeconfig(object):
 
   @staticmethod
   def DefaultPath():
+    """Return default path for kubeconfig file."""
+
     if os.environ.get('KUBECONFIG'):
       return os.environ['KUBECONFIG']
-    return os.path.join(os.path.expanduser('~/'), '.kube/config')
+    # kubectl doesn't do windows-compatible homedir detection, it
+    # expects HOME to be set.
+    # TODO(user): remove this once
+    # https://github.com/kubernetes/kubernetes/issues/23199
+    if not os.environ.get('HOME'):
+      raise MissingEnvVarError(
+          'environment variable HOME or KUBECONFIG must be set to store '
+          'credentials for kubectl')
+    return os.path.join(os.environ.get('HOME'), '.kube/config')
 
 
 def Cluster(name, server, ca_path=None, ca_data=None):

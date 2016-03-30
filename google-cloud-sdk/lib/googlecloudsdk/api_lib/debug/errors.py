@@ -21,12 +21,12 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 
 
-class NoEndpointError(Exception):
+class NoEndpointError(exceptions.Error):
 
   def __str__(self):
     return (
-        'Debug endpoint not initialized. DebugObject.SetApiEndpoint must be '
-        'called before using this module.')
+        'Debug endpoint not initialized. DebugObject.InitializeApiClients must '
+        'be called before using this module.')
 
 
 class UnknownHttpError(exceptions.Error):
@@ -34,9 +34,33 @@ class UnknownHttpError(exceptions.Error):
 
   def __init__(self, error):
     error_content = json.loads(error.content)['error']
-    print 'Error Content is {0}'.format(error_content)
     message = '%s %s' % (error_content['code'], error_content['message'])
     super(UnknownHttpError, self).__init__(message)
+
+
+class MultipleDebuggeesError(exceptions.Error):
+  """Multiple targets matched the search criteria."""
+
+  def __init__(self, pattern, debuggees):
+    if pattern:
+      pattern_msg = ' matching "{0}"'.format(pattern)
+    else:
+      pattern_msg = ''
+    super(MultipleDebuggeesError, self).__init__(
+        'Multiple possible targets found{0}: {1}'.format(
+            pattern_msg, debuggees))
+
+
+class NoDebuggeeError(exceptions.Error):
+  """No target matched the search criteria."""
+
+  def __init__(self, pattern=None):
+    if pattern:
+      super(NoDebuggeeError, self).__init__(
+          'No active debug target matched the pattern "{0}"'.format(pattern))
+    else:
+      super(NoDebuggeeError, self).__init__(
+          'No active debug targets were found for this project.')
 
 
 def ErrorFromHttpError(error):

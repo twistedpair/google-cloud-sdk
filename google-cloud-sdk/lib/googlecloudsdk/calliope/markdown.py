@@ -19,13 +19,9 @@ import re
 import StringIO
 import textwrap
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.third_party.py27 import py27_collections as collections
-
-
-def FilterOutSuppressed(args):
-  """Returns a copy of args containing only non-suppressed arguments."""
-  return [a for a in args if a.help != argparse.SUPPRESS]
 
 
 class Error(Exception):
@@ -185,17 +181,6 @@ class MarkdownGenerator(object):
     self._subcommands = command.GetSubCommandHelps()
     self._subgroups = command.GetSubGroupHelps()
 
-  def _IsSuppressed(self, arg):
-    """Checks if arg help is suppressed.
-
-    Args:
-      arg: The argparse arg to check.
-
-    Returns:
-      True if arg help is suppressed.
-    """
-    return arg.help == argparse.SUPPRESS
-
   def _UserInput(self, msg):
     """Returns msg with user input markdown.
 
@@ -205,9 +190,9 @@ class MarkdownGenerator(object):
     Returns:
       The msg string with embedded user input markdown.
     """
-    return (usage_text.MARKDOWN_CODE + usage_text.MARKDOWN_ITALIC +
+    return (base.MARKDOWN_CODE + base.MARKDOWN_ITALIC +
             msg +
-            usage_text.MARKDOWN_ITALIC + usage_text.MARKDOWN_CODE)
+            base.MARKDOWN_ITALIC + base.MARKDOWN_CODE)
 
   def _Section(self, name, sep=True):
     """Prints the section header markdown for name.
@@ -223,8 +208,8 @@ class MarkdownGenerator(object):
   def _PrintSynopsisSection(self):
     """Prints the command line synopsis section."""
     # MARKDOWN_CODE is the default SYNOPSIS font style.
-    code = usage_text.MARKDOWN_CODE
-    em = usage_text.MARKDOWN_ITALIC
+    code = base.MARKDOWN_CODE
+    em = base.MARKDOWN_ITALIC
     self._Section('SYNOPSIS')
     self._out('{code}{command}{code}'.format(code=code,
                                              command=self._command_name))
@@ -232,9 +217,9 @@ class MarkdownGenerator(object):
     # Output the positional args up to the first REMAINDER or '-- *' args. The
     # rest will be picked up after the flag args are output. argparse does not
     # have an explicit '--' arg intercept, so we use the metavar value as a '--'
-    # sentinel.
-    # Any SUPPRESSed args are ingnored by a pre-pass.
-    positional_args = FilterOutSuppressed(self._command.ai.positional_args[:])
+    # sentinel. Any suppressed args are ingnored by a pre-pass.
+    positional_args = usage_text.FilterOutSuppressed(
+        self._command.ai.positional_args)
     while positional_args:
       arg = positional_args[0]
       if arg.nargs == argparse.REMAINDER or arg.metavar.startswith('-- '):
@@ -262,31 +247,48 @@ class MarkdownGenerator(object):
         group_id = self._command.ai.mutex_groups.get(flag.dest, flag.dest)
         groups[group_id].append(flag)
 
-    # Split the groups dict into required, common, and then the rest of the
-    # flags.  A group is required if any flag in it is required and common if
-    # any flag in it is common.  Required takes precedence over common.
-    required_groups = {}
-    common_groups = {}
+    # Partition the non-GLOBAL flag groups dict into categorized sections. A
+    # group is REQUIRED if any flag in it is required, categorized if any flag
+    # in it is categorized, otherwise its OTHER.  REQUIRED takes precedence
+    # over categorized.
+    categorized_groups = {}
     for group_id, flags in groups.iteritems():
       for f in flags:
         if f.required:
-          required_groups[group_id] = flags
-          break
-        elif f.is_common:
-          common_groups[group_id] = flags
-          break
-    for g in required_groups:
-      del groups[g]
-    for g in common_groups:
-      del groups[g]
+          category = 'REQUIRED'
+        elif f.category:
+          category = f.category
+        else:
+          continue
+        if category not in categorized_groups:
+          categorized_groups[category] = {}
+        categorized_groups[category][group_id] = flags
+        break
+    # Delete the categorized groups to get OTHER.
+    for v in categorized_groups.values():
+      for g in v:
+        del groups[g]
+    category = 'OTHER'
+    if category not in categorized_groups:
+      categorized_groups[category] = {}
+    for group_id, flags in groups.iteritems():
+      categorized_groups[category][group_id] = flags
 
-    # Generate the flag usage string with required flags first, then common
-    # flags, then the rest of the flags.
-    for section in [required_groups, common_groups, groups]:
+    # Collect the sections in order: REQUIRED, COMMON, OTHER, and categorized.
+    sections = []
+    for category in ('REQUIRED', base.COMMONLY_USED_FLAGS, 'OTHER'):
+      if category in categorized_groups:
+        sections.append(categorized_groups[category])
+        del categorized_groups[category]
+    for _, v in sorted(categorized_groups.iteritems()):
+      sections.append(v)
+
+    # Generate the flag usage string with flags in section order.
+    for section in sections:
       for group in sorted(section.values(), key=lambda g: g[0].option_strings):
         if len(group) == 1:
           arg = group[0]
-          if self._IsSuppressed(arg):
+          if usage_text.IsSuppressed(arg):
             continue
           msg = usage_text.FlagDisplayString(arg, markdown=True)
           if not msg:
@@ -296,8 +298,8 @@ class MarkdownGenerator(object):
           else:
             self._out(' [{msg}]'.format(msg=msg))
         else:
+          group = usage_text.FilterOutSuppressed(group)
           group.sort(key=lambda f: f.option_strings)
-          group = [flag for flag in group if not self._IsSuppressed(flag)]
           msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
                            for arg in group)
           if not msg:
@@ -308,12 +310,10 @@ class MarkdownGenerator(object):
       self._out(' [' + em + 'GLOBAL-FLAG ...' + em + ']')
 
     # positional_args will only be non-empty if we had -- ... or REMAINDER left.
-    for arg in FilterOutSuppressed(positional_args):
+    for arg in usage_text.FilterOutSuppressed(positional_args):
       self._out(usage_text.PositionalDisplayString(arg, markdown=True))
 
-  def _PrintFlagSection(self, flags, section):
-    if not flags:
-      return
+  def _PrintFlagSection(self, section, flags):
     self._Section(section, sep=False)
     for flag in sorted(flags, key=lambda f: f.option_strings):
       self._out('\n{0}::\n'.format(
@@ -322,7 +322,8 @@ class MarkdownGenerator(object):
 
   def _PrintPositionalsAndFlagsSections(self):
     """Prints the positionals and flags sections."""
-    visible_positionals = FilterOutSuppressed(self._command.ai.positional_args)
+    visible_positionals = usage_text.FilterOutSuppressed(
+        self._command.ai.positional_args)
     if visible_positionals:
       self._Section('POSITIONAL ARGUMENTS', sep=False)
       for arg in visible_positionals:
@@ -330,34 +331,12 @@ class MarkdownGenerator(object):
             usage_text.PositionalDisplayString(arg, markdown=True).lstrip()))
         self._out('\n{arghelp}\n'.format(arghelp=self._Details(arg)))
 
-    # Partition the flags into REQUIRED FLAGS, COMMON FLAGS, OPTIONAL_FLAGS and
-    # GLOBAL FLAGS subsections.
-    required_flags = []
-    common_flags = []
-    other_flags = []
-    has_global_flags = False
-    for arg in (self._command.ai.flag_args +
-                self._command.ai.ancestor_flag_args):
-      if not self._IsSuppressed(arg):
-        if arg.is_global and not self._is_top_element:
-          has_global_flags = True
-        elif arg.required:
-          required_flags.append(arg)
-        elif arg.is_common:
-          common_flags.append(arg)
-        else:
-          other_flags.append(arg)
+    sections, has_global_flags = usage_text.GetFlagSections(
+        self._command, self._command.ai)
 
-    other_flags_heading = 'FLAGS'
-    if required_flags:
-      other_flags_heading = 'OPTIONAL FLAGS'
-    if common_flags:
-      other_flags_heading = 'OTHER FLAGS'
-
-    for flags, section in ((required_flags, 'REQUIRED FLAGS'),
-                           (common_flags, 'COMMONLY USED FLAGS'),
-                           (other_flags, other_flags_heading)):
-      self._PrintFlagSection(flags, section)
+    # List the sections in order.
+    for section, _, flags in sections:
+      self._PrintFlagSection(section, flags)
 
     if has_global_flags:
       self._Section('GLOBAL FLAGS', sep=False)

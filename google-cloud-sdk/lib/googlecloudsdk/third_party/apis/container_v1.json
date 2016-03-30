@@ -198,6 +198,13 @@
             "$ref": "NodePool"
           }
         },
+        "locations": {
+          "description": "The list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -302,7 +309,7 @@
           }
         },
         "image": {
-          "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.\nTODO(fabioy): This will NOT be exposed to the user in the first iteration,\nsince we're still working through what an \"image track\" means and what\nwe'll support. Discussion on the possibility of supporting different\nversions will be done then as well.",
+          "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.",
           "type": "string"
         },
         "labels": {
@@ -404,8 +411,37 @@
           "description": "The version of the Kubernetes of this node.",
           "type": "string"
         },
-        "instanceGroupUrl": {
+        "instanceGroupUrls": {
           "description": "[Output only] The resource URLs of [instance\ngroups](\/compute\/docs\/instance-groups\/) associated with this\nnode pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "description": "The status of the nodes in this pool instance.",
+          "enumDescriptions": [
+            "Not set.",
+            "The PROVISIONING state indicates the node pool is being created.",
+            "The RUNNING state indicates the node pool has been created\nand is fully usable.",
+            "The RUNNING_WITH_ERROR state indicates the node pool has been created\nand is partially usable. Some error state has occurred and some\nfunctionality may be impaired. Customer may need to reissue a request\nor trigger a new update.",
+            "The RECONCILING state indicates that some work is actively being done on\nthe node pool, such as upgrading node software. Details can\nbe found in the `statusMessage` field.",
+            "The STOPPING state indicates the node pool is being deleted.",
+            "The ERROR state indicates the node pool may be unusable. Details\ncan be found in the `statusMessage` field."
+          ],
+          "type": "string",
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "RUNNING_WITH_ERROR",
+            "RECONCILING",
+            "STOPPING",
+            "ERROR"
+          ]
+        },
+        "statusMessage": {
+          "description": "[Output only] Additional information about the current status of this\nnode pool instance, if available.",
           "type": "string"
         }
       }

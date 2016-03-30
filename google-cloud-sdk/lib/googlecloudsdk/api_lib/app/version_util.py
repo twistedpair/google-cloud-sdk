@@ -159,21 +159,21 @@ def ParseVersionResourcePaths(paths, project):
   return versions
 
 
-def _FilterVersions(all_versions, service, versions):
-  """Filter all of the project's versions down to just the requested ones.
+def GetMatchingVersions(all_versions, versions, service):
+  """Return a list of versions to act on based on user arguments.
 
   Args:
     all_versions: list of Version representing all services in the project.
-    service: str or None. If specified, only return versions for the specific
-      service.
-    versions: list of version names. If given, only return versions with one of
-      the given names.
+    versions: list of string, version names to filter for.
+      If empty, match all versions.
+    service: string or None, service name. If given, only match versions in the
+      given service.
 
   Returns:
-    list of Version
+    list of matching Version
 
   Raises:
-    VersionValidationError: if the specified service was not found
+    VersionValidationError: If an improper combination of arguments is given.
   """
   filtered_versions = all_versions
   if service:
@@ -185,43 +185,6 @@ def _FilterVersions(all_versions, service, versions):
     filtered_versions = [v for v in filtered_versions if v.id in versions]
 
   return filtered_versions
-
-
-def GetMatchingVersions(all_versions, args_versions, args_service, project):
-  """Return a list of versions to act on based on user arguments.
-
-  Args:
-    all_versions: list of Version representing all services in the project.
-    args_versions: list of string, version names/resource paths to filter for.
-      If empty, match all versions.
-    args_service: string or None, service name. If given, only match versions in
-      the given service.
-    project: the current project ID
-
-  Returns:
-    list of matching Version
-
-  Raises:
-    VersionValidationError: If an improper combination of arguments is given
-      (ex. a service is provided, but args_versions are given as resource
-      paths).
-  """
-  # If resource path(s) are given, use those. Otherwise, filter all available
-  # versions based on the given service/version specifiers.
-  versions = None
-  if any('/' in version for version in args_versions):
-    versions = ParseVersionResourcePaths(args_versions, project)
-    _ValidateServicesAreSubset(versions, all_versions)
-    for version in versions:
-      if args_service and version.service != args_service:
-        raise VersionValidationError(
-            'If you provide a resource path as an argument, it must match the '
-            'specified service.')
-      version_from_api = all_versions[all_versions.index(version)]
-      version.traffic_split = version_from_api.traffic_split
-  else:
-    versions = _FilterVersions(all_versions, args_service, args_versions)
-  return versions
 
 
 def DeleteVersions(api_client, versions):

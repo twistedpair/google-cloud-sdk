@@ -71,6 +71,9 @@ class Cluster(_messages.Message):
       node_pool at the same time.
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this cluster.
+    locations: The list of Google Compute Engine
+      [locations](/compute/docs/zones#available) in which the cluster's nodes
+      should be located.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options:  * `logging.googleapis.com` - the Google
       Cloud Logging service. * `none` - no logs will be exported from the
@@ -154,20 +157,21 @@ class Cluster(_messages.Message):
   initialClusterVersion = _messages.StringField(9)
   initialNodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(11, repeated=True)
-  loggingService = _messages.StringField(12)
-  masterAuth = _messages.MessageField('MasterAuth', 13)
-  monitoringService = _messages.StringField(14)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  nodeConfig = _messages.MessageField('NodeConfig', 17)
-  nodeIpv4CidrSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 19, repeated=True)
-  selfLink = _messages.StringField(20)
-  servicesIpv4Cidr = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusMessage = _messages.StringField(23)
-  subnetwork = _messages.StringField(24)
-  zone = _messages.StringField(25)
+  locations = _messages.StringField(12, repeated=True)
+  loggingService = _messages.StringField(13)
+  masterAuth = _messages.MessageField('MasterAuth', 14)
+  monitoringService = _messages.StringField(15)
+  name = _messages.StringField(16)
+  network = _messages.StringField(17)
+  nodeConfig = _messages.MessageField('NodeConfig', 18)
+  nodeIpv4CidrSize = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 20, repeated=True)
+  selfLink = _messages.StringField(21)
+  servicesIpv4Cidr = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  statusMessage = _messages.StringField(24)
+  subnetwork = _messages.StringField(25)
+  zone = _messages.StringField(26)
 
 
 class ClusterUpdate(_messages.Message):
@@ -616,11 +620,7 @@ class NodeConfig(_messages.Message):
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
     image: The image track to use for this node. Note that for a given image
-      track, the latest version of it will be used. TODO(user): This will
-      NOT be exposed to the user in the first iteration, since we're still
-      working through what an "image track" means and what we'll support.
-      Discussion on the possibility of supporting different versions will be
-      done then as well.
+      track, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -732,22 +732,58 @@ class NodePool(_messages.Message):
   during pod scheduling. They may also be resized up or down, to accommodate
   the workload.
 
+  Enums:
+    StatusValueValuesEnum: The status of the nodes in this pool instance.
+
   Fields:
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool.
-    instanceGroupUrl: [Output only] The resource URLs of [instance
+    instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this node pool.
     name: The name of the node pool.
     selfLink: Server-defined URL for the resource.
+    status: The status of the nodes in this pool instance.
+    statusMessage: [Output only] Additional information about the current
+      status of this node pool instance, if available.
     version: The version of the Kubernetes of this node.
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    """The status of the nodes in this pool instance.
+
+    Values:
+      STATUS_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the node pool is being
+        created.
+      RUNNING: The RUNNING state indicates the node pool has been created and
+        is fully usable.
+      RUNNING_WITH_ERROR: The RUNNING_WITH_ERROR state indicates the node pool
+        has been created and is partially usable. Some error state has
+        occurred and some functionality may be impaired. Customer may need to
+        reissue a request or trigger a new update.
+      RECONCILING: The RECONCILING state indicates that some work is actively
+        being done on the node pool, such as upgrading node software. Details
+        can be found in the `statusMessage` field.
+      STOPPING: The STOPPING state indicates the node pool is being deleted.
+      ERROR: The ERROR state indicates the node pool may be unusable. Details
+        can be found in the `statusMessage` field.
+    """
+    STATUS_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RUNNING_WITH_ERROR = 3
+    RECONCILING = 4
+    STOPPING = 5
+    ERROR = 6
+
   config = _messages.MessageField('NodeConfig', 1)
   initialNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  instanceGroupUrl = _messages.StringField(3)
+  instanceGroupUrls = _messages.StringField(3, repeated=True)
   name = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  version = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  statusMessage = _messages.StringField(7)
+  version = _messages.StringField(8)
 
 
 class Operation(_messages.Message):

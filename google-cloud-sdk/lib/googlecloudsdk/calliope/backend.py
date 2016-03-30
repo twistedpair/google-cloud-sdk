@@ -477,8 +477,10 @@ class ArgumentInterceptor(object):
     # added at the root of the CLI tree, or if it is explicitly added to every
     # command level.
     is_global = self.is_root or is_replicated
-    # True if this should be marked as a commonly used flag.
-    is_common = kwargs.pop('is_common', False)
+    # The flag category name, None for no category. This is also used for help
+    # printing. Flags in the same category are grouped together in a section
+    # named "{category} FLAGS".
+    category = kwargs.pop('category', None)
     # Any alias this flag has for the purposes of the "did you mean"
     # suggestions.
     suggestion_aliases = kwargs.pop('suggestion_aliases', [])
@@ -500,9 +502,9 @@ class ArgumentInterceptor(object):
         raise ArgumentException(
             "Positional arguments cannot contain a '-'. Illegal argument [{0}] "
             'for command [{1}]'.format(name, self.data.command_name))
-      if is_common:
+      if category:
         raise ArgumentException(
-            'Positional argument [{0}] cannot be marked as a common flag in '
+            'Positional argument [{0}] cannot have a category in '
             'command [{1}]'.format(name, self.data.command_name))
       if suggestion_aliases:
         raise ArgumentException(
@@ -524,22 +526,34 @@ class ArgumentInterceptor(object):
                              list_command_path)
 
     if positional:
+      if category:
+        raise ArgumentException(
+            'Positional argument [{0}] cannot have a category in '
+            'command [{1}]'.format(name, self.data.command_name))
       self.positional_args.append(added_argument)
     else:
+      if category and required:
+        raise ArgumentException(
+            'Required flag [{0}] cannot have a category in '
+            'command [{1}]'.format(name, self.data.command_name))
+      if category == 'REQUIRED':
+        raise ArgumentException(
+            "Flag [{0}] cannot have category='REQUIRED' in "
+            'command [{1}]'.format(name, self.data.command_name))
+      added_argument.category = category
       added_argument.do_not_propagate = do_not_propagate
       added_argument.is_replicated = is_replicated
       added_argument.is_global = is_global
-      added_argument.is_common = is_common
       added_argument.suggestion_aliases = suggestion_aliases
       self.flag_args.append(added_argument)
 
       inverted_flag = self._AddInvertedBooleanFlagIfNecessary(
           added_argument, name, dest, kwargs)
       if inverted_flag:
+        inverted_flag.category = category
         inverted_flag.do_not_propagate = do_not_propagate
         inverted_flag.is_replicated = is_replicated
         inverted_flag.is_global = is_global
-        inverted_flag.is_common = is_common
         # Don't add suggestion aliases for the inverted flag.  It can only map
         # to one or the other.
         self.flag_args.append(inverted_flag)
@@ -907,12 +921,12 @@ class CommandCommon(object):
     self.ai.add_argument(
         '-h', action=actions.ShortHelpAction(self),
         is_replicated=True,
-        is_common=True,
+        category=base.COMMONLY_USED_FLAGS,
         help='Print a summary help and exit.')
     self.ai.add_argument(
         '--help', action=actions.RenderDocumentAction(self, '--help'),
         is_replicated=True,
-        is_common=True,
+        category=base.COMMONLY_USED_FLAGS,
         help='Display detailed help.')
     self.ai.add_argument(
         '--document', action=actions.RenderDocumentAction(self),

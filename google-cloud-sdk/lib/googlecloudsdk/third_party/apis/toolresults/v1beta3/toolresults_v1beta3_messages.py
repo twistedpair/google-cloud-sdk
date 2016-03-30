@@ -11,11 +11,11 @@ package = 'toolresults'
 
 
 class Any(_messages.Message):
-  """`Any` contains an arbitrary serialized message along with a URL that
-  describes the type of the serialized message.  Protobuf library provides
-  support to pack/unpack Any values in the form of utility functions or
-  additional generated methods of the Any type.  Example 1: Pack and unpack a
-  message in C++.  Foo foo = ...; Any any; any.PackFrom(foo); ... if
+  """`Any` contains an arbitrary serialized protocol buffer message along with
+  a URL that describes the type of the serialized message.  Protobuf library
+  provides support to pack/unpack Any values in the form of utility functions
+  or additional generated methods of the Any type.  Example 1: Pack and unpack
+  a message in C++.  Foo foo = ...; Any any; any.PackFrom(foo); ... if
   (any.UnpackTo(&foo)) { ... }  Example 2: Pack and unpack a message in Java.
   Foo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) { foo =
   any.unpack(Foo.class); }  The pack methods provided by protobuf library will
@@ -35,19 +35,20 @@ class Any(_messages.Message):
 
   Fields:
     typeUrl: A URL/resource name whose content describes the type of the
-      serialized message.  For URLs which use the schema `http`, `https`, or
-      no schema, the following restrictions and interpretations apply:  * If
-      no schema is provided, `https` is assumed. * The last segment of the
-      URL's path must represent the fully qualified name of the type (as in
-      `path/google.protobuf.Duration`). * An HTTP GET on the URL must yield a
-      [google.protobuf.Type][] value in binary format, or produce an error. *
-      Applications are allowed to cache lookup results based on the URL, or
-      have them precompiled into a binary to avoid any lookup. Therefore,
-      binary compatibility needs to be preserved on changes to types. (Use
-      versioned type names to manage breaking changes.)  Schemas other than
-      `http`, `https` (or the empty schema) might be used with implementation
-      specific semantics.
-    value: Must be valid serialized data of the above specified type.
+      serialized protocol buffer message.  For URLs which use the schema
+      `http`, `https`, or no schema, the following restrictions and
+      interpretations apply:  * If no schema is provided, `https` is assumed.
+      * The last segment of the URL's path must represent the fully qualified
+      name of the type (as in `path/google.protobuf.Duration`). * An HTTP GET
+      on the URL must yield a [google.protobuf.Type][] value in binary format,
+      or produce an error. * Applications are allowed to cache lookup results
+      based on the URL, or have them precompiled into a binary to avoid any
+      lookup. Therefore, binary compatibility needs to be preserved on changes
+      to types. (Use versioned type names to manage breaking changes.)
+      Schemas other than `http`, `https` (or the empty schema) might be used
+      with implementation specific semantics.
+    value: Must be a valid serialized protocol buffer of the above specified
+      type.
   """
 
   typeUrl = _messages.StringField(1)
@@ -92,7 +93,7 @@ class Execution(_messages.Message):
   represent: - a mobile test executed across a range of device configurations
   - a jenkins job with a build step followed by a test step  The maximum size
   of an execution message is 1 MiB.  An Execution can be updated until its
-  state is set to COMPLETE at which point it becomes immutable. Next tag: 12
+  state is set to COMPLETE at which point it becomes immutable.
 
   Enums:
     StateValueValuesEnum: The initial state is IN_PROGRESS.  The only legal
@@ -200,8 +201,7 @@ class History(_messages.Message):
   start_timestamp_millis field (descending). It can be used to group all the
   Executions of a continuous build.  Note that the ordering only operates on
   one-dimension. If a repository has multiple branches, it means that multiple
-  histories will need to be used in order to order Executions per branch. Next
-  tag: 7
+  histories will need to be used in order to order Executions per branch.
 
   Fields:
     displayName: A short human-readable (plain text) name to display in the
@@ -221,7 +221,7 @@ class History(_messages.Message):
 
 
 class Image(_messages.Message):
-  """An image, with a link to the main image and a thumbnail.  Next tag: 6
+  """An image, with a link to the main image and a thumbnail.
 
   Fields:
     error: An error explaining why the thumbnail could not be rendered.
@@ -253,8 +253,7 @@ class InconclusiveDetail(_messages.Message):
     nativeCrash: A native process crashed on the device, producing a
       tombstone. It is unclear whether the crash was related to the app under
       test.  For example, OpenGL crashed, but it is unclear if the app is
-      responsible. TODO(user): Remove after all reference from TestService
-      are deleted.
+      responsible.
   """
 
   abortedByUser = _messages.BooleanField(1)
@@ -263,7 +262,7 @@ class InconclusiveDetail(_messages.Message):
 
 
 class ListExecutionsResponse(_messages.Message):
-  """Next tag: 3
+  """A ListExecutionsResponse object.
 
   Fields:
     executions: Executions.  Always set.
@@ -293,7 +292,7 @@ class ListHistoriesResponse(_messages.Message):
 
 
 class ListStepThumbnailsResponse(_messages.Message):
-  """A response containing the thumbnails in a step.  Next tag: 3
+  """A response containing the thumbnails in a step.
 
   Fields:
     nextPageToken: A continuation token to resume the query at the next item.
@@ -414,6 +413,16 @@ class SkippedDetail(_messages.Message):
   incompatibleDevice = _messages.BooleanField(3)
 
 
+class StackTrace(_messages.Message):
+  """A stacktrace.
+
+  Fields:
+    exception: The stack trace message.  Required
+  """
+
+  exception = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -518,7 +527,7 @@ class Step(_messages.Message):
   xml logs and returns a TestExecutionStep with updated TestResult(s). - user
   update the status of TestExecutionStep with id 100 to COMPLETE  A Step can
   be updated until its state is set to COMPLETE at which points it becomes
-  immutable.  Next tag: 20
+  immutable.
 
   Enums:
     StateValueValuesEnum: The initial state is IN_PROGRESS. The only legal
@@ -709,6 +718,11 @@ class TestExecutionStep(_messages.Message):
   field. Next tag: 7
 
   Fields:
+    testIssues: Issues observed during the test execution.  For example, if
+      the mobile app under test crashed during the test, the error message and
+      the stack trace content can be recorded here to assist debugging.  - In
+      response: present if set by create or update - In create/update request:
+      optional
     testSuiteOverviews: List of test suite overview contents. This could be
       parsed from xUnit XML log by server, or uploaded directly by user. This
       references should only be called when test suites are fully parsed or
@@ -722,16 +736,30 @@ class TestExecutionStep(_messages.Message):
       response: always set - In create/update request: optional
   """
 
-  testSuiteOverviews = _messages.MessageField('TestSuiteOverview', 1, repeated=True)
-  testTiming = _messages.MessageField('TestTiming', 2)
-  toolExecution = _messages.MessageField('ToolExecution', 3)
+  testIssues = _messages.MessageField('TestIssue', 1, repeated=True)
+  testSuiteOverviews = _messages.MessageField('TestSuiteOverview', 2, repeated=True)
+  testTiming = _messages.MessageField('TestTiming', 3)
+  toolExecution = _messages.MessageField('ToolExecution', 4)
+
+
+class TestIssue(_messages.Message):
+  """An abnormal event observed during the test execution.
+
+  Fields:
+    errorMessage: A brief human-readable message describing the abnormal
+      event.  Required.
+    stackTrace: Optional.
+  """
+
+  errorMessage = _messages.StringField(1)
+  stackTrace = _messages.MessageField('StackTrace', 2)
 
 
 class TestSuiteOverview(_messages.Message):
   """A summary of a test suite result either parsed from XML or uploaded
   directly by a user.  Note: the API related comments are for StepService
   only. This message is also being used in ExecutionService in a read only
-  mode for the corresponding step.  Next tag: 7
+  mode for the corresponding step.
 
   Fields:
     errorCount: Number of test cases in error, typically set by the service by
@@ -775,7 +803,7 @@ class TestTiming(_messages.Message):
 
 
 class Thumbnail(_messages.Message):
-  """A single thumbnail, with its size and format.  Next tag: 102
+  """A single thumbnail, with its size and format.
 
   Fields:
     contentType: The thumbnail's content type, i.e. "image/png".  Always set.
@@ -837,7 +865,7 @@ class Timestamp(_messages.Message):
 
 class ToolExecution(_messages.Message):
   """An execution of an arbitrary tool. It could be a test runner or a tool
-  copying artifacts or deploying code. Next tag: 7
+  copying artifacts or deploying code.
 
   Fields:
     commandLineArguments: The full tokenized command line including the

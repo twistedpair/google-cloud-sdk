@@ -2,6 +2,27 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 103.0.0 (2016/03/30)
+
+### Google Cloud Storage
+
+ * Update gsutil component to 4.18 (https://github.com/GoogleCloudPlatform/gsutil/blob/v4.18/CHANGES.md)
+
+### Google App Engine
+
+ * Add fingerprinting support for PHP applications. You can now run
+   `gcloud preview app gen-config` to auto-generate the necessary configuration for
+   deploying PHP applications to the App Engine Flexible Environment.
+
+### Google Container Engine
+
+ * gcloud container clusters create|get-credentials will warn/error
+   respectively if the HOME env var isn't set. The variable
+   is required to store kubectl credentials (kubeconfig).
+
+### Google Compute Engine
+
+  * Enable support for: gcloud compute disks resize.
 
 ## 102.0.0 (2016/03/22)
 

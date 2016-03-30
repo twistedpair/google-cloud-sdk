@@ -487,8 +487,18 @@
           "description": "Optional. How the results should be sorted.  Presently, the only permitted\nvalues are `\"timestamp asc\"` (default) and `\"timestamp desc\"`. The first\noption returns entries in order of increasing values of\n`LogEntry.timestamp` (oldest first), and the second option returns entries\nin order of decreasing timestamps (newest first).  Entries with equal\ntimestamps will be returned in order of `LogEntry.insertId`.",
           "type": "string"
         },
+        "batchSize": {
+          "description": "Optional. The number of LogEntrys to return in each streamed response.\nIf unspecified, the default will be 10.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxResponseInterval": {
+          "description": "Optional. The maximum time between successive streamed responses.\nA response will be sent every max_response_interval even if page_size\nentries have not yet been accumulated provided that either some entries\nhave been accumulated OR the last_observed_entry_timestamp \/ resume_token\nhas changed. (i.e. a response containg 0 entries is allowed)\nIf unspecified, the default will be 1 second.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "resumeToken": {
-          "description": "Optional. If the `resumeToken` parameter is supplied, then the next page of\nresults is retrieved. The `resumeToken` parameter must be set to the value\nfrom the previous response.",
+          "description": "Optional. If the `resumeToken` parameter is supplied, then the next batch of\nresults is retrieved. The `resumeToken` parameter must be set to the value\nfrom the previous response.",
           "type": "string"
         }
       }
@@ -499,14 +509,14 @@
       "type": "object",
       "properties": {
         "entries": {
-          "description": "A list of log entries. If the list is empty, there are no more entries in\nthe stream.",
+          "description": "A list of log entries - may be empty.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
           }
         },
         "lastObservedEntryTimestamp": {
-          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned.",
+          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a resume token is returned.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -540,7 +550,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Optional. The resource name of the monitored resource descriptor:\n`\"projects\/<project_id>\/monitoredResourceDescriptors\/<type>\"` where\n&lt;type&gt; is the value of the `type` field in this object and\n&lt;project_id&gt; is a project ID that provides API-specific context for\naccessing the type.  APIs that do not use project information can use the\nresource name format `\"monitoredResourceDescriptors\/<type>\"`.",
+          "description": "Optional. The resource name of the monitored resource descriptor:\n`\"projects\/{project_id}\/monitoredResourceDescriptors\/{type}\"` where\n{type} is the value of the `type` field in this object and\n{project_id} is a project ID that provides API-specific context for\naccessing the type.  APIs that do not use project information can use the\nresource name format `\"monitoredResourceDescriptors\/{type}\"`.",
           "type": "string"
         },
         "type": {
@@ -1616,7 +1626,13 @@
           },
           "response": {
             "$ref": "ReadLogEntriesResponse"
-          }
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
         }
       }
     },

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160314",
+ "revision": "20160324",
  "title": "Compute Engine API",
  "description": "API for the Google Compute Engine service.",
  "ownerDomain": "google.com",
@@ -974,6 +974,9 @@
       "$ref": "Backend"
      }
     },
+    "connectionDraining": {
+     "$ref": "ConnectionDraining"
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -1037,6 +1040,10 @@
       "",
       ""
      ]
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the regional backend service resides. This field is not applicable to global backend services."
     },
     "selfLink": {
      "type": "string",
@@ -1209,6 +1216,18 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "ConnectionDraining": {
+   "id": "ConnectionDraining",
+   "type": "object",
+   "description": "Message containing connection draining configuration.",
+   "properties": {
+    "drainingTimeoutSec": {
+     "type": "integer",
+     "description": "Time for which instance will be drained (not accept new connections, but still work to finish started).",
+     "format": "int32"
     }
    }
   },
@@ -6070,7 +6089,7 @@
     },
     "ins": {
      "type": "array",
-     "description": "The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in this set of entries.",
+     "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.",
      "items": {
       "type": "string"
      }
@@ -6084,7 +6103,7 @@
     },
     "notIns": {
      "type": "array",
-     "description": "The rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is not in this set of entries.",
+     "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.",
      "items": {
       "type": "string"
      }
@@ -14567,6 +14586,47 @@
       "instance": {
        "type": "string",
        "description": "Name of the instance resource to stop.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "suspend": {
+     "id": "compute.instances.suspend",
+     "path": "{project}/zones/{zone}/instances/{instance}/suspend",
+     "httpMethod": "POST",
+     "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance resource to suspend.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"

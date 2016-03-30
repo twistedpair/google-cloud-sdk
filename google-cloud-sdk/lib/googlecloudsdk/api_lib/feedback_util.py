@@ -38,7 +38,7 @@ What is the expected output? What do you see instead?
 Please provide any additional information below.
 
 
-{formatted_traceback}Installation information:
+{formatted_stacktrace}{exception}Installation information:
 
 {gcloud_info}\
 """
@@ -47,12 +47,13 @@ TRUNCATED_INFO_MESSAGE = '[output truncated]'
 
 STACKTRACE_LINES_PER_ENTRY = 2
 
-# Pattern for splitting the formatted issue comment into the parts that fall
-# before and after the stacktrace, as well as the stacktrace itself.
-EXTRACT_STACKTRACE_PATTERN = (
-    r'(?P<pre_stacktrace>(?:.|\n)*Trace:\n)'
-    r'(?P<stacktrace>(?:.|\n)*?)'
-    r'(?P<exception>\n\w(?:.|\n)*)')
+# Pattern for splitting the traceback into stacktrace and exception.
+PARTITION_TRACEBACK_PATTERN = (
+    r'(?P<stacktrace>'
+    r'Traceback \(most recent call last\):\n'
+    r'(?: {2}File ".*", line \d+, in .+\n {4}.+\n)+'
+    r')'
+    r'(?P<exception>\S.+)')
 
 TRACEBACK_ENTRY_REGEXP = (
     r'File "(?P<file>.*)", line (?P<line>\d+), in (?P<function>.+)\n'
@@ -87,7 +88,7 @@ def _UrlEncodeLen(string):
 
 
 def _FormatStackTrace(first_entry, rest):
-  return '\n'.join([first_entry, '  [...]'] + rest)
+  return '\n'.join([first_entry, '  [...]'] + rest) + '\n'
 
 
 def _ShortenStacktrace(stacktrace, url_encoded_length):
@@ -118,7 +119,7 @@ def _ShortenStacktrace(stacktrace, url_encoded_length):
 
 
   Args:
-    stacktrace: str, the formatted stacktrace (as Python prints by default)
+    stacktrace: str, the stacktrace (might be formatted by _FormatTraceback)
     url_encoded_length: int, the length to shorten the stacktrace to (when
         URL-encoded).
 
@@ -135,7 +136,7 @@ def _ShortenStacktrace(stacktrace, url_encoded_length):
              range(0, len(lines), STACKTRACE_LINES_PER_ENTRY)]
 
   if _UrlEncodeLen(stacktrace) <= url_encoded_length:
-    return stacktrace
+    return stacktrace + '\n'
 
   rest = entries[1:]
   while (_UrlEncodeLen(_FormatStackTrace(entries[0], rest)) >
@@ -147,7 +148,7 @@ def _ShortenStacktrace(stacktrace, url_encoded_length):
   return _FormatStackTrace(entries[0], rest)
 
 
-def _ShortenIssueBody(comment, url_encoded_length):
+def _ShortenIssueBody(comment, stacktrace, exception, url_encoded_length):
   """Shortens the comment to be at most the given length (URL-encoded).
 
   Does one of two things:
@@ -156,11 +157,14 @@ def _ShortenIssueBody(comment, url_encoded_length):
       URL-encoded max length, truncates the remainder of the comment (which
       should include e.g. the output of `gcloud info`.
   (2) Otherwise, chop out the middle of the stacktrace until it fits. (See
-      _ShortenStacktrace docstring for an example). If the stacktrace cannot be
-      shortened in this manner, revert to (1).
+      _ShortenStacktrace docstring for an example).
+  (3) If the stacktrace cannot be shortened to fit in (2), then revert to (1).
+      That is, truncate the comment.
 
   Args:
     comment: str, the formatted comment for inclusion before shortening.
+    stacktrace: str, the formatted stacktrace portion of the comment
+    exception: str, the exception in the comment
     url_encoded_length: the max length of the comment after shortening (when
         comment is URL-encoded).
 
@@ -179,27 +183,35 @@ def _ShortenIssueBody(comment, url_encoded_length):
   # character count.
   max_str_len = (url_encoded_length -
                  _UrlEncodeLen(TRUNCATED_INFO_MESSAGE + '\n'))
+  truncated_issue_body, remaining = _UrlTruncateLines(comment, max_str_len)
+
+  # Case (1) from the docstring
   if _UrlEncodeLen(critical_info) <= max_str_len:
-    # Case (1) from the docstring
-    return _UrlTruncateLines(comment, max_str_len)
+    return truncated_issue_body, remaining
   else:
-    # Case (2) from the docstring
-    match = re.search(EXTRACT_STACKTRACE_PATTERN, critical_info)
-    pre_stacktrace = match.groupdict()['pre_stacktrace']
-    stacktrace = match.groupdict()['stacktrace']
-    exception = match.groupdict()['exception']
+    # Attempt to shorten stacktrace by cutting out middle
+    pre_stacktrace, _, _ = critical_info.partition('Trace:\n')
 
     max_stacktrace_len = (
         url_encoded_length -
-        _UrlEncodeLen(pre_stacktrace + exception + TRUNCATED_INFO_MESSAGE))
-    shortened_stacktrace = _ShortenStacktrace(stacktrace, max_stacktrace_len)
-    included = (pre_stacktrace + shortened_stacktrace + exception +
-                TRUNCATED_INFO_MESSAGE)
-    excluded = ('Full stack trace (formatted):\n' + stacktrace + exception +
-                optional_info)
-    if _UrlEncodeLen(included) > max_str_len:
-      included = _UrlTruncateLines(included + optional_info, max_str_len)[0]
-    return included, excluded
+        _UrlEncodeLen(pre_stacktrace + 'Trace:\n' + exception + '\n' +
+                      TRUNCATED_INFO_MESSAGE))
+    shortened_stacktrace = ('Trace:\n' +
+                            _ShortenStacktrace(stacktrace, max_stacktrace_len))
+    critical_info_with_shortened_stacktrace = (
+        pre_stacktrace + shortened_stacktrace + exception + '\n' +
+        TRUNCATED_INFO_MESSAGE)
+    optional_info_with_full_stacktrace = ('Full stack trace (formatted):\n' +
+                                          stacktrace + exception + '\n' +
+                                          optional_info)
+
+    # Case (2) from the docstring
+    if _UrlEncodeLen(critical_info_with_shortened_stacktrace) <= max_str_len:
+      return (critical_info_with_shortened_stacktrace,
+              optional_info_with_full_stacktrace)
+    # Case (3) from the docstring
+    else:
+      return truncated_issue_body, optional_info_with_full_stacktrace
 
 
 def _UrlTruncateLines(string, url_encoded_length):
@@ -290,29 +302,32 @@ def _FormatIssueBody(info, log_data=None):
     formatted_command = 'Issue running command [{0}].\n\n'.format(
         log_data.command)
 
-  formatted_traceback = ''
+  formatted_stacktrace = ''
+  exception = ''
   if log_data and log_data.traceback:
     # Because we have a limited number of characters to work with (see
     # MAX_URL_LENGTH), we reduce the size of the traceback by stripping out the
     # unnecessary information, such as the runtime root and function names.
-    formatted_traceback = _FormatTraceback(log_data.traceback)
+    formatted_stacktrace, exception = _FormatTraceback(log_data.traceback)
+  return (COMMENT_TEMPLATE.format(formatted_command=formatted_command,
+                                  gcloud_info=gcloud_info.strip(),
+                                  formatted_stacktrace=formatted_stacktrace,
+                                  exception=exception),
+          formatted_stacktrace,
+          exception)
 
-  return COMMENT_TEMPLATE.format(formatted_command=formatted_command,
-                                 gcloud_info=gcloud_info.strip(),
-                                 formatted_traceback=formatted_traceback)
 
-
-def _TracebackEntryReplacement(entry):
-  """Used in re.sub to format a traceback entry to make it more compact.
+def _StacktraceEntryReplacement(entry):
+  """Used in re.sub to format a stacktrace entry to make it more compact.
 
   File "qux.py", line 13, in run      ===>      qux.py:13
     foo = math.sqrt(bar) / foo                   foo = math.sqrt(bar)...
 
   Args:
-    entry: re.MatchObject, the original unformatted traceback entry
+    entry: re.MatchObject, the original unformatted stacktrace entry
 
   Returns:
-    str, the formatted traceback entry
+    str, the formatted stacktrace entry
   """
 
   filename = entry.group('file')
@@ -327,36 +342,51 @@ def _TracebackEntryReplacement(entry):
 
 
 def _FormatTraceback(traceback):
-  """Formats traceback to make it more compact, without losing useful info.
+  """Compacts stack trace portion of traceback and extracts exception.
 
   Args:
     traceback: str, the original unformatted traceback
 
   Returns:
-    str, the formatted traceback
+    tuple of (str, str) where the first str is the formatted stack trace and the
+    second str is exception.
   """
+  # Separate stacktrace and exception
+  match = re.search(PARTITION_TRACEBACK_PATTERN, traceback)
+  if not match:
+    return traceback, ''
+
+  stacktrace = match.group('stacktrace')
+  exception = match.group('exception')
+
   # Strip trailing whitespace.
-  traceback = '\n'.join(line.strip() for line in traceback.splitlines()) + '\n'
+  formatted_stacktrace = '\n'.join(line.strip() for line in
+                                   stacktrace.splitlines())
+  formatted_stacktrace += '\n'
 
   # Strip out common directory prefix
-  traceback_files = re.findall(r'File "(.*)"', traceback)
-  common_prefix = _CommonPrefix(traceback_files)
-  traceback = traceback.replace(common_prefix, '')
+  stacktrace_files = re.findall(r'File "(.*)"', stacktrace)
+  common_prefix = _CommonPrefix(stacktrace_files)
+  formatted_stacktrace = formatted_stacktrace.replace(common_prefix, '')
 
-  # Strip out ./lib, lib/googlecloudsdk, and lib/third_party
+  # Strip out ./, lib/, lib/googlecloudsdk, and lib/third_party
   sep = os.path.sep
-  traceback = traceback.replace('.' + sep, '')
-  traceback = traceback.replace('lib' + sep + 'googlecloudsdk' + sep, '')
-  traceback = traceback.replace('lib' + sep + 'third_party' + sep, '')
-  traceback = traceback.replace('lib' + sep, '')
+  formatted_stacktrace = formatted_stacktrace.replace('.' + sep, '')
+  formatted_stacktrace = formatted_stacktrace.replace(
+      'lib' + sep + 'googlecloudsdk' + sep, '')
+  formatted_stacktrace = formatted_stacktrace.replace(
+      'lib' + sep + 'third_party' + sep, '')
+  formatted_stacktrace = formatted_stacktrace.replace('lib' + sep, '')
 
   # Make each stack frame entry more compact
-  traceback = re.sub(TRACEBACK_ENTRY_REGEXP, _TracebackEntryReplacement,
-                     traceback)
+  formatted_stacktrace = re.sub(TRACEBACK_ENTRY_REGEXP,
+                                _StacktraceEntryReplacement,
+                                formatted_stacktrace)
 
-  traceback = traceback.replace('Traceback (most recent call last):',
-                                'Trace:')
-  return traceback + '\n\n'
+  formatted_stacktrace = formatted_stacktrace.replace(
+      'Traceback (most recent call last):', 'Trace:')
+
+  return formatted_stacktrace, exception
 
 
 def OpenNewIssueInBrowser(info, log_data):
@@ -368,11 +398,12 @@ def OpenNewIssueInBrowser(info, log_data):
     info: InfoHolder, the data from of `gcloud info`
     log_data: LogData, parsed representation of a recent log
   """
-  comment = _FormatIssueBody(info, log_data)
+  comment, formatted_stacktrace, exception = _FormatIssueBody(info, log_data)
   url = _FormatNewIssueUrl(comment)
   if len(url) > MAX_URL_LENGTH:
     max_info_len = MAX_URL_LENGTH - len(_FormatNewIssueUrl(''))
-    truncated, remaining = _ShortenIssueBody(comment, max_info_len)
+    truncated, remaining = _ShortenIssueBody(
+        comment, formatted_stacktrace, exception, max_info_len)
     log.warn('Truncating included information. '
              'Please consider including the remainder:')
     divider_text = 'TRUNCATED INFORMATION (PLEASE CONSIDER INCLUDING)'

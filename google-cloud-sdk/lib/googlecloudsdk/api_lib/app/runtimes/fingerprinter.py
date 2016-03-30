@@ -40,7 +40,12 @@ RUNTIMES = [
     ext_runtime_adapter.CoreRuntimeLoader('java', 'Java',
                                           ['java', 'java7', 'custom']),
     python_compat,
-    python,  # python is last because it passes if there are any .py files.
+
+    # Python and PHP are last because they match if any .py or .php file is
+    # present.
+    ext_runtime_adapter.CoreRuntimeLoader('python', 'Python',
+                                          ['python', 'custom']),
+    ext_runtime_adapter.CoreRuntimeLoader('php', 'PHP', ['php', 'custom']),
 ]
 
 

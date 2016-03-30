@@ -189,30 +189,11 @@ def FilterInstances(instances, service=None, version=None, instance_path=None):
     InvalidInstanceSpecificationError: if an inconsistent instance specification
       was given (ex. service='service1' and instance='service2/v1/abcd').
   """
-  if instance_path and '/' in instance_path:
-    parsed_instance = AppEngineInstance.FromResourcePath(instance_path,
-                                                         service=service,
-                                                         version=version)
-    if (parsed_instance.service and service and
-        parsed_instance.service != service):
-      raise InvalidInstanceSpecificationError(
-          'Service [{0}] is inconsistent with specified instance '
-          '[{1}].'.format(service, instance_path))
-    if (parsed_instance.version and version and
-        parsed_instance.version != version):
-      raise InvalidInstanceSpecificationError(
-          'Version [{0}] is inconsistent with specified instance '
-          '[{1}].'.format(version, instance_path))
-    service = service or parsed_instance.service
-    version = version or parsed_instance.version
-    instance_id = parsed_instance.id
-  else:
-    instance_id = instance_path
   matching_instances = []
   for provided_instance in instances:
     if ((not service or provided_instance.service == service) and
         (not version or provided_instance.version == version) and
-        (not instance_id or provided_instance.id == instance_id)):
+        (not instance_path or provided_instance.id == instance_path)):
       matching_instances.append(provided_instance)
   return matching_instances
 

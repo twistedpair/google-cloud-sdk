@@ -18,3 +18,7 @@ from googlecloudsdk.core import exceptions
 
 class GenomicsError(exceptions.Error):
   """Exceptions for Genomics errors."""
+
+
+class GenomicsInputFileError(GenomicsError):
+  """More specific errors for failure to read input files."""

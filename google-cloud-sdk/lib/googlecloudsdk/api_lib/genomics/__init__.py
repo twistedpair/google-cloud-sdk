@@ -16,3 +16,6 @@
 GENOMICS_MESSAGES_MODULE_KEY = 'genomics_messages'
 GENOMICS_APITOOLS_CLIENT_KEY = 'genomics_client'
 GENOMICS_RESOURCES_KEY = 'genomics_resources'
+GENOMICS_MESSAGES_V1A2_MODULE_KEY = 'genomics_v1alpha2_messages'
+GENOMICS_APITOOLS_V1A2_CLIENT_KEY = 'genomics_v1alpha2_client'
+STORAGE_V1_CLIENT_KEY = 'storage_v1_client'

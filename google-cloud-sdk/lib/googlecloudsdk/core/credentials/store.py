@@ -210,29 +210,33 @@ def AvailableAccounts():
   return accounts
 
 
-def LoadIfValid(account=None):
+def LoadIfValid(account=None, scopes=None):
   """Gets the credentials associated with the provided account if valid.
 
   Args:
     account: str, The account address for the credentials being fetched. If
         None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
+        are requested.
 
   Returns:
     oauth2client.client.Credentials, The credentials if they were found and
     valid, or None otherwise.
   """
   try:
-    return Load(account=account)
+    return Load(account=account, scopes=scopes)
   except Error:
     return None
 
 
-def Load(account=None):
+def Load(account=None, scopes=None):
   """Get the credentials associated with the provided account.
 
   Args:
     account: str, The account address for the credentials being fetched. If
         None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
+        are requested.
 
   Returns:
     oauth2client.client.Credentials, The specified credentials.
@@ -255,7 +259,9 @@ def Load(account=None):
     try:
       cred = client.GoogleCredentials.from_stream(cred_file_override)
       if cred.create_scoped_required():
-        cred = cred.create_scoped(config.CLOUDSDK_SCOPES)
+        if scopes is None:
+          scopes = config.CLOUDSDK_SCOPES
+        cred = cred.create_scoped(scopes)
       return cred
     except client.Error as e:
       raise InvalidCredentialFileException(cred_file_override, e)
@@ -306,13 +312,15 @@ def Refresh(creds, http=None):
     raise RefreshError(e)
 
 
-def Store(creds, account=None):
+def Store(creds, account=None, scopes=None):
   """Store credentials according for an account address.
 
   Args:
     creds: oauth2client.client.Credentials, The credentials to be stored.
     account: str, The account address of the account they're being stored for.
         If None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
+        are requested.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -331,10 +339,12 @@ def Store(creds, account=None):
   store = _StorageForAccount(account)
   store.put(creds)
   creds.set_store(store)
-  _GetLegacyGen(account, creds).WriteTemplate()
+  _GetLegacyGen(account, creds, scopes).WriteTemplate()
 
 
-def _GetLegacyGen(account, creds):
+def _GetLegacyGen(account, creds, scopes=None):
+  if scopes is None:
+    scopes = config.CLOUDSDK_SCOPES
   return legacy.LegacyGenerator(
       multistore_path=config.Paths().LegacyCredentialsMultistorePath(account),
       json_path=config.Paths().LegacyCredentialsJSONPath(account),
@@ -342,14 +352,14 @@ def _GetLegacyGen(account, creds):
       gsutil_path=config.Paths().LegacyCredentialsGSUtilPath(account),
       key_path=config.Paths().LegacyCredentialsKeyPath(account),
       json_key_path=config.Paths().LegacyCredentialsJSONKeyPath(account),
-      credentials=creds, scopes=config.CLOUDSDK_SCOPES)
+      credentials=creds, scopes=scopes)
 
 
 def RevokeCredentials(creds):
   # TODO(user): Remove this condition when oauth2client does not crash while
   # revoking SignedJwtAssertionCredentials.
   if creds and (not client.HAS_CRYPTO or
-                type(creds) != client.SignedJwtAssertionCredentials):
+                not isinstance(creds, client.SignedJwtAssertionCredentials)):
     creds.revoke(_Http())
 
 
@@ -361,14 +371,17 @@ def Revoke(account=None):
         None, the currently active account is used.
 
   Raises:
+    NoActiveAccountException: If account is not provided and there is no
+        active account.
     NoCredentialsForAccountException: If the provided account is not tied to any
         known credentials.
     RevokeError: If there was a more general problem revoking the account.
   """
   if not account:
     account = properties.VALUES.core.account.Get()
+  if not account:
+    raise NoActiveAccountException()
 
-  # TODO(b/26904445): Handle the case where account is None here.
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 

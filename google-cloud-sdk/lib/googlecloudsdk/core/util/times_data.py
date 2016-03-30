@@ -21,7 +21,7 @@
 # TimeZone abbreviations are not unique. We pick the ones most relevant to the
 # Cloud SDK. For example, CST is used for US/Central, China standard time and
 # Cuba Standard Time. Most service date/times will be UTC or have an explicit
-# numeric +/-HH:MM timzone offset, so duplicates will not be a big problem.
+# numeric +/-HH:MM timezone offset, so duplicates will not be a big problem.
 ABBREVIATION_TO_IANA = {
     'ACST': 'Australia/Adelaide',
     'AEST': 'Australia/Brisbane',
