@@ -25,6 +25,7 @@ import time
 import traceback
 
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.core.util import retry
 
 NUM_RETRIES = 10
 
@@ -649,3 +650,144 @@ class ChDir(object):
 
   def __exit__(self, typ, value, tb):
     os.chdir(self.__original_dir)
+
+
+class FileLockLockingError(Error):
+  pass
+
+
+class FileLockTimeoutError(FileLockLockingError):
+  """A case of FileLockLockingError."""
+  pass
+
+
+class FileLockUnlockingError(Error):
+  pass
+
+
+class FileLock(object):
+  """A file lock for interprocess (not interthread) mutual exclusion.
+
+  At most one FileLock instance may be locked at a time for a given local file
+  path. FileLock instances may be used as context objects.
+  """
+
+  def __init__(self, path, timeout_secs=None):
+    """Constructs the FileLock.
+
+    Args:
+      path: str, the path to the file to lock. The directory containing the
+        file must already exist when Lock() is called.
+      timeout_secs: int, seconds Lock() may wait for the lock to become
+        available. If None, Lock() may block forever.
+    """
+    self._path = path
+    self._timeout_secs = timeout_secs
+    self._file = None
+    self._locked = False
+    if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+      self._impl = _WindowsLocking()
+    else:
+      self._impl = _PosixLocking()
+
+  def Lock(self):
+    """Opens and locks the file. A no-op if this FileLock is already locked.
+
+    The lock file is created if it does not already exist.
+
+    Raises:
+      FileLockLockingError: if the file could not be opened (or created when
+        necessary).
+      FileLockTimeoutError: if the file could not be locked before the timeout
+        elapsed.
+    """
+    if self._locked:
+      return
+    try:
+      self._file = open(self._path, 'w')
+    except IOError as e:
+      raise FileLockLockingError(e)
+
+    max_wait_ms = None
+    if self._timeout_secs is not None:
+      max_wait_ms = 1000 * self._timeout_secs
+
+    r = retry.Retryer(max_wait_ms=max_wait_ms)
+    try:
+      r.RetryOnException(self._impl.TryLock, args=[self._file.fileno()],
+                         sleep_ms=100)
+    except retry.RetryException as e:
+      self._file.close()
+      self._file = None
+      raise FileLockTimeoutError(
+          'Timed-out waiting to lock file: {0}'.format(self._path))
+    else:
+      self._locked = True
+
+  def Unlock(self):
+    """Unlocks and closes the file.
+
+    A no-op if this object is not locked.
+
+    Raises:
+      FileLockUnlockingError: if a problem was encountered when unlocking the
+        file. There is no need to retry.
+    """
+    if not self._locked:
+      return
+    try:
+      self._impl.Unlock(self._file.fileno())
+    except IOError as e:
+      # We don't expect Unlock() to ever raise an error, but can't be sure.
+      raise FileLockUnlockingError(e)
+    finally:
+      self._file.close()
+      self._file = None
+      self._locked = False
+
+  def __enter__(self):
+    """Locks and returns this FileLock object."""
+    self.Lock()
+    return self
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    """Unlocks, logging any errors encountered."""
+    try:
+      self.Unlock()
+    except Error as e:
+      logging.debug('Encountered error unlocking file %s: %s', self._path, e)
+    # Have Python re-raise the exception which caused the context to exit, if
+    # any.
+    return False
+
+
+# Imports fcntl, which is only available on POSIX.
+class _PosixLocking(object):
+  """Exclusive, non-blocking file locking on POSIX systems."""
+
+  def TryLock(self, fd):
+    """Raises IOError on failure."""
+    # pylint: disable=g-import-not-at-top
+    import fcntl
+    # Exclusive lock, non-blocking
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+  def Unlock(self, fd):
+    import fcntl  # pylint: disable=g-import-not-at-top
+    fcntl.flock(fd, fcntl.LOCK_UN)
+
+
+# Imports msvcrt, which is only available on Windows.
+class _WindowsLocking(object):
+  """Exclusive, non-blocking file locking on Windows."""
+
+  def TryLock(self, fd):
+    """Raises IOError on failure."""
+    # pylint: disable=g-import-not-at-top
+    import msvcrt
+    # Exclusive lock, non-blocking
+    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+
+  def Unlock(self, fd):
+    import msvcrt  # pylint: disable=g-import-not-at-top
+    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)

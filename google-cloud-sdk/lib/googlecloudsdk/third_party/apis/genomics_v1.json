@@ -129,6 +129,564 @@
     }
   },
   "schemas": {
+    "AnnotationSet": {
+      "id": "AnnotationSet",
+      "description": "An annotation set is a logical grouping of annotations that share consistent\ntype information and provenance. Examples of annotation sets include 'all\ngenes from refseq', and 'all variant annotations from ClinVar'.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The server-generated annotation set ID, unique across all annotation sets.",
+          "type": "string"
+        },
+        "datasetId": {
+          "description": "The dataset to which this annotation set belongs.",
+          "type": "string"
+        },
+        "referenceSetId": {
+          "description": "The ID of the reference set that defines the coordinate space for this\nset's annotations.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The display name for this annotation set.",
+          "type": "string"
+        },
+        "sourceUri": {
+          "description": "The source URI describing the file from which this annotation set was\ngenerated, if any.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of annotations contained within this set.",
+          "enumDescriptions": [
+            "",
+            "A `GENERIC` annotation type should be used when no other annotation\ntype will suffice. This represents an untyped annotation of the reference\ngenome.",
+            "A `VARIANT` annotation type.",
+            "A `GENE` annotation type represents the existence of a gene at the\nassociated reference coordinates. The start coordinate is typically the\ngene's transcription start site and the end is typically the end of the\ngene's last exon.",
+            "A `TRANSCRIPT` annotation type represents the assertion that a\nparticular region of the reference genome may be transcribed as RNA."
+          ],
+          "type": "string",
+          "enum": [
+            "ANNOTATION_TYPE_UNSPECIFIED",
+            "GENERIC",
+            "VARIANT",
+            "GENE",
+            "TRANSCRIPT"
+          ]
+        },
+        "info": {
+          "description": "A map of additional read alignment information. This must be of the form\nmap<string, string[]> (string key mapping to a list of string values).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SearchAnnotationSetsRequest": {
+      "id": "SearchAnnotationSetsRequest",
+
+      "type": "object",
+      "properties": {
+        "datasetIds": {
+          "description": "Required. The dataset IDs to search within. Caller must have `READ` access\nto these datasets.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referenceSetId": {
+          "description": "If specified, only annotation sets associated with the given reference set\nare returned.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Only return annotations sets for which a substring of the name matches this\nstring (case insensitive).",
+          "type": "string"
+        },
+        "types": {
+          "description": "If specified, only annotation sets that have any of these types are\nreturned.",
+          "enumDescriptions": [
+            "",
+            "A `GENERIC` annotation type should be used when no other annotation\ntype will suffice. This represents an untyped annotation of the reference\ngenome.",
+            "A `VARIANT` annotation type.",
+            "A `GENE` annotation type represents the existence of a gene at the\nassociated reference coordinates. The start coordinate is typically the\ngene's transcription start site and the end is typically the end of the\ngene's last exon.",
+            "A `TRANSCRIPT` annotation type represents the assertion that a\nparticular region of the reference genome may be transcribed as RNA."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ANNOTATION_TYPE_UNSPECIFIED",
+              "GENERIC",
+              "VARIANT",
+              "GENE",
+              "TRANSCRIPT"
+            ]
+          }
+        },
+        "pageToken": {
+          "description": "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`nextPageToken` from the previous response.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of results to return in a single page. If unspecified,\ndefaults to 128. The maximum value is 1024.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "SearchAnnotationSetsResponse": {
+      "id": "SearchAnnotationSetsResponse",
+
+      "type": "object",
+      "properties": {
+        "annotationSets": {
+          "description": "The matching annotation sets.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotationSet"
+          }
+        },
+        "nextPageToken": {
+          "description": "The continuation token, which is used to page through large result sets.\nProvide this value in a subsequent request to return the next page of\nresults. This field will be empty if there aren't any additional results.",
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "id": "Annotation",
+      "description": "An annotation describes a region of reference genome. The value of an\nannotation may be one of several canonical types, supplemented by arbitrary\ninfo tags. An annotation is not inherently associated with a specific\nsample or individual (though a client could choose to use annotations in\nthis way). Example canonical annotation types are `GENE` and\n`VARIANT`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The server-generated annotation ID, unique across all annotations.",
+          "type": "string"
+        },
+        "annotationSetId": {
+          "description": "The annotation set to which this annotation belongs.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The display name of this annotation.",
+          "type": "string"
+        },
+        "referenceId": {
+          "description": "The ID of the Google Genomics reference associated with this range.",
+          "type": "string"
+        },
+        "referenceName": {
+          "description": "The display name corresponding to the reference specified by\n`referenceId`, for example `chr1`, `1`, or `chrX`.",
+          "type": "string"
+        },
+        "start": {
+          "description": "The start position of the range on the reference, 0-based inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "end": {
+          "description": "The end position of the range on the reference, 0-based exclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "reverseStrand": {
+          "description": "Whether this range refers to the reverse strand, as opposed to the forward\nstrand. Note that regardless of this field, the start\/end position of the\nrange always refer to the forward strand.",
+          "type": "boolean"
+        },
+        "type": {
+          "description": "The data type for this annotation. Must match the containing annotation\nset's type.",
+          "enumDescriptions": [
+            "",
+            "A `GENERIC` annotation type should be used when no other annotation\ntype will suffice. This represents an untyped annotation of the reference\ngenome.",
+            "A `VARIANT` annotation type.",
+            "A `GENE` annotation type represents the existence of a gene at the\nassociated reference coordinates. The start coordinate is typically the\ngene's transcription start site and the end is typically the end of the\ngene's last exon.",
+            "A `TRANSCRIPT` annotation type represents the assertion that a\nparticular region of the reference genome may be transcribed as RNA."
+          ],
+          "type": "string",
+          "enum": [
+            "ANNOTATION_TYPE_UNSPECIFIED",
+            "GENERIC",
+            "VARIANT",
+            "GENE",
+            "TRANSCRIPT"
+          ]
+        },
+        "variant": {
+          "description": "A variant annotation, which describes the effect of a variant on the\ngenome, the coding sequence, and\/or higher level consequences at the\norganism level e.g. pathogenicity. This field is only set for annotations\nof type `VARIANT`.",
+          "$ref": "VariantAnnotation"
+        },
+        "transcript": {
+          "description": "A transcript value represents the assertion that a particular region of\nthe reference genome may be transcribed as RNA. An alternative splicing\npattern would be represented as a separate transcript object. This field\nis only set for annotations of type `TRANSCRIPT`.",
+          "$ref": "Transcript"
+        },
+        "info": {
+          "description": "A map of additional read alignment information. This must be of the form\nmap<string, string[]> (string key mapping to a list of string values).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
+          }
+        }
+      }
+    },
+    "VariantAnnotation": {
+      "id": "VariantAnnotation",
+
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type has been adapted from ClinVar's list of variant types.",
+          "enumDescriptions": [
+            "",
+            "`TYPE_OTHER` should be used when no other Type will suffice.\nFurther explanation of the variant type may be included in the\ninfo field.",
+            "`INSERTION` indicates an insertion.",
+            "`DELETION` indicates a deletion.",
+            "`SUBSTITUTION` indicates a block substitution of\ntwo or more nucleotides.",
+            "`SNP` indicates a single nucleotide polymorphism.",
+            "`STRUCTURAL` indicates a large structural variant,\nincluding chromosomal fusions, inversions, etc.",
+            "`CNV` indicates a variation in copy number."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "TYPE_OTHER",
+            "INSERTION",
+            "DELETION",
+            "SUBSTITUTION",
+            "SNP",
+            "STRUCTURAL",
+            "CNV"
+          ]
+        },
+        "effect": {
+          "description": "Effect of the variant on the coding sequence.",
+          "enumDescriptions": [
+            "",
+            "`EFFECT_OTHER` should be used when no other Effect\nwill suffice.",
+            "`FRAMESHIFT` indicates a mutation in which the insertion or\ndeletion of nucleotides resulted in a frameshift change.",
+            "`FRAME_PRESERVING_INDEL` indicates a mutation in which a\nmultiple of three nucleotides has been inserted or deleted, resulting\nin no change to the reading frame of the coding sequence.",
+            "`SYNONYMOUS_SNP` indicates a single nucleotide polymorphism\nmutation that results in no amino acid change.",
+            "`NONSYNONYMOUS_SNP` indicates a single nucleotide\npolymorphism mutation that results in an amino acid change.",
+            "`STOP_GAIN` indicates a mutation that leads to the creation\nof a stop codon at the variant site. Frameshift mutations creating\ndownstream stop codons do not count as `STOP_GAIN`.",
+            "`STOP_LOSS` indicates a mutation that eliminates a\nstop codon at the variant site.",
+            "`SPLICE_SITE_DISRUPTION` indicates that this variant is\nfound in a splice site for the associated transcript, and alters the\nnormal splicing pattern."
+          ],
+          "type": "string",
+          "enum": [
+            "EFFECT_UNSPECIFIED",
+            "EFFECT_OTHER",
+            "FRAMESHIFT",
+            "FRAME_PRESERVING_INDEL",
+            "SYNONYMOUS_SNP",
+            "NONSYNONYMOUS_SNP",
+            "STOP_GAIN",
+            "STOP_LOSS",
+            "SPLICE_SITE_DISRUPTION"
+          ]
+        },
+        "alternateBases": {
+          "description": "The alternate allele for this variant. If multiple alternate alleles\nexist at this location, create a separate variant for each one, as they\nmay represent distinct conditions.",
+          "type": "string"
+        },
+        "geneId": {
+          "description": "Google annotation ID of the gene affected by this variant. This should\nbe provided when the variant is created.",
+          "type": "string"
+        },
+        "transcriptIds": {
+          "description": "Google annotation IDs of the transcripts affected by this variant. These\nshould be provided when the variant is created.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "description": "The set of conditions associated with this variant.\nA condition describes the way a variant influences human health.",
+          "type": "array",
+          "items": {
+            "$ref": "ClinicalCondition"
+          }
+        },
+        "clinicalSignificance": {
+          "description": "Describes the clinical significance of a variant.\nIt is adapted from the ClinVar controlled vocabulary for clinical\nsignificance described at:\nhttp:\/\/www.ncbi.nlm.nih.gov\/clinvar\/docs\/clinsig\/",
+          "enumDescriptions": [
+            "",
+            "`OTHER` should be used when no other clinical significance\nvalue will suffice.",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "`MULTIPLE_REPORTED` should be used when multiple clinical\nsignficances are reported for a variant. The original clinical\nsignificance values may be provided in the `info` field."
+          ],
+          "type": "string",
+          "enum": [
+            "CLINICAL_SIGNIFICANCE_UNSPECIFIED",
+            "CLINICAL_SIGNIFICANCE_OTHER",
+            "UNCERTAIN",
+            "BENIGN",
+            "LIKELY_BENIGN",
+            "LIKELY_PATHOGENIC",
+            "PATHOGENIC",
+            "DRUG_RESPONSE",
+            "HISTOCOMPATIBILITY",
+            "CONFERS_SENSITIVITY",
+            "RISK_FACTOR",
+            "ASSOCIATION",
+            "PROTECTIVE",
+            "MULTIPLE_REPORTED"
+          ]
+        }
+      }
+    },
+    "ClinicalCondition": {
+      "id": "ClinicalCondition",
+
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "A set of names for the condition.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "externalIds": {
+          "description": "The set of external IDs for this condition.",
+          "type": "array",
+          "items": {
+            "$ref": "ExternalId"
+          }
+        },
+        "conceptId": {
+          "description": "The MedGen concept id associated with this gene.\nSearch for these IDs at http:\/\/www.ncbi.nlm.nih.gov\/medgen\/",
+          "type": "string"
+        },
+        "omimId": {
+          "description": "The OMIM id for this condition.\nSearch for these IDs at http:\/\/omim.org\/",
+          "type": "string"
+        }
+      }
+    },
+    "ExternalId": {
+      "id": "ExternalId",
+
+      "type": "object",
+      "properties": {
+        "sourceName": {
+          "description": "The name of the source of this data.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The id used by the source of this data.",
+          "type": "string"
+        }
+      }
+    },
+    "Transcript": {
+      "id": "Transcript",
+      "description": "A transcript represents the assertion that a particular region of the\nreference genome may be transcribed as RNA.",
+      "type": "object",
+      "properties": {
+        "geneId": {
+          "description": "The annotation ID of the gene from which this transcript is transcribed.",
+          "type": "string"
+        },
+        "exons": {
+          "description": "The <a href=\"http:\/\/en.wikipedia.org\/wiki\/Exon\">exons<\/a> that compose\nthis transcript. This field should be unset for genomes where transcript\nsplicing does not occur, for example prokaryotes.\n\nIntrons are regions of the transcript that are not included in the\nspliced RNA product. Though not explicitly modeled here, intron ranges can\nbe deduced; all regions of this transcript that are not exons are introns.\n\nExonic sequences do not necessarily code for a translational product\n(amino acids). Only the regions of exons bounded by the\n`codingSequence` correspond to coding DNA sequence.\n\nExons are ordered by start position and may not overlap.",
+          "type": "array",
+          "items": {
+            "$ref": "Exon"
+          }
+        },
+        "codingSequence": {
+          "description": "The range of the coding sequence for this transcript, if any. To determine\nthe exact ranges of coding sequence, intersect this range with those of the\n`exons`, if any. If there are any `exons`, the\n`codingSequence` must start and end within them.\n\nNote that in some cases, the reference genome will not exactly match the\nobserved mRNA transcript e.g. due to variance in the source genome from\nreference. In these cases, `exon.frame` will not necessarily match the\nexpected reference reading frame and coding exon reference bases cannot\nnecessarily be concatenated to produce the original transcript mRNA.",
+          "$ref": "CodingSequence"
+        }
+      }
+    },
+    "Exon": {
+      "id": "Exon",
+
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "The start position of the exon on this annotation's reference sequence,\n0-based inclusive. Note that this is relative to the reference start, and\n**not** the containing annotation start.",
+          "type": "string",
+          "format": "int64"
+        },
+        "end": {
+          "description": "The end position of the exon on this annotation's reference sequence,\n0-based exclusive. Note that this is relative to the reference start, and\n*not* the containing annotation start.",
+          "type": "string",
+          "format": "int64"
+        },
+        "frame": {
+          "description": "The frame of this exon. Contains a value of 0, 1, or 2, which indicates\nthe offset of the first coding base of the exon within the reading frame\nof the coding DNA sequence, if any. This field is dependent on the\nstrandedness of this annotation (see\nAnnotation.reverse_strand).\nFor forward stranded annotations, this offset is relative to the\n`exon.start`. For reverse strand annotations, this offset is relative to\nthe `exon.end - 1`.\n\nUnset if this exon does not intersect the coding sequence. Upon creation\nof a transcript, the frame must be populated for all or none of the\ncoding exons.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CodingSequence": {
+      "id": "CodingSequence",
+
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "The start of the coding sequence on this annotation's reference sequence,\n0-based inclusive. Note that this position is relative to the reference\nstart, and *not* the containing annotation start.",
+          "type": "string",
+          "format": "int64"
+        },
+        "end": {
+          "description": "The end of the coding sequence on this annotation's reference sequence,\n0-based exclusive. Note that this position is relative to the reference\nstart, and *not* the containing annotation start.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "BatchCreateAnnotationsRequest": {
+      "id": "BatchCreateAnnotationsRequest",
+
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "description": "The annotations to be created. At most 4096 can be specified in a single\nrequest.",
+          "type": "array",
+          "items": {
+            "$ref": "Annotation"
+          }
+        }
+      }
+    },
+    "BatchCreateAnnotationsResponse": {
+      "id": "BatchCreateAnnotationsResponse",
+
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "The resulting per-annotation entries, ordered consistently with the\noriginal request.",
+          "type": "array",
+          "items": {
+            "$ref": "Entry"
+          }
+        }
+      }
+    },
+    "Entry": {
+      "id": "Entry",
+
+      "type": "object",
+      "properties": {
+        "status": {
+
+          "$ref": "Status"
+        },
+        "annotation": {
+
+          "$ref": "Annotation"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @ype with type URL."
+            }
+          }
+        }
+      }
+    },
+    "SearchAnnotationsRequest": {
+      "id": "SearchAnnotationsRequest",
+
+      "type": "object",
+      "properties": {
+        "annotationSetIds": {
+          "description": "Required. The annotation sets to search within. The caller must have\n`READ` access to these annotation sets.\nAll queried annotation sets must have the same type.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referenceId": {
+          "description": "The ID of the reference to query.",
+          "type": "string"
+        },
+        "referenceName": {
+          "description": "The name of the reference to query, within the reference set associated\nwith this query.",
+          "type": "string"
+        },
+        "start": {
+          "description": "The start position of the range on the reference, 0-based inclusive. If\nspecified,\nreferenceId or\nreferenceName\nmust be specified. Defaults to 0.",
+          "type": "string",
+          "format": "int64"
+        },
+        "end": {
+          "description": "The end position of the range on the reference, 0-based exclusive. If\nreferenceId or\nreferenceName\nmust be specified, Defaults to the length of the reference.",
+          "type": "string",
+          "format": "int64"
+        },
+        "pageToken": {
+          "description": "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`nextPageToken` from the previous response.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of results to return in a single page. If unspecified,\ndefaults to 256. The maximum value is 2048.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "SearchAnnotationsResponse": {
+      "id": "SearchAnnotationsResponse",
+
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "description": "The matching annotations.",
+          "type": "array",
+          "items": {
+            "$ref": "Annotation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The continuation token, which is used to page through large result sets.\nProvide this value in a subsequent request to return the next page of\nresults. This field will be empty if there aren't any additional results.",
+          "type": "string"
+        }
+      }
+    },
     "ListDatasetsResponse": {
       "id": "ListDatasetsResponse",
       "description": "The dataset list response.",
@@ -169,13 +727,6 @@
           "type": "string",
           "format": "google-datetime"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "UndeleteDatasetRequest": {
@@ -304,33 +855,6 @@
           "additionalProperties": {
             "type": "any",
             "description": "Properties of the object. Contains field @ype with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @ype with type URL."
-            }
           }
         }
       }
@@ -1842,6 +2366,291 @@
     }
   },
   "resources": {
+    "annotationsets": {
+      "methods": {
+        "create": {
+          "id": "genomics.annotationsets.create",
+          "path": "v1/annotationsets",
+          "flatPath": "v1/annotationsets",
+          "httpMethod": "POST",
+          "description": "Creates a new annotation set. Caller must have WRITE permission for the\nassociated dataset.\n\nThe following fields are required:\n\n  * datasetId\n  * referenceSetId\n\nAll other fields may be optionally specified, unless documented as being\nserver-generated (for example, the `id` field).",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AnnotationSet"
+          },
+          "response": {
+            "$ref": "AnnotationSet"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "get": {
+          "id": "genomics.annotationsets.get",
+          "path": "v1/annotationsets/{annotationSetId}",
+          "flatPath": "v1/annotationsets/{annotationSetId}",
+          "httpMethod": "GET",
+          "description": "Gets an annotation set. Caller must have READ permission for\nthe associated dataset.",
+          "parameters": {
+            "annotationSetId": {
+              "description": "The ID of the annotation set to be retrieved.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "annotationSetId"
+          ],
+          "response": {
+            "$ref": "AnnotationSet"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics",
+            "https://www.googleapis.com/auth/genomics.readonly"
+          ]
+        },
+        "update": {
+          "id": "genomics.annotationsets.update",
+          "path": "v1/annotationsets/{annotationSetId}",
+          "flatPath": "v1/annotationsets/{annotationSetId}",
+          "httpMethod": "PUT",
+          "description": "Updates an annotation set. The update must respect all mutability\nrestrictions and other invariants described on the annotation set resource.\nCaller must have WRITE permission for the associated dataset.",
+          "parameters": {
+            "annotationSetId": {
+              "description": "The ID of the annotation set to be updated.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "An optional mask specifying which fields to update. Mutable fields are\nname,\nsource_uri, and\ninfo. If unspecified, all\nmutable fields will be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "annotationSetId"
+          ],
+          "request": {
+            "$ref": "AnnotationSet"
+          },
+          "response": {
+            "$ref": "AnnotationSet"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "delete": {
+          "id": "genomics.annotationsets.delete",
+          "path": "v1/annotationsets/{annotationSetId}",
+          "flatPath": "v1/annotationsets/{annotationSetId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes an annotation set. Caller must have WRITE permission\nfor the associated annotation set.",
+          "parameters": {
+            "annotationSetId": {
+              "description": "The ID of the annotation set to be deleted.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "annotationSetId"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "search": {
+          "id": "genomics.annotationsets.search",
+          "path": "v1/annotationsets/search",
+          "flatPath": "v1/annotationsets/search",
+          "httpMethod": "POST",
+          "description": "Searches for annotation sets that match the given criteria. Annotation sets\nare returned in an unspecified order. This order is consistent, such that\ntwo queries for the same content (regardless of page size) yield annotation\nsets in the same order across their respective streams of paginated\nresponses. Caller must have READ permission for the queried datasets.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "SearchAnnotationSetsRequest"
+          },
+          "response": {
+            "$ref": "SearchAnnotationSetsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics",
+            "https://www.googleapis.com/auth/genomics.readonly"
+          ]
+        }
+      }
+    },
+    "annotations": {
+      "methods": {
+        "create": {
+          "id": "genomics.annotations.create",
+          "path": "v1/annotations",
+          "flatPath": "v1/annotations",
+          "httpMethod": "POST",
+          "description": "Creates a new annotation. Caller must have WRITE permission\nfor the associated annotation set.\n\nThe following fields are required:\n\n* annotationSetId\n* referenceName or\n  referenceId or\n\n### Transcripts\n\ntranscript\ntranscript.exons\ntranscript.exons.start\n\nFor annotations of type TRANSCRIPT, the following fields of\ntranscript must be provided:\n\n* `exons.start`\n* `exons.end`\n\nAll other fields may be optionally specified, unless documented as being\nserver-generated (for example, the `id` field). The annotated\nrange must be no longer than 100Mbp (mega base pairs). See the\nAnnotation resource\nfor additional restrictions on each field.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "Annotation"
+          },
+          "response": {
+            "$ref": "Annotation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "batchCreate": {
+          "id": "genomics.annotations.batchCreate",
+          "path": "v1/annotations:batchCreate",
+          "flatPath": "v1/annotations:batchCreate",
+          "httpMethod": "POST",
+          "description": "Creates one or more new annotations atomically. All annotations must\nbelong to the same annotation set. Caller must have WRITE\npermission for this annotation set. For optimal performance, batch\npositionally adjacent annotations together.\n\nIf the request has a systemic issue, such as an attempt to write to\nan inaccessible annotation set, the entire RPC will fail accordingly. For\nlesser data issues, when possible an error will be isolated to the\ncorresponding batch entry in the response; the remaining well formed\nannotations will be created normally.\n\nFor details on the requirements for each individual annotation resource,\nsee\nCreateAnnotation.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "BatchCreateAnnotationsRequest"
+          },
+          "response": {
+            "$ref": "BatchCreateAnnotationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "get": {
+          "id": "genomics.annotations.get",
+          "path": "v1/annotations/{annotationId}",
+          "flatPath": "v1/annotations/{annotationId}",
+          "httpMethod": "GET",
+          "description": "Gets an annotation. Caller must have READ permission\nfor the associated annotation set.",
+          "parameters": {
+            "annotationId": {
+              "description": "The ID of the annotation to be retrieved.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "annotationId"
+          ],
+          "response": {
+            "$ref": "Annotation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics",
+            "https://www.googleapis.com/auth/genomics.readonly"
+          ]
+        },
+        "update": {
+          "id": "genomics.annotations.update",
+          "path": "v1/annotations/{annotationId}",
+          "flatPath": "v1/annotations/{annotationId}",
+          "httpMethod": "PUT",
+          "description": "Updates an annotation. Caller must have\nWRITE permission for the associated dataset.",
+          "parameters": {
+            "annotationId": {
+              "description": "The ID of the annotation to be updated.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "An optional mask specifying which fields to update. Mutable fields are\nname,\nvariant,\ntranscript, and\ninfo. If unspecified, all mutable\nfields will be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "annotationId"
+          ],
+          "request": {
+            "$ref": "Annotation"
+          },
+          "response": {
+            "$ref": "Annotation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "delete": {
+          "id": "genomics.annotations.delete",
+          "path": "v1/annotations/{annotationId}",
+          "flatPath": "v1/annotations/{annotationId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes an annotation. Caller must have WRITE permission for\nthe associated annotation set.",
+          "parameters": {
+            "annotationId": {
+              "description": "The ID of the annotation to be deleted.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "annotationId"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics"
+          ]
+        },
+        "search": {
+          "id": "genomics.annotations.search",
+          "path": "v1/annotations/search",
+          "flatPath": "v1/annotations/search",
+          "httpMethod": "POST",
+          "description": "Searches for annotations that match the given criteria. Results are\nordered by genomic coordinate (by reference sequence, then position).\nAnnotations with equivalent genomic coordinates are returned in an\nunspecified order. This order is consistent, such that two queries for the\nsame content (regardless of page size) yield annotations in the same order\nacross their respective streams of paginated responses. Caller must have\nREAD permission for the queried annotation sets.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "SearchAnnotationsRequest"
+          },
+          "response": {
+            "$ref": "SearchAnnotationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/genomics",
+            "https://www.googleapis.com/auth/genomics.readonly"
+          ]
+        }
+      }
+    },
     "datasets": {
       "methods": {
         "list": {
@@ -2646,7 +3455,7 @@
           "path": "v1/variants:import",
           "flatPath": "v1/variants:import",
           "httpMethod": "POST",
-          "description": "Creates variant data by asynchronously importing the provided information.\n\nFor the definitions of variant sets and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)\n\nThe variants for import will be merged with any existing variant that\nmatches its reference sequence, start, end, reference bases, and\nalternative bases. If no such variant exists, a new one will be created.\n\nWhen variants are merged, the call information from the new variant\nis added to the existing variant, and Variant info fields are merged\nas specified in\nInfoMergeConfig.\nAs a special case, for single-sample VCF files, QUAL and FILTER fields will\nbe moved to the call level; these are sometimes interpreted in a\ncall-specific context.\nImported VCF headers are appended to the metadata already in a variant set.",
+          "description": "Creates variant data by asynchronously importing the provided information.\n\nFor the definitions of variant sets and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)\n\nThe variants for import will be merged with any existing variant that\nmatches its reference sequence, start, end, reference bases, and\nalternative bases. If no such variant exists, a new one will be created.\n\nWhen variants are merged, the call information from the new variant\nis added to the existing variant, and Variant info fields are merged\nas specified in\ninfoMergeConfig.\nAs a special case, for single-sample VCF files, QUAL and FILTER fields will\nbe moved to the call level; these are sometimes interpreted in a\ncall-specific context.\nImported VCF headers are appended to the metadata already in a variant set.",
           "parameters": {
           },
           "parameterOrder": [
@@ -2796,7 +3605,7 @@
           "path": "v1/variants:merge",
           "flatPath": "v1/variants:merge",
           "httpMethod": "POST",
-          "description": "Merges the given variants with existing variants.\n\nFor the definitions of variants and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)\n\nEach variant will be\nmerged with an existing variant that matches its reference sequence,\nstart, end, reference bases, and alternative bases. If no such variant\nexists, a new one will be created.\n\nWhen variants are merged, the call information from the new variant\nis added to the existing variant. Variant info fields are merged as\nspecified in the\nInfoMergeConfig\nfield of the MergeVariantsRequest.",
+          "description": "Merges the given variants with existing variants.\n\nFor the definitions of variants and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)\n\nEach variant will be\nmerged with an existing variant that matches its reference sequence,\nstart, end, reference bases, and alternative bases. If no such variant\nexists, a new one will be created.\n\nWhen variants are merged, the call information from the new variant\nis added to the existing variant. Variant info fields are merged as\nspecified in the\ninfoMergeConfig\nfield of the MergeVariantsRequest.\n\nPlease exercise caution when using this method!  It is easy to introduce\nmistakes in existing variants and difficult to back out of them.  For\nexample,\nsuppose you were trying to merge a new variant with an existing one and\nboth\nvariants contain calls that belong to callsets with the same callset ID.\n\n    \/\/ Existing variant - irrelevant fields trimmed for clarity\n    {\n        \"variantSetId\": \"10473108253681171589\",\n        \"referenceName\": \"1\",\n        \"start\": \"10582\",\n        \"referenceBases\": \"G\",\n        \"alternateBases\": [\n            \"A\"\n        ],\n        \"calls\": [\n            {\n                \"callSetId\": \"10473108253681171589-0\",\n                \"callSetName\": \"CALLSET0\",\n                \"genotype\": [\n                    0,\n                    1\n                ],\n            }\n        ]\n    }\n\n    \/\/ New variant with conflicting call information\n    {\n        \"variantSetId\": \"10473108253681171589\",\n        \"referenceName\": \"1\",\n        \"start\": \"10582\",\n        \"referenceBases\": \"G\",\n        \"alternateBases\": [\n            \"A\"\n        ],\n        \"calls\": [\n            {\n                \"callSetId\": \"10473108253681171589-0\",\n                \"callSetName\": \"CALLSET0\",\n                \"genotype\": [\n                    1,\n                    1\n                ],\n            }\n        ]\n    }\n\nThe resulting merged variant would overwrite the existing calls with those\nfrom the new variant:\n\n    {\n        \"variantSetId\": \"10473108253681171589\",\n        \"referenceName\": \"1\",\n        \"start\": \"10582\",\n        \"referenceBases\": \"G\",\n        \"alternateBases\": [\n            \"A\"\n        ],\n        \"calls\": [\n            {\n                \"callSetId\": \"10473108253681171589-0\",\n                \"callSetName\": \"CALLSET0\",\n                \"genotype\": [\n                    1,\n                    1\n                ],\n            }\n        ]\n    }\n\nThis may be the desired outcome, but it is up to the user to determine if\nif that is indeed the case.",
           "parameters": {
           },
           "parameterOrder": [

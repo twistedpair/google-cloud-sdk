@@ -37,8 +37,6 @@ class Endpoint(_messages.Message):
     selfLink: [Output Only] Self link for the endpoint.
     state: [Output Only] The current state of the endpoint, as determined by
       the system.
-    visibility: The visibility of this endpoint. This must be a list of fully-
-      qualified URLs to Compute Engine networks.
   """
 
   addresses = _messages.MessageField('EndpointEndpointAddress', 1, repeated=True)
@@ -50,7 +48,6 @@ class Endpoint(_messages.Message):
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
   state = _messages.StringField(9)
-  visibility = _messages.MessageField('EndpointEndpointVisibility', 10)
 
 
 class EndpointDnsIntegration(_messages.Message):
@@ -93,17 +90,6 @@ class EndpointEndpointPort(_messages.Message):
   name = _messages.StringField(1)
   portNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   protocol = _messages.StringField(3)
-
-
-class EndpointEndpointVisibility(_messages.Message):
-  """A EndpointEndpointVisibility object.
-
-  Fields:
-    networks: Google Compute Engine networks for which the name of this
-      endpoint should be resolvable through DNS.
-  """
-
-  networks = _messages.StringField(1, repeated=True)
 
 
 class EndpointsListResponse(_messages.Message):

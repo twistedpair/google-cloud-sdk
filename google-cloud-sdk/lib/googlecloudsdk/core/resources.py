@@ -550,7 +550,8 @@ class Registry(object):
       default_version = core_apis.GetDefaultVersion(api_name)
       urls_only = api_version != default_version
 
-    api_client = core_apis.GetClientInstance(api_name, api_version)
+    api_client = core_apis.GetClientInstance(api_name, api_version,
+                                             no_http=True)
     self._RegisterAPI(api_client, urls_only, api_version)
 
   def _RegisterAPI(self, api_client, urls_only=False, api_version=None):
@@ -790,7 +791,7 @@ class Registry(object):
       raise InvalidResourceException(url)
 
     cur_level = self.parsers_by_url
-    for token in tokens:
+    for i, token in enumerate(tokens):
       if token in cur_level:
         # If the literal token is already here, follow it down.
         cur_level = cur_level[token]
@@ -800,10 +801,20 @@ class Registry(object):
         param = cur_level.keys()[0]
         if not param.startswith('{') or not param.endswith('}'):
           raise InvalidResourceException(url)
+
+        next_level = cur_level[param]
+        if len(next_level) == 1 and None in next_level:
+          # This is the last parameter so we can combine the remaining tokens.
+          token = '/'.join(tokens[i:])
+          params[param[1:-1]] = urllib.unquote(token)
+          cur_level = next_level
+          break
+
         # Clean up the provided value
         params[param[1:-1]] = urllib.unquote(token)
+
         # Keep digging down.
-        cur_level = cur_level[param]
+        cur_level = next_level
       else:
         # If the token we want isn't here, and there isn't a single parameter,
         # the URL we've been given doesn't match anything we know about.

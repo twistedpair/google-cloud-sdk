@@ -106,7 +106,7 @@ class Cluster(_messages.Message):
       `container_ipv4_cidr` range.
     nodePools: The node pools associated with this cluster. When creating a
       new cluster, only a single node pool should be specified. This field
-      should not be set if "node_config" and "initial_node_count" are
+      should not be set if "node_config" or "initial_node_count" are
       specified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
@@ -457,10 +457,8 @@ class CreateNodePoolRequest(_messages.Message):
   """CreateNodePoolRequest creates a node pool for a cluster.
 
   Fields:
-    initialNodeCount: The number of nodes to create in this pool. You must
-      ensure that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota.
+    initialNodeCount: This field is deprecated and will soon be removed.
+      Please use NodePool's initial_node_count field instead.
     nodePool: The node pool to create.
   """
 
@@ -737,7 +735,10 @@ class NodePool(_messages.Message):
 
   Fields:
     config: The node configuration of the pool.
-    initialNodeCount: The initial node count for the pool.
+    initialNodeCount: The initial node count for the pool. You must ensure
+      that your Compute Engine <a href="/compute/docs/resource-
+      quotas">resource quota</a> is sufficient for this number of instances.
+      You must also have available firewall and routes quota.
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this node pool.
     name: The name of the node pool.

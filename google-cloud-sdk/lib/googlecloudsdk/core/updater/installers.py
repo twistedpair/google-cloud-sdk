@@ -20,8 +20,8 @@ import ssl
 import tarfile
 import urllib2
 
-from googlecloudsdk.core import cli
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
@@ -266,7 +266,7 @@ class ComponentInstaller(object):
     """
     headers = {
         'Cache-Control': 'no-cache',
-        'User-Agent': cli.MakeUserAgentString(command_path)
+        'User-Agent': http.MakeUserAgentString(command_path)
     }
     try:
       if url.startswith(ComponentInstaller.GCS_BROWSER_DL_URL):

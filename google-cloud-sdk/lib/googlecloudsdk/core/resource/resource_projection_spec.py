@@ -98,12 +98,9 @@ class ProjectionSpec(object):
       self._active = defaults.active
       self._tree = copy.deepcopy(defaults.GetRoot())
       self.Defaults()
+      self.symbols = copy.deepcopy(symbols) if symbols else {}
       if defaults.symbols:
-        self.symbols = copy.deepcopy(defaults.symbols)
-        if symbols:
-          self.symbols.update(symbols)
-      else:
-        self.symbols = symbols if symbols else {}
+        self.symbols.update(defaults.symbols)
       self.aliases.update(defaults.aliases)
     else:
       self._active = 0

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20160323",
+ "revision": "20160330",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -576,6 +576,19 @@
     }
    }
   },
+  "IntervalPartitionConfiguration": {
+   "id": "IntervalPartitionConfiguration",
+   "type": "object",
+   "properties": {
+    "expirationMs": {
+     "type": "string",
+     "format": "int64"
+    },
+    "type": {
+     "type": "string"
+    }
+   }
+  },
   "Job": {
    "id": "Job",
    "type": "object",
@@ -1037,6 +1050,10 @@
       "$ref": "TableReference"
      }
     },
+    "schema": {
+     "$ref": "TableSchema",
+     "description": "[Output-only, Experimental] The schema of the results. Present only for successful dry run of non-legacy SQL queries."
+    },
     "totalBytesBilled": {
      "type": "string",
      "description": "[Output-only] Total bytes billed for the job.",
@@ -1372,6 +1389,13 @@
      "description": "[Output-only] The number of rows of data in this table, excluding any data in the streaming buffer.",
      "format": "uint64"
     },
+    "partitionConfigurations": {
+     "type": "array",
+     "description": "[Experimental] List of partition configurations for this table. Currently only one configuration can be specified and it can only be an interval partition with type daily.",
+     "items": {
+      "$ref": "TablePartitionConfiguration"
+     }
+    },
     "schema": {
      "$ref": "TableSchema",
      "description": "[Optional] Describes the schema of this table."
@@ -1590,6 +1614,17 @@
      "type": "integer",
      "description": "The total number of tables in the dataset.",
      "format": "int32"
+    }
+   }
+  },
+  "TablePartitionConfiguration": {
+   "id": "TablePartitionConfiguration",
+   "type": "object",
+   "description": "[Required] A partition configuration. Only one type of partition should be configured.",
+   "properties": {
+    "interval": {
+     "$ref": "IntervalPartitionConfiguration",
+     "description": "[Pick one] Configures an interval partition."
     }
    }
   },

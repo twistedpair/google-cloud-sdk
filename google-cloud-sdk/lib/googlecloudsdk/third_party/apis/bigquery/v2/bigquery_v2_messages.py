@@ -835,6 +835,18 @@ class GetQueryResultsResponse(_messages.Message):
   totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
 
 
+class IntervalPartitionConfiguration(_messages.Message):
+  """A IntervalPartitionConfiguration object.
+
+  Fields:
+    expirationMs: A string attribute.
+    type: A string attribute.
+  """
+
+  expirationMs = _messages.IntegerField(1)
+  type = _messages.StringField(2)
+
+
 class Job(_messages.Message):
   """A Job object.
 
@@ -1276,6 +1288,8 @@ class JobStatistics2(_messages.Message):
     referencedTables: [Output-only, Experimental] Referenced tables for the
       job. Queries that reference more than 50 tables will not have a complete
       list.
+    schema: [Output-only, Experimental] The schema of the results. Present
+      only for successful dry run of non-legacy SQL queries.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
   """
@@ -1284,8 +1298,9 @@ class JobStatistics2(_messages.Message):
   cacheHit = _messages.BooleanField(2)
   queryPlan = _messages.MessageField('ExplainQueryStage', 3, repeated=True)
   referencedTables = _messages.MessageField('TableReference', 4, repeated=True)
-  totalBytesBilled = _messages.IntegerField(5)
-  totalBytesProcessed = _messages.IntegerField(6)
+  schema = _messages.MessageField('TableSchema', 5)
+  totalBytesBilled = _messages.IntegerField(6)
+  totalBytesProcessed = _messages.IntegerField(7)
 
 
 class JobStatistics3(_messages.Message):
@@ -1599,6 +1614,9 @@ class Table(_messages.Message):
       data in the streaming buffer.
     numRows: [Output-only] The number of rows of data in this table, excluding
       any data in the streaming buffer.
+    partitionConfigurations: [Experimental] List of partition configurations
+      for this table. Currently only one configuration can be specified and it
+      can only be an interval partition with type daily.
     schema: [Optional] Describes the schema of this table.
     selfLink: [Output-only] A URL that can be used to access this resource
       again.
@@ -1627,12 +1645,13 @@ class Table(_messages.Message):
   location = _messages.StringField(10)
   numBytes = _messages.IntegerField(11)
   numRows = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  schema = _messages.MessageField('TableSchema', 13)
-  selfLink = _messages.StringField(14)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 15)
-  tableReference = _messages.MessageField('TableReference', 16)
-  type = _messages.StringField(17)
-  view = _messages.MessageField('ViewDefinition', 18)
+  partitionConfigurations = _messages.MessageField('TablePartitionConfiguration', 13, repeated=True)
+  schema = _messages.MessageField('TableSchema', 14)
+  selfLink = _messages.StringField(15)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 16)
+  tableReference = _messages.MessageField('TableReference', 17)
+  type = _messages.StringField(18)
+  view = _messages.MessageField('ViewDefinition', 19)
 
 
 class TableCell(_messages.Message):
@@ -1796,6 +1815,17 @@ class TableList(_messages.Message):
   nextPageToken = _messages.StringField(3)
   tables = _messages.MessageField('TablesValueListEntry', 4, repeated=True)
   totalItems = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class TablePartitionConfiguration(_messages.Message):
+  """[Required] A partition configuration. Only one type of partition should
+  be configured.
+
+  Fields:
+    interval: [Pick one] Configures an interval partition.
+  """
+
+  interval = _messages.MessageField('IntervalPartitionConfiguration', 1)
 
 
 class TableReference(_messages.Message):

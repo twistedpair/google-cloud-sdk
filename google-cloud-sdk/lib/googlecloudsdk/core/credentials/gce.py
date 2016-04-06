@@ -19,6 +19,7 @@ import urllib2
 
 from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.credentials import gce_read
+from googlecloudsdk.core.util import retry
 
 
 class Error(Exception):
@@ -33,6 +34,7 @@ class CannotConnectToMetadataServerException(MetadataServerException):
   """Exception for when the metadata server cannot be reached."""
 
 
+@retry.RetryOnException(max_retrials=3)
 def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
   """Reads data from a URI with no proxy, yielding cloud-sdk exceptions."""
   try:

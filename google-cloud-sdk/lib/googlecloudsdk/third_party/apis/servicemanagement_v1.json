@@ -1200,7 +1200,7 @@
           "enumDescriptions": [
             "The service can only be seen\/used by users identified in the service's\naccess control policy.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_RESTRICTED.",
             "The service can be seen\/used by anyone.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_PUBLIC.\n\nThe discovery document for the service will also be public and allow\nunregistered access.",
-            "The service can be seen\/used by users identified in the service's\naccess control policy.  Access is further constrained to the group\ncontrolled by the administrator of the project\/org that owns the\nservice.",
+            "The service can be seen\/used by users identified in the service's\naccess control policy and they are within the organization that owns the\nservice.\n\nAccess is further constrained to the group\ncontrolled by the administrator of the project\/org that owns the\nservice.",
             "The service can be seen\/used by the group of users controlled by the\nadministrator of the project\/org that owns the service."
           ],
           "type": "string",
@@ -1964,13 +1964,6 @@
           "description": "The service configuration for this quota group, minus the quota limits,\nwhich are replaced by the effective limits below.",
           "$ref": "QuotaGroup"
         },
-        "effectiveLimits": {
-          "description": "The effective limits for this quota group.\nDEPRECATED: new code should use |quotas.limit|.",
-          "type": "array",
-          "items": {
-            "$ref": "EffectiveQuotaLimit"
-          }
-        },
         "billingInteraction": {
 
           "enumDescriptions": [
@@ -1992,6 +1985,28 @@
           "type": "array",
           "items": {
             "$ref": "QuotaInfo"
+          }
+        }
+      }
+    },
+    "QuotaInfo": {
+      "id": "QuotaInfo",
+      "description": "Metadata about an individual quota, containing usage and limit information.",
+      "type": "object",
+      "properties": {
+        "limit": {
+          "description": "The effective limit for this quota.",
+          "$ref": "EffectiveQuotaLimit"
+        },
+        "currentUsage": {
+          "description": "The usage data for this quota as it applies to the current limit.",
+          "$ref": "QuotaUsage"
+        },
+        "historicalUsage": {
+          "description": "The historical usage data of this quota limit. Currently it is only\navailable for daily quota limit, that is, base_limit.duration = \"1d\".",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaUsage"
           }
         }
       }
@@ -2022,28 +2037,6 @@
           "description": "The effective limit value, based on the stored producer and consumer\noverrides and the service defaults.",
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "QuotaInfo": {
-      "id": "QuotaInfo",
-      "description": "Metadata about an individual quota, containing usage and limit information.",
-      "type": "object",
-      "properties": {
-        "limit": {
-          "description": "The effective limit for this quota.",
-          "$ref": "EffectiveQuotaLimit"
-        },
-        "currentUsage": {
-          "description": "The usage data for this quota as it applies to the current limit.",
-          "$ref": "QuotaUsage"
-        },
-        "historicalUsage": {
-          "description": "The historical usage data of this quota limit. Currently it is only\navailable for daily quota limit, that is, base_limit.duration = \"1d\".",
-          "type": "array",
-          "items": {
-            "$ref": "QuotaUsage"
-          }
         }
       }
     },

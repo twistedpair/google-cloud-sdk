@@ -856,6 +856,18 @@ _SPECS_BETA['routers'] = _InternalSpec(
     ],
     editables=None,
 )
+_SPECS_BETA['images'] = _InternalSpec(
+    message_class_name='Image',
+    table_cols=[
+        ('NAME', 'name'),
+        ('PROJECT', _ProjectToCell),
+        ('FAMILY', 'family'),
+        ('DEPRECATED', 'deprecated.state'),
+        ('STATUS', 'status'),
+    ],
+    transformations=[],
+    editables=None,
+)
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()

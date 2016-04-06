@@ -633,7 +633,7 @@ class CLI(object):
       # --configuration would not agree with the later parse by argparse.  The
       # following warning is intended to be dead code, but just in case...
       if named_configs.FLAG_OVERRIDE_STACK.Peek() != args.configuration:
-        log.warn('Problem parsing --configration flag.  Using named '
+        log.warn('Problem parsing --configuration flag.  Using named '
                  'flag value --configuration=[{0}].'.format(
                      named_configs.FLAG_OVERRIDE_STACK.Peek()))
 

@@ -53,8 +53,8 @@ def GetPubSubRoot():
   return pubsub_dir
 
 
-def GetDefaultDataDir():
-  return util.GetDataDir('pubsub')
+def GetDataDir():
+  return util.GetDataDir(PUBSUB)
 
 
 def BuildStartArgs(args, current_os):

@@ -225,7 +225,7 @@ def UpdateContextEndpointEntries(context, http, api_client_default='v1'):
   context['http'] = http
 
   api_client = core_apis.ResolveVersion('compute', api_client_default)
-  compute = core_apis.GetClientInstance('compute', api_client, http)
+  compute = core_apis.GetClientInstance('compute', api_client)
   context['api-version'] = api_client
   context['compute'] = compute
   context['resources'] = resources.REGISTRY.CloneAndSwitchAPIs(compute)
@@ -241,11 +241,10 @@ def UpdateContextEndpointEntries(context, http, api_client_default='v1'):
   try:
     # TODO(user): User a separate API override from compute.
     clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts',
-                                                    api_client, http)
+                                                    api_client)
   except core_apis.UnknownVersionError:
     # Throw an error here once clouseuseraccounts has a v1 API version.
-    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts', 'beta',
-                                                    http)
+    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts', 'beta')
 
   context['clouduseraccounts'] = clouduseraccounts
   context['clouduseraccounts-resources'] = (

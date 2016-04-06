@@ -134,8 +134,8 @@ class Source(object):
       raise NoEndpointException()
 
   @classmethod
-  def SetApiEndpoint(cls, http):
-    cls._client = apis.GetClientInstance('source', 'v1', http)
+  def SetApiEndpoint(cls):
+    cls._client = apis.GetClientInstance('source', 'v1')
 
   @classmethod
   def SetResourceParser(cls, parser):

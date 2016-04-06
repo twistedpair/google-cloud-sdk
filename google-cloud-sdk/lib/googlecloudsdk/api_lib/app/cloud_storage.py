@@ -30,6 +30,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr_os
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
@@ -238,8 +239,8 @@ def Rsync(source_dir, dest_dir, exclude_pattern=None):
 class LogTailer(object):
   """Helper class to tail a GCS logfile, printing content as available."""
 
-  def __init__(self, http, bucket, obj):
-    self.http = http
+  def __init__(self, bucket, obj):
+    self.http = http.Http()
     self.url = GCS_URL_PATTERN.format(bucket=bucket, obj=obj)
     log.debug('GCS logfile url is ' + self.url)
     # position in the file being read

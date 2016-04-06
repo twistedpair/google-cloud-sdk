@@ -409,28 +409,46 @@ class Datetime(object):
             user_input=s))
 
 
-def BoundedInt(lower_bound=None, upper_bound=None, unlimited=False):
-  """Returns a function that can parse integers within some bound.
+def _BoundedType(type_builder, type_description,
+                 lower_bound=None, upper_bound=None, unlimited=False):
+  """Returns a function that can parse given type within some bound.
 
   Args:
-    lower_bound: int, The value must be >= lower_bound.
-    upper_bound: int, The value must be <= upper_bound.
+    type_builder: A callable for building the requested type from the value
+        string.
+    type_description: str, Description of the requested type (for verbose
+        messages).
+    lower_bound: of type compatible with type_builder,
+        The value must be >= lower_bound.
+    upper_bound: of type compatible with type_builder,
+        The value must be <= upper_bound.
     unlimited: bool, If True then a value of 'unlimited' means no limit.
 
   Returns:
-    A function that can parse integers within some bound.
+    A function that can parse given type within some bound.
   """
 
-  def _Parse(value):
-    """Parses value as an int, raising ArgumentTypeError if out of bounds."""
+  def Parse(value):
+    """Parses value as a type constructed by type_builder.
+
+    Args:
+      value: str, Value to be converted to the requested type.
+
+    Raises:
+      ArgumentTypeError: If the provided value is out of bounds or unparsable.
+
+    Returns:
+      Value converted to the requested type.
+    """
     if unlimited and value == 'unlimited':
       return None
 
     try:
-      v = int(value)
+      v = type_builder(value)
     except ValueError:
       raise ArgumentTypeError(
-          _GenerateErrorMessage('Value must be an integer', user_input=value))
+          _GenerateErrorMessage('Value must be {0}'.format(type_description),
+                                user_input=value))
 
     if lower_bound is not None and v < lower_bound:
       raise ArgumentTypeError(
@@ -446,7 +464,15 @@ def BoundedInt(lower_bound=None, upper_bound=None, unlimited=False):
 
     return v
 
-  return _Parse
+  return Parse
+
+
+def BoundedInt(*args, **kwargs):
+  return _BoundedType(int, 'an integer', *args, **kwargs)
+
+
+def BoundedFloat(*args, **kwargs):
+  return _BoundedType(float, 'a floating point number', *args, **kwargs)
 
 
 def _TokenizeQuotedList(arg_value, delim=','):

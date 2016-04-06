@@ -144,7 +144,6 @@ def BuildAndPushDockerImages(module_configs,
                              version_id,
                              cloudbuild_client,
                              storage_client,
-                             http,
                              code_bucket_ref,
                              cli,
                              remote,
@@ -157,7 +156,6 @@ def BuildAndPushDockerImages(module_configs,
     version_id: The version id to deploy these modules under.
     cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
     storage_client: An instance of the storage_v1.StorageV1 client.
-    http: a http provider that can be used to create API clients
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
@@ -194,7 +192,7 @@ def BuildAndPushDockerImages(module_configs,
   if use_cloud_build:
     return _BuildImagesWithCloudBuild(project, modules, version_id,
                                       code_bucket_ref, cloudbuild_client,
-                                      storage_client, http)
+                                      storage_client)
 
   # Update docker client's credentials.
   for registry_host in constants.ALL_SUPPORTED_REGISTRIES:
@@ -226,7 +224,7 @@ def BuildAndPushDockerImages(module_configs,
 
 
 def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket_ref,
-                               cloudbuild_client, storage_client, http):
+                               cloudbuild_client, storage_client):
   """Build multiple modules with Cloud Build."""
   images = {}
   for module, info, ensure_dockerfile, ensure_context in modules:
@@ -244,9 +242,9 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket_ref,
                                image.tag, storage_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
       cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tag,
-                                    image.repo_tag, cloudbuild_client, http)
+                                    image.tag, cloudbuild_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-      images[module] = image.repo_tag
+      images[module] = image.tag
     finally:
       cleanup_dockerfile()
       cleanup_context()
@@ -291,7 +289,7 @@ def BuildAndPushDockerImage(appyaml_path, docker_client, image_name):
                              nocache=False)
   image.Build(docker_client)
   image.Push(docker_client)
-  return image.repo_tag
+  return image.tag
 
 
 def UseSsl(handlers):

@@ -228,7 +228,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. User-specified description.",
+          "description": "User-specified description.",
           "type": "string"
         },
         "inputParameters": {
@@ -269,7 +269,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. Human-readable description.",
+          "description": "Human-readable description.",
           "type": "string"
         },
         "defaultValue": {
@@ -318,16 +318,16 @@
       "type": "object",
       "properties": {
         "minimumCpuCores": {
-          "description": "Required at create time; optional at run time. The minimum number of\ncores to use.",
+          "description": "The minimum number of cores to use. Defaults to 1.",
           "type": "integer",
           "format": "int32"
         },
         "preemptible": {
-          "description": "Optional. At create time means that preemptible machines may be\nused for the run. At run time, means they should be used. Cannot\nbe true at run time if false at create time.",
+          "description": "At create time means that preemptible machines may be\nused for the run. At run time, means they should be used. Cannot\nbe true at run time if false at create time.\nDefaults to `false`.",
           "type": "boolean"
         },
         "minimumRamGb": {
-          "description": "Required at create time; optional at run time. The minimum amount of RAM\nto use.",
+          "description": "The minimum amount of RAM to use. Defaults to 3.75 (GB)",
           "type": "number",
           "format": "double"
         },
@@ -346,7 +346,7 @@
           }
         },
         "bootDiskSizeGb": {
-          "description": "Optional. The size of the boot disk. Can be overridden at runtime.",
+          "description": "The size of the boot disk. Defaults to 10 (GB).",
           "type": "integer",
           "format": "int32"
         }
@@ -378,7 +378,7 @@
           ]
         },
         "sizeGb": {
-          "description": "The size of the disk. This field is not applicable for local SSD.",
+          "description": "The size of the disk. Defaults to 500 (GB).\nThis field is not applicable for local SSD.",
           "type": "integer",
           "format": "int32"
         },
@@ -387,7 +387,7 @@
           "type": "string"
         },
         "autoDelete": {
-          "description": "Specifies whether or not to delete the disk when the pipeline\ncompletes. This field is applicable only for newly created disks. See\nhttps:\/\/cloud.google.com\/compute\/docs\/reference\/latest\/instances#resource\nfor more details.\nOptional. At create time means that an auto delete disk may be\nused. At run time, means it should be used. Cannot\nbe true at run time if false at create time.",
+          "description": "Specifies whether or not to delete the disk when the pipeline\ncompletes. This field is applicable only for newly created disks. See\nhttps:\/\/cloud.google.com\/compute\/docs\/reference\/latest\/instances#resource\nfor more details.\nBy default, `autoDelete` is `false`. `autoDelete` will be enabled if set\nto `true` at create time or run time.",
           "type": "boolean"
         },
         "readOnly": {
@@ -447,7 +447,7 @@
           "$ref": "ServiceAccount"
         },
         "clientId": {
-          "description": "Optional. For callers to use in filtering operations returned by this\nrequest.",
+          "description": "Client-specified pipeline operation identifier.",
           "type": "string"
         },
         "resources": {
@@ -466,11 +466,11 @@
       "type": "object",
       "properties": {
         "email": {
-          "description": "Required. Email address of the service account. 'default' is a valid\noption and uses the compute service account associated with the project.",
+          "description": "Email address of the service account. Defaults to `default`,\nwhich uses the compute service account associated with the project.",
           "type": "string"
         },
         "scopes": {
-          "description": "Required. List of scopes to be made available for this service\naccount. Should include\n* https:\/\/www.googleapis.com\/auth\/genomics\n* https:\/\/www.googleapis.com\/auth\/compute\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "List of scopes to be enabled for this service account on the\npipeline virtual machine.\nThe following scopes are automatically included:\n* https:\/\/www.googleapis.com\/auth\/genomics\n* https:\/\/www.googleapis.com\/auth\/compute\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"
@@ -912,18 +912,18 @@
               "type": "string"
             },
             "namePrefix": {
-              "description": "Optional. Pipelines with names that match this prefix should be\nreturned.  If unspecified, all pipelines in the project, up to\n`pageSize`, will be returned.",
+              "description": "Pipelines with names that match this prefix should be\nreturned.  If unspecified, all pipelines in the project, up to\n`pageSize`, will be returned.",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "Optional. Number of pipelines to return at once. Defaults to 256, and max\nis 2048.",
+              "description": "Number of pipelines to return at once. Defaults to 256, and max\nis 2048.",
               "location": "query",
               "type": "integer",
               "format": "int32"
             },
             "pageToken": {
-              "description": "Optional. Token to use to indicate where to start getting results.\nIf unspecified, returns the first page of results.",
+              "description": "Token to use to indicate where to start getting results.\nIf unspecified, returns the first page of results.",
               "location": "query",
               "type": "string"
             }

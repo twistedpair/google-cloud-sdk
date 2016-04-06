@@ -121,8 +121,8 @@ for a large volume of log entries.
           config, request, global_params=global_params)
 
     def Write(self, request, global_params=None):
-      """Writes log entries to Cloud Logging.
-All log entries in Cloud Logging are written by this method.
+      """Writes log entries to Stackdriver Logging.  All log entries are.
+written by this method.
 
       Args:
         request: (WriteLogEntriesRequest) input message
@@ -160,7 +160,7 @@ All log entries in Cloud Logging are written by this method.
           }
 
     def List(self, request, global_params=None):
-      """Lists monitored resource descriptors that are used by Cloud Logging.
+      """Lists the monitored resource descriptors used by Stackdriver Logging.
 
       Args:
         request: (LoggingMonitoredResourceDescriptorsListRequest) input message

@@ -767,7 +767,7 @@
       "type": "object",
       "properties": {
         "repoId": {
-
+          "description": "The repo within which to create the workspace.",
           "$ref": "RepoId"
         },
         "workspace": {
@@ -979,7 +979,7 @@
           "type": "string"
         },
         "message": {
-          "description": "required",
+          "description": "The commit message.\nrequired",
           "type": "string"
         },
         "paths": {

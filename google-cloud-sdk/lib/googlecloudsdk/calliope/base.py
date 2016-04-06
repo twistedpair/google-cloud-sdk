@@ -19,6 +19,7 @@ import abc
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
@@ -120,6 +121,14 @@ class Argument(object):
     self.__args = args
     self.__kwargs = kwargs
 
+  def __GetFlag(self, parser):
+    """Returns the flag object in parser."""
+    name = self.__args[0]
+    for flag in parser.flag_args:
+      if name in flag.option_strings:
+        return flag
+    return None
+
   def AddToParser(self, parser):
     """Adds this argument to the given parser.
 
@@ -133,6 +142,28 @@ class Argument(object):
     if self.__detailed_help:
       arg.detailed_help = self.__detailed_help
     return arg
+
+  def RemoveFromParser(self, parser):
+    """Removes this flag from the given parser.
+
+    Args:
+      parser: The argparse parser.
+    """
+    flag = self.__GetFlag(parser)
+    if flag:
+      parser.flag_args.remove(flag)
+
+  def SetDefault(self, parser, default):
+    """Sets the default value for this flag in the given parser.
+
+    Args:
+      parser: The argparse parser.
+      default: The default flag value.
+    """
+    flag = self.__GetFlag(parser)
+    if flag:
+      kwargs = {flag.dest: default}
+      parser.set_defaults(**kwargs)
 
 
 # Common flag definitions for consistency.
@@ -182,7 +213,7 @@ LIMIT_FLAG = Argument(
     If *--filter* is also specified then it is applied before *--limit*.
     """)
 
-PAGE_FLAG = Argument(
+PAGE_SIZE_FLAG = Argument(
     '--page-size',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
     category=LIST_COMMAND_FLAGS,
@@ -455,7 +486,7 @@ class Command(_Common):
     http_func: function that returns an http object that can be used during
         service requests.
     __format_string: str, The default resource printer format string.
-    __uri_cache_enabled: bool, The URI cache enabled state.
+    _uri_cache_enabled: bool, The URI cache enabled state.
   """
 
   __metaclass__ = abc.ABCMeta
@@ -466,7 +497,7 @@ class Command(_Common):
     self.context = context
     self.group = group
     self.__format_string = format_string
-    self.__uri_cache_enabled = False
+    self._uri_cache_enabled = False
 
   def ExecuteCommand(self, args):
     self.cli.Execute(args, call_arg_complete=False)
@@ -484,21 +515,15 @@ class Command(_Common):
     """
     pass
 
-  @staticmethod
-  def Collection(args):
+  def Collection(self):
     """Returns the default collection path string.
 
     Should handle all command-specific args. --async is handled by
     ResourceInfo().
 
-    Args:
-      args: argparse.Namespace, An object that contains the values for the
-          arguments specified in the ._Flags() and .Args() methods.
-
     Returns:
       The default collection path string.
     """
-    _ = args
     return None
 
   def ResourceInfo(self, args):
@@ -519,7 +544,7 @@ class Command(_Common):
     Returns:
       A resource object dispatched by display.Displayer().
     """
-    collection = self.Collection(args)  # pylint: disable=assignment-from-none
+    collection = self.Collection()  # pylint: disable=assignment-from-none
     if not collection:
       return None
     info = resource_registry.Get(collection)
@@ -536,21 +561,32 @@ class Command(_Common):
     """Returns the default format string."""
     return 'default'
 
-  def Epilog(self, unused_args):
+  def ListFormat(self, args):
+    info = self.ResourceInfo(args)
+    if info and info.list_format:
+      return info.list_format
+    return 'default'
+
+  def Epilog(self):
     """Called after resources are displayed if the default format was used."""
     pass
 
-  def GetUriCacheUpdateOp(self):
-    """Returns the URI cache update OP."""
+  def GetReferencedKeyNames(self, args):
+    """Returns the key names referenced by the filter and format expressions."""
+    return display.Displayer(self, args, None).GetReferencedKeyNames()
+
+  def GetUriFunc(self):
+    """Returns a function that transforms a command resource item to a URI.
+
+    Returns:
+      func(resource) that transforms resource into a URI.
+    """
     return None
 
-  def DisableUriCache(self):
-    """Disables URI caching for this command."""
-    self.__uri_cache_enabled = False
-
-  def IsUriCacheEnabled(self):
-    """Returns True if URI caching is enabled for this command."""
-    return self.__uri_cache_enabled
+  @staticmethod
+  def GetUriCacheUpdateOp():
+    """Returns the URI cache update OP."""
+    return None
 
   # TODO(user): Drop format, __format_string after all use resource_printer.
   # pylint: disable=invalid-name
@@ -586,10 +622,11 @@ class CacheCommand(Command):
 
   def __init__(self, *args, **kwargs):
     super(CacheCommand, self).__init__(*args, **kwargs)
-    self.__uri_cache_enabled = True
+    self._uri_cache_enabled = True
 
+  @staticmethod
   @abc.abstractmethod
-  def GetUriCacheUpdateOp(self):
+  def GetUriCacheUpdateOp():
     """Returns the URI cache update OP."""
     pass
 
@@ -601,21 +638,24 @@ class ListCommand(CacheCommand):
 
   @staticmethod
   def _Flags(parser):
-    """Adds the default flags for all ListCommand commands."""
+    """Adds the default flags for all ListCommand commands.
+
+    Args:
+      parser: The argparse parser.
+    """
 
     FILTER_FLAG.AddToParser(parser)
     FLATTEN_FLAG.AddToParser(parser)
     LIMIT_FLAG.AddToParser(parser)
-    PAGE_FLAG.AddToParser(parser)
+    PAGE_SIZE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)
+    URI_FLAG.AddToParser(parser)
 
   def Format(self, args):
-    info = self.ResourceInfo(args)
-    if info and info.list_format:
-      return info.list_format
-    return 'default'
+    return self.ListFormat(args)
 
-  def GetUriCacheUpdateOp(self):
+  @staticmethod
+  def GetUriCacheUpdateOp():
     return remote_completion.ReplaceCacheOp
 
 
@@ -624,7 +664,8 @@ class CreateCommand(CacheCommand):
 
   __metaclass__ = abc.ABCMeta
 
-  def GetUriCacheUpdateOp(self):
+  @staticmethod
+  def GetUriCacheUpdateOp():
     return remote_completion.AddToCacheOp
 
 
@@ -633,7 +674,8 @@ class DeleteCommand(CacheCommand):
 
   __metaclass__ = abc.ABCMeta
 
-  def GetUriCacheUpdateOp(self):
+  @staticmethod
+  def GetUriCacheUpdateOp():
     return remote_completion.DeleteFromCacheOp
 
 

@@ -214,7 +214,7 @@ class AutoscalerZonesListRequest(_messages.Message):
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
   pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(4)
 
 
 class AutoscalingPolicy(_messages.Message):

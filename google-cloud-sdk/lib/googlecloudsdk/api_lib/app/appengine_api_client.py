@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.third_party.apis.appengine.v1beta4 import appengine_v1beta4_client as v1beta4_client
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema
@@ -256,7 +257,7 @@ class AppengineApiClient(object):
         app_id=app_id, module_name=module_name, version_id=version_id)
 
 
-def GetApiClient(http, default_version='v1beta4'):
+def GetApiClient(default_version='v1beta4'):
   """Initializes an AppengineApiClient using the specified API version.
 
   Uses the api_client_overrides/appengine property to determine which client
@@ -264,7 +265,6 @@ def GetApiClient(http, default_version='v1beta4'):
   property to determine the server endpoint for the App Engine API.
 
   Args:
-    http: The http transport to use.
     default_version: Default client version to use if the
       api_client_overrides/appengine property was not set.
 
@@ -285,6 +285,6 @@ def GetApiClient(http, default_version='v1beta4'):
 
   endpoint_override = properties.VALUES.api_endpoint_overrides.appengine.Get()
   appengine_client = client(url=endpoint_override, get_credentials=False,
-                            http=http)
+                            http=http.Http())
 
   return AppengineApiClient(appengine_client, api_version)

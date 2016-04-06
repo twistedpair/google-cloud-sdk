@@ -41,7 +41,6 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
-from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
 
 
@@ -196,13 +195,13 @@ class UriCacher(peek_iterable.Tap):
   """A Tapper class that caches URIs based on the cache update op.
 
   Attributes:
-    _defaults: The resource format and filter default projection.
+    _transform_uri: The uri() transform function.
     _update_cache_op: The non-None return value from UpdateUriCache().
     _uris: The list of changed URIs, None if it is corrupt.
   """
 
-  def __init__(self, update_cache_op, defaults):
-    self._defaults = defaults
+  def __init__(self, update_cache_op, transform_uri):
+    self._transform_uri = transform_uri
     self._update_cache_op = update_cache_op
     self._uris = []
 
@@ -220,8 +219,7 @@ class UriCacher(peek_iterable.Tap):
     if resource_printer_base.IsResourceMarker(resource):
       return True
     if self._uris is not None:
-      uri = resource_transform.TransformUri(
-          resource, self._defaults, undefined=None)
+      uri = self._transform_uri(resource, undefined=None)
       if uri:
         self._uris.append(uri)
       else:
@@ -232,3 +230,31 @@ class UriCacher(peek_iterable.Tap):
     if self._uris is not None:
       remote_completion.RemoteCompletion().UpdateCache(self._update_cache_op,
                                                        self._uris)
+
+
+class UriReplacer(peek_iterable.Tap):
+  """A Tapper class that replaces each resource item with its URI.
+
+  Attributes:
+    _transform_uri: The uri() transform function.
+  """
+
+  def __init__(self, transform_uri):
+    self._transform_uri = transform_uri
+
+  def Tap(self, resource):
+    """Replaces resource with its URI or skips the resource if it has no URI.
+
+    Args:
+      resource: The resource to replace with its URI.
+
+    Returns:
+      TapInjector(URI, replace=True) if the resource has a URI or False to skip
+      the resource.
+    """
+    if resource_printer_base.IsResourceMarker(resource):
+      return True
+    uri = self._transform_uri(resource, undefined=None)
+    if not uri:
+      return False
+    return peek_iterable.TapInjector(uri, replace=True)

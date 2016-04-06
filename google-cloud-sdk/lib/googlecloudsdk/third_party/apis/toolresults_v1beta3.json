@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20160323",
+ "revision": "20160330",
  "title": "Cloud Tool Results API",
  "description": "Read and publish results from Cloud Test Lab.",
  "ownerDomain": "google.com",
@@ -598,7 +598,7 @@
   "TestExecutionStep": {
    "id": "TestExecutionStep",
    "type": "object",
-   "description": "A step that represents running tests.\n\nIt accepts ant-junit xml files which will be parsed into structured test results by the service. Xml file paths are updated in order to append more files, however they can't be deleted.\n\nUsers can also add test results manually by using the test_result field. Next tag: 7",
+   "description": "A step that represents running tests.\n\nIt accepts ant-junit xml files which will be parsed into structured test results by the service. Xml file paths are updated in order to append more files, however they can't be deleted.\n\nUsers can also add test results manually by using the test_result field.",
    "externalTypeName": "google.devtools.toolresults.v1.TestExecutionStep",
    "properties": {
     "testIssues": {

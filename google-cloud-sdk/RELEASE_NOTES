@@ -2,6 +2,40 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 104.0.0 (2016/04/06)
+
+### Cloud SDK
+
+* `gcloud init` no longer offers to clone
+  [Google Cloud Repositories](https://cloud.google.com/source-repositories/docs/).
+  Please use `gcloud source repos clone` at   any time after running
+  `gcloud init`.
+
+### Google Compute Engine
+
+* `gcloud beta compute` commands now support image families.
+
+### Google App Engine
+
+* Users of `gcloud preview app deploy` can set the timeout for the
+  Container Builder service using the app/cloud_build_timeout
+  property.
+
+### Google Container Engine
+
+* kubectl component is now available for Windows (64-bit only).
+
+* `gcloud alpha container clusters update` now allows enabling/disabling
+  addons for Container Engine clusters via `--update-addons` flag.
+
+* `gcloud container clusters create` now supports disabling
+  HPA and Ingress controller addons via `--disable-addons` flag.
+
+### Google Genomics
+
+* `gcloud alpha genomics variants import` now supports configurable variant info
+  field merging via the info_merge_config command line flag.
+
 ## 103.0.0 (2016/03/30)
 
 ### Google Cloud Storage
@@ -48,8 +82,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
   all managed VMs deployments.
 
   This change may require you to enable the Container Builder API. Visit
-  https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview?project=<PROJECT_ID>
-  to enable it, where <PROJECT_ID> is your current project ID.
+  https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview?project=*PROJECT_ID*;
+  to enable it, where *PROJECT_ID* is your current project ID.
 
 * Updated Google App Engine components to 1.9.34.
   Please visit the following release notes for details:
@@ -60,7 +94,7 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 * Added `gcloud compute backend-services` session affinity commands.
 
-* Added `gcloud compute http-health-checks' and `https-health-checks` commands.
+* Added `gcloud compute http-health-checks` and `https-health-checks` commands.
 
 * Added `gcloud alpha compute target-ssl-proxies` commands.
 

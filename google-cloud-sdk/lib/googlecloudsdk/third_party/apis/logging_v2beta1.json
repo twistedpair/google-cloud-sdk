@@ -6,7 +6,7 @@
   "version": "v2beta1",
   "revision": "0",
   "title": "Google Cloud Logging API",
-  "description": "Writes log entries and manages your logs, log sinks, and logs-based metrics.",
+  "description": "Writes log entries and manages your Stackdriver Logging configuration.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -222,7 +222,7 @@
           }
         },
         "timestamp": {
-          "description": "Optional. The time the event described by the log entry occurred.  If\nomitted, Cloud Logging will use the time the log entry is written.",
+          "description": "Optional. The time the event described by the log entry occurred.  If\nomitted, Stackdriver Logging will use the time the log entry is received.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -253,7 +253,7 @@
           ]
         },
         "insertId": {
-          "description": "Optional. A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same log with the same\nID as duplicates which can be removed.\nIf omitted, Cloud Logging will generate a unique ID for this log entry.",
+          "description": "Optional. A unique ID for the log entry. If you provide this\nfield, the logging service considers other log entries in the\nsame log with the same ID as duplicates which can be removed.  If\nomitted, Stackdriver Logging will generate a unique ID for this\nlog entry.",
           "type": "string"
         },
         "httpRequest": {
@@ -268,7 +268,7 @@
           }
         },
         "projectNumber": {
-          "description": "Read-only. This field is set by Cloud Logging to the project number that\ncorresponds to the project ID in the `logName` field.",
+          "description": "Read-only. This field is set by Stackdriver Logging to the\nproject number that corresponds to the project ID in the\n`logName` field.",
           "type": "string",
           "format": "int64"
         },
@@ -316,6 +316,10 @@
         },
         "remoteIp": {
           "description": "The IP address (IPv4 or IPv6) of the client that issued the HTTP\nrequest. Examples: `\"192.168.1.1\"`, `\"FE80::0202:B3FF:FE1E:8329\"`.",
+          "type": "string"
+        },
+        "serverIp": {
+          "description": "The IP address (IPv4 or IPv6) of the origin server that the request was\nsent to.",
           "type": "string"
         },
         "referer": {
@@ -699,7 +703,7 @@
     },
     "LogSink": {
       "id": "LogSink",
-      "description": "Describes a sink used to export log entries outside Cloud Logging.",
+      "description": "Describes a sink used to export log entries outside Stackdriver Logging.",
       "type": "object",
       "properties": {
         "name": {
@@ -711,11 +715,11 @@
           "type": "string"
         },
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters). Only\nlog entries matching that filter are exported. The filter must be\nconsistent with the log entry format specified by the\n`outputVersionFormat` parameter, regardless of the format of the\nlog entry that was originally written to Cloud Logging.\nExample (V2 format):\n`\"logName=projects\/my-projectid\/logs\/syslog AND severity>=ERROR\"`.",
+          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters). Only\nlog entries matching that filter are exported. The filter must be\nconsistent with the log entry format specified by the\n`outputVersionFormat` parameter, regardless of the format of the\nlog entry that was originally written to Stackdriver Logging.\nExample (V2 format):\n`\"logName=projects\/my-projectid\/logs\/syslog AND severity>=ERROR\"`.",
           "type": "string"
         },
         "outputVersionFormat": {
-          "description": "The log entry version to use for this sink's exported log entries.\nThis version does not have to correspond to the version of the log entry\nwhen it was written to Cloud Logging.",
+          "description": "The log entry version to use for this sink's exported log entries.\nThis version does not have to correspond to the version of the log entry\nwhen it was written to Stackdriver Logging.",
           "enumDescriptions": [
             "An unspecified version format will default to V2.",
             "`LogEntry` version 2 format.",
@@ -1571,7 +1575,7 @@
           "path": "v2beta1/entries:write",
           "flatPath": "v2beta1/entries:write",
           "httpMethod": "POST",
-          "description": "Writes log entries to Cloud Logging.\nAll log entries in Cloud Logging are written by this method.\n",
+          "description": "Writes log entries to Stackdriver Logging.  All log entries are\nwritten by this method.\n",
           "parameters": {
           },
           "parameterOrder": [
@@ -1643,7 +1647,7 @@
           "path": "v2beta1/monitoredResourceDescriptors",
           "flatPath": "v2beta1/monitoredResourceDescriptors",
           "httpMethod": "GET",
-          "description": "Lists monitored resource descriptors that are used by Cloud Logging.",
+          "description": "Lists the monitored resource descriptors used by Stackdriver Logging.",
           "parameters": {
             "pageSize": {
               "description": "Optional. The maximum number of results to return from this request.\nYou must check for presence of `nextPageToken` to determine if additional\nresults are available, which you can retrieve by passing the\n`nextPageToken` value as the `pageToken` parameter in the next request.",

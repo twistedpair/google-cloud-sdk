@@ -174,10 +174,10 @@ class DebugObject(object):
       raise errors.NoEndpointError()
 
   @classmethod
-  def InitializeApiClients(cls, http):
-    cls._debug_client = apis.GetClientInstance('debug', 'v2', http)
+  def InitializeApiClients(cls):
+    cls._debug_client = apis.GetClientInstance('debug', 'v2')
     cls._debug_messages = apis.GetMessagesModule('debug', 'v2')
-    cls._resource_client = apis.GetClientInstance('projects', 'v1beta1', http)
+    cls._resource_client = apis.GetClientInstance('projects', 'v1beta1')
     cls._resource_messages = apis.GetMessagesModule('projects', 'v1beta1')
     cls.SNAPSHOT_TYPE = (
         cls._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE)

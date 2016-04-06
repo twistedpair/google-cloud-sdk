@@ -23,6 +23,7 @@ class ResourceInfo(object):
 
   Attributes:
     async_collection: The operations collection when --async is set.
+    bypass_cache: True if cache_command output should be used instead of cache.
     collection: Memoized collection name set by Get().
     cache_command: The gcloud command string that updates the URI cache.
     list_format: The default list format string for resource_printer.Print().
@@ -37,11 +38,12 @@ class ResourceInfo(object):
     'none': Do not print anything.
   """
 
-  def __init__(self, async_collection=None, cache_command=None,
-               list_format=None, simple_format=None, defaults=None,
-               transforms=None):
+  def __init__(self, async_collection=None, bypass_cache=False,
+               cache_command=None, list_format=None, simple_format=None,
+               defaults=None, transforms=None):
     self.collection = None  # memoized by Get().
     self.async_collection = async_collection
+    self.bypass_cache = bypass_cache
     self.cache_command = cache_command
     self.list_format = list_format
     self.simple_format = simple_format
@@ -88,27 +90,6 @@ RESOURCE_REGISTRY = {
 
     # appengine
 
-    'app.module_versions': ResourceInfo(
-        list_format="""
-          table(
-            module,
-            version,
-            format("%.2f", traffic_split)
-          )
-        """,
-    ),
-    'app.versions': ResourceInfo(
-        list_format="""
-          table(
-            service,
-            id:label=VERSION,
-            format("{0:.2f}", traffic_split):label=TRAFFIC_SPLIT,
-            last_deployed_time.date("%Y-%m-%dT%H:%M:%S"):label=LAST_DEPLOYED,
-            version.servingStatus
-          )
-        """,
-    ),
-
     'app.instances': ResourceInfo(
         list_format="""
           table(
@@ -120,11 +101,34 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'app.module_versions': ResourceInfo(
+        list_format="""
+          table(
+            module,
+            version,
+            traffic_split.format("{0:.2f}", .)
+          )
+        """,
+    ),
+
     'app.services': ResourceInfo(
         list_format="""
           table(
             id:label=SERVICE:sort=1,
             versions.len():label=NUM_VERSIONS
+          )
+        """,
+    ),
+
+    'app.versions': ResourceInfo(
+        list_format="""
+          table(
+            service,
+            id:label=VERSION,
+            traffic_split.format("{0:.2f}", .),
+            last_deployed_time.date("%Y-%m-%dT%H:%M:%S%Oz", undefined="-")
+              :label=LAST_DEPLOYED,
+            version.servingStatus
           )
         """,
     ),
@@ -210,21 +214,23 @@ RESOURCE_REGISTRY = {
 
     'cloudbilling.billingAccounts': ResourceInfo(
         cache_command='billing accounts list',
+        # TODO(b/22402915) Delete this when OP resource completion is supported.
+        bypass_cache=True,
         list_format="""
           table(
-            name[16:],
-            displayName,
-            open,
+            name.basename():label=ID,
+            displayName:label=NAME,
+            open
           )
         """,
     ),
 
-    'cloudbilling.billingAccounts_projects': ResourceInfo(
+    'cloudbilling.projectBillingInfo': ResourceInfo(
         list_format="""
           table(
             projectId,
-            billingAccountName[16:],
-            billingEnabled,
+            billingAccountName.basename():label=BILLING_ACCOUNT_ID,
+            billingEnabled
           )
         """,
     ),
@@ -249,7 +255,7 @@ RESOURCE_REGISTRY = {
     # compute
 
     'compute.addresses': ResourceInfo(
-        cache_command='compute addresses list',
+        # cache_command='compute addresses list',
         list_format="""
           table(
             name,
@@ -262,7 +268,7 @@ RESOURCE_REGISTRY = {
 
     'compute.autoscalers': ResourceInfo(
         async_collection='compute.operations',
-        cache_command='compute autoscaler list',
+        # cache_command='compute autoscaler list',
         list_format="""
           table(
             name,
@@ -273,7 +279,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.backendBuckets': ResourceInfo(
-        cache_command='compute backend-buckets list',
+        # cache_command='compute backend-buckets list',
         list_format="""
           table(
             name,
@@ -282,8 +288,8 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.backendService': ResourceInfo(
-        cache_command='compute backend-services list',
+    'compute.backendServices': ResourceInfo(
+        # cache_command='compute backend-services list',
         list_format="""
           table(
             name,
@@ -294,7 +300,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.disks': ResourceInfo(
-        cache_command='compute disks list',
+        # cache_command='compute disks list',
         list_format="""
           table(
             name,
@@ -307,7 +313,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.diskTypes': ResourceInfo(
-        cache_command='compute disk-types list',
+        # cache_command='compute disk-types list',
         list_format="""
           table(
             name,
@@ -318,7 +324,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.firewalls': ResourceInfo(
-        cache_command='compute firewall-rules list',
+        # cache_command='compute firewall-rules list',
         list_format="""
           table(
             name,
@@ -332,7 +338,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.forwardingRules': ResourceInfo(
-        cache_command='compute forwarding-rules list',
+        # cache_command='compute forwarding-rules list',
         list_format="""
           table(
             name,
@@ -345,7 +351,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.groups': ResourceInfo(
-        cache_command='compute groups list',
+        # cache_command='compute groups list',
         list_format="""
           table(
             name,
@@ -356,7 +362,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.httpHealthChecks': ResourceInfo(
-        cache_command='compute http-health-checks list',
+        # cache_command='compute http-health-checks list',
         list_format="""
           table(
             name,
@@ -368,7 +374,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.httpsHealthChecks': ResourceInfo(
-        cache_command='compute https-health-checks list',
+        # cache_command='compute https-health-checks list',
         list_format="""
           table(
             name,
@@ -380,7 +386,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.images': ResourceInfo(
-        cache_command='compute images list',
+        # cache_command='compute images list',
         list_format="""
           table(
             name,
@@ -393,7 +399,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceGroups': ResourceInfo(
-        cache_command='compute instance-groups list',
+        # cache_command='compute instance-groups list',
         list_format="""
           table(
             name,
@@ -406,7 +412,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceGroupManagers': ResourceInfo(
-        cache_command='compute instance-groups managed list',
+        # cache_command='compute instance-groups managed list',
         list_format="""
           table(
             name,
@@ -421,7 +427,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instances': ResourceInfo(
-        cache_command='compute instances list',
+        # cache_command='compute instances list',
         list_format="""
           table(
             name,
@@ -436,7 +442,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceTemplates': ResourceInfo(
-        cache_command='compute instance-templates list',
+        # cache_command='compute instance-templates list',
         list_format="""
           table(
             name,
@@ -448,7 +454,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.machineTypes': ResourceInfo(
-        cache_command='compute machine-types list',
+        # cache_command='compute machine-types list',
         list_format="""
           table(
             name,
@@ -461,7 +467,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.networks': ResourceInfo(
-        cache_command='compute networks list',
+        # cache_command='compute networks list',
         list_format="""
           table(
             name,
@@ -493,7 +499,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.regions': ResourceInfo(
-        cache_command='compute regions list',
+        # cache_command='compute regions list',
         list_format="""
           table(
             name,
@@ -543,7 +549,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.routes': ResourceInfo(
-        cache_command='compute routes list',
+        # cache_command='compute routes list',
         list_format="""
           table(
             name,
@@ -557,7 +563,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.snapshots': ResourceInfo(
-        cache_command='compute snapshts list',
+        # cache_command='compute snapshots list',
         list_format="""
           table(
             name,
@@ -569,7 +575,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.sslCertificates': ResourceInfo(
-        cache_command='compute ssl-certificates list',
+        # cache_command='compute ssl-certificates list',
         list_format="""
           table(
             name,
@@ -579,7 +585,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetHttpProxies': ResourceInfo(
-        cache_command='compute target-http-proxies list',
+        # cache_command='compute target-http-proxies list',
         list_format="""
           table(
             name,
@@ -589,7 +595,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetHttpsProxies': ResourceInfo(
-        cache_command='compute target-https-proxies list',
+        # cache_command='compute target-https-proxies list',
         list_format="""
           table(
             name,
@@ -600,7 +606,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetSslProxies': ResourceInfo(
-        cache_command='compute target-ssl-proxies list',
+        # cache_command='compute target-ssl-proxies list',
         list_format="""
           table(
             name,
@@ -612,7 +618,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetInstances': ResourceInfo(
-        cache_command='compute target-instances list',
+        # cache_command='compute target-instances list',
         list_format="""
           table(
             name,
@@ -624,7 +630,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetPools': ResourceInfo(
-        cache_command='compute pools list',
+        # cache_command='compute pools list',
         list_format="""
           table(
             name,
@@ -637,7 +643,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetVpnGateways': ResourceInfo(
-        cache_command='compute vpn-gateways list',
+        # cache_command='compute vpn-gateways list',
         list_format="""
           table(
             name,
@@ -648,7 +654,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.urlMaps': ResourceInfo(
-        cache_command='compute url-maps list',
+        # # cache_command='compute url-maps list',
         list_format="""
           table(
             name,
@@ -658,7 +664,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.users': ResourceInfo(
-        cache_command='compute users list',
+        # cache_command='compute users list',
         list_format="""
           table(
             name,
@@ -669,7 +675,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.vpnTunnels': ResourceInfo(
-        cache_command='compute vpn-tunnels list',
+        # cache_command='compute vpn-tunnels list',
         list_format="""
           table(
             name,
@@ -681,7 +687,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.zones': ResourceInfo(
-        cache_command='compute zones list',
+        # cache_command='compute zones list',
         list_format="""
           table(
             name,
@@ -783,22 +789,38 @@ RESOURCE_REGISTRY = {
     ),
 
     # debug
-    'debug.snapshots': ResourceInfo(
-        list_format="""
-          table(id, location, short_status():label=STATUS,
-                consoleViewUrl:label=VIEW)
-        """
-    ),
 
     'debug.logpoints': ResourceInfo(
         list_format="""
-          table(id, location, logLevel:label=LEVEL, short_status():label=STATUS)
+          table(
+            id,
+            location,
+            logLevel:label=LEVEL,
+            short_status():label=STATUS,
+            condition,
+            log_message_format
+          )
+        """,
+    ),
+
+    'debug.snapshots': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            location,
+            short_status():label=STATUS,
+            consoleViewUrl:label=VIEW
+          )
         """
     ),
 
     'debug.targets': ResourceInfo(
         list_format="""
-          table(name, target_id:label=ID, description)
+          table(
+            name,
+            target_id:label=ID,
+            description
+          )
         """
     ),
 
@@ -954,6 +976,20 @@ RESOURCE_REGISTRY = {
             projectId,
             title,
             projectNumber
+          )
+        """,
+    ),
+
+    # pubsub
+
+    'pubsub.subscriptions': ResourceInfo(
+        list_format="""
+          table[box](
+            projectId:label=PROJECT,
+            subscriptionId:label=SUBSCRIPTION,
+            topicId:label=TOPIC,
+            type,
+            ackDeadlineSeconds:label=ACK_DEADLINE
           )
         """,
     ),

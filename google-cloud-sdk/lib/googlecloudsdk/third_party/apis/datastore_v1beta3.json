@@ -5,7 +5,7 @@
   "name": "datastore",
   "version": "v1beta3",
   "revision": "0",
-  "title": "Google Cloud Datastore API - NEW",
+  "title": "Google Cloud Datastore API",
   "description": "Google Cloud Datastore is a schemaless NoSQL datastore providing robust, scalable storage for your application.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",

@@ -29,10 +29,10 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import usage_text
-from googlecloudsdk.core import cli as core_cli
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import remote_completion
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
 
@@ -251,7 +251,18 @@ class ArgumentParser(argparse.ArgumentParser):
     Args:
       message: str, The error message to print.
     """
-    if self._is_group:
+    # No need to output help/usage text if we are in completion mode. However,
+    # we do need to populate group/command level choices. These choices are not
+    # loaded when there is a parser error since we do lazy loading.
+    if '_ARGCOMPLETE' in os.environ:
+      # pylint:disable=protected-access
+      if self._calliope_command._sub_parser:
+        choices = dict()
+        for choice in self._calliope_command.AllSubElements():
+          choices[choice.replace('_', '-')] = None
+        # pylint:disable=protected-access
+        self._calliope_command._sub_parser.choices = choices
+    elif self._is_group:
       shorthelp = usage_text.ShortHelpText(
           self._calliope_command, self._calliope_command.ai)
       # pylint:disable=protected-access
@@ -1377,13 +1388,13 @@ class Command(CommandCommon):
     tool_context = self._config_hooks.load_context()
     last_group = None
     for context_filter in self._config_hooks.context_filters:
-      last_group = context_filter(tool_context, core_cli.Http, args)
+      last_group = context_filter(tool_context, http.Http, args)
 
     command_instance = self._common_type(
         cli=cli,
         context=tool_context,
         group=last_group,
-        http_func=core_cli.Http,
+        http_func=http.Http,
         format_string=args.format or 'yaml')
 
     log.debug('Running %s with %s.', self.dotted_name, args)

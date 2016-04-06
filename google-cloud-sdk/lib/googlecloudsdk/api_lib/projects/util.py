@@ -131,14 +131,11 @@ def HandleHttpError(func):
   return CatchHTTPErrorRaiseHTTPException
 
 
-def GetClient(http):
+def GetClient():
   """Import and return the appropriate projects client.
-
-  Args:
-    http: httplib2.Http
 
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  return apis.GetClientInstance('projects', 'v1beta1', http)
+  return apis.GetClientInstance('projects', 'v1beta1')
 

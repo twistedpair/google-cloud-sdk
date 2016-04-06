@@ -45,20 +45,17 @@ def CheckResponse(response):
   return http_wrapper.CheckResponse(response)
 
 
-def NewAPIAdapter(http):
+def NewAPIAdapter():
   """Initialize an api adapter for the given api_version.
-
-  Args:
-    http: httplib2.Http object for api client to use.
 
   Returns:
     APIAdapter object.
   """
-  api_client = core_apis.GetClientInstance('container', 'v1', http)
+  api_client = core_apis.GetClientInstance('container', 'v1')
   api_client.check_response_func = CheckResponse
   messages = core_apis.GetMessagesModule('container', 'v1')
 
-  api_compute_client = core_apis.GetClientInstance('compute', 'v1', http)
+  api_compute_client = core_apis.GetClientInstance('compute', 'v1')
   api_compute_client.check_response_func = CheckResponse
   compute_messages = core_apis.GetMessagesModule('compute', 'v1')
 
@@ -365,7 +362,8 @@ class CreateClusterOptions(object):
                cluster_ipv4_cidr=None,
                enable_cloud_logging=None,
                enable_cloud_monitoring=None,
-               subnetwork=None):
+               subnetwork=None,
+               disable_addons=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -380,6 +378,11 @@ class CreateClusterOptions(object):
     self.enable_cloud_logging = enable_cloud_logging
     self.enable_cloud_monitoring = enable_cloud_monitoring
     self.subnetwork = subnetwork
+    self.disable_addons = disable_addons
+
+
+INGRESS = 'HttpLoadBalancing'
+HPA = 'HorizontalPodAutoscaling'
 
 
 class UpdateClusterOptions(object):
@@ -389,14 +392,14 @@ class UpdateClusterOptions(object):
                update_master=None,
                update_nodes=None,
                node_pool=None,
-               update_cluster=None,
-               monitoring_service=None):
+               monitoring_service=None,
+               disable_addons=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
     self.node_pool = node_pool
-    self.update_cluster = bool(update_cluster)
-    self.monitoring_service = str(monitoring_service)
+    self.monitoring_service = monitoring_service
+    self.disable_addons = disable_addons
 
 
 class CreateNodePoolOptions(object):
@@ -437,7 +440,6 @@ class V1Adapter(APIAdapter):
     node_config = self.messages.NodeConfig()
     if options.node_machine_type:
       node_config.machineType = options.node_machine_type
-    # TODO(user): support disk size via flag
     if options.node_disk_size_gb:
       node_config.diskSizeGb = options.node_disk_size_gb
     if options.node_source_image:
@@ -465,6 +467,11 @@ class V1Adapter(APIAdapter):
       cluster.monitoringService = 'none'
     if options.subnetwork:
       cluster.subnetwork = options.subnetwork
+    if options.disable_addons:
+      addons = self._AddonsConfig(
+          disable_ingress=INGRESS in options.disable_addons or None,
+          disable_hpa=HPA in options.disable_addons or None)
+      cluster.addonsConfig = addons
 
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 
@@ -485,9 +492,14 @@ class V1Adapter(APIAdapter):
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
-    elif options.update_cluster:
+    elif options.monitoring_service:
       update = self.messages.ClusterUpdate(
           desiredMonitoringService=options.monitoring_service)
+    elif options.disable_addons:
+      addons = self._AddonsConfig(
+          disable_ingress=options.disable_addons.get(INGRESS),
+          disable_hpa=options.disable_addons.get(HPA))
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
 
     op = self.client.projects_zones_clusters.Update(
         self.messages.ContainerProjectsZonesClustersUpdateRequest(
@@ -497,6 +509,16 @@ class V1Adapter(APIAdapter):
             updateClusterRequest=self.messages.UpdateClusterRequest(
                 update=update)))
     return self.ParseOperation(op.name)
+
+  def _AddonsConfig(self, disable_ingress=None, disable_hpa=None):
+    addons = self.messages.AddonsConfig()
+    if disable_ingress is not None:
+      addons.httpLoadBalancing = self.messages.HttpLoadBalancing(
+          disabled=bool(disable_ingress))
+    if disable_hpa is not None:
+      addons.horizontalPodAutoscaling = self.messages.HorizontalPodAutoscaling(
+          disabled=bool(disable_hpa))
+    return addons
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_zones_clusters.Delete(
@@ -524,10 +546,9 @@ class V1Adapter(APIAdapter):
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
+        initialNodeCount=options.num_nodes,
         config=node_config)
-    create_node_pool_req = self.messages.CreateNodePoolRequest(
-        nodePool=pool,
-        initialNodeCount=options.num_nodes)
+    create_node_pool_req = self.messages.CreateNodePoolRequest(nodePool=pool)
 
     req = self.messages.ContainerProjectsZonesClustersNodePoolsCreateRequest(
         projectId=node_pool_ref.projectId,

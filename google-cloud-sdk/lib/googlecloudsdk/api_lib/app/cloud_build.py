@@ -107,7 +107,7 @@ def UploadSource(source_dir, bucket, obj, storage_client):
 
 
 def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
-                      cloudbuild_client, http):
+                      cloudbuild_client):
   """Execute a call to CloudBuild service and wait for it to finish.
 
   Args:
@@ -117,7 +117,6 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
     output_image: GCR location for the output docker image;
                   eg, gcr.io/test-gae/hardcoded-output-tag.
     cloudbuild_client: client to the Cloud Build service.
-    http: an http provider that can be used to create api clients.
 
   Raises:
     BuildFailedError: when the build fails.
@@ -125,10 +124,18 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
   builder = properties.VALUES.app.container_builder_image.Get()
   log.debug('Using builder image: [{0}]'.format(builder))
   logs_bucket = bucket_ref.bucket
+
+  cloud_build_timeout = properties.VALUES.app.cloud_build_timeout.Get()
+  if cloud_build_timeout is not None:
+    timeout_str = cloud_build_timeout + 's'
+  else:
+    timeout_str = None
+
   build_op = cloudbuild_client.projects_builds.Create(
       cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
           projectId=project,
           build=cloudbuild_v1.Build(
+              timeout=timeout_str,
               source=cloudbuild_v1.Source(
                   storageSource=cloudbuild_v1.StorageSource(
                       bucket=bucket_ref.bucket,
@@ -161,7 +168,6 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
       'Started cloud build [{build_id}].'.format(build_id=build_id))
   log_object = CLOUDBUILD_LOGFILE_FMT_STRING.format(build_id=build_id)
   log_tailer = cloud_storage.LogTailer(
-      http=http,
       bucket=logs_bucket,
       obj=log_object)
   logs_uri = CLOUDBUILD_LOGS_URI_TEMPLATE.format(project_id=project,

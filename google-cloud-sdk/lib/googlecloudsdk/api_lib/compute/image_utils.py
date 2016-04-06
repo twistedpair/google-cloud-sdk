@@ -81,8 +81,8 @@ class ImageExpander(object):
     provided, only the given project is queried.
 
     Args:
-      args: The command-line flags. The flags accessed are --image and
-        --image-project.
+      args: The command-line flags. The flags accessed are --image,
+        --image-family and --image-project.
       return_image_resource: If True, always makes an API call to also
         fetch the image resource.
 
@@ -91,10 +91,27 @@ class ImageExpander(object):
         return_image_resource is False, the second element is None, otherwise
         it is the image resource.
     """
-    image_ref = self.resources.Parse(
-        args.image or constants.DEFAULT_IMAGE,
-        collection='compute.images',
-        resolve=False)
+
+    image_ref = None
+
+    if args.image:
+      image_ref = self.resources.Parse(
+          args.image,
+          collection='compute.images',
+          resolve=False)
+    # TODO(user): remove getattr on image family GA
+    elif getattr(args, 'image_family', None):
+      image_ref = self.resources.Parse(
+          args.image_family,
+          collection='compute.images',
+          resolve=False)
+      if not image_ref.image.startswith('family/'):
+        image_ref.image = 'family/' + image_ref.image
+    else:
+      image_ref = self.resources.Parse(
+          constants.DEFAULT_IMAGE,
+          collection='compute.images',
+          resolve=False)
 
     # If an image project was specified, then assume that image refers
     # to an image in that project.

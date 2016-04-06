@@ -5,7 +5,7 @@
  "name": "serviceregistry",
  "canonicalName": "Service Registry",
  "version": "beta",
- "revision": "20160323",
+ "revision": "20160330",
  "title": "Google Cloud Service Registry API",
  "description": "Manages service endpoints in Service Registry and provides integration with DNS for service discovery and name resolution.",
  "ownerDomain": "google.com",
@@ -132,10 +132,6 @@
     "state": {
      "type": "string",
      "description": "[Output Only] The current state of the endpoint, as determined by the system."
-    },
-    "visibility": {
-     "$ref": "EndpointEndpointVisibility",
-     "description": "The visibility of this endpoint. This must be a list of fully-qualified URLs to Compute Engine networks."
     }
    }
   },
@@ -187,19 +183,6 @@
     "protocol": {
      "type": "string",
      "description": "Optional user provided protocol for this port. Must be one of the following well known protocol strings: tcp, udp, icmp, esp, ah or sctp. Default is tcp."
-    }
-   }
-  },
-  "EndpointEndpointVisibility": {
-   "id": "EndpointEndpointVisibility",
-   "type": "object",
-   "properties": {
-    "networks": {
-     "type": "array",
-     "description": "Google Compute Engine networks for which the name of this endpoint should be resolvable through DNS.",
-     "items": {
-      "type": "string"
-     }
     }
    }
   },

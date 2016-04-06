@@ -14,22 +14,21 @@
 """Remote resource completion and caching."""
 
 import abc
-import logging
 import os
-import sys
+import StringIO
 import tempfile
 import threading
 import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.resource import resource_registry
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
-
-_GETINSTANCEFUN = None
 
 _RESOURCE_FLAGS = {
     'compute.projects': ' --project ',
@@ -49,19 +48,6 @@ _OPTIONAL_PARMS = {
         {'project': lambda parsed_args: parsed_args.project},
     ],
 }
-
-
-def SetGetInstanceFun(fun):
-  """Sets function to use to convert list items to instance_ref selfref.
-
-  Args:
-    fun: The function to call with the list item
-
-  Returns:
-    instance_ref: The selflink corresponding to the reference.
-  """
-  global _GETINSTANCEFUN
-  _GETINSTANCEFUN = fun
 
 
 class CompletionProgressTracker(object):
@@ -228,20 +214,6 @@ class RemoteCompletion(object):
   def CacheTries():
     return RemoteCompletion.CACHE_TRIES
 
-  def __init__(self):
-    """Set the cache directory."""
-    try:
-      self.project = properties.VALUES.core.project.Get(required=True)
-    except Exception:  # pylint:disable=broad-except
-      self.project = 0
-    self.cache_dir = config.Paths().completion_cache_dir
-    self.flags = ''
-    self.index_offset = 0
-    self.account = properties.VALUES.core.account.Get(required=False)
-    if self.account:
-      self.index_offset = 1
-      self.cache_dir = os.path.join(self.cache_dir, self.account)
-
   @staticmethod
   def CachePath(self_link):
     """Returns cache path corresponding to self_link.
@@ -257,6 +229,26 @@ class RemoteCompletion(object):
     name = lst[-1]
     lst[-1] = '_names_'
     return [os.path.join(*lst), name]
+
+  @staticmethod
+  def ResetCache():
+    cache_dir = config.Paths().completion_cache_dir
+    if os.path.isdir(cache_dir):
+      files.RmTree(cache_dir)
+
+  def __init__(self):
+    """Set the cache directory."""
+    try:
+      self.project = properties.VALUES.core.project.Get(required=True)
+    except Exception:  # pylint:disable=broad-except
+      self.project = 0
+    self.cache_dir = config.Paths().completion_cache_dir
+    self.flags = ''
+    self.index_offset = 0
+    self.account = properties.VALUES.core.account.Get(required=False)
+    if self.account:
+      self.index_offset = 1
+      self.cache_dir = os.path.join(self.cache_dir, self.account)
 
   def ResourceIsCached(self, resource):
     """Returns True for resources that can be cached.
@@ -324,11 +316,8 @@ class RemoteCompletion(object):
           options = self._GetAllMatchesFromCache(prefix, fpath, options,
                                                  increment_counters)
         else:
-          # if not valid than the cache can't be used so return no matches
-          size = 0
-          if os.path.isdir(os.path.dirname(fpath)):
-            size = os.path.getsize(fpath)
-          if size > 0:
+          # if not valid then the cache can't be used so return no matches
+          if os.path.isdir(os.path.dirname(fpath)) and os.path.getsize(fpath):
             return None
       # for regional resources also check for global resources
       lst0 = lst[0]
@@ -478,8 +467,42 @@ class RemoteCompletion(object):
     return os.fdopen(9, 'w')
 
   @staticmethod
-  def RunListCommand(cli, command):
-    return list(cli().Execute(command, call_arg_complete=False))
+  def RunListCommand(cli, command, parse_output=False):
+    """Runs a cli list comman with a visual progress tracker/spinner.
+
+    Args:
+      cli: The calliope cli object.
+      command: The list command that generates the completion data.
+      parse_output: If True then the output of command is read and split into a
+        resource data list, one item per line. If False then the command return
+        value is the resource data list.
+
+    Returns:
+      The resource data list.
+    """
+    pid = os.getpid()
+    ofile = RemoteCompletion.GetTickerStream()
+    tracker = CompletionProgressTracker(ofile)
+    if parse_output:
+      log_out = log.out
+      out = StringIO.StringIO()
+      log.out = out
+    else:
+      command.append('--format=none[disable]')
+    with tracker:
+      items = cli().Execute(command, call_arg_complete=False)
+    if parse_output:
+      log.out = log_out
+    if tracker.has_forked:
+      # The tracker has forked,
+      if os.getpid() == pid:
+        # This is the parent.
+        return []
+      # The parent already exited, so exit the child.
+      os.exit(0)
+    if parse_output:
+      return out.getvalue().rstrip('\n').split('\n')
+    return list(items)
 
   @staticmethod
   def GetCompleterForResource(resource, cli, command_line=None):
@@ -495,13 +518,35 @@ class RemoteCompletion(object):
     """
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       return None
-    if not command_line:
-      command_line = resource
+    ro_resource = resource
+    ro_command_line = command_line or resource
 
     def RemoteCompleter(parsed_args, **unused_kwargs):
-      """Run list command on resource to generates completion options."""
+      """Runs list command on resource to generate completion data."""
+      resource = ro_resource
+      command_line = ro_command_line
+      list_command_updates_cache = False
+      info = resource_registry.Get(resource)
+      if info.cache_command:
+        command = info.cache_command.split(' ')
+        if info.bypass_cache:
+          # Don't cache - use the cache_command results directly.
+          return RemoteCompletion.RunListCommand(
+              cli, command, parse_output=True)
+        list_command_updates_cache = True
+      else:
+        command = command_line.split('.') + ['list']
       options = []
       try:
+        if hasattr(parsed_args, 'property'):
+          if parsed_args.property == 'compute/region':
+            resource = 'compute.regions'
+            command = resource.split('.') + ['list']
+          elif parsed_args.property == 'compute/zone':
+            resource = 'compute.zones'
+            command = resource.split('.') + ['list']
+          elif parsed_args.property != 'project':
+            return options
         line = os.getenv('COMP_LINE')
         prefix = ''
         if line:
@@ -510,7 +555,6 @@ class RemoteCompletion(object):
             if c == ' ' or c == '\t':
               break
             prefix = c + prefix
-        command = command_line.split('.') + ['list']
         project = properties.VALUES.core.project.Get(required=True)
         parms = {}
         if command[0] in _OPTIONAL_PARMS:
@@ -530,49 +574,44 @@ class RemoteCompletion(object):
         resource_missing = len(lst) > 1
         ccache = RemoteCompletion()
         options = ccache.GetFromCache(resource_link, prefix)
-        pid = os.getpid()
-        if options is None:
-          properties.VALUES.core.user_output_enabled.Set(False)
-          ofile = RemoteCompletion.GetTickerStream()
-          tracker = CompletionProgressTracker(ofile)
-          with tracker:
-            items = RemoteCompletion.RunListCommand(cli, command)
-          options = []
-          # the following is true if tracker forked and this is the parent
-          if tracker.has_forked and os.getpid() == pid:
-            return options
-          self_links = []
-          for item in items:
-            # Get a selflink for the item
-            if command[0] == 'compute':
-              if 'selfLink' in item:
-                instance_ref = resources.Parse(item['selfLink'])
-                selflink = instance_ref.SelfLink()
-              elif resource_link:
-                selflink = resource_link.rstrip('+') + item['name']
-            elif _GETINSTANCEFUN:
-              # List command provides a function to get the selflink
-              selflink = _GETINSTANCEFUN(item)
-            else:
-              instance_ref = resources.Create(resource, project=item.project,
-                                              instance=item.instance)
+        if options is not None:
+          return options
+
+        items = RemoteCompletion.RunListCommand(cli, command)
+        if list_command_updates_cache:
+          options = ccache.GetFromCache(resource_link, prefix) or []
+          if options:
+            RemoteCompletion.CACHE_HITS -= 1
+          return options
+
+        # This part can be dropped when all commands are subclassed.
+        options = []
+        self_links = []
+        for item in items:
+          # Get a selflink for the item
+          if command[0] == 'compute':
+            if 'selfLink' in item:
+              instance_ref = resources.Parse(item['selfLink'])
               selflink = instance_ref.SelfLink()
-            self_links.append(selflink)
-            lst = selflink.split('/')
-            name = lst[-1]
-            if not prefix or name.startswith(prefix):
-              options.append(name)
-          if self_links:
-            ccache.StoreInCache(self_links)
-            if tracker.has_forked:
-              # the parent already exited, so exit the child
-              sys.exit(0)
-            if resource_missing:
-              options = ccache.GetFromCache(resource_link, prefix,
-                                            increment_counters=False) or []
+            elif resource_link:
+              selflink = resource_link.rstrip('+') + item['name']
+          else:
+            instance_ref = resources.Create(resource, project=item.project,
+                                            instance=item.instance)
+            selflink = instance_ref.SelfLink()
+          self_links.append(selflink)
+          lst = selflink.split('/')
+          name = lst[-1]
+          if not prefix or name.startswith(prefix):
+            options.append(name)
+        if self_links:
+          ccache.StoreInCache(self_links)
+          if resource_missing:
+            options = ccache.GetFromCache(resource_link, prefix,
+                                          increment_counters=False) or []
       except Exception:  # pylint:disable=broad-except
-        logging.error(resource + 'completion command failed', exc_info=True)
+        log.error(resource + 'completion command failed', exc_info=True)
         return []
       return options
-    return RemoteCompleter
 
+    return RemoteCompleter

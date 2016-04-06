@@ -33,6 +33,8 @@ class GenomicsV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.annotations = self.AnnotationsService(self)
+    self.annotationsets = self.AnnotationsetsService(self)
     self.callsets = self.CallsetsService(self)
     self.datasets = self.DatasetsService(self)
     self.operations = self.OperationsService(self)
@@ -44,6 +46,371 @@ class GenomicsV1(base_api.BaseApiClient):
     self.referencesets = self.ReferencesetsService(self)
     self.variants = self.VariantsService(self)
     self.variantsets = self.VariantsetsService(self)
+
+  class AnnotationsService(base_api.BaseApiService):
+    """Service class for the annotations resource."""
+
+    _NAME = u'annotations'
+
+    def __init__(self, client):
+      super(GenomicsV1.AnnotationsService, self).__init__(client)
+      self._method_configs = {
+          'BatchCreate': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.annotations.batchCreate',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/annotations:batchCreate',
+              request_field='<request>',
+              request_type_name=u'BatchCreateAnnotationsRequest',
+              response_type_name=u'BatchCreateAnnotationsResponse',
+              supports_download=False,
+          ),
+          'Create': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.annotations.create',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/annotations',
+              request_field='<request>',
+              request_type_name=u'Annotation',
+              response_type_name=u'Annotation',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'genomics.annotations.delete',
+              ordered_params=[u'annotationId'],
+              path_params=[u'annotationId'],
+              query_params=[],
+              relative_path=u'v1/annotations/{annotationId}',
+              request_field='',
+              request_type_name=u'GenomicsAnnotationsDeleteRequest',
+              response_type_name=u'Empty',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'genomics.annotations.get',
+              ordered_params=[u'annotationId'],
+              path_params=[u'annotationId'],
+              query_params=[],
+              relative_path=u'v1/annotations/{annotationId}',
+              request_field='',
+              request_type_name=u'GenomicsAnnotationsGetRequest',
+              response_type_name=u'Annotation',
+              supports_download=False,
+          ),
+          'Search': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.annotations.search',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/annotations/search',
+              request_field='<request>',
+              request_type_name=u'SearchAnnotationsRequest',
+              response_type_name=u'SearchAnnotationsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'genomics.annotations.update',
+              ordered_params=[u'annotationId'],
+              path_params=[u'annotationId'],
+              query_params=[u'updateMask'],
+              relative_path=u'v1/annotations/{annotationId}',
+              request_field=u'annotation',
+              request_type_name=u'GenomicsAnnotationsUpdateRequest',
+              response_type_name=u'Annotation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      """Creates one or more new annotations atomically. All annotations must.
+belong to the same annotation set. Caller must have WRITE
+permission for this annotation set. For optimal performance, batch
+positionally adjacent annotations together.
+
+If the request has a systemic issue, such as an attempt to write to
+an inaccessible annotation set, the entire RPC will fail accordingly. For
+lesser data issues, when possible an error will be isolated to the
+corresponding batch entry in the response; the remaining well formed
+annotations will be created normally.
+
+For details on the requirements for each individual annotation resource,
+see
+CreateAnnotation.
+
+      Args:
+        request: (BatchCreateAnnotationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchCreateAnnotationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Create(self, request, global_params=None):
+      """Creates a new annotation. Caller must have WRITE permission.
+for the associated annotation set.
+
+The following fields are required:
+
+* annotationSetId
+* referenceName or
+  referenceId or
+
+### Transcripts
+
+transcript
+transcript.exons
+transcript.exons.start
+
+For annotations of type TRANSCRIPT, the following fields of
+transcript must be provided:
+
+* `exons.start`
+* `exons.end`
+
+All other fields may be optionally specified, unless documented as being
+server-generated (for example, the `id` field). The annotated
+range must be no longer than 100Mbp (mega base pairs). See the
+Annotation resource
+for additional restrictions on each field.
+
+      Args:
+        request: (Annotation) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes an annotation. Caller must have WRITE permission for.
+the associated annotation set.
+
+      Args:
+        request: (GenomicsAnnotationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Gets an annotation. Caller must have READ permission.
+for the associated annotation set.
+
+      Args:
+        request: (GenomicsAnnotationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Search(self, request, global_params=None):
+      """Searches for annotations that match the given criteria. Results are.
+ordered by genomic coordinate (by reference sequence, then position).
+Annotations with equivalent genomic coordinates are returned in an
+unspecified order. This order is consistent, such that two queries for the
+same content (regardless of page size) yield annotations in the same order
+across their respective streams of paginated responses. Caller must have
+READ permission for the queried annotation sets.
+
+      Args:
+        request: (SearchAnnotationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAnnotationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates an annotation. Caller must have.
+WRITE permission for the associated dataset.
+
+      Args:
+        request: (GenomicsAnnotationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class AnnotationsetsService(base_api.BaseApiService):
+    """Service class for the annotationsets resource."""
+
+    _NAME = u'annotationsets'
+
+    def __init__(self, client):
+      super(GenomicsV1.AnnotationsetsService, self).__init__(client)
+      self._method_configs = {
+          'Create': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.annotationsets.create',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/annotationsets',
+              request_field='<request>',
+              request_type_name=u'AnnotationSet',
+              response_type_name=u'AnnotationSet',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'genomics.annotationsets.delete',
+              ordered_params=[u'annotationSetId'],
+              path_params=[u'annotationSetId'],
+              query_params=[],
+              relative_path=u'v1/annotationsets/{annotationSetId}',
+              request_field='',
+              request_type_name=u'GenomicsAnnotationsetsDeleteRequest',
+              response_type_name=u'Empty',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'genomics.annotationsets.get',
+              ordered_params=[u'annotationSetId'],
+              path_params=[u'annotationSetId'],
+              query_params=[],
+              relative_path=u'v1/annotationsets/{annotationSetId}',
+              request_field='',
+              request_type_name=u'GenomicsAnnotationsetsGetRequest',
+              response_type_name=u'AnnotationSet',
+              supports_download=False,
+          ),
+          'Search': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'genomics.annotationsets.search',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/annotationsets/search',
+              request_field='<request>',
+              request_type_name=u'SearchAnnotationSetsRequest',
+              response_type_name=u'SearchAnnotationSetsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'genomics.annotationsets.update',
+              ordered_params=[u'annotationSetId'],
+              path_params=[u'annotationSetId'],
+              query_params=[u'updateMask'],
+              relative_path=u'v1/annotationsets/{annotationSetId}',
+              request_field=u'annotationSet',
+              request_type_name=u'GenomicsAnnotationsetsUpdateRequest',
+              response_type_name=u'AnnotationSet',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new annotation set. Caller must have WRITE permission for the.
+associated dataset.
+
+The following fields are required:
+
+  * datasetId
+  * referenceSetId
+
+All other fields may be optionally specified, unless documented as being
+server-generated (for example, the `id` field).
+
+      Args:
+        request: (AnnotationSet) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationSet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes an annotation set. Caller must have WRITE permission.
+for the associated annotation set.
+
+      Args:
+        request: (GenomicsAnnotationsetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Gets an annotation set. Caller must have READ permission for.
+the associated dataset.
+
+      Args:
+        request: (GenomicsAnnotationsetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Search(self, request, global_params=None):
+      """Searches for annotation sets that match the given criteria. Annotation sets.
+are returned in an unspecified order. This order is consistent, such that
+two queries for the same content (regardless of page size) yield annotation
+sets in the same order across their respective streams of paginated
+responses. Caller must have READ permission for the queried datasets.
+
+      Args:
+        request: (SearchAnnotationSetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAnnotationSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates an annotation set. The update must respect all mutability.
+restrictions and other invariants described on the annotation set resource.
+Caller must have WRITE permission for the associated dataset.
+
+      Args:
+        request: (GenomicsAnnotationsetsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnnotationSet) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
   class CallsetsService(base_api.BaseApiService):
     """Service class for the callsets resource."""
@@ -1311,7 +1678,7 @@ alternative bases. If no such variant exists, a new one will be created.
 When variants are merged, the call information from the new variant
 is added to the existing variant, and Variant info fields are merged
 as specified in
-InfoMergeConfig.
+infoMergeConfig.
 As a special case, for single-sample VCF files, QUAL and FILTER fields will
 be moved to the call level; these are sometimes interpreted in a
 call-specific context.
@@ -1342,8 +1709,83 @@ exists, a new one will be created.
 When variants are merged, the call information from the new variant
 is added to the existing variant. Variant info fields are merged as
 specified in the
-InfoMergeConfig
+infoMergeConfig
 field of the MergeVariantsRequest.
+
+Please exercise caution when using this method!  It is easy to introduce
+mistakes in existing variants and difficult to back out of them.  For
+example,
+suppose you were trying to merge a new variant with an existing one and
+both
+variants contain calls that belong to callsets with the same callset ID.
+
+    // Existing variant - irrelevant fields trimmed for clarity
+    {
+        "variantSetId": "10473108253681171589",
+        "referenceName": "1",
+        "start": "10582",
+        "referenceBases": "G",
+        "alternateBases": [
+            "A"
+        ],
+        "calls": [
+            {
+                "callSetId": "10473108253681171589-0",
+                "callSetName": "CALLSET0",
+                "genotype": [
+                    0,
+                    1
+                ],
+            }
+        ]
+    }
+
+    // New variant with conflicting call information
+    {
+        "variantSetId": "10473108253681171589",
+        "referenceName": "1",
+        "start": "10582",
+        "referenceBases": "G",
+        "alternateBases": [
+            "A"
+        ],
+        "calls": [
+            {
+                "callSetId": "10473108253681171589-0",
+                "callSetName": "CALLSET0",
+                "genotype": [
+                    1,
+                    1
+                ],
+            }
+        ]
+    }
+
+The resulting merged variant would overwrite the existing calls with those
+from the new variant:
+
+    {
+        "variantSetId": "10473108253681171589",
+        "referenceName": "1",
+        "start": "10582",
+        "referenceBases": "G",
+        "alternateBases": [
+            "A"
+        ],
+        "calls": [
+            {
+                "callSetId": "10473108253681171589-0",
+                "callSetName": "CALLSET0",
+                "genotype": [
+                    1,
+                    1
+                ],
+            }
+        ]
+    }
+
+This may be the desired outcome, but it is up to the user to determine if
+if that is indeed the case.
 
       Args:
         request: (MergeVariantsRequest) input message

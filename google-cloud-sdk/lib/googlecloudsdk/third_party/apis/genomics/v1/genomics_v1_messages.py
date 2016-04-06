@@ -13,6 +13,221 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'genomics'
 
 
+class Annotation(_messages.Message):
+  """An annotation describes a region of reference genome. The value of an
+  annotation may be one of several canonical types, supplemented by arbitrary
+  info tags. An annotation is not inherently associated with a specific sample
+  or individual (though a client could choose to use annotations in this way).
+  Example canonical annotation types are `GENE` and `VARIANT`.
+
+  Enums:
+    TypeValueValuesEnum: The data type for this annotation. Must match the
+      containing annotation set's type.
+
+  Messages:
+    InfoValue: A map of additional read alignment information. This must be of
+      the form map<string, string[]> (string key mapping to a list of string
+      values).
+
+  Fields:
+    annotationSetId: The annotation set to which this annotation belongs.
+    end: The end position of the range on the reference, 0-based exclusive.
+    id: The server-generated annotation ID, unique across all annotations.
+    info: A map of additional read alignment information. This must be of the
+      form map<string, string[]> (string key mapping to a list of string
+      values).
+    name: The display name of this annotation.
+    referenceId: The ID of the Google Genomics reference associated with this
+      range.
+    referenceName: The display name corresponding to the reference specified
+      by `referenceId`, for example `chr1`, `1`, or `chrX`.
+    reverseStrand: Whether this range refers to the reverse strand, as opposed
+      to the forward strand. Note that regardless of this field, the start/end
+      position of the range always refer to the forward strand.
+    start: The start position of the range on the reference, 0-based
+      inclusive.
+    transcript: A transcript value represents the assertion that a particular
+      region of the reference genome may be transcribed as RNA. An alternative
+      splicing pattern would be represented as a separate transcript object.
+      This field is only set for annotations of type `TRANSCRIPT`.
+    type: The data type for this annotation. Must match the containing
+      annotation set's type.
+    variant: A variant annotation, which describes the effect of a variant on
+      the genome, the coding sequence, and/or higher level consequences at the
+      organism level e.g. pathogenicity. This field is only set for
+      annotations of type `VARIANT`.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The data type for this annotation. Must match the containing annotation
+    set's type.
+
+    Values:
+      ANNOTATION_TYPE_UNSPECIFIED: <no description>
+      GENERIC: A `GENERIC` annotation type should be used when no other
+        annotation type will suffice. This represents an untyped annotation of
+        the reference genome.
+      VARIANT: A `VARIANT` annotation type.
+      GENE: A `GENE` annotation type represents the existence of a gene at the
+        associated reference coordinates. The start coordinate is typically
+        the gene's transcription start site and the end is typically the end
+        of the gene's last exon.
+      TRANSCRIPT: A `TRANSCRIPT` annotation type represents the assertion that
+        a particular region of the reference genome may be transcribed as RNA.
+    """
+    ANNOTATION_TYPE_UNSPECIFIED = 0
+    GENERIC = 1
+    VARIANT = 2
+    GENE = 3
+    TRANSCRIPT = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InfoValue(_messages.Message):
+    """A map of additional read alignment information. This must be of the
+    form map<string, string[]> (string key mapping to a list of string
+    values).
+
+    Messages:
+      AdditionalProperty: An additional property for a InfoValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InfoValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a InfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotationSetId = _messages.StringField(1)
+  end = _messages.IntegerField(2)
+  id = _messages.StringField(3)
+  info = _messages.MessageField('InfoValue', 4)
+  name = _messages.StringField(5)
+  referenceId = _messages.StringField(6)
+  referenceName = _messages.StringField(7)
+  reverseStrand = _messages.BooleanField(8)
+  start = _messages.IntegerField(9)
+  transcript = _messages.MessageField('Transcript', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  variant = _messages.MessageField('VariantAnnotation', 12)
+
+
+class AnnotationSet(_messages.Message):
+  """An annotation set is a logical grouping of annotations that share
+  consistent type information and provenance. Examples of annotation sets
+  include 'all genes from refseq', and 'all variant annotations from ClinVar'.
+
+  Enums:
+    TypeValueValuesEnum: The type of annotations contained within this set.
+
+  Messages:
+    InfoValue: A map of additional read alignment information. This must be of
+      the form map<string, string[]> (string key mapping to a list of string
+      values).
+
+  Fields:
+    datasetId: The dataset to which this annotation set belongs.
+    id: The server-generated annotation set ID, unique across all annotation
+      sets.
+    info: A map of additional read alignment information. This must be of the
+      form map<string, string[]> (string key mapping to a list of string
+      values).
+    name: The display name for this annotation set.
+    referenceSetId: The ID of the reference set that defines the coordinate
+      space for this set's annotations.
+    sourceUri: The source URI describing the file from which this annotation
+      set was generated, if any.
+    type: The type of annotations contained within this set.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of annotations contained within this set.
+
+    Values:
+      ANNOTATION_TYPE_UNSPECIFIED: <no description>
+      GENERIC: A `GENERIC` annotation type should be used when no other
+        annotation type will suffice. This represents an untyped annotation of
+        the reference genome.
+      VARIANT: A `VARIANT` annotation type.
+      GENE: A `GENE` annotation type represents the existence of a gene at the
+        associated reference coordinates. The start coordinate is typically
+        the gene's transcription start site and the end is typically the end
+        of the gene's last exon.
+      TRANSCRIPT: A `TRANSCRIPT` annotation type represents the assertion that
+        a particular region of the reference genome may be transcribed as RNA.
+    """
+    ANNOTATION_TYPE_UNSPECIFIED = 0
+    GENERIC = 1
+    VARIANT = 2
+    GENE = 3
+    TRANSCRIPT = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InfoValue(_messages.Message):
+    """A map of additional read alignment information. This must be of the
+    form map<string, string[]> (string key mapping to a list of string
+    values).
+
+    Messages:
+      AdditionalProperty: An additional property for a InfoValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InfoValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a InfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  datasetId = _messages.StringField(1)
+  id = _messages.StringField(2)
+  info = _messages.MessageField('InfoValue', 3)
+  name = _messages.StringField(4)
+  referenceSetId = _messages.StringField(5)
+  sourceUri = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
+class BatchCreateAnnotationsRequest(_messages.Message):
+  """A BatchCreateAnnotationsRequest object.
+
+  Fields:
+    annotations: The annotations to be created. At most 4096 can be specified
+      in a single request.
+  """
+
+  annotations = _messages.MessageField('Annotation', 1, repeated=True)
+
+
+class BatchCreateAnnotationsResponse(_messages.Message):
+  """A BatchCreateAnnotationsResponse object.
+
+  Fields:
+    entries: The resulting per-annotation entries, ordered consistently with
+      the original request.
+  """
+
+  entries = _messages.MessageField('Entry', 1, repeated=True)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -175,6 +390,40 @@ class CigarUnit(_messages.Message):
   referenceSequence = _messages.StringField(3)
 
 
+class ClinicalCondition(_messages.Message):
+  """A ClinicalCondition object.
+
+  Fields:
+    conceptId: The MedGen concept id associated with this gene. Search for
+      these IDs at http://www.ncbi.nlm.nih.gov/medgen/
+    externalIds: The set of external IDs for this condition.
+    names: A set of names for the condition.
+    omimId: The OMIM id for this condition. Search for these IDs at
+      http://omim.org/
+  """
+
+  conceptId = _messages.StringField(1)
+  externalIds = _messages.MessageField('ExternalId', 2, repeated=True)
+  names = _messages.StringField(3, repeated=True)
+  omimId = _messages.StringField(4)
+
+
+class CodingSequence(_messages.Message):
+  """A CodingSequence object.
+
+  Fields:
+    end: The end of the coding sequence on this annotation's reference
+      sequence, 0-based exclusive. Note that this position is relative to the
+      reference start, and *not* the containing annotation start.
+    start: The start of the coding sequence on this annotation's reference
+      sequence, 0-based inclusive. Note that this position is relative to the
+      reference start, and *not* the containing annotation start.
+  """
+
+  end = _messages.IntegerField(1)
+  start = _messages.IntegerField(2)
+
+
 class CoverageBucket(_messages.Message):
   """A bucket over which read coverage has been precomputed. A bucket
   corresponds to a specific range of the reference sequence.
@@ -216,6 +465,44 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Entry(_messages.Message):
+  """A Entry object.
+
+  Fields:
+    annotation: A Annotation attribute.
+    status: A Status attribute.
+  """
+
+  annotation = _messages.MessageField('Annotation', 1)
+  status = _messages.MessageField('Status', 2)
+
+
+class Exon(_messages.Message):
+  """A Exon object.
+
+  Fields:
+    end: The end position of the exon on this annotation's reference sequence,
+      0-based exclusive. Note that this is relative to the reference start,
+      and *not* the containing annotation start.
+    frame: The frame of this exon. Contains a value of 0, 1, or 2, which
+      indicates the offset of the first coding base of the exon within the
+      reading frame of the coding DNA sequence, if any. This field is
+      dependent on the strandedness of this annotation (see
+      Annotation.reverse_strand). For forward stranded annotations, this
+      offset is relative to the `exon.start`. For reverse strand annotations,
+      this offset is relative to the `exon.end - 1`.  Unset if this exon does
+      not intersect the coding sequence. Upon creation of a transcript, the
+      frame must be populated for all or none of the coding exons.
+    start: The start position of the exon on this annotation's reference
+      sequence, 0-based inclusive. Note that this is relative to the reference
+      start, and **not** the containing annotation start.
+  """
+
+  end = _messages.IntegerField(1)
+  frame = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  start = _messages.IntegerField(3)
 
 
 class Experiment(_messages.Message):
@@ -295,6 +582,90 @@ class ExportVariantSetRequest(_messages.Message):
   callSetIds = _messages.StringField(3, repeated=True)
   format = _messages.EnumField('FormatValueValuesEnum', 4)
   projectId = _messages.StringField(5)
+
+
+class ExternalId(_messages.Message):
+  """A ExternalId object.
+
+  Fields:
+    id: The id used by the source of this data.
+    sourceName: The name of the source of this data.
+  """
+
+  id = _messages.StringField(1)
+  sourceName = _messages.StringField(2)
+
+
+class GenomicsAnnotationsDeleteRequest(_messages.Message):
+  """A GenomicsAnnotationsDeleteRequest object.
+
+  Fields:
+    annotationId: The ID of the annotation to be deleted.
+  """
+
+  annotationId = _messages.StringField(1, required=True)
+
+
+class GenomicsAnnotationsGetRequest(_messages.Message):
+  """A GenomicsAnnotationsGetRequest object.
+
+  Fields:
+    annotationId: The ID of the annotation to be retrieved.
+  """
+
+  annotationId = _messages.StringField(1, required=True)
+
+
+class GenomicsAnnotationsUpdateRequest(_messages.Message):
+  """A GenomicsAnnotationsUpdateRequest object.
+
+  Fields:
+    annotation: A Annotation resource to be passed as the request body.
+    annotationId: The ID of the annotation to be updated.
+    updateMask: An optional mask specifying which fields to update. Mutable
+      fields are name, variant, transcript, and info. If unspecified, all
+      mutable fields will be updated.
+  """
+
+  annotation = _messages.MessageField('Annotation', 1)
+  annotationId = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class GenomicsAnnotationsetsDeleteRequest(_messages.Message):
+  """A GenomicsAnnotationsetsDeleteRequest object.
+
+  Fields:
+    annotationSetId: The ID of the annotation set to be deleted.
+  """
+
+  annotationSetId = _messages.StringField(1, required=True)
+
+
+class GenomicsAnnotationsetsGetRequest(_messages.Message):
+  """A GenomicsAnnotationsetsGetRequest object.
+
+  Fields:
+    annotationSetId: The ID of the annotation set to be retrieved.
+  """
+
+  annotationSetId = _messages.StringField(1, required=True)
+
+
+class GenomicsAnnotationsetsUpdateRequest(_messages.Message):
+  """A GenomicsAnnotationsetsUpdateRequest object.
+
+  Fields:
+    annotationSet: A AnnotationSet resource to be passed as the request body.
+    annotationSetId: The ID of the annotation set to be updated.
+    updateMask: An optional mask specifying which fields to update. Mutable
+      fields are name, source_uri, and info. If unspecified, all mutable
+      fields will be updated.
+  """
+
+  annotationSet = _messages.MessageField('AnnotationSet', 1)
+  annotationSetId = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GenomicsCallsetsDeleteRequest(_messages.Message):
@@ -1652,6 +2023,114 @@ class ReferenceSet(_messages.Message):
   sourceUri = _messages.StringField(8)
 
 
+class SearchAnnotationSetsRequest(_messages.Message):
+  """A SearchAnnotationSetsRequest object.
+
+  Enums:
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    datasetIds: Required. The dataset IDs to search within. Caller must have
+      `READ` access to these datasets.
+    name: Only return annotations sets for which a substring of the name
+      matches this string (case insensitive).
+    pageSize: The maximum number of results to return in a single page. If
+      unspecified, defaults to 128. The maximum value is 1024.
+    pageToken: The continuation token, which is used to page through large
+      result sets. To get the next page of results, set this parameter to the
+      value of `nextPageToken` from the previous response.
+    referenceSetId: If specified, only annotation sets associated with the
+      given reference set are returned.
+    types: If specified, only annotation sets that have any of these types are
+      returned.
+  """
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    """TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      ANNOTATION_TYPE_UNSPECIFIED: <no description>
+      GENERIC: <no description>
+      VARIANT: <no description>
+      GENE: <no description>
+      TRANSCRIPT: <no description>
+    """
+    ANNOTATION_TYPE_UNSPECIFIED = 0
+    GENERIC = 1
+    VARIANT = 2
+    GENE = 3
+    TRANSCRIPT = 4
+
+  datasetIds = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  referenceSetId = _messages.StringField(5)
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 6, repeated=True)
+
+
+class SearchAnnotationSetsResponse(_messages.Message):
+  """A SearchAnnotationSetsResponse object.
+
+  Fields:
+    annotationSets: The matching annotation sets.
+    nextPageToken: The continuation token, which is used to page through large
+      result sets. Provide this value in a subsequent request to return the
+      next page of results. This field will be empty if there aren't any
+      additional results.
+  """
+
+  annotationSets = _messages.MessageField('AnnotationSet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class SearchAnnotationsRequest(_messages.Message):
+  """A SearchAnnotationsRequest object.
+
+  Fields:
+    annotationSetIds: Required. The annotation sets to search within. The
+      caller must have `READ` access to these annotation sets. All queried
+      annotation sets must have the same type.
+    end: The end position of the range on the reference, 0-based exclusive. If
+      referenceId or referenceName must be specified, Defaults to the length
+      of the reference.
+    pageSize: The maximum number of results to return in a single page. If
+      unspecified, defaults to 256. The maximum value is 2048.
+    pageToken: The continuation token, which is used to page through large
+      result sets. To get the next page of results, set this parameter to the
+      value of `nextPageToken` from the previous response.
+    referenceId: The ID of the reference to query.
+    referenceName: The name of the reference to query, within the reference
+      set associated with this query.
+    start: The start position of the range on the reference, 0-based
+      inclusive. If specified, referenceId or referenceName must be specified.
+      Defaults to 0.
+  """
+
+  annotationSetIds = _messages.StringField(1, repeated=True)
+  end = _messages.IntegerField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  referenceId = _messages.StringField(5)
+  referenceName = _messages.StringField(6)
+  start = _messages.IntegerField(7)
+
+
+class SearchAnnotationsResponse(_messages.Message):
+  """A SearchAnnotationsResponse object.
+
+  Fields:
+    annotations: The matching annotations.
+    nextPageToken: The continuation token, which is used to page through large
+      result sets. Provide this value in a subsequent request to return the
+      next page of results. This field will be empty if there aren't any
+      additional results.
+  """
+
+  annotations = _messages.MessageField('Annotation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class SearchCallSetsRequest(_messages.Message):
   """The call set search request.
 
@@ -2216,6 +2695,39 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class Transcript(_messages.Message):
+  """A transcript represents the assertion that a particular region of the
+  reference genome may be transcribed as RNA.
+
+  Fields:
+    codingSequence: The range of the coding sequence for this transcript, if
+      any. To determine the exact ranges of coding sequence, intersect this
+      range with those of the `exons`, if any. If there are any `exons`, the
+      `codingSequence` must start and end within them.  Note that in some
+      cases, the reference genome will not exactly match the observed mRNA
+      transcript e.g. due to variance in the source genome from reference. In
+      these cases, `exon.frame` will not necessarily match the expected
+      reference reading frame and coding exon reference bases cannot
+      necessarily be concatenated to produce the original transcript mRNA.
+    exons: The <a href="http://en.wikipedia.org/wiki/Exon">exons</a> that
+      compose this transcript. This field should be unset for genomes where
+      transcript splicing does not occur, for example prokaryotes.  Introns
+      are regions of the transcript that are not included in the spliced RNA
+      product. Though not explicitly modeled here, intron ranges can be
+      deduced; all regions of this transcript that are not exons are introns.
+      Exonic sequences do not necessarily code for a translational product
+      (amino acids). Only the regions of exons bounded by the `codingSequence`
+      correspond to coding DNA sequence.  Exons are ordered by start position
+      and may not overlap.
+    geneId: The annotation ID of the gene from which this transcript is
+      transcribed.
+  """
+
+  codingSequence = _messages.MessageField('CodingSequence', 1)
+  exons = _messages.MessageField('Exon', 2, repeated=True)
+  geneId = _messages.StringField(3)
+
+
 class UndeleteDatasetRequest(_messages.Message):
   """A UndeleteDatasetRequest object."""
 
@@ -2301,6 +2813,145 @@ class Variant(_messages.Message):
   referenceName = _messages.StringField(11)
   start = _messages.IntegerField(12)
   variantSetId = _messages.StringField(13)
+
+
+class VariantAnnotation(_messages.Message):
+  """A VariantAnnotation object.
+
+  Enums:
+    ClinicalSignificanceValueValuesEnum: Describes the clinical significance
+      of a variant. It is adapted from the ClinVar controlled vocabulary for
+      clinical significance described at:
+      http://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/
+    EffectValueValuesEnum: Effect of the variant on the coding sequence.
+    TypeValueValuesEnum: Type has been adapted from ClinVar's list of variant
+      types.
+
+  Fields:
+    alternateBases: The alternate allele for this variant. If multiple
+      alternate alleles exist at this location, create a separate variant for
+      each one, as they may represent distinct conditions.
+    clinicalSignificance: Describes the clinical significance of a variant. It
+      is adapted from the ClinVar controlled vocabulary for clinical
+      significance described at:
+      http://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/
+    conditions: The set of conditions associated with this variant. A
+      condition describes the way a variant influences human health.
+    effect: Effect of the variant on the coding sequence.
+    geneId: Google annotation ID of the gene affected by this variant. This
+      should be provided when the variant is created.
+    transcriptIds: Google annotation IDs of the transcripts affected by this
+      variant. These should be provided when the variant is created.
+    type: Type has been adapted from ClinVar's list of variant types.
+  """
+
+  class ClinicalSignificanceValueValuesEnum(_messages.Enum):
+    """Describes the clinical significance of a variant. It is adapted from
+    the ClinVar controlled vocabulary for clinical significance described at:
+    http://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/
+
+    Values:
+      CLINICAL_SIGNIFICANCE_UNSPECIFIED: <no description>
+      CLINICAL_SIGNIFICANCE_OTHER: `OTHER` should be used when no other
+        clinical significance value will suffice.
+      UNCERTAIN: <no description>
+      BENIGN: <no description>
+      LIKELY_BENIGN: <no description>
+      LIKELY_PATHOGENIC: <no description>
+      PATHOGENIC: <no description>
+      DRUG_RESPONSE: <no description>
+      HISTOCOMPATIBILITY: <no description>
+      CONFERS_SENSITIVITY: <no description>
+      RISK_FACTOR: <no description>
+      ASSOCIATION: <no description>
+      PROTECTIVE: <no description>
+      MULTIPLE_REPORTED: `MULTIPLE_REPORTED` should be used when multiple
+        clinical signficances are reported for a variant. The original
+        clinical significance values may be provided in the `info` field.
+    """
+    CLINICAL_SIGNIFICANCE_UNSPECIFIED = 0
+    CLINICAL_SIGNIFICANCE_OTHER = 1
+    UNCERTAIN = 2
+    BENIGN = 3
+    LIKELY_BENIGN = 4
+    LIKELY_PATHOGENIC = 5
+    PATHOGENIC = 6
+    DRUG_RESPONSE = 7
+    HISTOCOMPATIBILITY = 8
+    CONFERS_SENSITIVITY = 9
+    RISK_FACTOR = 10
+    ASSOCIATION = 11
+    PROTECTIVE = 12
+    MULTIPLE_REPORTED = 13
+
+  class EffectValueValuesEnum(_messages.Enum):
+    """Effect of the variant on the coding sequence.
+
+    Values:
+      EFFECT_UNSPECIFIED: <no description>
+      EFFECT_OTHER: `EFFECT_OTHER` should be used when no other Effect will
+        suffice.
+      FRAMESHIFT: `FRAMESHIFT` indicates a mutation in which the insertion or
+        deletion of nucleotides resulted in a frameshift change.
+      FRAME_PRESERVING_INDEL: `FRAME_PRESERVING_INDEL` indicates a mutation in
+        which a multiple of three nucleotides has been inserted or deleted,
+        resulting in no change to the reading frame of the coding sequence.
+      SYNONYMOUS_SNP: `SYNONYMOUS_SNP` indicates a single nucleotide
+        polymorphism mutation that results in no amino acid change.
+      NONSYNONYMOUS_SNP: `NONSYNONYMOUS_SNP` indicates a single nucleotide
+        polymorphism mutation that results in an amino acid change.
+      STOP_GAIN: `STOP_GAIN` indicates a mutation that leads to the creation
+        of a stop codon at the variant site. Frameshift mutations creating
+        downstream stop codons do not count as `STOP_GAIN`.
+      STOP_LOSS: `STOP_LOSS` indicates a mutation that eliminates a stop codon
+        at the variant site.
+      SPLICE_SITE_DISRUPTION: `SPLICE_SITE_DISRUPTION` indicates that this
+        variant is found in a splice site for the associated transcript, and
+        alters the normal splicing pattern.
+    """
+    EFFECT_UNSPECIFIED = 0
+    EFFECT_OTHER = 1
+    FRAMESHIFT = 2
+    FRAME_PRESERVING_INDEL = 3
+    SYNONYMOUS_SNP = 4
+    NONSYNONYMOUS_SNP = 5
+    STOP_GAIN = 6
+    STOP_LOSS = 7
+    SPLICE_SITE_DISRUPTION = 8
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type has been adapted from ClinVar's list of variant types.
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      TYPE_OTHER: `TYPE_OTHER` should be used when no other Type will suffice.
+        Further explanation of the variant type may be included in the info
+        field.
+      INSERTION: `INSERTION` indicates an insertion.
+      DELETION: `DELETION` indicates a deletion.
+      SUBSTITUTION: `SUBSTITUTION` indicates a block substitution of two or
+        more nucleotides.
+      SNP: `SNP` indicates a single nucleotide polymorphism.
+      STRUCTURAL: `STRUCTURAL` indicates a large structural variant, including
+        chromosomal fusions, inversions, etc.
+      CNV: `CNV` indicates a variation in copy number.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_OTHER = 1
+    INSERTION = 2
+    DELETION = 3
+    SUBSTITUTION = 4
+    SNP = 5
+    STRUCTURAL = 6
+    CNV = 7
+
+  alternateBases = _messages.StringField(1)
+  clinicalSignificance = _messages.EnumField('ClinicalSignificanceValueValuesEnum', 2)
+  conditions = _messages.MessageField('ClinicalCondition', 3, repeated=True)
+  effect = _messages.EnumField('EffectValueValuesEnum', 4)
+  geneId = _messages.StringField(5)
+  transcriptIds = _messages.StringField(6, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class VariantCall(_messages.Message):

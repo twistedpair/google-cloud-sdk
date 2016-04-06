@@ -16,6 +16,7 @@
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.third_party.apis import apis_map
 
 
@@ -197,13 +198,13 @@ def GetClientClass(api_name, api_version=None):
   return getattr(module_obj, client_class_name)
 
 
-def GetClientInstance(api_name, api_version=None, http=None):
+def GetClientInstance(api_name, api_version=None, no_http=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    http: httplib2.Http, Object to be used by the client to perform requests.
+    no_http: bool, True to not create an http object for this client.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -212,7 +213,10 @@ def GetClientInstance(api_name, api_version=None, http=None):
   endpoint_override = endpoint_overrides.get(api_name, '')
 
   client_class = GetClientClass(api_name, api_version)
-  return client_class(url=endpoint_override, get_credentials=False, http=http)
+  return client_class(
+      url=endpoint_override,
+      get_credentials=False,
+      http=None if no_http else http.Http())
 
 
 def GetMessagesModule(api_name, api_version=None):

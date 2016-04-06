@@ -59,7 +59,7 @@ TRACEBACK_ENTRY_REGEXP = (
     r'File "(?P<file>.*)", line (?P<line>\d+), in (?P<function>.+)\n'
     r'(?P<code_snippet>.+)\n')
 
-MAX_CODE_SNIPPET_LENGTH = 20
+MAX_CODE_SNIPPET_LENGTH = 40
 
 
 def _FormatNewIssueUrl(comment, status='New', summary=''):

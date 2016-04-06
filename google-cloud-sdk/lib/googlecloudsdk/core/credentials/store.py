@@ -23,6 +23,7 @@ import textwrap
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
@@ -101,12 +102,6 @@ class RefreshError(Error):
 
 class RevokeError(Error):
   """Exception for when there was a problem revoking."""
-
-
-def _Http(*args, **kwargs):
-  no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool()
-  kwargs['disable_ssl_certificate_validation'] = no_validate
-  return httplib2.Http(*args, **kwargs)
 
 
 def _GetStorageKeyForAccount(account):
@@ -294,20 +289,20 @@ def Load(account=None, scopes=None):
   return cred
 
 
-def Refresh(creds, http=None):
+def Refresh(creds, http_client=None):
   """Refresh credentials.
 
   Calls creds.refresh(), unless they're SignedJwtAssertionCredentials.
 
   Args:
     creds: oauth2client.client.Credentials, The credentials to refresh.
-    http: httplib2.Http, The http transport to refresh with.
+    http_client: httplib2.Http, The http transport to refresh with.
 
   Raises:
     RefreshError: If the credentials fail to refresh.
   """
   try:
-    creds.refresh(http or _Http())
+    creds.refresh(http_client or http.Http())
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     raise RefreshError(e)
 
@@ -360,7 +355,7 @@ def RevokeCredentials(creds):
   # revoking SignedJwtAssertionCredentials.
   if creds and (not client.HAS_CRYPTO or
                 not isinstance(creds, client.SignedJwtAssertionCredentials)):
-    creds.revoke(_Http())
+    creds.revoke(http.Http())
 
 
 def Revoke(account=None):
@@ -453,9 +448,7 @@ def AcquireFromWebFlow(launch_browser=True,
   from googlecloudsdk.core.credentials import flow
 
   try:
-    cred = flow.Run(
-        webflow, launch_browser=launch_browser,
-        http=_Http())
+    cred = flow.Run(webflow, launch_browser=launch_browser, http=http.Http())
   except flow.Error as e:
     raise FlowError(e)
   return cred
@@ -488,9 +481,7 @@ def AcquireFromWebFlowAndClientIdFile(client_id_file,
   from googlecloudsdk.core.credentials import flow
 
   try:
-    cred = flow.Run(
-        webflow, launch_browser=launch_browser,
-        http=_Http())
+    cred = flow.Run(webflow, launch_browser=launch_browser, http=http.Http())
   except flow.Error as e:
     raise FlowError(e)
   return cred

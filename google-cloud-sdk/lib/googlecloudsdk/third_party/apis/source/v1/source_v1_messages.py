@@ -200,7 +200,7 @@ class CommitWorkspaceRequest(_messages.Message):
       <author@example.com>" required
     currentSnapshotId: If non-empty, current_snapshot_id must refer to the
       most recent update to the workspace, or ABORTED is returned.
-    message: required
+    message: The commit message. required
     paths: The subset of modified paths to commit. If empty, then commit all
       modified paths.
     workspaceId: The ID of the workspace.
@@ -238,7 +238,7 @@ class CreateWorkspaceRequest(_messages.Message):
     actions: An ordered sequence of actions to perform in the workspace. Can
       be empty. Specifying actions here instead of using ModifyWorkspace saves
       one RPC.
-    repoId: A RepoId attribute.
+    repoId: The repo within which to create the workspace.
     workspace: The following fields of workspace, with the allowable exception
       of baseline, must be set. No other fields of workspace should be set.
       id.name Provides the name of the workspace and must be unique within the

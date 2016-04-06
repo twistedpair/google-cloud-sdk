@@ -4,9 +4,9 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160324",
+ "revision": "20160330",
  "title": "Compute Engine API",
- "description": "API for the Google Compute Engine service.",
+ "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
@@ -448,7 +448,7 @@
     },
     "sourceImage": {
      "type": "string",
-     "description": "The source image used to create this disk.\n\nTo create a disk with a private image, specify the image name in the following format:\n\nglobal/images/my-private-image \n\nTo create a disk with a public image, specify the image name and the project that owns the image. For example, you can use a Debian image from the debian-cloud project:\n\nprojects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD \n\nThe vYYYYMMDD value is the image version. The fully-qualified URL also works in both examples."
+     "description": "The source image used to create this disk. If the source image is deleted, this field will not be set.\n\nTo create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-8 to use the latest Debian 8 image:\n\nprojects/debian-cloud/global/images/family/debian-8 \n\nAlternatively, use a specific version of a public operating system image:\n\nprojects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD \n\nTo create a disk with a private image that you created, specify the image name in the following format:\n\nglobal/images/my-private-image \n\nYou can also specify a private image by its image family, which returns the latest version of the image in that family. Replace the image name with family/family-name:\n\nglobal/images/family/my-private-family"
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -768,6 +768,10 @@
      "type": "integer",
      "description": "The minimum number of replicas that the autoscaler can scale down to. This cannot be less than 0. If not provided, autoscaler will choose a default value depending on maximum number of instances allowed.",
      "format": "int32"
+    },
+    "queueBasedScaling": {
+     "$ref": "AutoscalingPolicyQueueBasedScaling",
+     "description": "Configuration parameters of autoscaling based on queuing system."
     }
    }
   },
@@ -822,6 +826,42 @@
      "type": "number",
      "description": "Fraction of backend capacity utilization (set in HTTP(s) load balancing configuration) that autoscaler should maintain. Must be a positive float value. If not defined, the default is 0.8.",
      "format": "double"
+    }
+   }
+  },
+  "AutoscalingPolicyQueueBasedScaling": {
+   "id": "AutoscalingPolicyQueueBasedScaling",
+   "type": "object",
+   "description": "Configuration parameters of autoscaling based on queuing system.",
+   "properties": {
+    "acceptableBacklogPerInstance": {
+     "type": "number",
+     "description": "Scaling based on the average number of tasks in the queue per each active instance. The autoscaler keeps the average number of tasks per instance below this number, based on data collected in the last couple of minutes. The autoscaler will also take into account incoming tasks when calculating when to scale.",
+     "format": "double"
+    },
+    "cloudPubSub": {
+     "$ref": "AutoscalingPolicyQueueBasedScalingCloudPubSub",
+     "description": "Configuration for Cloud Pub/Sub subscription queue."
+    },
+    "singleWorkerThroughputPerSec": {
+     "type": "number",
+     "description": "The scaling algorithm will also calculate throughput estimates on its own; if you explicitly provide this value, the autoscaler will take into account your value as well as automatic estimates when deciding how to scale.",
+     "format": "double"
+    }
+   }
+  },
+  "AutoscalingPolicyQueueBasedScalingCloudPubSub": {
+   "id": "AutoscalingPolicyQueueBasedScalingCloudPubSub",
+   "type": "object",
+   "description": "Configuration parameters for scaling based on Cloud Pub/Sub subscription queue.",
+   "properties": {
+    "subscription": {
+     "type": "string",
+     "description": "Cloud Pub/Sub subscription used for scaling. Provide the partial URL (starting with projects/) or just the subscription name. The subscription must be assigned to the topic specified in topicName and must be in a pull configuration. The subscription must belong to the same project as the Autoscaler."
+    },
+    "topic": {
+     "type": "string",
+     "description": "Cloud Pub/Sub topic used for scaling. Provide the partial URL or partial URL (starting with projects/) or just the topic name. The topic must belong to the same project as the Autoscaler resource."
     }
    }
   },
@@ -6470,7 +6510,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] URL of the region where the Subnetwork resides."
+     "description": "URL of the region where the Subnetwork resides."
     },
     "selfLink": {
      "type": "string",
@@ -17599,7 +17639,7 @@
      "id": "compute.subnetworks.get",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "GET",
-     "description": "Returns the specified subnetwork. Get a list of available subnetworks by making a list() request.",
+     "description": "Returns the specified subnetwork. Get a list of available subnetworks list() request.",
      "parameters": {
       "project": {
        "type": "string",

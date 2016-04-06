@@ -18,11 +18,9 @@ from googlecloudsdk.api_lib.projects import util
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
-def List(client=None, messages=None, http=None, limit=None):
+def List(client=None, messages=None, limit=None):
   if not client:
-    if not http:
-      raise ValueError('At least one of {client, http} must be provided.')
-    client = util.GetClient(http)
+    client = util.GetClient()
   messages = messages or util.GetMessages()
   return list_pager.YieldFromList(
       client.projects,

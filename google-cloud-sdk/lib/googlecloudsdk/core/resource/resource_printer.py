@@ -170,6 +170,8 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
       expression=print_format, defaults=defaults,
       symbols=resource_transform.GetTransforms())
   printer_name = projector.Projection().Name()
+  if not printer_name:
+    return None
   try:
     printer_class = _FORMATTERS[printer_name]
   except KeyError:

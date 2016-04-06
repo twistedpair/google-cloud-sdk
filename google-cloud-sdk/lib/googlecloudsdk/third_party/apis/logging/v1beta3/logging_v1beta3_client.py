@@ -365,12 +365,12 @@ If the sink does not exist, it is created.
           }
 
     def Write(self, request, global_params=None):
-      """Writes log entries to Cloud Logging. Each entry consists of a.
-`LogEntry` object.  You must fill in all the fields of the
-object, including one of the payload fields.  You may supply a
-map, `commonLabels`, that holds default (key, value) data for the
-`entries[].metadata.labels` map in each entry, saving you the
-trouble of creating identical copies for each entry.
+      """Writes log entries to Stackdriver Logging. Each entry consists of a.
+`LogEntry` object.  You must fill in the required fields of the
+object.  You can supply a map, `commonLabels`, that holds default
+(key, value) data for the `entries[].metadata.labels` map in each
+entry, saving you the trouble of creating identical copies for
+each entry.
 
       Args:
         request: (LoggingProjectsLogsEntriesWriteRequest) input message

@@ -23,10 +23,10 @@ import sys
 import urlparse
 
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import cli
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import http as cred_http
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_client
 from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_messages as messages
@@ -141,7 +141,7 @@ class StorageClient(object):
 
   def __init__(self, http=None):
     if not http:
-      http = cli.Http(timeout=HTTP_TIMEOUT)
+      http = cred_http.Http(timeout=HTTP_TIMEOUT)
     self.client = storage_v1_client.StorageV1(
         http=http,
         get_credentials=False)

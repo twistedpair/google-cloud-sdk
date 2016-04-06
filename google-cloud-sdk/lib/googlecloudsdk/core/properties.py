@@ -377,20 +377,22 @@ class _Section(object):
   def __le__(self, other):
     return self.name <= other.name
 
-  def _Add(self, name, help_text=None, hidden=False, callbacks=None,
-           validator=None, choices=None, resource=None,
-           resource_command_path=None):
+  def _Add(self, name, help_text=None, internal=False, hidden=False,
+           callbacks=None, default=None, validator=None, choices=None,
+           resource=None, resource_command_path=None):
     prop = _Property(
-        section=self.__name, name=name, help_text=help_text,
-        hidden=(self.is_hidden or hidden),
-        callbacks=callbacks, validator=validator, choices=choices,
+        section=self.__name, name=name, help_text=help_text, internal=internal,
+        hidden=(self.is_hidden or hidden), callbacks=callbacks, default=default,
+        validator=validator, choices=choices,
         resource=resource, resource_command_path=resource_command_path)
     self.__properties[name] = prop
     return prop
 
-  def _AddBool(self, name, help_text=None, hidden=False, callbacks=None):
-    return self._Add(name=name, help_text=help_text, hidden=hidden,
-                     callbacks=callbacks, choices=('true', 'false'))
+  def _AddBool(self, name, help_text=None, internal=False, hidden=False,
+               callbacks=None, default=None):
+    return self._Add(name=name, help_text=help_text, internal=internal,
+                     hidden=hidden, callbacks=callbacks, default=default,
+                     choices=('true', 'false'))
 
   def Property(self, property_name):
     """Gets a property from this section, given its name.
@@ -446,6 +448,9 @@ class _Section(object):
 
     result = {}
     for prop in self:
+      if prop.is_internal:
+        # Never show internal properties, ever.
+        continue
       if (prop.is_hidden
           and not include_hidden
           and _GetPropertyWithoutCallback(prop, properties_file) is None):
@@ -454,7 +459,7 @@ class _Section(object):
       if only_file_contents:
         value = properties_file.Get(prop)
       else:
-        value = _GetProperty(prop, properties_file, required=False)
+        value = _GetPropertyWithoutDefault(prop, properties_file)
 
       if value is None:
         if not list_unset:
@@ -489,7 +494,7 @@ class _SectionCompute(_Section):
         resource='compute.regions')
     self.gce_metadata_read_timeout_sec = self._Add(
         'gce_metadata_read_timeout_sec',
-        callbacks=[lambda: 1],
+        default=1,
         hidden=True)
 
 
@@ -500,7 +505,7 @@ class _SectionApp(_Section):
     super(_SectionApp, self).__init__('app')
     self.promote_by_default = self._AddBool(
         'promote_by_default',
-        callbacks=[lambda: True],
+        default=True,
         hidden=True)
     self.stop_previous_version = self._AddBool(
         'stop_previous_version',
@@ -509,37 +514,55 @@ class _SectionApp(_Section):
         'be stopped manually.')
     self.use_cloud_build = self._AddBool(
         'use_cloud_build',
+        default=True,
         help_text='If False, use a temporary VM rather than the Container '
-        'Builder API to perform docker  builds. See '
+        'Builder API to perform docker builds. See '
         'https://cloud.google.com/container-builder/docs/ for more '
         'information.')
+    def CloudBuildTimeoutValidator(cloud_build_timeout):
+      if cloud_build_timeout is None:
+        return
+      max_timeout = 30 * 60
+      try:
+        if int(cloud_build_timeout) > max_timeout:
+          raise InvalidValueError(
+              'cloud_build_timeout may not exceed %d', max_timeout)
+      except ValueError:
+        raise InvalidValueError(
+            'cloud_build_timeout must be an integer')
+    self.cloud_build_timeout = self._Add(
+        'cloud_build_timeout',
+        validator=CloudBuildTimeoutValidator,
+        help_text='The timeout, in seconds, for gcloud managed VM deployment '
+        'builds when using the Container Builder API (that is, '
+        'app/use_cloud_build is True) to perform docker builds.')
     self.container_builder_image = self._Add(
         'container_builder_image',
-        callbacks=[lambda: 'gcr.io/cloud-builders/dockerizer'],
+        default='gcr.io/cloud-builders/dockerizer',
         hidden=True)
     self.use_gsutil = self._AddBool(
         'use_gsutil',
-        callbacks=[lambda: True],
+        default=True,
         hidden=True)
     self.hosted_build_image = self._Add(
         'hosted_build_image',
-        callbacks=[lambda: 'gae-builder-vm'],
+        default='gae-builder-vm',
         hidden=True)
     self.hosted_build_zone = self._Add(
         'hosted_build_zone',
-        callbacks=[lambda: 'us-central1-f'],
+        default='us-central1-f',
         hidden=True)
     self.hosted_build_machine_type = self._Add(
         'hosted_build_machine_type',
-        callbacks=[lambda: 'n1-standard-1'],
+        default='n1-standard-1',
         hidden=True)
     self.hosted_build_boot_disk_size = self._Add(
         'hosted_build_boot_disk_size',
-        callbacks=[lambda: '200GB'],
+        default='200GB',
         hidden=True)
     self.use_appengine_api = self._AddBool(
         'use_appengine_api',
-        callbacks=[lambda: True],
+        default=True,
         hidden=True)
     self.suppress_change_warning = self._AddBool(
         'suppress_change_warning',
@@ -625,7 +648,8 @@ class _SectionCore(_Section):
         help_text='If True, color will not be used when printing messages in '
         'the terminal.')
     self.disable_command_lazy_loading = self._AddBool(
-        'disable_command_lazy_loading', hidden=True)
+        'disable_command_lazy_loading',
+        hidden=True)
     self.disable_prompts = self._AddBool(
         'disable_prompts',
         help_text='If True, the default answer will be assumed for all user '
@@ -638,8 +662,9 @@ class _SectionCore(_Section):
         'installation, but can be changed at any time.  For more information, '
         'see: https://cloud.google.com/sdk/usage-statistics')
     self.api_host = self._Add(
-        'api_host', hidden=True,
-        callbacks=[lambda: 'https://www.googleapis.com'])
+        'api_host',
+        hidden=True,
+        default='https://www.googleapis.com')
     self.verbosity = self._Add(
         'verbosity',
         help_text='The default logging verbosity for gcloud commands.  This is '
@@ -653,21 +678,30 @@ class _SectionCore(_Section):
         help_text='If True, log http requests and responses to the logs.  '
         'You may need to adjust your `verbosity` setting if you want to see '
         'in the terminal, otherwise it is available in the log files.')
-    self.http_timeout = self._Add('http_timeout', hidden=True)
+    self.http_timeout = self._Add(
+        'http_timeout',
+        hidden=True)
     self.check_gce_metadata = self._AddBool(
-        'check_gce_metadata', hidden=True,
-        callbacks=[lambda: True])
+        'check_gce_metadata',
+        hidden=True,
+        default=True)
     self.print_unhandled_tracebacks = self._AddBool(
-        'print_unhandled_tracebacks', hidden=True)
+        'print_unhandled_tracebacks',
+        hidden=True)
     self.trace_token = self._Add(
         'trace_token',
         help_text='Token used to route traces of service requests for '
         'investigation of issues. This token will be provided by Google '
         'support.')
-    self.trace_email = self._Add('trace_email', hidden=True)
-    self.trace_log = self._Add('trace_log', hidden=True)
+    self.trace_email = self._Add(
+        'trace_email',
+        hidden=True)
+    self.trace_log = self._Add(
+        'trace_log',
+        hidden=True)
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',
+        default=True,
         help_text='If True, pass the configured Cloud SDK authentication '
                   'to gsutil.')
 
@@ -721,18 +755,18 @@ class _SectionAuth(_Section):
     # unless we really have to.
     self.auth_host = self._Add(
         'auth_host', hidden=True,
-        callbacks=[lambda: 'https://accounts.google.com/o/oauth2/auth'])
+        default='https://accounts.google.com/o/oauth2/auth')
     self.token_host = self._Add(
         'token_host', hidden=True,
-        callbacks=[lambda: 'https://accounts.google.com/o/oauth2/token'])
+        default='https://accounts.google.com/o/oauth2/token')
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
         'client_id', hidden=True,
-        callbacks=[lambda: config.CLOUDSDK_CLIENT_ID])
+        default=config.CLOUDSDK_CLIENT_ID)
     self.client_secret = self._Add(
         'client_secret', hidden=True,
-        callbacks=[lambda: config.CLOUDSDK_CLIENT_NOTSOSECRET])
+        default=config.CLOUDSDK_CLIENT_NOTSOSECRET)
     self.authority_selector = self._Add(
         'authority_selector', hidden=True)
     self.authorization_token_file = self._Add(
@@ -747,7 +781,7 @@ class _SectionMetrics(_Section):
   def __init__(self):
     super(_SectionMetrics, self).__init__('metrics', hidden=True)
     self.environment = self._Add('environment', hidden=True)
-    self.command_name = self._Add('command_name', hidden=True)
+    self.command_name = self._Add('command_name', internal=True)
 
 
 class _SectionComponentManager(_Section):
@@ -831,10 +865,10 @@ class _SectionDevshell(_Section):
     super(_SectionDevshell, self).__init__('devshell')
     self.image = self._Add(
         'image', hidden=True,
-        callbacks=[lambda: const_lib.DEFAULT_DEVSHELL_IMAGE])
+        default=const_lib.DEFAULT_DEVSHELL_IMAGE)
     self.metadata_image = self._Add(
         'metadata_image', hidden=True,
-        callbacks=[lambda: const_lib.METADATA_IMAGE])
+        default=const_lib.METADATA_IMAGE)
 
 
 class _SectionApiEndpointOverrides(_Section):
@@ -921,23 +955,40 @@ class _Property(object):
   Attributes:
     section: str, The name of the section the property appears in in the file.
     name: str, The name of the property.
-    hidden: bool, True to hide this property from display.
+    help_test: str, The man page help for what this property does.
+    hidden: bool, True to hide this property from display for users that don't
+      know about them.
+    internal: bool, True to hide this property from display even if it is set.
+      Internal properties are implementation details not meant to be set by
+      users.
     callbacks: [func], A list of functions to be called, in order, if no value
-        is found elsewhere.
+      is found elsewhere.  The result of a callback will be shown in when
+      listing properties (if the property is not hidden).
+    default: str, A final value to use if no value is found after the callbacks.
+      The default value is never shown when listing properties regardless of
+      whether the property is hidden or not.
     validator: func(str), A function that is called on the value when .Set()'d
-        or .Get()'d. For valid values, the function should do nothing. For
-        invalid values, it should raise InvalidValueError with an
-        explanation of why it was invalid.
+      or .Get()'d. For valid values, the function should do nothing. For
+      invalid values, it should raise InvalidValueError with an
+      explanation of why it was invalid.
+    choices: [str], The allowable values for this property.  This is included
+      in the help text and used in tab completion.
+    resource: str, The resource type that this property refers to.  This is
+      used by remote resource completion.
+    resource_command_path: str, An alternate command to user to list the
+      resources for this property.
   """
 
   def __init__(self, section, name, help_text=None, hidden=False,
-               callbacks=None, validator=None, choices=None, resource=None,
-               resource_command_path=None):
+               internal=False, callbacks=None, default=None, validator=None,
+               choices=None, resource=None, resource_command_path=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
     self.__hidden = hidden
+    self.__internal = internal
     self.__callbacks = callbacks or []
+    self.__default = default
     self.__validator = validator
     self.__choices = choices
     self.__resource = resource
@@ -958,6 +1009,14 @@ class _Property(object):
   @property
   def is_hidden(self):
     return self.__hidden
+
+  @property
+  def is_internal(self):
+    return self.__internal
+
+  @property
+  def default(self):
+    return self.__default
 
   @property
   def callbacks(self):
@@ -1312,15 +1371,13 @@ def _GetProperty(prop, properties_file, required):
     if prop in first_invocation:
       flag_to_use = first_invocation.get(prop).flag
 
-  value = _GetPropertyWithoutCallback(prop, properties_file)
+  value = _GetPropertyWithoutDefault(prop, properties_file)
   if value is not None:
     return str(value)
 
-  # Still nothing, fall back to the callbacks.
-  for callback in prop.callbacks:
-    value = callback()
-    if value is not None:
-      return str(value)
+  # Still nothing, check the final default.
+  if prop.default is not None:
+    return str(prop.default)
 
   # Not set, throw if required.
   if required:
@@ -1330,12 +1387,13 @@ def _GetProperty(prop, properties_file, required):
   return None
 
 
-def _GetPropertyWithoutCallback(prop, properties_file):
-  """Gets the given property without using a callback.
+def _GetPropertyWithoutDefault(prop, properties_file):
+  """Gets the given property without using a default.
 
   If the property has a designated command line argument and args is provided,
   check args for the value first. If the corresponding environment variable is
-  set, use that second. If still nothing, use the callbacks.
+  set, use that second. Next, return whatever is in the property file.  Finally,
+  use the callbacks to find values.  Do not check the default value.
 
   Args:
     prop: properties.Property, The property to get.
@@ -1344,7 +1402,36 @@ def _GetPropertyWithoutCallback(prop, properties_file):
   Returns:
     str, The value of the property, or None if it is not set.
   """
+  # Try to get a value from args, env, or property file.
+  value = _GetPropertyWithoutCallback(prop, properties_file)
+  if value is not None:
+    return str(value)
 
+  # No value, try getting a value from the callbacks.
+  for callback in prop.callbacks:
+    value = callback()
+    if value is not None:
+      return str(value)
+
+  return None
+
+
+def _GetPropertyWithoutCallback(prop, properties_file):
+  """Gets the given property without using a callback or default.
+
+  If the property has a designated command line argument and args is provided,
+  check args for the value first. If the corresponding environment variable is
+  set, use that second. Finally, return whatever is in the property file.  Do
+  not check for values in callbacks or defaults.
+
+  Args:
+    prop: properties.Property, The property to get.
+    properties_file: PropertiesFile, An already loaded properties files to use.
+
+  Returns:
+    str, The value of the property, or None if it is not set.
+  """
+  # Look for a value in the flags that were used on this command.
   invocation_stack = VALUES.GetInvocationStack()
   for value_flags in reversed(invocation_stack):
     if prop not in value_flags:
@@ -1355,10 +1442,12 @@ def _GetPropertyWithoutCallback(prop, properties_file):
     if value_flag.value is not None:
       return str(value_flag.value)
 
+  # Check the environment variable overrides.
   value = os.environ.get(prop.EnvironmentName(), None)
   if value is not None:
     return str(value)
 
+  # Check the property file itself.
   value = properties_file.Get(prop)
   if value is not None:
     return str(value)

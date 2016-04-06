@@ -532,8 +532,6 @@ class EffectiveQuotaGroup(_messages.Message):
     baseGroup: The service configuration for this quota group, minus the quota
       limits, which are replaced by the effective limits below.
     billingInteraction: A BillingInteractionValueValuesEnum attribute.
-    effectiveLimits: The effective limits for this quota group. DEPRECATED:
-      new code should use |quotas.limit|.
     quotas: The usage and limit information for each limit within this quota
       group.
   """
@@ -558,8 +556,7 @@ class EffectiveQuotaGroup(_messages.Message):
 
   baseGroup = _messages.MessageField('QuotaGroup', 1)
   billingInteraction = _messages.EnumField('BillingInteractionValueValuesEnum', 2)
-  effectiveLimits = _messages.MessageField('EffectiveQuotaLimit', 3, repeated=True)
-  quotas = _messages.MessageField('QuotaInfo', 4, repeated=True)
+  quotas = _messages.MessageField('QuotaInfo', 3, repeated=True)
 
 
 class EffectiveQuotaLimit(_messages.Message):
@@ -2917,8 +2914,9 @@ class Usage(_messages.Message):
         discovery document for the service will also be public and allow
         unregistered access.
       ORG_RESTRICTED: The service can be seen/used by users identified in the
-        service's access control policy.  Access is further constrained to the
-        group controlled by the administrator of the project/org that owns the
+        service's access control policy and they are within the organization
+        that owns the service.  Access is further constrained to the group
+        controlled by the administrator of the project/org that owns the
         service.
       ORG_PUBLIC: The service can be seen/used by the group of users
         controlled by the administrator of the project/org that owns the

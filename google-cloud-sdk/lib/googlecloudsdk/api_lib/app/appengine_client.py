@@ -26,6 +26,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import service_account as c_service_account
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
@@ -418,7 +419,8 @@ class AppengineClient(object):
         timeout_max_errors=timeout_max_errors,
         account_type='HOSTED_OR_GOOGLE',
         secure=True,
-        ignore_certs=self.ignore_bad_certs)
+        ignore_certs=self.ignore_bad_certs,
+        http_object=http.Http())
     # TODO(user) Hack to avoid failure due to missing cacerts.txt resource.
     server.certpath = None
     # Don't use a cert file if the user passed ignore-bad-certs.

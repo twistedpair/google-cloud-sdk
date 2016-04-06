@@ -283,6 +283,8 @@ class InstallationConfig(object):
       calls.
     documentation_url: str, The URL where we can redirect people when they need
       more information.
+    release_notes_url: str, The URL where we host a nice looking version of our
+      release notes.
     snapshot_url: str, The url for the component manager to look at for
       updates.
     disable_updater: bool, True to disable the component manager for this
@@ -361,14 +363,16 @@ class InstallationConfig(object):
     return time.mktime(InstallationConfig.ParseRevision(revision))
 
   def __init__(self, version, revision, user_agent, documentation_url,
-               snapshot_url, disable_updater, disable_usage_reporting,
-               snapshot_schema_version, release_channel, config_suffix):
+               release_notes_url, snapshot_url, disable_updater,
+               disable_usage_reporting, snapshot_schema_version,
+               release_channel, config_suffix):
     # JSON returns all unicode.  We know these are regular strings and using
     # unicode in environment variables on Windows doesn't work.
     self.version = str(version)
     self.revision = revision
     self.user_agent = str(user_agent)
     self.documentation_url = str(documentation_url)
+    self.release_notes_url = str(release_notes_url)
     self.snapshot_url = str(snapshot_url)
     self.disable_updater = disable_updater
     self.disable_usage_reporting = disable_usage_reporting

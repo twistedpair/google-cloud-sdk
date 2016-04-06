@@ -41,16 +41,13 @@ def GetMessages():
   return apis.GetMessagesModule('cloudbilling', 'v1')
 
 
-def GetClient(http):
+def GetClient():
   """Import and return the appropriate projects client.
-
-  Args:
-    http: httplib2.Http
 
   Returns:
     a cloudbilling client
   """
-  return apis.GetClientInstance('cloudbilling', 'v1', http)
+  return apis.GetClientInstance('cloudbilling', 'v1')
 
 
 def MessageToResource(message, collection):

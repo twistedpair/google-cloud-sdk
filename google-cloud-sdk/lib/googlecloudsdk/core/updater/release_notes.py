@@ -195,13 +195,11 @@ def PrintReleaseNotesDiff(release_notes_url, current_version, latest_version):
     release_notes_diff = None
 
   if not release_notes_diff:
-    # We failed to print the release notes.  Send people to either the release
-    # notes if we have a link, or just to the developers page if we don't.
-    url = (release_notes_url if release_notes_url else
-           config.INSTALLATION_CONFIG.documentation_url)
+    # We failed to print the release notes.  Send people to a nice web page with
+    # the release notes.
     log.status.write(
         'For the latest full release notes, please visit:\n  {0}\n\n'.format(
-            url))
+            config.INSTALLATION_CONFIG.release_notes_url))
     return
 
   if len(release_notes_diff) > ReleaseNotes.MAX_DIFF:
@@ -209,7 +207,7 @@ def PrintReleaseNotesDiff(release_notes_url, current_version, latest_version):
 A lot has changed since your last upgrade.  For the latest full release notes,
 please visit:
   {0}
-""".format(release_notes_url))
+""".format(config.INSTALLATION_CONFIG.release_notes_url))
     return
 
   log.status.Print("""\
@@ -217,7 +215,7 @@ The following release notes are new in this upgrade.
 Please read carefully for information about new features, breaking changes,
 and bugs fixed.  The latest full release notes can be viewed at:
   {0}
-""".format(release_notes_url))
+""".format(config.INSTALLATION_CONFIG.release_notes_url))
 
   full_text = StringIO.StringIO()
   for _, text in release_notes_diff:

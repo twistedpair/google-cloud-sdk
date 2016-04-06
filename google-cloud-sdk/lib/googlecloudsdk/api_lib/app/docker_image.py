@@ -27,7 +27,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_attr_os
-from googlecloudsdk.core.docker import constants
 
 # Use the default width for logs that don't necessarily go to the screen
 DOCKER_OUTPUT_BEGIN = ' DOCKER BUILD OUTPUT '
@@ -84,11 +83,6 @@ class Image(object):
   def tag(self):
     """Returns image tag string."""
     return self._tag
-
-  @property
-  def repo_tag(self):
-    """Returns the fully qualified repo tag name."""
-    return '%s/gcloud/%s' % (constants.APPENGINE_REGISTRY, self._tag)
 
   def Build(self, docker_client):
     """Calls "docker build" command.
@@ -161,10 +155,10 @@ class Image(object):
     Raises:
       Error: if the push fails, even after retries.
     """
-    docker_client.tag(self.id, self.repo_tag, force=True)
+    docker_client.tag(self.id, self.tag, force=True)
     log.info('Pushing image to Google Container Registry...\n')
     def InnerPush():
-      for line in docker_client.push(self.repo_tag, stream=True):
+      for line in docker_client.push(self.tag, stream=True):
         # Check for errors.
         _ProcessStreamingOutput(line)
 

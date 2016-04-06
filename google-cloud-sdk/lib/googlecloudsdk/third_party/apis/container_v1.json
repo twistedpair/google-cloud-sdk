@@ -192,7 +192,7 @@
           "type": "string"
         },
         "nodePools": {
-          "description": "The node pools associated with this cluster. When creating a new cluster,\nonly a single node pool should be specified.\nThis field should not be set if \"node_config\" and \"initial_node_count\" are\nspecified.",
+          "description": "The node pools associated with this cluster. When creating a new cluster,\nonly a single node pool should be specified.\nThis field should not be set if \"node_config\" or \"initial_node_count\" are\nspecified.",
           "type": "array",
           "items": {
             "$ref": "NodePool"
@@ -399,7 +399,7 @@
           "$ref": "NodeConfig"
         },
         "initialNodeCount": {
-          "description": "The initial node count for the pool.",
+          "description": "The initial node count for the pool. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.",
           "type": "integer",
           "format": "int32"
         },
@@ -639,7 +639,7 @@
           "$ref": "NodePool"
         },
         "initialNodeCount": {
-          "description": "The number of nodes to create in this pool. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.",
+          "description": "This field is deprecated and will soon be removed. Please use NodePool's\ninitial_node_count field instead.",
           "type": "integer",
           "format": "int32"
         }

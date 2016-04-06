@@ -45,8 +45,6 @@ import re
 import StringIO
 import urllib2
 
-from googlecloudsdk.core import apis as core_apis
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
@@ -614,12 +612,14 @@ def TransformSegment(r, index=-1, undefined=''):
 
 
 # pylint: disable=redefined-builtin, params match the transform spec
-def TransformSize(r, zero='0', units_in=None, units_out=None, min=0):
+def TransformSize(r, zero='0', precision=1, units_in=None, units_out=None,
+                  min=0):
   """Formats a human readable size in bytes.
 
   Args:
     r: A size in bytes.
-    zero: Returns this value if size==0. Ignored if not specified.
+    zero: Returns this if size==0. Ignored if None.
+    precision: The number of digits displayed after the decimal point.
     units_in: A unit suffix (only the first character is checked) or unit size.
       The size is multiplied by this. The default is 1.0.
     units_out: A unit suffix (only the first character is checked) or unit size.
@@ -676,7 +676,8 @@ def TransformSize(r, zero='0', units_in=None, units_out=None, min=0):
   (units_out_suffix, units_out_size) = _UnitSuffixAndSize(units_out)
   if units_out_suffix:
     size /= units_out_size
-    return '{0:.1f}'.format(size)
+    fmt = '{{0:.{precision}f}}'.format(precision=precision)
+    return fmt.format(size)
   the_unit = 'PiB'
   for unit in ['bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB']:
     if size < 1024.0:
@@ -688,22 +689,20 @@ def TransformSize(r, zero='0', units_in=None, units_out=None, min=0):
   if size == int(size):
     return '{0}{1}{2}'.format(prefix, int(size), the_unit)
   else:
-    return '{0}{1:.1f}{2}'.format(prefix, size, the_unit)
+    fmt = '{{0}}{{1:.{precision}f}}{{2}}'.format(precision=precision)
+    return fmt.format(prefix, size, the_unit)
 
 
-def TransformUri(r, projection, undefined='.'):
+def TransformUri(r, undefined='.'):
   """Gets the resource URI.
 
   Args:
     r: A JSON-serializable object.
-    projection: The parent ProjectionSpec.
     undefined: Returns this if a the URI for r cannot be determined.
 
   Returns:
     The URI for r or undefined if not defined.
   """
-
-  names = ('selfLink', 'SelfLink')
 
   def _GetAttr(attr):
     """Returns the string value for attr or None if the value is not a string.
@@ -724,26 +723,10 @@ def TransformUri(r, projection, undefined='.'):
     if r.startswith('https://'):
       return r
   elif r:
-    # Low hanging fruit first.
-    for name in names:
+    for name in ('selfLink', 'SelfLink'):
       uri = _GetAttr(resource_property.Get(r, [name], None))
       if uri:
         return uri
-    if projection:
-      collection_func = projection.symbols.get('collection', None)
-      collection = collection_func(r) if collection_func else None
-      if collection:
-        # Generate the URI from the collection and a few params.
-        instance = _GetAttr(resource_property.Get(r, ['instance'], None))
-        project = _GetAttr(resource_property.Get(r, ['project'], None))
-        try:
-          uri = resources.Create(
-              collection, project=project, instance=instance).SelfLink()
-        except (resources.InvalidCollectionException, core_apis.UnknownAPIError,
-                resources.UnknownCollectionException):
-          uri = None
-        if uri:
-          return uri
   return undefined
 
 

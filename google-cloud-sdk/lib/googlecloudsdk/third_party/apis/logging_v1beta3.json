@@ -6,7 +6,7 @@
   "version": "v1beta3",
   "revision": "0",
   "title": "Google Cloud Logging API",
-  "description": "Writes log entries and manages your logs, log sinks, and logs-based metrics.",
+  "description": "Writes log entries and manages your Stackdriver Logging configuration.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -186,7 +186,7 @@
           }
         },
         "entries": {
-          "description": "Log entries to insert.",
+          "description": "Log entries to write.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
@@ -204,7 +204,7 @@
       "type": "object",
       "properties": {
         "metadata": {
-          "description": "Information about the log entry.",
+          "description": "Required. Information about the log entry.",
           "$ref": "LogEntryMetadata"
         },
         "protoPayload": {
@@ -228,11 +228,11 @@
           }
         },
         "insertId": {
-          "description": "A unique ID for the log entry. If you provide this field, the logging\nservice considers other log entries in the same log with the same ID as\nduplicates which can be removed.",
+          "description": "A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same log with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
           "type": "string"
         },
         "log": {
-          "description": "The log to which this entry belongs. When a log entry is ingested,\nthe value of this field is set by the logging system.",
+          "description": "The log to which this entry belongs. When a log entry is written,\nthe value of this field is set by the logging system.",
           "type": "string"
         },
         "httpRequest": {
@@ -255,12 +255,12 @@
       "type": "object",
       "properties": {
         "timestamp": {
-          "description": "The time the event described by the log entry occurred.\nTimestamps must be later than January 1, 1970.",
+          "description": "The time the event described by the log entry occurred.\nTimestamps must be later than January 1, 1970.  If omitted,\nStackdriver Logging will use the time the log entry is received.",
           "type": "string",
           "format": "google-datetime"
         },
         "severity": {
-          "description": "The severity of the log entry.",
+          "description": "The severity of the log entry. If omitted, `LogSeverity.DEFAULT`\nis used.",
           "enumDescriptions": [
             "The log entry has no assigned severity level.",
             "Debug or trace information.",
@@ -290,12 +290,12 @@
           "type": "string"
         },
         "projectNumber": {
-          "description": "This field is populated by the API at ingestion time.",
+          "description": "This field is supplied by the API at when the entry is written.",
           "type": "string",
           "format": "int64"
         },
         "serviceName": {
-          "description": "The API name of the Google Cloud Platform service that created the log\nentry.  For example, `\"compute.googleapis.com\"`.",
+          "description": "Required. The API name of the Google Cloud Platform service that\ncreated the log entry.  For example, `\"compute.googleapis.com\"`.",
           "type": "string"
         },
         "region": {
@@ -353,6 +353,10 @@
         },
         "remoteIp": {
           "description": "The IP address (IPv4 or IPv6) of the client that issued the HTTP\nrequest. Examples: `\"192.168.1.1\"`, `\"FE80::0202:B3FF:FE1E:8329\"`.",
+          "type": "string"
+        },
+        "serverIp": {
+          "description": "The IP address (IPv4 or IPv6) of the origin server that the request was\nsent to.",
           "type": "string"
         },
         "referer": {
@@ -527,7 +531,7 @@
     },
     "LogSink": {
       "id": "LogSink",
-      "description": "Describes where log entries are written outside of Cloud Logging.",
+      "description": "Describes where log entries are written outside of Stackdriver Logging.",
       "type": "object",
       "properties": {
         "name": {
@@ -535,7 +539,7 @@
           "type": "string"
         },
         "destination": {
-          "description": "The resource name of the destination.\nCloud Logging writes designated log entries to this destination.\nFor example, `\"storage.googleapis.com\/my-output-bucket\"`.",
+          "description": "The resource name of the destination.\nStackdriver Logging writes designated log entries to this destination.\nFor example, `\"storage.googleapis.com\/my-output-bucket\"`.",
           "type": "string"
         },
         "filter": {
@@ -990,7 +994,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "httpMethod": "POST",
-                  "description": "Writes log entries to Cloud Logging. Each entry consists of a\n`LogEntry` object.  You must fill in all the fields of the\nobject, including one of the payload fields.  You may supply a\nmap, `commonLabels`, that holds default (key, value) data for the\n`entries[].metadata.labels` map in each entry, saving you the\ntrouble of creating identical copies for each entry.\n\n",
+                  "description": "Writes log entries to Stackdriver Logging. Each entry consists of a\n`LogEntry` object.  You must fill in the required fields of the\nobject.  You can supply a map, `commonLabels`, that holds default\n(key, value) data for the `entries[].metadata.labels` map in each\nentry, saving you the trouble of creating identical copies for\neach entry.\n\n",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `logName`. The resource name of the log that will receive the log entries.",

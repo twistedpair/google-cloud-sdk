@@ -6136,7 +6136,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Returns the specified subnetwork. Get a list of available subnetworks by making a list() request.
+      """Returns the specified subnetwork. Get a list of available subnetworks list() request.
 
       Args:
         request: (ComputeSubnetworksGetRequest) input message

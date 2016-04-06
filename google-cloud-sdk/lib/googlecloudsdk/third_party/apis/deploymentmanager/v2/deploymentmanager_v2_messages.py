@@ -54,6 +54,7 @@ class Deployment(_messages.Message):
       cannot be a dash.
     operation: [Output Only] The Operation that most recently ran, or is
       currently running, on this deployment.
+    selfLink: [Output Only] Self link for the manifest.
     target: [Input Only] The parameters that define your deployment, including
       the deployment configuration and relevant templates.
     update: [Output Only] If Deployment Manager is currently updating or
@@ -69,8 +70,9 @@ class Deployment(_messages.Message):
   manifest = _messages.StringField(6)
   name = _messages.StringField(7)
   operation = _messages.MessageField('Operation', 8)
-  target = _messages.MessageField('TargetConfiguration', 9)
-  update = _messages.MessageField('DeploymentUpdate', 10)
+  selfLink = _messages.StringField(9)
+  target = _messages.MessageField('TargetConfiguration', 10)
+  update = _messages.MessageField('DeploymentUpdate', 11)
 
 
 class DeploymentLabelEntry(_messages.Message):

@@ -155,9 +155,8 @@ class Disk(_messages.Message):
     autoDelete: Specifies whether or not to delete the disk when the pipeline
       completes. This field is applicable only for newly created disks. See ht
       tps://cloud.google.com/compute/docs/reference/latest/instances#resource
-      for more details. Optional. At create time means that an auto delete
-      disk may be used. At run time, means it should be used. Cannot be true
-      at run time if false at create time.
+      for more details. By default, `autoDelete` is `false`. `autoDelete` will
+      be enabled if set to `true` at create time or run time.
     mountPoint: Required at create time and cannot be overridden at run time.
       Specifies the path in the docker container where files on this disk
       should be located. For example, if `mountPoint` is `/mnt/disk`, and the
@@ -170,7 +169,8 @@ class Disk(_messages.Message):
       See https://cloud.google.com/compute/docs/disks/persistent-
       disks#use_multi_instances for more details. Can only be set at create
       time.
-    sizeGb: The size of the disk. This field is not applicable for local SSD.
+    sizeGb: The size of the disk. Defaults to 500 (GB). This field is not
+      applicable for local SSD.
     source: The full or partial URL of the persistent disk to attach. See
       https://cloud.google.com/compute/docs/reference/latest/instances#resourc
       e and https://cloud.google.com/compute/docs/disks/persistent-
@@ -318,13 +318,13 @@ class GenomicsPipelinesListRequest(_messages.Message):
   """A GenomicsPipelinesListRequest object.
 
   Fields:
-    namePrefix: Optional. Pipelines with names that match this prefix should
-      be returned.  If unspecified, all pipelines in the project, up to
+    namePrefix: Pipelines with names that match this prefix should be
+      returned.  If unspecified, all pipelines in the project, up to
       `pageSize`, will be returned.
-    pageSize: Optional. Number of pipelines to return at once. Defaults to
-      256, and max is 2048.
-    pageToken: Optional. Token to use to indicate where to start getting
-      results. If unspecified, returns the first page of results.
+    pageSize: Number of pipelines to return at once. Defaults to 256, and max
+      is 2048.
+    pageToken: Token to use to indicate where to start getting results. If
+      unspecified, returns the first page of results.
     projectId: Required. The name of the project to search for pipelines.
       Caller must have READ access to this project.
   """
@@ -577,7 +577,7 @@ class Pipeline(_messages.Message):
   run all at once with the `run` method.
 
   Fields:
-    description: Optional. User-specified description.
+    description: User-specified description.
     docker: Specifies the docker run information.
     inputParameters: Input parameters of the pipeline.
     name: Required. A user specified pipeline name that does not have to be
@@ -644,7 +644,7 @@ class PipelineParameter(_messages.Message):
     defaultValue: The default value for this parameter. Can be overridden at
       runtime. If `localCopy` is present, then this must be a Google Cloud
       Storage path beginning with `gs://`.
-    description: Optional. Human-readable description.
+    description: Human-readable description.
     localCopy: If present, this parameter is marked for copying to and from
       the VM. `LocalCopy` indicates where on the VM the file should be. The
       value given to this parameter (either at runtime or using
@@ -663,16 +663,13 @@ class PipelineResources(_messages.Message):
   """The system resources for the pipeline run.
 
   Fields:
-    bootDiskSizeGb: Optional. The size of the boot disk. Can be overridden at
-      runtime.
+    bootDiskSizeGb: The size of the boot disk. Defaults to 10 (GB).
     disks: Disks to attach.
-    minimumCpuCores: Required at create time; optional at run time. The
-      minimum number of cores to use.
-    minimumRamGb: Required at create time; optional at run time. The minimum
-      amount of RAM to use.
-    preemptible: Optional. At create time means that preemptible machines may
-      be used for the run. At run time, means they should be used. Cannot be
-      true at run time if false at create time.
+    minimumCpuCores: The minimum number of cores to use. Defaults to 1.
+    minimumRamGb: The minimum amount of RAM to use. Defaults to 3.75 (GB)
+    preemptible: At create time means that preemptible machines may be used
+      for the run. At run time, means they should be used. Cannot be true at
+      run time if false at create time. Defaults to `false`.
     zones: List of Google Compute Engine availability zones to which resource
       creation will restricted. If empty, any zone may be chosen.
   """
@@ -709,8 +706,7 @@ class RunPipelineArgs(_messages.Message):
       will be overridden.
 
   Fields:
-    clientId: Optional. For callers to use in filtering operations returned by
-      this request.
+    clientId: Client-specified pipeline operation identifier.
     inputs: Pipeline input arguments; keys are defined in the pipeline
       documentation. All input parameters that do not have default values
       must be specified. If parameters with defaults are specified here, the
@@ -815,11 +811,11 @@ class ServiceAccount(_messages.Message):
   """A Google Cloud Service Account.
 
   Fields:
-    email: Required. Email address of the service account. 'default' is a
-      valid option and uses the compute service account associated with the
-      project.
-    scopes: Required. List of scopes to be made available for this service
-      account. Should include * https://www.googleapis.com/auth/genomics *
+    email: Email address of the service account. Defaults to `default`, which
+      uses the compute service account associated with the project.
+    scopes: List of scopes to be enabled for this service account on the
+      pipeline virtual machine. The following scopes are automatically
+      included: * https://www.googleapis.com/auth/genomics *
       https://www.googleapis.com/auth/compute *
       https://www.googleapis.com/auth/devstorage.full_control
   """
