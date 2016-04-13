@@ -50,7 +50,7 @@ def _RunGsutilCommand(gsutil_args):
   Returns:
     The exit code of the call to the gsutil command.
   """
-  args = execution_utils.ArgsForBinaryTool(_GetGsutilPath(), *gsutil_args)
+  args = execution_utils.ArgsForExecutableTool(_GetGsutilPath(), *gsutil_args)
   return execution_utils.Exec(args, no_exit=True)
 
 

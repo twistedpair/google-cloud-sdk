@@ -308,7 +308,7 @@
             "type": "string"
           }
         },
-        "image": {
+        "imageTrack": {
           "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.",
           "type": "string"
         },
@@ -559,7 +559,11 @@
           "$ref": "AddonsConfig"
         },
         "desiredNodePoolId": {
-          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" is specified and there is more than one node pool\non the cluster.",
+          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_track\" is specified and\nthere is more than one node pool on the cluster.",
+          "type": "string"
+        },
+        "desiredImageTrack": {
+          "description": "The desired image track for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
         },
         "desiredMasterVersion": {
@@ -608,6 +612,17 @@
         },
         "validNodeVersions": {
           "description": "List of valid node upgrade target versions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "defaultImageTrack": {
+          "description": "Default image track.",
+          "type": "string"
+        },
+        "validImageTracks": {
+          "description": "List of valid image tracks.",
           "type": "array",
           "items": {
             "type": "string"

@@ -69,7 +69,7 @@ def ArgsForGCDEmulator(*args):
     return execution_utils.ArgsForCMDTool(gcd_executable, *args)
   else:
     gcd_executable = os.path.join(GetGCDRoot(), 'gcd.sh')
-    return execution_utils.ArgsForShellTool(gcd_executable, *args)
+    return execution_utils.ArgsForExecutableTool(gcd_executable, *args)
 
 
 DATASTORE = 'datastore'

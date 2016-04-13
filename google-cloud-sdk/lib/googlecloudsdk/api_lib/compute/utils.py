@@ -20,7 +20,6 @@ import cStringIO
 import re
 import urlparse
 from googlecloudsdk.api_lib.compute import constants
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
@@ -113,34 +112,6 @@ def RaiseException(problems, exception, error_message=None):
       ConstructList(
           error_message or 'Some requests did not succeed:',
           errors))
-
-
-def AddZoneFlag(parser, resource_type, operation_type,
-                explanation=constants.ZONE_PROPERTY_EXPLANATION):
-  """Adds a --zone flag to the given parser."""
-  short_help = 'The zone of the {0} to {1}.'.format(
-      resource_type, operation_type)
-  zone = parser.add_argument(
-      '--zone',
-      help=short_help,
-      completion_resource='compute.zones',
-      action=actions.StoreProperty(properties.VALUES.compute.zone))
-  zone.detailed_help = '{0} {1}'.format(
-      short_help, explanation)
-
-
-def AddRegionFlag(parser, resource_type, operation_type,
-                  explanation=constants.REGION_PROPERTY_EXPLANATION):
-  """Adds a --region flag to the given parser."""
-  short_help = 'The region of the {0} to {1}.'.format(
-      resource_type, operation_type)
-  region = parser.add_argument(
-      '--region',
-      help=short_help,
-      completion_resource='compute.regions',
-      action=actions.StoreProperty(properties.VALUES.compute.region))
-  region.detailed_help = '{0} {1}'.format(
-      short_help, explanation)
 
 
 def PromptForDeletion(refs, scope_name=None, prompt_title=None):

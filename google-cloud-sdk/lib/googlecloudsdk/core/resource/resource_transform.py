@@ -162,6 +162,11 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
   except (TypeError, ValueError):
     pass
 
+  # Check if r is a serialized datetime object.
+  original_repr = resource_property.Get(r, ['datetime'], None)
+  if original_repr and isinstance(original_repr, basestring):
+    r = original_repr
+
   # Check if r is a date/time string.
   try:
     dt = times.ParseDateTime(r, tzinfo)
@@ -421,7 +426,7 @@ def TransformGroup(r, *args):
     else:
       sep = ' '
     if not args:
-      buf.write('[{0}]'.format(str(item)))
+      buf.write('[{0}]'.format(unicode(item)))
     else:
       buf.write('[')
       sub = None
@@ -431,7 +436,7 @@ def TransformGroup(r, *args):
           sub = ', '
         else:
           sub = ': '
-        buf.write(str(getattr(item, attr)))
+        buf.write(unicode(getattr(item, attr)))
       buf.write(']')
   return buf.getvalue()
 
@@ -465,11 +470,13 @@ def TransformLen(r):
     return 0
 
 
-def TransformList(r, undefined='', separator=','):
+def TransformList(r, show='', undefined='', separator=','):
   """Formats a dict or list into a compact comma separated list.
 
   Args:
     r: A JSON-serializable object.
+    show: If show=*keys* then list dict keys; if show=*values* then list dict
+      values; otherwise list dict key=value pairs.
     undefined: Return this if the resource is empty.
     separator: The list item separator string.
 
@@ -479,10 +486,15 @@ def TransformList(r, undefined='', separator=','):
     list.
   """
   if isinstance(r, dict):
-    return separator.join(['{key}={value}'.format(key=key, value=value)
-                           for key, value in sorted(r.iteritems())])
+    if show == 'keys':
+      return separator.join([unicode(k) for k in sorted(r)])
+    elif show == 'values':
+      return separator.join([unicode(v) for _, v in sorted(r.iteritems())])
+    else:
+      return separator.join([u'{k}={v}'.format(k=k, v=v)
+                             for k, v in sorted(r.iteritems())])
   if isinstance(r, list):
-    return separator.join(map(str, r))
+    return separator.join(map(unicode, r))
   return r or undefined
 
 

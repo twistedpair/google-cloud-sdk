@@ -241,7 +241,7 @@ RESOURCE_REGISTRY = {
         cache_command='projects list',
         list_format="""
           table(
-            projectId,
+            projectId:sort=101,
             name,
             projectNumber
           )
@@ -920,11 +920,36 @@ RESOURCE_REGISTRY = {
 
     # genomics
 
+    'genomics.alignments': ResourceInfo(
+        list_format="""
+          table(
+            alignment.position.referenceName,
+            alignment.position.position,
+            alignment.position.reverseStrand,
+            fragmentName,
+            alignedSequence:label=SEQUENCE
+          )
+        """,
+    ),
+
     'genomics.datasets': ResourceInfo(
         list_format="""
           table(
             id,
             name
+          )
+        """,
+    ),
+
+    'genomics.variants': ResourceInfo(
+        list_format="""
+          table(
+            variantSetId,
+            referenceName,
+            start,
+            end,
+            referenceBases,
+            alternateBases
           )
         """,
     ),

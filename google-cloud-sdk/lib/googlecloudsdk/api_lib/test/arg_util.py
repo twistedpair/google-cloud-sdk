@@ -41,9 +41,9 @@ def AddCommonTestRunArgs(parser):
   argspec_arg.completer = arg_file.ArgSpecCompleter
 
   parser.add_argument(
-      '--type', choices=['instrumentation', 'monkey', 'robo'],
+      '--type', choices=['instrumentation', 'robo'],
       help='The type of test to run '
-      '(_TYPE_ may be one of: instrumentation, robo, monkey).')
+      '(_TYPE_ may be one of: instrumentation, robo).')
   parser.add_argument(
       '--app',
       help='The path to the application binary file. The path may be in the '
@@ -181,27 +181,6 @@ def AddInstrumentationTestArgs(parser):
       '* "class package_name.class_name#method_name".')
 
 
-def AddMonkeyTestArgs(parser):
-  """Register args which are specific to Android Monkey tests.
-
-  Args:
-    parser: An argparse parser used to add arguments that follow a command
-        in the CLI.
-  """
-  parser.add_argument(
-      '--event-count', metavar='int', type=arg_validate.POSITIVE_INT_PARSER,
-      help='Number of simulated user events to create during a monkey test '
-      '(default: 1000).')
-  parser.add_argument(
-      '--event-delay', metavar='int', type=arg_validate.NONNEGATIVE_INT_PARSER,
-      help='Fixed delay in milliseconds inserted between simulated events in '
-      'a monkey test (default: 0).')
-  parser.add_argument(
-      '--random-seed', metavar='int', type=int,
-      help='Seed value for the pseudo-random number generator used during a '
-      'monkey test (default: 0).')
-
-
 def AddRoboTestArgs(parser):
   """Register args which are specific to Android Robo tests.
 
@@ -267,15 +246,6 @@ _TEST_TYPE_ARG_RULES = {
         'optional': ['test_package', 'test_runner_class', 'test_targets'],
         'defaults': {}
     },
-    'monkey': {
-        'required': [],
-        'optional': ['event_count', 'event_delay', 'random_seed'],
-        'defaults': {
-            'event_count': 1000,
-            'event_delay': 0,
-            'random_seed': 0,
-        },
-    },
     'robo': {
         'required': [],
         'optional': ['app_initial_activity', 'max_depth', 'max_steps'],
@@ -311,7 +281,7 @@ def _GetTestTypeOrRaise(args, type_rules):
       per type of test, plus any default values.
 
   Returns:
-    The type of the test to be run (e.g. 'monkey' or 'instrumentation')
+    The type of the test to be run (e.g. 'robo' or 'instrumentation')
 
   Raises:
     InvalidArgumentException if an explicit test type is invalid.

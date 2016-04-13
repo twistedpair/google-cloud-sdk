@@ -422,7 +422,7 @@
                   "description": "Returns a list of all functions that belong to the requested project.",
                   "parameters": {
                     "location": {
-                      "description": "The project and region in which the function should be created, specified\nin the format: projects\/*\/regions\/*",
+                      "description": "The project and region from which functions should be listed, specified\nin the format: projects\/*\/regions\/*",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/regions\/[^\/]*$",

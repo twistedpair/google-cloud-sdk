@@ -81,7 +81,7 @@ def _RunGsutilCommand(command_name, command_args, run_concurrent=False):
   gsutil_args += command_args
   env = None
 
-  gsutil_cmd = execution_utils.ArgsForBinaryTool(gsutil_path, *gsutil_args)
+  gsutil_cmd = execution_utils.ArgsForExecutableTool(gsutil_path, *gsutil_args)
   log.debug('Running command: [{args}], Env: [{env}]'.format(
       args=' '.join(gsutil_cmd),
       env=env))

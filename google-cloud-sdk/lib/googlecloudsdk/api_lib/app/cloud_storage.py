@@ -204,7 +204,8 @@ def _RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
     gsutil_args = execution_utils.ArgsForCMDTool(command_path + '.cmd',
                                                  *command_args)
   else:
-    gsutil_args = execution_utils.ArgsForShellTool(command_path, *command_args)
+    gsutil_args = execution_utils.ArgsForExecutableTool(command_path,
+                                                        *command_args)
   log.debug('Running command: [{args}]]'.format(args=' '.join(gsutil_args)))
   return execution_utils.Exec(gsutil_args, no_exit=True,
                               pipe_output_through_logger=True,

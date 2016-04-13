@@ -2115,7 +2115,7 @@ See Accessing images for more information.
               method_id=u'compute.instanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'zone', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'zone'],
-              query_params=[],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
               relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',

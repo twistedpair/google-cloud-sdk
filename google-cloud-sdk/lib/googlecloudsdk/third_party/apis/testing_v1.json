@@ -422,7 +422,7 @@
           "$ref": "AndroidMonkeyTest"
         },
         "autoGoogleLogin": {
-          "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account\nand use it to log into the device, before executing the test. Note that\ntest accounts might be reused.\nMany applications can be tested more effectively in the context of\nsuch an account.\nDefault is false.\nOptional",
+          "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and\nadd it to the device, before executing the test. Note that test accounts\nmight be reused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated\naccounts allows testing more functionalities.\nDefault is false.\nOptional",
           "type": "boolean"
         }
       }
@@ -452,6 +452,10 @@
           "items": {
             "$ref": "Apk"
           }
+        },
+        "account": {
+          "description": "The device will be logged in on this account for the duration of the test.\nOptional",
+          "$ref": "Account"
         }
       }
     },
@@ -541,6 +545,43 @@
         },
         "packageName": {
           "description": "The java package for the APK to be installed.\nOptional, value is determined by examining the application's manifest.",
+          "type": "string"
+        }
+      }
+    },
+    "Account": {
+      "id": "Account",
+
+      "type": "object",
+      "properties": {
+        "googleAuto": {
+
+          "$ref": "GoogleAuto"
+        },
+        "googleUsernamePassword": {
+
+          "$ref": "GoogleUsernamePassword"
+        }
+      }
+    },
+    "GoogleAuto": {
+      "id": "GoogleAuto",
+      "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and add\nit to the device, before executing the test. Note that test accounts might be\nreused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated accounts\nallows testing more functionalities.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleUsernamePassword": {
+      "id": "GoogleUsernamePassword",
+      "description": "Enables login to a user-specified Google account, to be used for testing.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "The username, which is normally an email address.\nRequired",
+          "type": "string"
+        },
+        "password": {
+          "description": "Required",
           "type": "string"
         }
       }

@@ -74,7 +74,7 @@ def BuildStartArgs(args, current_os):
     return execution_utils.ArgsForCMDTool(pubsub_executable, *args)
 
   pubsub_executable = os.path.join(pubsub_dir, 'bin/cloud-pubsub-fake')
-  return execution_utils.ArgsForShellTool(pubsub_executable, *args)
+  return execution_utils.ArgsForExecutableTool(pubsub_executable, *args)
 
 
 def GetEnv(args):

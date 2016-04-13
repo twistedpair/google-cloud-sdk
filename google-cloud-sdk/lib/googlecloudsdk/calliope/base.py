@@ -669,7 +669,7 @@ class CreateCommand(CacheCommand):
     return remote_completion.AddToCacheOp
 
 
-class DeleteCommand(CacheCommand):
+class DeleteCommand(CacheCommand, SilentCommand):
   """A command that deletes resources."""
 
   __metaclass__ = abc.ABCMeta

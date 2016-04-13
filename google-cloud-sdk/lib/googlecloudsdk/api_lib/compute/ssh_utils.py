@@ -47,6 +47,11 @@ _SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
 # successful `ssh` execution where the *command* errored).
 _SSH_ERROR_EXIT_CODE = 255
 
+# Normally, all SSH output is simply returned to the user (or sent to
+# /dev/null if user output is disabled). For testing, this value can be
+# overridden with a file path.
+SSH_OUTPUT_FILE = None
+
 
 class SetProjectMetadataError(core_exceptions.Error):
   pass
@@ -282,11 +287,12 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
     SshLikeCmdFailed: if the command failed (based on the command exit code and
       the strict_error_checking flag)
   """
-  with open(os.devnull, 'w') as devnull:
-    if log.IsUserOutputEnabled():
+  outfile = SSH_OUTPUT_FILE or os.devnull
+  with open(outfile, 'w') as output_file:
+    if log.IsUserOutputEnabled() and not SSH_OUTPUT_FILE:
       stdout, stderr = None, None
     else:
-      stdout, stderr = devnull, devnull
+      stdout, stderr = output_file, output_file
     if _IsRunningOnWindows() and not cmd_args[0].endswith('winkeygen.exe'):
       # TODO(user): b/25126583 will drop StrictHostKeyChecking=no and 'y'.
       # PuTTY and friends always prompt on fingerprint mismatch. A 'y' response

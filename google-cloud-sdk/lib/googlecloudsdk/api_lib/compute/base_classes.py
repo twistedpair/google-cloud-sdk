@@ -33,6 +33,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
@@ -769,7 +770,7 @@ class RegionalDescriber(BaseDescriber):
   @staticmethod
   def Args(parser, resource=None, command=None):
     BaseDescriber.AddArgs(parser, resource, command)
-    utils.AddRegionFlag(
+    flags.AddRegionFlag(
         parser,
         resource_type='resource',
         operation_type='fetch')
@@ -787,7 +788,7 @@ class ZonalDescriber(BaseDescriber):
   @staticmethod
   def Args(parser, resource=None, command=None):
     BaseDescriber.AddArgs(parser, resource, command)
-    utils.AddZoneFlag(
+    flags.AddZoneFlag(
         parser,
         resource_type='resource',
         operation_type='fetch')
@@ -1307,7 +1308,7 @@ class ZonalDeleter(BaseDeleter):
   @staticmethod
   def Args(parser, resource=None, command=None):
     BaseDeleter.AddArgs(parser, resource, command)
-    utils.AddZoneFlag(
+    flags.AddZoneFlag(
         parser, resource_type='resources', operation_type='delete')
 
   @property
@@ -1328,7 +1329,7 @@ class RegionalDeleter(BaseDeleter):
   @staticmethod
   def Args(parser, resource=None, command=None):
     BaseDeleter.AddArgs(parser, resource, command)
-    utils.AddRegionFlag(
+    flags.AddRegionFlag(
         parser, resource_type='resources', operation_type='delete')
 
   @property
@@ -1525,7 +1526,7 @@ class InstanceMetadataMutatorMixin(ReadWriteCommand):
 
   @staticmethod
   def Args(parser):
-    utils.AddZoneFlag(
+    flags.AddZoneFlag(
         parser,
         resource_type='instance',
         operation_type='set metadata on')
@@ -1573,7 +1574,7 @@ class InstanceTagsMutatorMixin(ReadWriteCommand):
 
   @staticmethod
   def Args(parser):
-    utils.AddZoneFlag(
+    flags.AddZoneFlag(
         parser,
         resource_type='instance',
         operation_type='set tags on')

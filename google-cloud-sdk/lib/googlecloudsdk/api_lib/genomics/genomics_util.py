@@ -24,7 +24,7 @@ from googlecloudsdk.api_lib.genomics.exceptions import GenomicsInputFileError
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
 from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
 from googlecloudsdk.third_party.apitools.base.py import encoding
@@ -242,3 +242,20 @@ def _SplitBucketAndObject(gcs_path):
     raise exceptions.BadFileException(
         '[{0}] is not a valid Google Cloud Storage path'.format(gcs_path))
   return tokens
+
+
+def GetQueryFields(referenced_fields, prefix):
+  """Returns the comma separated list of field names referenced by the command.
+
+  Args:
+    referenced_fields: A list of field names referenced by the format and filter
+      expressions.
+    prefix: The referenced field name resource prefix.
+
+  Returns:
+    The comma separated list of field names referenced by the command.
+  """
+  if not referenced_fields:
+    return None
+  return ','.join(['nextPageToken'] +
+                  ['.'.join([prefix, field]) for field in referenced_fields])

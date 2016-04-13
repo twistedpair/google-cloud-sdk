@@ -182,6 +182,8 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredImageTrack: The desired image track for the node pool. NOTE: Set
+      the "desired_node_pool" field as well.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -194,19 +196,20 @@ class ClusterUpdate(_messages.Message):
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolId: The node pool to be upgraded. This field is mandatory
-      if the "desired_node_version" is specified and there is more than one
-      node pool on the cluster.
+      if the "desired_node_version" or "desired_image_track" is specified and
+      there is more than one node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
       supported by the server.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredMasterMachineType = _messages.StringField(2)
-  desiredMasterVersion = _messages.StringField(3)
-  desiredMonitoringService = _messages.StringField(4)
-  desiredNodePoolId = _messages.StringField(5)
-  desiredNodeVersion = _messages.StringField(6)
+  desiredImageTrack = _messages.StringField(2)
+  desiredMasterMachineType = _messages.StringField(3)
+  desiredMasterVersion = _messages.StringField(4)
+  desiredMonitoringService = _messages.StringField(5)
+  desiredNodePoolId = _messages.StringField(6)
+  desiredNodeVersion = _messages.StringField(7)
 
 
 class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):
@@ -617,8 +620,8 @@ class NodeConfig(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
-    image: The image track to use for this node. Note that for a given image
-      track, the latest version of it will be used.
+    imageTrack: The image track to use for this node. Note that for a given
+      image track, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -715,7 +718,7 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  image = _messages.StringField(2)
+  imageTrack = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   machineType = _messages.StringField(4)
   metadata = _messages.MessageField('MetadataValue', 5)
@@ -864,12 +867,16 @@ class ServerConfig(_messages.Message):
     buildClientInfo: apiserver build BuildData::ClientInfo()
     defaultClusterVersion: Version of Kubernetes the service deploys by
       default.
+    defaultImageTrack: Default image track.
+    validImageTracks: List of valid image tracks.
     validNodeVersions: List of valid node upgrade target versions.
   """
 
   buildClientInfo = _messages.StringField(1)
   defaultClusterVersion = _messages.StringField(2)
-  validNodeVersions = _messages.StringField(3, repeated=True)
+  defaultImageTrack = _messages.StringField(3)
+  validImageTracks = _messages.StringField(4, repeated=True)
+  validNodeVersions = _messages.StringField(5, repeated=True)
 
 
 class SignedUrls(_messages.Message):

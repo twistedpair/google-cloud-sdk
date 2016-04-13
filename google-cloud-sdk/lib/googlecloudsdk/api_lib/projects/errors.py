@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Errors for Projects."""
+"""Errors for projects."""
 import json
 
 from googlecloudsdk.core import exceptions
 
 
 class ProjectNotFoundError(exceptions.Error):
-  """The specified Project does not exist."""
+  """The specified project does not exist."""
 
   def __init__(self, project_id):
     # TODO(user): Make the error message include how to create a project
@@ -30,7 +30,7 @@ class ProjectNotFoundError(exceptions.Error):
 
 
 class ProjectAccessError(exceptions.Error):
-  """User does not have permission to access the Project."""
+  """User does not have permission to access the project."""
 
   def __init__(self, project_id):
     message = 'You do not have permission to access project [%s].' % project_id

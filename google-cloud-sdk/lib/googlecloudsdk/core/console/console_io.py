@@ -634,6 +634,7 @@ class ProgressTracker(object):
     self._detail_message_callback = detail_message_callback
     self._last_message_size = 0
     self._tick_delay = tick_delay
+    self._is_tty = IsInteractive(output=True, error=True)
 
   def _GetPrefix(self):
     if self._detail_message_callback:
@@ -656,13 +657,20 @@ class ProgressTracker(object):
     return self
 
   def Tick(self):
-    """Give a visual indication to the user that some progress has been made."""
-    with self._lock:
-      if not self._done:
-        self._ticks += 1
-        self._Print(ProgressTracker.SPIN_MARKS[
-            self._ticks % len(ProgressTracker.SPIN_MARKS)])
-      return self._done
+    """Give a visual indication to the user that some progress has been made.
+
+    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
+
+    Returns:
+      Whether progress has completed.
+    """
+    if self._is_tty:
+      with self._lock:
+        if not self._done:
+          self._ticks += 1
+          self._Print(ProgressTracker.SPIN_MARKS[
+              self._ticks % len(ProgressTracker.SPIN_MARKS)])
+    return self._done
 
   def _Print(self, message=''):
     """Reprints the prefix followed by an optional message."""

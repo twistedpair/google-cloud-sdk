@@ -12,6 +12,18 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'testing'
 
 
+class Account(_messages.Message):
+  """A Account object.
+
+  Fields:
+    googleAuto: A GoogleAuto attribute.
+    googleUsernamePassword: A GoogleUsernamePassword attribute.
+  """
+
+  googleAuto = _messages.MessageField('GoogleAuto', 1)
+  googleUsernamePassword = _messages.MessageField('GoogleUsernamePassword', 2)
+
+
 class AndroidDevice(_messages.Message):
   """A single Android device.
 
@@ -585,6 +597,17 @@ class GceInstanceDetails(_messages.Message):
   zone = _messages.StringField(3)
 
 
+class GoogleAuto(_messages.Message):
+  """Enables automatic Google account login. If set, the service will
+  automatically generate a Google test account and add it to the device,
+  before executing the test. Note that test accounts might be reused. Many
+  applications show their full set of functionalities when an account is
+  present on the device. Logging into the device with these generated accounts
+  allows testing more functionalities.
+  """
+
+
+
 class GoogleCloudStorage(_messages.Message):
   """A storage location within Google cloud storage (GCS).
 
@@ -595,6 +618,18 @@ class GoogleCloudStorage(_messages.Message):
   """
 
   gcsPath = _messages.StringField(1)
+
+
+class GoogleUsernamePassword(_messages.Message):
+  """Enables login to a user-specified Google account, to be used for testing.
+
+  Fields:
+    password: Required
+    username: The username, which is normally an email address. Required
+  """
+
+  password = _messages.StringField(1)
+  username = _messages.StringField(2)
 
 
 class LinuxMachine(_messages.Message):
@@ -1015,6 +1050,8 @@ class TestSetup(_messages.Message):
   """A description of how to set up the device prior to running the test
 
   Fields:
+    account: The device will be logged in on this account for the duration of
+      the test. Optional
     additionalApks: APKs to install in addition to those being directly
       tested. Currently capped at three. Optional
     directoriesToPull: The directories on the device to upload to GCS at the
@@ -1023,9 +1060,10 @@ class TestSetup(_messages.Message):
     filesToPush: Optional
   """
 
-  additionalApks = _messages.MessageField('Apk', 1, repeated=True)
-  directoriesToPull = _messages.StringField(2, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 3, repeated=True)
+  account = _messages.MessageField('Account', 1)
+  additionalApks = _messages.MessageField('Apk', 2, repeated=True)
+  directoriesToPull = _messages.StringField(3, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 4, repeated=True)
 
 
 class TestSpecification(_messages.Message):
@@ -1036,10 +1074,12 @@ class TestSpecification(_messages.Message):
     androidMonkeyTest: An Android monkey test.
     androidRoboTest: An Android robo test.
     autoGoogleLogin: Enables automatic Google account login. If set, the
-      service will automatically generate a Google test account and use it to
-      log into the device, before executing the test. Note that test accounts
-      might be reused. Many applications can be tested more effectively in the
-      context of such an account. Default is false. Optional
+      service will automatically generate a Google test account and add it to
+      the device, before executing the test. Note that test accounts might be
+      reused. Many applications show their full set of functionalities when an
+      account is present on the device. Logging into the device with these
+      generated accounts allows testing more functionalities. Default is
+      false. Optional
     testSetup: Test setup requirements e.g. files to install, bootstrap
       scripts Optional
     testTimeout: Max time a test execution is allowed to run before it is

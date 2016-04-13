@@ -542,7 +542,7 @@ class _SectionApp(_Section):
         hidden=True)
     self.use_gsutil = self._AddBool(
         'use_gsutil',
-        default=True,
+        default=False,
         hidden=True)
     self.hosted_build_image = self._Add(
         'hosted_build_image',

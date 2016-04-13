@@ -12,14 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Util for Projects."""
+"""Util for projects."""
 
 from datetime import datetime
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.apitools.base.py import exceptions
+
+
+class DeletedResource(object):
+  """A deleted/undeleted resource returned by Run()."""
+
+  def __init__(self, project_id):
+    self.projectId = project_id  # pylint: disable=invalid-name, This is a resource attribute name.
+
+
+class ProjectCommand(base.Command):
+  """Common methods for a project command."""
+
+  def Collection(self):
+    return 'cloudresourcemanager.projects'
+
+  def GetUriFunc(self):
+    def _GetUri(resource):
+      ref = resources.Parse(resource.projectId, collection=self.Collection())
+      return ref.SelfLink()
+    return _GetUri
 
 
 def GetMessages():
@@ -37,7 +59,7 @@ lifecycle_description = {
 
 
 def IsActive(project):
-  """Returns true if the Project's lifecycle state is 'active'.
+  """Returns true if the project's lifecycle state is 'active'.
 
   Args:
     project: A Project
@@ -48,7 +70,7 @@ def IsActive(project):
 
 
 def GetLifecycle(project):
-  """Returns a reader friendly string description of a Project's active state.
+  """Returns a reader friendly string description of a project's active state.
 
   Args:
     project: A Project with a LifecycleStateValueValues enum.

@@ -16,6 +16,7 @@ import abc
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.command_lib.compute import flags
 import ipaddr
 
 
@@ -27,7 +28,7 @@ class AddressesMutator(base_classes.BaseAsyncMutator):
     """Adds common flags for mutating addresses."""
     scope = parser.add_mutually_exclusive_group()
 
-    utils.AddRegionFlag(
+    flags.AddRegionFlag(
         scope,
         resource_type='address',
         operation_type='operate on')

@@ -18,13 +18,14 @@ import random
 import re
 import string
 import sys
-from googlecloudsdk.api_lib.compute import constants
+
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.third_party.apis.compute.alpha import compute_alpha_messages
 
 _ALLOWED_UTILIZATION_TARGET_TYPES = sorted(
@@ -143,18 +144,18 @@ def AddAutoscalerArgs(parser,
                         'to consume.')
   if multizonal_enabled:
     scope_parser = parser.add_mutually_exclusive_group()
-    utils.AddRegionFlag(
+    flags.AddRegionFlag(
         scope_parser,
         resource_type='resources',
         operation_type='update',
-        explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-    utils.AddZoneFlag(
+        explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+    flags.AddZoneFlag(
         scope_parser,
         resource_type='resources',
         operation_type='update',
-        explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+        explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
   else:
-    utils.AddZoneFlag(
+    flags.AddZoneFlag(
         parser,
         resource_type='resources',
         operation_type='update')

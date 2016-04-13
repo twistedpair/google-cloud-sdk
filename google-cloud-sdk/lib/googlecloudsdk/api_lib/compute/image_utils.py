@@ -19,6 +19,8 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
+FAMILY_PREFIX = 'family/'
+
 
 class ImageResourceFetcher(object):
   """Mixin class for displaying images."""
@@ -55,12 +57,23 @@ class ImageExpander(object):
   def GetImage(self, image_ref):
     """Returns the image resource corresponding to the given reference."""
     errors = []
+    requests = []
+    name = image_ref.Name()
+    if name.startswith(FAMILY_PREFIX):
+      requests.append((self.compute.images,
+                       'GetFromFamily',
+                       self.messages.ComputeImagesGetFromFamilyRequest(
+                           family=name[len(FAMILY_PREFIX):],
+                           project=image_ref.project)))
+    else:
+      requests.append((self.compute.images,
+                       'Get',
+                       self.messages.ComputeImagesGetRequest(
+                           image=name,
+                           project=image_ref.project)))
+
     res = list(request_helper.MakeRequests(
-        requests=[(self.compute.images,
-                   'Get',
-                   self.messages.ComputeImagesGetRequest(
-                       image=image_ref.Name(),
-                       project=image_ref.project))],
+        requests=requests,
         http=self.http,
         batch_url=self.batch_url,
         errors=errors,
@@ -72,7 +85,7 @@ class ImageExpander(object):
     return res[0]
 
   def ExpandImageFlag(self, args, return_image_resource=False):
-    """Resolves the --image flag value.
+    """Resolves the --image or --image-family flag value.
 
     If the value of --image is one of the aliases defined in the
     constants module, both the user's project and the public image
@@ -105,8 +118,8 @@ class ImageExpander(object):
           args.image_family,
           collection='compute.images',
           resolve=False)
-      if not image_ref.image.startswith('family/'):
-        image_ref.image = 'family/' + image_ref.image
+      if not image_ref.image.startswith(FAMILY_PREFIX):
+        image_ref.image = FAMILY_PREFIX + image_ref.image
     else:
       image_ref = self.resources.Parse(
           constants.DEFAULT_IMAGE,

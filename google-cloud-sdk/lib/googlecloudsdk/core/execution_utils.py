@@ -161,20 +161,6 @@ def ArgsForPythonTool(executable_path, *args, **kwargs):
       python_executable, python_args, executable_path, *args)
 
 
-def ArgsForShellTool(executable_path, *args):
-  """Constructs an argument list for calling the bash interpreter.
-
-  Args:
-    executable_path: str, The full path to the shell script.
-    *args: args for the command
-
-  Returns:
-    An argument list to execute the bash interpreter
-  """
-  shell_bin = _GetShellExecutable()
-  return _GetToolArgs(shell_bin, [], executable_path, *args)
-
-
 def ArgsForCMDTool(executable_path, *args):
   """Constructs an argument list for calling the cmd interpreter.
 
@@ -188,8 +174,10 @@ def ArgsForCMDTool(executable_path, *args):
   return _GetToolArgs('cmd', ['/c'], executable_path, *args)
 
 
-def ArgsForBinaryTool(executable_path, *args):
-  """Constructs an argument list for calling a native binary.
+def ArgsForExecutableTool(executable_path, *args):
+  """Constructs an argument list for an executable.
+
+   Can be used for calling a native binary or shell executable.
 
   Args:
     executable_path: str, The full path to the binary.

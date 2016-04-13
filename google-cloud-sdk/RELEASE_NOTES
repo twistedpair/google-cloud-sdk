@@ -2,6 +2,34 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 105.0.0 (2016/04/13)
+
+### Breaking Changes
+
+* `health-checks` commands for protocol HTTP2 have been removed.
+
+* Rename the `alpha compute url-maps` `invalidate-cache` and
+  `list-cache-invalidations` subcommands to `invalidate-cdn-cache` and
+  `list-cdn-cache-invalidations`, respectively.
+
+### Cloud SDK
+
+* Suppress progress tracker animations if not outputting to a terminal.
+
+* `gcloud components list` now supports the `--filter` flag and queries like:
+  `gcloud components list --filter=id:app-engine-java
+  --format="value(state.name)"`
+
+### Google Compute Engine
+
+* Promote Cloud CDN functionality from alpha to beta.
+
+### Google App Engine
+
+* File uploads during gcloud preview app deploy have been improved. If you have
+  any trouble, you can revert to the old behavior with
+  `gcloud config set app/use_gsutil true`.
+
 ## 104.0.0 (2016/04/06)
 
 ### Cloud SDK

@@ -170,7 +170,7 @@ def AddTargetArg(parser):
       '  address=ADDRESS[;port_number=PORT[,protocol=PROTOCOL]'
       '[,port_name=name]]+\n\n'
       'port specifications are separated by semi-colons, and the '
-      'address= portion must come first. If you are specifying more than one '
+      '"address=" portion must come first. If you are specifying more than one '
       'port, then port_name is required.',
       metavar='TARGET')
 
@@ -184,10 +184,9 @@ def AddNetworksArg(parser):
   parser.add_argument(
       '--networks',
       type=arg_parsers.ArgList(),
-      help='A list of networks your endpoint should be visible in. Use '
-      'fully qualified Compute Network URLs separated by commas: e.g. \n\n'
+      help='A list of networks your endpoint should have private DNS records '
+      'created in: e.g. \n\n'
       '   "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default,..."',  # pylint:disable=line-too-long
-      required=True,
       metavar='NETWORKS')
 
 

@@ -68,21 +68,15 @@ def GetHttpErrorMessage(error):
   message = ''
   try:
     data = json.loads(error.content)
-  except ValueError:
-    data = error.content
-
-  if 'error' in data:
-    try:
+    if 'error' in data:
       error_info = data['error']
       if 'message' in error_info:
         message = error_info['message']
-    except (ValueError, TypeError):
-      message = data
-    violations = _GetViolationsFromError(error_info)
-    if violations:
-      message += '\nProblems:\n' + violations
-  else:
-    message = data
+      violations = _GetViolationsFromError(error_info)
+      if violations:
+        message += '\nProblems:\n' + violations
+  except (ValueError, TypeError):
+    message = error.content
   return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
       status, code, message)
 

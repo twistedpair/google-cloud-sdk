@@ -961,7 +961,7 @@ class ComputeBeta(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the target disk.
+      """Sets the labels on a disk. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -2344,7 +2344,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the target image.
+      """Sets the labels on an image. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -2466,7 +2466,7 @@ See Accessing images for more information.
               method_id=u'compute.instanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'zone', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'zone'],
-              query_params=[],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
               relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -3568,7 +3568,7 @@ See Accessing images for more information.
           config, request, global_params=global_params)
 
     def SetLabels(self, request, global_params=None):
-      """Sets labels for the specified instance to the data included in the request.
+      """Sets labels on an instance. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -4665,7 +4665,7 @@ For more information, see Deleting snaphots.
           config, request, global_params=global_params)
 
     def SetLabels(self, request, global_params=None):
-      """Sets the labels on the target snapshot.
+      """Sets the labels on a snapshot. To learn more about labels, read the Labeling or Tagging Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message

@@ -101,16 +101,6 @@ class Displayer(object):
     """
     return getattr(self._args, flag_name, None)
 
-  def _AddUriReplaceTap(self):
-    """Taps a resource Uri replacer into self.resources if needed."""
-
-    if not self._GetFlag('uri'):
-      return
-
-    tap = display_taps.UriReplacer(self._transform_uri)
-    self._transform_uri = lambda x, undefined='': x or undefined
-    self._resources = peek_iterable.Tapper(self._resources, tap)
-
   def _AddUriCacheTap(self):
     """Taps a resource Uri cache updater into self.resources if needed."""
 
@@ -167,6 +157,15 @@ class Displayer(object):
     if page_size is None or page_size <= 0:
       return
     tap = display_taps.Pager(page_size)
+    self._resources = peek_iterable.Tapper(self._resources, tap)
+
+  def _AddUriReplaceTap(self):
+    """Taps a resource Uri replacer into self.resources if needed."""
+
+    if not self._GetFlag('uri'):
+      return
+
+    tap = display_taps.UriReplacer(self._transform_uri)
     self._resources = peek_iterable.Tapper(self._resources, tap)
 
   def _GetResourceInfoDefaults(self):
@@ -305,9 +304,6 @@ class Displayer(object):
     # Initialize the printer.
     self._InitPrinter()
 
-    # Add the URI replace tap if needed.
-    self._AddUriReplaceTap()
-
     # Add a URI cache update tap if needed.
     self._AddUriCacheTap()
 
@@ -322,6 +318,9 @@ class Displayer(object):
 
     # Add a resource limit tap if needed.
     self._AddLimitTap()
+
+    # Add the URI replace tap if needed.
+    self._AddUriReplaceTap()
 
     if self._printer:
       # Most command output will end up here.

@@ -22,6 +22,8 @@ Example usage:
     OperateOnProjectedResource(obj)
 """
 
+import datetime
+
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
@@ -62,6 +64,11 @@ def ClassToDict(resource):
       # Omit callable attributes.
       continue
     r[attr] = value
+  if isinstance(resource, datetime.datetime):
+    # The datetime.tzinfo object does not serialize, so we save the original
+    # string representation, which by default has enough information to
+    # reconstruct tzinfo.
+    r['datetime'] = unicode(resource)
   return r
 
 

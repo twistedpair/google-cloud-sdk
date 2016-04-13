@@ -13,9 +13,9 @@
 # limitations under the License.
 """Code that's shared between multiple backend-services subcommands."""
 
-from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags
 
 
 def BalancingModes(backend):
@@ -126,11 +126,11 @@ def AddUpdatableBackendArgs(parser, compute_messages, multizonal=False):
   scope_parser = parser
   if multizonal:
     scope_parser = parser.add_mutually_exclusive_group()
-    utils.AddRegionFlag(
+    flags.AddRegionFlag(
         scope_parser,
         resource_type='instance group',
         operation_type='add to the backend service')
-  utils.AddZoneFlag(
+  flags.AddZoneFlag(
       scope_parser,
       resource_type='instance group',
       operation_type='add to the backend service')

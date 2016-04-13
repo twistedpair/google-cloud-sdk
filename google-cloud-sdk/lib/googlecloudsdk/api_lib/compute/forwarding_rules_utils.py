@@ -13,53 +13,13 @@
 # limitations under the License.
 """Common classes and functions for forwarding rules."""
 import abc
-import textwrap
 from googlecloudsdk.api_lib.compute import base_classes
-from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import properties
-
-
-FORWARDING_RULES_OVERVIEW = """\
-        Forwarding rules match and direct certain types of traffic to a load
-        balancer which is controlled by a target pool, a target instance,
-        or a target HTTP proxy. Target pools and target instances perform load
-        balancing at the layer 3 of the OSI networking model
-        (http://en.wikipedia.org/wiki/Network_layer). Target
-        HTTP proxies perform load balancing at layer 7.
-
-        Forwarding rules can be either regional or global. They are
-        regional if they point to a target pool or a target instance
-        and global if they point to a target HTTP proxy.
-
-        For more information on load balancing, see
-        https://cloud.google.com/compute/docs/load-balancing-and-autoscaling/.
-        """
 
 
 class ForwardingRulesMutator(base_classes.BaseAsyncMutator):
   """Base class for modifying forwarding rules."""
-
-  @staticmethod
-  def Args(parser):
-    """Adds common flags for mutating forwarding rules."""
-    scope = parser.add_mutually_exclusive_group()
-
-    utils.AddRegionFlag(
-        scope,
-        resource_type='forwarding rule',
-        operation_type='operate on')
-
-    global_flag = scope.add_argument(
-        '--global',
-        action='store_true',
-        help='If provided, it is assumed the forwarding rules are global.')
-    global_flag.detailed_help = """\
-        If provided, assume the forwarding rules are global. A forwarding rule
-        is global if it references a target HTTP proxy.
-        """
 
   @property
   def service(self):
@@ -91,58 +51,6 @@ class ForwardingRulesMutator(base_classes.BaseAsyncMutator):
 
 class ForwardingRulesTargetMutator(ForwardingRulesMutator):
   """Base class for modifying forwarding rule targets."""
-
-  @staticmethod
-  def BaseArgs(parser, include_alpha_targets):
-    """Adds common flags for mutating forwarding rule targets."""
-    ForwardingRulesMutator.Args(parser)
-
-    target = parser.add_mutually_exclusive_group(required=True)
-
-    target_instance = target.add_argument(
-        '--target-instance',
-        help='The target instance that will receive the traffic.')
-    target_instance.detailed_help = textwrap.dedent("""\
-        The name of the target instance that will receive the traffic. The
-        target instance must be in a zone that's in the forwarding rule's
-        region. Global forwarding rules may not direct traffic to target
-        instances.
-        """) + constants.ZONE_PROPERTY_EXPLANATION
-
-    target_pool = target.add_argument(
-        '--target-pool',
-        help='The target pool that will receive the traffic.')
-    target_pool.detailed_help = """\
-        The target pool that will receive the traffic. The target pool
-        must be in the same region as the forwarding rule. Global
-        forwarding rules may not direct traffic to target pools.
-        """
-
-    target.add_argument(
-        '--target-http-proxy',
-        help='The target HTTP proxy that will receive the traffic.')
-
-    target.add_argument(
-        '--target-https-proxy',
-        help='The target HTTPS proxy that will receive the traffic.')
-
-    if include_alpha_targets:
-      target.add_argument(
-          '--target-ssl-proxy',
-          help='The target SSL proxy that will receive the traffic.')
-
-    target.add_argument(
-        '--target-vpn-gateway',
-        help='The target VPN gateway that will receive forwarded traffic.')
-
-    parser.add_argument(
-        '--target-instance-zone',
-        help='The zone of the target instance.',
-        action=actions.StoreProperty(properties.VALUES.compute.zone))
-
-    parser.add_argument(
-        'name',
-        help='The name of the forwarding rule.')
 
   def GetGlobalTarget(self, args):
     """Return the forwarding target for a globally scoped request."""

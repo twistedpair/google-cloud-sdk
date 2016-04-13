@@ -100,7 +100,7 @@ class CloudfunctionsProjectsRegionsFunctionsListRequest(_messages.Message):
   """A CloudfunctionsProjectsRegionsFunctionsListRequest object.
 
   Fields:
-    location: The project and region in which the function should be created,
+    location: The project and region from which functions should be listed,
       specified in the format: projects/*/regions/*
     pageSize: Maximum number of functions to return.
     pageToken: The value returned by the last ListFunctionsResponse; indicates

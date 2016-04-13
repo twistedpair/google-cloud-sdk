@@ -15,7 +15,6 @@
 import abc
 import sys
 from googlecloudsdk.api_lib.compute import base_classes
-from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
@@ -23,6 +22,7 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as resource_exceptions
@@ -143,18 +143,18 @@ class InstanceGroupListInstancesBase(base_classes.BaseCommand):
 
     if multizonal:
       scope_parser = parser.add_mutually_exclusive_group()
-      utils.AddRegionFlag(
+      flags.AddRegionFlag(
           scope_parser,
           resource_type='instance group',
           operation_type='list instances in',
-          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      utils.AddZoneFlag(
+          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      flags.AddZoneFlag(
           scope_parser,
           resource_type='instance group',
           operation_type='list instances in',
-          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
     else:
-      utils.AddZoneFlag(
+      flags.AddZoneFlag(
           parser,
           resource_type='instance group',
           operation_type='list instances in')
@@ -348,18 +348,18 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
 
     if multizonal:
       scope_parser = parser.add_mutually_exclusive_group()
-      utils.AddRegionFlag(
+      flags.AddRegionFlag(
           scope_parser,
           resource_type='instance or instance group',
           operation_type='get named ports for',
-          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      utils.AddZoneFlag(
+          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      flags.AddZoneFlag(
           scope_parser,
           resource_type='instance or instance group',
           operation_type='get named ports for',
-          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
     else:
-      utils.AddZoneFlag(
+      flags.AddZoneFlag(
           parser,
           resource_type='instance or instance group',
           operation_type='get named ports for')
@@ -467,18 +467,18 @@ class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
 
     if multizonal:
       scope_parser = parser.add_mutually_exclusive_group()
-      utils.AddRegionFlag(
+      flags.AddRegionFlag(
           scope_parser,
           resource_type='instance group',
           operation_type='set named ports for',
-          explanation=constants.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      utils.AddZoneFlag(
+          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
+      flags.AddZoneFlag(
           scope_parser,
           resource_type='instance group',
           operation_type='set named ports for',
-          explanation=constants.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
+          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
     else:
-      utils.AddZoneFlag(
+      flags.AddZoneFlag(
           parser,
           resource_type='instance group',
           operation_type='set named ports for')
