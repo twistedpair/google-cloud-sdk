@@ -236,6 +236,21 @@ class AppengineAppsModulesVersionsGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class AppengineAppsModulesVersionsInstancesListRequest(_messages.Message):
+  """A AppengineAppsModulesVersionsInstancesListRequest object.
+
+  Fields:
+    name: Name of the resource requested. For example:
+      "apps/myapp/modules/default/versions/v1".
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class AppengineAppsModulesVersionsListRequest(_messages.Message):
   """A AppengineAppsModulesVersionsListRequest object.
 
@@ -590,6 +605,69 @@ class HealthCheck(_messages.Message):
   unhealthyThreshold = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
 
 
+class Instance(_messages.Message):
+  """Instances are the computing units that App Engine uses to automatically
+  scale an application.
+
+  Enums:
+    AvailabilityValueValuesEnum: Availability of instance.  @OutputOnly
+
+  Fields:
+    appEngineRelease: The App Engine release the instance is running on.
+      @OutputOnly
+    availability: Availability of instance.  @OutputOnly
+    averageLatency: Latency in milliseconds (averaged over the last minute).
+      @OutputOnly
+    errors: Number of errors since the instance was started.  @OutputOnly
+    id: The relative name/path of the instance within the version. Example:
+      "instance-1"  @OutputOnly
+    memoryUsage: Memory usage (in bytes).  @OutputOnly
+    name: The full path to the Instance resource in the API. Example:
+      "apps/myapp/modules/default/versions/v1/instances/instance-1"
+      @OutputOnly
+    qps: QPS for this instance (averaged over the last minute).  @OutputOnly
+    requests: Number of requests (since the clone was started).  @OutputOnly
+    startTimestamp: Time when instance was started.  @OutputOnly
+    vmId: For VMEngines instances, the GCE VM ID of the instance.  @OutputOnly
+    vmName: For VMEngines instances, the name of GCE VM where the instance
+      lives.  @OutputOnly
+    vmStatus: For VMEngines instances, the status of GCE VM where the instance
+      lives.  @OutputOnly
+    vmUnlocked: For VMEngines instances, whether the instance has been
+      unlocked.  @OutputOnly
+    vmZoneName: For VMEngines instances, the zone where the GCE VM is located.
+      @OutputOnly
+  """
+
+  class AvailabilityValueValuesEnum(_messages.Enum):
+    """Availability of instance.  @OutputOnly
+
+    Values:
+      UNSPECIFIED: <no description>
+      RESIDENT: <no description>
+      DYNAMIC: <no description>
+    """
+    UNSPECIFIED = 0
+    RESIDENT = 1
+    DYNAMIC = 2
+
+  appEngineRelease = _messages.StringField(1)
+  availability = _messages.EnumField('AvailabilityValueValuesEnum', 2)
+  averageLatency = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  errors = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  id = _messages.StringField(5)
+  memoryUsage = _messages.IntegerField(6)
+  name = _messages.StringField(7)
+  qps = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  requests = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  startTimestamp = _messages.StringField(10)
+  vmId = _messages.StringField(11)
+  vmName = _messages.StringField(12)
+  vmStatus = _messages.StringField(13)
+  vmUnlocked = _messages.BooleanField(14)
+  vmZoneName = _messages.StringField(15)
+
+
 class Library(_messages.Message):
   """A Python runtime third-party library required by the application.
 
@@ -600,6 +678,18 @@ class Library(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ListInstancesResponse(_messages.Message):
+  """Response message for `Instances.ListInstances`.
+
+  Fields:
+    instances: The instances belonging to the requested version.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  instances = _messages.MessageField('Instance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListModulesResponse(_messages.Message):

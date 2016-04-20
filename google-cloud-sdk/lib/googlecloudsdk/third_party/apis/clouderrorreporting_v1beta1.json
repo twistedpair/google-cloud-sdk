@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "clouderrorreporting:v1beta1",
   "name": "clouderrorreporting",
+  "canonicalName": "Clouderrorreporting",
   "version": "v1beta1",
   "revision": "0",
   "title": "Google Cloud Error Reporting API",

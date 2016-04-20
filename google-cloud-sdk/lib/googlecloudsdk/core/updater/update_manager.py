@@ -833,6 +833,14 @@ Please remove the following to avoid accidentally invoking these old tools:
 {0}
 
 """.format('\n'.join(bad_commands)))
+
+    if platforms.PythonVersion().IsPython26():
+      log.warn("""\
+You are running Python 2.6, which is no longer receiving security
+patches as of October 2013.  The Cloud SDK will stop supporting Python 2.6 on
+September 1, 2016.  Please update your Python installation to 2.7 to ensure
+compatibility with future Cloud SDK versions.""")
+
     return True
 
   def FindAllOldToolsOnPath(self, path=None):

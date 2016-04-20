@@ -191,7 +191,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
       value = resource_property.Get(r, [part], None)
       if value is None:
         # Missing parts default to now.
-        value = getattr(now, part)
+        value = getattr(now, part, 0)
       else:
         valid += 1
       parts.append(int(value))
@@ -436,7 +436,12 @@ def TransformGroup(r, *args):
           sub = ', '
         else:
           sub = ': '
-        buf.write(unicode(getattr(item, attr)))
+        if isinstance(item, dict):
+          value = item.get(attr)
+        else:
+          value = getattr(item, attr, None)
+        if value is not None:
+          buf.write(unicode(value))
       buf.write(']')
   return buf.getvalue()
 

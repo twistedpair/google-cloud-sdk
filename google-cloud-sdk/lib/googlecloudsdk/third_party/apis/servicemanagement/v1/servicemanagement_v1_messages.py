@@ -273,6 +273,49 @@ class BillingStatusRule(_messages.Message):
   selector = _messages.StringField(2)
 
 
+class ConfigFile(_messages.Message):
+  """Generic specification of a source configuration file
+
+  Fields:
+    contents: The contents of the configuration file.
+    filePath: The file name of the configuration file (full or relative path).
+  """
+
+  contents = _messages.StringField(1)
+  filePath = _messages.StringField(2)
+
+
+class ConfigOptions(_messages.Message):
+  """A set of options to cover use of source config within `ServiceManager`
+  and related tools.
+  """
+
+
+
+class ConfigSource(_messages.Message):
+  """Represents a user-specified configuration for a service (as opposed to
+  the the generated service config form provided by `google.api.Service`).
+  This is meant to encode service config as manipulated directly by customers,
+  rather than the config form resulting from toolchain generation and
+  normalization.
+
+  Fields:
+    files: Service management-specific configuration for a service that
+      accompanies source specification. This typically includes configuration
+      of metrics, quota, etc. At the moment, only YAML configuration files are
+      supported.
+    options: Options to cover use of source config within ServiceManager and
+      tools
+    protoSpec: Protocol buffer API specification
+    swaggerSpec: Swagger / OpenAPI specification
+  """
+
+  files = _messages.MessageField('ConfigFile', 1, repeated=True)
+  options = _messages.MessageField('ConfigOptions', 2)
+  protoSpec = _messages.MessageField('ProtoSpec', 3)
+  swaggerSpec = _messages.MessageField('SwaggerSpec', 4)
+
+
 class Context(_messages.Message):
   """`Context` defines which contexts an API requests.  Example:      context:
   rules:       - selector: "*"         requested:         -
@@ -901,6 +944,18 @@ class LabelDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 3)
 
 
+class ListServiceConfigsResponse(_messages.Message):
+  """Response message for ListServiceConfigs method.
+
+  Fields:
+    nextPageToken: The token of the next page of results.
+    serviceConfigs: The list of service config resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceConfigs = _messages.MessageField('Service', 2, repeated=True)
+
+
 class ListServicesResponse(_messages.Message):
   """Response message for `ListServices` method.
 
@@ -996,6 +1051,12 @@ class ManagedService(_messages.Message):
   other control plane deployment related information.
 
   Fields:
+    configSource: User-supplied source configuration for the service. This is
+      distinct from the generated configuration provided in
+      `google.api.Service`. This is NOT populated on GetService calls at the
+      moment. NOTE: Any upsert operation that contains both a service_config
+      and a config_source is considered invalid and will result in an error
+      being returned.
     generation: A server-assigned monotonically increasing number that changes
       whenever a mutation is made to the `ManagedService` or any of its
       components via the `ServiceManager` API.
@@ -1010,12 +1071,13 @@ class ManagedService(_messages.Message):
       in the `service_config` field.
   """
 
-  generation = _messages.IntegerField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-  producerProjectId = _messages.StringField(3)
-  projectSettings = _messages.MessageField('ProjectSettings', 4)
-  serviceConfig = _messages.MessageField('Service', 5)
-  serviceName = _messages.StringField(6)
+  configSource = _messages.MessageField('ConfigSource', 1)
+  generation = _messages.IntegerField(2)
+  operations = _messages.MessageField('Operation', 3, repeated=True)
+  producerProjectId = _messages.StringField(4)
+  projectSettings = _messages.MessageField('ProjectSettings', 5)
+  serviceConfig = _messages.MessageField('Service', 6)
+  serviceName = _messages.StringField(7)
 
 
 class MediaDownload(_messages.Message):
@@ -1658,6 +1720,37 @@ class Property(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class ProtoDescriptor(_messages.Message):
+  """Contains a serialized protoc-generated protocol buffer message descriptor
+  set along with a URL that describes the type of the descriptor message.
+
+  Fields:
+    typeUrl: A URL/resource name whose content describes the type of the
+      serialized protocol buffer message.  Only
+      'type.googleapis.com/google.protobuf.FileDescriptorSet' is supported. If
+      the type_url is not specificed,
+      'type.googleapis.com/google.protobuf.FileDescriptorSet' will be assumed.
+    value: Must be a valid serialized protocol buffer descriptor set.  To
+      generate, use protoc with imports and source info included. For an
+      example test.proto file, the following command would put the value in a
+      new file named descriptor.pb.  $protoc --include_imports
+      --include_source_info test.proto -o descriptor.pb
+  """
+
+  typeUrl = _messages.StringField(1)
+  value = _messages.BytesField(2)
+
+
+class ProtoSpec(_messages.Message):
+  """A collection of protocol buffer service specification files.
+
+  Fields:
+    protoDescriptor: A complete descriptor of a protocol buffer specification
+  """
+
+  protoDescriptor = _messages.MessageField('ProtoDescriptor', 1)
+
+
 class QueryUserAccessResponse(_messages.Message):
   """Request message for QueryUserAccess method.
 
@@ -2130,6 +2223,9 @@ class Service(_messages.Message):
       be listed here by name. Example:      enums:     - name:
       google.someapi.v1.SomeEnum
     http: HTTP configuration.
+    id: A unique ID for a specific instance of this message, typically
+      assigned by the client for tracking purpose. If empty, the server may
+      choose to generate one instead.
     logging: Logging configuration of the service.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
@@ -2171,21 +2267,22 @@ class Service(_messages.Message):
   documentation = _messages.MessageField('Documentation', 9)
   enums = _messages.MessageField('Enum', 10, repeated=True)
   http = _messages.MessageField('Http', 11)
-  logging = _messages.MessageField('Logging', 12)
-  logs = _messages.MessageField('LogDescriptor', 13, repeated=True)
-  metrics = _messages.MessageField('MetricDescriptor', 14, repeated=True)
-  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 15, repeated=True)
-  monitoring = _messages.MessageField('Monitoring', 16)
-  name = _messages.StringField(17)
-  producerProjectId = _messages.StringField(18)
-  projectProperties = _messages.MessageField('ProjectProperties', 19)
-  quota = _messages.MessageField('Quota', 20)
-  systemParameters = _messages.MessageField('SystemParameters', 21)
-  systemTypes = _messages.MessageField('Type', 22, repeated=True)
-  title = _messages.StringField(23)
-  types = _messages.MessageField('Type', 24, repeated=True)
-  usage = _messages.MessageField('Usage', 25)
-  visibility = _messages.MessageField('Visibility', 26)
+  id = _messages.StringField(12)
+  logging = _messages.MessageField('Logging', 13)
+  logs = _messages.MessageField('LogDescriptor', 14, repeated=True)
+  metrics = _messages.MessageField('MetricDescriptor', 15, repeated=True)
+  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 16, repeated=True)
+  monitoring = _messages.MessageField('Monitoring', 17)
+  name = _messages.StringField(18)
+  producerProjectId = _messages.StringField(19)
+  projectProperties = _messages.MessageField('ProjectProperties', 20)
+  quota = _messages.MessageField('Quota', 21)
+  systemParameters = _messages.MessageField('SystemParameters', 22)
+  systemTypes = _messages.MessageField('Type', 23, repeated=True)
+  title = _messages.StringField(24)
+  types = _messages.MessageField('Type', 25, repeated=True)
+  usage = _messages.MessageField('Usage', 26)
+  visibility = _messages.MessageField('Visibility', 27)
 
 
 class ServiceAccessList(_messages.Message):
@@ -2279,6 +2376,19 @@ class ServicemanagementServicesAccessPolicyQueryRequest(_messages.Message):
   userEmail = _messages.StringField(2)
 
 
+class ServicemanagementServicesConfigsCreateRequest(_messages.Message):
+  """A ServicemanagementServicesConfigsCreateRequest object.
+
+  Fields:
+    service: A Service resource to be passed as the request body.
+    serviceName: The name of the service.  See the `ServiceManager` overview
+      for naming requirements.  For example: `example.googleapis.com`.
+  """
+
+  service = _messages.MessageField('Service', 1)
+  serviceName = _messages.StringField(2, required=True)
+
+
 class ServicemanagementServicesConfigsGetRequest(_messages.Message):
   """A ServicemanagementServicesConfigsGetRequest object.
 
@@ -2291,6 +2401,21 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
 
   configId = _messages.StringField(1, required=True)
   serviceName = _messages.StringField(2, required=True)
+
+
+class ServicemanagementServicesConfigsListRequest(_messages.Message):
+  """A ServicemanagementServicesConfigsListRequest object.
+
+  Fields:
+    pageSize: The max number of items to include in the response list.
+    pageToken: The token of the page to retrieve.
+    serviceName: The name of the service.  See the `ServiceManager` overview
+      for naming requirements.  For example: `example.googleapis.com`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  serviceName = _messages.StringField(3, required=True)
 
 
 class ServicemanagementServicesCustomerSettingsGetRequest(_messages.Message):

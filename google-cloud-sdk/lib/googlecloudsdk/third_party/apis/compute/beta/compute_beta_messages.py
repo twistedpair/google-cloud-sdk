@@ -313,17 +313,17 @@ class AttachedDisk(_messages.Message):
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
-      encryption key.  If you are creating a new disk, this field encrypts the
-      disk using a customer-supplied encryption key. If you are attaching an
+      encryption key.  If you are creating a new disk, encrypts the new disk
+      using an encryption key that you provide. If you are attaching an
       existing disk that is already encrypted, this field decrypts the disk
-      using the customer-supplied encryption key.  If you encrypt a new disk
-      using a customer-supplied encryption key, you must provide the same key
-      again when you attempt to use this resource at a later time. For
-      example, you must provide the key when you create a snapshot or an image
-      from the disk or when you attach the disk to a virtual machine instance.
-      If no customer-supplied encryption key is provided at creation, then the
-      disk will be encrypted using an automatically generated key and you do
-      not need to provide a key to use the disk later.
+      using the customer-supplied encryption key.  If you encrypt a disk using
+      a customer-supplied key, you must provide the same key again when you
+      attempt to use this resource at a later time. For example, you must
+      provide the key when you create a snapshot or an image from the disk or
+      when you attach the disk to a virtual machine instance.  If you do not
+      provide an encryption key, then the disk will be encrypted using an
+      automatically generated key and you do not need to provide a key to use
+      the disk later.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -438,9 +438,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
-      source image. This key is required if the source image is protected by a
-      customer-supplied encryption key.  If the incorrect key is provided, the
-      operation will fail.
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
   """
 
   class DiskStorageTypeValueValuesEnum(_messages.Enum):
@@ -3002,54 +3001,14 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -3967,6 +3926,24 @@ class ComputeInstancesStartRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A ComputeInstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    instance: Name of the instance resource to start.
+    instancesStartWithEncryptionKeyRequest: A
+      InstancesStartWithEncryptionKeyRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesStartWithEncryptionKeyRequest = _messages.MessageField('InstancesStartWithEncryptionKeyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesStopRequest(_messages.Message):
   """A ComputeInstancesStopRequest object.
 
@@ -4235,6 +4212,32 @@ class ComputeProjectsGetRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsMoveDiskRequest(_messages.Message):
+  """A ComputeProjectsMoveDiskRequest object.
+
+  Fields:
+    diskMoveRequest: A DiskMoveRequest resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  diskMoveRequest = _messages.MessageField('DiskMoveRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeProjectsMoveInstanceRequest(_messages.Message):
+  """A ComputeProjectsMoveInstanceRequest object.
+
+  Fields:
+    instanceMoveRequest: A InstanceMoveRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  instanceMoveRequest = _messages.MessageField('InstanceMoveRequest', 1)
+  project = _messages.StringField(2, required=True)
 
 
 class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
@@ -6414,6 +6417,20 @@ class CustomerEncryptionKey(_messages.Message):
   sha256 = _messages.StringField(3)
 
 
+class CustomerEncryptionKeyProtectedDisk(_messages.Message):
+  """A CustomerEncryptionKeyProtectedDisk object.
+
+  Fields:
+    diskEncryptionKey: Decrypts data associated with the disk with a customer-
+      supplied encryption key.
+    source: Specifies a valid partial or full URL to an existing Persistent
+      Disk resource. This field is only applicable for persistent disks.
+  """
+
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+  source = _messages.StringField(2)
+
+
 class DeprecationStatus(_messages.Message):
   """Deprecation status for a public resource.
 
@@ -6487,15 +6504,13 @@ class Disk(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
-      key.  If you encrypt the disk using a customer-supplied encryption key,
-      and you want to use the disk later (e.g. to create a disk snapshot or an
-      image, or to attach the disk to a virtual machine), you must provide the
-      same key in your request. If you provide an incorrect key, or no key,
-      the operation will fail.  Customer-supplied encryption keys do not
-      protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the disk later.
+      key.  After you encrypt a disk with a customer-supplied key, you must
+      provide the same key if you use the disk later (e.g. to create a disk
+      snapshot or an image, or to attach the disk to a virtual machine).
+      Customer-supplied encryption keys do not protect access to metadata of
+      the disk.  If you do not provide an encryption key when creating the
+      disk, then the disk will be encrypted using an automatically generated
+      key and you do not need to provide a key to use the disk later.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -6543,9 +6558,8 @@ class Disk(_messages.Message):
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
-      source image. This key is required if the source image is protected by a
-      customer-supplied encryption key.  If the incorrect key is provided, the
-      operation will fail.
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
     sourceImageId: [Output Only] The ID value of the image used to create this
       disk. This value identifies the exact image that was used to create this
       persistent disk. For example, if you created the persistent disk from an
@@ -6558,9 +6572,8 @@ class Disk(_messages.Message):
       ojects/project/global/snapshots/snapshot  -
       projects/project/global/snapshots/snapshot  - global/snapshots/snapshot
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
-      source snapshot. This key is required if the source snapshot is
-      protected by a customer-supplied encryption key.  If the incorrect key
-      is provided, the operation will fail.
+      source snapshot. Required if the source snapshot is protected by a
+      customer-supplied encryption key.
     sourceSnapshotId: [Output Only] The unique ID of the snapshot used to
       create this disk. This value identifies the exact snapshot that was used
       to create this persistent disk. For example, if you created the
@@ -6729,6 +6742,26 @@ class DiskList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#diskList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class DiskMoveRequest(_messages.Message):
+  """A DiskMoveRequest object.
+
+  Fields:
+    destinationZone: The URL of the destination zone to move the disk. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a zone:   -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone  -
+      projects/project/zones/zone  - zones/zone
+    targetDisk: The URL of the target disk to move. This can be a full or
+      partial URL. For example, the following are all valid URLs to a disk:
+      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/disk
+      s/disk  - projects/project/zones/zone/disks/disk  -
+      zones/zone/disks/disk
+  """
+
+  destinationZone = _messages.StringField(1)
+  targetDisk = _messages.StringField(2)
 
 
 class DiskType(_messages.Message):
@@ -7158,7 +7191,7 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH or SCTP.
+      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
 
   Fields:
     IPAddress: Value of the reserved IP address that this forwarding rule is
@@ -7167,7 +7200,7 @@ class ForwardingRule(_messages.Message):
       same region as the forwarding rule. If left empty (default value), an
       ephemeral IP from the same scope (global or regional) will be assigned.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH or SCTP.
+      TCP, UDP, ESP, AH, SCTP or ICMP.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -7201,7 +7234,7 @@ class ForwardingRule(_messages.Message):
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     """The IP protocol to which this rule applies. Valid options are TCP, UDP,
-    ESP, AH or SCTP.
+    ESP, AH, SCTP or ICMP.
 
     Values:
       AH: <no description>
@@ -7715,13 +7748,11 @@ class Image(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
-      encryption key.  If you encrypt an image using a customer-supplied
-      encryption key, and you want to use the image later (e.g. to create a
-      disk from the image), you must provide the same key used encrypt the
-      image in your future request. If you provide an incorrect key, or no
-      key, the operation will fail.  Customer-supplied encryption keys do not
-      protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
+      encryption key.  After you encrypt an image with a customer-supplied
+      key, you must provide the same key if you use the image later (e.g. to
+      create a disk from the image).  Customer-supplied encryption keys do not
+      protect access to metadata of the disk.  If you do not provide an
+      encryption key when creating the image, then the disk will be encrypted
       using an automatically generated key and you do not need to provide a
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
@@ -7751,10 +7782,9 @@ class Image(_messages.Message):
       example, the following are valid values:   - https://www.googleapis.com/
       compute/v1/projects/project/zones/zone/disk/disk  -
       projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
-    sourceDiskEncryptionKey: Specifies the customer-supplied encryption key of
-      the source disk. This key is required if the source disk is protected by
-      a customer-supplied encryption key.  If the incorrect key is provided
-      the operation will fail.
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
@@ -8243,9 +8273,9 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    fingerprint: [Output Only] The fingerprint of the target pools
-      information. You can use this optional field for optimistic locking when
-      you update the target pool entries.
+    fingerprint: [Output Only] The fingerprint of the resource data. You can
+      use this optional field for optimistic locking when you update the
+      resource.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -8853,6 +8883,27 @@ class InstanceList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class InstanceMoveRequest(_messages.Message):
+  """A InstanceMoveRequest object.
+
+  Fields:
+    destinationZone: The URL of the destination zone to move the instance.
+      This can be a full or partial URL. For example, the following are all
+      valid URLs to a zone:   -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone  -
+      projects/project/zones/zone  - zones/zone
+    targetInstance: The URL of the target instance to move. This can be a full
+      or partial URL. For example, the following are all valid URLs to an
+      instance:   - https://www.googleapis.com/compute/v1/projects/project/zon
+      es/zone/instances/instance  -
+      projects/project/zones/zone/instances/instance  -
+      zones/zone/instances/instance
+  """
+
+  destinationZone = _messages.StringField(1)
+  targetInstance = _messages.StringField(2)
+
+
 class InstanceProperties(_messages.Message):
   """InstanceProperties message type.
 
@@ -9179,6 +9230,20 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   machineType = _messages.StringField(1)
 
 
+class InstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A InstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to start the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+
+
 class License(_messages.Message):
   """A license resource.
 
@@ -9211,6 +9276,7 @@ class MachineType(_messages.Message):
       the instance.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    isSharedCpu: [Output Only] Whether this machine type has a shared CPU.
     kind: [Output Only] The type of the resource. Always compute#machineType
       for machine types.
     maximumPersistentDisks: [Output Only] Maximum persistent disks allowed.
@@ -9229,13 +9295,14 @@ class MachineType(_messages.Message):
   description = _messages.StringField(3)
   guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(8)
-  memoryMb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  isSharedCpu = _messages.BooleanField(6)
+  kind = _messages.StringField(7, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(9)
+  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -9699,16 +9766,17 @@ class NetworkInterface(_messages.Message):
       are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
       roject/global/networks/network  -
       projects/project/global/networks/network  - global/networks/default
-    networkIP: [Output Only] An optional IPV4 internal network address
-      assigned to the instance for this network interface.
+    networkIP: An IPV4 internal network address to assign to the instance for
+      this network interface. If not specified by user an unused internal IP
+      is assigned by system.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not provide this property. If the
       network is in auto subnet mode, providing the subnetwork is optional. If
       the network is in custom subnet mode, then this field should be
       specified. If you specify this property, you can specify the subnetwork
       as a full or partial URL. For example, the following are all valid URLs:
-      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/subn
-      etworks/subnetwork  - zones/zone/subnetworks/subnetwork
+      - https://www.googleapis.com/compute/v1/projects/project/regions/region/
+      subnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
@@ -11017,21 +11085,18 @@ class Snapshot(_messages.Message):
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
     snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
-      encryption key.  If you encrypt a snapshot using a customer-supplied
-      encryption key and you want to use the snapshot later, you must provide
-      the same key that you used to encrypt the snapshot. For example, you
-      must provide the encryption key when you create a disk from the
-      encrypted snapshot in a future request. If you provide an incorrect key,
-      or no key, the request will fail.  Customer-supplied encryption keys do
-      not protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the snapshot later.
+      encryption key.  After you encrypt a snapshot using a customer-supplied
+      key, you must provide the same key if you use the image later For
+      example, you must provide the encryption key when you create a disk from
+      the encrypted snapshot in a future request.  Customer-supplied
+      encryption keys do not protect access to metadata of the disk.  If you
+      do not provide an encryption key when creating the snapshot, then the
+      snapshot will be encrypted using an automatically generated key and you
+      do not need to provide a key to use the snapshot later.
     sourceDisk: [Output Only] The source disk used to create this snapshot.
-    sourceDiskEncryptionKey: Specifies the customer-supplied encryption key of
-      the source disk. This key is required if the source disk is protected by
-      a customer-supplied encryption key.  If the incorrect key is provided,
-      the request will fail.
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
@@ -12503,7 +12568,7 @@ class UrlMap(_messages.Message):
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
     tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only all of the test cases pass.
+      will succeed only if all of the test cases pass.
   """
 
   creationTimestamp = _messages.StringField(1)

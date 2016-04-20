@@ -60,6 +60,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
+    self.regionalBackendServices = self.RegionalBackendServicesService(self)
     self.regions = self.RegionsService(self)
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
@@ -2898,7 +2899,7 @@ See Accessing images for more information.
               method_id=u'compute.instanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'zone', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'zone'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              query_params=[],
               relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -4487,6 +4488,30 @@ See Accessing images for more information.
               response_type_name=u'Project',
               supports_download=False,
           ),
+          'MoveDisk': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.projects.moveDisk',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/moveDisk',
+              request_field=u'diskMoveRequest',
+              request_type_name=u'ComputeProjectsMoveDiskRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'MoveInstance': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.projects.moveInstance',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/moveInstance',
+              request_field=u'instanceMoveRequest',
+              request_type_name=u'ComputeProjectsMoveInstanceRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetCommonInstanceMetadata': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.projects.setCommonInstanceMetadata',
@@ -4526,6 +4551,32 @@ See Accessing images for more information.
         (Project) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def MoveDisk(self, request, global_params=None):
+      """Moves a persistent disk from one zone to another.
+
+      Args:
+        request: (ComputeProjectsMoveDiskRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MoveDisk')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def MoveInstance(self, request, global_params=None):
+      """Moves an instance and its attached persistent disks from one zone to another.
+
+      Args:
+        request: (ComputeProjectsMoveInstanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MoveInstance')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4828,7 +4879,7 @@ See Accessing images for more information.
               method_id=u'compute.regionInstanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'region', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'region'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              query_params=[],
               relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeRegionInstanceGroupManagersListManagedInstancesRequest',
@@ -5304,6 +5355,44 @@ See Accessing images for more information.
         (OperationList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionalBackendServicesService(base_api.BaseApiService):
+    """Service class for the regionalBackendServices resource."""
+
+    _NAME = u'regionalBackendServices'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionalBackendServicesService, self).__init__(client)
+      self._method_configs = {
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionalBackendServices.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionalBackendServicesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionalBackendServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

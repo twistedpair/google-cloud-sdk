@@ -471,8 +471,8 @@ class Entry(_messages.Message):
   """A Entry object.
 
   Fields:
-    annotation: A Annotation attribute.
-    status: A Status attribute.
+    annotation: The created annotation, if creation was successful.
+    status: The creation status.
   """
 
   annotation = _messages.MessageField('Annotation', 1)
@@ -491,8 +491,8 @@ class Exon(_messages.Message):
       reading frame of the coding DNA sequence, if any. This field is
       dependent on the strandedness of this annotation (see
       Annotation.reverse_strand). For forward stranded annotations, this
-      offset is relative to the `exon.start`. For reverse strand annotations,
-      this offset is relative to the `exon.end - 1`.  Unset if this exon does
+      offset is relative to the exon.start. For reverse strand annotations,
+      this offset is relative to the exon.end `- 1`.  Unset if this exon does
       not intersect the coding sequence. Upon creation of a transcript, the
       frame must be populated for all or none of the coding exons.
     start: The start position of the exon on this annotation's reference
@@ -2702,13 +2702,13 @@ class Transcript(_messages.Message):
   Fields:
     codingSequence: The range of the coding sequence for this transcript, if
       any. To determine the exact ranges of coding sequence, intersect this
-      range with those of the `exons`, if any. If there are any `exons`, the
-      `codingSequence` must start and end within them.  Note that in some
-      cases, the reference genome will not exactly match the observed mRNA
-      transcript e.g. due to variance in the source genome from reference. In
-      these cases, `exon.frame` will not necessarily match the expected
-      reference reading frame and coding exon reference bases cannot
-      necessarily be concatenated to produce the original transcript mRNA.
+      range with those of the exons, if any. If there are any exons, the
+      codingSequence must start and end within them.  Note that in some cases,
+      the reference genome will not exactly match the observed mRNA transcript
+      e.g. due to variance in the source genome from reference. In these
+      cases, exon.frame will not necessarily match the expected reference
+      reading frame and coding exon reference bases cannot necessarily be
+      concatenated to produce the original transcript mRNA.
     exons: The <a href="http://en.wikipedia.org/wiki/Exon">exons</a> that
       compose this transcript. This field should be unset for genomes where
       transcript splicing does not occur, for example prokaryotes.  Introns
@@ -2716,7 +2716,7 @@ class Transcript(_messages.Message):
       product. Though not explicitly modeled here, intron ranges can be
       deduced; all regions of this transcript that are not exons are introns.
       Exonic sequences do not necessarily code for a translational product
-      (amino acids). Only the regions of exons bounded by the `codingSequence`
+      (amino acids). Only the regions of exons bounded by the codingSequence
       correspond to coding DNA sequence.  Exons are ordered by start position
       and may not overlap.
     geneId: The annotation ID of the gene from which this transcript is

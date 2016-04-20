@@ -33,10 +33,49 @@ class AppengineV1beta4(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.apps_modules_versions_instances = self.AppsModulesVersionsInstancesService(self)
     self.apps_modules_versions = self.AppsModulesVersionsService(self)
     self.apps_modules = self.AppsModulesService(self)
     self.apps_operations = self.AppsOperationsService(self)
     self.apps = self.AppsService(self)
+
+  class AppsModulesVersionsInstancesService(base_api.BaseApiService):
+    """Service class for the apps_modules_versions_instances resource."""
+
+    _NAME = u'apps_modules_versions_instances'
+
+    def __init__(self, client):
+      super(AppengineV1beta4.AppsModulesVersionsInstancesService, self).__init__(client)
+      self._method_configs = {
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'appengine.apps.modules.versions.instances.list',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[u'pageSize', u'pageToken'],
+              relative_path=u'v1beta4/{+name}/instances',
+              request_field='',
+              request_type_name=u'AppengineAppsModulesVersionsInstancesListRequest',
+              response_type_name=u'ListInstancesResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the instances of a version.
+
+      Args:
+        request: (AppengineAppsModulesVersionsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
   class AppsModulesVersionsService(base_api.BaseApiService):
     """Service class for the apps_modules_versions resource."""

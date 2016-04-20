@@ -271,6 +271,10 @@
           "description": "Optional. Information about an operation associated with the log entry, if\napplicable.",
           "$ref": "LogEntryOperation"
         },
+        "internalId": {
+
+          "$ref": "InternalEntityId"
+        },
         "projectNumber": {
           "description": "Gaia Id of a project",
           "type": "string",
@@ -379,6 +383,32 @@
         "last": {
           "description": "Optional. Set this to True if this is the last log entry in the operation.",
           "type": "boolean"
+        }
+      }
+    },
+    "InternalEntityId": {
+      "id": "InternalEntityId",
+
+      "type": "object",
+      "properties": {
+        "projectNumber": {
+          "description": "Gaia Id of a project",
+          "type": "string",
+          "format": "int64"
+        },
+        "organizationNumber": {
+          "description": "Gaia Id of an organization",
+          "type": "string",
+          "format": "int64"
+        },
+        "folderNumber": {
+          "description": "Gaia Id of a folder",
+          "type": "string",
+          "format": "int64"
+        },
+        "billingAccountId": {
+          "description": "Unique identifier of a billing account",
+          "type": "string"
         }
       }
     },

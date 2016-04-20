@@ -269,13 +269,15 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     """The kind of filter to use.
 
     Values:
+      UNKNOWN: <no description>
       ALL: <no description>
       TERMINATED: <no description>
       ACTIVE: <no description>
     """
-    ALL = 0
-    TERMINATED = 1
-    ACTIVE = 2
+    UNKNOWN = 0
+    ALL = 1
+    TERMINATED = 2
+    ACTIVE = 3
 
   class ViewValueValuesEnum(_messages.Enum):
     """Level of information requested in response. Default is SUMMARY.
@@ -2992,7 +2994,7 @@ class WorkerPool(_messages.Message):
     packages: Packages to be installed on workers.
     poolArgs: Extra arguments for this worker pool.
     subnetwork: Subnetwork to which VMs will be assigned, if desired.
-      Expected to be of the form "zones/ZONE/subnetworks/SUBNETWORK".
+      Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     taskrunnerSettings: Settings passed through to Google Compute Engine
       workers when using the standard Dataflow task runner.  Users should
       ignore this field.

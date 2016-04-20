@@ -13,18 +13,15 @@
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
 import abc
-import sys
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
-from googlecloudsdk.api_lib.compute import property_selector
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as resource_exceptions
 
 
@@ -46,23 +43,6 @@ def ValidateInstanceInZone(instances, zone):
         'instances', 'The zone of instance must match the instance group zone. '
         'Following instances has invalid zone: %s'
         % ', '.join(invalid_instances))
-
-
-def GetSortKey(sort_by, columns):
-  """Gets the sort key from columns declaration based on sort_by parameter."""
-  descending = False
-  sort_key_fn = None
-  if sort_by:
-    if sort_by.startswith('~'):
-      sort_by = sort_by[1:]
-      descending = True
-    sort_key_fn = dict(columns).get(sort_by, None)
-    if sort_key_fn is not None:
-      if isinstance(sort_key_fn, property_selector.PropertyGetter):
-        sort_key_fn = sort_key_fn.Get
-    else:
-      sort_key_fn = None
-  return sort_key_fn, descending
 
 
 def _UnwrapResponse(responses, attr_name):
@@ -103,43 +83,16 @@ class InstanceGroupDescribe(base_classes.ZonalDescriber,
   }
 
 
-class InstanceGroupListInstancesBase(base_classes.BaseCommand):
+class InstanceGroupListInstancesBase(base_classes.BaseLister):
   """Base class for listing instances present in instance group."""
 
   # TODO(user): add support for --names parameter as in all List verbs
-
-  _LIST_TABS = []
-  _FIELD_TRANSFORMS = []
 
   @staticmethod
   def ListInstancesArgs(parser, multizonal=False):
     parser.add_argument(
         'name',
         help='The name of the instance group.')
-
-    parser.add_argument(
-        '--limit',
-        type=arg_parsers.BoundedInt(1, sys.maxint),
-        help='The maximum number of results.')
-
-    sort_by = parser.add_argument(
-        '--sort-by',
-        help='A field to sort by.')
-    sort_by.detailed_help = """\
-        A field to sort by. To perform a descending-order sort, prefix
-        the value of this flag with a tilde (``~'').
-        """
-
-    uri = parser.add_argument(
-        '--uri',
-        action='store_true',
-        help='If provided, a list of URIs is printed instead of a table.')
-    uri.detailed_help = """\
-        If provided, the list command will only print URIs for the
-        resources returned.  If this flag is not provided, the list
-        command will print a human-readable table of useful resource
-        data.
-        """
 
     if multizonal:
       scope_parser = parser.add_mutually_exclusive_group()
@@ -176,45 +129,38 @@ class InstanceGroupListInstancesBase(base_classes.BaseCommand):
     return 'items'
 
   def Run(self, args):
-    sort_key_fn = None
-    descending = False
     errors = []
 
-    if args.uri:
-      field_selector = None
-    else:
-      field_selector = property_selector.PropertySelector(
-          properties=None,
-          transformations=self._FIELD_TRANSFORMS)
-
-    sort_key_fn, descending = GetSortKey(args.sort_by, self._LIST_TABS)
     responses, errors = self.GetResources(args)
     if errors:
       utils.RaiseToolException(errors)
     items = lister.ProcessResults(
         resources=list(_UnwrapResponse(responses, self.list_field)),
-        field_selector=field_selector,
-        sort_key_fn=sort_key_fn,
-        reverse_sort=descending,
+        field_selector=None,
         limit=args.limit)
 
     for item in items:
-      if args.uri:
-        yield item['instance']
-      else:
-        yield item
+      yield item
 
   @abc.abstractmethod
   def GetResources(self, args):
     """Retrieves response with instance in the instance group."""
     pass
 
-  def Display(self, args, resources):
-    if args.uri:
-      for resource in resources:
-        log.out.Print(resource)
-    else:
-      base_classes.PrintTable(resources, self._LIST_TABS)
+  @staticmethod
+  def GetUriCacheUpdateOp():
+    """This command class does not update the URI cache."""
+    return None
+
+  def GetUriFunc(self):
+
+    def _GetUri(resource):
+      return resource['instance']
+
+    return _GetUri
+
+  def Format(self, unused_args):
+    return 'table(instance.basename():label=NAME, status)'
 
   detailed_help = {
       'brief': 'List instances present in the instance group',
@@ -226,12 +172,6 @@ class InstanceGroupListInstancesBase(base_classes.BaseCommand):
 
 class InstanceGroupListInstances(InstanceGroupListInstancesBase):
   """List Google Compute Engine instances present in instance group."""
-
-  _LIST_TABS = [
-      ('NAME', property_selector.PropertyGetter('instance')),
-      ('STATUS', property_selector.PropertyGetter('status'))]
-
-  _FIELD_TRANSFORMS = [('instance', path_simplifier.Name)]
 
   @staticmethod
   def Args(parser):
@@ -320,31 +260,14 @@ class InstanceGroupReferenceMixin(object):
                                               regional_resource_type)[0]
 
 
-class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
+class InstanceGroupGetNamedPorts(base_classes.BaseLister):
   """Get named ports in Google Compute Engine instance groups."""
-
-  _COLUMNS = [
-      ('NAME', property_selector.PropertyGetter('name')),
-      ('PORT', property_selector.PropertyGetter('port'))]
 
   @staticmethod
   def AddArgs(parser, multizonal):
     parser.add_argument(
         'name',
         help='The name of the instance group.')
-
-    parser.add_argument(
-        '--limit',
-        type=arg_parsers.BoundedInt(1, sys.maxint),
-        help='The maximum number of results.')
-
-    sort_by = parser.add_argument(
-        '--sort-by',
-        help='A field to sort by.')
-    sort_by.detailed_help = """\
-        A field to sort by. To perform a descending-order sort, prefix
-        the value of this flag with a tilde (``~'').
-        """
 
     if multizonal:
       scope_parser = parser.add_mutually_exclusive_group()
@@ -377,19 +300,12 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
     return 'GetNamedPorts'
 
   def Run(self, args):
-    field_selector = property_selector.PropertySelector(
-        properties=None,
-        transformations=[])
-
-    sort_key_fn, descending = GetSortKey(args.sort_by, self._COLUMNS)
     responses, errors = self.GetResources(args)
     if errors:
       utils.RaiseToolException(errors)
     return lister.ProcessResults(
         resources=list(_UnwrapResponse(responses, 'namedPorts')),
-        field_selector=field_selector,
-        sort_key_fn=sort_key_fn,
-        reverse_sort=descending,
+        field_selector=None,
         limit=args.limit)
 
   def GetResources(self, args):
@@ -410,8 +326,13 @@ class InstanceGroupGetNamedPorts(base_classes.BaseCommand):
 
     return results, errors
 
-  def Display(self, args, resources):
-    base_classes.PrintTable(resources, self._COLUMNS)
+  @staticmethod
+  def GetUriCacheUpdateOp():
+    """This command class does not update the URI cache."""
+    return None
+
+  def Format(self, unused_args):
+    return 'table(name, port)'
 
   detailed_help = {
       'brief': 'Lists the named ports for an instance group resource',

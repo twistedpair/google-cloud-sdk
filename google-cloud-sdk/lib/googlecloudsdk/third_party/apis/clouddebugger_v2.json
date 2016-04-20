@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "clouddebugger:v2",
   "name": "clouddebugger",
+  "canonicalName": "Cloud Debugger",
   "version": "v2",
   "revision": "0",
   "title": "Google Cloud Debugger API",

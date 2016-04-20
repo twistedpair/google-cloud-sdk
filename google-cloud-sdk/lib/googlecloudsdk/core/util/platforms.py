@@ -300,13 +300,9 @@ class PythonVersion(object):
     else:
       self.version = None
 
-  def __MinVersionString(self):
-    return '%s.%s' % (str(PythonVersion.MIN_REQUIRED_VERSION[0]),
-                      str(PythonVersion.MIN_REQUIRED_VERSION[1]))
-
   def MinSupportedVersionString(self):
-    return '%s.%s' % (str(PythonVersion.MIN_SUPPORTED_VERSION[0]),
-                      str(PythonVersion.MIN_SUPPORTED_VERSION[1]))
+    return '{0}.{1}.x'.format(PythonVersion.MIN_SUPPORTED_VERSION[0],
+                              PythonVersion.MIN_SUPPORTED_VERSION[1])
 
   def __PrintEnvVarMessage(self):
     """Prints how to set CLOUDSDK_PYTHON."""
@@ -331,17 +327,17 @@ class PythonVersion(object):
     error = None
     if not self.version:
       error = ('ERROR: Your current version of Python is not compatible with '
-               'the Google Cloud SDK. Please upgrade to Python %s or greater.\n'
-               % (self.__MinVersionString()))
-    if self.version[0] >= 3:
+               'the Google Cloud SDK. Please upgrade to Python {0}\n'
+               .format(self.MinSupportedVersionString()))
+    elif self.version[0] >= 3:
       error = ('ERROR: Python 3 and later is not compatible with by the Google '
-               'Cloud SDK. Please use a Python 2.x version that is %s or '
-               'greater.\n' % (self.__MinVersionString()))
-    if self.version < PythonVersion.MIN_REQUIRED_VERSION:
-      error = ('ERROR: Python %s.%s is not compatible with the Google Cloud '
-               'SDK. Please upgrade to version %s or greater.\n'
-               % (str(self.version[0]), str(self.version[1]),
-                  self.__MinVersionString()))
+               'Cloud SDK. Please use a Python {0} version.\n'
+               .format(self.MinSupportedVersionString()))
+    elif self.version < PythonVersion.MIN_REQUIRED_VERSION:
+      error = ('ERROR: Python {0}.{1} is not compatible with the Google Cloud '
+               'SDK. Please upgrade to Python {2}\n'
+               .format(self.version[0], self.version[1],
+                       self.MinSupportedVersionString()))
 
     if error:
       if print_errors:
@@ -353,10 +349,18 @@ class PythonVersion(object):
   def IsSupported(self):
     """Return whether this Python version is recommended.
 
-    Only version 2.7 is compatible.
+    Only version 2.7 is supported.
 
     Returns:
       bool, True if the Python version is recommended
     """
     return (self.IsCompatible(print_errors=False) and
             self.version >= self.MIN_SUPPORTED_VERSION)
+
+  def IsPython26(self):
+    """Check specifically if we are running on Python 2.6 so we can warn.
+
+    Returns:
+      True, if running on Python 2.6, False otherwise.
+    """
+    return self.version == (2, 6)

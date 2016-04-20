@@ -355,6 +355,7 @@ class CreateClusterOptions(object):
                scopes=None,
                enable_cloud_endpoints=None,
                num_nodes=None,
+               additional_zones=None,
                user=None,
                password=None,
                cluster_version=None,
@@ -363,13 +364,15 @@ class CreateClusterOptions(object):
                enable_cloud_logging=None,
                enable_cloud_monitoring=None,
                subnetwork=None,
-               disable_addons=None):
+               disable_addons=None,
+               local_ssd_count=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
     self.scopes = scopes
     self.enable_cloud_endpoints = enable_cloud_endpoints
     self.num_nodes = num_nodes
+    self.additional_zones = additional_zones
     self.user = user
     self.password = password
     self.cluster_version = cluster_version
@@ -379,6 +382,7 @@ class CreateClusterOptions(object):
     self.enable_cloud_monitoring = enable_cloud_monitoring
     self.subnetwork = subnetwork
     self.disable_addons = disable_addons
+    self.local_ssd_count = local_ssd_count
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -408,11 +412,13 @@ class CreateNodePoolOptions(object):
                machine_type=None,
                disk_size_gb=None,
                scopes=None,
-               num_nodes=None):
+               num_nodes=None,
+               local_ssd_count=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
     self.num_nodes = num_nodes
+    self.local_ssd_count = local_ssd_count
 
 
 class V1Adapter(APIAdapter):
@@ -448,6 +454,8 @@ class V1Adapter(APIAdapter):
     if options.enable_cloud_endpoints:
       scope_uris += _ENDPOINTS_SCOPES
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+    if options.local_ssd_count:
+      node_config.localSsdCount = options.local_ssd_count
 
     cluster = self.messages.Cluster(
         name=cluster_ref.clusterId,
@@ -455,6 +463,8 @@ class V1Adapter(APIAdapter):
         nodeConfig=node_config,
         masterAuth=self.messages.MasterAuth(username=options.user,
                                             password=options.password))
+    if options.additional_zones:
+      cluster.locations = options.additional_zones + [cluster_ref.zone]
     if options.cluster_version:
       cluster.initialClusterVersion = options.cluster_version
     if options.network:
@@ -543,6 +553,8 @@ class V1Adapter(APIAdapter):
       node_config.diskSizeGb = options.disk_size_gb
     scope_uris = ExpandScopeURIs(options.scopes)
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+    if options.local_ssd_count:
+      node_config.localSsdCount = options.local_ssd_count
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -610,4 +622,3 @@ class V1Adapter(APIAdapter):
         size=size,
         zone=zone)
     return self.compute_client.instanceGroupManagers.Resize(req)
-

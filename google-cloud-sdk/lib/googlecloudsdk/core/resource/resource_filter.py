@@ -63,7 +63,9 @@ Left-factorized BNF Grammar:
   operator  := ':' | '=' | '<' | '<=' | '>=' | '>' | '!=' | '~' | '!~'
   function  := < name in symbol table >
   name      := < resource identifier name >
-  operand   := < token terminated by <space> | '(' | ')' | <EndOfInput> >
+  operand   := < token terminated by <space> |
+               '(' operand, ... ')' |       # for the : operator only
+               <EndOfInput> >
   integer   := < positive or negative integer >
 
 Example:
@@ -302,7 +304,11 @@ class _Parser(object):
       raise resource_exceptions.ExpressionSyntaxError(
           'Logical operator not expected [{0}].'.format(
               self._lex.Annotate(here)))
-    operand = self._lex.Token('()')
+    if operator == self._backend.ExprHAS and self._lex.IsCharacter('('):
+      # List valued operand
+      operand = self._lex.Args()
+    else:
+      operand = self._lex.Token('()')
     if operand is None:
       raise resource_exceptions.ExpressionSyntaxError(
           'Term operand expected [{0}].'.format(self._lex.Annotate(here)))

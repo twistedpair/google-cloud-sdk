@@ -42,6 +42,7 @@ Pythonicness of the Transform*() methods:
 
 import httplib
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.core.resource import resource_transform
 
 
@@ -92,6 +93,57 @@ def TransformImageAlias(r, undefined=''):
   return ','.join(aliases)
 
 
+def TransformLocation(r, undefined=''):
+  """Return the region or zone name.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    The region or zone name.
+  """
+  for scope in ('zone', 'region'):
+    if scope in r:
+      return resource_transform.TransformBaseName(r[scope], undefined)
+  return undefined
+
+
+def TransformLocationScope(r, undefined=''):
+  """Return the location scope name, either region or zone.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    The location scope name, either region or zone.
+  """
+  for scope in ('zone', 'region'):
+    if scope in r:
+      return scope
+  return undefined
+
+
+def TransformMachineType(r):
+  """Return the formatted name for a machine type.
+
+  Args:
+    r: JSON-serializable object.
+
+  Returns:
+    The formatted name for a machine type.
+  """
+  if not isinstance(r, basestring):
+    return r
+  custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(r)
+  if not custom_cpu or not custom_ram:
+    return r
+  # Restricting output to 2 decimal places
+  custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2 ** 10))
+  return 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
+
+
 def TransformNextMaintenance(r, undefined=''):
   """Returns the timestamps of the next scheduled maintenance.
 
@@ -128,7 +180,7 @@ def TransformOperationHttpStatus(r, undefined=''):
   Returns:
     The HTTP response code of the operation in r.
   """
-  if r.get('status', None) == 'DONE':
+  if isinstance(r, dict) and r.get('status', None) == 'DONE':
     return r.get('httpErrorStatusCode', None) or httplib.OK
   return undefined
 
@@ -180,6 +232,9 @@ _TRANSFORMS = {
 
     'firewall_rule': TransformFirewallRule,
     'image_alias': TransformImageAlias,
+    'location': TransformLocation,
+    'location_scope': TransformLocationScope,
+    'machine_type': TransformMachineType,
     'next_maintenance': TransformNextMaintenance,
     'operation_http_status': TransformOperationHttpStatus,
     'quota': TransformQuota,

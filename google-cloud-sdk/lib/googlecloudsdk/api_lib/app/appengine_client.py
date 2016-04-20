@@ -151,12 +151,12 @@ class AppengineClient(object):
           warning_message += index.ToYAML()
         log.warning(warning_message)
 
-  def GetLogs(self, module, version, severity, vhost, include_vhost,
+  def GetLogs(self, service, version, severity, vhost, include_vhost,
               include_all, num_days, end_date, output_file):
-    """Get application logs for the given version of the module.
+    """Get application logs for the given version of the service.
 
     Args:
-      module: str, The module of the app to fetch logs from.
+      service: str, The service of the app to fetch logs from.
       version: str, The version of the app to fetch logs for.
       severity: int, App log severity to request (0-4); None for request logs
         only.
@@ -173,16 +173,16 @@ class AppengineClient(object):
     """
     rpcserver = self._GetRpcServer()
     requestor = logs_requestor.LogsRequester(
-        rpcserver, self.project, module, version, severity, vhost,
+        rpcserver, self.project, service, version, severity, vhost,
         include_vhost, include_all)
     requestor.DownloadLogs(num_days, end_date, output_file)
 
-  def GetLogsAppend(self, module, version, severity, vhost, include_vhost,
+  def GetLogsAppend(self, service, version, severity, vhost, include_vhost,
                     include_all, end_date, output_file):
     """Get application logs and append them to an existing file.
 
     Args:
-      module: str, The module of the app to fetch logs from.
+      service: str, The service of the app to fetch logs from.
       version: str, The version of the app to fetch logs for.
       severity: int, App log severity to request (0-4); None for request logs
         only.
@@ -197,7 +197,7 @@ class AppengineClient(object):
     """
     rpcserver = self._GetRpcServer()
     requestor = logs_requestor.LogsRequester(
-        rpcserver, self.project, module, version, severity, vhost,
+        rpcserver, self.project, service, version, severity, vhost,
         include_vhost, include_all)
     requestor.DownloadLogsAppend(end_date, output_file)
 
@@ -206,14 +206,14 @@ class AppengineClient(object):
     rpcserver = self._GetRpcServer(timeout_max_errors=5)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
 
-  def SetManagedByGoogle(self, module, version, instance=None, wait=True):
-    """Sets a module version (and optionally an instance) to Google managed.
+  def SetManagedByGoogle(self, service, version, instance=None, wait=True):
+    """Sets a service version (and optionally an instance) to Google managed.
 
     This will reboot the machine and restore the instance with a fresh runtime.
 
     Args:
-      module: str, The module to update.
-      version: str, The version of the module to update.
+      service: str, The service to update.
+      version: str, The version of the service to update.
       instance: str, The instance id of a single instance to update.
       wait: bool, True to wait until it takes effect.
 
@@ -221,17 +221,17 @@ class AppengineClient(object):
       None, if not waiting.  If waiting, returns (bool, message) for the last
       attempt at checking state.
     """
-    return self._SetManagedBy(module, version, instance, '/api/vms/lock', wait)
+    return self._SetManagedBy(service, version, instance, '/api/vms/lock', wait)
 
-  def SetManagedBySelf(self, module, version, instance=None, wait=True):
-    """Sets a module version (and optionally a single instance) as self managed.
+  def SetManagedBySelf(self, service, version, instance=None, wait=True):
+    """Sets a service version (optionally a single instance) as self managed.
 
     This is the 'break the glass' mode that lets you ssh into the machine and
     debug.
 
     Args:
-      module: str, The module to update.
-      version: str, The version of the module to update.
+      service: str, The service to update.
+      version: str, The version of the service to update.
       instance: str, The instance id of a single instance to update.
       wait: bool, True to wait until it takes effect.
 
@@ -239,14 +239,15 @@ class AppengineClient(object):
       None, if not waiting.  If waiting, returns (bool, message) for the last
       attempt at checking state.
     """
-    return self._SetManagedBy(module, version, instance, '/api/vms/debug', wait)
+    return self._SetManagedBy(service, version, instance, '/api/vms/debug',
+                              wait)
 
-  def _SetManagedBy(self, module, version, instance, url, wait):
-    """Switches a module version between management modes.
+  def _SetManagedBy(self, service, version, instance, url, wait):
+    """Switches a service version between management modes.
 
     Args:
-      module: str, The module to update.
-      version: str, The version of the module to update.
+      service: str, The service to update.
+      version: str, The version of the service to update.
       instance: str, The instance id of a single instance to update.
       url: str, The URL of the API to call to make the update.
       wait: bool, True to wait until it takes effect.
@@ -258,7 +259,7 @@ class AppengineClient(object):
     rpcserver = self._GetRpcServer()
     kwargs = {'app_id': self.project,
               'version_match': version,
-              'module': module}
+              'module': service}
     if instance:
       kwargs['instance'] = instance
 
@@ -268,7 +269,7 @@ class AppengineClient(object):
       def GetState():
         yaml_data = rpcserver.Send(
             '/api/vms/debugstate', app_id=self.project, version_match=version,
-            module=module)
+            module=service)
         state = yaml.safe_load(yaml_data)
         done = state['state'] != 'PENDING'
         return (done, state['message'])
@@ -280,29 +281,29 @@ class AppengineClient(object):
       return util.RetryWithBackoff(GetState, PrintRetryMessage, initial_delay=1,
                                    backoff_factor=2, max_delay=5, max_tries=20)
 
-  def StartModule(self, module, version):
-    """Starts serving a the given version of the module.
+  def StartService(self, service, version):
+    """Starts serving a the given version of the service.
 
     This only works if scaling is set to manual.
 
     Args:
-      module: str, The module to start.
-      version: str, The version of the module to start.
+      service: str, The service to start.
+      version: str, The version of the service to start.
     """
     self._GetRpcServer().Send('/api/modules/start', app_id=self.project,
-                              module=module, version=version)
+                              module=service, version=version)
 
-  def StopModule(self, module, version):
-    """Stop serving a the given version of the module.
+  def StopService(self, service, version):
+    """Stop serving a the given version of the service.
 
     This only works if scaling is set to manual.
 
     Args:
-      module: str, The module to stop.
-      version: str, The version of the module to stop.
+      service: str, The service to stop.
+      version: str, The version of the service to stop.
     """
     self._GetRpcServer().Send('/api/modules/stop', app_id=self.project,
-                              module=module, version=version)
+                              module=service, version=version)
 
   def UpdateConfig(self, config_name, parsed_yaml):
     """Updates any of the supported config file types.

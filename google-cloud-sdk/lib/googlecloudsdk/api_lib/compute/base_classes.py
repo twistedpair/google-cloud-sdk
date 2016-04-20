@@ -16,12 +16,12 @@ import abc
 import argparse
 import cStringIO
 import json
-import sys
 import textwrap
 
 from enum import Enum
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
+from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
@@ -141,30 +141,18 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     """Specifies the API message classes."""
     return self.compute.MESSAGES_MODULE
 
-  def Format(self, args):
-    return 'default'
+  def Collection(self):
+    """Returns the resource collection path."""
+    return 'compute.' + self.resource_type if self.resource_type else None
 
 
-class BaseLister(BaseCommand):
+class BaseLister(base.ListCommand, BaseCommand):
   """Base class for the list subcommands."""
 
   __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def Args(parser):
-    parser.add_argument(
-        '--limit',
-        type=arg_parsers.BoundedInt(1, sys.maxint),
-        help='The maximum number of results.')
-
-    sort_by = parser.add_argument(
-        '--sort-by',
-        help='A field to sort by.')
-    sort_by.detailed_help = """\
-        A field to sort by. To perform a descending-order sort, prefix
-        the value of this flag with a tilde (``~'').
-        """
-
     parser.add_argument(
         'names',
         metavar='NAME',
@@ -173,17 +161,6 @@ class BaseLister(BaseCommand):
         completion_resource='compute.instances',
         help=('If provided, show details for the specified names and/or URIs '
               'of resources.'))
-
-    uri = parser.add_argument(
-        '--uri',
-        action='store_true',
-        help='If provided, a list of URIs is printed instead of a table.')
-    uri.detailed_help = """\
-        If provided, the list command will only print URIs for the
-        resources returned.  If this flag is not provided, the list
-        command will print a human-readable table of useful resource
-        data.
-        """
 
     regexp = parser.add_argument(
         '--regexp', '-r',
@@ -257,38 +234,12 @@ class BaseLister(BaseCommand):
     self.names = set()
     self.resource_refs = []
 
-    if args.uri:
-      field_selector = None
-    else:
-      # The field selector should be constructed before any resources
-      # are fetched, so if there are any syntactic errors with the
-      # fields, we can fail fast.
-      field_selector = property_selector.PropertySelector(
-          properties=None,
-          transformations=self.transformations)
-
-    if args.sort_by:
-      if args.sort_by.startswith('~'):
-        sort_by = args.sort_by[1:]
-        descending = True
-      else:
-        sort_by = args.sort_by
-        descending = False
-
-      for col_name, path in self._resource_spec.table_cols:
-        if sort_by == col_name:
-          sort_by = path
-          break
-
-      if isinstance(sort_by, property_selector.PropertyGetter):
-        property_getter = sort_by
-      else:
-        property_getter = property_selector.PropertyGetter(sort_by)
-      sort_key_fn = property_getter.Get
-
-    else:
-      sort_key_fn = None
-      descending = False
+    # The field selector should be constructed before any resources
+    # are fetched, so if there are any syntactic errors with the
+    # fields, we can fail fast.
+    field_selector = property_selector.PropertySelector(
+        properties=None,
+        transformations=self.transformations)
 
     errors = []
 
@@ -297,27 +248,14 @@ class BaseLister(BaseCommand):
     items = lister.ProcessResults(
         resources=items,
         field_selector=field_selector,
-        sort_key_fn=sort_key_fn,
-        reverse_sort=descending,
         limit=args.limit)
     items = self.ComputeDynamicProperties(args, items)
 
     for item in items:
-      if args.uri:
-        yield item['selfLink']
-      else:
-        yield item
+      yield item
 
     if errors:
       utils.RaiseToolException(errors)
-
-  def Display(self, args, resources):
-    """Prints the given resources."""
-    if args.uri:
-      for resource in resources:
-        log.out.Print(resource)
-    else:
-      PrintTable(resources, self._resource_spec.table_cols)
 
 
 class GlobalLister(BaseLister):
@@ -1065,6 +1003,11 @@ class BaseAsyncMutator(BaseCommand):
             provided service and method
     """
 
+  def ComputeDynamicProperties(self, args, items):
+    """Computes dynamic properties, which are not returned by GCE API."""
+    _ = args
+    return items
+
   def Run(self, args, request_protobufs=None, service=None):
     if request_protobufs is None:
       request_protobufs = self.CreateRequests(args)
@@ -1100,13 +1043,12 @@ class BaseAsyncMutator(BaseCommand):
             properties=None,
             transformations=self.transformations))
 
+    resources = self.ComputeDynamicProperties(args, resources)
+
     if errors:
       utils.RaiseToolException(errors)
 
     return resources
-
-  def Format(self, args):
-    return 'default'
 
 
 class NoOutputAsyncMutator(BaseAsyncMutator):
@@ -1125,6 +1067,29 @@ class InstanceGroupFilteringMode(Enum):
 
 class InstanceGroupManagerDynamicProperiesMixin(object):
   """Mixin class to compute dynamic information for instance groups."""
+
+  def ComputeDynamicProperties(self, args, items):
+    """Add Autoscaler information if Autoscaler is defined for the item."""
+    _ = args
+    # Items are expected to be IGMs.
+    items = list(items)
+    for mig in managed_instance_groups_utils.AddAutoscalersToMigs(
+        migs_iterator=self.ComputeInstanceGroupSize(items=items),
+        project=self.project,
+        compute=self.compute,
+        http=self.http,
+        batch_url=self.batch_url,
+        fail_when_api_not_supported=False):
+      if 'autoscaler' in mig and mig['autoscaler'] is not None:
+        if (hasattr(mig['autoscaler'], 'status') and mig['autoscaler'].status ==
+            self.messages.Autoscaler.StatusValueValuesEnum.ERROR):
+          mig['autoscaled'] = 'yes (*)'
+          self._had_errors = True
+        else:
+          mig['autoscaled'] = 'yes'
+      else:
+        mig['autoscaled'] = 'no'
+      yield mig
 
   def ComputeInstanceGroupSize(self, items):
     """Add information about Instance Group size."""
@@ -1229,21 +1194,14 @@ class InstanceGroupDynamicProperiesMixin(object):
       yield item
 
 
-class ListOutputMixin(object):
-  """Mixin class to display a list by default."""
+class BaseAsyncCreator(BaseAsyncMutator):
+  """Base class for subcommands that create resources.
 
-  def ComputeDynamicProperties(self, args, items):
-    """Computes dynamic properties, which are not returned by GCE API."""
-    _ = args
-    return items
+  This class is a base.Command with base.ListCommand formatting.
+  """
 
-  def Display(self, args, resources):
-    PrintTable(self.ComputeDynamicProperties(args, resources),
-               self._resource_spec.table_cols)
-
-
-class BaseAsyncCreator(ListOutputMixin, BaseAsyncMutator):
-  """Base class for subcommands that create resources."""
+  def Format(self, args):
+    return self.ListFormat(args)
 
 
 class BaseDeleter(BaseAsyncMutator):
@@ -1868,6 +1826,3 @@ class BaseEdit(BaseCommand):
             transformations=self.transformations))
     for resource in resources:
       yield resource
-
-  def Format(self, args):
-    return 'default'

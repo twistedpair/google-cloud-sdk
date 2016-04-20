@@ -14,9 +14,9 @@
 
 """Table format resource printer."""
 
-import cStringIO
 import json
 import operator
+import StringIO
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
@@ -94,23 +94,14 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
 
   If *--page-size*=_N_ is specified then output is grouped into tables with
   at most _N_ rows. Headings, alignment and sorting are done per-page. The
-  title, if any, is printed before the first table. The legend, if any, is
-  printed after the last table.
+  title, if any, is printed before the first table.
 
   Printer attributes:
     box: Prints a box around the entire table and each cell, including the
       title if any.
-    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
-      are no items. The default *empty-legend* is "Listed 0 items.".
-      *no-empty-legend* disables the default.
     format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
       _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
-    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
-      item if there is at least one item.
-    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
-      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
-      *debug*, *info*, *warn*, or *error*.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
@@ -159,7 +150,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
           # This initializes a Printer to a string stream.
-          out = self._out if self._aggregate else cStringIO.StringIO()
+          out = self._out if self._aggregate else StringIO.StringIO()
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr)
         else:
@@ -198,9 +189,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     """
     if not self._rows:
       # Table is empty.
-      if last_page:
-        # There might be an empty legend.
-        self.AddLegend()
       return
 
     if self._aggregate:
@@ -210,6 +198,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         for row in self._rows:
           subformat.printer.Print(row[subformat.index], intermediate=True)
         subformat.printer.Finish()
+      # TODO(b/27967563): remove 3Q2016
       if last_page:
         self.AddLegend()
       return
@@ -413,7 +402,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._out.write(b_rule)
       self._out.write('\n')
 
-    # Print the legend if any.
+    # TODO(b/27967563): remove 3Q2016
     if last_page:
       self.AddLegend()
 

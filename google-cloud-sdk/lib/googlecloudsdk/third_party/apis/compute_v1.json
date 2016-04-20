@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20160404",
+ "revision": "20160413",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1526,7 +1526,7 @@
     },
     "IPProtocol": {
      "type": "string",
-     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH or SCTP.",
+     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.",
      "enum": [
       "AH",
       "ESP",
@@ -2009,6 +2009,10 @@
      "description": "Size of the image when restored onto a persistent disk (in GB).",
      "format": "int64"
     },
+    "family": {
+     "type": "string",
+     "description": "The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated."
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
@@ -2439,7 +2443,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "[Output Only] The fingerprint of the target pools information. You can use this optional field for optimistic locking when you update the target pool entries.",
+     "description": "[Output Only] The fingerprint of the resource data. You can use this optional field for optimistic locking when you update the resource.",
      "format": "byte"
     },
     "id": {
@@ -2453,12 +2457,7 @@
     },
     "instanceTemplate": {
      "type": "string",
-     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create all new instances in the managed instance group.",
-     "annotations": {
-      "required": [
-       "compute.instanceGroupManagers.insert"
-      ]
-     }
+     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create all new instances in the managed instance group."
     },
     "kind": {
      "type": "string",
@@ -3754,11 +3753,11 @@
     },
     "networkIP": {
      "type": "string",
-     "description": "[Output Only] An optional IPV4 internal network address assigned to the instance for this network interface."
+     "description": "An IPV4 internal network address to assign to the instance for this network interface. If not specified by user an unused internal IP is assigned by system."
     },
     "subnetwork": {
      "type": "string",
-     "description": "The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/subnetworks/subnetwork \n- zones/zone/subnetworks/subnetwork"
+     "description": "The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/subnetworks/subnetwork \n- regions/region/subnetworks/subnetwork"
     }
    }
   },
@@ -6023,7 +6022,7 @@
     },
     "tests": {
      "type": "array",
-     "description": "The list of expected URL mappings. Request to update this UrlMap will succeed only all of the test cases pass.",
+     "description": "The list of expected URL mappings. Request to update this UrlMap will succeed only if all of the test cases pass.",
      "items": {
       "$ref": "UrlMapTest"
      }
@@ -9229,6 +9228,40 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getFromFamily": {
+     "id": "compute.images.getFromFamily",
+     "path": "{project}/global/images/family/{family}",
+     "httpMethod": "GET",
+     "description": "Returns the latest image that is part of an image family and is not deprecated.",
+     "parameters": {
+      "family": {
+       "type": "string",
+       "description": "Name of the image resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "family"
+     ],
+     "response": {
+      "$ref": "Image"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.images.insert",
      "path": "{project}/global/images",
@@ -9610,30 +9643,11 @@
      "httpMethod": "POST",
      "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action.",
      "parameters": {
-      "filter": {
-       "type": "string",
-       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nCompute Engine Beta API Only: When filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nThe Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
-       "location": "query"
-      },
       "instanceGroupManager": {
        "type": "string",
        "description": "The name of the managed instance group.",
        "required": true,
        "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "maximum": "500",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
-       "location": "query"
       },
       "project": {
        "type": "string",

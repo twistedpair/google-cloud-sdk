@@ -322,10 +322,12 @@ class Displayer(object):
     # Add the URI replace tap if needed.
     self._AddUriReplaceTap()
 
+    resources_were_displayed = True
     if self._printer:
       # Most command output will end up here.
       log.info('Display format "%s".', self._format)
       self._printer.Print(self._resources)
+      resources_were_displayed = self._printer.ResourcesWerePrinted()
     elif hasattr(self._command, 'Display'):
       # This will eventually be rare.
       log.info('Explict Display.')
@@ -336,6 +338,6 @@ class Displayer(object):
 
     # If the default format was used then display the epilog.
     if self._default_format_used:
-      self._command.Epilog()
+      self._command.Epilog(resources_were_displayed)
 
     return self._resources

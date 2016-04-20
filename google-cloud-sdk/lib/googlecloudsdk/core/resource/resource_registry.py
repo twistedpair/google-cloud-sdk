@@ -76,18 +76,6 @@ class ResourceInfo(object):
 
 RESOURCE_REGISTRY = {
 
-    # apheleia
-
-    'apheleia.projects.regions.functions': ResourceInfo(
-        list_format="""
-          table(
-            name,
-            status,
-            triggers.len()
-          )
-        """,
-    ),
-
     # appengine
 
     'app.instances': ResourceInfo(
@@ -128,7 +116,7 @@ RESOURCE_REGISTRY = {
             traffic_split.format("{0:.2f}", .),
             last_deployed_time.date("%Y-%m-%dT%H:%M:%S%Oz", undefined="-")
               :label=LAST_DEPLOYED,
-            version.servingStatus
+            version.servingStatus.name:label=SERVING_STATUS
           )
         """,
     ),
@@ -255,7 +243,7 @@ RESOURCE_REGISTRY = {
     # compute
 
     'compute.addresses': ResourceInfo(
-        # cache_command='compute addresses list',
+        cache_command='compute addresses list',
         list_format="""
           table(
             name,
@@ -268,7 +256,7 @@ RESOURCE_REGISTRY = {
 
     'compute.autoscalers': ResourceInfo(
         async_collection='compute.operations',
-        # cache_command='compute autoscaler list',
+        cache_command='compute autoscaler list',
         list_format="""
           table(
             name,
@@ -279,7 +267,6 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.backendBuckets': ResourceInfo(
-        # cache_command='compute backend-buckets list',
         list_format="""
           table(
             name,
@@ -288,8 +275,14 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.backendServiceGroupHealth': ResourceInfo(
+        list_format="""
+          default
+        """,
+    ),
+
     'compute.backendServices': ResourceInfo(
-        # cache_command='compute backend-services list',
+        cache_command='compute backend-services list',
         list_format="""
           table(
             name,
@@ -300,7 +293,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.disks': ResourceInfo(
-        # cache_command='compute disks list',
+        cache_command='compute disks list',
         list_format="""
           table(
             name,
@@ -313,7 +306,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.diskTypes': ResourceInfo(
-        # cache_command='compute disk-types list',
+        cache_command='compute disk-types list',
         list_format="""
           table(
             name,
@@ -324,7 +317,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.firewalls': ResourceInfo(
-        # cache_command='compute firewall-rules list',
+        cache_command='compute firewall-rules list',
         list_format="""
           table(
             name,
@@ -338,7 +331,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.forwardingRules': ResourceInfo(
-        # cache_command='compute forwarding-rules list',
+        cache_command='compute forwarding-rules list',
         list_format="""
           table(
             name,
@@ -351,7 +344,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.groups': ResourceInfo(
-        # cache_command='compute groups list',
+        cache_command='compute groups list',
         list_format="""
           table(
             name,
@@ -361,8 +354,18 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.healthChecks': ResourceInfo(
+        cache_command='compute health-checks list',
+        list_format="""
+          table(
+            name,
+            type:label=PROTOCOL
+          )
+        """,
+    ),
+
     'compute.httpHealthChecks': ResourceInfo(
-        # cache_command='compute http-health-checks list',
+        cache_command='compute http-health-checks list',
         list_format="""
           table(
             name,
@@ -374,7 +377,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.httpsHealthChecks': ResourceInfo(
-        # cache_command='compute https-health-checks list',
+        cache_command='compute https-health-checks list',
         list_format="""
           table(
             name,
@@ -386,7 +389,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.images': ResourceInfo(
-        # cache_command='compute images list',
+        cache_command='compute images list',
         list_format="""
           table(
             name,
@@ -399,7 +402,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceGroups': ResourceInfo(
-        # cache_command='compute instance-groups list',
+        cache_command='compute instance-groups list',
         list_format="""
           table(
             name,
@@ -412,14 +415,15 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceGroupManagers': ResourceInfo(
-        # cache_command='compute instance-groups managed list',
+        cache_command='compute instance-groups managed list',
         list_format="""
           table(
             name,
-            zone.basename(),
+            location():label=LOCATION,
+            location_scope():label=SCOPE,
             baseInstanceName,
             size,
-            instanceGroup.basename():label=GROUP,
+            targetSize,
             instanceTemplate.basename(),
             autoscaled
           )
@@ -427,12 +431,12 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instances': ResourceInfo(
-        # cache_command='compute instances list',
+        cache_command='compute instances list',
         list_format="""
           table(
             name,
             zone.basename(),
-            machineType.basename(),
+            machineType.machine_type(),
             scheduling.preemptible.yesno(yes=true, no=''),
             networkInterfaces[0].networkIP:label=INTERNAL_IP,
             networkInterfaces[0].accessConfigs[0].natIP:label=EXTERNAL_IP,
@@ -442,35 +446,48 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.instanceTemplates': ResourceInfo(
-        # cache_command='compute instance-templates list',
+        cache_command='compute instance-templates list',
         list_format="""
           table(
             name,
-            properties.machineType,
+            properties.machineType.machine_type(),
             properties.scheduling.preemptible.yesno(yes=true, no=''),
             creationTimestamp
           )
         """,
     ),
 
+    'compute.invalidations': ResourceInfo(
+        cache_command='beta compute url-maps list-cdn-cache-invalidations',
+        list_format="""
+          table(
+            description,
+            operation_http_status():label=HTTP_STATUS,
+            status,
+            insertTime:label=TIMESTAMP
+          )
+        """,
+    ),
+
     'compute.machineTypes': ResourceInfo(
-        # cache_command='compute machine-types list',
+        cache_command='compute machine-types list',
         list_format="""
           table(
             name,
             zone.basename(),
             guestCpus:label=CPUS,
-            memoryMb.size(units_in=MiB, units_out=GiB):label=MEMORY_GB,
+            memoryMb.size(units_in=MiB, units_out=GiB, precision=2):label=MEMORY_GB,
             deprecated.state:label=DEPRECATED
           )
         """,
     ),
 
     'compute.networks': ResourceInfo(
-        # cache_command='compute networks list',
+        cache_command='compute networks list',
         list_format="""
           table(
             name,
+            x_gcloud_mode:label=MODE,
             IPv4Range:label=IPV4_RANGE,
             gatewayIPv4
           )
@@ -499,7 +516,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.regions': ResourceInfo(
-        # cache_command='compute regions list',
+        cache_command='compute regions list',
         list_format="""
           table(
             name,
@@ -548,8 +565,19 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.routers': ResourceInfo(
+        cache_command='compute routers list',
+        list_format="""
+          table(
+            name,
+            region.basename(),
+            network.basename()
+          )
+        """,
+    ),
+
     'compute.routes': ResourceInfo(
-        # cache_command='compute routes list',
+        cache_command='compute routes list',
         list_format="""
           table(
             name,
@@ -563,7 +591,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.snapshots': ResourceInfo(
-        # cache_command='compute snapshots list',
+        cache_command='compute snapshots list',
         list_format="""
           table(
             name,
@@ -575,7 +603,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.sslCertificates': ResourceInfo(
-        # cache_command='compute ssl-certificates list',
+        cache_command='compute ssl-certificates list',
         list_format="""
           table(
             name,
@@ -584,8 +612,20 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.subnetworks': ResourceInfo(
+        cache_command='compute networks subnets list',
+        list_format="""
+          table(
+            name,
+            region.basename(),
+            network.basename(),
+            ipCidrRange:label=RANGE
+          )
+        """,
+    ),
+
     'compute.targetHttpProxies': ResourceInfo(
-        # cache_command='compute target-http-proxies list',
+        cache_command='compute target-http-proxies list',
         list_format="""
           table(
             name,
@@ -595,7 +635,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.targetHttpsProxies': ResourceInfo(
-        # cache_command='compute target-https-proxies list',
+        cache_command='compute target-https-proxies list',
         list_format="""
           table(
             name,
@@ -605,20 +645,8 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.targetSslProxies': ResourceInfo(
-        # cache_command='compute target-ssl-proxies list',
-        list_format="""
-          table(
-            name,
-            sslCertificates.map().basename().list():label=SSL_CERTIFICATES
-            service.basename()
-            proxyHeader
-          )
-        """,
-    ),
-
     'compute.targetInstances': ResourceInfo(
-        # cache_command='compute target-instances list',
+        cache_command='compute target-instances list',
         list_format="""
           table(
             name,
@@ -629,8 +657,14 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.targetPoolInstanceHealth': ResourceInfo(
+        list_format="""
+          default
+        """,
+    ),
+
     'compute.targetPools': ResourceInfo(
-        # cache_command='compute pools list',
+        cache_command='compute target-pools list',
         list_format="""
           table(
             name,
@@ -642,8 +676,20 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'compute.targetSslProxies': ResourceInfo(
+        cache_command='compute target-ssl-proxies list',
+        list_format="""
+          table(
+            name,
+            proxyHeader,
+            service.basename(),
+            sslCertificates.map().basename().list():label=SSL_CERTIFICATES
+          )
+        """,
+    ),
+
     'compute.targetVpnGateways': ResourceInfo(
-        # cache_command='compute vpn-gateways list',
+        cache_command='compute target-vpn-gateways list',
         list_format="""
           table(
             name,
@@ -654,7 +700,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.urlMaps': ResourceInfo(
-        # # cache_command='compute url-maps list',
+        cache_command='compute url-maps list',
         list_format="""
           table(
             name,
@@ -664,7 +710,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.users': ResourceInfo(
-        # cache_command='compute users list',
+        cache_command='compute users list',
         list_format="""
           table(
             name,
@@ -675,7 +721,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.vpnTunnels': ResourceInfo(
-        # cache_command='compute vpn-tunnels list',
+        cache_command='compute vpn-tunnels list',
         list_format="""
           table(
             name,
@@ -687,7 +733,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.zones': ResourceInfo(
-        # cache_command='compute zones list',
+        cache_command='compute zones list',
         list_format="""
           table(
             name,
@@ -795,7 +841,7 @@ RESOURCE_REGISTRY = {
           table(
             id,
             location,
-            logLevel:label=LEVEL,
+            logLevel.name:label=LEVEL,
             short_status():label=STATUS,
             condition,
             log_message_format
@@ -839,8 +885,6 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [legend-log=status,
-           empty-legend="No Deployments were found in your project!"]
           value(
             name
           )
@@ -858,8 +902,6 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [legend-log=status,
-           empty-legend="No Operations were found in your project!"]
           value(
             name
           )
@@ -876,8 +918,6 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [legend-log=status,
-           empty-legend="No Resources were found in your deployment!"]
           value(
             name
           )
@@ -915,6 +955,18 @@ RESOURCE_REGISTRY = {
                 ttl,
                 rrdatas.list():label=DATA
               )
+        """,
+    ),
+
+    # functions
+
+    'functions.projects.regions.functions': ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            status,
+            triggers.len()
+          )
         """,
     ),
 
@@ -959,16 +1011,7 @@ RESOURCE_REGISTRY = {
     'logging.logs': ResourceInfo(
         list_format="""
           table(
-            name
-          )
-        """,
-    ),
-
-    'logging.sinks': ResourceInfo(
-        list_format="""
-          table(
-            name,
-            destination
+            name.scope(logs):label=ID
           )
         """,
     ),
@@ -983,12 +1026,24 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'logging.typedSinks': ResourceInfo(
+    'logging.resourceDescriptors': ResourceInfo(
+        list_format="""
+          table(
+            type,
+            description,
+            labels[].key.list()
+          )
+        """,
+    ),
+
+    'logging.sinks': ResourceInfo(
         list_format="""
           table(
             name,
             destination,
-            type
+            type,
+            format,
+            filter
           )
         """,
     ),
@@ -1040,7 +1095,7 @@ RESOURCE_REGISTRY = {
     'service_registry.endpoints': ResourceInfo(
         async_collection='service_registry.operations',
         list_format="""
-          table[empty-legend="No endpoints were found in your project"](
+          table(
             name,
             description,
             state,
@@ -1048,9 +1103,7 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [legend-log=status,
-           empty-legend="No endpoints were found in your project"],
-           value(
+          value(
             name
           )
         """,
@@ -1058,7 +1111,7 @@ RESOURCE_REGISTRY = {
 
     'service_registry.operations': ResourceInfo(
         list_format="""
-          table[empty-legend="No operations were found in your project"](
+          table(
             name,
             operationType:label=TYPE,
             status,
@@ -1068,8 +1121,6 @@ RESOURCE_REGISTRY = {
           )
         """,
         simple_format="""
-          [legend-log=status,
-           empty-legend="No operations were found in your project"]
           value(
             name
           )
@@ -1207,7 +1258,7 @@ RESOURCE_REGISTRY = {
             id:label=DEVICE_ID,
             manufacturer:label=MAKE,
             name:label=MODEL_NAME,
-            form.color(blue=VIRTUAL,yellow=PHYSICAL),
+            form.name.color(blue=VIRTUAL,yellow=PHYSICAL):label=FORM,
             format("{0:4} x {1}", screenY, screenX):label=RESOLUTION,
             supportedVersionIds.list("none"):label=OS_VERSION_IDS,
             tags.list().color(green=default,red=deprecated,yellow=preview)

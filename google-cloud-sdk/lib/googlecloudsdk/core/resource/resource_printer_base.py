@@ -91,8 +91,6 @@ class ResourcePrinter(object):
     _console_attr: The console attributes. May be ignored by some printers.
     _empty: True if there are no records.
     _heading: The list of column heading label strings.
-    _is_legend_done: True if AddLegend() has already been called and there have
-      been no more AddRecord() calls since then.
     _name: Format name.
     _non_empty_projection_required: True if the printer requires a non-empty
       projection.
@@ -101,16 +99,6 @@ class ResourcePrinter(object):
       AddRecord() before calling _AddRecord(). It is called like this:
         record = process_record(record)
     _printer: The resource_printer.Printer method for nested formats.
-
-  Printer attributes:
-    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
-      are no items. The default *empty-legend* is "Listed 0 items.".
-      *no-empty-legend* disables the default.
-    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
-      item if there is at least one item.
-    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
-      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
-      *debug*, *info*, *warn*, or *error*.
   """
 
   def __init__(self, out=None, name=None, projector=None, by_columns=False,
@@ -139,7 +127,6 @@ class ResourcePrinter(object):
     self._console_attr = console_attr
     self._empty = True
     self._heading = None
-    self._is_legend_done = False
     self._name = name
     self._non_empty_projection_required = non_empty_projection_required
     self._out = out or log.out
@@ -200,19 +187,14 @@ class ResourcePrinter(object):
       record.Act(self)
     else:
       self._empty = False
-      # More records enables the legend to be printed multiple times.
-      self._is_legend_done = False
       self._AddRecord(self._process_record(record), delimit)
 
+  # TODO(b/27967563): remove 3Q2016
   def AddLegend(self):
     """Prints the table legend if it was specified.
 
     The legend is one or more lines of text printed after the table data.
     """
-    if self._is_legend_done:
-      return
-    self._is_legend_done = True
-
     writers = {
         'out': lambda x: self._out.write(x + '\n'),
         'status': lambda x: log.status.write(x + '\n'),
@@ -223,7 +205,6 @@ class ResourcePrinter(object):
         }
 
     log_type = self.attributes.get('legend-log')
-    # TODO(user): drop the 'log' check when the log=TYPE attribute is added.
     if not log_type:
       log_type = self.attributes.get('log')
       if log_type:
@@ -246,6 +227,10 @@ class ResourcePrinter(object):
   def Finish(self):
     """Prints the results for non-streaming formats."""
     pass
+
+  def ResourcesWerePrinted(self):
+    """Returns True if some resource items were printed or printer disabled."""
+    return not self._empty
 
   def Page(self):
     """Flushes intermediate results for streaming formats."""
@@ -275,6 +260,7 @@ class ResourcePrinter(object):
     """
     if 'disable' in self.attributes:
       # Disable formatted output and do not consume the resources.
+      self._empty = False
       return
     if self._non_empty_projection_required and (
         not self.column_attributes or not self.column_attributes.Columns()):

@@ -2,6 +2,60 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 106.0.0 (2016/04/20)
+
+### Breaking Changes
+
+*   Python 2.6 support in the Cloud SDK is deprecated and releases will stop
+    supporting Python 2.6 on September 1, 2016.  Please update your Python
+    installation to 2.7 to ensure compatibility with future Cloud SDK versions.
+*   `gcloud preview app modules` commands are now deprecated (see "Google App
+    Engine" section for more details).
+*   `module` parameter in application .yaml files is now deprecated (see "Google
+    App Engine" section for more details).
+*   `--format` printer legend attributes are now deprecated (see "Cloud SDK"
+    section for more details).
+
+### Cloud SDK
+
+*   The --format printer legend attributes are deprecated and will be removed in
+    release 124.0.0. The legend attribute docs have been removed.
+*   The gcloud compute, functions, genomics, logging, and projects list commands
+    now  support the `--filter` flag.
+
+### Google Cloud Storage
+
+*   Update gsutil component to 4.18 (https://github.com/GoogleCloudPlatform/gsutil/blob/v4.19/CHANGES.md)
+
+### Google App Engine
+
+*   App Engine "modules" are being renamed to "services".
+    *   The `gcloud preview app modules` commands are now deprecated (except
+        `gcloud preview app modules get-logs`). Please use the just-added
+        `gcloud preview app versions`, `gcloud preview app services`, and
+        `gcloud preview app instances` commands instead.
+    *   The 'module' parameter in application .yaml files is deprecated; please
+        use 'service' instead.
+*   Fixed `MaxRetrialsException` for `gcloud preview app deploy` of standard
+    (not MVM or flexible) App Engine apps with `.git` directory present
+    (<https://code.google.com/p/google-cloud-sdk/issues/detail?id=727>).
+*   Fixed bug in `gcloud preview app deploy` where `--docker-build=local` did
+    not work when `app/use_cloud_build` was enabled.
+
+### Google Compute Engine
+
+*   Add `--no-creation-retries` flag to `compute instance-groups managed resize`
+    command in alpha and beta.
+
+### Google Container Engine
+
+*   Fix bug that caused kubectl component to be missing from components list on
+    Windows.
+*   `gcloud container clusters create` now allows specifying multiple zones
+    within a region for your cluster's nodes to be created in.
+*   Update kubectl to v1.2.2
+
+
 ## 105.0.0 (2016/04/13)
 
 ### Breaking Changes

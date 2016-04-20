@@ -106,19 +106,11 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
 class ValuePrinter(CsvPrinter):
   """A printer for printing value data.
 
-  CSV with no heading and <TAB> separator instead of <COMMA>, and a legend. Used
-  to retrieve individual resource values. This format requires a projection to
-  define the value(s) to be printed.
+  CSV with no heading and <TAB> separator instead of <COMMA>. Used to retrieve
+  individual resource values. This format requires a projection to define the
+  value(s) to be printed.
 
   Printer attributes:
-    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
-      are no items. The default *empty-legend* is "Listed 0 items.".
-      *no-empty-legend* disables the default.
-    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
-      item if there is at least one item.
-    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
-      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
-      *debug*, *info*, *warn*, or *error*.
     no-quote: Prints NEWLINE terminated TAB delimited values with no quoting.
   """
 
@@ -128,6 +120,7 @@ class ValuePrinter(CsvPrinter):
     self._separator = '\t'
     self._quote = None if self.attributes.get('no-quote', 0) else '"'
 
+  # TODO(b/27967563): remove 3Q2016
   def Finish(self):
     """Prints the legend if any."""
     self.AddLegend()

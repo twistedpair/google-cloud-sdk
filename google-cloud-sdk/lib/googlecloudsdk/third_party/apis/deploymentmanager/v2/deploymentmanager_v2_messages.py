@@ -54,7 +54,7 @@ class Deployment(_messages.Message):
       cannot be a dash.
     operation: [Output Only] The Operation that most recently ran, or is
       currently running, on this deployment.
-    selfLink: [Output Only] Self link for the manifest.
+    selfLink: [Output Only] Self link for the deployment.
     target: [Input Only] The parameters that define your deployment, including
       the deployment configuration and relevant templates.
     update: [Output Only] If Deployment Manager is currently updating or

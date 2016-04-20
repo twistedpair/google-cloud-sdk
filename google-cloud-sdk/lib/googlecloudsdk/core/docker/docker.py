@@ -27,12 +27,14 @@ import tempfile
 import urlparse
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
-_USERNAME = '_token'
+_USERNAME = 'oauth2accesstoken'
+_EMAIL = 'not@val.id'
 
 
 # Other tools like the python docker library (used by gcloud app)
@@ -147,9 +149,50 @@ def UpdateDockerCredentials(server):
     raise exceptions.Error('No access token could be obtained '
                            'from the current credentials.')
 
-  # Update the docker configuration file passing the access token
-  # as a password, and a benign value as the username.
-  _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+  try:
+    # Update the credentials stored by docker, passing the access token
+    # as a password, and benign values as the email and username.
+    _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
+  except exceptions.Error:
+    # Fall back to the previous manual .dockercfg manipulation
+    # in order to support gcloud app's docker-binaryless use case.
+    # TODO(user) when app deploy is using Argo to take over builds,
+    # remove this.
+    _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+    log.warn(
+        "'docker' was not discovered on the path. Credentials have been "
+        "stored, but are not guaranteed to work with the 1.11 Docker client if"
+        "an external credential store is configured.")
+
+
+def _DockerLogin(server, email, username, access_token):
+  """Register the username / token for the given server on Docker's keyring."""
+
+  # Sanitize and normalize the server input.
+  parsed_url = urlparse.urlparse(server)
+  # Work around the fact that Python 2.6 does not properly
+  # look for :// and simply splits on colon, so something
+  # like 'gcr.io:1234' returns the scheme 'gcr.io'.
+  if '://' not in server:
+    # Server doesn't have a scheme, set it to HTTPS.
+    parsed_url = urlparse.urlparse('https://' + server)
+    if parsed_url.hostname == 'localhost':
+      # Now that it parses, if the hostname is localhost switch to HTTP.
+      parsed_url = urlparse.urlparse('http://' + server)
+
+  server = parsed_url.geturl()
+
+  # 'docker login' must be used due to the change introduced in
+  # https://github.com/docker/docker/pull/20107 .
+  # TODO(user) leverage https://github.com/docker/docker-py/issues/1023 when
+  # Docker-py 1.9 is released.
+  docker_args = ['login']
+  docker_args.append('--email=' + email)
+  docker_args.append('--username=' + username)
+  docker_args.append('--password=' + access_token)
+  docker_args.append(server)  # The auth endpoint must be the last argument.
+
+  return Execute(docker_args)
 
 
 def _UpdateDockerConfig(server, username, access_token):
@@ -185,7 +228,7 @@ def _UpdateDockerConfig(server, username, access_token):
   if server_unqualified in dockercfg_contents:
     del dockercfg_contents[server_unqualified]
 
-  dockercfg_contents[server] = {'auth': auth, 'email': 'not@val.id'}
+  dockercfg_contents[server] = {'auth': auth, 'email': _EMAIL}
 
   WriteDockerConfig(dockercfg_contents)
 

@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160404",
+ "revision": "20160413",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -346,7 +346,7 @@
     },
     "diskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, this field encrypts the disk using a customer-supplied encryption key. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a new disk using a customer-supplied encryption key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf no customer-supplied encryption key is provided at creation, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later."
+     "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, encrypts the new disk using an encryption key that you provide. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a disk using a customer-supplied key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf you do not provide an encryption key, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later."
     },
     "index": {
      "type": "integer",
@@ -452,7 +452,7 @@
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "The customer-supplied encryption key of the source image. This key is required if the source image is protected by a customer-supplied encryption key.\n\nIf the incorrect key is provided, the operation will fail."
+     "description": "The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key."
     }
    }
   },
@@ -948,6 +948,20 @@
     }
    }
   },
+  "CustomerEncryptionKeyProtectedDisk": {
+   "id": "CustomerEncryptionKeyProtectedDisk",
+   "type": "object",
+   "properties": {
+    "diskEncryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "Decrypts data associated with the disk with a customer-supplied encryption key."
+    },
+    "source": {
+     "type": "string",
+     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks."
+    }
+   }
+  },
   "DeprecationStatus": {
    "id": "DeprecationStatus",
    "type": "object",
@@ -1000,7 +1014,7 @@
     },
     "diskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Encrypts the disk using a customer-supplied encryption key.\n\nIf you encrypt the disk using a customer-supplied encryption key, and you want to use the disk later (e.g. to create a disk snapshot or an image, or to attach the disk to a virtual machine), you must provide the same key in your request. If you provide an incorrect key, or no key, the operation will fail.\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf no customer-supplied encryption key is provided at creation, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later."
+     "description": "Encrypts the disk using a customer-supplied encryption key.\n\nAfter you encrypt a disk with a customer-supplied key, you must provide the same key if you use the disk later (e.g. to create a disk snapshot or an image, or to attach the disk to a virtual machine).\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf you do not provide an encryption key when creating the disk, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later."
     },
     "id": {
      "type": "string",
@@ -1068,7 +1082,7 @@
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "The customer-supplied encryption key of the source image. This key is required if the source image is protected by a customer-supplied encryption key.\n\nIf the incorrect key is provided, the operation will fail."
+     "description": "The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key."
     },
     "sourceImageId": {
      "type": "string",
@@ -1080,7 +1094,7 @@
     },
     "sourceSnapshotEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "The customer-supplied encryption key of the source snapshot. This key is required if the source snapshot is protected by a customer-supplied encryption key.\n\nIf the incorrect key is provided, the operation will fail."
+     "description": "The customer-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer-supplied encryption key."
     },
     "sourceSnapshotId": {
      "type": "string",
@@ -1190,6 +1204,20 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "DiskMoveRequest": {
+   "id": "DiskMoveRequest",
+   "type": "object",
+   "properties": {
+    "destinationZone": {
+     "type": "string",
+     "description": "The URL of the destination zone to move the disk. This can be a full or partial URL. For example, the following are all valid URLs to a zone:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone \n- projects/project/zones/zone \n- zones/zone"
+    },
+    "targetDisk": {
+     "type": "string",
+     "description": "The URL of the target disk to move. This can be a full or partial URL. For example, the following are all valid URLs to a disk:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk"
     }
    }
   },
@@ -1600,7 +1628,7 @@
     },
     "IPProtocol": {
      "type": "string",
-     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH or SCTP.",
+     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.",
      "enum": [
       "AH",
       "ESP",
@@ -2112,7 +2140,7 @@
     },
     "imageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Encrypts the image using a customer-supplied encryption key.\n\nIf you encrypt an image using a customer-supplied encryption key, and you want to use the image later (e.g. to create a disk from the image), you must provide the same key used encrypt the image in your future request. If you provide an incorrect key, or no key, the operation will fail.\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf no customer-supplied encryption key is provided at creation, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later."
+     "description": "Encrypts the image using a customer-supplied encryption key.\n\nAfter you encrypt an image with a customer-supplied key, you must provide the same key if you use the image later (e.g. to create a disk from the image).\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later."
     },
     "kind": {
      "type": "string",
@@ -2188,7 +2216,7 @@
     },
     "sourceDiskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Specifies the customer-supplied encryption key of the source disk. This key is required if the source disk is protected by a customer-supplied encryption key.\n\nIf the incorrect key is provided the operation will fail."
+     "description": "The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key."
     },
     "sourceDiskId": {
      "type": "string",
@@ -2574,7 +2602,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "[Output Only] The fingerprint of the target pools information. You can use this optional field for optimistic locking when you update the target pool entries.",
+     "description": "[Output Only] The fingerprint of the resource data. You can use this optional field for optimistic locking when you update the resource.",
      "format": "byte"
     },
     "id": {
@@ -2588,12 +2616,7 @@
     },
     "instanceTemplate": {
      "type": "string",
-     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create all new instances in the managed instance group.",
-     "annotations": {
-      "required": [
-       "compute.instanceGroupManagers.insert"
-      ]
-     }
+     "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create all new instances in the managed instance group."
     },
     "kind": {
      "type": "string",
@@ -3153,6 +3176,20 @@
     }
    }
   },
+  "InstanceMoveRequest": {
+   "id": "InstanceMoveRequest",
+   "type": "object",
+   "properties": {
+    "destinationZone": {
+     "type": "string",
+     "description": "The URL of the destination zone to move the instance. This can be a full or partial URL. For example, the following are all valid URLs to a zone:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone \n- projects/project/zones/zone \n- zones/zone"
+    },
+    "targetInstance": {
+     "type": "string",
+     "description": "The URL of the target instance to move. This can be a full or partial URL. For example, the following are all valid URLs to an instance:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/instances/instance \n- projects/project/zones/zone/instances/instance \n- zones/zone/instances/instance"
+    }
+   }
+  },
   "InstanceProperties": {
    "id": "InstanceProperties",
    "type": "object",
@@ -3441,6 +3478,19 @@
     }
    }
   },
+  "InstancesStartWithEncryptionKeyRequest": {
+   "id": "InstancesStartWithEncryptionKeyRequest",
+   "type": "object",
+   "properties": {
+    "disks": {
+     "type": "array",
+     "description": "Array of disks associated with this instance that are protected with a customer-supplied encryption key.\n\nIn order to start the instance, the disk url and its corresponding key must be provided.\n\nIf the disk is not protected with a customer-supplied encryption key it should not be specified.",
+     "items": {
+      "$ref": "CustomerEncryptionKeyProtectedDisk"
+     }
+    }
+   }
+  },
   "License": {
    "id": "License",
    "type": "object",
@@ -3497,6 +3547,10 @@
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
      "format": "uint64"
+    },
+    "isSharedCpu": {
+     "type": "boolean",
+     "description": "[Output Only] Whether this machine type has a shared CPU."
     },
     "kind": {
      "type": "string",
@@ -3923,11 +3977,11 @@
     },
     "networkIP": {
      "type": "string",
-     "description": "[Output Only] An optional IPV4 internal network address assigned to the instance for this network interface."
+     "description": "An IPV4 internal network address to assign to the instance for this network interface. If not specified by user an unused internal IP is assigned by system."
     },
     "subnetwork": {
      "type": "string",
-     "description": "The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/subnetworks/subnetwork \n- zones/zone/subnetworks/subnetwork"
+     "description": "The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/subnetworks/subnetwork \n- regions/region/subnetworks/subnetwork"
     }
    }
   },
@@ -5294,7 +5348,7 @@
     },
     "snapshotEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Encrypts the snapshot using a customer-supplied encryption key.\n\nIf you encrypt a snapshot using a customer-supplied encryption key and you want to use the snapshot later, you must provide the same key that you used to encrypt the snapshot. For example, you must provide the encryption key when you create a disk from the encrypted snapshot in a future request. If you provide an incorrect key, or no key, the request will fail.\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf no customer-supplied encryption key is provided at creation, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the snapshot later."
+     "description": "Encrypts the snapshot using a customer-supplied encryption key.\n\nAfter you encrypt a snapshot using a customer-supplied key, you must provide the same key if you use the image later For example, you must provide the encryption key when you create a disk from the encrypted snapshot in a future request.\n\nCustomer-supplied encryption keys do not protect access to metadata of the disk.\n\nIf you do not provide an encryption key when creating the snapshot, then the snapshot will be encrypted using an automatically generated key and you do not need to provide a key to use the snapshot later."
     },
     "sourceDisk": {
      "type": "string",
@@ -5302,7 +5356,7 @@
     },
     "sourceDiskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Specifies the customer-supplied encryption key of the source disk. This key is required if the source disk is protected by a customer-supplied encryption key.\n\nIf the incorrect key is provided, the request will fail."
+     "description": "The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key."
     },
     "sourceDiskId": {
      "type": "string",
@@ -6624,7 +6678,7 @@
     },
     "tests": {
      "type": "array",
-     "description": "The list of expected URL mappings. Request to update this UrlMap will succeed only all of the test cases pass.",
+     "description": "The list of expected URL mappings. Request to update this UrlMap will succeed only if all of the test cases pass.",
      "items": {
       "$ref": "UrlMapTest"
      }
@@ -10891,35 +10945,11 @@
      "httpMethod": "POST",
      "description": "Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action.",
      "parameters": {
-      "filter": {
-       "type": "string",
-       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nCompute Engine Beta API Only: When filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nThe Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
-       "location": "query"
-      },
       "instanceGroupManager": {
        "type": "string",
        "description": "The name of the managed instance group.",
        "required": true,
        "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "maximum": "500",
-       "location": "query"
-      },
-      "orderBy": {
-       "type": "string",
-       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
-       "location": "query"
       },
       "project": {
        "type": "string",
@@ -12745,6 +12775,50 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "startWithEncryptionKey": {
+     "id": "compute.instances.startWithEncryptionKey",
+     "path": "{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey",
+     "httpMethod": "POST",
+     "description": "Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance resource to start.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesStartWithEncryptionKeyRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "stop": {
      "id": "compute.instances.stop",
      "path": "{project}/zones/{zone}/instances/{instance}/stop",
@@ -13237,6 +13311,62 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "moveDisk": {
+     "id": "compute.projects.moveDisk",
+     "path": "{project}/moveDisk",
+     "httpMethod": "POST",
+     "description": "Moves a persistent disk from one zone to another.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "DiskMoveRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "moveInstance": {
+     "id": "compute.projects.moveInstance",
+     "path": "{project}/moveInstance",
+     "httpMethod": "POST",
+     "description": "Moves an instance and its attached persistent disks from one zone to another.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "InstanceMoveRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "setCommonInstanceMetadata": {

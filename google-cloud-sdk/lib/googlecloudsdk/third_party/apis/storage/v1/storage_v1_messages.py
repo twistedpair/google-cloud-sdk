@@ -848,7 +848,7 @@ class StorageBucketsGetRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit acl and defaultObjectAcl properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
     """
     full = 0
     noAcl = 1
@@ -933,7 +933,7 @@ class StorageBucketsInsertRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit acl and defaultObjectAcl properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
     """
     full = 0
     noAcl = 1
@@ -965,7 +965,7 @@ class StorageBucketsListRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit acl and defaultObjectAcl properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
     """
     full = 0
     noAcl = 1
@@ -1050,7 +1050,7 @@ class StorageBucketsPatchRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit acl and defaultObjectAcl properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
     """
     full = 0
     noAcl = 1
@@ -1161,7 +1161,7 @@ class StorageBucketsUpdateRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit acl and defaultObjectAcl properties.
+      noAcl: Omit owner, acl and defaultObjectAcl properties.
     """
     full = 0
     noAcl = 1
@@ -1481,7 +1481,7 @@ class StorageObjectsCopyRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1580,7 +1580,7 @@ class StorageObjectsGetRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1660,7 +1660,7 @@ class StorageObjectsInsertRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1706,7 +1706,7 @@ class StorageObjectsListRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1775,7 +1775,7 @@ class StorageObjectsPatchRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1881,7 +1881,7 @@ class StorageObjectsRewriteRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -1997,7 +1997,7 @@ class StorageObjectsUpdateRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1
@@ -2044,7 +2044,7 @@ class StorageObjectsWatchAllRequest(_messages.Message):
 
     Values:
       full: Include all properties.
-      noAcl: Omit the acl property.
+      noAcl: Omit the owner, acl property.
     """
     full = 0
     noAcl = 1

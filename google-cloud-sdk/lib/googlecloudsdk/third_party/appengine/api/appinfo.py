@@ -508,7 +508,7 @@ _SUPPORTED_LIBRARIES = [
         'ssl',
         'http://docs.python.org/dev/library/ssl.html',
         'The SSL socket wrapper built-in module.',
-        ['2.7'],
+        ['2.7', '2.7.11'],
         latest_version='2.7',
         ),
     _VersionedLibrary(

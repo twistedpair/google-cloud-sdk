@@ -467,7 +467,8 @@ class RemoteCompletion(object):
     return os.fdopen(9, 'w')
 
   @staticmethod
-  def RunListCommand(cli, command, parse_output=False):
+  def RunListCommand(cli, command, parse_output=False,
+                     list_command_updates_cache=False):
     """Runs a cli list comman with a visual progress tracker/spinner.
 
     Args:
@@ -476,6 +477,8 @@ class RemoteCompletion(object):
       parse_output: If True then the output of command is read and split into a
         resource data list, one item per line. If False then the command return
         value is the resource data list.
+      list_command_updates_cache: True if running the list command updates the
+        cache.
 
     Returns:
       The resource data list.
@@ -487,6 +490,8 @@ class RemoteCompletion(object):
       log_out = log.out
       out = StringIO.StringIO()
       log.out = out
+    elif list_command_updates_cache:
+      command.append('--format=none')
     else:
       command.append('--format=none[disable]')
     with tracker:
@@ -577,7 +582,8 @@ class RemoteCompletion(object):
         if options is not None:
           return options
 
-        items = RemoteCompletion.RunListCommand(cli, command)
+        items = RemoteCompletion.RunListCommand(
+            cli, command, list_command_updates_cache=list_command_updates_cache)
         if list_command_updates_cache:
           options = ccache.GetFromCache(resource_link, prefix) or []
           if options:

@@ -1920,6 +1920,18 @@ class ComputeV1(base_api.BaseApiClient):
               response_type_name=u'Image',
               supports_download=False,
           ),
+          'GetFromFamily': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.images.getFromFamily',
+              ordered_params=[u'project', u'family'],
+              path_params=[u'family', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/images/family/{family}',
+              request_field='',
+              request_type_name=u'ComputeImagesGetFromFamilyRequest',
+              response_type_name=u'Image',
+              supports_download=False,
+          ),
           'Insert': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.images.insert',
@@ -1987,6 +1999,19 @@ If an empty request body is given, clears the deprecation status instead.
         (Image) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetFromFamily(self, request, global_params=None):
+      """Returns the latest image that is part of an image family and is not deprecated.
+
+      Args:
+        request: (ComputeImagesGetFromFamilyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Image) The response message.
+      """
+      config = self.GetMethodConfig('GetFromFamily')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -2115,7 +2140,7 @@ See Accessing images for more information.
               method_id=u'compute.instanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'zone', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'zone'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
+              query_params=[],
               relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',

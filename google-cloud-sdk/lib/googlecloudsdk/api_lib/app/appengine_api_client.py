@@ -61,14 +61,14 @@ class AppengineApiClient(object):
     else:
       return ''
 
-  def DeployModule(
-      self, module_name, version_id, module_config, manifest, image):
+  def DeployService(
+      self, service_name, version_id, service_config, manifest, image):
     """Updates and deploys new app versions based on given config.
 
     Args:
-      module_name: str, The module to deploy.
-      version_id: str, The version of the module to deploy.
-      module_config: AppInfoExternal, Module info parsed from a module yaml
+      service_name: str, The service to deploy.
+      version_id: str, The version of the service to deploy.
+      service_config: AppInfoExternal, Service info parsed from a service yaml
         file.
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
@@ -76,10 +76,11 @@ class AppengineApiClient(object):
     Returns:
       A Version resource representing the deployed version.
     """
-    version_resource = self._CreateVersionResource(module_config, manifest,
+    version_resource = self._CreateVersionResource(service_config, manifest,
                                                    version_id, image)
     create_request = self.messages.AppengineAppsModulesVersionsCreateRequest(
-        name=self._FormatModule(app_id=self.project, module_name=module_name),
+        name=self._FormatService(app_id=self.project,
+                                 service_name=service_name),
         version=version_resource)
 
     operation = requests.MakeRequest(
@@ -90,11 +91,11 @@ class AppengineApiClient(object):
 
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def SetDefaultVersion(self, module_name, version_id):
-    """Sets the default serving version of the given modules.
+  def SetDefaultVersion(self, service_name, version_id):
+    """Sets the default serving version of the given services.
 
     Args:
-      module_name: str, The module name
+      service_name: str, The service name
       version_id: str, The version to set as default.
     Returns:
       Long running operation.
@@ -102,14 +103,14 @@ class AppengineApiClient(object):
     # Create a traffic split where 100% of traffic goes to the specified
     # version.
     allocations = {version_id: 1.0}
-    return self.SetTrafficSplit(module_name, allocations)
+    return self.SetTrafficSplit(service_name, allocations)
 
-  def SetTrafficSplit(self, module_name, allocations,
+  def SetTrafficSplit(self, service_name, allocations,
                       shard_by='UNSPECIFIED', migrate=False):
-    """Sets the traffic split of the given modules.
+    """Sets the traffic split of the given services.
 
     Args:
-      module_name: str, The module name
+      service_name: str, The service name
       allocations: A dict mapping version ID to traffic split.
       shard_by: A ShardByValuesEnum value specifying how to shard the traffic.
       migrate: Whether or not to migrate traffic.
@@ -121,22 +122,23 @@ class AppengineApiClient(object):
     traffic_split = encoding.PyValueToMessage(self.messages.TrafficSplit,
                                               {'allocations': allocations,
                                                'shardBy': shard_by})
-    update_module_request = self.messages.AppengineAppsModulesPatchRequest(
-        name=self._FormatModule(app_id=self.project, module_name=module_name),
+    update_service_request = self.messages.AppengineAppsModulesPatchRequest(
+        name=self._FormatService(app_id=self.project,
+                                 service_name=service_name),
         module=self.messages.Module(split=traffic_split),
         migrateTraffic=migrate,
         mask='split')
 
     operation = requests.MakeRequest(
         self.client.apps_modules.Patch,
-        update_module_request)
+        update_service_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def DeleteVersion(self, module_name, version_id):
-    """Deletes the specified version of the given module.
+  def DeleteVersion(self, service_name, version_id):
+    """Deletes the specified version of the given service.
 
     Args:
-      module_name: str, The module name
+      service_name: str, The service name
       version_id: str, The version to delete.
 
     Returns:
@@ -144,7 +146,7 @@ class AppengineApiClient(object):
     """
     delete_request = self.messages.AppengineAppsModulesVersionsDeleteRequest(
         name=self._FormatVersion(app_id=self.project,
-                                 module_name=module_name,
+                                 service_name=service_name,
                                  version_id=version_id))
     operation = requests.MakeRequest(
         self.client.apps_modules_versions.Delete,
@@ -184,7 +186,7 @@ class AppengineApiClient(object):
     for service in services:
       # Get the versions.
       request = self.messages.AppengineAppsModulesVersionsListRequest(
-          name=self._FormatModule(self.project, service.id))
+          name=self._FormatService(self.project, service.id))
       response = requests.MakeRequest(
           self.client.apps_modules_versions.List, request)
 
@@ -203,25 +205,24 @@ class AppengineApiClient(object):
       The completed Operation.
     """
     delete_request = self.messages.AppengineAppsModulesDeleteRequest(
-        name=self._FormatModule(app_id=self.project,
-                                module_name=service_name))
+        name=self._FormatService(app_id=self.project,
+                                 service_name=service_name))
     operation = requests.MakeRequest(
         self.client.apps_modules.Delete,
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def _CreateVersionResource(self, module_config, manifest, version_id, image):
+  def _CreateVersionResource(self, service_config, manifest, version_id, image):
     """Constructs a Version resource for deployment."""
-    appinfo = module_config.parsed
+    appinfo = service_config.parsed
     # TODO(user): Two Steps
     # 1. Once Zeus supports service, flip this to write module into service
-    #    and warn the user that module is deprecated
     # 2. Once we want to stop supporting module, take this code out
     if appinfo.service:
       appinfo.module = appinfo.service
       appinfo.service = None
 
-    parsed_yaml = module_config.parsed.ToYAML()
+    parsed_yaml = service_config.parsed.ToYAML()
     config_dict = yaml.safe_load(parsed_yaml)
     try:
       json_version_resource = yaml_schema.SCHEMA.ConvertValue(config_dict)
@@ -229,7 +230,7 @@ class AppengineApiClient(object):
       raise exceptions.ToolException.FromCurrent(
           ('[{f}] could not be converted to the App Engine configuration '
            'format for the following reason: {msg}').format(
-               f=module_config.file, msg=e.message))
+               f=service_config.file, msg=e.message))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
 
@@ -248,13 +249,13 @@ class AppengineApiClient(object):
   def _FormatApp(self, app_id):
     return 'apps/{app_id}'.format(app_id=app_id)
 
-  def _FormatModule(self, app_id, module_name):
-    return 'apps/{app_id}/modules/{module_name}'.format(app_id=app_id,
-                                                        module_name=module_name)
+  def _FormatService(self, app_id, service_name):
+    return 'apps/{app_id}/modules/{service_name}'.format(
+        app_id=app_id, service_name=service_name)
 
-  def _FormatVersion(self, app_id, module_name, version_id):
-    return 'apps/{app_id}/modules/{module_name}/versions/{version_id}'.format(
-        app_id=app_id, module_name=module_name, version_id=version_id)
+  def _FormatVersion(self, app_id, service_name, version_id):
+    return 'apps/{app_id}/modules/{service_name}/versions/{version_id}'.format(
+        app_id=app_id, service_name=service_name, version_id=version_id)
 
 
 def GetApiClient(default_version='v1beta4'):

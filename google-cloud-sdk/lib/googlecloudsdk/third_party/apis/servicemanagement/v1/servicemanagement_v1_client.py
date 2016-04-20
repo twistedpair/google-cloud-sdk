@@ -134,6 +134,18 @@ the service.
     def __init__(self, client):
       super(ServicemanagementV1.ServicesConfigsService, self).__init__(client)
       self._method_configs = {
+          'Create': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.configs.create',
+              ordered_params=[u'serviceName'],
+              path_params=[u'serviceName'],
+              query_params=[],
+              relative_path=u'v1/services/{serviceName}/configs',
+              request_field=u'service',
+              request_type_name=u'ServicemanagementServicesConfigsCreateRequest',
+              response_type_name=u'Service',
+              supports_download=False,
+          ),
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'servicemanagement.services.configs.get',
@@ -146,10 +158,35 @@ the service.
               response_type_name=u'Service',
               supports_download=False,
           ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'servicemanagement.services.configs.list',
+              ordered_params=[u'serviceName'],
+              path_params=[u'serviceName'],
+              query_params=[u'pageSize', u'pageToken'],
+              relative_path=u'v1/services/{serviceName}/configs',
+              request_field='',
+              request_type_name=u'ServicemanagementServicesConfigsListRequest',
+              response_type_name=u'ListServiceConfigsResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      """Creates a google.api.Service under the specified service.
+
+      Args:
+        request: (ServicemanagementServicesConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
       """Retrieves the [google.api.Service] resource for the given service name.
@@ -163,6 +200,19 @@ will be returned.
         (Service) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """List all google.api.Service resources under the given service name.
+
+      Args:
+        request: (ServicemanagementServicesConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 

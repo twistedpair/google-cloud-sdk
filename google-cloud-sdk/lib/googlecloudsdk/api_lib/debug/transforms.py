@@ -31,7 +31,7 @@ Pythonicness of the Transform*() methods:
 """
 
 
-def TransformShortStatus(r):
+def TransformShortStatus(r, undefined=''):
   """Returns a short description of the status of a logpoint or snapshot.
 
   Status will be one of ACTIVE, COMPLETED, or a short error description. If
@@ -40,6 +40,7 @@ def TransformShortStatus(r):
 
   Args:
     r: a JSON-serializable object
+    undefined: Returns this value if the resource is not a valid status.
 
   Returns:
     One of ACTIVE, COMPLETED, or an error description.
@@ -47,12 +48,16 @@ def TransformShortStatus(r):
   Example:
     --format="table(id, location, short_status()())"
   """
-  if not r.isFinalState:
-    return 'ACTIVE'
-  status = r.status
-  if not status or not status.isError:
-    return 'COMPLETED'
-  return '{0}_ERROR'.format(status.refersTo)
+  if isinstance(r, dict):
+    if not r.get('isFinalState'):
+      return 'ACTIVE'
+    status = r.get('status')
+    if not status or not isinstance(status, dict) or not status.get('isError'):
+      return 'COMPLETED'
+    refers_to = status.get('refersTo')
+    if refers_to:
+      return '{0}_ERROR'.format(refers_to)
+  return undefined
 
 _TRANSFORMS = {
     'short_status': TransformShortStatus,

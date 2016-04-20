@@ -25,7 +25,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
   """Interpret an argument value as an EndpointAddress."""
 
   def __call__(self, arg_value):
-    """Parses arg_value into an EndpointEndpointAddress.
+    """Parses arg_value into an EndpointAddress.
 
     Args:
       arg_value: A simple or "full" address. Simple addresses are just the
@@ -35,7 +35,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
         port_name must be specified if more than one port specification is
         supplied for the address.
     Returns:
-      An EndpointEndpointAddress represented by arg_value
+      An EndpointAddress represented by arg_value
     """
     self.arg_value = arg_value
 
@@ -52,8 +52,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
 
       address = address_parts[1]
       ports = self.parse_port_specs(address_parts[1], arg_parts[1:])
-      return messages.EndpointEndpointAddress(address=address,
-                                              ports=ports)
+      return messages.EndpointAddress(address=address, ports=ports)
     elif ';' in arg_value or ',' in arg_value:
       # Don't let users accidentally mix the simple and keyed schemes
       self.raiseValidationError(
@@ -64,12 +63,12 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       # It's just an ADDRESS:PORT
       host_port = arg_parsers.HostPort.Parse(arg_value, ipv6_enabled=True)
 
-      endpoint_address = messages.EndpointEndpointAddress(
+      endpoint_address = messages.EndpointAddress(
           address=host_port.host)
 
       if host_port.port:
         endpoint_address.ports = [
-            messages.EndpointEndpointPort(portNumber=int(host_port.port))
+            messages.EndpointPort(portNumber=int(host_port.port))
         ]
 
       return endpoint_address
@@ -86,7 +85,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       if name_required and not port_name:
         self.raiseValidationError(
             '"port_name" is required when adding multiple ports to an address.')
-      endpoint_port = messages.EndpointEndpointPort(portNumber=port_number)
+      endpoint_port = messages.EndpointPort(portNumber=port_number)
       if port_name:
         endpoint_port.name = port_name
       if protocol:

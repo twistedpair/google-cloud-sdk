@@ -19,7 +19,7 @@ Container is created once you start a process in Docker from an Image. Container
 consists of read-write layer, plus information about the parent Image, plus
 some additional information like its unique ID, networking configuration,
 and resource limits.
-For more information refer to http://docs.docker.io/.
+For more information refer to http://docs.docker.com/.
 
 Mapping to Docker CLI:
 Image is a result of "docker build path/to/Dockerfile" command.
@@ -53,9 +53,9 @@ DOCKER_CONNECTION_ERROR_LOCAL = (
     'If you would like to perform the docker build locally, please check '
     'whether the environment variables DOCKER_HOST, DOCKER_CERT_PATH and '
     'DOCKER_TLS_VERIFY are set correctly.\n'
-    'With boot2docker, you can set them up by running:\n'
-    '  boot2docker shellinit\n'
-    'and executing the commands that boot2docker shows.')
+    'With docker-machine, you can set them up by running:\n'
+    '  eval "$(docker-machine env default)"\n'
+    'See https://docs.docker.com/machine for more information.')
 
 
 class DockerDaemonConnectionError(exceptions.Error):
@@ -162,8 +162,8 @@ def NewDockerClient(local=False, **kwargs):
               'Homebrew: '
               'https://github.com/docker/docker-py/issues/465\n\n'
               'One possible workaround is to set the environment variable '
-              'CLOUDSDK_PYTHON to another Python executable (that is, not the '
-              'one from Homebrew).')
+              'CLOUDSDK_PYTHON to another Python executable e.g.\n'
+              'export CLOUDSDK_PYTHON=/usr/bin/python\n')
       try:
         # This is a part of requests[security], which is a set of optional
         # dependencies for the requests library. If installed, it can work

@@ -43,7 +43,7 @@ class CannotOpenFileError(Error):
 class LogsRequester(object):
   """Provide facilities to export request logs."""
 
-  def __init__(self, rpcserver, project, module, version,
+  def __init__(self, rpcserver, project, service, version,
                severity=None, vhost=None, include_vhost=None, include_all=None):
     """Constructor.
 
@@ -51,7 +51,7 @@ class LogsRequester(object):
       rpcserver: The RPC server to use.  Should be an instance of HttpRpcServer
         or TestRpcServer.
       project: The project id to fetch logs from.
-      module: The module of the app to fetch logs from, optional.
+      service: The service of the app to fetch logs from, optional.
       version: The version of the app to fetch logs for.
       severity: App log severity to request (0-4); None for no app logs.
       vhost: The virtual host of log messages to get. None for all hosts.
@@ -67,7 +67,7 @@ class LogsRequester(object):
                     'version': version,
                     'limit': 1000,
                     'no_header': 1,
-                    'module': module}
+                    'module': service}
     if severity is not None:
       self._params['severity'] = str(severity)
     if vhost is not None:

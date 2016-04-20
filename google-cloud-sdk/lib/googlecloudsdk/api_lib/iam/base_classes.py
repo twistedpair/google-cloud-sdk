@@ -18,6 +18,7 @@ import os.path
 
 from googlecloudsdk.api_lib.iam import utils
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.exceptions import ToolException
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
@@ -79,10 +80,10 @@ class BaseIamCommand(base.Command):
       address: An IAM email address.
 
     Raises:
-      ValueError: The given address was not a valid email.
+      ToolException: The given address was not a valid email.
     """
     if not utils.ValidateEmail(address):
-      raise ValueError('IAM address must be an email, given [{0}]'.format(
+      raise ToolException('IAM address must be an email, given [{0}]'.format(
           address))
     self.address = address
 
@@ -94,11 +95,12 @@ class BaseIamCommand(base.Command):
       key_id: A key id.
 
     Raises:
-      ValueError: The given address was not a valid email.
+      ToolException: The given address was not a valid email, or the given key
+        wasn't a valid key.
     """
     self.SetAddress(address)
     if not utils.ValidateKeyId(key_id):
-      raise ValueError('[{0}] is not a valid key'.format(address))
+      raise ToolException('[{0}] is not a valid key'.format(address))
     self.key_id = key_id
 
   # TODO(user): b/25212870
@@ -121,17 +123,17 @@ class BaseIamCommand(base.Command):
       The contents of the file as a string.
 
     Raises:
-      ValueError: An error occurred when trying to read the file.
+      ToolException: An error occurred when trying to read the file.
     """
     if not os.path.exists(file_name):
-      raise ValueError('The given file could not be found: {0}'.format(
+      raise ToolException('The given file could not be found: {0}'.format(
           file_name))
 
     try:
       with open(file_name, 'rb') as handle:
         return handle.read()
     except EnvironmentError:
-      raise ValueError('The given file could not be read: {0}'.format(
+      raise ToolException('The given file could not be read: {0}'.format(
           file_name))
 
   def WriteFile(self, file_name, contents):
@@ -142,11 +144,11 @@ class BaseIamCommand(base.Command):
       contents: The data to write into the file
 
     Raises:
-      ValueError: An error occurred when trying to write the file.
+      ToolException: An error occurred when trying to write the file.
     """
     try:
       with open(file_name, 'wb') as handle:
         handle.write(contents)
     except EnvironmentError:
-      raise ValueError('The given file could not be written: {0}'.format(
+      raise ToolException('The given file could not be written: {0}'.format(
           file_name))

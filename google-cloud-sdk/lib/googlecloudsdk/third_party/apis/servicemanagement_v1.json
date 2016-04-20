@@ -160,6 +160,10 @@
           "description": "The service's generated configuration.",
           "$ref": "Service"
         },
+        "configSource": {
+          "description": "User-supplied source configuration for the service. This is distinct from\nthe generated configuration provided in `google.api.Service`.\nThis is NOT populated on GetService calls at the moment.\nNOTE: Any upsert operation that contains both a service_config\nand a config_source is considered invalid and will result in\nan error being returned.",
+          "$ref": "ConfigSource"
+        },
         "operations": {
           "description": "Read-only view of pending operations affecting this resource, if requested.",
           "type": "array",
@@ -185,6 +189,10 @@
         },
         "name": {
           "description": "The DNS address at which this service is available,\ne.g. `calendar.googleapis.com`.",
+          "type": "string"
+        },
+        "id": {
+          "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. If empty, the server may choose to\ngenerate one instead.",
           "type": "string"
         },
         "title": {
@@ -1708,6 +1716,110 @@
         }
       }
     },
+    "ConfigSource": {
+      "id": "ConfigSource",
+      "description": "Represents a user-specified configuration for a service (as opposed to the\nthe generated service config form provided by `google.api.Service`). This is\nmeant to encode service config as manipulated directly by customers,\nrather than the config form resulting from toolchain generation and\nnormalization.",
+      "type": "object",
+      "properties": {
+        "options": {
+          "description": "Options to cover use of source config within ServiceManager and tools",
+          "$ref": "ConfigOptions"
+        },
+        "files": {
+          "description": "Service management-specific configuration for a service that accompanies\nsource specification. This typically includes configuration of metrics,\nquota, etc. At the moment, only YAML configuration files are supported.",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigFile"
+          }
+        },
+        "swaggerSpec": {
+          "description": "Swagger \/ OpenAPI specification",
+          "$ref": "SwaggerSpec"
+        },
+        "protoSpec": {
+          "description": "Protocol buffer API specification",
+          "$ref": "ProtoSpec"
+        }
+      }
+    },
+    "ConfigOptions": {
+      "id": "ConfigOptions",
+      "description": "A set of options to cover use of source config within `ServiceManager`\nand related tools.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ConfigFile": {
+      "id": "ConfigFile",
+      "description": "Generic specification of a source configuration file",
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "description": "The file name of the configuration file (full or relative path).",
+          "type": "string"
+        },
+        "contents": {
+          "description": "The contents of the configuration file.",
+          "type": "string"
+        }
+      }
+    },
+    "SwaggerSpec": {
+      "id": "SwaggerSpec",
+      "description": "A collection of swagger specification files.",
+      "type": "object",
+      "properties": {
+        "swaggerFiles": {
+          "description": "The individual files.",
+          "type": "array",
+          "items": {
+            "$ref": "File"
+          }
+        }
+      }
+    },
+    "File": {
+      "id": "File",
+      "description": "A single swagger specification file.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The relative path of the swagger spec file.",
+          "type": "string"
+        },
+        "contents": {
+          "description": "The contents of the swagger spec file.",
+          "type": "string"
+        }
+      }
+    },
+    "ProtoSpec": {
+      "id": "ProtoSpec",
+      "description": "A collection of protocol buffer service specification files.",
+      "type": "object",
+      "properties": {
+        "protoDescriptor": {
+          "description": "A complete descriptor of a protocol buffer specification",
+          "$ref": "ProtoDescriptor"
+        }
+      }
+    },
+    "ProtoDescriptor": {
+      "id": "ProtoDescriptor",
+      "description": "Contains a serialized protoc-generated protocol buffer message descriptor set\nalong with a URL that describes the type of the descriptor message.",
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "description": "A URL\/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nOnly 'type.googleapis.com\/google.protobuf.FileDescriptorSet' is supported.\nIf the type_url is not specificed,\n'type.googleapis.com\/google.protobuf.FileDescriptorSet' will be assumed.\n",
+          "type": "string"
+        },
+        "value": {
+          "description": "Must be a valid serialized protocol buffer descriptor set.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named descriptor.pb.\n\n$protoc --include_imports --include_source_info test.proto -o descriptor.pb",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -2054,6 +2166,24 @@
         }
       }
     },
+    "ListServiceConfigsResponse": {
+      "id": "ListServiceConfigsResponse",
+      "description": "Response message for ListServiceConfigs method.",
+      "type": "object",
+      "properties": {
+        "serviceConfigs": {
+          "description": "The list of service config resources.",
+          "type": "array",
+          "items": {
+            "$ref": "Service"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token of the next page of results.",
+          "type": "string"
+        }
+      }
+    },
     "ServiceAccessPolicy": {
       "id": "ServiceAccessPolicy",
       "description": "Policy describing who can access a service and any visibility labels on that\nservice.",
@@ -2138,35 +2268,6 @@
         },
         "serviceName": {
           "description": "The service name to use for constructing the normalized service\nconfiguration equivalent of the provided configuration specification.",
-          "type": "string"
-        }
-      }
-    },
-    "SwaggerSpec": {
-      "id": "SwaggerSpec",
-      "description": "A collection of swagger specification files.",
-      "type": "object",
-      "properties": {
-        "swaggerFiles": {
-          "description": "The individual files.",
-          "type": "array",
-          "items": {
-            "$ref": "File"
-          }
-        }
-      }
-    },
-    "File": {
-      "id": "File",
-      "description": "A single swagger specification file.",
-      "type": "object",
-      "properties": {
-        "path": {
-          "description": "The relative path of the swagger spec file.",
-          "type": "string"
-        },
-        "contents": {
-          "description": "The contents of the swagger spec file.",
           "type": "string"
         }
       }
@@ -2647,6 +2748,42 @@
       "resources": {
         "configs": {
           "methods": {
+            "list": {
+              "id": "servicemanagement.services.configs.list",
+              "path": "v1/services/{serviceName}/configs",
+              "flatPath": "v1/services/{serviceName}/configs",
+              "httpMethod": "GET",
+              "description": "List all google.api.Service resources under the given service name.\n",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "The token of the page to retrieve.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The max number of items to include in the response list.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "serviceName"
+              ],
+              "response": {
+                "$ref": "ListServiceConfigsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            },
             "get": {
               "id": "servicemanagement.services.configs.get",
               "path": "v1/services/{serviceName}/configs/{configId}",
@@ -2671,6 +2808,34 @@
                 "serviceName",
                 "configId"
               ],
+              "response": {
+                "$ref": "Service"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            },
+            "create": {
+              "id": "servicemanagement.services.configs.create",
+              "path": "v1/services/{serviceName}/configs",
+              "flatPath": "v1/services/{serviceName}/configs",
+              "httpMethod": "POST",
+              "description": "Creates a google.api.Service under the specified service.\n",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "serviceName"
+              ],
+              "request": {
+                "$ref": "Service"
+              },
               "response": {
                 "$ref": "Service"
               },

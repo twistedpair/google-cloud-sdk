@@ -20,22 +20,23 @@ import re
 from googlecloudsdk.core.resource import resource_property
 
 
-def _IsIn(matcher, value):
+def _IsIn(matcher, operand, value):
   """Applies matcher to determine if the expression operand is in value.
 
   Args:
     matcher: Boolean match function that takes value as an argument and
       returns True if the expression operand is in value.
+    operand: Number or string operand.
     value: The value to match against.
 
   Returns:
     True if the expression operand is in value.
   """
-  if matcher(value):
+  if matcher(operand, value):
     return True
   try:
     for index in value:
-      if matcher(index):
+      if matcher(operand, index):
         return True
   except TypeError:
     pass
@@ -97,7 +98,7 @@ class Backend(object):
     Returns:
       _ExprInMatch if operand is an anchored pattern, _ExprIn otherwise.
     """
-    if '*' not in operand.string_value:
+    if operand.list_value is not None or '*' not in operand.string_value:
       return _ExprIn(self, key, operand, transform, args)
     pattern = operand.string_value.lower()
     i = pattern.find('*')
@@ -267,6 +268,7 @@ class _ExprOperand(object):
   conversion fails then the key and operand string values are passed to Apply().
 
   Attributes:
+    list_value: A list of operands.
     numeric_value: The int or float number, or None if the token string does not
       convert to a number.
     string_value: The token string.
@@ -274,7 +276,14 @@ class _ExprOperand(object):
 
   def __init__(self, backend, value):
     self.backend = backend
-    if isinstance(value, basestring):
+    self.list_value = None
+    self.numeric_value = None
+    self.string_value = None
+    if isinstance(value, list):
+      self.list_value = []
+      for val in value:
+        self.list_value.append(_ExprOperand(backend, val))
+    elif isinstance(value, basestring):
       self.string_value = value
       try:
         self.numeric_value = int(value)
@@ -282,9 +291,9 @@ class _ExprOperand(object):
         try:
           self.numeric_value = float(value)
         except ValueError:
-          self.numeric_value = None
+          pass
     else:
-      self.string_value = str(value)
+      self.string_value = unicode(value)
       self.numeric_value = value
 
 
@@ -327,24 +336,32 @@ class _ExprOperator(_Expr):
           value = self._transform(*self._args)
       except (AttributeError, TypeError, ValueError):
         value = None
-    # Each try/except attempts a different combination of value/operand
-    # numeric and string conversions.
-    if self._operand.numeric_value is not None:
+    if self._operand.list_value:
+      operands = self._operand.list_value
+    else:
+      operands = [self._operand]
+    for operand in operands:
+      # Each try/except attempts a different combination of value/operand
+      # numeric and string conversions.
+      if operand.numeric_value is not None:
+        try:
+          return self.Apply(float(value), operand.numeric_value)
+        except (TypeError, ValueError):
+          pass
       try:
-        return self.Apply(float(value), self._operand.numeric_value)
-      except (TypeError, ValueError):
+        if self.Apply(value, operand.string_value):
+          return True
+      except (AttributeError, ValueError):
         pass
-    try:
-      return self.Apply(value, self._operand.string_value)
-    except (AttributeError, ValueError):
-      return False
-    except TypeError:
-      if isinstance(value, basestring):
-        return False
-    try:
-      return self.Apply(str(value), self._operand.string_value)
-    except TypeError:
-      return False
+      except TypeError:
+        if not isinstance(value, basestring):
+          try:
+            if self.Apply(unicode(value), operand.string_value):
+              return True
+          except TypeError:
+            pass
+
+    return False
 
   @abc.abstractmethod
   def Apply(self, value, operand):
@@ -393,18 +410,18 @@ class _ExprInMatch(_ExprOperator):
     self._prefix = prefix
     self._suffix = suffix
 
-  def Apply(self, value, unused_operand):
+  def Apply(self, value, operand):
     """Applies the : anchored case insensitive match operation."""
 
-    def _InMatch(value):
+    def _InMatch(unused_operand, value):
       """Applies case insensitive string prefix/suffix match to value."""
       if value is None:
         return False
-      v = str(value).lower()
+      v = unicode(value).lower()
       return ((not self._prefix or v.startswith(self._prefix)) and
               (not self._suffix or v.endswith(self._suffix)))
 
-    return _IsIn(_InMatch, value)
+    return _IsIn(_InMatch, operand, value)
 
 
 class _ExprIn(_ExprOperator):
@@ -412,20 +429,24 @@ class _ExprIn(_ExprOperator):
 
   def __init__(self, backend, key, operand, transform, args):
     super(_ExprIn, self).__init__(backend, key, operand, transform, args)
-    self._operand.string_value = self._operand.string_value.lower()
+    if self._operand.list_value is not None:
+      for operand in self._operand.list_value:
+        operand.string_value = operand.string_value.lower()
+    else:
+      self._operand.string_value = self._operand.string_value.lower()
 
   def Apply(self, value, operand):
     """Checks if operand is a member of value ignoring case differences.
 
     Args:
       value: The number, string, dict or list object value.
-      operand: Number or string operand.
+      operand: Number or string or list of Number or String.
 
     Returns:
       True if operand is a member of value ignoring case differences.
     """
 
-    def _InEq(subject):
+    def _InEq(operand, subject):
       """Applies case insensitive string contains check to subject."""
       if operand == subject:
         return True
@@ -456,7 +477,7 @@ class _ExprIn(_ExprOperator):
         pass
       return False
 
-    return _IsIn(_InEq, value)
+    return _IsIn(_InEq, operand, value)
 
 
 class _ExprMatch(_ExprOperator):

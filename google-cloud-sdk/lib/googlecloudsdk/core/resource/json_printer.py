@@ -14,8 +14,8 @@
 
 """JSON format resource printer."""
 
-import cStringIO
 import json
+import StringIO
 
 from googlecloudsdk.core.resource import resource_printer_base
 
@@ -42,7 +42,7 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
 
   def __init__(self, *args, **kwargs):
     super(JsonPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
-    self._buffer = cStringIO.StringIO()
+    self._buffer = StringIO.StringIO()
     self._empty = True
     self._delimiter = self._BEGIN_DELIMITER
     self._indent = ' ' * resource_printer_base.STRUCTURED_INDENTATION

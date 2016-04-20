@@ -168,18 +168,18 @@ class ConfigYamlInfo(_YamlInfo):
     return ConfigYamlInfo(file_path, config=base, parsed=parsed)
 
 
-class ModuleYamlInfo(_YamlInfo):
-  """A class for holding some basic attributes of a parsed module .yaml file."""
-  DEFAULT_MODULE_NAME = 'default'
+class ServiceYamlInfo(_YamlInfo):
+  """A class for holding some basic attributes of a parsed service yaml file."""
+  DEFAULT_SERVICE_NAME = 'default'
 
   def __init__(self, file_path, parsed):
-    """Creates a new ModuleYamlInfo.
+    """Creates a new ServiceYamlInfo.
 
     Args:
       file_path: str, The full path the file that was parsed.
       parsed: appinfo.AppInfoExternal, parsed Application Configuration.
     """
-    super(ModuleYamlInfo, self).__init__(file_path, parsed)
+    super(ServiceYamlInfo, self).__init__(file_path, parsed)
     self.module = parsed.module
 
     # All env: 2 apps are hermetic. All vm: false apps are not hermetic.
@@ -204,17 +204,17 @@ class ModuleYamlInfo(_YamlInfo):
 
   @staticmethod
   def FromFile(file_path):
-    """Parses the given module file.
+    """Parses the given service file.
 
     Args:
-      file_path: str, The full path to the module file.
+      file_path: str, The full path to the service file.
 
     Raises:
       YamlParseError: If the file is not a valid Yaml-file.
       YamlValidationError: If validation of parsed info fails.
 
     Returns:
-      A ModuleYamlInfo object for the parsed file.
+      A ServiceYamlInfo object for the parsed file.
     """
     try:
       parsed = _YamlInfo._ParseYaml(file_path, appinfo_includes.Parse)
@@ -227,9 +227,9 @@ class ModuleYamlInfo(_YamlInfo):
       vm_runtime = None
       if parsed.runtime == 'python':
         raise YamlValidationError(
-            'Module [{module}] uses unsupported Python 2.5 runtime. '
+            'Service [{service}] uses unsupported Python 2.5 runtime. '
             'Please use [runtime: python27] instead.'.format(
-                module=parsed.module))
+                service=parsed.module))
       elif parsed.runtime == 'python-compat':
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
@@ -239,8 +239,11 @@ class ModuleYamlInfo(_YamlInfo):
           'The "python27" is not a valid runtime in env: 2.  '
           'Please use [python-compat] instead.')
 
-    if not parsed.module:
-      parsed.module = ModuleYamlInfo.DEFAULT_MODULE_NAME
+    if parsed.module:
+      log.warn('The "module" parameter in application .yaml files is '
+               'deprecated. Please use the "service" parameter instead.')
+    else:
+      parsed.module = parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME
 
     _CheckIllegalAttribute(
         name='application',
@@ -256,14 +259,14 @@ class ModuleYamlInfo(_YamlInfo):
         file_path=file_path,
         msg=HINT_VERSION)
 
-    return ModuleYamlInfo(file_path, parsed)
+    return ServiceYamlInfo(file_path, parsed)
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""
     return self.is_vm
 
   def _UpdateManagedVMConfig(self):
-    """Overwrites vm_settings for Managed VMs modules.
+    """Overwrites vm_settings for Managed VMs services.
 
     Sets has_docker_image to be always True. Required for transition period
     until all images in production are pushed via gcloud (and therefore all
@@ -272,8 +275,8 @@ class ModuleYamlInfo(_YamlInfo):
     Also sets module_yaml_path which is needed for some runtimes.
 
     Raises:
-      AppConfigError: if the function was called for the module which is not a
-        Managed VM module.
+      AppConfigError: if the function was called for the service which is not a
+        Managed VM service.
     """
     if not self.is_vm:
       raise AppConfigError('This is not a Managed VM module. vm != True')
@@ -325,7 +328,7 @@ class AppConfigSet(object):
       YamlParserError: If a file fails to parse.
     """
     self.__config_yamls = {}
-    self.__module_yamls = {}
+    self.__service_yamls = {}
     self.__error = False
 
     for f in files:
@@ -349,30 +352,30 @@ class AppConfigSet(object):
     log.error(*args, **kwargs)
     self.__error = True
 
-  def Modules(self):
-    """Gets the modules that were found.
+  def Services(self):
+    """Gets the services that were found.
 
     Returns:
-      {str, ModuleYamlInfo}, A mapping of module name to definition.
+      {str, ServiceYamlInfo}, A mapping of service name to definition.
     """
-    return dict(self.__module_yamls)
+    return dict(self.__service_yamls)
 
-  def HermeticModules(self):
-    """Gets the hermetic modules that were found.
+  def HermeticServices(self):
+    """Gets the hermetic services that were found.
 
     Returns:
-      {str, ModuleYamlInfo}, A mapping of module name to definition.
+      {str, ServiceYamlInfo}, A mapping of service name to definition.
     """
-    return dict((key, mod) for (key, mod) in self.__module_yamls.iteritems()
-                if mod.is_hermetic)
+    return dict((key, srv) for (key, srv) in self.__service_yamls.iteritems()
+                if srv.is_hermetic)
 
-  def NonHermeticModules(self):
-    """Gets the non-hermetic modules that were found.
+  def NonHermeticServices(self):
+    """Gets the non-hermetic services that were found.
 
     Returns:
-      {str, ModuleYamlInfo}, A mapping of module name to definition.
+      {str, ServiceYamlInfo}, A mapping of service name to definition.
     """
-    return dict((key, mod) for (key, mod) in self.__module_yamls.iteritems()
+    return dict((key, mod) for (key, mod) in self.__service_yamls.iteritems()
                 if not mod.is_hermetic)
 
   def Configs(self):
@@ -390,7 +393,7 @@ class AppConfigSet(object):
       f: str, The full path to the file.
 
     Returns:
-      True if the file is a module yaml or a config yaml.
+      True if the file is a service yaml or a config yaml.
     """
     (base, ext) = os.path.splitext(os.path.basename(f))
     if ext not in AppConfigSet.YAML_EXTS:
@@ -409,7 +412,7 @@ class AppConfigSet(object):
       YamlValidationError: If the info in the yaml file is invalid.
 
     Returns:
-      True if the file was valid, False if it is not a valid module or config
+      True if the file was valid, False if it is not a valid service or config
       file.
     """
     file_path = os.path.abspath(file_path)
@@ -426,14 +429,14 @@ class AppConfigSet(object):
       else:
         self.__config_yamls[yaml.config] = yaml
     else:
-      yaml = ModuleYamlInfo.FromFile(file_path)
-      existing_module = self.__module_yamls.get(yaml.module)
-      if existing_module:
-        self.__Error('Found multiple files declaring module [%s]: [%s, %s]',
+      yaml = ServiceYamlInfo.FromFile(file_path)
+      existing_service = self.__service_yamls.get(yaml.module)
+      if existing_service:
+        self.__Error('Found multiple files declaring service [%s]: [%s, %s]',
                      yaml.module, self.__RelPath(yaml),
-                     self.__RelPath(existing_module))
+                     self.__RelPath(existing_service))
       else:
-        self.__module_yamls[yaml.module] = yaml
+        self.__service_yamls[yaml.module] = yaml
 
     return True
 

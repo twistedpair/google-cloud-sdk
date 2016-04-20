@@ -213,6 +213,7 @@ class AndroidRoboTest(_messages.Message):
       Default is 50. Optional
     maxSteps: The max number of steps Robo can execute. Default is no limit.
       Optional
+    protoConf: A FileReference attribute.
     randomizeSteps: Whether Robo follows a random order of steps on a given
       activity state. Optional
   """
@@ -222,7 +223,8 @@ class AndroidRoboTest(_messages.Message):
   appPackageId = _messages.StringField(3)
   maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  randomizeSteps = _messages.BooleanField(6)
+  protoConf = _messages.MessageField('FileReference', 6)
+  randomizeSteps = _messages.BooleanField(7)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):

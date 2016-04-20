@@ -313,17 +313,17 @@ class AttachedDisk(_messages.Message):
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
-      encryption key.  If you are creating a new disk, this field encrypts the
-      disk using a customer-supplied encryption key. If you are attaching an
+      encryption key.  If you are creating a new disk, encrypts the new disk
+      using an encryption key that you provide. If you are attaching an
       existing disk that is already encrypted, this field decrypts the disk
-      using the customer-supplied encryption key.  If you encrypt a new disk
-      using a customer-supplied encryption key, you must provide the same key
-      again when you attempt to use this resource at a later time. For
-      example, you must provide the key when you create a snapshot or an image
-      from the disk or when you attach the disk to a virtual machine instance.
-      If no customer-supplied encryption key is provided at creation, then the
-      disk will be encrypted using an automatically generated key and you do
-      not need to provide a key to use the disk later.
+      using the customer-supplied encryption key.  If you encrypt a disk using
+      a customer-supplied key, you must provide the same key again when you
+      attempt to use this resource at a later time. For example, you must
+      provide the key when you create a snapshot or an image from the disk or
+      when you attach the disk to a virtual machine instance.  If you do not
+      provide an encryption key, then the disk will be encrypted using an
+      automatically generated key and you do not need to provide a key to use
+      the disk later.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -438,9 +438,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
-      source image. This key is required if the source image is protected by a
-      customer-supplied encryption key.  If the incorrect key is provided, the
-      operation will fail.
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
   """
 
   class DiskStorageTypeValueValuesEnum(_messages.Enum):
@@ -945,6 +944,8 @@ class Backend(_messages.Message):
       offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    failover: This field designates whether this is a failover backend. More
+      than one failover backend can be configured for a given BackendService.
     group: The fully-qualified URL of a zonal Instance Group resource. This
       instance group defines the list of instances that serve traffic. Member
       virtual machine instances from each instance group must live in the same
@@ -990,12 +991,13 @@ class Backend(_messages.Message):
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
-  group = _messages.StringField(4)
-  maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  failover = _messages.BooleanField(4)
+  group = _messages.StringField(5)
+  maxConnections = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maxRatePerInstance = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
 
 
 class BackendBucket(_messages.Message):
@@ -1056,6 +1058,7 @@ class BackendService(_messages.Message):
   virtual machines and their serving capacity.
 
   Enums:
+    LoadBalancingSchemeValueValuesEnum:
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
       and SSL.
@@ -1073,6 +1076,16 @@ class BackendService(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.
+    failoverRatio: The value of the field must be in [0, 1]. If set,
+      'backends[].failover' must be set. They together define the fallback
+      behavior of the primary backend: if the ratio of the healthy VMs in the
+      primary backend is at or below this number, traffic arriving at the
+      load-balanced IP will be directed to the failover backend.  In case
+      where 'failoverRatio' is not set or all the VMs in the backup backend
+      are unhealthy, the traffic will be directed back to the primary backend
+      in the "force" mode, where traffic will be spread to the healthy VMs
+      with the best effort, or to all VMs when no VM is healthy.  This field
+      can only be used for regional BackendServices.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -1084,6 +1097,7 @@ class BackendService(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
+    loadBalancingScheme: A LoadBalancingSchemeValueValuesEnum attribute.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -1105,6 +1119,18 @@ class BackendService(_messages.Message):
       a failed request. Default is 30 seconds.
   """
 
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    """LoadBalancingSchemeValueValuesEnum enum type.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      INVALID_LOAD_BALANCING_SCHEME: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    INVALID_LOAD_BALANCING_SCHEME = 2
+
   class ProtocolValueValuesEnum(_messages.Enum):
     """The protocol this BackendService uses to communicate with backends.
     Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
@@ -1114,23 +1140,29 @@ class BackendService(_messages.Message):
       HTTPS: <no description>
       SSL: <no description>
       TCP: <no description>
+      UDP: <no description>
     """
     HTTP = 0
     HTTPS = 1
     SSL = 2
     TCP = 3
+    UDP = 4
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     """Type of session affinity to use.
 
     Values:
       CLIENT_IP: <no description>
+      CLIENT_IP_PORT_PROTO: <no description>
+      CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
-    GENERATED_COOKIE = 1
-    NONE = 2
+    CLIENT_IP_PORT_PROTO = 1
+    CLIENT_IP_PROTO = 2
+    GENERATED_COOKIE = 3
+    NONE = 4
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
@@ -1138,18 +1170,20 @@ class BackendService(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   enableCDN = _messages.BooleanField(6)
-  fingerprint = _messages.BytesField(7)
-  healthChecks = _messages.StringField(8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default=u'compute#backendService')
-  name = _messages.StringField(11)
-  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(13)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 17)
-  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  failoverRatio = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  fingerprint = _messages.BytesField(8)
+  healthChecks = _messages.StringField(9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(15)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
+  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -3542,54 +3576,14 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -4839,6 +4833,32 @@ class ComputeProjectsGetRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
 
 
+class ComputeProjectsMoveDiskRequest(_messages.Message):
+  """A ComputeProjectsMoveDiskRequest object.
+
+  Fields:
+    diskMoveRequest: A DiskMoveRequest resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  diskMoveRequest = _messages.MessageField('DiskMoveRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeProjectsMoveInstanceRequest(_messages.Message):
+  """A ComputeProjectsMoveInstanceRequest object.
+
+  Fields:
+    instanceMoveRequest: A InstanceMoveRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+  """
+
+  instanceMoveRequest = _messages.MessageField('InstanceMoveRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
   """A ComputeProjectsSetCommonInstanceMetadataRequest object.
 
@@ -5092,54 +5112,14 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  region = _messages.StringField(7, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -5543,6 +5523,23 @@ class ComputeRegionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionalBackendServicesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionsGetRequest(_messages.Message):
@@ -7939,15 +7936,13 @@ class Disk(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
-      key.  If you encrypt the disk using a customer-supplied encryption key,
-      and you want to use the disk later (e.g. to create a disk snapshot or an
-      image, or to attach the disk to a virtual machine), you must provide the
-      same key in your request. If you provide an incorrect key, or no key,
-      the operation will fail.  Customer-supplied encryption keys do not
-      protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the disk later.
+      key.  After you encrypt a disk with a customer-supplied key, you must
+      provide the same key if you use the disk later (e.g. to create a disk
+      snapshot or an image, or to attach the disk to a virtual machine).
+      Customer-supplied encryption keys do not protect access to metadata of
+      the disk.  If you do not provide an encryption key when creating the
+      disk, then the disk will be encrypted using an automatically generated
+      key and you do not need to provide a key to use the disk later.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -7995,9 +7990,8 @@ class Disk(_messages.Message):
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
-      source image. This key is required if the source image is protected by a
-      customer-supplied encryption key.  If the incorrect key is provided, the
-      operation will fail.
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
     sourceImageId: [Output Only] The ID value of the image used to create this
       disk. This value identifies the exact image that was used to create this
       persistent disk. For example, if you created the persistent disk from an
@@ -8010,9 +8004,8 @@ class Disk(_messages.Message):
       ojects/project/global/snapshots/snapshot  -
       projects/project/global/snapshots/snapshot  - global/snapshots/snapshot
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
-      source snapshot. This key is required if the source snapshot is
-      protected by a customer-supplied encryption key.  If the incorrect key
-      is provided, the operation will fail.
+      source snapshot. Required if the source snapshot is protected by a
+      customer-supplied encryption key.
     sourceSnapshotId: [Output Only] The unique ID of the snapshot used to
       create this disk. This value identifies the exact snapshot that was used
       to create this persistent disk. For example, if you created the
@@ -8181,6 +8174,26 @@ class DiskList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#diskList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class DiskMoveRequest(_messages.Message):
+  """A DiskMoveRequest object.
+
+  Fields:
+    destinationZone: The URL of the destination zone to move the disk. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a zone:   -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone  -
+      projects/project/zones/zone  - zones/zone
+    targetDisk: The URL of the target disk to move. This can be a full or
+      partial URL. For example, the following are all valid URLs to a disk:
+      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/disk
+      s/disk  - projects/project/zones/zone/disks/disk  -
+      zones/zone/disks/disk
+  """
+
+  destinationZone = _messages.StringField(1)
+  targetDisk = _messages.StringField(2)
 
 
 class DiskType(_messages.Message):
@@ -8610,7 +8623,11 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH or SCTP.
+      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
+    LoadBalancingSchemeValueValuesEnum: When used for load balancing, this
+      signifies what the ForwardingRule will be used for and can only take the
+      following values: INTERNAL (Internal Network Load Balancing) and
+      EXTERNAL (External HTTP(S) Load Balancing).
 
   Fields:
     IPAddress: Value of the reserved IP address that this forwarding rule is
@@ -8619,7 +8636,10 @@ class ForwardingRule(_messages.Message):
       same region as the forwarding rule. If left empty (default value), an
       ephemeral IP from the same scope (global or regional) will be assigned.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH or SCTP.
+      TCP, UDP, ESP, AH, SCTP or ICMP.
+    backendService: The BackendService resource to receive the matched
+      traffic. This field should only be used for Forwarding Rules with LB
+      scheme INTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -8628,6 +8648,10 @@ class ForwardingRule(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
+    loadBalancingScheme: When used for load balancing, this signifies what the
+      ForwardingRule will be used for and can only take the following values:
+      INTERNAL (Internal Network Load Balancing) and EXTERNAL (External
+      HTTP(S) Load Balancing).
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -8635,6 +8659,9 @@ class ForwardingRule(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: This field identifies the network that the load balanced IP
+      should belong to, for this Forwarding Rule. This field should only be
+      used for Forwarding Rules with LB scheme INTERNAL.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
@@ -8642,6 +8669,11 @@ class ForwardingRule(_messages.Message):
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
+    subnetwork: This field identifies the subnetwork that the load balanced IP
+      should belong to, for this Forwarding Rule.  This field should only be
+      used for Forwarding Rules with LB scheme INTERNAL.  If the network
+      specified is in auto subnet mode, this field is optional. However, if
+      the network is in custom subnet mode, a subnetwork must be specified.
     target: The URL of the target resource to receive the matched traffic. For
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
@@ -8653,7 +8685,7 @@ class ForwardingRule(_messages.Message):
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     """The IP protocol to which this rule applies. Valid options are TCP, UDP,
-    ESP, AH or SCTP.
+    ESP, AH, SCTP or ICMP.
 
     Values:
       AH: <no description>
@@ -8668,17 +8700,36 @@ class ForwardingRule(_messages.Message):
     TCP = 3
     UDP = 4
 
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    """When used for load balancing, this signifies what the ForwardingRule
+    will be used for and can only take the following values: INTERNAL
+    (Internal Network Load Balancing) and EXTERNAL (External HTTP(S) Load
+    Balancing).
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      INVALID: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    INVALID = 2
+
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#forwardingRule')
-  name = _messages.StringField(7)
-  portRange = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  target = _messages.StringField(11)
+  backendService = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#forwardingRule')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  portRange = _messages.StringField(11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  subnetwork = _messages.StringField(14)
+  target = _messages.StringField(15)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -9338,13 +9389,11 @@ class Image(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
-      encryption key.  If you encrypt an image using a customer-supplied
-      encryption key, and you want to use the image later (e.g. to create a
-      disk from the image), you must provide the same key used encrypt the
-      image in your future request. If you provide an incorrect key, or no
-      key, the operation will fail.  Customer-supplied encryption keys do not
-      protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
+      encryption key.  After you encrypt an image with a customer-supplied
+      key, you must provide the same key if you use the image later (e.g. to
+      create a disk from the image).  Customer-supplied encryption keys do not
+      protect access to metadata of the disk.  If you do not provide an
+      encryption key when creating the image, then the disk will be encrypted
       using an automatically generated key and you do not need to provide a
       key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
@@ -9374,10 +9423,9 @@ class Image(_messages.Message):
       example, the following are valid values:   - https://www.googleapis.com/
       compute/v1/projects/project/zones/zone/disk/disk  -
       projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
-    sourceDiskEncryptionKey: Specifies the customer-supplied encryption key of
-      the source disk. This key is required if the source disk is protected by
-      a customer-supplied encryption key.  If the incorrect key is provided
-      the operation will fail.
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
@@ -9546,16 +9594,16 @@ class Instance(_messages.Message):
       be created before you can assign them.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    instanceEncryptionKey: Encrypts or decrypts data associated with an
-      instance with a customer-supplied encryption key.  If you are creating a
-      new instance, this field encrypts the Local SSD and RAM contents of the
-      instance using a customer-supplied encryption key.  If you are starting
-      an instance protected with a customer-supplied encryption key then you
-      must provide the correct key otherwise the instance start will not
-      succeed.  If no customer-supplied encryption key is provided at
-      creation, then the Local SSD and RAM will be encrypted using an
-      automatically generated key and you do not need to provide a key to
-      start the instance later.
+    instanceEncryptionKey: Encrypts or decrypts data for an instance with a
+      customer-supplied encryption key.  If you are creating a new instance,
+      this field encrypts the local SSD and in-memory contents of the instance
+      using a key that you provide.  If you are restarting an instance
+      protected with a customer-supplied encryption key, you must provide the
+      correct key in order to successfully restart the instance.  If you do
+      not provide an encryption key when creating the instance, then the local
+      SSD and in-memory contents will be encrypted using an automatically
+      generated key and you do not need to provide a key to start the instance
+      later.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -9885,9 +9933,9 @@ class InstanceGroupManager(_messages.Message):
       property when you create the resource.
     failoverAction: The action to perform in case of zone failure (set only
       for Regional instance group managers).
-    fingerprint: [Output Only] The fingerprint of the target pools
-      information. You can use this optional field for optimistic locking when
-      you update the target pool entries.
+    fingerprint: [Output Only] The fingerprint of the resource data. You can
+      use this optional field for optimistic locking when you update the
+      resource.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -10508,6 +10556,27 @@ class InstanceList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class InstanceMoveRequest(_messages.Message):
+  """A InstanceMoveRequest object.
+
+  Fields:
+    destinationZone: The URL of the destination zone to move the instance.
+      This can be a full or partial URL. For example, the following are all
+      valid URLs to a zone:   -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone  -
+      projects/project/zones/zone  - zones/zone
+    targetInstance: The URL of the target instance to move. This can be a full
+      or partial URL. For example, the following are all valid URLs to an
+      instance:   - https://www.googleapis.com/compute/v1/projects/project/zon
+      es/zone/instances/instance  -
+      projects/project/zones/zone/instances/instance  -
+      zones/zone/instances/instance
+  """
+
+  destinationZone = _messages.StringField(1)
+  targetInstance = _messages.StringField(2)
 
 
 class InstanceProperties(_messages.Message):
@@ -11410,16 +11479,17 @@ class NetworkInterface(_messages.Message):
       are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
       roject/global/networks/network  -
       projects/project/global/networks/network  - global/networks/default
-    networkIP: [Output Only] An optional IPV4 internal network address
-      assigned to the instance for this network interface.
+    networkIP: An IPV4 internal network address to assign to the instance for
+      this network interface. If not specified by user an unused internal IP
+      is assigned by system.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not provide this property. If the
       network is in auto subnet mode, providing the subnetwork is optional. If
       the network is in custom subnet mode, then this field should be
       specified. If you specify this property, you can specify the subnetwork
       as a full or partial URL. For example, the following are all valid URLs:
-      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/subn
-      etworks/subnetwork  - zones/zone/subnetworks/subnetwork
+      - https://www.googleapis.com/compute/v1/projects/project/regions/region/
+      subnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
@@ -13071,21 +13141,18 @@ class Snapshot(_messages.Message):
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
     snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
-      encryption key.  If you encrypt a snapshot using a customer-supplied
-      encryption key and you want to use the snapshot later, you must provide
-      the same key that you used to encrypt the snapshot. For example, you
-      must provide the encryption key when you create a disk from the
-      encrypted snapshot in a future request. If you provide an incorrect key,
-      or no key, the request will fail.  Customer-supplied encryption keys do
-      not protect access to metadata of the disk.  If no customer-supplied
-      encryption key is provided at creation, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the snapshot later.
+      encryption key.  After you encrypt a snapshot using a customer-supplied
+      key, you must provide the same key if you use the image later For
+      example, you must provide the encryption key when you create a disk from
+      the encrypted snapshot in a future request.  Customer-supplied
+      encryption keys do not protect access to metadata of the disk.  If you
+      do not provide an encryption key when creating the snapshot, then the
+      snapshot will be encrypted using an automatically generated key and you
+      do not need to provide a key to use the snapshot later.
     sourceDisk: [Output Only] The source disk used to create this snapshot.
-    sourceDiskEncryptionKey: Specifies the customer-supplied encryption key of
-      the source disk. This key is required if the source disk is protected by
-      a customer-supplied encryption key.  If the incorrect key is provided,
-      the request will fail.
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
@@ -14707,7 +14774,7 @@ class UrlMap(_messages.Message):
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
     tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only all of the test cases pass.
+      will succeed only if all of the test cases pass.
   """
 
   creationTimestamp = _messages.StringField(1)

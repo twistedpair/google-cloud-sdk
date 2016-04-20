@@ -151,7 +151,22 @@ class Argument(object):
     """
     flag = self.__GetFlag(parser)
     if flag:
-      parser.flag_args.remove(flag)
+      # Remove the flag and its inverse, if it exists, from its container.
+      name = flag.option_strings[0]
+      conflicts = [(name, flag)]
+      no_name = '--no-' + name[2:]
+      for no_flag in parser.flag_args:
+        if no_name in no_flag.option_strings:
+          conflicts.append((no_name, no_flag))
+      # pylint: disable=protected-access, argparse, why can't we be friends
+      flag.container._handle_conflict_resolve(flag, conflicts)
+      # Remove the conflict flags from the calliope argument interceptor.
+      for _, flag in conflicts:
+        parser.defaults.pop(flag.dest, None)
+        if flag.dest in parser.dests:
+          parser.dests.remove(flag.dest)
+        if flag in parser.flag_args:
+          parser.flag_args.remove(flag)
 
   def SetDefault(self, parser, default):
     """Sets the default value for this flag in the given parser.
@@ -567,9 +582,13 @@ class Command(_Common):
       return info.list_format
     return 'default'
 
-  def Epilog(self):
-    """Called after resources are displayed if the default format was used."""
-    pass
+  def Epilog(self, resources_were_displayed):
+    """Called after resources are displayed if the default format was used.
+
+    Args:
+      resources_were_displayed: True if resources were displayed.
+    """
+    _ = resources_were_displayed
 
   def GetReferencedKeyNames(self, args):
     """Returns the key names referenced by the filter and format expressions."""
@@ -650,6 +669,15 @@ class ListCommand(CacheCommand):
     PAGE_SIZE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)
     URI_FLAG.AddToParser(parser)
+
+  def Epilog(self, resources_were_displayed):
+    """Called after resources are displayed if the default format was used.
+
+    Args:
+      resources_were_displayed: True if resources were displayed.
+    """
+    if not resources_were_displayed:
+      log.status.Print('Listed 0 items.')
 
   def Format(self, args):
     return self.ListFormat(args)

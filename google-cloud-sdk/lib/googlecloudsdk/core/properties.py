@@ -675,7 +675,7 @@ class _SectionCore(_Section):
         'standard output and standard error will be suppressed.')
     self.log_http = self._AddBool(
         'log_http',
-        help_text='If True, log http requests and responses to the logs.  '
+        help_text='If True, log HTTP requests and responses to the logs.  '
         'You may need to adjust your `verbosity` setting if you want to see '
         'in the terminal, otherwise it is available in the log files.')
     self.http_timeout = self._Add(
@@ -901,6 +901,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
     self.servicemanagement = self._Add('servicemanagement')
+    self.serviceregistry = self._Add('serviceregistry')
     self.source = self._Add('source')
     self.sql = self._Add('sql')
     self.pubsub = self._Add('pubsub')

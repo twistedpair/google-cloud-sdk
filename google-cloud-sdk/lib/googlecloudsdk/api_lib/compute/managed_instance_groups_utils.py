@@ -422,6 +422,7 @@ def AddAutoscalersToMigs(migs_iterator, project, compute, http,
     if hasattr(autoscaler, 'region') and autoscaler.region is not None:
       autoscaler_scope = path_simplifier.Name(autoscaler.region)
     if autoscaler_scope is not None:
+      autoscalers.setdefault(autoscaler_scope, [])
       autoscalers[autoscaler_scope].append(autoscaler)
 
   for mig in migs:

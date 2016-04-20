@@ -2466,7 +2466,7 @@ See Accessing images for more information.
               method_id=u'compute.instanceGroupManagers.listManagedInstances',
               ordered_params=[u'project', u'zone', u'instanceGroupManager'],
               path_params=[u'instanceGroupManager', u'project', u'zone'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              query_params=[],
               relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listManagedInstances',
               request_field='',
               request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
@@ -3382,6 +3382,18 @@ See Accessing images for more information.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'StartWithEncryptionKey': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.startWithEncryptionKey',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey',
+              request_field=u'instancesStartWithEncryptionKeyRequest',
+              request_type_name=u'ComputeInstancesStartWithEncryptionKeyRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Stop': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.stop',
@@ -3642,6 +3654,19 @@ See Accessing images for more information.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def StartWithEncryptionKey(self, request, global_params=None):
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+
+      Args:
+        request: (ComputeInstancesStartWithEncryptionKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartWithEncryptionKey')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3955,6 +3980,30 @@ See Accessing images for more information.
               response_type_name=u'Project',
               supports_download=False,
           ),
+          'MoveDisk': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.projects.moveDisk',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/moveDisk',
+              request_field=u'diskMoveRequest',
+              request_type_name=u'ComputeProjectsMoveDiskRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'MoveInstance': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.projects.moveInstance',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/moveInstance',
+              request_field=u'instanceMoveRequest',
+              request_type_name=u'ComputeProjectsMoveInstanceRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetCommonInstanceMetadata': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.projects.setCommonInstanceMetadata',
@@ -3994,6 +4043,32 @@ See Accessing images for more information.
         (Project) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def MoveDisk(self, request, global_params=None):
+      """Moves a persistent disk from one zone to another.
+
+      Args:
+        request: (ComputeProjectsMoveDiskRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MoveDisk')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def MoveInstance(self, request, global_params=None):
+      """Moves an instance and its attached persistent disks from one zone to another.
+
+      Args:
+        request: (ComputeProjectsMoveInstanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MoveInstance')
       return self._RunMethod(
           config, request, global_params=global_params)
 

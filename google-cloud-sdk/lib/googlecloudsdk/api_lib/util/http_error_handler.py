@@ -14,10 +14,11 @@
 
 """Module for translating HttpErrors into HttpExceptions."""
 
-import functools
+from functools import wraps
 import json
+import sys
 
-from googlecloudsdk.calliope import exceptions as base_exceptions
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
@@ -25,25 +26,71 @@ def GetHttpErrorMessage(error):
   """Returns a human readable string representation from the http response.
 
   Args:
-    error: HttpException representing the error response.
+    error: apitools HttpException representing the error response.
 
   Returns:
     A human readable string representation of the error.
   """
-  data = json.loads(error.content)
-  code = data['error']['code']
-  message = data['error']['message']
-  return 'ResponseError: code={0}, message={1}'.format(code, message)
+  code = getattr(error.response, 'status', '')  # Example: 403
+  status = ''
+  message = ''
+  try:
+    data = json.loads(error.content)
+    if 'error' in data:
+      error_info = data['error']
+      code = error_info.get('code', code)  # Example: 403
+      status = error_info.get('status', '')  # Example: PERMISSION_DENIED
+      message = error_info.get('message', '')
+  except (ValueError, TypeError):
+    message = error.content
+  if not status and not message:
+    # Example: 'HTTPError 403'
+    return 'HTTPError {0}'.format(code)
+  if not status or not message:
+    # Example: 'PERMISSION_DENIED' or 'You do not have permission to access X'
+    return '{0}'.format(status or message)
+  # Example: 'PERMISSION_DENIED: You do not have permission to access X'
+  return '{0}: {1}'.format(status, message)
 
 
 def HandleHttpErrors(func):
-  """Decorator that catches HttpErrors and raises a CLI friendly exception."""
+  """Decorator that catches apitools HttpError and raises HttpException."""
 
-  @functools.wraps(func)
-  def HandleErrorFn(*args, **kwargs):
+  @wraps(func)
+  def CatchHTTPErrorRaiseHTTPExceptionFn(*args, **kwargs):
+    """Catch HTTPError and raise HTTPException for normal functions."""
     try:
       return func(*args, **kwargs)
     except apitools_exceptions.HttpError as error:
-      raise base_exceptions.HttpException(GetHttpErrorMessage(error))
+      msg = GetHttpErrorMessage(error)
+      unused_type, unused_value, traceback = sys.exc_info()
+      raise exceptions.HttpException, msg, traceback
 
-  return HandleErrorFn
+  @wraps(func)
+  def CatchHTTPErrorRaiseHTTPExceptionGen(*args, **kwargs):
+    """Catch HTTPError and raise HTTPException for generator functions."""
+    try:
+      result = func(*args, **kwargs)
+      for element in result:
+        yield element
+    except apitools_exceptions.HttpError as error:
+      msg = GetHttpErrorMessage(error)
+      unused_type, unused_value, traceback = sys.exc_info()
+      raise exceptions.HttpException, msg, traceback
+
+  # The wrapper should only be used with functions or methods.
+  # Technically, the proper way is to check isinstance of MethodType or
+  # FunctionType. However, we want to make this fast, and we want it to fail
+  # for classes (which can be callable or implement __call__!). func_code is
+  # also used below to check if it's a generator so it needs to exist.
+  if not hasattr(func, 'func_code'):
+    raise TypeError('CatchHTTPErrorRaiseHTTPException can only be applied to '
+                    'functions or methods.')
+
+  # Check if function is a generator.
+  # This is basically an inline implementation of inspect.isgeneratorfunction
+  # so we won't have to import inspect. Importing inspect caused perf problems
+  # in the past. 0x20 is defined as CO_GENERATOR in inspect module.
+  if func.func_code.co_flags & 0x20:
+    return CatchHTTPErrorRaiseHTTPExceptionGen
+  return CatchHTTPErrorRaiseHTTPExceptionFn

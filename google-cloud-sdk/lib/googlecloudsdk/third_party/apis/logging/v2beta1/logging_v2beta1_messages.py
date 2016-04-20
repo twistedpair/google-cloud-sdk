@@ -70,6 +70,22 @@ class HttpRequest(_messages.Message):
   userAgent = _messages.StringField(13)
 
 
+class InternalEntityId(_messages.Message):
+  """A InternalEntityId object.
+
+  Fields:
+    billingAccountId: Unique identifier of a billing account
+    folderNumber: Gaia Id of a folder
+    organizationNumber: Gaia Id of an organization
+    projectNumber: Gaia Id of a project
+  """
+
+  billingAccountId = _messages.StringField(1)
+  folderNumber = _messages.IntegerField(2)
+  organizationNumber = _messages.IntegerField(3)
+  projectNumber = _messages.IntegerField(4)
+
+
 class LabelDescriptor(_messages.Message):
   """A description of a label.
 
@@ -314,6 +330,7 @@ class LogEntry(_messages.Message):
       field, the logging service considers other log entries in the same log
       with the same ID as duplicates which can be removed.  If omitted,
       Stackdriver Logging will generate a unique ID for this log entry.
+    internalId: A InternalEntityId attribute.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -456,18 +473,19 @@ class LogEntry(_messages.Message):
   folderNumber = _messages.IntegerField(2)
   httpRequest = _messages.MessageField('HttpRequest', 3)
   insertId = _messages.StringField(4)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  logName = _messages.StringField(7)
-  operation = _messages.MessageField('LogEntryOperation', 8)
-  organizationNumber = _messages.IntegerField(9)
-  projectNumber = _messages.IntegerField(10)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 11)
-  resource = _messages.MessageField('MonitoredResource', 12)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 13)
-  textPayload = _messages.StringField(14)
-  timestamp = _messages.StringField(15)
-  writerEmailAddress = _messages.StringField(16)
+  internalId = _messages.MessageField('InternalEntityId', 5)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  logName = _messages.StringField(8)
+  operation = _messages.MessageField('LogEntryOperation', 9)
+  organizationNumber = _messages.IntegerField(10)
+  projectNumber = _messages.IntegerField(11)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 12)
+  resource = _messages.MessageField('MonitoredResource', 13)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 14)
+  textPayload = _messages.StringField(15)
+  timestamp = _messages.StringField(16)
+  writerEmailAddress = _messages.StringField(17)
 
 
 class LogEntryOperation(_messages.Message):

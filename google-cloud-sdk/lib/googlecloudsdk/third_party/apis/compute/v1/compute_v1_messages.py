@@ -2370,6 +2370,18 @@ class ComputeImagesDeprecateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class ComputeImagesGetFromFamilyRequest(_messages.Message):
+  """A ComputeImagesGetFromFamilyRequest object.
+
+  Fields:
+    family: Name of the image resource to return.
+    project: Project ID for this request.
+  """
+
+  family = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeImagesGetRequest(_messages.Message):
   """A ComputeImagesGetRequest object.
 
@@ -2560,45 +2572,14 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   """A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: Sets a filter expression for filtering listed resources, in the
-      form filter={expression}. Your {expression} must be in the format:
-      field_name comparison_string literal_string.  The field_name is the name
-      of the field you want to compare. Only atomic field types are supported
-      (string, number, boolean). The comparison_string must be either eq
-      (equals) or ne (not equals). The literal_string is the string value to
-      filter to. The literal value must be valid for the type of field you are
-      filtering by (string, number, boolean). For string fields, the literal
-      value is interpreted as a regular expression using RE2 syntax. The
-      literal value must match the entire field.  For example, to filter for
-      instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
-      example, you could filter on instances that have set the
-      scheduling.automaticRestart field to true. Use filtering on nested
-      fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
     instanceGroupManager: The name of the managed instance group.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
 
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -5832,7 +5813,7 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH or SCTP.
+      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
 
   Fields:
     IPAddress: Value of the reserved IP address that this forwarding rule is
@@ -5841,7 +5822,7 @@ class ForwardingRule(_messages.Message):
       same region as the forwarding rule. If left empty (default value), an
       ephemeral IP from the same scope (global or regional) will be assigned.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH or SCTP.
+      TCP, UDP, ESP, AH, SCTP or ICMP.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -5875,7 +5856,7 @@ class ForwardingRule(_messages.Message):
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     """The IP protocol to which this rule applies. Valid options are TCP, UDP,
-    ESP, AH or SCTP.
+    ESP, AH, SCTP or ICMP.
 
     Values:
       AH: <no description>
@@ -6315,6 +6296,10 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
+    family: The name of the image family to which this image belongs. You can
+      create disks by specifying an image family instead of a specific image
+      name. The image family always returns its latest image that is not
+      deprecated.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#image for images.
@@ -6409,16 +6394,17 @@ class Image(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 3)
   description = _messages.StringField(4)
   diskSizeGb = _messages.IntegerField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#image')
-  licenses = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  rawDisk = _messages.MessageField('RawDiskValue', 10)
-  selfLink = _messages.StringField(11)
-  sourceDisk = _messages.StringField(12)
-  sourceDiskId = _messages.StringField(13)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 14, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  family = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#image')
+  licenses = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  rawDisk = _messages.MessageField('RawDiskValue', 11)
+  selfLink = _messages.StringField(12)
+  sourceDisk = _messages.StringField(13)
+  sourceDiskId = _messages.StringField(14)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 15, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
 
 
 class ImageList(_messages.Message):
@@ -6747,9 +6733,9 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    fingerprint: [Output Only] The fingerprint of the target pools
-      information. You can use this optional field for optimistic locking when
-      you update the target pool entries.
+    fingerprint: [Output Only] The fingerprint of the resource data. You can
+      use this optional field for optimistic locking when you update the
+      resource.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -8117,16 +8103,17 @@ class NetworkInterface(_messages.Message):
       are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
       roject/global/networks/network  -
       projects/project/global/networks/network  - global/networks/default
-    networkIP: [Output Only] An optional IPV4 internal network address
-      assigned to the instance for this network interface.
+    networkIP: An IPV4 internal network address to assign to the instance for
+      this network interface. If not specified by user an unused internal IP
+      is assigned by system.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not provide this property. If the
       network is in auto subnet mode, providing the subnetwork is optional. If
       the network is in custom subnet mode, then this field should be
       specified. If you specify this property, you can specify the subnetwork
       as a full or partial URL. For example, the following are all valid URLs:
-      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/subn
-      etworks/subnetwork  - zones/zone/subnetworks/subnetwork
+      - https://www.googleapis.com/compute/v1/projects/project/regions/region/
+      subnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
@@ -10485,7 +10472,7 @@ class UrlMap(_messages.Message):
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
     tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only all of the test cases pass.
+      will succeed only if all of the test cases pass.
   """
 
   creationTimestamp = _messages.StringField(1)

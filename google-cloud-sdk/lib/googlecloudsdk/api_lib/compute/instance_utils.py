@@ -454,6 +454,17 @@ def AddNetworkArgs(parser):
       """
 
 
+def AddNetworkArgsBeta(parser):
+  """Set arguments for choosing the network/subnetwork in beta."""
+  private_network_ip = parser.add_argument(
+      '--private-network-ip',
+      help='Assigns the given RFC1918 IP address to the instance.')
+  private_network_ip.detailed_help = """\
+      Specifies the RFC1918 IP to assign to the instance. The IP should be in
+      the subnet or legacy network IP range.
+      """
+
+
 def AddScopeArgs(parser):
   """Adds scope arguments for instances and instance-templates."""
   scopes_group = parser.add_mutually_exclusive_group()

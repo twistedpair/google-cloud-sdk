@@ -16,6 +16,7 @@
 
 import time
 
+from googlecloudsdk.api_lib.service_registry import constants
 from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
@@ -31,10 +32,9 @@ class ServiceRegistryClient(object):
 
   OPERATION_TIMEOUT = 10 * 60  # 10 mins
 
-  def __init__(self, client, messages, project):
+  def __init__(self, client, resources):
     self.client = client
-    self.messages = messages
-    self.project = project
+    self.resources = resources
 
   @http_error_handler.HandleHttpErrors
   def call_service_registry(self, call, request, async, success_message):
@@ -60,22 +60,21 @@ class ServiceRegistryClient(object):
       log.Print('Operation {0} is running...'.format(operation.name))
       return operation
     else:
-      operation_name = operation.name
-      self.wait_for_operation(operation_name,
+      operation_ref = self.resources.Parse(
+          operation.name, collection=constants.OPERATIONS_COLLECTION)
+      self.wait_for_operation(operation_ref,
                               operation.operationType)
       log.status.Print(success_message)
 
   @http_error_handler.HandleHttpErrors
-  def wait_for_operation(
-      self, operation_name, operation_description=None):
+  def wait_for_operation(self, operation_ref, operation_description=None):
     """Wait for an operation to complete.
 
     Polls the operation requested approximately every second, showing a
     progress indicator. Returns when the operation has completed.
 
     Args:
-      operation_name: The name of the operation to wait on, as returned by
-          operations.list.
+      operation_ref: A reference to an operation resource.
       operation_description: A short description of the operation to wait on,
           such as 'create' or 'delete'. Will be displayed to the user.
 
@@ -89,21 +88,16 @@ class ServiceRegistryClient(object):
     ticks = 0
     message = ('Waiting for {0}[{1}]'.format(
         operation_description + ' ' if operation_description else '',
-        operation_name))
+        operation_ref.Name()))
     with console_io.ProgressTracker(message, autotick=False) as ticker:
       while ticks < self.OPERATION_TIMEOUT:
-        operation = self.client.operations.Get(
-            self.messages.ServiceregistryOperationsGetRequest(
-                project=self.project,
-                operation=operation_name,
-            )
-        )
+        operation = self.client.operations.Get(operation_ref.Request())
         # Operation status is one of PENDING, RUNNING, DONE
         if operation.status == 'DONE':
           if operation.error:
             raise ServiceRegistryError(
                 'Error in Operation [{0}]: {1}'.format(
-                    operation_name, str(operation.error)))
+                    operation_ref.Name(), str(operation.error)))
           else:  # Operation succeeded
             return
 
@@ -113,4 +107,4 @@ class ServiceRegistryClient(object):
 
       # Timeout exceeded
       raise ServiceRegistryError(
-          'Wait for Operation [' + operation_name + '] exceeded timeout.')
+          'Wait for Operation [' + operation_ref.Name() + '] exceeded timeout.')

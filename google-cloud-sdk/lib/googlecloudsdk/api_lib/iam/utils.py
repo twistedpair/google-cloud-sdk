@@ -18,6 +18,8 @@ import httplib
 import pickle
 import re
 
+from googlecloudsdk.calliope.exceptions import HttpException
+from googlecloudsdk.calliope.exceptions import ToolException
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apis.iam.v1 import iam_v1_messages as msgs
 from googlecloudsdk.third_party.apitools.base.py import exceptions
@@ -149,7 +151,7 @@ def CatchServiceAccountErrors(func):
           log.error(
               '{0}: service account [{1}]'.format(error_msg, self.address))
         return
-      raise
+      raise ToolException.FromCurrent()
 
   return CatchHttpErrors(wrapper)
 
@@ -165,7 +167,7 @@ def CatchHttpErrors(func):
       return func(*args, **kwargs)
     except exceptions.HttpError as error:
       log.error('Error:\n' + error.content)
-      raise
+      raise HttpException.FromCurrent()
 
   return wrapper
 

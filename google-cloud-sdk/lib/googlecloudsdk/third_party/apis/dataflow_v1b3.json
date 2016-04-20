@@ -434,7 +434,7 @@
           "type": "string"
         },
         "subnetwork": {
-          "description": "Subnetwork to which VMs will be assigned, if desired.  Expected to be of\nthe form \"zones\/ZONE\/subnetworks\/SUBNETWORK\".",
+          "description": "Subnetwork to which VMs will be assigned, if desired.  Expected to be of\nthe form \"regions\/REGION\/subnetworks\/SUBNETWORK\".",
           "type": "string"
         },
         "workerHarnessContainerImage": {
@@ -2521,6 +2521,7 @@
                   "location": "query",
                   "type": "string",
                   "enum": [
+                    "UNKNOWN",
                     "ALL",
                     "TERMINATED",
                     "ACTIVE"

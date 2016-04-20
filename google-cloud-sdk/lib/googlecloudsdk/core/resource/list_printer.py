@@ -21,16 +21,6 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
   """Prints the list representations of a JSON-serializable list.
 
   An ordered list of items.
-
-  Printer attributes:
-    empty-legend=_SENTENCES_: Prints _SENTENCES_ to the *status* logger if there
-      are no items. The default *empty-legend* is "Listed 0 items.".
-      *no-empty-legend* disables the default.
-    legend=_SENTENCES_: Prints _SENTENCES_ to the *out* logger after the last
-      item if there is at least one item.
-    legend-log=_TYPE_: Prints the legend to the _TYPE_ logger instead of the
-      default.  _TYPE_ may be: *out* (the default), *status* (standard error),
-      *debug*, *info*, *warn*, or *error*.
   """
 
   def __init__(self, *args, **kwargs):
@@ -54,6 +44,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     record = [i for i in record if i is not None]
     self._out.write(' - ' + '\n   '.join(record) + '\n')
 
+  # TODO(b/27967563): remove 3Q2016
   def Finish(self):
     """Prints the legend if any."""
     self.AddLegend()

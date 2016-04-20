@@ -37,7 +37,7 @@ def _BuildDeploymentManifest(info, bucket_ref, source_contexts,
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
-    info: An instance of yaml_parsing.ModuleInfo.
+    info: An instance of yaml_parsing.ServiceInfo.
     bucket_ref: The reference to the bucket files will be placed in.
     source_contexts: A list of source context files.
     context_dir: A temp directory to place the source context files in.
@@ -84,8 +84,8 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client):
   This skips already-uploaded files.
 
   Args:
-    manifest: A dict containing the deployment manifest for a single module.
-    source_dir: The relative source directory of the module.
+    manifest: A dict containing the deployment manifest for a single service.
+    source_dir: The relative source directory of the service.
     bucket_ref: The GCS bucket reference to upload files into.
     storage_client: A storage_v1 client object.
 
@@ -115,7 +115,7 @@ def _UploadFiles(files_to_upload, bucket_ref, storage_client):
 
 
 def CopyFilesToCodeBucketNoGsUtil(
-    modules, bucket_ref, source_contexts, storage_client):
+    services, bucket_ref, source_contexts, storage_client):
   """Copies application files to the code bucket without calling gsutil.
 
   Consider the following original structure:
@@ -146,53 +146,53 @@ def CopyFilesToCodeBucketNoGsUtil(
     values already present in the bucket will not be uploaded again.
 
   Args:
-    modules: Dictionary of user-specified modules.
+    services: Dictionary of user-specified services.
     bucket_ref: The bucket reference to upload to.
     source_contexts: A list of source_contexts to also upload.
     storage_client: A storage_v1 client object.
 
   Returns:
-    A lookup from module name to a dictionary representing the manifest.
+    A lookup from service name to a dictionary representing the manifest.
   """
   manifests = {}
 
   # Collect a list of files to upload, indexed by the SHA so uploads are
   # deduplicated.
-  for (module, info) in sorted(modules):
-    with file_utils.TemporaryDirectory() as context_dir:
-      manifest = _BuildDeploymentManifest(
-          info, bucket_ref, source_contexts, context_dir)
-      manifests[module] = manifest
+  for (service, info) in sorted(services):
+    source_dir = os.path.dirname(info.file)
+    manifest = _BuildDeploymentManifest(
+        info, bucket_ref, source_contexts, source_dir)
+    manifests[service] = manifest
 
-      source_dir = os.path.dirname(info.file)
-      files_to_upload = _BuildFileUploadMap(
-          manifest, source_dir, bucket_ref, storage_client)
-      _UploadFiles(files_to_upload, bucket_ref, storage_client)
+    source_dir = os.path.dirname(info.file)
+    files_to_upload = _BuildFileUploadMap(
+        manifest, source_dir, bucket_ref, storage_client)
+    _UploadFiles(files_to_upload, bucket_ref, storage_client)
   log.status.Print('File upload done.')
   log.info('Manifests: [{0}]'.format(manifests))
   return manifests
 
 
 def CopyFilesToCodeBucket(
-    modules, bucket_ref, source_contexts, unused_storage_client):
-  """Examines modules and copies files to a Google Cloud Storage bucket.
+    services, bucket_ref, source_contexts, unused_storage_client):
+  """Examines services and copies files to a Google Cloud Storage bucket.
 
   Args:
-    modules: [(str, ModuleYamlInfo)] List of pairs of module name, and parsed
-      module information.
+    services: [(str, ServiceYamlInfo)] List of pairs of service name, and parsed
+      service information.
     bucket_ref: str A reference to a GCS bucket where the files will be
       uploaded.
     source_contexts: [dict] List of json-serializable source contexts
-      associated with the modules.
+      associated with the services.
     unused_storage_client: Unused, there to satisfy the same interface as
       CopyFilesToCodeBucketNoGsutil
   Returns:
-    A lookup from module name to a dictionary representing the manifest. See
+    A lookup from service name to a dictionary representing the manifest. See
     _BuildStagingDirectory.
   """
   manifests = {}
   with file_utils.TemporaryDirectory() as staging_directory:
-    for (module, info) in modules:
+    for (service, info) in services:
       source_directory = os.path.dirname(info.file)
       excluded_files_regex = info.parsed.skip_files.regex
 
@@ -201,7 +201,7 @@ def CopyFilesToCodeBucket(
                                         bucket_ref,
                                         excluded_files_regex,
                                         source_contexts)
-      manifests[module] = manifest
+      manifests[service] = manifest
 
     if any(manifest for manifest in manifests.itervalues()):
       log.status.Print('Copying files to Google Cloud Storage...')

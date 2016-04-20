@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20160404",
+ "revision": "20160413",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -491,6 +491,10 @@
      "$ref": "CsvOptions",
      "description": "Additional properties to set if sourceFormat is set to CSV."
     },
+    "googleSheetsOptions": {
+     "$ref": "GoogleSheetsOptions",
+     "description": "[Optional] Additional options if sourceFormat is set to GOOGLE_SHEETS. Data must be located in the first tab, and should start in the first column. The data must also start in the first row unless a header row is present. The optional header row can contain column names. Fields that are empty will be filled will NULL values."
+    },
     "ignoreUnknownValues": {
      "type": "boolean",
      "description": "[Optional] Indicates if BigQuery should allow extra values that are not represented in the table schema. If true, the extra values are ignored. If false, records with extra columns are treated as bad records, and if there are too many bad records, an invalid error is returned in the job result. The default value is false. The sourceFormat property determines what BigQuery treats as an extra value: CSV: Trailing columns JSON: Named values that don't match any column names Google Cloud Bigtable: This setting is ignored. Google Cloud Datastore backups: This setting is ignored. Avro: This setting is ignored."
@@ -506,7 +510,7 @@
     },
     "sourceFormat": {
      "type": "string",
-     "description": "[Required] The data format. For CSV files, specify \"CSV\". For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\". For Avro files, specify \"AVRO\". For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\". [Experimental] For Google Cloud Bigtable, specify \"BIGTABLE\". Please note that reading from Google Cloud Bigtable is experimental and has to be enabled for your project. Please contact Google Cloud Support to enable this for your project."
+     "description": "[Required] The data format. For CSV files, specify \"CSV\". For Google Sheets, specify \"GOOGLE_SHEETS\". For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\". For Avro files, specify \"AVRO\". For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\". [Experimental] For Google Cloud Bigtable, specify \"BIGTABLE\". Please note that reading from Google Cloud Bigtable is experimental and has to be enabled for your project. Please contact Google Cloud Support to enable this for your project."
     },
     "sourceUris": {
      "type": "array",
@@ -576,16 +580,13 @@
     }
    }
   },
-  "IntervalPartitionConfiguration": {
-   "id": "IntervalPartitionConfiguration",
+  "GoogleSheetsOptions": {
+   "id": "GoogleSheetsOptions",
    "type": "object",
    "properties": {
-    "expirationMs": {
-     "type": "string",
-     "format": "int64"
-    },
-    "type": {
-     "type": "string"
+    "hasHeaderRow": {
+     "type": "boolean",
+     "description": "[Optional] Indicates that the first row in the spreadsheet contains column names."
     }
    }
   },
@@ -847,7 +848,7 @@
     },
     "useLegacySql": {
      "type": "boolean",
-     "description": "[Experimental] Specifies whether to use BigQuery's legacy SQL dialect for this query. The default value is true. If set to false, the query will use BigQuery's updated SQL dialect with improved standards compliance. When using BigQuery's updated SQL, the values of allowLargeResults and flattenResults are ignored. Queries with useLegacySql set to false will be run as if allowLargeResults is true and flattenResults is false."
+     "description": "[Experimental] Specifies whether to use BigQuery's legacy SQL dialect for this query. The default value is true. If set to false, the query will use BigQuery's updated SQL dialect with improved standards compliance: https://cloud.google.com/bigquery/sql-reference/ When using BigQuery's updated SQL, the values of allowLargeResults and flattenResults are ignored. Queries with useLegacySql set to false will be run as if allowLargeResults is true and flattenResults is false."
     },
     "useQueryCache": {
      "type": "boolean",
@@ -1246,7 +1247,7 @@
     },
     "useLegacySql": {
      "type": "boolean",
-     "description": "[Experimental] Specifies whether to use BigQuery's legacy SQL dialect for this query. The default value is true. If set to false, the query will use BigQuery's updated SQL dialect with improved standards compliance. When using BigQuery's updated SQL, the values of allowLargeResults and flattenResults are ignored. Queries with useLegacySql set to false will be run as if allowLargeResults is true and flattenResults is false."
+     "description": "[Experimental] Specifies whether to use BigQuery's legacy SQL dialect for this query. The default value is true. If set to false, the query will use BigQuery's updated SQL dialect with improved standards compliance: https://cloud.google.com/bigquery/sql-reference/ When using BigQuery's updated SQL, the values of allowLargeResults and flattenResults are ignored. Queries with useLegacySql set to false will be run as if allowLargeResults is true and flattenResults is false."
     },
     "useQueryCache": {
      "type": "boolean",
@@ -1389,13 +1390,6 @@
      "description": "[Output-only] The number of rows of data in this table, excluding any data in the streaming buffer.",
      "format": "uint64"
     },
-    "partitionConfigurations": {
-     "type": "array",
-     "description": "[Experimental] List of partition configurations for this table. Currently only one configuration can be specified and it can only be an interval partition with type daily.",
-     "items": {
-      "$ref": "TablePartitionConfiguration"
-     }
-    },
     "schema": {
      "$ref": "TableSchema",
      "description": "[Optional] Describes the schema of this table."
@@ -1411,6 +1405,10 @@
     "tableReference": {
      "$ref": "TableReference",
      "description": "[Required] Reference describing the ID of this table."
+    },
+    "timePartitioning": {
+     "$ref": "TimePartitioning",
+     "description": "[Experimental] If specified, configures time-based partitioning for this table."
     },
     "type": {
      "type": "string",
@@ -1617,17 +1615,6 @@
     }
    }
   },
-  "TablePartitionConfiguration": {
-   "id": "TablePartitionConfiguration",
-   "type": "object",
-   "description": "[Required] A partition configuration. Only one type of partition should be configured.",
-   "properties": {
-    "interval": {
-     "$ref": "IntervalPartitionConfiguration",
-     "description": "[Pick one] Configures an interval partition."
-    }
-   }
-  },
   "TableReference": {
    "id": "TableReference",
    "type": "object",
@@ -1684,6 +1671,21 @@
      "items": {
       "$ref": "TableFieldSchema"
      }
+    }
+   }
+  },
+  "TimePartitioning": {
+   "id": "TimePartitioning",
+   "type": "object",
+   "properties": {
+    "expirationMs": {
+     "type": "string",
+     "description": "[Optional] Number of milliseconds for which to keep the storage for a partition.",
+     "format": "int64"
+    },
+    "type": {
+     "type": "string",
+     "description": "[Required] The only type supported is DAY, which will generate one partition per day based on data loading time."
     }
    }
   },

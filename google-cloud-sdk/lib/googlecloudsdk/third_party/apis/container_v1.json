@@ -308,8 +308,8 @@
             "type": "string"
           }
         },
-        "imageTrack": {
-          "description": "The image track to use for this node. Note that for a given image track,\nthe latest version of it will be used.",
+        "imageFamily": {
+          "description": "The image family to use for this node. Note that for a given image family,\nthe latest version of it will be used.",
           "type": "string"
         },
         "labels": {
@@ -318,6 +318,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "localSsdCount": {
+          "description": "The number of local SSD disks that to be attached to the node.\n\nThe limit for this value is dependant upon the maximum number of\ndisks available on a machine per zone. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#local_ssd_limits\nfor more information.\n",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -559,11 +564,11 @@
           "$ref": "AddonsConfig"
         },
         "desiredNodePoolId": {
-          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_track\" is specified and\nthere is more than one node pool on the cluster.",
+          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_family\" is specified and\nthere is more than one node pool on the cluster.",
           "type": "string"
         },
-        "desiredImageTrack": {
-          "description": "The desired image track for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
+        "desiredImageFamily": {
+          "description": "The desired image family for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
         },
         "desiredMasterVersion": {
@@ -617,12 +622,12 @@
             "type": "string"
           }
         },
-        "defaultImageTrack": {
-          "description": "Default image track.",
+        "defaultImageFamily": {
+          "description": "Default image family.",
           "type": "string"
         },
-        "validImageTracks": {
-          "description": "List of valid image tracks.",
+        "validImageFamilies": {
+          "description": "List of valid image families.",
           "type": "array",
           "items": {
             "type": "string"

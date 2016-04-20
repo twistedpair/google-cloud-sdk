@@ -166,19 +166,15 @@ The following fields are required:
 
 * annotationSetId
 * referenceName or
-  referenceId or
+  referenceId
 
 ### Transcripts
-
-transcript
-transcript.exons
-transcript.exons.start
 
 For annotations of type TRANSCRIPT, the following fields of
 transcript must be provided:
 
-* `exons.start`
-* `exons.end`
+* exons.start
+* exons.end
 
 All other fields may be optionally specified, unless documented as being
 server-generated (for example, the `id` field). The annotated

@@ -197,4 +197,7 @@ def Print(resources, print_format, out=None, defaults=None, single=False):
     single: If True then resources is a single item and not a list.
       For example, use this to print a single object as JSON.
   """
-  Printer(print_format, out=out, defaults=defaults).Print(resources, single)
+  printer = Printer(print_format, out=out, defaults=defaults)
+  # None means the printer is disabled.
+  if printer:
+    printer.Print(resources, single)

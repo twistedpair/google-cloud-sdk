@@ -650,6 +650,10 @@
         "randomizeSteps": {
           "description": "Whether Robo follows a random order of steps on a given activity state.\nOptional",
           "type": "boolean"
+        },
+        "protoConf": {
+
+          "$ref": "FileReference"
         }
       }
     },

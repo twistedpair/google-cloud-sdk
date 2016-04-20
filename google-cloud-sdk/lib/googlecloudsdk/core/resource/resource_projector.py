@@ -390,9 +390,11 @@ class Projector(object):
     if self._transforms_enabled is None:
       # Pretty-print formats enable transforms by default.
       self._transforms_enabled = True
+    serialize = Compile().Evaluate
     columns = []
     for column in self._projection.Columns():
       val = resource_property.Get(obj, column.key) if column.key else obj
+      val = serialize(val)
       if column.attribute.transform:
         val = self._ProjectTransform(val, column.attribute.transform)
       columns.append(val)

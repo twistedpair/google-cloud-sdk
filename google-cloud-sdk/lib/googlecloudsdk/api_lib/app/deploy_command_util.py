@@ -39,7 +39,7 @@ from googlecloudsdk.third_party.appengine.api import appinfo
 
 
 DEFAULT_DOMAIN = 'appspot.com'
-DEFAULT_MODULE = 'default'
+DEFAULT_SERVICE = 'default'
 ALT_SEPARATOR = '-dot-'
 MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
 
@@ -63,8 +63,8 @@ def _GetDockerfileCreator(info, config_cleanup=None):
   """Returns a function to create a dockerfile if the user doesn't have one.
 
   Args:
-    info: (googlecloudsdk.api_lib.app.yaml_parsing.ModuleYamlInfo)
-      The module config.
+    info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo)
+      The service config.
     config_cleanup: (callable() or None) If a temporary Dockerfile has already
       been created during the course of the deployment, this should be a
       callable that deletes it.
@@ -132,15 +132,15 @@ def _GetDomainAndDisplayId(project_id):
   return l[1], l[0]
 
 
-def _GetImageName(project, module, version):
+def _GetImageName(project, service, version):
   """Returns image tag according to App Engine convention."""
   display, domain = _GetDomainAndDisplayId(project)
   return (config.DOCKER_IMAGE_NAME_DOMAIN_FORMAT if domain
           else config.DOCKER_IMAGE_NAME_FORMAT).format(
-              display=display, domain=domain, module=module, version=version)
+              display=display, domain=domain, service=service, version=version)
 
 
-def BuildAndPushDockerImages(module_configs,
+def BuildAndPushDockerImages(service_configs,
                              version_id,
                              cloudbuild_client,
                              storage_client,
@@ -152,8 +152,8 @@ def BuildAndPushDockerImages(module_configs,
   """Builds and pushes a set of docker images.
 
   Args:
-    module_configs: A map of module name to parsed config.
-    version_id: The version id to deploy these modules under.
+    service_configs: A map of service name to parsed config.
+    version_id: The version id to deploy these services under.
     cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
     storage_client: An instance of the storage_v1.StorageV1 client.
     code_bucket_ref: The reference to the GCS bucket where the source will be
@@ -167,30 +167,30 @@ def BuildAndPushDockerImages(module_configs,
       callable that deletes it.
 
   Returns:
-    A dictionary mapping modules to the name of the pushed container image.
+    A dictionary mapping services to the name of the pushed container image.
   """
   project = properties.VALUES.core.project.Get(required=True)
   use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool()
   if use_cloud_build is None:
     use_cloud_build = True
 
-  # Prepare temporary dockerfile creators for all modules that need them
+  # Prepare temporary dockerfile creators for all services that need them
   # before doing the heavy lifting so we can fail fast if there are errors.
-  modules = []
-  for (name, info) in module_configs.iteritems():
+  services = []
+  for (name, info) in service_configs.iteritems():
     if info.RequiresImage():
       context_creator = context_util.GetSourceContextFilesCreator(
           os.path.dirname(info.file), source_contexts)
-      modules.append((name, info, _GetDockerfileCreator(info, config_cleanup),
-                      context_creator))
-  if not modules:
+      services.append((name, info, _GetDockerfileCreator(info, config_cleanup),
+                       context_creator))
+  if not services:
     # No images need to be built.
     return {}
 
   log.status.Print('Verifying that Managed VMs are enabled and ready.')
 
-  if use_cloud_build:
-    return _BuildImagesWithCloudBuild(project, modules, version_id,
+  if use_cloud_build and remote:
+    return _BuildImagesWithCloudBuild(project, services, version_id,
                                       code_bucket_ref, cloudbuild_client,
                                       storage_client)
 
@@ -204,15 +204,15 @@ def BuildAndPushDockerImages(module_configs,
   with docker_util.DockerHost(
       cli, version_id, remote, project) as docker_client:
     # Build and push all images.
-    for module, info, ensure_dockerfile, ensure_context in modules:
+    for service, info, ensure_dockerfile, ensure_context in services:
       log.status.Print(
-          'Building and pushing image for module [{module}]'
-          .format(module=module))
+          'Building and pushing image for service [{service}]'
+          .format(service=service))
       cleanup_dockerfile = ensure_dockerfile()
       cleanup_context = ensure_context()
       try:
-        image_name = _GetImageName(project, module, version_id)
-        images[module] = BuildAndPushDockerImage(
+        image_name = _GetImageName(project, service, version_id)
+        images[service] = BuildAndPushDockerImage(
             info.file, docker_client, image_name)
       finally:
         cleanup_dockerfile()
@@ -223,20 +223,20 @@ def BuildAndPushDockerImages(module_configs,
   return images
 
 
-def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket_ref,
+def _BuildImagesWithCloudBuild(project, services, version_id, code_bucket_ref,
                                cloudbuild_client, storage_client):
-  """Build multiple modules with Cloud Build."""
+  """Build multiple services with Cloud Build."""
   images = {}
-  for module, info, ensure_dockerfile, ensure_context in modules:
+  for service, info, ensure_dockerfile, ensure_context in services:
     log.status.Print(
-        'Building and pushing image for module [{module}]'
-        .format(module=module))
+        'Building and pushing image for service [{service}]'
+        .format(service=service))
     cleanup_dockerfile = ensure_dockerfile()
     cleanup_context = ensure_context()
     try:
       image = docker_image.Image(
           dockerfile_dir=os.path.dirname(info.file),
-          tag=_GetImageName(project, module, version_id),
+          tag=_GetImageName(project, service, version_id),
           nocache=False)
       cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
                                image.tag, storage_client)
@@ -244,7 +244,7 @@ def _BuildImagesWithCloudBuild(project, modules, version_id, code_bucket_ref,
       cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tag,
                                     image.tag, cloudbuild_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-      images[module] = image.tag
+      images[service] = image.tag
     finally:
       cleanup_dockerfile()
       cleanup_context()
@@ -275,7 +275,7 @@ def BuildAndPushDockerImage(appyaml_path, docker_client, image_name):
       Pushes an image to GCR.
 
   Args:
-    appyaml_path: str, Path to the app.yaml for the module.
+    appyaml_path: str, Path to the app.yaml for the service.
         Dockerfile must be located in the same directory.
     docker_client: docker.Client instance.
     image_name: str, The name to build the image as.
@@ -319,13 +319,13 @@ def UseSsl(handlers):
   return appinfo.SECURE_HTTP
 
 
-def GetAppHostname(app_id, module=None, version=None,
+def GetAppHostname(app_id, service=None, version=None,
                    use_ssl=appinfo.SECURE_HTTP):
   """Returns the hostname of the given version of the deployed app.
 
   Args:
     app_id: str, project ID.
-    module: str, the (optional) module being deployed
+    service: str, the (optional) service being deployed
     version: str, the deployed version ID (omit to get the default version URL).
     use_ssl: bool, whether to construct an HTTPS URL.
   Returns:
@@ -337,23 +337,23 @@ def GetAppHostname(app_id, module=None, version=None,
     msg = 'Must provide a valid app ID to construct a hostname.'
     raise exceptions.Error(msg)
   version = version or ''
-  module = module or ''
-  if module == DEFAULT_MODULE:
-    module = ''
+  service = service or ''
+  if service == DEFAULT_SERVICE:
+    service = ''
 
   domain = DEFAULT_DOMAIN
   if ':' in app_id:
     domain, app_id = app_id.split(':')
 
-  if module == DEFAULT_MODULE:
-    module = ''
+  if service == DEFAULT_SERVICE:
+    service = ''
 
   # Normally, AppEngine URLs are of the form
-  # 'http[s]://version.module.app.appspot.com'. However, the SSL certificate for
-  # appspot.com is not valid for subdomains of subdomains of appspot.com (e.g.
-  # 'https://app.appspot.com/' is okay; 'https://module.app.appspot.com/' is
-  # not). To deal with this, AppEngine recognizes URLs like
-  # 'http[s]://version-dot-module-dot-app.appspot.com/'.
+  # 'http[s]://version.service.app.appspot.com'. However, the SSL certificate
+  # for appspot.com is not valid for subdomains of subdomains of appspot.com
+  # (e.g. 'https://app.appspot.com/' is okay; 'https://service.app.appspot.com/'
+  # is not). To deal with this, AppEngine recognizes URLs like
+  # 'http[s]://version-dot-service-dot-app.appspot.com/'.
   #
   # This works well as long as the domain name part constructed in this fashion
   # is less than 63 characters long, as per the DNS spec. If the domain name
@@ -361,7 +361,7 @@ def GetAppHostname(app_id, module=None, version=None,
   # certificate.
   #
   # We've tried to do the best possible thing in every case here.
-  subdomain_parts = filter(bool, [version, module, app_id])
+  subdomain_parts = filter(bool, [version, service, app_id])
   scheme = 'http'
   if use_ssl == appinfo.SECURE_HTTP:
     subdomain = '.'.join(subdomain_parts)
@@ -375,9 +375,9 @@ def GetAppHostname(app_id, module=None, version=None,
       if use_ssl == appinfo.SECURE_HTTP_OR_HTTPS:
         scheme = 'http'
       elif use_ssl == appinfo.SECURE_HTTPS:
-        msg = ('Most browsers will reject the SSL certificate for module {0}. '
+        msg = ('Most browsers will reject the SSL certificate for service {0}. '
                'Please verify that the certificate corresponds to the parent '
-               'domain of your application when you connect.').format(module)
+               'domain of your application when you connect.').format(service)
         log.warn(msg)
         scheme = 'https'
 
