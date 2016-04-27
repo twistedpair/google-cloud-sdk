@@ -150,20 +150,21 @@ class CreateServiceAccountKeyRequest(_messages.Message):
   """The service account key create request.
 
   Enums:
-    PrivateKeyTypeValueValuesEnum: The type of the key requested.
+    PrivateKeyTypeValueValuesEnum: The type of the private key requested.
       GOOGLE_CREDENTIALS is the default key type.
 
   Fields:
-    privateKeyType: The type of the key requested. GOOGLE_CREDENTIALS is the
-      default key type.
+    privateKeyType: The type of the private key requested. GOOGLE_CREDENTIALS
+      is the default key type.
   """
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the key requested. GOOGLE_CREDENTIALS is the default key
-    type.
+    """The type of the private key requested. GOOGLE_CREDENTIALS is the
+    default key type.
 
     Values:
-      TYPE_UNSPECIFIED: Unspecified.
+      TYPE_UNSPECIFIED: Unspecified. Defaults to Google Credentials File
+        format.
       TYPE_PKCS12_FILE: PKCS12 format. The password for the PKCS12 file is
         'notasecret'. For more information, see
         https://tools.ietf.org/html/rfc7292.
@@ -332,15 +333,34 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
 class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
   """A IamProjectsServiceAccountsKeysGetRequest object.
 
+  Enums:
+    PublicKeyTypeValueValuesEnum: The type of the public key requested.
+      X509_PEM is the default key type.
+
   Fields:
     name: The resource name of the service account key in the format
       "projects/{project}/serviceAccounts/{account}/keys/{key}". Using '-' as
       a wildcard for the project will infer the project from the account. The
       account value can be the email address or the unique_id of the service
       account.
+    publicKeyType: The type of the public key requested. X509_PEM is the
+      default key type.
   """
 
+  class PublicKeyTypeValueValuesEnum(_messages.Enum):
+    """The type of the public key requested. X509_PEM is the default key type.
+
+    Values:
+      TYPE_NONE: <no description>
+      TYPE_X509_PEM_FILE: <no description>
+      TYPE_RAW_PUBLIC_KEY: <no description>
+    """
+    TYPE_NONE = 0
+    TYPE_X509_PEM_FILE = 1
+    TYPE_RAW_PUBLIC_KEY = 2
+
   name = _messages.StringField(1, required=True)
+  publicKeyType = _messages.EnumField('PublicKeyTypeValueValuesEnum', 2)
 
 
 class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
@@ -709,8 +729,9 @@ class ServiceAccountKey(_messages.Message):
   Fields:
     name: The resource name of the service account key in the format
       "projects/{project}/serviceAccounts/{email}/keys/{key}".
-    privateKeyData: The key data.
+    privateKeyData: The private key data.
     privateKeyType: The type of the private key.
+    publicKeyData: The public key data.
     validAfterTime: The key can be used after this timestamp.
     validBeforeTime: The key can be used before this timestamp.
   """
@@ -719,7 +740,8 @@ class ServiceAccountKey(_messages.Message):
     """The type of the private key.
 
     Values:
-      TYPE_UNSPECIFIED: Unspecified.
+      TYPE_UNSPECIFIED: Unspecified. Defaults to Google Credentials File
+        format.
       TYPE_PKCS12_FILE: PKCS12 format. The password for the PKCS12 file is
         'notasecret'. For more information, see
         https://tools.ietf.org/html/rfc7292.
@@ -732,8 +754,9 @@ class ServiceAccountKey(_messages.Message):
   name = _messages.StringField(1)
   privateKeyData = _messages.BytesField(2)
   privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 3)
-  validAfterTime = _messages.StringField(4)
-  validBeforeTime = _messages.StringField(5)
+  publicKeyData = _messages.BytesField(4)
+  validAfterTime = _messages.StringField(5)
+  validBeforeTime = _messages.StringField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Api client adapter containers commands."""
+from collections import deque
+from os import linesep
 import time
 
 from googlecloudsdk.api_lib.compute import constants
@@ -28,14 +29,21 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import http_wrapper
 
-
 WRONG_ZONE_ERROR_MSG = """\
 {error}
 Could not find [{name}] in [{wrong_zone}].
 Did you mean [{name}] in [{zone}]?"""
+
 NO_SUCH_CLUSTER_ERROR_MSG = """\
 {error}
 No cluster named '{name}' in {project}."""
+
+NO_SUCH_NODE_POOL_ERROR_MSG = """\
+No node pool named '{name}' in {cluster}."""
+
+NO_NODE_POOL_SELECTED_ERROR_MSG = """\
+Please specify one of the following node pools:
+"""
 
 
 def CheckResponse(response):
@@ -211,6 +219,22 @@ class APIAdapter(object):
         name=cluster_ref.clusterId,
         project=cluster_ref.projectId))
 
+  def FindNodePool(self, cluster, pool_name=None):
+    """Find the node pool with the given name in the cluster."""
+    msg = ''
+    if pool_name:
+      for np in cluster.nodePools:
+        if np.name == pool_name:
+          return np
+      msg = NO_SUCH_NODE_POOL_ERROR_MSG.format(cluster=cluster.name,
+                                               name=pool_name) + linesep
+    elif len(cluster.nodePools) == 1:
+      return cluster.nodePools[0]
+    # Couldn't find a node pool with that name or a node pool was not specified.
+    msg += NO_NODE_POOL_SELECTED_ERROR_MSG + linesep.join(
+        [np.name for np in cluster.nodePools])
+    raise util.Error(msg)
+
   def ListClusters(self, project, zone=None):
     raise NotImplementedError('ListClusters is not overriden')
 
@@ -301,49 +325,65 @@ class APIAdapter(object):
     return (operation.status ==
             self.compute_messages.Operation.StatusValueValuesEnum.DONE)
 
-  def WaitForComputeOperation(self, project, zone, operation_id, message,
-                              timeout_s=1200, poll_period_s=5):
-    """Poll container Operation until its status is done or timeout reached.
+  def WaitForComputeOperations(self, project, zone, operation_ids, message,
+                               timeout_s=1200, poll_period_s=5):
+    """Poll Compute Operations until their status is done or timeout reached.
 
     Args:
       project: project on which the operation is performed
       zone: zone on which the operation is performed
-      operation_id: id of the compute operation to wait for
+      operation_ids: list/set of ids of the compute operations to wait for
       message: str, message to display to user while polling.
       timeout_s: number, seconds to poll with retries before timing out.
       poll_period_s: number, delay in seconds between requests.
 
     Returns:
-      Operation: the return value of the last successful operations.get
-      request.
+      Operations: list of the last successful operations.getrequest for each op.
 
     Raises:
       Error: if the operation times out or finishes with an error.
     """
+    operation_ids = deque(operation_ids)
+    operations = {}
+    errors = []
     with console_io.ProgressTracker(message, autotick=True):
       start_time = time.clock()
-      while timeout_s > (time.clock() - start_time):
+      ops_to_retry = []
+      while timeout_s > (time.clock() - start_time) and operation_ids:
+        op_id = operation_ids.popleft()
         try:
-          operation = self.GetComputeOperation(project, zone, operation_id)
-          if self.IsComputeOperationFinished(operation):
-            # Success!
-            log.info('Operation %s succeeded after %.3f seconds',
-                     operation, (time.clock() - start_time))
-            break
+          operation = self.GetComputeOperation(project, zone, op_id)
+          operations[op_id] = operation
+          if not self.IsComputeOperationFinished(operation):
+            # Operation is still in progress.
+            ops_to_retry.append(op_id)
+            continue
+
+          log.debug('Operation %s succeeded after %.3f seconds', operation,
+                    (time.clock() - start_time))
+          error = self.GetOperationError(operation)
+          if error:
+            # Operation Failed!
+            msg = 'Operation [{0}] finished with error: {1}'.format(op_id,
+                                                                    error)
+            log.debug(msg)
+            errors.append(msg)
         except apitools_exceptions.HttpError as error:
           log.debug('GetComputeOperation failed: %s', error)
           # Keep trying until we timeout in case error is transient.
           # TODO(user): add additional backoff if server is returning 500s
-        time.sleep(poll_period_s)
-    if not self.IsComputeOperationFinished(operation):
-      log.err.Print('Timed out waiting for operation {0}'.format(operation))
-      raise util.Error(
-          'Operation [{0}] is still running'.format(operation))
-    if self.GetOperationError(operation):
-      raise util.Error('Operation [{0}] finished with error: {1}'.format(
-          operation, self.GetOperationError(operation)))
+        if not operation_ids and ops_to_retry:
+          operation_ids = deque(ops_to_retry)
+          ops_to_retry = []
+          time.sleep(poll_period_s)
 
-    return operation
+    operation_ids.extend(ops_to_retry)
+    for op_id in operation_ids:
+      errors.append('Operation [{0}] is still running'.format(op_id))
+    if errors:
+      raise util.Error(linesep.join(errors))
+
+    return operations.values()
 
 
 class CreateClusterOptions(object):
@@ -431,12 +471,12 @@ class V1Adapter(APIAdapter):
     return cluster.currentMasterVersion
 
   def PrintClusters(self, clusters):
-    list_printer.PrintResourceList(
-        'container.projects.zones.clusters', clusters)
+    list_printer.PrintResourceList('container.projects.zones.clusters',
+                                   clusters)
 
   def PrintOperations(self, operations):
-    list_printer.PrintResourceList(
-        'container.projects.zones.operations', operations)
+    list_printer.PrintResourceList('container.projects.zones.operations',
+                                   operations)
 
   def PrintNodePools(self, node_pools):
     list_printer.PrintResourceList(

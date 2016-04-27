@@ -225,7 +225,7 @@
         "privateKeyType": {
           "description": "The type of the private key.",
           "enumDescriptions": [
-            "Unspecified.",
+            "Unspecified. Defaults to Google Credentials File format.",
             "PKCS12 format.\nThe password for the PKCS12 file is 'notasecret'.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
             "Google Credentials File format."
           ],
@@ -237,7 +237,12 @@
           ]
         },
         "privateKeyData": {
-          "description": "The key data.",
+          "description": "The private key data.",
+          "type": "string",
+          "format": "byte"
+        },
+        "publicKeyData": {
+          "description": "The public key data.",
           "type": "string",
           "format": "byte"
         },
@@ -259,9 +264,9 @@
       "type": "object",
       "properties": {
         "privateKeyType": {
-          "description": "The type of the key requested. GOOGLE_CREDENTIALS is the default key type.",
+          "description": "The type of the private key requested. GOOGLE_CREDENTIALS is the default\nkey type.",
           "enumDescriptions": [
-            "Unspecified.",
+            "Unspecified. Defaults to Google Credentials File format.",
             "PKCS12 format.\nThe password for the PKCS12 file is 'notasecret'.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
             "Google Credentials File format."
           ],
@@ -1027,6 +1032,16 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*\/keys\/[^\/]*$",
                       "type": "string"
+                    },
+                    "publicKeyType": {
+                      "description": "The type of the public key requested. X509_PEM is the default key type.",
+                      "location": "query",
+                      "type": "string",
+                      "enum": [
+                        "TYPE_NONE",
+                        "TYPE_X509_PEM_FILE",
+                        "TYPE_RAW_PUBLIC_KEY"
+                      ]
                     }
                   },
                   "parameterOrder": [

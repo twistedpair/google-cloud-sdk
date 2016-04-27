@@ -20,24 +20,20 @@ from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import http
-from googlecloudsdk.third_party.apis.appengine.v1beta4 import appengine_v1beta4_client as v1beta4_client
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema
 
 import yaml
 
-KNOWN_APIS = {'v1beta4': v1beta4_client.AppengineV1beta4}
-
 
 class AppengineApiClient(object):
   """Client used by gcloud to communicate with the App Engine API."""
 
-  def __init__(self, client, api_version):
+  def __init__(self, client):
     self.client = client
-    self.api_version = api_version
     self.project = properties.VALUES.core.project.Get(required=True)
 
   @property
@@ -153,6 +149,58 @@ class AppengineApiClient(object):
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
+  def SetServingStatus(self, service_name, version_id, serving_status):
+    """Sets the serving status of the specified version.
+
+    Args:
+      service_name: str, The service name
+      version_id: str, The version to delete.
+      serving_status: The serving status to set.
+
+    Returns:
+      The completed Operation.
+    """
+    patch_request = self.messages.AppengineAppsModulesVersionsPatchRequest(
+        name=self._FormatVersion(app_id=self.project,
+                                 service_name=service_name,
+                                 version_id=version_id),
+        version=self.messages.Version(servingStatus=serving_status),
+        mask='servingStatus')
+    operation = requests.MakeRequest(
+        self.client.apps_modules_versions.Patch,
+        patch_request)
+    return operations.WaitForOperation(self.client.apps_operations, operation)
+
+  def StopVersion(self, module_name, version_id):
+    """Stops the specified version.
+
+    Args:
+      module_name: str, The module name
+      version_id: str, The version to stop.
+
+    Returns:
+      The completed Operation.
+    """
+    return self.SetServingStatus(
+        module_name,
+        version_id,
+        self.messages.Version.ServingStatusValueValuesEnum.STOPPED)
+
+  def StartVersion(self, module_name, version_id):
+    """Starts the specified version.
+
+    Args:
+      module_name: str, The module name
+      version_id: str, The version to start.
+
+    Returns:
+      The completed Operation.
+    """
+    return self.SetServingStatus(
+        module_name,
+        version_id,
+        self.messages.Version.ServingStatusValueValuesEnum.SERVING)
+
   def ListServices(self):
     """Lists all services for the given application.
 
@@ -258,16 +306,12 @@ class AppengineApiClient(object):
         app_id=app_id, service_name=service_name, version_id=version_id)
 
 
-def GetApiClient(default_version='v1beta4'):
+def GetApiClient():
   """Initializes an AppengineApiClient using the specified API version.
 
   Uses the api_client_overrides/appengine property to determine which client
   version to use. Additionally uses the api_endpoint_overrides/appengine
   property to determine the server endpoint for the App Engine API.
-
-  Args:
-    default_version: Default client version to use if the
-      api_client_overrides/appengine property was not set.
 
   Returns:
     An AppengineApiClient used by gcloud to communicate with the App Engine API.
@@ -276,16 +320,4 @@ def GetApiClient(default_version='v1beta4'):
     ValueError: If default_version does not correspond to a supported version of
       the API.
   """
-  api_version = properties.VALUES.api_client_overrides.appengine.Get()
-  if not api_version:
-    api_version = default_version
-
-  client = KNOWN_APIS.get(api_version)
-  if not client:
-    raise ValueError('Invalid API version: [{0}]'.format(api_version))
-
-  endpoint_override = properties.VALUES.api_endpoint_overrides.appengine.Get()
-  appengine_client = client(url=endpoint_override, get_credentials=False,
-                            http=http.Http())
-
-  return AppengineApiClient(appengine_client, api_version)
+  return AppengineApiClient(core_apis.GetClientInstance('appengine', 'v1beta4'))

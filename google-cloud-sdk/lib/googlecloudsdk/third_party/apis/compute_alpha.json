@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160413",
+ "revision": "20160420",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1987,6 +1987,28 @@
     }
    }
   },
+  "FixedOrPercent": {
+   "id": "FixedOrPercent",
+   "type": "object",
+   "description": "Encapsulates numeric value that can be either absolute or relative.",
+   "properties": {
+    "calculated": {
+     "type": "integer",
+     "description": "[Output Only] Absolute value calculated based on mode: mode = fixed -\u003e calculated = fixed = percent -\u003e calculated = ceiling(percent/100 * base_value)",
+     "format": "int32"
+    },
+    "fixed": {
+     "type": "integer",
+     "description": "fixed must be non-negative.",
+     "format": "int32"
+    },
+    "percent": {
+     "type": "integer",
+     "description": "percent must belong to [0, 100].",
+     "format": "int32"
+    }
+   }
+  },
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
@@ -3270,6 +3292,17 @@
       ]
      }
     },
+    "updatePolicy": {
+     "$ref": "InstanceGroupManagerUpdatePolicy",
+     "description": "The update policy for this managed instance group."
+    },
+    "versions": {
+     "type": "array",
+     "description": "Versions supported by this IGM. User should set this field if they need fine-grained control over how many instances in each version are run by this IGM. Versions are keyed by instanceTemplate. Every instanceTemplate can appear at most once. This field overrides instanceTemplate field. If both instanceTemplate and versions are set, the user receives a warning. \"instanceTemplate: X\" is semantically equivalent to \"versions [ { instanceTemplate: X } ]\". Exactly one version must have targetSize field left unset. Size of such a version will be calculated automatically.",
+     "items": {
+      "$ref": "InstanceGroupManagerVersion"
+     }
+    },
     "zone": {
      "type": "string",
      "description": "The name of the zone where the managed instance group is located."
@@ -3396,6 +3429,79 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] The URL for this resource type. The server generates this URL."
+    }
+   }
+  },
+  "InstanceGroupManagerUpdatePolicy": {
+   "id": "InstanceGroupManagerUpdatePolicy",
+   "type": "object",
+   "properties": {
+    "maxSurge": {
+     "$ref": "FixedOrPercent",
+     "description": "Maximum number of instances that can be created above the InstanceGroupManager.targetSize during the update process. By default, a fixed value of 1 is used. Using maxSurge \u003e 0 will cause instance names to change during the update process. At least one of { maxSurge, maxUnavailable } must be greater than 0."
+    },
+    "maxUnavailable": {
+     "$ref": "FixedOrPercent",
+     "description": "Maximum number of instances that can be unavailable during the update process. The instance is considered available if all of the following conditions are satisfied: 1. instance's status is RUNNING 2. instance's liveness health check result was observed to be HEALTHY at least once By default, a fixed value of 1 is used. At least one of { maxSurge, maxUnavailable } must be greater than 0."
+    },
+    "minReadySec": {
+     "type": "integer",
+     "description": "Minimum number of seconds to wait for after a newly created instance becomes available.",
+     "format": "int32"
+    },
+    "minimalAction": {
+     "type": "string",
+     "description": "Minimal action to be taken on an instance. The order of action types is: REBOOT \u003c REPLACE.",
+     "enum": [
+      "REBOOT",
+      "REPLACE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "standbyMode": {
+     "type": "string",
+     "description": "Standby mode of all the standby instances managed by the IGM.",
+     "enum": [
+      "DRAINED"
+     ],
+     "enumDescriptions": [
+      ""
+     ]
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "OPPORTUNISTIC",
+      "PROACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "InstanceGroupManagerVersion": {
+   "id": "InstanceGroupManagerVersion",
+   "type": "object",
+   "properties": {
+    "instanceTemplate": {
+     "type": "string"
+    },
+    "keepStandbyInstances": {
+     "type": "boolean",
+     "description": "If this field is set, IGM maintains a pool of standby instances created from instanceTemplate. The number of standby instances is such that the total number of instances created from this instanceTemplate is equal to InstanceGroupManager.targetSize regardless of what is the value of targetSize.fixed or targetSize.percent. Standby instances are useful during the update, when the user wants to be able to quickly rollout/rollback to the target version."
+    },
+    "tag": {
+     "type": "string",
+     "description": "Tag describing the version. Changing it may trigger an action configured in UpdatePolicy."
+    },
+    "targetSize": {
+     "$ref": "FixedOrPercent",
+     "description": "Intended number of instances that are created from instanceTemplate. The final number of instances created from instanceTemplate will be equal to: * if expressed as fixed number: min(targetSize.fixed, instanceGroupManager.targetSize), * if expressed as percent: ceiling(targetSize.percent * InstanceGroupManager.targetSize). If unset, this version will handle all the remaining instances."
     }
    }
   },
@@ -4438,6 +4544,16 @@
     "lastAttempt": {
      "$ref": "ManagedInstanceLastAttempt",
      "description": "[Output Only] Information about the last attempt to create or delete the instance."
+    },
+    "standbyMode": {
+     "type": "string",
+     "description": "[Output Only] Standby mode of the instance. This field is non-empty iff the instance is a standby.",
+     "enum": [
+      "DRAINED"
+     ],
+     "enumDescriptions": [
+      ""
+     ]
     }
    }
   },
@@ -12767,6 +12883,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "patch": {
+     "id": "compute.instanceGroupManagers.patch",
+     "path": "{project}/zones/{zone}/instanceGroupManagers",
+     "httpMethod": "PATCH",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "required": true,
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where you want to create the managed instance group.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "recreateInstances": {
      "id": "compute.instanceGroupManagers.recreateInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
@@ -13067,6 +13225,46 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "update": {
+     "id": "compute.instanceGroupManagers.update",
+     "path": "{project}/zones/{zone}/instanceGroupManagers",
+     "httpMethod": "PUT",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where you want to create the managed instance group.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }
@@ -15955,6 +16153,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "patch": {
+     "id": "compute.regionInstanceGroupManagers.patch",
+     "path": "{project}/regions/{region}/instanceGroupManagers",
+     "httpMethod": "PATCH",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "required": true,
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "recreateInstances": {
      "id": "compute.regionInstanceGroupManagers.recreateInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
@@ -16214,6 +16454,46 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "update": {
+     "id": "compute.regionInstanceGroupManagers.update",
+     "path": "{project}/regions/{region}/instanceGroupManagers",
+     "httpMethod": "PUT",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }

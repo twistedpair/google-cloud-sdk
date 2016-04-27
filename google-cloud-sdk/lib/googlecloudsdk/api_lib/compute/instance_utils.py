@@ -22,56 +22,19 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
+from googlecloudsdk.core import apis as core_apis
 
+
+MESSAGES = core_apis.GetMessagesModule('compute', 'v1')
 
 MIGRATION_OPTIONS = sorted(
-    compute_v1_messages.Scheduling
-    .OnHostMaintenanceValueValuesEnum.to_dict().keys())
+    MESSAGES.Scheduling.OnHostMaintenanceValueValuesEnum.to_dict().keys())
 
 LOCAL_SSD_INTERFACES = sorted(
-    compute_v1_messages.AttachedDisk
-    .InterfaceValueValuesEnum.to_dict().keys())
-
-DEFAULT_LOCAL_SSD_INTERFACE = str(
-    compute_v1_messages.AttachedDisk.InterfaceValueValuesEnum.SCSI)
+    MESSAGES.AttachedDisk.InterfaceValueValuesEnum.to_dict().keys())
 
 
 def AddImageArgs(parser):
-  """Adds arguments related to images for instances and instance-templates."""
-
-  def AddImageHelp():
-    """Returns the detailed help for the `--image` flag."""
-    template = """
-          Specifies the boot image for the instances. For each
-          instance, a new boot disk will be created from the given
-          image. Each boot disk will have the same name as the
-          instance.
-
-          {alias_table}
-
-          When using this option, ``--boot-disk-device-name'' and
-          ``--boot-disk-size'' can be used to override the boot disk's
-          device name and size, respectively.
-
-          By default, ``{default_image}'' is assumed for this flag.
-          """
-    # -1 for leading newline
-    indent = template.find(template.lstrip()[0]) - 1
-    return template.format(
-        alias_table=image_utils.GetImageAliasTable(indent=indent),
-        default_image=constants.DEFAULT_IMAGE)
-
-  image_choices = ['IMAGE'] + sorted(constants.IMAGE_ALIASES.keys())
-  image = parser.add_argument(
-      '--image',
-      help='The image that the boot disk will be initialized with.',
-      metavar=' | '.join(image_choices))
-  image.detailed_help = AddImageHelp
-  image_utils.AddImageProjectFlag(parser)
-
-
-def AddImageArgsBeta(parser):
   """Adds arguments related to images for instances and instance-templates."""
 
   def AddImageHelp():
@@ -108,7 +71,7 @@ def AddImageArgsBeta(parser):
   image_group.add_argument(
       '--image-family',
       help=('The family of the image that the boot disk will be initialized '
-            'with. When a family is used instead of an image, the latest '
+            'with. When a family is specified instead of an image, the latest '
             'non-deprecated image associated with that family is used.')
   )
 
@@ -454,8 +417,8 @@ def AddNetworkArgs(parser):
       """
 
 
-def AddNetworkArgsBeta(parser):
-  """Set arguments for choosing the network/subnetwork in beta."""
+def AddPrivateNetworkIpArgs(parser):
+  """Set arguments for choosing the network IP address."""
   private_network_ip = parser.add_argument(
       '--private-network-ip',
       help='Assigns the given RFC1918 IP address to the instance.')

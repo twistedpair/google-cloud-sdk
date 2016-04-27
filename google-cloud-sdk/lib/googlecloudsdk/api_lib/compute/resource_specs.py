@@ -482,12 +482,11 @@ _SPECS_V1 = {
         table_cols=[
             ('NAME', 'name'),
             ('PROJECT', _ProjectToCell),
-            ('ALIAS', _AliasToCell),
+            ('FAMILY', 'family'),
             ('DEPRECATED', 'deprecated.state'),
             ('STATUS', 'status'),
         ],
-        transformations=[
-            ],
+        transformations=[],
         editables=None,
     ),
 
@@ -856,18 +855,6 @@ _SPECS_BETA['routers'] = _InternalSpec(
     ],
     editables=None,
 )
-_SPECS_BETA['images'] = _InternalSpec(
-    message_class_name='Image',
-    table_cols=[
-        ('NAME', 'name'),
-        ('PROJECT', _ProjectToCell),
-        ('FAMILY', 'family'),
-        ('DEPRECATED', 'deprecated.state'),
-        ('STATUS', 'status'),
-    ],
-    transformations=[],
-    editables=None,
-)
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
@@ -945,6 +932,25 @@ _SPECS_ALPHA['backendServices'] = _InternalSpec(
         'protocol',
         'timeoutSec',
     ],)
+_SPECS_ALPHA['urlMaps'] = _InternalSpec(
+    message_class_name='UrlMap',
+    table_cols=[
+        ('NAME', 'name'),
+        ('DEFAULT_SERVICE', 'defaultService'),
+    ],
+    transformations=[
+        ('defaultService', path_simplifier.TypeSuffix),
+        ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
+        ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
+        ('tests[].service', path_simplifier.TypeSuffix),
+    ],
+    editables=[
+        'defaultService',
+        'description',
+        'hostRules',
+        'pathMatchers',
+        'tests',
+    ])
 
 
 def _GetSpecsForVersion(api_version):

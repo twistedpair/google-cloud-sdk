@@ -34,13 +34,13 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
-from googlecloudsdk.third_party.apis.compute.v1 import compute_v1_messages
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.py27 import py27_collections as collections
@@ -74,8 +74,6 @@ def PrintTable(resources, table_cols):
 
 class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   """Base class for all compute subcommands."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     super(BaseCommand, self).__init__(*args, **kwargs)
@@ -148,8 +146,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
 
 class BaseLister(base.ListCommand, BaseCommand):
   """Base class for the list subcommands."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def Args(parser):
@@ -412,8 +408,6 @@ class ScopeType(Enum):
 class MultiScopeLister(BaseLister):
   """Base class for listing global and regional resources."""
 
-  __metaclass__ = abc.ABCMeta
-
   @staticmethod
   def AddScopeArgs(parser, scopes):
     BaseLister.Args(parser)
@@ -625,8 +619,6 @@ def GetGlobalRegionalListerHelp(resource):
 class BaseDescriber(BaseCommand):
   """Base class for the describe subcommands."""
 
-  __metaclass__ = abc.ABCMeta
-
   @staticmethod
   def Args(parser, resource=None, list_command_path=None):
     BaseDescriber.AddArgs(parser, resource, list_command_path)
@@ -740,8 +732,6 @@ class ZonalDescriber(BaseDescriber):
 
 class MultiScopeDescriber(BaseDescriber):
   """Base class for describing global or regional resources."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def AddScopeArgs(parser, resource_type, scope_types, command=None):
@@ -934,9 +924,10 @@ def AddFieldsFlag(parser, resource_type):
   """
 
   def GenerateDetailedHelp():
+    messages_module = core_apis.GetMessagesModule('compute', 'v1')
     return ('Fields to display. Possible values are:\n+\n  ' +
             '\n  '.join(resource_specs.GetSpec(
-                resource_type, compute_v1_messages, 'v1').fields))
+                resource_type, messages_module, 'v1').fields))
 
   fields = parser.add_argument(
       '--fields',
@@ -959,8 +950,6 @@ def AddFieldsFlag(parser, resource_type):
 
 class BaseAsyncMutator(BaseCommand):
   """Base class for subcommands that mutate resources."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractproperty
   def service(self):
@@ -1322,8 +1311,6 @@ class GlobalDeleter(BaseDeleter):
 class ReadWriteCommand(BaseCommand):
   """Base class for read->update->write subcommands."""
 
-  __metaclass__ = abc.ABCMeta
-
   @abc.abstractproperty
   def service(self):
     pass
@@ -1657,8 +1644,6 @@ def _WriteResourceInCommentBlock(serialized_resource, title, buf):
 
 class BaseEdit(BaseCommand):
   """Base class for modifying resources using $EDITOR."""
-
-  __metaclass__ = abc.ABCMeta
 
   DEFAULT_FORMAT = 'yaml'
 

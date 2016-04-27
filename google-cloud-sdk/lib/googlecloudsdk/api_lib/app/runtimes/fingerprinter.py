@@ -18,7 +18,6 @@
 from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app import ext_runtime_adapter
-from googlecloudsdk.api_lib.app.runtimes import go
 from googlecloudsdk.api_lib.app.runtimes import python
 from googlecloudsdk.api_lib.app.runtimes import python_compat
 from googlecloudsdk.core import exceptions
@@ -32,7 +31,9 @@ RUNTIMES = [
     ext_runtime_adapter.CoreRuntimeLoader('custom', 'Custom',
                                           ['custom']),
 
-    go,  # Go's position is relatively flexible due to its orthogonal nature.
+    # Go's position is relatively flexible due to its orthogonal nature.
+    ext_runtime_adapter.CoreRuntimeLoader('go', 'Go', ['go', 'custom']),
+
     ext_runtime_adapter.CoreRuntimeLoader('ruby', 'Ruby', ['ruby', 'custom']),
     ext_runtime_adapter.CoreRuntimeLoader('nodejs', 'Node.js',
                                           ['nodejs', 'custom']),

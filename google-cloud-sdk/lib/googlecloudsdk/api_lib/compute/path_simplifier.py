@@ -41,3 +41,10 @@ def ProjectSuffix(uri):
 
   # Get the part after projects. The argument is assumed valid.
   return uri.split('/projects/')[-1]
+
+
+def TypeSuffix(uri):
+  """Get the type and the name of the object the uri refers to."""
+
+  # Since the path is assumed valid, we can just take the last two pieces.
+  return '/'.join(uri.split('/')[-2:])

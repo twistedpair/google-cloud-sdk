@@ -447,6 +447,6 @@ def GetKeyName(key):
     elif re.search(r'\W', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
-      part = '"{part}"'.format(part=part)
+      part = u'"{part}"'.format(part=part)
     parts.append(part)
   return '.'.join(parts) if parts else '.'

@@ -18,9 +18,9 @@ import os
 
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import transfer
 
@@ -52,6 +52,7 @@ class ResultsBucketOps(object):
     """
     self._project = project
     self._storage_client = storage_client
+    self._storage_messages = core_apis.GetMessagesModule('storage', 'v1')
     self._gcs_object_name = unique_obj_name
 
     # If the user supplied a results bucket, make sure it exists. Otherwise,
@@ -100,7 +101,8 @@ class ResultsBucketOps(object):
       BadFileException if the bucket name is malformed, the user does not
         have access rights to the bucket, or the bucket can't be created.
     """
-    get_req = storage_v1.StorageBucketsGetRequest(bucket=bucket_name)
+    get_req = self._storage_messages.StorageBucketsGetRequest(
+        bucket=bucket_name)
     try:
       self._storage_client.buckets.Get(get_req)
       return  # The bucket exists and the user can access it.
@@ -117,12 +119,12 @@ class ResultsBucketOps(object):
     log.status.Print('Creating results bucket [{g}{b}] in project [{p}].'
                      .format(g=GCS_PREFIX, b=bucket_name, p=self._project))
 
-    bucket_req = storage_v1.StorageBucketsInsertRequest
+    bucket_req = self._storage_messages.StorageBucketsInsertRequest
     acl = bucket_req.PredefinedAclValueValuesEnum.projectPrivate
     objacl = bucket_req.PredefinedDefaultObjectAclValueValuesEnum.projectPrivate
 
-    insert_req = storage_v1.StorageBucketsInsertRequest(
-        bucket=storage_v1.Bucket(name=bucket_name),
+    insert_req = self._storage_messages.StorageBucketsInsertRequest(
+        bucket=self._storage_messages.Bucket(name=bucket_name),
         predefinedAcl=acl,
         predefinedDefaultObjectAcl=objacl,
         project=self._project)
@@ -156,7 +158,7 @@ class ResultsBucketOps(object):
       if path.startswith(GCS_PREFIX):
         # Perform a GCS object to GCS object copy
         file_bucket, file_obj = _SplitBucketAndObject(path)
-        copy_req = storage_v1.StorageObjectsCopyRequest(
+        copy_req = self._storage_messages.StorageObjectsCopyRequest(
             sourceBucket=file_bucket,
             sourceObject=file_obj,
             destinationBucket=self._results_bucket,
@@ -170,11 +172,11 @@ class ResultsBucketOps(object):
         except os.error:
           raise exceptions.BadFileException('[{0}] not found or not accessible'
                                             .format(path))
-        src_obj = storage_v1.Object(size=file_size)
+        src_obj = self._storage_messages.Object(size=file_size)
         upload = transfer.Upload.FromFile(
             path,
             mime_type='application/vnd.android.package-archive')
-        insert_req = storage_v1.StorageObjectsInsertRequest(
+        insert_req = self._storage_messages.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
             name='{obj}/{name}'.format(obj=self._gcs_object_name,
                                        name=os.path.basename(path)),

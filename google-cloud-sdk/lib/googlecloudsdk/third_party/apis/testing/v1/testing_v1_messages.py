@@ -126,6 +126,8 @@ class AndroidModel(_messages.Message):
   Fields:
     brand: The company that this device is branded with. Example: "Google",
       "Samsung" @OutputOnly
+    buildTags: Build tags (generally release-keys or dev-keys) This
+      corresponds to ro.build.tags @OutputOnly
     codename: The name of the industrial design. This corresponds to
       android.os.Build.DEVICE @OutputOnly
     form: Whether this device is virtual or physical. @OutputOnly
@@ -134,13 +136,16 @@ class AndroidModel(_messages.Message):
     manufacturer: The manufacturer of this device. @OutputOnly
     name: The human-readable marketing name for this device model. Examples:
       "Nexus 5", "Galaxy S5" @OutputOnly
+    screenDensity: Screen density in DPI. This corresponds to
+      ro.sf.lcd_density @OutputOnly
     screenX: Screen size in the horizontal (X) dimension measured in pixels.
       @OutputOnly
     screenY: Screen size in the vertical (Y) dimension measured in pixels.
       @OutputOnly
     supportedAbis: The list of supported ABIs for this device. This
       corresponds to either android.os.Build.SUPPORTED_ABIS (for API level 21
-      and above) or android.os.Build.CPU_ABI/CPU_ABI2. @OutputOnly
+      and above) or android.os.Build.CPU_ABI/CPU_ABI2. The most preferred ABI
+      is the first element in the list. @OutputOnly
     supportedVersionIds: The set of Android versions this device supports.
       @OutputOnly
     tags: Tags for this dimension. Examples: "default", "preview",
@@ -160,16 +165,18 @@ class AndroidModel(_messages.Message):
     PHYSICAL = 2
 
   brand = _messages.StringField(1)
-  codename = _messages.StringField(2)
-  form = _messages.EnumField('FormValueValuesEnum', 3)
-  id = _messages.StringField(4)
-  manufacturer = _messages.StringField(5)
-  name = _messages.StringField(6)
-  screenX = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(9, repeated=True)
-  supportedVersionIds = _messages.StringField(10, repeated=True)
-  tags = _messages.StringField(11, repeated=True)
+  buildTags = _messages.StringField(2, repeated=True)
+  codename = _messages.StringField(3)
+  form = _messages.EnumField('FormValueValuesEnum', 4)
+  id = _messages.StringField(5)
+  manufacturer = _messages.StringField(6)
+  name = _messages.StringField(7)
+  screenDensity = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(11, repeated=True)
+  supportedVersionIds = _messages.StringField(12, repeated=True)
+  tags = _messages.StringField(13, repeated=True)
 
 
 class AndroidMonkeyTest(_messages.Message):

@@ -29,7 +29,10 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import urlopen_with_cacerts
 
 
+UPDATE_MANAGER_COMMAND_PATH = 'UPDATE_MANAGER'
+
 TIMEOUT_IN_SEC = 60
+UPDATE_MANAGER_TIMEOUT_IN_SEC = 3
 
 
 class Error(exceptions.Error):
@@ -268,13 +271,16 @@ class ComponentInstaller(object):
         'Cache-Control': 'no-cache',
         'User-Agent': http.MakeUserAgentString(command_path)
     }
+    timeout = TIMEOUT_IN_SEC
+    if command_path == UPDATE_MANAGER_COMMAND_PATH:
+      timeout = UPDATE_MANAGER_TIMEOUT_IN_SEC
     try:
       if url.startswith(ComponentInstaller.GCS_BROWSER_DL_URL):
         url = url.replace(ComponentInstaller.GCS_BROWSER_DL_URL,
                           ComponentInstaller.GCS_API_DL_URL,
                           1)
       req = urllib2.Request(url, headers=headers)
-      return urlopen_with_cacerts.urlopen(req, timeout=TIMEOUT_IN_SEC)
+      return urlopen_with_cacerts.urlopen(req, timeout=timeout)
     except urllib2.HTTPError as e:
       if e.code != 403 or not url.startswith(ComponentInstaller.GCS_API_DL_URL):
         raise e
@@ -290,7 +296,7 @@ class ComponentInstaller(object):
       try:
         # Retry the download using the credentials.
         req = urllib2.Request(url, headers=headers)
-        return urlopen_with_cacerts.urlopen(req, timeout=TIMEOUT_IN_SEC)
+        return urlopen_with_cacerts.urlopen(req, timeout=timeout)
       except urllib2.HTTPError as e:
         if e.code != 403:
           raise e

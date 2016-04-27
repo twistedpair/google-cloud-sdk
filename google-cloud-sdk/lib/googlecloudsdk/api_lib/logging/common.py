@@ -19,6 +19,7 @@ import datetime
 
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
@@ -145,15 +146,20 @@ class LogPrinter(object):
   def _LogEntryToText(self, entry):
     """Use the formatters to convert a log entry to unprocessed text."""
     out = None
-    for fn in self.formatters[entry.logName]:
+    for fn in self.formatters[entry.logName] + [self._FallbackFormatter]:
+      # pylint:disable=bare-except
       try:
         out = fn(entry)
         break
-      # pylint:disable=bare-except
+      except KeyboardInterrupt as e:
+        raise e
       except:
         pass
     if not out:
-      out = self._FallbackFormatter(entry)
+      log.debug('Could not format log entry: %s %s %s', entry.timestamp,
+                entry.logName, entry.insertId)
+      out = ('< UNREADABLE LOG ENTRY {0}. OPEN THE DEVELOPER CONSOLE TO '
+             'INSPECT. >'.format(entry.insertId))
     return out
 
   def _FallbackFormatter(self, entry):
@@ -162,7 +168,5 @@ class LogPrinter(object):
       return str(entry.protoPayload)
     elif entry.jsonPayload:
       return str(entry.jsonPayload)
-    elif entry.textPayload:
-      return entry.textPayload
     else:
-      return '< UNREADABLE LOG ENTRY. OPEN THE DEVELOPER CONSOLE TO INSPECT. >'
+      return entry.textPayload

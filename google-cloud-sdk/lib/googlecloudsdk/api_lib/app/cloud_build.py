@@ -22,12 +22,11 @@ import tempfile
 from docker import docker
 from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.apis.cloudbuild import v1 as cloudbuild_v1
-
 
 CLOUDBUILD_SUCCESS = 'SUCCESS'
 CLOUDBUILD_LOGS_URI_TEMPLATE = (
@@ -131,18 +130,20 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
   else:
     timeout_str = None
 
+  cloudbuild_messages = core_apis.GetMessagesModule('cloudbuild', 'v1')
+
   build_op = cloudbuild_client.projects_builds.Create(
-      cloudbuild_v1.CloudbuildProjectsBuildsCreateRequest(
+      cloudbuild_messages.CloudbuildProjectsBuildsCreateRequest(
           projectId=project,
-          build=cloudbuild_v1.Build(
+          build=cloudbuild_messages.Build(
               timeout=timeout_str,
-              source=cloudbuild_v1.Source(
-                  storageSource=cloudbuild_v1.StorageSource(
+              source=cloudbuild_messages.Source(
+                  storageSource=cloudbuild_messages.StorageSource(
                       bucket=bucket_ref.bucket,
                       object=object_name,
                   ),
               ),
-              steps=[cloudbuild_v1.BuildStep(
+              steps=[cloudbuild_messages.BuildStep(
                   name=builder,
                   args=[output_image]
               )],

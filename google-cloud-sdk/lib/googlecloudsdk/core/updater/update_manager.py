@@ -28,6 +28,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import release_notes
 from googlecloudsdk.core.updater import snapshots
@@ -482,7 +483,8 @@ version [{1}].  To clear your fixed version setting, run:
         log.debug('Checking for updates...')
         # It's time to do an update check and refresh the notification cache.
         try:
-          (_, diff) = self._GetStateAndDiff(command_path='UPDATE_MANAGER')
+          (_, diff) = self._GetStateAndDiff(
+              command_path=installers.UPDATE_MANAGER_COMMAND_PATH)
           last_update_check.SetFromSnapshot(
               diff.latest, bool(diff.AvailableUpdates()), force=force)
         except snapshots.IncompatibleSchemaVersionError:

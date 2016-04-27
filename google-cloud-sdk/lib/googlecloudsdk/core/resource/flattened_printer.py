@@ -123,7 +123,8 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
   """
 
   def __init__(self, *args, **kwargs):
-    super(FlattenedPrinter, self).__init__(*args, **kwargs)
+    super(FlattenedPrinter, self).__init__(*args, retain_none_values=False,
+                                           **kwargs)
 
   def _AddRecord(self, record, delimit=True):
     """Immediately prints the record as flattened a flattened tree.

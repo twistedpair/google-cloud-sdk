@@ -115,7 +115,7 @@ the user has access to.
               method_id=u'iam.projects.serviceAccounts.keys.get',
               ordered_params=[u'name'],
               path_params=[u'name'],
-              query_params=[],
+              query_params=[u'publicKeyType'],
               relative_path=u'v1/{+name}',
               request_field='',
               request_type_name=u'IamProjectsServiceAccountsKeysGetRequest',

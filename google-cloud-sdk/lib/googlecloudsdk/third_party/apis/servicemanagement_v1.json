@@ -1732,9 +1732,9 @@
             "$ref": "ConfigFile"
           }
         },
-        "swaggerSpec": {
-          "description": "Swagger \/ OpenAPI specification",
-          "$ref": "SwaggerSpec"
+        "openApiSpec": {
+          "description": "OpenAPI specification",
+          "$ref": "OpenApiSpec"
         },
         "protoSpec": {
           "description": "Protocol buffer API specification",
@@ -1764,32 +1764,17 @@
         }
       }
     },
-    "SwaggerSpec": {
-      "id": "SwaggerSpec",
-      "description": "A collection of swagger specification files.",
+    "OpenApiSpec": {
+      "id": "OpenApiSpec",
+      "description": "A collection of OpenAPI specification files.",
       "type": "object",
       "properties": {
-        "swaggerFiles": {
-          "description": "The individual files.",
+        "openApiFiles": {
+          "description": "Individual files.",
           "type": "array",
           "items": {
-            "$ref": "File"
+            "$ref": "ConfigFile"
           }
-        }
-      }
-    },
-    "File": {
-      "id": "File",
-      "description": "A single swagger specification file.",
-      "type": "object",
-      "properties": {
-        "path": {
-          "description": "The relative path of the swagger spec file.",
-          "type": "string"
-        },
-        "contents": {
-          "description": "The contents of the swagger spec file.",
-          "type": "string"
         }
       }
     },
@@ -2266,8 +2251,41 @@
           "description": "The swagger specification for an API.",
           "$ref": "SwaggerSpec"
         },
+        "openApiSpec": {
+          "description": "The OpenAPI specification for an API.",
+          "$ref": "OpenApiSpec"
+        },
         "serviceName": {
           "description": "The service name to use for constructing the normalized service\nconfiguration equivalent of the provided configuration specification.",
+          "type": "string"
+        }
+      }
+    },
+    "SwaggerSpec": {
+      "id": "SwaggerSpec",
+      "description": "A collection of swagger specification files.",
+      "type": "object",
+      "properties": {
+        "swaggerFiles": {
+          "description": "The individual files.",
+          "type": "array",
+          "items": {
+            "$ref": "File"
+          }
+        }
+      }
+    },
+    "File": {
+      "id": "File",
+      "description": "A single swagger specification file.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The relative path of the swagger spec file.",
+          "type": "string"
+        },
+        "contents": {
+          "description": "The contents of the swagger spec file.",
           "type": "string"
         }
       }

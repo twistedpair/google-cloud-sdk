@@ -19,9 +19,8 @@ import json
 import textwrap
 import time
 from googlecloudsdk.api_lib.bigquery import message_conversions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apis.bigquery.v2 import bigquery_v2_messages as messages
-from googlecloudsdk.third_party.apis.bigquery.v2.bigquery_v2_client import BigqueryV2 as client
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import list_pager
 
@@ -45,8 +44,9 @@ class Bigquery(object):
   _resource_parser = None
 
   @classmethod
-  def SetApiEndpoint(cls, http, endpoint):
-    cls._client = client(url=endpoint, get_credentials=False, http=http)
+  def SetApiEndpoint(cls):
+    cls._client = core_apis.GetClientInstance('bigquery', 'v2')
+    cls._messages = core_apis.GetMessagesModule('bigquery', 'v2')
 
   @classmethod
   def SetResourceParser(cls, parser):
@@ -66,7 +66,7 @@ class Project(Bigquery):
 
   # TODO(user): do not expose backend representation.
   def GetCurrentRawJobsListGenerator(self, all_users, max_results):
-    """Returns list of jobs using backed representation for this project."""
+    """Returns list of jobs using backend representation for this project."""
 
     # TODO(user): add back state filter support once b/22224569 is resolved.
     # state_enum = messages.BigqueryJobsListRequest.StateFilterValueValuesEnum
@@ -76,11 +76,11 @@ class Project(Bigquery):
     #    'pending': state_enum.pending,
     # }
     # job_state_filter = [state_map[value] for value in state_filter]
-    request = messages.BigqueryJobsListRequest(
+    request = self._messages.BigqueryJobsListRequest(
         projectId=self.id,
         allUsers=all_users,
-        projection=(messages.BigqueryJobsListRequest.ProjectionValueValuesEnum
-                    .full))
+        projection=(self._messages.BigqueryJobsListRequest
+                    .ProjectionValueValuesEnum.full))
     return list_pager.YieldFromList(
         self._client.jobs,
         request,
@@ -106,8 +106,8 @@ class Job(Bigquery):
 
   def _Refresh(self):
     """Sync this object with backend."""
-    request = messages.BigqueryJobsGetRequest(projectId=self.project.id,
-                                              jobId=self.id)
+    request = self._messages.BigqueryJobsGetRequest(projectId=self.project.id,
+                                                    jobId=self.id)
     try:
       self._job = self._client.jobs.Get(request)
     except apitools_exceptions.HttpError as server_error:
@@ -135,7 +135,7 @@ class Job(Bigquery):
     Returns:
       iterable QueryResults object with schema.
     """
-    request = messages.BigqueryJobsGetQueryResultsRequest(
+    request = self._messages.BigqueryJobsGetQueryResultsRequest(
         projectId=self.project.id,
         jobId=self.id,
         startIndex=start_row)

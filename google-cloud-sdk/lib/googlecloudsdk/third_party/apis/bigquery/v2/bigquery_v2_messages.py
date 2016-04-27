@@ -506,7 +506,7 @@ class CsvOptions(_messages.Message):
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
   quote = _messages.StringField(5, default=u'"')
-  skipLeadingRows = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  skipLeadingRows = _messages.IntegerField(6)
 
 
 class Dataset(_messages.Message):
@@ -742,11 +742,6 @@ class ExternalDataConfiguration(_messages.Message):
       ignored for Google Cloud Bigtable, Google Cloud Datastore backups and
       Avro formats.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
-    googleSheetsOptions: [Optional] Additional options if sourceFormat is set
-      to GOOGLE_SHEETS. Data must be located in the first tab, and should
-      start in the first column. The data must also start in the first row
-      unless a header row is present. The optional header row can contain
-      column names. Fields that are empty will be filled will NULL values.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as
@@ -766,13 +761,12 @@ class ExternalDataConfiguration(_messages.Message):
       JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
       Datastore backups, and Avro formats.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
-      For Google Sheets, specify "GOOGLE_SHEETS". For newline-delimited JSON,
-      specify "NEWLINE_DELIMITED_JSON". For Avro files, specify "AVRO". For
-      Google Cloud Datastore backups, specify "DATASTORE_BACKUP".
-      [Experimental] For Google Cloud Bigtable, specify "BIGTABLE". Please
-      note that reading from Google Cloud Bigtable is experimental and has to
-      be enabled for your project. Please contact Google Cloud Support to
-      enable this for your project.
+      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro
+      files, specify "AVRO". For Google Cloud Datastore backups, specify
+      "DATASTORE_BACKUP". [Experimental] For Google Cloud Bigtable, specify
+      "BIGTABLE". Please note that reading from Google Cloud Bigtable is
+      experimental and has to be enabled for your project. Please contact
+      Google Cloud Support to enable this for your project.
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
       '*' wildcard character and it must come after the 'bucket' name. Size
@@ -789,12 +783,11 @@ class ExternalDataConfiguration(_messages.Message):
   bigtableOptions = _messages.MessageField('BigtableOptions', 2)
   compression = _messages.StringField(3)
   csvOptions = _messages.MessageField('CsvOptions', 4)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 5)
-  ignoreUnknownValues = _messages.BooleanField(6)
-  maxBadRecords = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 8)
-  sourceFormat = _messages.StringField(9)
-  sourceUris = _messages.StringField(10, repeated=True)
+  ignoreUnknownValues = _messages.BooleanField(5)
+  maxBadRecords = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  schema = _messages.MessageField('TableSchema', 7)
+  sourceFormat = _messages.StringField(8)
+  sourceUris = _messages.StringField(9, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -840,17 +833,6 @@ class GetQueryResultsResponse(_messages.Message):
   schema = _messages.MessageField('TableSchema', 9)
   totalBytesProcessed = _messages.IntegerField(10)
   totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-
-
-class GoogleSheetsOptions(_messages.Message):
-  """A GoogleSheetsOptions object.
-
-  Fields:
-    hasHeaderRow: [Optional] Indicates that the first row in the spreadsheet
-      contains column names.
-  """
-
-  hasHeaderRow = _messages.BooleanField(1)
 
 
 class Job(_messages.Message):
@@ -1093,11 +1075,11 @@ class JobConfigurationQuery(_messages.Message):
       be queried as if it were a standard BigQuery table.
     useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
       SQL dialect for this query. The default value is true. If set to false,
-      the query will use BigQuery's updated SQL dialect with improved
-      standards compliance: https://cloud.google.com/bigquery/sql-reference/
-      When using BigQuery's updated SQL, the values of allowLargeResults and
-      flattenResults are ignored. Queries with useLegacySql set to false will
-      be run as if allowLargeResults is true and flattenResults is false.
+      the query will use BigQuery's standard SQL:
+      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
+      set to false, the values of allowLargeResults and flattenResults are
+      ignored; query will be run as if allowLargeResults is true and
+      flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
@@ -1467,11 +1449,11 @@ class QueryRequest(_messages.Message):
       results. The default value is 10000 milliseconds (10 seconds).
     useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
       SQL dialect for this query. The default value is true. If set to false,
-      the query will use BigQuery's updated SQL dialect with improved
-      standards compliance: https://cloud.google.com/bigquery/sql-reference/
-      When using BigQuery's updated SQL, the values of allowLargeResults and
-      flattenResults are ignored. Queries with useLegacySql set to false will
-      be run as if allowLargeResults is true and flattenResults is false.
+      the query will use BigQuery's standard SQL:
+      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
+      set to false, the values of allowLargeResults and flattenResults are
+      ignored; query will be run as if allowLargeResults is true and
+      flattenResults is false.
     useQueryCache: [Optional] Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.

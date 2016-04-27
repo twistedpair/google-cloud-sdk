@@ -116,7 +116,7 @@ RESOURCE_REGISTRY = {
             traffic_split.format("{0:.2f}", .),
             last_deployed_time.date("%Y-%m-%dT%H:%M:%S%Oz", undefined="-")
               :label=LAST_DEPLOYED,
-            version.servingStatus.name:label=SERVING_STATUS
+            version.servingStatus:label=SERVING_STATUS
           )
         """,
     ),
@@ -394,7 +394,7 @@ RESOURCE_REGISTRY = {
           table(
             name,
             selfLink.map().scope(projects).segment(0):label=PROJECT,
-            image_alias():label=ALIAS,
+            family,
             deprecated.state:label=DEPRECATED,
             status
           )
@@ -704,7 +704,7 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             name,
-            defaultService.basename()
+            defaultService
           )
         """,
     ),
@@ -873,7 +873,6 @@ RESOURCE_REGISTRY = {
     # deployment manager v2
 
     'deploymentmanager.deployments': ResourceInfo(
-        async_collection='deployments.operations',
         list_format="""
           table(
             name,
@@ -909,17 +908,34 @@ RESOURCE_REGISTRY = {
     ),
 
     'deploymentmanager.resources': ResourceInfo(
+        async_collection='deploymentmanager.operations',
         list_format="""
           table(
             name,
-            operationType,
-            status.yesno(no="COMPLETED"):label=UPDATE_STATE,
+            type,
+            update.state.yesno(no="COMPLETED"),
             update.error.errors.group(code, message)
           )
         """,
         simple_format="""
           value(
             name
+          )
+        """,
+    ),
+
+    'deploymentmanager.resources_and_outputs': ResourceInfo(
+        async_collection='deploymentmanager.operations',
+        list_format="""
+          table(
+            resources:format='table[empty-legend="No resources were found in your deployment"](
+              name,
+              type,
+              update.state.yesno(no="COMPLETED"),
+              update.error.errors.group(code, message))',
+            outputs:format='table[empty-legend="No outputs were found in your deployment"](
+              name:label=OUTPUTS,
+              finalValue:label=VALUE)'
           )
         """,
     ),
@@ -1258,7 +1274,7 @@ RESOURCE_REGISTRY = {
             id:label=DEVICE_ID,
             manufacturer:label=MAKE,
             name:label=MODEL_NAME,
-            form.name.color(blue=VIRTUAL,yellow=PHYSICAL):label=FORM,
+            form.color(blue=VIRTUAL,yellow=PHYSICAL):label=FORM,
             format("{0:4} x {1}", screenY, screenX):label=RESOLUTION,
             supportedVersionIds.list("none"):label=OS_VERSION_IDS,
             tags.list().color(green=default,red=deprecated,yellow=preview)

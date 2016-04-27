@@ -1173,6 +1173,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "screenDensity": {
+          "description": "Screen density in DPI.\nThis corresponds to ro.sf.lcd_density\n@OutputOnly",
+          "type": "integer",
+          "format": "int32"
+        },
         "supportedVersionIds": {
           "description": "The set of Android versions this device supports.\n@OutputOnly",
           "type": "array",
@@ -1181,7 +1186,14 @@
           }
         },
         "supportedAbis": {
-          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\n@OutputOnly",
+          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\nThe most preferred ABI is the first element in the list.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "buildTags": {
+          "description": "Build tags (generally release-keys or dev-keys)\nThis corresponds to ro.build.tags\n@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"

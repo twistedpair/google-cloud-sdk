@@ -524,6 +524,7 @@ class OperationMetadata(_messages.Message):
   Fields:
     createTime: The time at which the job was submitted to the Genomics
       service.
+    endTime: The time at which the job stopped running.
     events: Optional event messages that were generated during the job's
       execution. This also contains any warnings that were generated during
       import or export.
@@ -563,9 +564,10 @@ class OperationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  events = _messages.MessageField('OperationEvent', 2, repeated=True)
-  projectId = _messages.StringField(3)
-  request = _messages.MessageField('RequestValue', 4)
+  endTime = _messages.StringField(2)
+  events = _messages.MessageField('OperationEvent', 3, repeated=True)
+  projectId = _messages.StringField(4)
+  request = _messages.MessageField('RequestValue', 5)
 
 
 class Pipeline(_messages.Message):

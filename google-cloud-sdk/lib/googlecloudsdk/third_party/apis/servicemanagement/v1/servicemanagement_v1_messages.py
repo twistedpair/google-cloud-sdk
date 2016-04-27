@@ -304,16 +304,16 @@ class ConfigSource(_messages.Message):
       accompanies source specification. This typically includes configuration
       of metrics, quota, etc. At the moment, only YAML configuration files are
       supported.
+    openApiSpec: OpenAPI specification
     options: Options to cover use of source config within ServiceManager and
       tools
     protoSpec: Protocol buffer API specification
-    swaggerSpec: Swagger / OpenAPI specification
   """
 
   files = _messages.MessageField('ConfigFile', 1, repeated=True)
-  options = _messages.MessageField('ConfigOptions', 2)
-  protoSpec = _messages.MessageField('ProtoSpec', 3)
-  swaggerSpec = _messages.MessageField('SwaggerSpec', 4)
+  openApiSpec = _messages.MessageField('OpenApiSpec', 2)
+  options = _messages.MessageField('ConfigOptions', 3)
+  protoSpec = _messages.MessageField('ProtoSpec', 4)
 
 
 class Context(_messages.Message):
@@ -369,14 +369,16 @@ class ConvertConfigRequest(_messages.Message):
   """Request message for `ConvertConfig` method.
 
   Fields:
+    openApiSpec: The OpenAPI specification for an API.
     serviceName: The service name to use for constructing the normalized
       service configuration equivalent of the provided configuration
       specification.
     swaggerSpec: The swagger specification for an API.
   """
 
-  serviceName = _messages.StringField(1)
-  swaggerSpec = _messages.MessageField('SwaggerSpec', 2)
+  openApiSpec = _messages.MessageField('OpenApiSpec', 1)
+  serviceName = _messages.StringField(2)
+  swaggerSpec = _messages.MessageField('SwaggerSpec', 3)
 
 
 class ConvertConfigResponse(_messages.Message):
@@ -1408,6 +1410,16 @@ class OAuthRequirements(_messages.Message):
   """
 
   canonicalScopes = _messages.StringField(1)
+
+
+class OpenApiSpec(_messages.Message):
+  """A collection of OpenAPI specification files.
+
+  Fields:
+    openApiFiles: Individual files.
+  """
+
+  openApiFiles = _messages.MessageField('ConfigFile', 1, repeated=True)
 
 
 class Operation(_messages.Message):

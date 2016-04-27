@@ -112,8 +112,7 @@ class ImageExpander(object):
           args.image,
           collection='compute.images',
           resolve=False)
-    # TODO(user): remove getattr on image family GA
-    elif getattr(args, 'image_family', None):
+    elif args.image_family is not None:
       image_ref = self.resources.Parse(
           args.image_family,
           collection='compute.images',

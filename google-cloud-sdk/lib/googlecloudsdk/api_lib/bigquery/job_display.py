@@ -17,26 +17,31 @@
 
 import datetime
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.api_lib.bigquery import bigquery_client_helper
+from googlecloudsdk.api_lib.bigquery import job_control
+from googlecloudsdk.core import log
 
 
-class DisplayInfo(object):
+class _DisplayInfo(object):
   """Information about a job displayed in command output.
 
   Fields:
      job_id: the job ID
      job_type: one of 'copy', 'extract', 'load', 'query'
+     message: the original API response, defined for use in --format expressions
      state: one of 'SUCCESS', 'FAILURE', 'RUNNING'
      start_time: in the form yyyy-mm-dd hh:mm:ss
      duration: in the form h:mm:ss
      bytes_processed (optional)
   """
 
-  def __init__(self, job):
+  def __init__(self, job, log_errors=False, ignore_errors=False):
+    self.message = job
     self.job_id = job.jobReference.jobId
     self.job_type = (
         job.configuration
-        and DisplayInfo._JobTypeForConfiguration(job.configuration))
+        and _DisplayInfo._JobTypeForConfiguration(job.configuration))
     if job.status.state == 'DONE':
       self.state = 'FAILURE' if job.status.errorResult else 'SUCCESS'
     else:
@@ -50,6 +55,30 @@ class DisplayInfo(object):
         duration_seconds = end_time_in_seconds - start_time_in_seconds
         self.duration = str(datetime.timedelta(seconds=duration_seconds))
     self.bytes_processed = job.statistics.totalBytesProcessed
+    if log_errors and job_control.IsFailedJob(job):
+      if ignore_errors:
+        log.err.Print(
+            '\nFAILURE (ignored): {0}'.format(job.status.errorResult.message))
+      else:
+        log.err.Print()
+        raise bigquery.BackendError(
+            job.status.errorResult.message, job.status.errorResult, [],
+            job.jobReference)
+
+  def __repr__(self):
+    """String representation, mainly for readable test comparisons."""
+    body = ['<Job']
+    message = None
+    for name, value in sorted(self.__dict__.iteritems()):
+      if name == 'message':
+        message = value
+      else:
+        body.append('\n {name}: {value}'.format(name=name, value=repr(value)))
+    if message:
+      body.append('\n {name}: {value}'.format(name='message',
+                                              value=repr(message)))
+    body.append('>')
+    return ''.join(body)
 
   @staticmethod
   def _JobTypeForConfiguration(configuration):
@@ -70,3 +99,20 @@ class DisplayInfo(object):
     if configuration.query:
       return 'query'
     return None
+
+
+def Synthesize(resources, log_errors=False, ignore_errors=False):
+  """Synthesize Run() resources from the raw backend resources.
+
+  Args:
+    resources: The raw backend resources.
+    log_errors: Log job errors if True. If ignore_errors is False also
+      raise an exception on errors.
+    ignore_errors: If True then log_errors will not raise an exception on error.
+
+  Returns:
+    A synthesized resource iterable.
+  """
+  return (_DisplayInfo(resource, log_errors=log_errors,
+                       ignore_errors=ignore_errors)
+          for resource in resources)

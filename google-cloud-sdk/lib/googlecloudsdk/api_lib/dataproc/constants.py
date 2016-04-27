@@ -15,8 +15,9 @@
 """Constants for the dataproc tool."""
 
 # TODO(user): Move defaults to the server
-from googlecloudsdk.third_party.apis.dataproc.v1 import dataproc_v1_messages as messages
+from googlecloudsdk.core import apis as core_apis
 
+messages = core_apis.GetMessagesModule('dataproc', 'v1')
 # Job Status states that do not change.
 TERMINAL_JOB_STATES = [
     messages.JobStatus.StateValueValuesEnum.CANCELLED,

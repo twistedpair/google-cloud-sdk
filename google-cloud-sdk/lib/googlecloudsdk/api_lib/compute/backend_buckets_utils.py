@@ -23,10 +23,3 @@ def AddUpdatableArgs(parser):
   parser.add_argument(
       '--description',
       help='An optional, textual description for the backend bucket.')
-
-  gcs_bucket_name = parser.add_argument(
-      '--gcs-bucket-name',
-      help=('The name of the GCS Bucket to use.'))
-  gcs_bucket_name.detailed_help = """\
-      TODO(eriel): Add details here.
-      """

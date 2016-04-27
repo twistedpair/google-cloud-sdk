@@ -2,6 +2,40 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 107.0.0 (2016/04/27)
+
+### Google Compute Engine
+
+* Enable cursor ("start") support for get-serial-port-output in Beta.
+* Add tail-serial-port-output in Beta.
+* Image families are now in General Availability (GA).
+
+### Google App Engine
+
+* GAE components updated to 1.9.36.
+ * Please visit the following release notes for details:
+   * Python - https://cloud.google.com/appengine/docs/python/release-notes
+   * Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+### Deployment Manager
+
+* Creating and updating Deployments will now display output values in addition
+  to listing the resources.
+
+### Google Container Engine
+
+* `gcloud container clusters resize` now allows specifying a node pool.
+
+### Cloud Debugger
+
+* Added `gcloud alpha debug` command surface to allow control of the
+  Cloud Debugger from the command line.
+
+### Bigquery
+
+* BQ support for partitioned tables.
+
+
 ## 106.0.0 (2016/04/20)
 
 ### Breaking Changes

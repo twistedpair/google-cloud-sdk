@@ -3638,6 +3638,24 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersPatchRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone where you want to create the managed instance
+      group.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A ComputeInstanceGroupManagersRecreateInstancesRequest object.
 
@@ -3761,6 +3779,24 @@ class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagersUpdateRequest(_messages.Message):
+  """A ComputeInstanceGroupManagersUpdateRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone where you want to create the managed instance
+      group.
+  """
+
+  instanceGroupManager = _messages.StringField(1)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
 
 
@@ -5174,6 +5210,23 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeRegionInstanceGroupManagersPatchRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersPatchRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
 class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
   """A ComputeRegionInstanceGroupManagersRecreateInstancesRequest object.
 
@@ -5278,6 +5331,23 @@ class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Mess
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersUpdateRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersUpdateRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.StringField(1)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
 
 
 class ComputeRegionInstanceGroupsGetRequest(_messages.Message):
@@ -8616,6 +8686,22 @@ class FirewallList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class FixedOrPercent(_messages.Message):
+  """Encapsulates numeric value that can be either absolute or relative.
+
+  Fields:
+    calculated: [Output Only] Absolute value calculated based on mode: mode =
+      fixed -> calculated = fixed = percent -> calculated =
+      ceiling(percent/100 * base_value)
+    fixed: fixed must be non-negative.
+    percent: percent must belong to [0, 100].
+  """
+
+  calculated = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  fixed = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
@@ -9958,6 +10044,16 @@ class InstanceGroupManager(_messages.Message):
     targetSize: The target number of running instances for this managed
       instance group. Deleting or abandoning instances reduces this number.
       Resizing the group changes this number.
+    updatePolicy: The update policy for this managed instance group.
+    versions: Versions supported by this IGM. User should set this field if
+      they need fine-grained control over how many instances in each version
+      are run by this IGM. Versions are keyed by instanceTemplate. Every
+      instanceTemplate can appear at most once. This field overrides
+      instanceTemplate field. If both instanceTemplate and versions are set,
+      the user receives a warning. "instanceTemplate: X" is semantically
+      equivalent to "versions [ { instanceTemplate: X } ]". Exactly one
+      version must have targetSize field left unset. Size of such a version
+      will be calculated automatically.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -9989,7 +10085,9 @@ class InstanceGroupManager(_messages.Message):
   selfLink = _messages.StringField(15)
   targetPools = _messages.StringField(16, repeated=True)
   targetSize = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(18)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 18)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 19, repeated=True)
+  zone = _messages.StringField(20)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -10129,6 +10227,102 @@ class InstanceGroupManagerList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class InstanceGroupManagerUpdatePolicy(_messages.Message):
+  """A InstanceGroupManagerUpdatePolicy object.
+
+  Enums:
+    MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
+      The order of action types is: REBOOT < REPLACE.
+    StandbyModeValueValuesEnum: Standby mode of all the standby instances
+      managed by the IGM.
+    TypeValueValuesEnum:
+
+  Fields:
+    maxSurge: Maximum number of instances that can be created above the
+      InstanceGroupManager.targetSize during the update process. By default, a
+      fixed value of 1 is used. Using maxSurge > 0 will cause instance names
+      to change during the update process. At least one of { maxSurge,
+      maxUnavailable } must be greater than 0.
+    maxUnavailable: Maximum number of instances that can be unavailable during
+      the update process. The instance is considered available if all of the
+      following conditions are satisfied: 1. instance's status is RUNNING 2.
+      instance's liveness health check result was observed to be HEALTHY at
+      least once By default, a fixed value of 1 is used. At least one of {
+      maxSurge, maxUnavailable } must be greater than 0.
+    minReadySec: Minimum number of seconds to wait for after a newly created
+      instance becomes available.
+    minimalAction: Minimal action to be taken on an instance. The order of
+      action types is: REBOOT < REPLACE.
+    standbyMode: Standby mode of all the standby instances managed by the IGM.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    """Minimal action to be taken on an instance. The order of action types
+    is: REBOOT < REPLACE.
+
+    Values:
+      REBOOT: <no description>
+      REPLACE: <no description>
+    """
+    REBOOT = 0
+    REPLACE = 1
+
+  class StandbyModeValueValuesEnum(_messages.Enum):
+    """Standby mode of all the standby instances managed by the IGM.
+
+    Values:
+      DRAINED: <no description>
+    """
+    DRAINED = 0
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """TypeValueValuesEnum enum type.
+
+    Values:
+      OPPORTUNISTIC: <no description>
+      PROACTIVE: <no description>
+    """
+    OPPORTUNISTIC = 0
+    PROACTIVE = 1
+
+  maxSurge = _messages.MessageField('FixedOrPercent', 1)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 2)
+  minReadySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
+  standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class InstanceGroupManagerVersion(_messages.Message):
+  """A InstanceGroupManagerVersion object.
+
+  Fields:
+    instanceTemplate: A string attribute.
+    keepStandbyInstances: If this field is set, IGM maintains a pool of
+      standby instances created from instanceTemplate. The number of standby
+      instances is such that the total number of instances created from this
+      instanceTemplate is equal to InstanceGroupManager.targetSize regardless
+      of what is the value of targetSize.fixed or targetSize.percent. Standby
+      instances are useful during the update, when the user wants to be able
+      to quickly rollout/rollback to the target version.
+    tag: Tag describing the version. Changing it may trigger an action
+      configured in UpdatePolicy.
+    targetSize: Intended number of instances that are created from
+      instanceTemplate. The final number of instances created from
+      instanceTemplate will be equal to: * if expressed as fixed number:
+      min(targetSize.fixed, instanceGroupManager.targetSize), * if expressed
+      as percent: ceiling(targetSize.percent *
+      InstanceGroupManager.targetSize). If unset, this version will handle all
+      the remaining instances.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  keepStandbyInstances = _messages.BooleanField(2)
+  tag = _messages.StringField(3)
+  targetSize = _messages.MessageField('FixedOrPercent', 4)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -11212,6 +11406,8 @@ class ManagedInstance(_messages.Message):
       list for an instance without stopping that instance.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
+    StandbyModeValueValuesEnum: [Output Only] Standby mode of the instance.
+      This field is non-empty iff the instance is a standby.
 
   Fields:
     currentAction: [Output Only] The current action that the managed instance
@@ -11243,6 +11439,8 @@ class ManagedInstance(_messages.Message):
       }.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    standbyMode: [Output Only] Standby mode of the instance. This field is
+      non-empty iff the instance is a standby.
   """
 
   class CurrentActionValueValuesEnum(_messages.Enum):
@@ -11307,12 +11505,22 @@ class ManagedInstance(_messages.Message):
     SUSPENDING = 6
     TERMINATED = 7
 
+  class StandbyModeValueValuesEnum(_messages.Enum):
+    """[Output Only] Standby mode of the instance. This field is non-empty iff
+    the instance is a standby.
+
+    Values:
+      DRAINED: <no description>
+    """
+    DRAINED = 0
+
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
   instanceTemplate = _messages.StringField(5)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
+  standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 7)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):

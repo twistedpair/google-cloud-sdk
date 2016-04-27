@@ -216,7 +216,6 @@ class _LogManager(object):
   MAX_AGE_TIMEDELTA = datetime.timedelta(days=30)
 
   def __init__(self):
-    self.console_formatter = _ConsoleFormatter(sys.stderr)
     # Note: if this ever changes, please update LOG_PREFIX_PATTERN
     self.file_formatter = logging.Formatter(
         fmt='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
@@ -235,9 +234,10 @@ class _LogManager(object):
 
     self.logs_dirs = []
 
+    self.console_formatter = None
     self.user_output_filter = _UserOutputFilter(DEFAULT_USER_OUTPUT_ENABLED)
-    self.stdout_stream_wrapper = _StreamWrapper(sys.stdout)
-    self.stderr_stream_wrapper = _StreamWrapper(sys.stderr)
+    self.stdout_stream_wrapper = _StreamWrapper(None)
+    self.stderr_stream_wrapper = _StreamWrapper(None)
 
     self.stdout_writer = _ConsoleWriter(self.file_only_logger,
                                         self.user_output_filter,
@@ -249,9 +249,9 @@ class _LogManager(object):
     self.verbosity = None
     self.user_output_enabled = None
     self.current_log_file = None
-    self.Reset()
+    self.Reset(sys.stdout, sys.stderr)
 
-  def Reset(self):
+  def Reset(self, stdout, stderr):
     """Resets all logging functionality to its default state."""
     # Clears any existing logging handlers.
     if version.IS_ON_PYTHON26:
@@ -261,14 +261,14 @@ class _LogManager(object):
     self.logger.handlers[:] = []
 
     # Refresh the streams for the console writers.
-    self.stdout_stream_wrapper.stream = sys.stdout
-    self.stderr_stream_wrapper.stream = sys.stderr
+    self.stdout_stream_wrapper.stream = stdout
+    self.stderr_stream_wrapper.stream = stderr
 
     # Reset the color handling.
-    self.console_formatter = _ConsoleFormatter(sys.stderr)
+    self.console_formatter = _ConsoleFormatter(stderr)
 
     # A handler to redirect logs to stderr, this one is standard.
-    self.stderr_handler = logging.StreamHandler(sys.stderr)
+    self.stderr_handler = logging.StreamHandler(stderr)
     self.stderr_handler.setFormatter(self.console_formatter)
     self.stderr_handler.setLevel(DEFAULT_VERBOSITY)
     self.logger.addHandler(self.stderr_handler)
@@ -525,7 +525,7 @@ def Reset():
   logging framework is reinitialized.  This is useful mainly for clearing the
   loggers between tests so stubs can get reset.
   """
-  _log_manager.Reset()
+  _log_manager.Reset(sys.stdout, sys.stderr)
 
 
 def SetVerbosity(verbosity):

@@ -25,6 +25,7 @@ import os
 import re
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -33,7 +34,6 @@ from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.third_party.apitools.base.py import transfer
 
@@ -45,6 +45,8 @@ LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
 OUTPUT_LINE_CHAR = '-'
 GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
+
+STORAGE_MESSAGES = core_apis.GetMessagesModule('storage', 'v1')
 
 
 class Error(Exception):
@@ -106,11 +108,11 @@ def CopyFileToGCS(bucket_ref, local_path, target_path, storage_client):
     BadFileException if the file upload is not successful.
   """
   file_size = _GetFileSize(local_path)
-  src_obj = storage_v1.Object(size=file_size)
+  src_obj = STORAGE_MESSAGES.Object(size=file_size)
   mime_type = _GetMimetype(local_path)
 
   upload = transfer.Upload.FromFile(local_path, mime_type=mime_type)
-  insert_req = storage_v1.StorageObjectsInsertRequest(
+  insert_req = STORAGE_MESSAGES.StorageObjectsInsertRequest(
       bucket=bucket_ref.bucket,
       name=target_path,
       object=src_obj)
@@ -140,7 +142,7 @@ def ListBucket(bucket_ref, client):
   Returns:
     A set of names of items.
   """
-  request = storage_v1.StorageObjectsListRequest(bucket=bucket_ref.bucket)
+  request = STORAGE_MESSAGES.StorageObjectsListRequest(bucket=bucket_ref.bucket)
   try:
     response = client.objects.List(request)
   except api_exceptions.HttpError as e:

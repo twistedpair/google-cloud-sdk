@@ -43,35 +43,6 @@ def MakeSerializable(resource):
   return Compile().Evaluate(resource)
 
 
-def ClassToDict(resource):
-  """Converts a resource class object to a dict.
-
-  Private and callable attributes are omitted in the dict.
-
-  Args:
-    resource: The class object to convert.
-
-  Returns:
-    The dict representing the class object.
-  """
-  r = {}
-  for attr in dir(resource):
-    if attr.startswith('_'):
-      # Omit private attributes.
-      continue
-    value = getattr(resource, attr)
-    if hasattr(value, '__call__'):
-      # Omit callable attributes.
-      continue
-    r[attr] = value
-  if isinstance(resource, datetime.datetime):
-    # The datetime.tzinfo object does not serialize, so we save the original
-    # string representation, which by default has enough information to
-    # reconstruct tzinfo.
-    r['datetime'] = unicode(resource)
-  return r
-
-
 class Projector(object):
   """Projects a resource using a ProjectionSpec.
 
@@ -85,6 +56,7 @@ class Projector(object):
     _been_here_done_that: A LIFO of the current objects being projected. Used
       to catch recursive objects like datetime.datetime.max.
     _by_columns: True if Projector projects to a list of columns.
+    _columns: self._projection.Columns() column attributes.
     _retain_none_values: Retain dict entries with None values.
     _transforms_enabled_attribute: The projection.Attributes()
       transforms_enabled setting.
@@ -102,6 +74,7 @@ class Projector(object):
     """
     self._projection = projection
     self._by_columns = by_columns
+    self._columns = self._projection.Columns()
     self._retain_none_values = retain_none_values
     self._been_here_done_that = []
     if 'transforms' in projection.Attributes():
@@ -157,6 +130,43 @@ class Projector(object):
     # leaf=True makes sure we don't get back here with the same obj.
     return self._Project(obj, projection, flag, leaf=True)
 
+  def _ProjectClass(self, obj, projection, flag):
+    """Converts class object to a dict.
+
+    Private and callable attributes are omitted in the dict.
+
+    Args:
+      obj: The class object to convert.
+      projection: Projection _Tree node.
+      flag: A bitmask of DEFAULT, INNER, PROJECT.
+
+    Returns:
+      The dict representing the class object.
+    """
+    r = {}
+    exclude = set()
+    if isinstance(obj, datetime.datetime):
+      # The datetime.tzinfo object does not serialize, so we save the original
+      # string representation, which by default has enough information to
+      # reconstruct tzinfo.
+      r['datetime'] = unicode(obj)
+      # Exclude tzinfo and the default recursive attributes that really should
+      # be external constants anyway.
+      exclude.update(('max', 'min', 'resolution', 'tzinfo'))
+    for attr in dir(obj):
+      if attr.startswith('_'):
+        # Omit private attributes.
+        continue
+      if attr in exclude:
+        # Omit excluded attributes.
+        continue
+      value = getattr(obj, attr)
+      if hasattr(value, '__call__'):
+        # Omit callable attributes.
+        continue
+      r[attr] = self._Project(value, projection, flag)
+    return r
+
   def _ProjectDict(self, obj, projection, flag):
     """Projects a dictionary object.
 
@@ -172,9 +182,10 @@ class Projector(object):
       return obj
     res = {}
     for key, val in obj.iteritems():
+      f = flag
       if key in projection.tree:
         child_projection = projection.tree[key]
-        f = flag | child_projection.attribute.flag
+        f |= child_projection.attribute.flag
         if f < self._projection.INNER:
           # This branch of the tree is dead.
           continue
@@ -182,8 +193,10 @@ class Projector(object):
         # None if there are no actual PROJECT hits below.
         val = self._Project(val, child_projection, f)
       else:
-        val = self._ProjectAttribute(val, self._projection.GetEmpty(), flag)
-      if self._retain_none_values or val is not None:
+        val = self._ProjectAttribute(val, self._projection.GetEmpty(), f)
+      if (val is not None or self._retain_none_values or
+          f >= self._projection.PROJECT and self._columns):
+        # Explicit projection paths always show none values.
         res[unicode(key)] = val
     return res or None
 
@@ -198,10 +211,13 @@ class Projector(object):
     Returns:
       The projected obj.
     """
-    if not obj:
-      return obj
     if isinstance(obj, set):
+      # Convert set to an ordered list. This does empty set => [] without an
+      # explicit check for None.
       obj = sorted(obj)
+    if not obj:
+      # This catches the empty list and None.
+      return obj
     # No iterators or generators beyond this point.
     try:
       _ = len(obj)
@@ -319,7 +335,7 @@ class Projector(object):
     # for some types raises exceptions on type mismatch. == or != raising
     # exceptions is not a good plan. `is' avoids __eq__.
     if any([obj is x for x in self._been_here_done_that]):
-      obj = None
+      return None
     elif obj is None:
       pass
     elif isinstance(obj, (basestring, bool, int, long, float, complex)):
@@ -333,9 +349,12 @@ class Projector(object):
       if isinstance(obj, messages.Message):
         # protorpc message.
         obj = encoding.MessageToDict(obj)
+      elif isinstance(obj, messages.Enum):
+        # protorpc enum
+        obj = obj.name
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):
         # class object or collections.namedtuple() (via the _fields test).
-        obj = ClassToDict(obj)
+        obj = self._ProjectClass(obj, self._projection.GetEmpty(), flag)
       if (projection and projection.attribute and
           projection.attribute.transform):
         # Transformed nodes prune here.
@@ -369,7 +388,7 @@ class Projector(object):
     self._retain_none_values = enable
 
   def Evaluate(self, obj):
-    """Serializes/projects/transforms one or more objects.
+    """Serializes/projects/transforms obj.
 
     A default or empty projection expression simply converts a resource object
     to a JSON-serializable copy of the object.
@@ -383,18 +402,21 @@ class Projector(object):
         to the input object do not affect the JSON-serializable copy.
     """
     self._transforms_enabled = self._transforms_enabled_attribute
-    if not self._by_columns or not self._projection.Columns():
-      flag = (self._projection.DEFAULT if self._projection.Columns()
-              else self._projection.PROJECT)
+    if not self._by_columns or not self._columns:
+      if self._columns:
+        self._retain_none_values = False
+        flag = self._projection.DEFAULT
+      else:
+        flag = self._projection.PROJECT
       return self._Project(obj, self._projection.Tree(), flag)
-    if self._transforms_enabled is None:
-      # Pretty-print formats enable transforms by default.
+    obj = self._Project(obj, self._projection.GetEmpty(),
+                        self._projection.PROJECT)
+    if self._transforms_enabled_attribute is None:
+      # By-column formats enable transforms by default.
       self._transforms_enabled = True
-    serialize = Compile().Evaluate
     columns = []
-    for column in self._projection.Columns():
+    for column in self._columns:
       val = resource_property.Get(obj, column.key) if column.key else obj
-      val = serialize(val)
       if column.attribute.transform:
         val = self._ProjectTransform(val, column.attribute.transform)
       columns.append(val)

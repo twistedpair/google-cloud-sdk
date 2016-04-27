@@ -4,7 +4,7 @@
  "id": "resourceviews:v1beta1",
  "name": "resourceviews",
  "version": "v1beta1",
- "revision": "20160413",
+ "revision": "20160420",
  "title": "Resource Views API",
  "description": "The Resource View API allows users to create and manage logical sets of Google Compute Engine instances.",
  "ownerDomain": "google.com",

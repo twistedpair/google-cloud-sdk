@@ -2906,6 +2906,18 @@ See Accessing images for more information.
               response_type_name=u'InstanceGroupManagersListManagedInstancesResponse',
               supports_download=False,
           ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.instanceGroupManagers.patch',
+              ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+              path_params=[u'project', u'zone'],
+              query_params=[u'instanceGroupManager'],
+              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers',
+              request_field=u'instanceGroupManagerResource',
+              request_type_name=u'ComputeInstanceGroupManagersPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'RecreateInstances': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instanceGroupManagers.recreateInstances',
@@ -2988,6 +3000,18 @@ See Accessing images for more information.
               request_field=u'testPermissionsRequest',
               request_type_name=u'ComputeInstanceGroupManagersTestIamPermissionsRequest',
               response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.instanceGroupManagers.update',
+              ordered_params=[u'project', u'zone'],
+              path_params=[u'project', u'zone'],
+              query_params=[u'instanceGroupManager'],
+              relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers',
+              request_field=u'instanceGroupManagerResource',
+              request_type_name=u'ComputeInstanceGroupManagersUpdateRequest',
+              response_type_name=u'Operation',
               supports_download=False,
           ),
           }
@@ -3099,6 +3123,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def Patch(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+
+      Args:
+        request: (ComputeInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
@@ -3187,6 +3224,19 @@ See Accessing images for more information.
         (TestPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeInstanceGroupManagersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -4886,6 +4936,18 @@ See Accessing images for more information.
               response_type_name=u'RegionInstanceGroupManagersListInstancesResponse',
               supports_download=False,
           ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.regionInstanceGroupManagers.patch',
+              ordered_params=[u'project', u'region', u'instanceGroupManager'],
+              path_params=[u'project', u'region'],
+              query_params=[u'instanceGroupManager'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
+              request_field=u'instanceGroupManagerResource',
+              request_type_name=u'ComputeRegionInstanceGroupManagersPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'RecreateInstances': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.regionInstanceGroupManagers.recreateInstances',
@@ -4956,6 +5018,18 @@ See Accessing images for more information.
               request_field=u'testPermissionsRequest',
               request_type_name=u'ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
               response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.regionInstanceGroupManagers.update',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'instanceGroupManager'],
+              relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers',
+              request_field=u'instanceGroupManagerResource',
+              request_type_name=u'ComputeRegionInstanceGroupManagersUpdateRequest',
+              response_type_name=u'Operation',
               supports_download=False,
           ),
           }
@@ -5054,6 +5128,19 @@ See Accessing images for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def Patch(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
@@ -5129,6 +5216,19 @@ See Accessing images for more information.
         (TestPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 

@@ -15,6 +15,7 @@
 """The calliope CLI/API is a framework for building library interfaces."""
 
 import argparse
+import httplib
 import os
 import re
 import ssl
@@ -42,11 +43,13 @@ from googlecloudsdk.core.util import pkg_resources
 # for various reasons (e.g. circular dependencies). To work around this, we keep
 # a list of known "friendly" error types, which we handle in the same way.
 # Additionally, we provide useful message suffixes for these error types.
+_NETWORK_ISSUES_ERROR_STRING = (
+    'This may be due to network connectivity issues. Please check your network '
+    'settings, and the status of the service you are trying to reach.')
 KNOWN_ERRORS = {
     files.Error: '',
-    ssl.SSLError: 'This may be due to network connectivity issues. '
-                  'Please check your network settings, '
-                  'and the status of the service you are trying to reach.',
+    ssl.SSLError: _NETWORK_ISSUES_ERROR_STRING,
+    httplib.ResponseNotReady: _NETWORK_ISSUES_ERROR_STRING,
 }
 _COMMAND_SUFFIX = '.py'
 

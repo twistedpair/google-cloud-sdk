@@ -24,6 +24,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+import yaml
 
 
 def PrettyPrint(resource, print_format='json'):
@@ -181,5 +182,119 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
                if response.get_assigned_value(resource_field)
                else [])
     return (results, return_token)
+  except apitools_exceptions.HttpError as error:
+    raise exceptions.HttpException(GetError(error))
+
+
+def ExtractManifestName(deployment_response):
+  """Given the response from a Deployment GET, return the manifest's name."""
+  manifest_url = None
+  # Look in the update block for a manifest
+  if deployment_response.update and deployment_response.update.manifest:
+    manifest_url = deployment_response.update.manifest
+  # Otherwise, look in the deployment
+  elif deployment_response.manifest:
+    manifest_url = deployment_response.manifest
+
+  return manifest_url.split('/')[-1] if manifest_url else None
+
+
+class ResourcesAndOutputs(object):
+  """Holds a list of resources and outputs."""
+
+  def __init__(self, resources, outputs):
+    self.resources = resources
+    self.outputs = outputs
+
+
+def _BuildOutput(name, value):
+  return {'name': name, 'finalValue': value}
+
+
+def FlattenLayoutOutputs(manifest_layout):
+  """Takes the layout from a manifest and returns the flattened outputs.
+
+  List output 'foo: [A,B]' becomes 'foo[0]: A, foo[1]: B'
+  Dict output 'bar: {a:1, b:2}' becomes 'bar[a]: 1, bar[b]: 2'
+  Lists and Dicts whose values are themselves lists or dicts are not expanded.
+
+  Args:
+    manifest_layout: The 'layout' field from the manifest.
+
+  Returns:
+    A list of {'name': X, 'finalValue': Y} dicts built out of the 'outputs'
+    section of the layout.
+  """
+
+  layout = yaml.load(manifest_layout)
+
+  if not isinstance(layout, dict) or 'outputs' not in layout:
+    return []  # Empty list
+
+  outputs = []
+
+  basic_outputs = layout['outputs']
+  for basic_output in basic_outputs:
+    if 'finalValue' not in basic_output or 'name' not in basic_output:
+      continue   # No value to process
+    name = basic_output['name']
+    value = basic_output['finalValue']
+    if isinstance(value, list):
+      for pos in range(len(value)):
+        final_name = '%s[%d]' % (name, pos)
+        outputs.append(_BuildOutput(final_name, value[pos]))
+    elif isinstance(value, dict):
+      for key in value:
+        final_name = '%s[%s]' % (name, key)
+        outputs.append(_BuildOutput(final_name, value[key]))
+    else:
+      outputs.append(_BuildOutput(name, value))
+
+  return outputs
+
+
+def YieldWithHttpExceptions(generator):
+  """Wraps generators to translate HttpErrors into HttpExceptions."""
+  try:
+    for y in generator:
+      yield y
+  except apitools_exceptions.HttpError as error:
+    raise exceptions.HttpException(GetError(error))
+
+
+def FetchResourcesAndOutputs(client, messages, project, deployment_name):
+  """Returns a ResourcesAndOutputs object for a deployment."""
+  try:
+    # Fetch a list of the previewed or updated resources.
+    response = client.resources.List(
+        messages.DeploymentmanagerResourcesListRequest(
+            project=project,
+            deployment=deployment_name,
+        )
+    )
+    resources = response.resources if response.resources else []
+
+    deployment_response = client.deployments.Get(
+        messages.DeploymentmanagerDeploymentsGetRequest(
+            project=project,
+            deployment=deployment_name,
+        )
+    )
+
+    outputs = []
+    manifest = ExtractManifestName(deployment_response)
+
+    if manifest:
+      manifest_response = client.manifests.Get(
+          messages.DeploymentmanagerManifestsGetRequest(
+              project=project,
+              deployment=deployment_name,
+              manifest=manifest,
+          )
+      )
+      outputs = FlattenLayoutOutputs(manifest_response.layout)
+
+    # TODO(user): Pagination b/28298504
+    return ResourcesAndOutputs(resources, outputs)
   except apitools_exceptions.HttpError as error:
     raise exceptions.HttpException(GetError(error))

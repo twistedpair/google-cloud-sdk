@@ -699,6 +699,11 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "endTime": {
+          "description": "The time at which the job stopped running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "request": {
           "description": "The original request that started the operation. Note that this will be in\ncurrent version of the API. If the operation was started with v1beta2 API\nand a GetOperation is performed on v1 API, a v1 request will be returned.",
           "type": "object",

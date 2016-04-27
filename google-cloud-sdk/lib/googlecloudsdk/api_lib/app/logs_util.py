@@ -43,16 +43,13 @@ def _ExtractServiceAndVersion(entry):
 
   Returns:
     A 2-tuple of the form (service_id, version_id)
-
-  Raises:
-    AttributeError: If at least one of the keys do not exist.
   """
   # TODO(user): If possible, extract instance ID too
-  ad_prop = entry.labels.additionalProperties
+  ad_prop = entry.resource.labels.additionalProperties
   service = next(x.value
                  for x in ad_prop
-                 if x.key == 'appengine.googleapis.com/module_id')
+                 if x.key == 'module_id')
   version = next(x.value
                  for x in ad_prop
-                 if x.key == 'appengine.googleapis.com/version_id')
+                 if x.key == 'version_id')
   return (service, version)

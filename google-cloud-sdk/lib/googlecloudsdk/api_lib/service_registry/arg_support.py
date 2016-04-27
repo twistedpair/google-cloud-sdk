@@ -18,7 +18,7 @@ import argparse
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apis.serviceregistry.beta import serviceregistry_beta_messages as messages
+from googlecloudsdk.core import apis
 
 
 class ArgEndpointAddress(arg_parsers.ArgType):
@@ -52,7 +52,8 @@ class ArgEndpointAddress(arg_parsers.ArgType):
 
       address = address_parts[1]
       ports = self.parse_port_specs(address_parts[1], arg_parts[1:])
-      return messages.EndpointAddress(address=address, ports=ports)
+      return apis.GetMessagesModule('serviceregistry').EndpointAddress(
+          address=address, ports=ports)
     elif ';' in arg_value or ',' in arg_value:
       # Don't let users accidentally mix the simple and keyed schemes
       self.raiseValidationError(
@@ -63,12 +64,13 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       # It's just an ADDRESS:PORT
       host_port = arg_parsers.HostPort.Parse(arg_value, ipv6_enabled=True)
 
-      endpoint_address = messages.EndpointAddress(
-          address=host_port.host)
+      endpoint_address = (apis.GetMessagesModule('serviceregistry')
+                          .EndpointAddress(address=host_port.host))
 
       if host_port.port:
         endpoint_address.ports = [
-            messages.EndpointPort(portNumber=int(host_port.port))
+            apis.GetMessagesModule('serviceregistry').EndpointPort(
+                portNumber=int(host_port.port))
         ]
 
       return endpoint_address
@@ -85,7 +87,8 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       if name_required and not port_name:
         self.raiseValidationError(
             '"port_name" is required when adding multiple ports to an address.')
-      endpoint_port = messages.EndpointPort(portNumber=port_number)
+      endpoint_port = apis.GetMessagesModule('serviceregistry').EndpointPort(
+          portNumber=port_number)
       if port_name:
         endpoint_port.name = port_name
       if protocol:
