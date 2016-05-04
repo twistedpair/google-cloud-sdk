@@ -45,28 +45,8 @@ except ImportError:
   tzwin = None
 
 
-class _UTCTimeZone(datetime.tzinfo):
-  """The UTC tzinfo."""
-
-  def __init__(self):
-    super(_UTCTimeZone, self).__init__()
-    self._tz = 'UTC'
-    self._zero = datetime.timedelta(0)
-
-  def __repr__(self):
-    return self._tz
-
-  def tzname(self, unused_dt):
-    return self._tz
-
-  def utcoffset(self, unused_dt):
-    return self._zero
-
-  def dst(self, unused_dt):
-    return self._zero
-
-
-UTC = _UTCTimeZone()  # The UTC timezone.
+LOCAL = tz.tzlocal()  # The local timezone.
+UTC = tz.tzutc()  # The UTC timezone.
 
 
 def GetTimeZone(name):
@@ -80,6 +60,8 @@ def GetTimeZone(name):
   """
   if name in ('UTC', 'Z'):
     return UTC
+  if name in ('LOCAL', 'L'):
+    return LOCAL
   name = times_data.ABBREVIATION_TO_IANA.get(name, name)
   tzinfo = tz.gettz(name)
   if not tzinfo and tzwin:
@@ -91,7 +73,7 @@ def GetTimeZone(name):
   return tzinfo
 
 
-def FormatDateTime(dt, fmt=None):
+def FormatDateTime(dt, fmt=None, tzinfo=None):
   """Returns a string of a datetime object formatted by an extended strftime().
 
   fmt handles these modifier extensions to the standard formatting chars:
@@ -104,10 +86,13 @@ def FormatDateTime(dt, fmt=None):
     dt: The datetime object to be formatted.
     fmt: The strftime(3) format string, None for the RFC 3339 format in the dt
       timezone ('%Y-%m-%dT%H:%M:%S.%3f%Ez').
+    tzinfo: Format dt relative to this timezone.
 
   Returns:
     A string of a datetime object formatted by an extended strftime().
   """
+  if tzinfo:
+    dt = LocalizeDateTime(dt, tzinfo)
   if not fmt:
     fmt = '%Y-%m-%dT%H:%M:%S.%3f%Ez'
   extension = re.compile('%[1-9]?[EO]?[fz]')
@@ -269,3 +254,16 @@ def LocalizeDateTime(dt, tzinfo=None):
   """
   ts = GetTimeStampFromDateTime(dt)
   return GetDateTimeFromTimeStamp(ts, tzinfo=tzinfo)
+
+
+def Now(tzinfo=None):
+  """Returns a timezone aware datetime object for the current time.
+
+  Args:
+    tzinfo: The timezone of the localized dt. If None then the result is naive,
+      otherwise it is aware.
+
+  Returns:
+    A datetime object localized to the timezone tzinfo.
+  """
+  return datetime.datetime.now(tzinfo)

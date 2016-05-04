@@ -14,8 +14,6 @@
 
 """Flags and helpers for the config related commands."""
 
-import argparse
-
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 
@@ -30,13 +28,6 @@ INSTALLATION_FLAG = base.Argument(
         configuration, but when `--installation` is given the property is
         updated for the entire gcloud installation."""
     )
-
-
-DEPRECATED_SCOPE_FLAG = base.Argument(
-    '--scope',
-    required=False,
-    choices=properties.Scope.AllScopeNames(),
-    help=argparse.SUPPRESS)
 
 
 def RequestedScope(args):

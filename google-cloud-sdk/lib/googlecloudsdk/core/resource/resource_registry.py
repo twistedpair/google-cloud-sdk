@@ -809,7 +809,7 @@ RESOURCE_REGISTRY = {
             clusterName:label=NAME,
             configuration.numWorkers:label=WORKER_COUNT,
             status.state:label=STATUS,
-            configuration.gceClusterConfiguration.zoneUri.zone()
+            configuration.gceClusterConfiguration.zoneUri.scope(zone)
           )
         """,
     ),
@@ -928,12 +928,12 @@ RESOURCE_REGISTRY = {
         async_collection='deploymentmanager.operations',
         list_format="""
           table(
-            resources:format='table[empty-legend="No resources were found in your deployment"](
+            resources:format='table(
               name,
               type,
               update.state.yesno(no="COMPLETED"),
               update.error.errors.group(code, message))',
-            outputs:format='table[empty-legend="No outputs were found in your deployment"](
+            outputs:format='table(
               name:label=OUTPUTS,
               finalValue:label=VALUE)'
           )
@@ -1008,6 +1008,14 @@ RESOURCE_REGISTRY = {
           )
         """,
     ),
+
+    'genomics.readGroupSets': ResourceInfo(list_format="""
+          table(
+            id,
+            name,
+            referenceSetId
+          )
+        """,),
 
     'genomics.variants': ResourceInfo(
         list_format="""
@@ -1360,6 +1368,12 @@ RESOURCE_REGISTRY = {
             status
           )
         """,
+    ),
+
+    # special IAM roles completion case
+
+    'iam.roles': ResourceInfo(
+        bypass_cache=True,
     ),
 
     # generic

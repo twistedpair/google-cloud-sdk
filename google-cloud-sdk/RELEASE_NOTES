@@ -2,6 +2,47 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 108.0.0 (2016/05/04)
+
+### Breaking Changes
+
+*   The `gcloud preview app modules get-logs` command is now deprecated. Please
+    use the new command `gcloud preview app logs read` instead.
+
+### Google App Engine
+
+*   Fixed a bug which caused `gcloud preview app deploy` to fail when run from a
+    git directory.
+
+### Google Cloud SDK
+
+*   Deprecated user property files (~/.config/gcloud/properties) will no longer
+    be read by gcloud.  If you are not already using `configurations`, your
+    properties will be automatically migrated for you.  No action is required on
+    your part.
+
+*   The `--format` flag now supports four more transforms: `extract`, `join`,
+    `slice`, and `split`.
+
+### Google Cloud Debugger
+
+*   Added the `gcloud alpha debug snapshots wait` command.
+
+### Google Compute Engine
+
+*   The `gcloud alpha compute instance-groups managed list-instances` command
+    output now includes the `INSTANCE_TEMPLATE` and `STATUS` columns.
+
+### Google Container Engine
+
+*   Update kubectl to v1.2.3
+
+### Google Genomics
+
+*   `gcloud alpha genomics variants describe/delete/update` commands now accept
+    non-integer variant IDs.
+
+
 ## 107.0.0 (2016/04/27)
 
 ### Google Compute Engine

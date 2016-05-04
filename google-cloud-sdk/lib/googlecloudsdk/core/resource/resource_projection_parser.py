@@ -140,6 +140,10 @@ class Parser(object):
       return '{0}{1}({2})'.format('map().' if self.map_transform else '',
                                   self.name, ','.join(self.args))
 
+    def __deepcopy__(self, memo):
+      # This avoids recursive ProjectionSpec transforms that deepcopy chokes on.
+      return copy.copy(self)
+
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.
 

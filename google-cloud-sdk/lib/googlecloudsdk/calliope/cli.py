@@ -31,8 +31,8 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core import named_configs
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
@@ -612,33 +612,23 @@ class CLI(object):
     # is finished parsing.
     command_path_string = self.__name
 
-    named_configs.FLAG_OVERRIDE_STACK.AllocateFrame()
+    # Look for a --configuration flag and update property state based on
+    # that before proceeding to the main argparse parse step.
+    named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(args)
     properties.VALUES.PushInvocationValues()
+
     flag_names = None
     try:
       for s in args:
         try:
           s.decode('ascii')
         except UnicodeDecodeError:
-          raise exceptions.InvalidCharacterInArgException([sys.argv[0]] + args,
-                                                          s)
-      # Look for a --configuration flag and update property state based on
-      # that before proceeding to the main argparse parse step.
-      named_configs.FLAG_OVERRIDE_STACK.ReplaceTop(
-          named_configs.AdhocConfigFlagParse(args),
-          properties.PropertiesFile.Invalidate)
+          raise exceptions.InvalidCharacterInArgException(
+              [sys.argv[0]] + args, s)
+
       args = self.__parser.parse_args(args)
       flag_names = self.__parser.GetFlagCollection()
-
       # -h|--help|--document are dispatched by parse_args and never get here.
-
-      # In principle it's possible that the initial round of ad-hoc parsing of
-      # --configuration would not agree with the later parse by argparse.  The
-      # following warning is intended to be dead code, but just in case...
-      if named_configs.FLAG_OVERRIDE_STACK.Peek() != args.configuration:
-        log.warn('Problem parsing --configuration flag.  Using named '
-                 'flag value --configuration=[{0}].'.format(
-                     named_configs.FLAG_OVERRIDE_STACK.Peek()))
 
       # Now that we have parsed the args, reload the settings so the flags will
       # take effect.  These will use the values from the properties.

@@ -28,8 +28,8 @@ import textwrap
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
-from googlecloudsdk.core import named_configs
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import platforms
 
@@ -140,16 +140,13 @@ class ConfigInfo(object):
 
   def __init__(self):
     cfg_paths = config.Paths()
+    active_config = named_configs.ConfigurationStore.ActiveConfig()
+    self.active_config_name = active_config.name
     self.paths = {
         'installation_properties_path': cfg_paths.installation_properties_path,
         'global_config_dir': cfg_paths.global_config_dir,
+        'active_config_path': active_config.file_path
     }
-    self.active_config_name = named_configs.GetNameOfActiveNamedConfig()
-    if self.active_config_name is not None:
-      self.paths['active_config_path'] = (named_configs
-                                          .GetFileForActiveNamedConfig())
-    else:
-      self.paths['user_properties_path'] = cfg_paths.user_properties_path
     self.account = properties.VALUES.core.account.Get(validate=False)
     self.project = properties.VALUES.core.project.Get(validate=False)
     self.properties = properties.VALUES.AllValues()
@@ -160,14 +157,10 @@ class ConfigInfo(object):
               .format(self.paths['installation_properties_path']))
     out.write('User Config Directory: [{0}]\n'
               .format(self.paths['global_config_dir']))
-    if self.active_config_name is not None:
-      out.write('Active Configuration Name: [{0}]\n'
-                .format(self.active_config_name))
-      out.write('Active Configuration Path: [{0}]\n\n'
-                .format(self.paths['active_config_path']))
-    else:
-      out.write('User Properties: [{0}]\n\n'
-                .format(self.paths['user_properties_path']))
+    out.write('Active Configuration Name: [{0}]\n'
+              .format(self.active_config_name))
+    out.write('Active Configuration Path: [{0}]\n\n'
+              .format(self.paths['active_config_path']))
 
     out.write('Account: [{0}]\n'.format(self.account))
     out.write('Project: [{0}]\n\n'.format(self.project))

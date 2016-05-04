@@ -14,38 +14,72 @@
 """General IAM utilities used by the Cloud SDK."""
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
 from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
-def AddArgsForAddIamPolicyBinding(parser):
+def _AddRoleArgument(
+    parser, help_text, completion_resource_arg, completion_resource_collection):
+  """Helper function to add the --role flag with remote completion."""
+
+  def CompletionCallback(parsed_args):
+    resource_ref = resources.Parse(
+        getattr(parsed_args, completion_resource_arg),
+        collection=completion_resource_collection)
+    resource_uri = resource_ref.SelfLink()
+    return ['beta', 'iam', 'list-grantable-roles', '--format=value(name)',
+            resource_uri]
+  have_completion = (completion_resource_arg and completion_resource_collection)
+
+  parser.add_argument(
+      '--role', required=True,
+      completion_resource='iam.roles' if have_completion else None,
+      list_command_callback_fn=CompletionCallback if have_completion else None,
+      help=help_text)
+
+
+def AddArgsForAddIamPolicyBinding(
+    parser, completion_resource_arg=None, completion_resource_collection=None):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
+    completion_resource_arg: str, Name of the argument that holds the resource
+      upon which the policy is applied to.
+    completion_resource_collection: str, Collection of the resource.
+      completion_resource_arg and completion_resource_collection are optional,
+      but role tab completion is not possible without specifying them.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
-  parser.add_argument(
-      '--role', required=True,
-      help='Define the role of the member.')
+
+  _AddRoleArgument(parser, 'Define the role of the member.',
+                   completion_resource_arg, completion_resource_collection)
   parser.add_argument(
       '--member', required=True,
       help='The member to add to the binding.')
 
-def AddArgsForRemoveIamPolicyBinding(parser):
+
+def AddArgsForRemoveIamPolicyBinding(
+    parser, completion_resource_arg=None, completion_resource_collection=None):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
+    completion_resource_arg: str, Name of the argument that hold the resource
+      upon which the policy is applied to.
+    completion_resource_collection: str, Collection of the resource.
+      completion_resource_arg and completion_resource_collection are optional,
+      but role tab completion is not possible without specifying them.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
-  parser.add_argument(
-      '--role', required=True,
-      help='The role to remove the member from.')
+
+  _AddRoleArgument(parser, 'The role to remove the member from.',
+                   completion_resource_arg, completion_resource_collection)
   parser.add_argument(
       '--member', required=True,
       help='The member to remove from the binding.')

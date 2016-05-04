@@ -37,9 +37,12 @@ class ProjectCommand(base.Command):
   def Collection(self):
     return 'cloudresourcemanager.projects'
 
+  def GetProject(self, project_id):
+    return resources.Parse(project_id, collection=self.Collection())
+
   def GetUriFunc(self):
     def _GetUri(resource):
-      ref = resources.Parse(resource.projectId, collection=self.Collection())
+      ref = self.GetProject(resource.projectId)
       return ref.SelfLink()
     return _GetUri
 
@@ -160,4 +163,3 @@ def GetClient():
     Cloud Resource Manager client for the appropriate release track.
   """
   return apis.GetClientInstance('projects', 'v1beta1')
-

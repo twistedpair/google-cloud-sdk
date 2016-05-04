@@ -171,12 +171,12 @@ class Displayer(object):
   def _GetResourceInfoDefaults(self):
     """Returns the default symbols for --filter and --format."""
     if not self._info:
-      return None
+      return self._defaults
     symbols = self._info.GetTransforms()
     if not symbols and not self._info.defaults:
-      return None
+      return self._defaults
     return resource_projection_parser.Parse(
-        self._info.defaults, symbols=symbols)
+        self._info.defaults, defaults=self._defaults, symbols=symbols)
 
   def _GetExplicitFormat(self):
     """Determines the explicit format.

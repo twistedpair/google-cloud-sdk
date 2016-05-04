@@ -500,6 +500,9 @@ class ArgumentInterceptor(object):
     # An explicit command to run for remote completion instead of the default
     # for this resource type.
     list_command_path = kwargs.pop('list_command_path', None)
+    # Callback function that receives the currently entered args at the time of
+    # remote completion processing, and returns the command to run.
+    list_command_callback_fn = kwargs.pop('list_command_callback_fn', None)
 
     positional = not name.startswith('-')
     if positional:
@@ -534,7 +537,7 @@ class ArgumentInterceptor(object):
 
     added_argument = self.parser.add_argument(*args, **kwargs)
     self._AddRemoteCompleter(added_argument, completion_resource,
-                             list_command_path)
+                             list_command_path, list_command_callback_fn)
 
     if positional:
       if category:
@@ -697,7 +700,7 @@ class ArgumentInterceptor(object):
     return False, None
 
   def _AddRemoteCompleter(self, added_argument, completion_resource,
-                          list_command_path):
+                          list_command_path, list_command_callback_fn):
     """Adds a remote completer to the given argument if necessary.
 
     Args:
@@ -706,7 +709,9 @@ class ArgumentInterceptor(object):
         corresponds to.
       list_command_path: str, The explicit calliope command to run to get the
         completions if you want to override the default for the given resource
-        type.
+        type. list_command_callback_fn takes precedence.
+      list_command_callback_fn: function, Callback function to be called to get
+        the list command. Takes precedence over list_command_path.
     """
     if not completion_resource:
       return
@@ -727,7 +732,8 @@ class ArgumentInterceptor(object):
           remote_completion.RemoteCompletion.GetCompleterForResource(
               completion_resource,
               self.cli_generator.Generate,
-              command_line=list_command_path))
+              command_line=list_command_path,
+              list_command_callback_fn=list_command_callback_fn))
       added_argument.completion_resource = completion_resource
 
   def _LowerCaseWithDashes(self, name):

@@ -23,7 +23,6 @@ import sys
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
-from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 # FIXED(b/23150309): Error messages should be textual, not just regexp.
@@ -151,10 +150,8 @@ def ValidateAndStandarizeBucketUriOrRaise(bucket):
   return bucket
 
 
-def ValidateAndStandarizePubsubTopicNameOrRaise(topic):
+def ValidatePubsubTopicNameOrRaise(topic):
   """Checks if a Pub/Sub topic name provided by user is valid.
-
-  If the topic name is valid, converts it to a standard form.
 
   Args:
     topic: Pub/Sub topic name provided by user.
@@ -165,8 +162,7 @@ def ValidateAndStandarizePubsubTopicNameOrRaise(topic):
   """
   topic = _ValidateArgumentByRegexOrRaise(topic, _TOPIC_NAME_RE,
                                           _TOPIC_NAME_ERROR)
-  project = properties.VALUES.core.project.Get(required=True)
-  return 'projects/{0}/topics/{1}'.format(project, topic)
+  return topic
 
 
 def ValidateDirectoryExistsOrRaiseFunctionError(directory):

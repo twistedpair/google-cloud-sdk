@@ -88,8 +88,7 @@ class Version(object):
     return cls(project, service_id, version.id, traffic_split=traffic_split,
                last_deployed_time=last_deployed, version_resource=version)
 
-  @property
-  def is_receiving_all_traffic(self):
+  def IsReceivingAllTraffic(self):
     return abs(self.traffic_split - 1.0) < self._ALL_TRAFFIC_EPSILON
 
   def __eq__(self, other):

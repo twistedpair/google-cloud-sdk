@@ -460,13 +460,10 @@ class CreateNodePoolRequest(_messages.Message):
   """CreateNodePoolRequest creates a node pool for a cluster.
 
   Fields:
-    initialNodeCount: This field is deprecated and will soon be removed.
-      Please use NodePool's initial_node_count field instead.
     nodePool: The node pool to create.
   """
 
-  initialNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  nodePool = _messages.MessageField('NodePool', 2)
+  nodePool = _messages.MessageField('NodePool', 1)
 
 
 class CreateSignedUrlsRequest(_messages.Message):

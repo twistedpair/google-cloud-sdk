@@ -70,7 +70,7 @@ def _BuildDeploymentManifest(info, bucket_ref, source_contexts,
       continue
     else:
       sha1_hash = _GetSha1(context_file)
-      manifest_path = '/'.join([bucket_url, rel_path])
+      manifest_path = '/'.join([bucket_url, sha1_hash])
       manifest[rel_path] = {
           'sourceUrl': manifest_path,
           'sha1Sum': sha1_hash

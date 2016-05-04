@@ -214,10 +214,14 @@ class ResourcePrinter(object):
       if not log_type:
         log_type = 'status'
       legend = self.attributes.get('empty-legend')
-      if legend is None and 'no-empty-legend' not in self.attributes:
-        legend = 'Listed 0 items.'
+      if legend:
+        log.warn('[empty-legend={0}] is deprecated. Use '
+                 '[calliope.base.Command.Epilog()] instead.'.format(log_type))
     else:
       legend = self.attributes.get('legend')
+      if legend:
+        log.warn('[legend={0}] is deprecated. Use '
+                 '[calliope.base.Command.Epilog()] instead.'.format(log_type))
       if legend and not log_type:
         legend = '\n' + legend
     if legend is not None:

@@ -23,13 +23,11 @@ import sys
 import urlparse
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
-from googlecloudsdk.core.credentials import http as cred_http
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_client
-from googlecloudsdk.third_party.apis.storage.v1 import storage_v1_messages as messages
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.third_party.apitools.base.py import transfer
 
@@ -104,11 +102,12 @@ def Upload(files, destination):
             files, destination))
 
 
-def GetObjectRef(path):
+def GetObjectRef(path, messages):
   """Build an Object proto message from a GCS path.
 
   Args:
     path: The GCS path of the form "gs://<bucket>/<object>"
+    messages: Storage v1 messages module
 
   Returns:
     A proto message of the parsed objects
@@ -139,15 +138,12 @@ class StorageClient(object):
 
   # TODO(user): Add application-id.
 
-  def __init__(self, http=None):
-    if not http:
-      http = cred_http.Http(timeout=HTTP_TIMEOUT)
-    self.client = storage_v1_client.StorageV1(
-        http=http,
-        get_credentials=False)
+  def __init__(self):
+    self.client = core_apis.GetClientInstance('storage', 'v1')
+    self.messages = core_apis.GetMessagesModule('storage', 'v1')
 
   def _GetObject(self, object_ref, download=None):
-    request = messages.StorageObjectsGetRequest(
+    request = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket, object=object_ref.name)
     try:
       return self.client.objects.Get(request=request, download=download)
@@ -233,7 +229,7 @@ class StorageObjectSeriesStream(object):
   def _GetObject(self, i):
     """Get the ith object in the series."""
     path = '{0}.{1:09d}'.format(self._base_path, i)
-    return self._gcs.GetObject(GetObjectRef(path))
+    return self._gcs.GetObject(GetObjectRef(path, self._gcs.messages))
 
   def ReadIntoWritable(self, writable, n=sys.maxsize):
     """Read from this stream into a writable.

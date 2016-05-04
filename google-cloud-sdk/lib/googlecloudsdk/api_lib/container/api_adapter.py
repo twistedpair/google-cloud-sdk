@@ -405,7 +405,8 @@ class CreateClusterOptions(object):
                enable_cloud_monitoring=None,
                subnetwork=None,
                disable_addons=None,
-               local_ssd_count=None):
+               local_ssd_count=None,
+               image_family=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -423,6 +424,7 @@ class CreateClusterOptions(object):
     self.subnetwork = subnetwork
     self.disable_addons = disable_addons
     self.local_ssd_count = local_ssd_count
+    self.image_family = image_family
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -437,13 +439,15 @@ class UpdateClusterOptions(object):
                update_nodes=None,
                node_pool=None,
                monitoring_service=None,
-               disable_addons=None):
+               disable_addons=None,
+               image_family=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.disable_addons = disable_addons
+    self.image_family = image_family
 
 
 class CreateNodePoolOptions(object):
@@ -453,12 +457,14 @@ class CreateNodePoolOptions(object):
                disk_size_gb=None,
                scopes=None,
                num_nodes=None,
-               local_ssd_count=None):
+               local_ssd_count=None,
+               image_family=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
+    self.image_family = image_family
 
 
 class V1Adapter(APIAdapter):
@@ -494,8 +500,12 @@ class V1Adapter(APIAdapter):
     if options.enable_cloud_endpoints:
       scope_uris += _ENDPOINTS_SCOPES
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
+
+    if options.image_family:
+      node_config.imageFamily = options.image_family
 
     cluster = self.messages.Cluster(
         name=cluster_ref.clusterId,
@@ -538,7 +548,8 @@ class V1Adapter(APIAdapter):
     if options.update_nodes:
       update = self.messages.ClusterUpdate(
           desiredNodeVersion=options.version,
-          desiredNodePoolId=options.node_pool)
+          desiredNodePoolId=options.node_pool,
+          desiredImageFamily=options.image_family)
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
@@ -591,6 +602,8 @@ class V1Adapter(APIAdapter):
       node_config.machineType = options.machine_type
     if options.disk_size_gb:
       node_config.diskSizeGb = options.disk_size_gb
+    if options.image_family:
+      node_config.imageFamily = options.image_family
     scope_uris = ExpandScopeURIs(options.scopes)
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
     if options.local_ssd_count:

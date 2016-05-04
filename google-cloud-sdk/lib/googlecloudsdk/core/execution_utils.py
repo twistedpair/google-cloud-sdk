@@ -23,8 +23,8 @@ import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
-from googlecloudsdk.core import named_configs
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
@@ -123,7 +123,7 @@ def _GetToolEnv(env=None):
   # property (although it behaves like one).
   _AddOrRemoveVar(env,
                   config.CLOUDSDK_ACTIVE_CONFIG_NAME,
-                  named_configs.GetNameOfActiveNamedConfig())
+                  named_configs.ConfigurationStore.ActiveConfig().name)
 
   return env
 

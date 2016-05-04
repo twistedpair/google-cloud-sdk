@@ -170,9 +170,7 @@ def BuildAndPushDockerImages(service_configs,
     A dictionary mapping services to the name of the pushed container image.
   """
   project = properties.VALUES.core.project.Get(required=True)
-  use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool()
-  if use_cloud_build is None:
-    use_cloud_build = True
+  use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool(required=True)
 
   # Prepare temporary dockerfile creators for all services that need them
   # before doing the heavy lifting so we can fail fast if there are errors.

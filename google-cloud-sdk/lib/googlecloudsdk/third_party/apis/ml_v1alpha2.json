@@ -1,0 +1,1352 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "ml:v1alpha2",
+  "name": "ml",
+  "version": "v1alpha2",
+  "revision": "0",
+  "title": "Google Machine Learning API",
+  "description": "An API to enable creating and using machine learning models.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/ml/",
+  "protocol": "rest",
+  "rootUrl": "https://ml.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://ml.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": "True",
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "bearer_token": {
+      "type": "string",
+      "description": "OAuth bearer token.",
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "pp": {
+      "type": "boolean",
+      "description": "Pretty-print response.",
+      "default": "true",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "_ListModelsResponse": {
+      "id": "_ListModelsResponse",
+      "description": "Response message for the ListModels API on ModelService.",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "The set of models within the project.",
+          "type": "array",
+          "items": {
+            "$ref": "_Model"
+          }
+        },
+        "nextPageToken": {
+          "description": "Optional pagination token to use for retrieving the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "_Model": {
+      "id": "_Model",
+      "description": "Represents a machine learning model resource that can be used to perform\ntraining and prediction.\nIn order to be usable, a model must have at least one version trained.\nA model might have multiple versions, with one of them marked as the\ndefault. The default version cannot be deleted.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The user-specified name of the model. This must be unique within\nthe project.",
+          "type": "string"
+        },
+        "scenario": {
+          "description": "The machine learning scenario that this model implements.",
+          "enumDescriptions": [
+            "Default model scenario, representing an invalid value.",
+            "Classification model",
+            "Regression model"
+          ],
+          "type": "string",
+          "enum": [
+            "SCENARIO_UNSPECIFIED",
+            "CLASSIFICATION",
+            "REGRESSION"
+          ]
+        },
+        "description": {
+          "description": "The optional, user-supplied description of the model.",
+          "type": "string"
+        },
+        "versions": {
+          "description": "The set of versions that have been defined on this model.\nA model can have a small and finite number of versions active\nat any point.",
+          "type": "array",
+          "items": {
+            "$ref": "Model_Version"
+          }
+        },
+        "defaultVersion": {
+          "description": "The version marked as the default. This is used when version is not\nexplicitly specified in various requests.",
+          "type": "string"
+        }
+      }
+    },
+    "Model_Version": {
+      "id": "Model_Version",
+      "description": "Represents information about a version.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The user-specified name of the version.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The timestamp representing when the version was created.\nSpecifically, this is the time stamp of when the training\njob was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ready": {
+          "description": "Whether the training job has completed and the version\nis ready to use.",
+          "type": "boolean"
+        },
+        "trainingAnalysis": {
+          "description": "The analysis generated during training.",
+          "$ref": "_Analysis"
+        }
+      }
+    },
+    "_Analysis": {
+      "id": "_Analysis",
+      "description": "Represents analysis of a trained model.",
+      "type": "object",
+      "properties": {
+        "classification": {
+          "description": "The analysis of a classification model.",
+          "$ref": "_ClassificationAnalysis"
+        },
+        "regression": {
+          "description": "The analysis of a regression model.",
+          "$ref": "_RegressionAnalysis"
+        }
+      }
+    },
+    "_ClassificationAnalysis": {
+      "id": "_ClassificationAnalysis",
+      "description": "Represents the analysis of a trained classification model.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The error rate of a classification model.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "_RegressionAnalysis": {
+      "id": "_RegressionAnalysis",
+      "description": "Represents the analysis of a trained regression model.",
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "The root mean squared error of a regression model.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "_Empty": {
+      "id": "_Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "_SetDefaultVersionRequest": {
+      "id": "_SetDefaultVersionRequest",
+      "description": "Request message for the SetDefaultVersion API on ModelService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model that should be promoted to be the new default.\nIf this is empty, then the default version on the model is cleared.",
+          "type": "string"
+        }
+      }
+    },
+    "_DeleteVersionRequest": {
+      "id": "_DeleteVersionRequest",
+      "description": "Request message for the DeleteVersion API on ModelService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version to delete.",
+          "type": "string"
+        }
+      }
+    },
+    "_PredictRequest": {
+      "id": "_PredictRequest",
+      "description": "Request message for the Predict API on ModelService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model to be used for prediction.",
+          "type": "string"
+        },
+        "data": {
+          "description": "The data instances to perform prediction over. Only datasets with\nwith inline data are supported. Additionally, inline data is limited\nto 128 instances.",
+          "$ref": "_DataSet"
+        },
+        "labelsPerInstance": {
+          "description": "The number of labels to predict per instance. This applies only to\nclassification models, and defaults to 1, i.e., produce only the label\nwith highest confidence score.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "_DataSet": {
+      "id": "_DataSet",
+      "description": "Represents data to be used within training and prediction.",
+      "type": "object",
+      "properties": {
+        "inline": {
+          "description": "A dataset comprised of a set of individual instances inlined. The number\nof instances is limited based on constraints of individual methods.",
+          "$ref": "_InlineData"
+        },
+        "files": {
+          "description": "A dataset comprised of a set of individual files or objects within\nCloud Storage.",
+          "$ref": "_StorageData"
+        }
+      }
+    },
+    "_InlineData": {
+      "id": "_InlineData",
+      "description": "Represents inlined data.",
+      "type": "object",
+      "properties": {
+        "instances": {
+          "description": "The list of data instances.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_StorageData": {
+      "id": "_StorageData",
+      "description": "Represents reference to data stored in Cloud Storage. Each object is\ninterpreted as a file.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "The list of Cloud Storage URIs formatted as a complete URI such as\nFormat: gs:\/\/bucket\/path\/to\/data\/file.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_PredictResponse": {
+      "id": "_PredictResponse",
+      "description": "Response message for the Predict API on ModelService.",
+      "type": "object",
+      "properties": {
+        "predictions": {
+          "description": "The list of prediction results.",
+          "type": "array",
+          "items": {
+            "$ref": "_Prediction"
+          }
+        }
+      }
+    },
+    "_Prediction": {
+      "id": "_Prediction",
+      "description": "Represents a prediction output.",
+      "type": "object",
+      "properties": {
+        "classification": {
+          "description": "The prediction produced by a classification model.",
+          "$ref": "_ClassificationPrediction"
+        },
+        "regression": {
+          "description": "The prediction produced by a regression model.",
+          "$ref": "_RegressionPrediction"
+        }
+      }
+    },
+    "_ClassificationPrediction": {
+      "id": "_ClassificationPrediction",
+      "description": "Represents the classification output or prediction generated from a\na classification model.\nA classification by default produces a single label, the one with\nhighest confidence score. Additional labels are produced when requested\nin the prediction request.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "The top label produced by the model.",
+          "$ref": "ClassificationPrediction_Label"
+        },
+        "additionalLabels": {
+          "description": "Optional additional labels produced by the model.",
+          "type": "array",
+          "items": {
+            "$ref": "ClassificationPrediction_Label"
+          }
+        }
+      }
+    },
+    "ClassificationPrediction_Label": {
+      "id": "ClassificationPrediction_Label",
+      "description": "Represents a label produced by the model, along with its associated\nconfidence score.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the label.",
+          "type": "string"
+        },
+        "score": {
+          "description": "The associated confidence score.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "_RegressionPrediction": {
+      "id": "_RegressionPrediction",
+      "description": "Represents the regression output or prediction generated from a\na regression model.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The regression value produced by the model.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "_GetVersionRequest": {
+      "id": "_GetVersionRequest",
+      "description": "Request message for the GetVersion API on ModelService",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model to describe.",
+          "type": "string"
+        }
+      }
+    },
+    "_GetVersionResponse": {
+      "id": "_GetVersionResponse",
+      "description": "Request message for the GetVersion API on ModelService.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The specification used to train the model.",
+          "$ref": "_ModelSpec"
+        },
+        "trainData": {
+          "description": "The data that was used for training the model.",
+          "$ref": "_DataSet"
+        },
+        "evalData": {
+          "description": "The data that was used for evaluating the model during training.",
+          "$ref": "_DataSet"
+        },
+        "trainingOperationName": {
+          "description": "The name of the associated training operation.",
+          "type": "string"
+        },
+        "trainingAnalysis": {
+          "description": "The analysis generated during training.",
+          "$ref": "_Analysis"
+        },
+        "ready": {
+          "description": "Whether the training job has completed and the version is ready to use.",
+          "type": "boolean"
+        }
+      }
+    },
+    "_ModelSpec": {
+      "id": "_ModelSpec",
+      "description": "Represents the specification of a model.",
+      "type": "object",
+      "properties": {
+        "classification": {
+          "description": "The configuration for classification models.",
+          "$ref": "_ClassificationConfig"
+        },
+        "regression": {
+          "description": "The configuration for regression models.",
+          "$ref": "_RegressionConfig"
+        }
+      }
+    },
+    "_ClassificationConfig": {
+      "id": "_ClassificationConfig",
+      "description": "Represents the definition of a classification model.",
+      "type": "object",
+      "properties": {
+        "tensorflowGraph": {
+          "description": "Options for classification using a custom TensorFlow graph.",
+          "$ref": "_TensorFlowGraph"
+        }
+      }
+    },
+    "_TensorFlowGraph": {
+      "id": "_TensorFlowGraph",
+      "description": "Represents options for using TensorFlow graph-based classification or\nregression.",
+      "type": "object",
+      "properties": {
+        "session": {
+          "description": "The training session to use.",
+          "$ref": "_TensorFlowSession"
+        },
+        "graphUri": {
+          "description": "The Cloud Storage location of the serialized graph definition.\nThe file must represent TensorFlowGraphDefinition message in JSON format.",
+          "type": "string"
+        }
+      }
+    },
+    "_TensorFlowSession": {
+      "id": "_TensorFlowSession",
+      "description": "Represents the settings used to run a TensorFlow session.",
+      "type": "object",
+      "properties": {
+        "replicas": {
+          "description": "The number of replicas of the graph that should run in parallel\nover the data.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "enableAcceleration": {
+          "description": "Whether the session should attempt to use additional hardware\ncapabilities to accelerate the execution of the graph.",
+          "type": "boolean"
+        },
+        "batchSize": {
+          "description": "The number of data instances to read or process in each iteration step.\nThis parameter is used to balance how quickly the model can be trained.\nAltering this parameter often requires altering learning rate. Decreasing\nbatch size may require a decrease in learning rate, and vice-versa.\nPowers of two are recommended, because they can yield in optimizations.\nTypical values are between 32 and 256. This defaults to 64.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "steps": {
+          "description": "The number of steps to iterate over during the execution of the graph.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "modelToKeep": {
+          "description": "Specifies which model should be kept at the end of the training: the model\nfrom the latest training step or the model with the minimum evaluation\nerror observed during training. Defaults to the model from the latest step.",
+          "enumDescriptions": [
+            "The latest model.",
+            "The model with the minimum evaluation error."
+          ],
+          "type": "string",
+          "enum": [
+            "LATEST",
+            "MIN_ERROR"
+          ]
+        }
+      }
+    },
+    "_RegressionConfig": {
+      "id": "_RegressionConfig",
+      "description": "Represents the definition of a regression model.",
+      "type": "object",
+      "properties": {
+        "tensorflowGraph": {
+          "description": "Options for regression using a custom TensorFlow graph.",
+          "$ref": "_TensorFlowGraph"
+        }
+      }
+    },
+    "_SubmitTrainingJobRequest": {
+      "id": "_SubmitTrainingJobRequest",
+      "description": "Request message for the SubmitTrainingJob API on JobService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model to produce.",
+          "type": "string"
+        },
+        "overwrite": {
+          "description": "Whether the version with this name can be overwritten if it already exists.",
+          "type": "boolean"
+        },
+        "job": {
+          "description": "The training specification.",
+          "$ref": "_TrainingJob"
+        }
+      }
+    },
+    "_TrainingJob": {
+      "id": "_TrainingJob",
+      "description": "Represents a specification for a training job.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "The specification of the model to train.",
+          "$ref": "_ModelSpec"
+        },
+        "trainData": {
+          "description": "The data to use for training the model.",
+          "$ref": "_DataSet"
+        },
+        "evalData": {
+          "description": "The data to use for evaluating the model during training.",
+          "$ref": "_DataSet"
+        },
+        "outputUri": {
+          "description": "The storage location of a folder to write out the training outputs, such\nas a model analysis, a training event log, predictions on the eval dataset\nand others.",
+          "type": "string"
+        }
+      }
+    },
+    "_Operation": {
+      "id": "_Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @ype with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure.",
+          "$ref": "_Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @ype with type URL."
+          }
+        }
+      }
+    },
+    "_Status": {
+      "id": "_Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @ype with type URL."
+            }
+          }
+        }
+      }
+    },
+    "_SubmitPredictionJobRequest": {
+      "id": "_SubmitPredictionJobRequest",
+      "description": "Request message for the SubmitPredictionJob API on JobService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model to use.",
+          "type": "string"
+        },
+        "job": {
+          "description": "The prediction specification.",
+          "$ref": "_PredictionJob"
+        }
+      }
+    },
+    "_PredictionJob": {
+      "id": "_PredictionJob",
+      "description": "Represents a specification for a prediction job.",
+      "type": "object",
+      "properties": {
+        "predictData": {
+          "description": "The dataset to predict over.",
+          "$ref": "_DataSet"
+        },
+        "outputUri": {
+          "description": "The storage location of a folder to write out the predictions.",
+          "type": "string"
+        },
+        "labelsPerInstance": {
+          "description": "The number of labels to predict per instance. This applies only to\nclassification models, and defaults to 1, i.e., produce only the label\nwith highest confidence score. If this is set to -1, all labels\nare included in the output.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "_SubmitEvaluationJobRequest": {
+      "id": "_SubmitEvaluationJobRequest",
+      "description": "Request message for the SubmitEvaluationJob API on JobService.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the model to use.",
+          "type": "string"
+        },
+        "job": {
+          "description": "The evaluation specification.",
+          "$ref": "_EvaluationJob"
+        }
+      }
+    },
+    "_EvaluationJob": {
+      "id": "_EvaluationJob",
+      "description": "Represents a specification for an evaluation job.",
+      "type": "object",
+      "properties": {
+        "evalData": {
+          "description": "The data to evaluate over.",
+          "$ref": "_DataSet"
+        },
+        "outputUri": {
+          "description": "The storage location of a folder to write out the evaluation outputs.",
+          "type": "string"
+        }
+      }
+    },
+    "_ListOperationsResponse": {
+      "id": "_ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "_Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "_SubmitTrainingJobMetadata": {
+      "id": "_SubmitTrainingJobMetadata",
+      "description": "Represents the metadata on the operation resulting from SubmitTrainingJob.",
+      "type": "object",
+      "properties": {
+        "operationType": {
+          "description": "The type of this operation: 'training'.",
+          "type": "string"
+        },
+        "job": {
+          "description": "The specification of the job.",
+          "$ref": "_TrainingJob"
+        },
+        "createTime": {
+          "description": "When the job was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "When the job processing started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "When the job processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "isCancellationRequested": {
+          "description": "Whether the cancellation of the job has been requested.",
+          "type": "boolean"
+        },
+        "model": {
+          "description": "The name of the model.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The name of the model version.",
+          "type": "string"
+        }
+      }
+    },
+    "_SubmitPredictionJobMetadata": {
+      "id": "_SubmitPredictionJobMetadata",
+      "description": "Represents the metadata on the operation resulting from SubmitPredictionJob.",
+      "type": "object",
+      "properties": {
+        "operationType": {
+          "description": "The type of this operation: 'prediction'.",
+          "type": "string"
+        },
+        "job": {
+          "description": "The specification of the job.",
+          "$ref": "_PredictionJob"
+        },
+        "createTime": {
+          "description": "When the job was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "When the job processing started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "When the job processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "isCancellationRequested": {
+          "description": "Whether the cancellation of the job has been requested.",
+          "type": "boolean"
+        },
+        "model": {
+          "description": "The name of the model.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The name of the model version.",
+          "type": "string"
+        }
+      }
+    },
+    "_SubmitEvaluationJobMetadata": {
+      "id": "_SubmitEvaluationJobMetadata",
+      "description": "Represents the metadata on the operation resulting from SubmitEvaluationJob.",
+      "type": "object",
+      "properties": {
+        "operationType": {
+          "description": "The type of this operation: 'evaluation'.",
+          "type": "string"
+        },
+        "job": {
+          "description": "The specification of the job.",
+          "$ref": "_EvaluationJob"
+        },
+        "createTime": {
+          "description": "When the job was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "When the job processing started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "When the job processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "isCancellationRequested": {
+          "description": "Whether the cancellation of the job has been requested.",
+          "type": "boolean"
+        },
+        "model": {
+          "description": "The name of the model.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The name of the model version.",
+          "type": "string"
+        }
+      }
+    },
+    "_JobResult": {
+      "id": "_JobResult",
+      "description": "Represents the results of a training, prediction or evaluation job.",
+      "type": "object",
+      "properties": {
+        "outputFiles": {
+          "description": "The list of generated output files.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "analysis": {
+          "description": "The analysis of a trained model for training or evaluation jobs.",
+          "$ref": "_Analysis"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "models": {
+          "methods": {
+            "list": {
+              "id": "ml.projects.models.list",
+              "path": "v1alpha2/{+name}/models",
+              "flatPath": "v1alpha2/projects/{projectsId}/models",
+              "httpMethod": "GET",
+              "description": "Get the list of models.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the project whose models are to be listed.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "Specifies the subset of models to retrieve.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "orderBy": {
+                  "description": "Specifies the ordering of the models.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "An optional pagination token, if available, for continuing the enumeration.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional page size. The default is 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_ListModelsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "get": {
+              "id": "ml.projects.models.get",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}",
+              "httpMethod": "GET",
+              "description": "Get information about a single model.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to retrieve.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_Model"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "create": {
+              "id": "ml.projects.models.create",
+              "path": "v1alpha2/{+name}/models",
+              "flatPath": "v1alpha2/projects/{projectsId}/models",
+              "httpMethod": "POST",
+              "description": "Create a new model.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the project that will own this model.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_Model"
+              },
+              "response": {
+                "$ref": "_Model"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "ml.projects.models.delete",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}",
+              "httpMethod": "DELETE",
+              "description": "Delete the specified model.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to delete.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "patch": {
+              "id": "ml.projects.models.patch",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}",
+              "httpMethod": "PATCH",
+              "description": "Update the specified model.",
+              "parameters": {
+                "name": {
+                  "description": "The user-specified name of the model. This must be unique within\nthe project.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_Model"
+              },
+              "response": {
+                "$ref": "_Model"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "setDefaultVersion": {
+              "id": "ml.projects.models.setDefaultVersion",
+              "path": "v1alpha2/{+name}:setDefaultVersion",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:setDefaultVersion",
+              "httpMethod": "POST",
+              "description": "Update the specified model to change its default version.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to update.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_SetDefaultVersionRequest"
+              },
+              "response": {
+                "$ref": "_Model"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "deleteVersion": {
+              "id": "ml.projects.models.deleteVersion",
+              "path": "v1alpha2/{+name}:deleteVersion",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:deleteVersion",
+              "httpMethod": "POST",
+              "description": "Delete the specified version of the model.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to update.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_DeleteVersionRequest"
+              },
+              "response": {
+                "$ref": "_Model"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "predict": {
+              "id": "ml.projects.models.predict",
+              "path": "v1alpha2/{+name}:predict",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:predict",
+              "httpMethod": "POST",
+              "description": "Performs online prediction using a specific version of the model.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to use for prediction.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_PredictRequest"
+              },
+              "response": {
+                "$ref": "_PredictResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "getVersion": {
+              "id": "ml.projects.models.getVersion",
+              "path": "v1alpha2/{+name}:getVersion",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:getVersion",
+              "httpMethod": "POST",
+              "description": "Describes the model version.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the model to use for prediction.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_GetVersionRequest"
+              },
+              "response": {
+                "$ref": "_GetVersionResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "submitTrainingJob": {
+              "id": "ml.projects.models.submitTrainingJob",
+              "path": "v1alpha2/{+name}:submitTrainingJob",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:submitTrainingJob",
+              "httpMethod": "POST",
+              "description": "Submit a training job.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the associated model.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_SubmitTrainingJobRequest"
+              },
+              "response": {
+                "$ref": "_Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "submitPredictionJob": {
+              "id": "ml.projects.models.submitPredictionJob",
+              "path": "v1alpha2/{+name}:submitPredictionJob",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:submitPredictionJob",
+              "httpMethod": "POST",
+              "description": "Submit a prediction job.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the associated model.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_SubmitPredictionJobRequest"
+              },
+              "response": {
+                "$ref": "_Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "submitEvaluationJob": {
+              "id": "ml.projects.models.submitEvaluationJob",
+              "path": "v1alpha2/{+name}:submitEvaluationJob",
+              "flatPath": "v1alpha2/projects/{projectsId}/models/{modelsId}:submitEvaluationJob",
+              "httpMethod": "POST",
+              "description": "Submit an evaluation job.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the associated project.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/models\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "_SubmitEvaluationJobRequest"
+              },
+              "response": {
+                "$ref": "_Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "ml.projects.operations.get",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/operations\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "list": {
+              "id": "ml.projects.operations.list",
+              "path": "v1alpha2/{+name}/operations",
+              "flatPath": "v1alpha2/projects/{projectsId}/operations",
+              "httpMethod": "GET",
+              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding below allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation collection.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_ListOperationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "cancel": {
+              "id": "ml.projects.operations.cancel",
+              "path": "v1alpha2/{+name}:cancel",
+              "flatPath": "v1alpha2/projects/{projectsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be cancelled.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/operations\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "delete": {
+              "id": "ml.projects.operations.delete",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/operations/{operationsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be deleted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*\/operations\/[^\/]*$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "_Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

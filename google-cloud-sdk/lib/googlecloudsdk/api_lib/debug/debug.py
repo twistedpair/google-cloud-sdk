@@ -15,10 +15,10 @@
 """Debug apis layer."""
 
 import re
+import threading
 import urllib
 
 from googlecloudsdk.api_lib.debug import errors
-from googlecloudsdk.api_lib.projects import util as project_util
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import config
 from googlecloudsdk.core.util import retry
@@ -137,7 +137,7 @@ def DebugViewUrl(breakpoint):
   """
   debug_view_url = 'https://console.developers.google.com/debug/fromgcloud?'
   data = [
-      ('project', breakpoint.project_number),
+      ('project', breakpoint.project),
       ('dbgee', breakpoint.target_uniquifier),
       ('bp', breakpoint.id)
   ]
@@ -158,8 +158,11 @@ class DebugObject(object):
   _debug_messages = None
   _resource_client = None
   _resource_messages = None
-  _project_id_to_number_cache = {}
-  _project_number_to_id_cache = {}
+
+  # Lock for remote calls in routines which might be multithreaded. Client
+  # connections are not thread-safe. Currently, only WaitForBreakpoint can
+  # be called from multiple threads.
+  _client_lock = threading.Lock()
 
   # Breakpoint type constants (initialized by IntializeApiClients)
   SNAPSHOT_TYPE = None
@@ -187,53 +190,13 @@ class DebugObject(object):
   def InitializeClientVersion(cls, version):
     cls.CLIENT_VERSION = version
 
-  @classmethod
-  def GetProjectNumber(cls, project_id):
-    """Retrieves the project number given a project ID.
-
-    Args:
-      project_id: The ID of the project.
-    Returns:
-      Integer project number.
-    """
-    if project_id in cls._project_id_to_number_cache:
-      return cls._project_id_to_number_cache[project_id]
-    # Convert errors in the client API to something meaningful.
-    @project_util.HandleHttpError
-    def GetProject(message):
-      return cls._resource_client.projects.Get(message)
-    project = GetProject(
-        cls._resource_messages.CloudresourcemanagerProjectsGetRequest(
-            projectId=project_id))
-    cls._project_id_to_number_cache[project.projectId] = project.projectNumber
-    cls._project_number_to_id_cache[project.projectNumber] = project.projectId
-    return project.projectNumber
-
-  @classmethod
-  def GetProjectId(cls, project_number):
-    """Retrieves the project ID given a project number.
-
-    Args:
-      project_number: (int) The unique number of the project.
-    Returns:
-      Project ID string.
-    """
-    if project_number in cls._project_number_to_id_cache:
-      return cls._project_number_to_id_cache[project_number]
-    # Treat the number as an ID to populate the cache. They're interchangeable
-    # in lookup.
-    cls.GetProjectNumber(str(project_number))
-    return cls._project_number_to_id_cache.get(project_number,
-                                               str(project_number))
-
 
 class Debugger(DebugObject):
   """Abstracts Cloud Debugger service for a project."""
 
-  def __init__(self, project_id):
+  def __init__(self, project):
     self._CheckClient()
-    self._project_id = project_id
-    self._project_number = self.GetProjectNumber(project_id)
+    self._project = project
 
   @errors.HandleHttpError
   def ListDebuggees(self, include_inactive=False):
@@ -246,7 +209,7 @@ class Debugger(DebugObject):
       [Debuggee] A list of debuggees.
     """
     request = self._debug_messages.ClouddebuggerDebuggerDebuggeesListRequest(
-        project=str(self._project_number), includeInactive=include_inactive,
+        project=self._project, includeInactive=include_inactive,
         clientVersion=self.CLIENT_VERSION)
     response = self._debug_client.debugger_debuggees.List(request)
     return [Debuggee(debuggee) for debuggee in response.debuggees]
@@ -362,7 +325,7 @@ class Debugger(DebugObject):
       agent_version = self.CLIENT_VERSION
     request = self._debug_messages.RegisterDebuggeeRequest(
         debuggee=self._debug_messages.Debuggee(
-            project=str(self._project_number), description=description,
+            project=self._project, description=description,
             uniquifier=uniquifier, agentVersion=agent_version))
     response = self._debug_client.controller_debuggees.Register(request)
     return Debuggee(response.debuggee)
@@ -372,8 +335,7 @@ class Debuggee(DebugObject):
   """Represents a single debuggee."""
 
   def __init__(self, message):
-    self.project_number = int(message.project)
-    self.project_id = self.GetProjectId(self.project_number)
+    self.project = message.project
     self.agent_version = message.agentVersion
     self.description = message.description
     self.ext_source_contexts = message.extSourceContexts
@@ -601,18 +563,28 @@ class Debuggee(DebugObject):
     response = self._debug_client.debugger_debuggees_breakpoints.Set(request)
     return self.AddTargetInfo(response.breakpoint)
 
+  def _CallGet(self, request):
+    with self._client_lock:
+      return self._debug_client.debugger_debuggees_breakpoints.Get(request)
+
   @errors.HandleHttpError
-  def WaitForBreakpoint(self, breakpoint_id, timeout=None, retry_ms=500):
+  def WaitForBreakpoint(self, breakpoint_id, timeout=None, retry_ms=500,
+                        should_retry_if=None):
     """Waits for a breakpoint to be completed.
 
     Args:
       breakpoint_id: A breakpoint ID.
       timeout: The number of seconds to wait for completion.
       retry_ms: Milliseconds to wait betweeen retries.
+      should_retry_if: A function that accepts a Breakpoint message and returns
+        True if the breakpoint wait is not finished. If not specified, defaults
+        to a function which just checks the isFinalState flag.
     Returns:
       The Breakpoint message, or None if the breakpoint did not complete before
       the timeout,
     """
+    if not should_retry_if:
+      should_retry_if = lambda r, _: not r.breakpoint.isFinalState
     retryer = retry.Retryer(
         max_wait_ms=1000*timeout if timeout is not None else None,
         wait_ceiling_ms=1000)
@@ -621,14 +593,34 @@ class Debuggee(DebugObject):
                    breakpointId=breakpoint_id, debuggeeId=self.target_id,
                    clientVersion=self.CLIENT_VERSION))
     try:
-      result = retryer.RetryOnResult(
-          self._debug_client.debugger_debuggees_breakpoints.Get, [request],
-          should_retry_if=lambda r, _: not r.breakpoint.isFinalState,
-          sleep_ms=retry_ms)
+      result = retryer.RetryOnResult(self._CallGet, [request],
+                                     should_retry_if=should_retry_if,
+                                     sleep_ms=retry_ms)
     except retry.RetryException:
       # Timeout before the beakpoint was finalized.
       return None
+    if not result.breakpoint.isFinalState:
+      return None
     return self.AddTargetInfo(result.breakpoint)
+
+  def WaitForMultipleBreakpoints(self, ids, wait_all=False, timeout=None):
+    """Waits for one or more breakpoints to complete.
+
+    Args:
+      ids: A list of breakpoint IDs.
+      wait_all: If True, wait for all breakpoints to complete. Otherwise, wait
+        for any breakpoint to complete.
+      timeout: The number of seconds to wait for completion.
+    Returns:
+      The completed Breakpoint messages, in the order requested. If wait_all was
+      specified and the timeout was reached, the result will still comprise the
+      completed Breakpoints.
+    """
+    waiter = _BreakpointWaiter(wait_all, timeout)
+    for i in ids:
+      waiter.AddTarget(self, i)
+    results = waiter.Wait()
+    return [results[i] for i in ids if i in results]
 
   def AddTargetInfo(self, message):
     """Converts a message into an object with added debuggee information.
@@ -637,11 +629,10 @@ class Debuggee(DebugObject):
       message: A message returned from a debug API call.
     Returns:
       An object including the fields of the original object plus the following
-      fields: project_id, project_number, target_uniquifier, and target_id.
+      fields: project, target_uniquifier, and target_id.
     """
     result = _MessageDict(message, hidden_fields={
-        'project_id': self.project_id,
-        'project_number': self.project_number,
+        'project': self.project,
         'target_uniquifier': self.target_uniquifier,
         'target_id': self.target_id})
     result['consoleViewUrl'] = DebugViewUrl(result)
@@ -686,6 +677,74 @@ class Debuggee(DebugObject):
     return [self.AddTargetInfo(r) for r in result
             if not restrict_to_type or r.action == restrict_to_type
             or (not r.action and restrict_to_type == self.SNAPSHOT_TYPE)]
+
+
+class _BreakpointWaiter(object):
+  """Waits for multiple breakpoints.
+
+  Attributes:
+    _result_lock: Lock for modifications to all fields
+    _done: Flag to indicate that the wait condition is satisfied and wait
+        should stop even if some threads are not finished.
+    _threads: The list of active threads
+    _results: The set of completed breakpoints.
+    _failures: All exceptions which caused any thread to stop waiting.
+    _wait_all: If true, wait for all breakpoints to complete, else wait for
+        any breakpoint to complete. Controls whether to set _done after any
+        breakpoint completes.
+    _timeout: Mazimum time (in ms) to wait for breakpoints to complete.
+  """
+
+  def __init__(self, wait_all, timeout):
+    self._result_lock = threading.Lock()
+    self._done = False
+    self._threads = []
+    self._results = {}
+    self._failures = []
+    self._wait_all = wait_all
+    self._timeout = timeout
+
+  def _ShouldRetry(self, response, _):
+    if response.breakpoint.isFinalState:
+      return False
+    with self._result_lock:
+      return not self._done
+
+  def _WaitForOne(self, debuggee, breakpoint_id):
+    try:
+      breakpoint = debuggee.WaitForBreakpoint(
+          breakpoint_id, timeout=self._timeout,
+          should_retry_if=self._ShouldRetry)
+      if not breakpoint:
+        # Breakpoint never completed (i.e. timeout)
+        with self._result_lock:
+          if not self._wait_all:
+            self._done = True
+        return
+      if breakpoint.isFinalState:
+        with self._result_lock:
+          self._results[breakpoint_id] = breakpoint
+          if not self._wait_all:
+            self._done = True
+    except errors.DebugError as e:
+      with self._result_lock:
+        self._failures.append(e)
+        self._done = True
+
+  def AddTarget(self, debuggee, breakpoint_id):
+    self._threads.append(
+        threading.Thread(target=self._WaitForOne,
+                         args=(debuggee, breakpoint_id)))
+
+  def Wait(self):
+    for t in self._threads:
+      t.start()
+    for t in self._threads:
+      t.join()
+    if self._failures:
+      # Just raise the first exception we handled
+      raise self._failures[0]
+    return self._results
 
 
 def _MatchesIdOrRegexp(snapshot, ids, patterns):

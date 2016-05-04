@@ -59,7 +59,6 @@ class InstanceGroupDescribe(base_classes.ZonalDescriber,
   @staticmethod
   def Args(parser):
     base_classes.ZonalDescriber.Args(parser)
-    base_classes.AddFieldsFlag(parser, 'instanceGroups')
 
   @property
   def service(self):

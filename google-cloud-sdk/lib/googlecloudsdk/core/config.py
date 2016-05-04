@@ -450,17 +450,7 @@ class Paths(object):
                                       INSTALLATION_CONFIG.config_suffix)
 
   CLOUDSDK_STATE_DIR = '.install'
-
   CLOUDSDK_PROPERTIES_NAME = 'properties'
-
-  # The pointer to the user's active config is stored in
-  # $GLOBAL_CONFIG/$CLOUDSDK_NAMED_CONFIG_ACTIVATOR_FILE_NAME, e.g.
-  # $HOME/.config/gcloud/active_config
-  CLOUDSDK_NAMED_CONFIG_ACTIVATOR_FILE_NAME = 'active_config'
-
-  CLOUDSDK_NAMED_CONFIG_DIRECTORY = 'configurations'
-
-  CLOUDSDK_NAMED_CONFIG_FILE_PREFIX = 'config_'
 
   def __init__(self):
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
@@ -583,8 +573,16 @@ class Paths(object):
     Returns:
       str, The path to the file.
     """
-    return os.path.join(self.global_config_dir,
-                        self.CLOUDSDK_NAMED_CONFIG_ACTIVATOR_FILE_NAME)
+    return os.path.join(self.global_config_dir, 'active_config')
+
+  @property
+  def named_config_directory(self):
+    """Gets the path to the directory that stores the named configs.
+
+    Returns:
+      str, The path to the directory.
+    """
+    return os.path.join(self.global_config_dir, 'configurations')
 
   @property
   def container_config_path(self):

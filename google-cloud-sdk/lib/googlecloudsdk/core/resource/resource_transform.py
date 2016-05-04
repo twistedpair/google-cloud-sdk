@@ -294,6 +294,23 @@ def TransformError(r, message=None):
   raise resource_exceptions.Error(message)
 
 
+def TransformExtract(r, *keys):
+  """Extract an ordered list of values from the resource for the specified keys.
+
+  Args:
+    r: A JSON-serializable object.
+    *keys: The list of keys in the resource whose associated values will be
+        included in the result.
+
+  Returns:
+    The list of extracted values.
+  """
+  try:
+    return [r[k] for k in keys if k in r]
+  except TypeError:
+    return []
+
+
 def TransformFatal(r, message=None):
   """Raises an InternalError exception that generates a stack trace.
 
@@ -458,6 +475,29 @@ def TransformIso(r, undefined='T'):
     The numeric ISO time format for r or undefined if r is not a time.
   """
   return r.isoformat() if hasattr(r, 'isoformat') else undefined
+
+
+def TransformJoin(r, sep='/', undefined=''):
+  """Joins the elements of the resource list by the value of sep.
+
+  A string resource is treated as a list of characters.
+
+  Args:
+    r: A string or list.
+    sep: The separator value to use when joining.
+    undefined: Returns this value if the result after joining is empty.
+
+  Returns:
+    A new string containing the resource values joined by sep.
+
+  Example:
+    "a/b/c/d".split("/").join("!") returns "a!b!c!d"
+  """
+  try:
+    parts = [unicode(i) for i in r]
+    return sep.join(parts) or undefined
+  except (AttributeError, TypeError):
+    return undefined
 
 
 def TransformLen(r):
@@ -710,6 +750,88 @@ def TransformSize(r, zero='0', precision=1, units_in=None, units_out=None,
     return fmt.format(prefix, size, the_unit)
 
 
+def TransformSlice(r, op=':', undefined=''):
+  """Returns a list slice specified by op.
+
+  The op parameter consists of up to three colon-delimeted integers: start, end,
+  and step. The parameter supports half-open ranges: start and end values can
+  be omitted, representing the first and last positions of the resource
+  respectively.
+
+  The step value represents the increment between items in the resource included
+  in the slice. A step of 2 results in a slice that contains every other item in
+  the resource.
+
+  Negative values for start and end indicate that the positons should start from
+  the last position of the resource. A negative value for step indicates that
+  the slice should contain items in reverse order.
+
+  If op contains no colons, the slice consists of the single item at the
+  specified position in the resource.
+
+  Args:
+    r: A JSON-serializable string or array.
+    op: The slice operation.
+    undefined: Returns this value if the slice cannot be created, or the
+        resulting slice is empty.
+
+  Returns:
+    A new array containing the specified slice of the resource.
+
+  Example:
+    [1,2,3].slice(1:) returns [2,3].
+    [1,2,3].slice(:2) returns [1,2].
+    [1,2,3].slice(-1:) returns [3].
+    [1,2,3].slice(::-1) returns [3,2,1].
+    [1,2,3].slice(1) returns [2].
+  """
+  op = op.strip()
+  if not op:
+    return undefined
+
+  # Construct a list of integer and None values from op to be passed to slice().
+  try:
+    ops = [int(sp) if sp else None for sp in (p.strip() for p in op.split(':'))]
+  except (AttributeError, TypeError, ValueError):
+    return undefined
+
+  # Handle the case where the user specifies only an index by
+  # constructing a slice of i:i+1. E.g., the equivalent slice of index
+  # 1 is [1:2]. If ops[0] + 1 == 0, use None as the slice end instead.
+  # The slice [-1:0] returns an empty set; [-1:] returns a set
+  # containing the last element.
+  if len(ops) == 1:
+    ops.append(ops[0] + 1 or None)
+
+  try:
+    return list(r[slice(*ops)]) or undefined
+  except (TypeError, ValueError):
+    return undefined
+
+
+def TransformSplit(r, sep='/', undefined=''):
+  """Splits a string by the value of sep.
+
+  Args:
+    r: A string.
+    sep: The separator value to use when splitting.
+    undefined: Returns this value if the result after splitting is empty.
+
+  Returns:
+    A new array containing the split components of the resource.
+
+  Example:
+    "a/b/c/d".split() returns ["a", "b", "c", "d"]
+  """
+  if not r:
+    return undefined
+
+  try:
+    return r.split(sep)
+  except (AttributeError, TypeError, ValueError):
+    return undefined
+
+
 def TransformUri(r, undefined='.'):
   """Gets the resource URI.
 
@@ -773,12 +895,14 @@ _BUILTIN_TRANSFORMS = {
     'duration': TransformDuration,
     'encode': TransformEncode,
     'error': TransformError,
+    'extract': TransformExtract,
     'fatal': TransformFatal,
     'firstof': TransformFirstOf,
     'float': TransformFloat,
     'format': TransformFormat,
     'group': TransformGroup,
     'iso': TransformIso,
+    'join': TransformJoin,
     'len': TransformLen,
     'list': TransformList,
     'map': TransformMap,
@@ -786,6 +910,8 @@ _BUILTIN_TRANSFORMS = {
     'scope': TransformScope,
     'segment': TransformSegment,
     'size': TransformSize,
+    'slice': TransformSlice,
+    'split': TransformSplit,
     'uri': TransformUri,
     'yesno': TransformYesNo,
 }

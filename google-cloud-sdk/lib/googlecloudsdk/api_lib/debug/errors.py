@@ -21,7 +21,11 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 
 
-class NoEndpointError(exceptions.Error):
+class DebugError(exceptions.Error):
+  pass
+
+
+class NoEndpointError(DebugError):
 
   def __str__(self):
     return (
@@ -29,7 +33,7 @@ class NoEndpointError(exceptions.Error):
         'be called before using this module.')
 
 
-class UnknownHttpError(exceptions.Error):
+class UnknownHttpError(DebugError):
   """An unknown error occurred during a remote API call."""
 
   def __init__(self, error):
@@ -38,7 +42,7 @@ class UnknownHttpError(exceptions.Error):
     super(UnknownHttpError, self).__init__(message)
 
 
-class MultipleDebuggeesError(exceptions.Error):
+class MultipleDebuggeesError(DebugError):
   """Multiple targets matched the search criteria."""
 
   def __init__(self, pattern, debuggees):
@@ -51,7 +55,7 @@ class MultipleDebuggeesError(exceptions.Error):
             pattern_msg, debuggees))
 
 
-class NoDebuggeeError(exceptions.Error):
+class NoDebuggeeError(DebugError):
   """No target matched the search criteria."""
 
   def __init__(self, pattern=None):

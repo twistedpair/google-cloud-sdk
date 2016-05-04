@@ -14,19 +14,22 @@
 
 """Read and write properties for the CloudSDK."""
 
-import ConfigParser
 import os
 import re
 import sys
-import threading
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import named_configs
+from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
-from googlecloudsdk.core.util import files
 
-named_configs.FLAG_OVERRIDE_STACK.Push(named_configs.AdhocConfigFlagParse())
+
+# Try to parse the command line flags at import time to see if someone provided
+# the --configuration flag.  If they did, this could affect the value of the
+# properties defined in that configuration.  Since some libraries (like logging)
+# use properties at startup, we want to use the correct configuration for that.
+named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(sys.argv)
 
 
 _SET_PROJECT_HELP = """\
@@ -105,21 +108,13 @@ class NoSuchPropertyError(Error):
   """An exception to be raised when the desired property does not exist."""
 
 
-class MissingConfigLocationError(Error):
-  """An exception to be raised when a config location does not exist."""
+class MissingInstallationConfig(Error):
+  """An exception to be raised when the sdk root does not exist."""
 
-  def __init__(self, scope):
-    super(MissingConfigLocationError, self).__init__(
-        'The configuration location for [{scope}] properties does not exist.'
-        .format(scope=scope.id))
-
-
-class ReadOnlyNamedConfigNotSettableError(Error):
-  """An exception for when the active config is read-only (e.g. None)."""
-
-  def __init__(self, config_name):
-    super(ReadOnlyNamedConfigNotSettableError, self).__init__(
-        'Properties in configuration [{0}] are read only.'.format(config_name))
+  def __init__(self):
+    super(MissingInstallationConfig, self).__init__(
+        'Installation properties could not be set because the installation '
+        'root of the Cloud SDK could not be found.')
 
 
 class InvalidScopeValueError(Error):
@@ -435,8 +430,8 @@ class _Section(object):
       include_hidden: bool, True to include hidden properties in the result.
         If a property has a value set but is hidden, it will be included
         regardless of this setting.
-      properties_file: PropertiesFile, the file to read settings from.  If None
-        the active property file will be used.
+      properties_file: properties_file.PropertiesFile, the file to read settings
+        from.  If None the active property file will be used.
       only_file_contents: bool, True if values should be taken only from
         the properties file, false if flags, env vars, etc. should
         be consulted too.  Mostly useful for listing file contents.
@@ -444,7 +439,8 @@ class _Section(object):
     Returns:
       {str:str}, The dict of {property:value} for this section.
     """
-    properties_file = properties_file or PropertiesFile.Load()
+    properties_file = (properties_file or
+                       named_configs.ActivePropertiesFile.Load())
 
     result = {}
     for prop in self:
@@ -457,7 +453,7 @@ class _Section(object):
         continue
 
       if only_file_contents:
-        value = properties_file.Get(prop)
+        value = properties_file.Get(prop.section, prop.name)
       else:
         value = _GetPropertyWithoutDefault(prop, properties_file)
 
@@ -1067,7 +1063,8 @@ class _Property(object):
     Returns:
       str, The value for this property.
     """
-    value = _GetProperty(self, PropertiesFile.Load(), required)
+    value = _GetProperty(self, named_configs.ActivePropertiesFile.Load(),
+                         required)
     if validate:
       self.Validate(value)
     return value
@@ -1099,7 +1096,8 @@ class _Property(object):
     Returns:
       bool, The boolean value for this property, or None if it is not set.
     """
-    value = _GetBoolProperty(self, PropertiesFile.Load(), required)
+    value = _GetBoolProperty(self, named_configs.ActivePropertiesFile.Load(),
+                             required)
     if validate:
       self.Validate(value)
     return value
@@ -1118,7 +1116,8 @@ class _Property(object):
     Returns:
       int, The integer value for this property.
     """
-    value = _GetIntProperty(self, PropertiesFile.Load(), required)
+    value = _GetIntProperty(self, named_configs.ActivePropertiesFile.Load(),
+                            required)
     if validate:
       self.Validate(value)
     return value
@@ -1195,10 +1194,9 @@ def ParsePropertyString(property_string):
 class _ScopeInfo(object):
 
   # pylint: disable=redefined-builtin
-  def __init__(self, id, description, get_file):
+  def __init__(self, id, description):
     self.id = id
     self.description = description
-    self.get_file = get_file
 
 
 class Scope(object):
@@ -1210,14 +1208,12 @@ class Scope(object):
       description='The installation based configuration file applies to all '
       'users on the system that use this version of the Cloud SDK.  If the SDK '
       'was installed by an administrator, you will need administrator rights '
-      'to make changes to this file.',
-      get_file=lambda: config.Paths().installation_properties_path)
+      'to make changes to this file.')
   USER = _ScopeInfo(
       id='user',
       description='The user based configuration file applies only to the '
       'current user of the system.  It will override any values from the '
-      'installation configuration.',
-      get_file=named_configs.GetEffectiveNamedConfigFile)
+      'installation configuration.')
 
   _ALL = [USER, INSTALLATION]
   _ALL_SCOPE_NAMES = [s.id for s in _ALL]
@@ -1262,7 +1258,7 @@ class Scope(object):
                         for s in Scope.AllValues()])
 
 
-def PersistProperty(prop, value, scope=None, properties_file=None):
+def PersistProperty(prop, value, scope=None):
   """Sets the given property in the properties file.
 
   This function should not generally be used as part of normal program
@@ -1282,66 +1278,22 @@ def PersistProperty(prop, value, scope=None, properties_file=None):
         - user level config
       It will never fall back to installation properties; you must
       use that scope explicitly to set that value.
-    properties_file: str, Path to an explicit properties file to use (instead of
-      one of the known locations).  It is an error to specify a scope and an
-      explicit file.
 
   Raises:
-    ValueError: If you give both a scope and a properties file.
-    MissingConfigLocationError: If there is not file for the given scope.
-    ReadOnlyNamedConfigNotSettableError: If the user is attempting to set
-      a property in a read-only configuration.
-    InternalError: If there's a programming error.
+    MissingInstallationConfig: If you are trying to set the installation config,
+      but there is not SDK root.
   """
   prop.Validate(value)
-  if scope and properties_file:
-    raise ValueError('You cannot provide both a scope and a specific properties'
-                     ' file.')
-  if not properties_file:
-    if scope:
-      if scope == Scope.INSTALLATION:
-        config.EnsureSDKWriteAccess()
-      properties_file = scope.get_file()
-      if not properties_file:
-        raise MissingConfigLocationError(scope)
-    else:
-      # This will auto convert legacy credentials to named configurations.
-      named_configs.TryEnsureWriteableNamedConfig()
-      properties_file = named_configs.GetEffectiveNamedConfigFile()
-      if properties_file is None:
-        # Should be dead code.
-        raise exceptions.InternalError('Unexpected None properties file.')
-      if properties_file == os.path.devnull:
-        # Refuse to write and fail with an informative error
-        # TODO(b/22817095) Simplify control flow and update
-        # messaging when moving to automatic upgrade scenario
-        # on all release tracks.
-        if (named_configs.GetNameOfActiveNamedConfig() ==
-            named_configs.RESERVED_NAMED_CONFIG_NAME_NONE):
-          raise ReadOnlyNamedConfigNotSettableError(
-              named_configs.RESERVED_NAMED_CONFIG_NAME_NONE)
-        if not Scope.USER.get_file():
-          raise MissingConfigLocationError(Scope.USER)
-
-  parsed_config = ConfigParser.ConfigParser()
-  parsed_config.read(properties_file)
-
-  if not parsed_config.has_section(prop.section):
-    if value is None:
-      return
-    parsed_config.add_section(prop.section)
-
-  if value is None:
-    parsed_config.remove_option(prop.section, prop.name)
+  if scope == Scope.INSTALLATION:
+    config.EnsureSDKWriteAccess()
+    config_file = config.Paths().installation_properties_path
+    if not config_file:
+      raise MissingInstallationConfig()
+    prop_files_lib.PersistProperty(config_file, prop.section, prop.name, value)
+    named_configs.ActivePropertiesFile.Invalidate()
   else:
-    parsed_config.set(prop.section, prop.name, str(value))
-
-  properties_dir, unused_name = os.path.split(properties_file)
-  files.MakeDir(properties_dir)
-  with open(properties_file, 'w') as fp:
-    parsed_config.write(fp)
-
-  PropertiesFile.Invalidate()
+    active_config = named_configs.ConfigurationStore.ActiveConfig()
+    active_config.PersistProperty(prop.section, prop.name, value)
 
 
 def _GetProperty(prop, properties_file, required):
@@ -1353,7 +1305,8 @@ def _GetProperty(prop, properties_file, required):
 
   Args:
     prop: properties.Property, The property to get.
-    properties_file: PropertiesFile, An already loaded properties files to use.
+    properties_file: properties_file.PropertiesFile, An already loaded
+      properties files to use.
     required: bool, True to raise an exception if the property is not set.
 
   Raises:
@@ -1398,7 +1351,8 @@ def _GetPropertyWithoutDefault(prop, properties_file):
 
   Args:
     prop: properties.Property, The property to get.
-    properties_file: PropertiesFile, An already loaded properties files to use.
+    properties_file: properties_file.PropertiesFile, An already loaded
+      properties files to use.
 
   Returns:
     str, The value of the property, or None if it is not set.
@@ -1449,7 +1403,7 @@ def _GetPropertyWithoutCallback(prop, properties_file):
     return str(value)
 
   # Check the property file itself.
-  value = properties_file.Get(prop)
+  value = properties_file.Get(prop.section, prop.name)
   if value is not None:
     return str(value)
 
@@ -1461,7 +1415,8 @@ def _GetBoolProperty(prop, properties_file, required):
 
   Args:
     prop: properties.Property, The property to get.
-    properties_file: PropertiesFile, An already loaded properties files to use.
+    properties_file: properties_file.PropertiesFile, An already loaded
+      properties files to use.
     required: bool, True to raise an exception if the property is not set.
 
   Returns:
@@ -1478,7 +1433,8 @@ def _GetIntProperty(prop, properties_file, required):
 
   Args:
     prop: properties.Property, The property to get.
-    properties_file: PropertiesFile, An already loaded properties files to use.
+    properties_file: properties_file.PropertiesFile, An already loaded
+      properties files to use.
     required: bool, True to raise an exception if the property is not set.
 
   Returns:
@@ -1493,123 +1449,6 @@ def _GetIntProperty(prop, properties_file, required):
     raise InvalidValueError(
         'The property [{section}.{name}] must have an integer value: [{value}]'
         .format(section=prop.section, name=prop.name, value=value))
-
-
-class PropertiesFile(object):
-  """Properties holder for CloudSDK CLIs."""
-
-  _PROPERTIES = None
-  _LOCK = threading.RLock()
-  _ALREADY_GAVE_DEPRECATION_WARNINGS = False
-
-  @staticmethod
-  def Load():
-    """Loads the set of properties for the CloudSDK CLIs from files.
-
-    This function will load the properties file, first from the installation
-    config, then from either the global config directory
-    CLOUDSDK_GLOBAL_CONFIG_DIR (to be deprecated) or an named config set
-    at CLOUDSDK_NAMED_CONFIG_ACTIVATOR_PATH,
-    and then from the workspace config directory
-    CLOUDSDK_WORKSPACE_CONFIG_DIR (to be deprecated).
-
-    If the properties have already been loaded, the cached values are returned.
-
-    Returns:
-      properties.Properties, The CloudSDK properties.
-    """
-    PropertiesFile._LOCK.acquire()
-    try:
-      if not PropertiesFile._PROPERTIES:
-        config_paths = config.Paths()
-        named_configs.WarnOnActiveNamedConfigMissing()
-        paths = [config_paths.installation_properties_path,
-                 named_configs.GetEffectiveNamedConfigFile()]
-        # Filter out None elements in paths
-        paths = [p for p in paths if p]
-        PropertiesFile._PROPERTIES = PropertiesFile(paths)
-
-        # Warn if loading file from deperecated paths
-
-        # Setting PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS is used
-        # to avoid printing redundant warnings after properties invalidation.
-        if not PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS:
-
-          PropertiesFile._ALREADY_GAVE_DEPRECATION_WARNINGS = True
-
-          if ((config_paths.user_properties_path in paths) and
-              os.path.isfile(config_paths.user_properties_path)):
-            # Write to standard output directly as importing `logging` here
-            # messes up the logging boot-strap process.  We could probably do
-            # a more principled refactor to avoid this, but it doesn't seem
-            # worthwhile for a temporary warning message.
-            sys.stderr.write("""\
-Loading legacy configuration file: [{0}]
-This configuration file is deprecated and will not be read in a future
-gcloud release.  gcloud will automatically migrate your current settings to the
-new configuration format the next time you set a property by running:
-  $ gcloud config set PROPERTY VALUE
-You may also run:
-  $ gcloud init
-to create a new configuration and walk you through initializing some basic
-settings.  You can find more information on named configurations by running:
-  $ gcloud topic configurations
-
-""".format(config_paths.user_properties_path))
-
-    finally:
-      PropertiesFile._LOCK.release()
-    return PropertiesFile._PROPERTIES
-
-  @staticmethod
-  def Invalidate():
-    """Invalidate the chached property values."""
-    PropertiesFile._PROPERTIES = None
-
-  def __init__(self, paths):
-    """Creates a new PropertiesFile and load from the given paths.
-
-    Args:
-      paths: [str], List of files to load properties from, in order.
-    """
-    self._properties = {}
-
-    for properties_path in paths:
-      self.__Load(properties_path)
-
-  def __Load(self, properties_path):
-    """Loads properties from the given file.
-
-    Overwrites anything already known.
-
-    Args:
-      properties_path: str, Path to the file containing properties info.
-    """
-    parsed_config = ConfigParser.ConfigParser()
-    try:
-      parsed_config.read(properties_path)
-    except ConfigParser.ParsingError as e:
-      raise PropertiesParseError(e.message)
-
-    for section in parsed_config.sections():
-      if section not in self._properties:
-        self._properties[section] = {}
-      self._properties[section].update(dict(parsed_config.items(section)))
-
-  def Get(self, prop):
-    """Gets the value of the given property.
-
-    Args:
-      prop: Property, The property to get.
-
-    Returns:
-      str, The value for the given section and property, or None if it is not
-        set.
-    """
-    try:
-      return self._properties[prop.section][prop.name]
-    except KeyError:
-      return None
 
 
 def DisplayProperties(writer, properties):

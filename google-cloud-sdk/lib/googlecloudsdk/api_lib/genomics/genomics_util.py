@@ -22,10 +22,10 @@ from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsInputFileError
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.third_party.apis.storage import v1 as storage_v1
 from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
@@ -189,8 +189,9 @@ def GetFileAsMessage(path, message, client):
     tf.close()
     print tf.name
     bucket, obj = _SplitBucketAndObject(path)
-    get_request = storage_v1.StorageObjectsGetRequest(bucket=bucket,
-                                                      object=obj)
+    storage_messages = core_apis.GetMessagesModule('storage', 'v1')
+    get_request = storage_messages.StorageObjectsGetRequest(
+        bucket=bucket, object=obj)
     try:
       download = transfer.Download.FromFile(tf.name, overwrite=True)
       client.objects.Get(get_request, download=download)

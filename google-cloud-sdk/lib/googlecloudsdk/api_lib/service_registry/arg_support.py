@@ -187,9 +187,11 @@ def AddNetworksArg(parser):
       '--networks',
       type=arg_parsers.ArgList(),
       help='A list of networks your endpoint should have private DNS records '
-      'created in: e.g. \n\n'
-      '   "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default,..."',  # pylint:disable=line-too-long
-      metavar='NETWORKS')
+      'created in. Each network is represented by a full resource url. '
+      'For example\n\n'
+      '   "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default"',  # pylint:disable=line-too-long
+      metavar='NETWORKS',
+      default=[])
 
 
 def AddEndpointNameArg(parser):

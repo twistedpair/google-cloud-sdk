@@ -510,13 +510,16 @@ class RemoteCompletion(object):
     return list(items)
 
   @staticmethod
-  def GetCompleterForResource(resource, cli, command_line=None):
+  def GetCompleterForResource(resource, cli, command_line=None,
+                              list_command_callback_fn=None):
     """Returns a completer function for the given resource.
 
     Args:
       resource: The resource as subcommand.resource.
       cli: The calliope instance.
-      command_line: The gcloud list command to run.
+      command_line: str, The gcloud list command to run.
+      list_command_callback_fn: function, Callback function to be run to produce
+        the gcloud list command to run. Takes precedence over command_line.
 
     Returns:
       A completer function for the specified resource.
@@ -525,22 +528,29 @@ class RemoteCompletion(object):
       return None
     ro_resource = resource
     ro_command_line = command_line or resource
+    ro_list_command_callback_fn = list_command_callback_fn
 
     def RemoteCompleter(parsed_args, **unused_kwargs):
       """Runs list command on resource to generate completion data."""
       resource = ro_resource
       command_line = ro_command_line
+      list_command_callback_fn = ro_list_command_callback_fn
       list_command_updates_cache = False
+
       info = resource_registry.Get(resource)
       if info.cache_command:
         command = info.cache_command.split(' ')
-        if info.bypass_cache:
-          # Don't cache - use the cache_command results directly.
-          return RemoteCompletion.RunListCommand(
-              cli, command, parse_output=True)
-        list_command_updates_cache = True
+      elif list_command_callback_fn:
+        command = list_command_callback_fn(parsed_args)
       else:
         command = command_line.split('.') + ['list']
+
+      if info.bypass_cache:
+        # Don't cache - use the cache_command results directly.
+        return RemoteCompletion.RunListCommand(
+            cli, command, parse_output=True)
+      list_command_updates_cache = True
+
       options = []
       try:
         if hasattr(parsed_args, 'property'):

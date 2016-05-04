@@ -19,13 +19,14 @@ from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resource_printer
-from googlecloudsdk.third_party.apis.dns.v1 import dns_v1_messages as messages
 import yaml
 
 
 DEFAULT_PATH = 'transaction.yaml'
+messages = core_apis.GetMessagesModule('dns', 'v1')
 
 
 class CorruptedTransactionFileError(core_exceptions.Error):

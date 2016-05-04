@@ -15,8 +15,8 @@
 """Argcomplete completers for various config related things."""
 
 
-from googlecloudsdk.core import named_configs
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 
 
 def PropertiesCompleter(prefix, **unused_kwargs):
@@ -46,5 +46,5 @@ def PropertiesCompleter(prefix, **unused_kwargs):
 
 def NamedConfigCompleter(prefix, **unused_kwargs):
   """An argcomplete completer for existing named configuration names."""
-  configs = named_configs.ListNamedConfigs(log_warnings=False)
-  return [c.name for c in configs if c.name.startswith(prefix)]
+  configs = named_configs.ConfigurationStore.AllConfigs().keys()
+  return [c for c in configs if c.startswith(prefix)]

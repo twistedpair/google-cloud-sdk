@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Base classes for abstracting away common logic."""
+
 import abc
-import argparse
 import cStringIO
 import json
 import textwrap
@@ -34,7 +35,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resource_printer
@@ -655,10 +655,6 @@ class BaseDescriber(BaseCommand):
 
   def Run(self, args):
     """Yields JSON-serializable dicts of resources."""
-    # The field selector should be constructed before any resources
-    # are fetched, so if there are any syntactic errors with the
-    # fields, we can fail fast.
-    field_selector = property_selector.PropertySelector(properties=args.fields)
     ref = self.CreateReference(args)
 
     get_request_class = self.service.GetRequestType(self.method)
@@ -677,7 +673,7 @@ class BaseDescriber(BaseCommand):
         errors=errors,
         custom_get_requests=None)
 
-    resources = lister.ProcessResults(objects, field_selector)
+    resources = lister.ProcessResults(objects, field_selector=None)
     resources = list(self.ComputeDynamicProperties(args, resources))
 
     if errors:
@@ -737,7 +733,6 @@ class MultiScopeDescriber(BaseDescriber):
   def AddScopeArgs(parser, resource_type, scope_types, command=None):
     resource = resource_type
     BaseDescriber.AddArgs(parser, 'compute.' + resource, command)
-    AddFieldsFlag(parser, resource_type)
 
     scope = parser.add_mutually_exclusive_group()
 
@@ -906,46 +901,6 @@ class GlobalRegionalDescriber(MultiScopeDescriber):
   @property
   def zonal_resource_type(self):
     return None
-
-
-def AddFieldsFlag(parser, resource_type):
-  """Adds the --fields flag to the given parser.
-
-  This function is to be called from implementations of describe/list
-  subcommands. The resulting help text of --fields will contain all
-  valid values for the flag. We need this function becasue Args() is a
-  static method so the only way to communicate the resource type is by
-  having the subclass pass it in.
-
-  Args:
-    parser: The parser to add --fields to.
-    resource_type: The resource type as defined in the resource_specs
-      module.
-  """
-
-  def GenerateDetailedHelp():
-    messages_module = core_apis.GetMessagesModule('compute', 'v1')
-    return ('Fields to display. Possible values are:\n+\n  ' +
-            '\n  '.join(resource_specs.GetSpec(
-                resource_type, messages_module, 'v1').fields))
-
-  fields = parser.add_argument(
-      '--fields',
-      type=arg_parsers.ArgList(min_length=1),
-      metavar='FIELD',
-      action=arg_parsers.FloatingListValuesCatcher(),
-
-      # We have not reached an agreement over the --fields flag for
-      # Cloud SDK tools. It has been agreed that the compute component
-      # will keep --fields but will keep it undocumented until
-      # consensus can be reached over the flag's fate.
-      help=argparse.SUPPRESS)
-
-  # Note that we do not actually call GenerateDetailedHelp, the help
-  # generator does that. This is important because getting the set of
-  # fields is a potentially expensive operation, so we only want to do
-  # it when needed.
-  fields.detailed_help = GenerateDetailedHelp
 
 
 class BaseAsyncMutator(BaseCommand):

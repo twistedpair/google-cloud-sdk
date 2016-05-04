@@ -149,10 +149,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       index = 0
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
-          # This initializes a Printer to a string stream.
+          # This initializes a nested Printer to a string stream.
           out = self._out if self._aggregate else StringIO.StringIO()
           printer = self.Printer(col.attribute.subformat, out=out,
-                                 console_attr=self._console_attr)
+                                 console_attr=self._console_attr,
+                                 defaults=self.column_attributes)
         else:
           out = None
           printer = None
@@ -194,10 +195,15 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     if self._aggregate:
       # No parent columns, only nested formats. Aggregate each subformat
       # column to span all records.
+      self._empty = True
       for subformat in self._subformats:
         for row in self._rows:
-          subformat.printer.Print(row[subformat.index], intermediate=True)
+          record = row[subformat.index]
+          if record:
+            subformat.printer.Print(record, intermediate=True)
         subformat.printer.Finish()
+        if subformat.printer.ResourcesWerePrinted():
+          self._empty = False
       # TODO(b/27967563): remove 3Q2016
       if last_page:
         self.AddLegend()
@@ -386,7 +392,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         if box:
           self._out.write(b_rule)
           self._out.write('\n')
-        r = self._nest.pop()
+        r = self._nest.pop(0)
         for subformat in self._subformats:
           if subformat.printer:
             # Indent the nested printer lines.
