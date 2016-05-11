@@ -2031,8 +2031,6 @@ If an empty request body is given, clears the deprecation status instead.
     def List(self, request, global_params=None):
       """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 7. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
-See Accessing images for more information.
-
       Args:
         request: (ComputeImagesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

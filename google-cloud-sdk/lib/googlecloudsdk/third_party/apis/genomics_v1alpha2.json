@@ -113,6 +113,9 @@
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
         },
+        "https://www.googleapis.com/auth/compute": {
+          "description": "View and manage your Google Compute Engine resources"
+        },
         "https://www.googleapis.com/auth/genomics": {
           "description": "View and manage Genomics data"
         }
@@ -443,7 +446,7 @@
           }
         },
         "serviceAccount": {
-          "description": "Required. The Google Cloud Service Account that will be used to access\ndata and services.",
+          "description": "The Google Cloud Service Account that will be used to access data and\nservices. By default, the compute service account associated with\n`projectId` is used.",
           "$ref": "ServiceAccount"
         },
         "clientId": {
@@ -876,6 +879,7 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/genomics"
           ]
         },

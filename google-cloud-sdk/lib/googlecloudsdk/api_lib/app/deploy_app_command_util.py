@@ -32,15 +32,15 @@ def _GetSha1(input_path):
   return file_utils.Checksum().AddFileContents(input_path).HexDigest()
 
 
-def _BuildDeploymentManifest(info, bucket_ref, source_contexts,
-                             context_dir):
+def _BuildDeploymentManifest(info, bucket_ref, source_contexts, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
     info: An instance of yaml_parsing.ServiceInfo.
     bucket_ref: The reference to the bucket files will be placed in.
-    source_contexts: A list of source context files.
-    context_dir: A temp directory to place the source context files in.
+    source_contexts: A list of source contexts.
+    tmp_dir: A temp directory for storing generated files (currently just source
+        context files).
   Returns:
     A deployment manifest (dict) for use with the Admin API.
   """
@@ -59,26 +59,28 @@ def _BuildDeploymentManifest(info, bucket_ref, source_contexts,
         'sha1Sum': sha1_hash
     }
 
-  # Source context files.
-  context_files = context_util.CreateContextFiles(
-      context_dir, source_contexts, overwrite=True, source_dir=source_dir)
+  # Source context files. These are temporary files which indicate the current
+  # state of the source repository (git, cloud repo, etc.)
+  context_files = context_util.CreateContextFiles(tmp_dir, source_contexts,
+                                                  source_dir=source_dir)
   for context_file in context_files:
     rel_path = os.path.basename(context_file)
     if rel_path in manifest:
       # The source context file was explicitly provided by the user.
-      log.debug('Source context already exists. Skipping creation.')
+      log.debug('Source context already exists. Using the existing file.')
       continue
     else:
       sha1_hash = _GetSha1(context_file)
       manifest_path = '/'.join([bucket_url, sha1_hash])
       manifest[rel_path] = {
           'sourceUrl': manifest_path,
-          'sha1Sum': sha1_hash
+          'sha1Sum': sha1_hash,
       }
   return manifest
 
 
-def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client):
+def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client,
+                        tmp_dir):
   """Builds a map of files to upload, indexed by their hash.
 
   This skips already-uploaded files.
@@ -88,6 +90,9 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client):
     source_dir: The relative source directory of the service.
     bucket_ref: The GCS bucket reference to upload files into.
     storage_client: A storage_v1 client object.
+    tmp_dir: The path to a temporary directory where generated files may be
+      stored. If a file in the manifest is not found in the source directory,
+      it will be retrieved from this directory instead.
 
   Returns:
     A dict mapping hashes to file paths that should be uploaded.
@@ -96,6 +101,11 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client):
   existing_items = set(cloud_storage.ListBucket(bucket_ref, storage_client))
   for rel_path in manifest:
     full_path = os.path.join(source_dir, rel_path)
+    # For generated files, the relative path is based on the tmp_dir rather
+    # than source_dir. If the file is not in the source directory, look in
+    # tmp_dir instead.
+    if not os.path.exists(full_path):
+      full_path = os.path.join(tmp_dir, rel_path)
     sha1_hash = manifest[rel_path]['sha1Sum']
     if sha1_hash in existing_items:
       log.debug('Skipping upload of [{f}]'.format(f=rel_path))
@@ -159,15 +169,15 @@ def CopyFilesToCodeBucketNoGsUtil(
   # Collect a list of files to upload, indexed by the SHA so uploads are
   # deduplicated.
   for (service, info) in sorted(services):
-    source_dir = os.path.dirname(info.file)
-    manifest = _BuildDeploymentManifest(
-        info, bucket_ref, source_contexts, source_dir)
-    manifests[service] = manifest
+    with file_utils.TemporaryDirectory() as tmp_dir:
+      manifest = _BuildDeploymentManifest(
+          info, bucket_ref, source_contexts, tmp_dir)
+      manifests[service] = manifest
 
-    source_dir = os.path.dirname(info.file)
-    files_to_upload = _BuildFileUploadMap(
-        manifest, source_dir, bucket_ref, storage_client)
-    _UploadFiles(files_to_upload, bucket_ref, storage_client)
+      source_dir = os.path.dirname(info.file)
+      files_to_upload = _BuildFileUploadMap(
+          manifest, source_dir, bucket_ref, storage_client, tmp_dir)
+      _UploadFiles(files_to_upload, bucket_ref, storage_client)
   log.status.Print('File upload done.')
   log.info('Manifests: [{0}]'.format(manifests))
   return manifests

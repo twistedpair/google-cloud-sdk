@@ -19,9 +19,7 @@ import sys
 
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import apis
-from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 # TODO(user): Avoid initializing this at import time.
@@ -218,61 +216,6 @@ class Repo(Source):
     self._repo_name = name
     self._project_id = project_id
 
-  def ListRevisions(
-      self, starts=None, ends=None, path=None,
-      walk_direction=messages.SourceProjectsReposRevisionsListRequest.
-      WalkDirectionValueValuesEnum.FORWARD):
-    """Request a list of revisions.
-
-    Args:
-      starts: ([string])
-        Revision IDs (hexadecimal strings) that specify where the listing
-        begins. If empty, the repo heads (revisions with no children) are
-        used.
-      ends: ([string])
-        Revision IDs (hexadecimal strings) that specify where the listing
-        ends. If this field is present, the listing will contain only
-        revisions that are topologically between starts and ends, inclusive.
-      path: (string)
-        List only those revisions that modify path.
-      walk_direction: (messages.SourceProjectsReposRevisionsListRequest.
-                       WalkDirectionValueValuesEnum)
-        The direction to walk the graph.
-    Returns:
-      [messages.Revision] The revisions matching the search criteria, in the
-      order specified by walkDirection.
-    """
-    if not starts:
-      starts = []
-    if not ends:
-      ends = []
-    if path:
-      path = _NormalizeToSourceAPIPath(path)
-    request = messages.SourceProjectsReposRevisionsListRequest(
-        projectId=self._project_id, repoName=self._repo_name,
-        starts=starts, ends=ends, path=path, walkDirection=walk_direction)
-
-    return list_pager.YieldFromList(
-        self._client.projects_repos_revisions, request,
-        field='revisions', batch_size_attribute='pageSize')
-
-  def ListAliases(self, kind=messages.SourceProjectsReposAliasesListRequest.
-                  KindValueValuesEnum.ANY):
-    """Request a list of aliases.
-
-    Args:
-      kind: (messages.SourceProjectsReposAliasesListRequest.KindValueValuesEnum)
-        The type of alias to list (fixed, movable, etc).
-    Returns:
-      [messages.Alias] The aliases of the given kind.
-    """
-    request = messages.SourceProjectsReposAliasesListRequest(
-        projectId=self._project_id, repoName=self._repo_name, kind=kind)
-
-    return list_pager.YieldFromList(
-        self._client.projects_repos_aliases, request,
-        field='aliases', batch_size_attribute='pageSize')
-
   def ListWorkspaces(self):
     """Request a list of workspaces.
 
@@ -306,21 +249,6 @@ class Repo(Source):
     ws = self._client.projects_repos_workspaces.Get(request)
     return Workspace(self._project_id, ws.id.name, repo_name=self._repo_name,
                      state=ws)
-
-  def CreateAlias(self, name, revision_id, kind):
-    """Create a new alias (branch) in the repo.
-
-    Args:
-      name: (string) The name of the branch.
-      revision_id: (string) The ID of the revision.
-      kind: (messages.Alias.KindValueValuesEnum) The type of alias.
-    Returns:
-      (messages.Alias) The alias that was created.
-    """
-    request = messages.SourceProjectsReposAliasesCreateRequest(
-        projectId=self._project_id, repoName=self._repo_name,
-        alias=messages.Alias(name=name, revisionId=revision_id, kind=kind))
-    return self._client.projects_repos_aliases.Create(request)
 
   def CreateWorkspace(self, workspace_name, alias_name, expected_baseline=None):
     """Create a new workspace in the repo.
@@ -444,36 +372,6 @@ class Workspace(Source):
     if self._post_callback:
       self._post_callback(len(self._pending_actions))
     self._pending_actions = []
-
-  def Commit(self, message, paths=None):
-    """Commit all pending changes to the repo.
-
-    Args:
-      message: (string) A description of the commit.
-      paths: ([string]) Restrict the commit to the given paths.
-    Returns:
-      A messages.Workspace object describing the state after the commit.
-    """
-
-    self.FlushPendingActions()
-    current_snapshot = None
-    if self._workspace_state:
-      current_snapshot = self._workspace_state.currentSnapshotId
-    if not paths:
-      paths = []
-    else:
-      paths = [_NormalizeToSourceAPIPath(path) for path in paths]
-    request = messages.SourceProjectsReposWorkspacesCommitWorkspaceRequest(
-        projectId=self._project_id, repoName=self._repo_name,
-        name=self._workspace_name,
-        commitWorkspaceRequest=messages.CommitWorkspaceRequest(
-            author=properties.VALUES.core.account.Get(required=True),
-            currentSnapshotId=current_snapshot,
-            message=message,
-            paths=paths))
-    self._workspace_state = (
-        self._client.projects_repos_workspaces.CommitWorkspace(request))
-    return self._workspace_state
 
   def WriteFile(self, path, contents,
                 mode=messages.WriteAction.ModeValueValuesEnum.NORMAL):

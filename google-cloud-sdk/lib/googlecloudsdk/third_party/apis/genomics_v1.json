@@ -3788,7 +3788,7 @@
               "type": "string"
             },
             "updateMask": {
-              "description": "An optional mask specifying which fields to update. Supported fields:\n\n* metadata.\n\nLeaving `updateMask` unset is equivalent to specifying all mutable\nfields.",
+              "description": "An optional mask specifying which fields to update. Supported fields:\n\n* metadata.\n* name.\n* description.\n\nLeaving `updateMask` unset is equivalent to specifying all mutable\nfields.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

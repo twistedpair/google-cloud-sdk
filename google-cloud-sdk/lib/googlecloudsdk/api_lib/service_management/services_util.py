@@ -36,6 +36,10 @@ import yaml
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
 
 
+def GetMessagesModule():
+  return apis.GetMessagesModule('servicemanagement', 'v1')
+
+
 def GetError(error, verbose=False):
   """Returns a ready-to-print string representation from the http response.
 
@@ -128,7 +132,7 @@ def ValidateEmailString(email):
   return EMAIL_REGEX.match(email or '') is not None and len(email) <= 254
 
 
-def ProcessOperationResult(result):
+def ProcessOperationResult(result, async=False):
   """Validate and process Operation result message for user display.
 
   This method checks to make sure the result is of type Operation and
@@ -136,7 +140,8 @@ def ProcessOperationResult(result):
   string.
 
   Args:
-    result: The message to process (expected to be of type Operation)
+    result: The message to process (expected to be of type Operation)'
+    async: If False, the method will block until the operation completes.
 
   Returns:
     The processed message in Python dict form
@@ -144,11 +149,17 @@ def ProcessOperationResult(result):
   if not result:
     return
 
-  messages = apis.GetMessagesModule('servicemanagement', 'v1')
+  messages = GetMessagesModule()
 
   RaiseIfResultNotTypeOf(result, messages.Operation)
 
   result_dict = encoding.MessageToDict(result)
+
+  if not async:
+    log.status.Print('Waiting for operation to complete...')
+    op_name = result_dict['name']
+    result_dict = encoding.MessageToDict(WaitForOperation(
+        op_name, apis.GetClientInstance('servicemanagement', 'v1')))
 
   # Convert metadata startTime to local time
   if 'metadata' in result_dict and 'startTime' in result_dict['metadata']:
@@ -167,7 +178,7 @@ def RaiseIfResultNotTypeOf(test_object, expected_type, nonetype_ok=False):
 
 
 def GetCallerViews():
-  messages = apis.GetMessagesModule('servicemanagement', 'v1')
+  messages = GetMessagesModule()
   get_request = messages.ServicemanagementServicesProjectSettingsGetRequest
   return {
       'CONSUMER': get_request.ViewValueValuesEnum.CONSUMER_VIEW,
@@ -191,7 +202,7 @@ def WaitForOperation(op_name, client):
   """
   WaitForOperation.operation_response = None
 
-  messages = apis.GetMessagesModule('servicemanagement', 'v1')
+  messages = GetMessagesModule()
 
   def _CheckOperation(op_name):  # pylint: disable=missing-docstring
     # If a user includes the leading "operations/", just strip it off
@@ -287,5 +298,4 @@ def ProcessEndpointsServices(app_config_services, project):
             swagger_abs_path,
             project,
             apis.GetClientInstance('servicemanagement', 'v1'),
-            apis.GetMessagesModule('servicemanagement', 'v1'))
-
+            GetMessagesModule())

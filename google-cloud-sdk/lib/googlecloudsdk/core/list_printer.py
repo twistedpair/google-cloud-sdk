@@ -245,8 +245,8 @@ COLLECTION_COLUMNS = {
         ('ZONE', _Select('zone')),
         ('MASTER_VERSION', _Select('currentMasterVersion')),
         ('MASTER_IP', _Select('endpoint')),
-        ('MACHINE_TYPE', _Select(
-            'nodeConfig', transform=lambda x: '%s' % (x.machineType))),
+        ('MACHINE_TYPE', _Select('nodeConfig', transform=lambda x:
+                                 ('%s' % (x.machineType)) if x else None)),
         ('NODE_VERSION', _Select('currentNodeVersion')),
         ('NUM_NODES', _Select('currentNodeCount')),
         ('STATUS', _Select('status')),

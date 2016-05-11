@@ -453,6 +453,22 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   signBlobRequest = _messages.MessageField('SignBlobRequest', 2)
 
 
+class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
+  """A IamProjectsServiceAccountsSignJwtRequest object.
+
+  Fields:
+    name: The resource name of the service account in the format
+      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
+      for the project, will infer the project from the account. The account
+      value can be the email address or the unique_id of the service account.
+    signJwtRequest: A SignJwtRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  signJwtRequest = _messages.MessageField('SignJwtRequest', 2)
+
+
 class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
   """A IamProjectsServiceAccountsTestIamPermissionsRequest object.
 
@@ -499,10 +515,12 @@ class LogConfig(_messages.Message):
   start with a '/', generally be lowercase-only, and end in "_count". Field
   names should not contain an initial slash. The actual exported metric names
   will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present only
-  "iam_principal", corresponding to IAMContext.principal, is supported.
-  Examples:   counter { metric: "/debug_access_count"  field: "iam_principal"
-  }   ==> increment counter /iam/policy/backend_debug_access_count
+  parameters and field values are their respective values.  At present the
+  only supported field names are    - "iam_principal", corresponding to
+  IAMContext.principal;    - "" (empty string), resulting in one aggretated
+  counter with no field.  Examples:   counter { metric: "/debug_access_count"
+  field: "iam_principal" }   ==> increment counter
+  /iam/policy/backend_debug_access_count
   {iam_principal=[value of IAMContext.principal]}  At this time we do not
   support: * multiple field names (though this may be supported in the future)
   * decrementing the counter * incrementing it by anything other than 1
@@ -792,6 +810,28 @@ class SignBlobResponse(_messages.Message):
 
   keyId = _messages.StringField(1)
   signature = _messages.BytesField(2)
+
+
+class SignJwtRequest(_messages.Message):
+  """The service account sign jwt request.
+
+  Fields:
+    payload: The jwt payload to sign.
+  """
+
+  payload = _messages.StringField(1)
+
+
+class SignJwtResponse(_messages.Message):
+  """The service account sign jwt response.
+
+  Fields:
+    keyId: The id of the key used to sign the jwt.
+    signedJwt: The signed jwt.
+  """
+
+  keyId = _messages.StringField(1)
+  signedJwt = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -252,11 +252,11 @@
       "type": "object",
       "properties": {
         "service": {
-          "description": "An identifier of the service, such as the name of the executable, job, or\nGoogle App Engine module name. This field is expected to have a low number\nof values that are relatively stable over time, as opposed to\n`version`, which can be changed whenever new code is deployed.\n\nContains the module name for error reports extracted from Google\nApp Engine logs or `default` if the App Engine default module is used. If\nempty, the value is set to `default`.",
+          "description": "An identifier of the service, such as the name of the executable, job, or\nGoogle App Engine module name. This field is expected to have a low number\nof values that are relatively stable over time, as opposed to\n`version`, which can be changed whenever new code is deployed.\n\nContains the module name for error reports extracted from Google\nApp Engine logs or `default` if the App Engine default module is used.",
           "type": "string"
         },
         "version": {
-          "description": "Represents the source code version that the developer provided,\nwhich could represent a version label or a Git SHA-1 hash, for example.\nIf the developer did not provide a version, the value is set to\n`default`. For App Engine, the version is set to the version of the\napp.",
+          "description": "Represents the source code version that the developer provided,\nwhich could represent a version label or a Git SHA-1 hash, for example.",
           "type": "string"
         }
       }

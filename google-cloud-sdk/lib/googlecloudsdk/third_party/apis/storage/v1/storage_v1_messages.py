@@ -400,6 +400,83 @@ class ComposeRequest(_messages.Message):
   sourceObjects = _messages.MessageField('SourceObjectsValueListEntry', 3, repeated=True)
 
 
+class Notification(_messages.Message):
+  """A subscription to receive Google PubSub notifications.
+
+  Messages:
+    CustomAttributesValue: An optional list of additional attributes to attach
+      to each Cloud PubSub message published for this notification
+      subscription.
+
+  Fields:
+    bucket: The name of the bucket this subscription is particular to.
+    custom_attributes: An optional list of additional attributes to attach to
+      each Cloud PubSub message published for this notification subscription.
+    etag: HTTP 1.1 Entity tag for this subscription notification.
+    event_types: If present, only send notifications about listed event types.
+      If empty, sent notifications for all event types.
+    id: The ID of the notification.
+    kind: The kind of item this is. For notifications, this is always
+      storage#notification.
+    payload_content: The desired content of the Payload. Defaults to
+      OBJECT_METADATA_JSON_V1.
+    selfLink: The canonical URL of this notification.
+    topic: The Cloud PubSub topic to which this subscription publishes.
+      Formatted as: '//pubsub.googleapis.com/projects/{project-
+      identifier}/topics/{my-topic}'
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomAttributesValue(_messages.Message):
+    """An optional list of additional attributes to attach to each Cloud
+    PubSub message published for this notification subscription.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        CustomAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a CustomAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bucket = _messages.StringField(1)
+  custom_attributes = _messages.MessageField('CustomAttributesValue', 2)
+  etag = _messages.StringField(3)
+  event_types = _messages.StringField(4, repeated=True)
+  id = _messages.StringField(5)
+  kind = _messages.StringField(6, default=u'storage#notification')
+  payload_content = _messages.StringField(7, default=u'OBJECT_METADATA_JSON_V1')
+  selfLink = _messages.StringField(8)
+  topic = _messages.StringField(9)
+
+
+class Notifications(_messages.Message):
+  """A list of notification subscriptions.
+
+  Fields:
+    items: The list of items.
+    kind: The kind of item this is. For lists of notifications, this is always
+      storage#notifications.
+  """
+
+  items = _messages.MessageField('Notification', 1, repeated=True)
+  kind = _messages.StringField(2, default=u'storage#notifications')
+
+
 class Object(_messages.Message):
   """An object.
 
@@ -639,7 +716,7 @@ class Policy(_messages.Message):
 
     Fields:
       members: A collection of identifiers for members who may assume the
-        provided role. Recognized identifiers are as follows:   - allusers \u2014 A
+        provided role. Recognized identifiers are as follows:   - allUsers \u2014 A
         special identifier that represents anyone on the internet; with or
         without a Google account.   - allAuthenticatedUsers> \u2014 A special
         identifier that represents anyone who is authenticated with a Google
@@ -668,7 +745,7 @@ class Policy(_messages.Message):
         listing. Equivalent to an ACL entry on an object with the READER role.
         - roles/storage.legacyObjectOwner \u2014 Read/write access to existing
         objects without listing. Equivalent to an ACL entry on an object with
-        the OWNER role.   - roles/storage.legacyBucketOwner \u2014 Read access to
+        the OWNER role.   - roles/storage.legacyBucketReader \u2014 Read access to
         buckets with object listing. Equivalent to an ACL entry on a bucket
         with the READER role.   - roles/storage.legacyBucketWriter \u2014 Read
         access to buckets with object listing/creation/deletion. Equivalent to
@@ -1225,6 +1302,40 @@ class StorageDefaultObjectAccessControlsListRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   ifMetagenerationMatch = _messages.IntegerField(2)
   ifMetagenerationNotMatch = _messages.IntegerField(3)
+
+
+class StorageNotificationsDeleteRequest(_messages.Message):
+  """A StorageNotificationsDeleteRequest object.
+
+  Fields:
+    notification: ID of the notification to delete.
+  """
+
+  notification = _messages.StringField(1, required=True)
+
+
+class StorageNotificationsDeleteResponse(_messages.Message):
+  """An empty StorageNotificationsDelete response."""
+
+
+class StorageNotificationsGetRequest(_messages.Message):
+  """A StorageNotificationsGetRequest object.
+
+  Fields:
+    notification: Notification ID
+  """
+
+  notification = _messages.StringField(1, required=True)
+
+
+class StorageNotificationsListRequest(_messages.Message):
+  """A StorageNotificationsListRequest object.
+
+  Fields:
+    bucket: Name of a GCS bucket.
+  """
+
+  bucket = _messages.StringField(1, required=True)
 
 
 class StorageObjectAccessControlsDeleteRequest(_messages.Message):

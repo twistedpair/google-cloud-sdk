@@ -378,9 +378,9 @@ class Debuggee(DebugObject):
   def name(self):
     module = self.module
     version = self.version
-    if self.module or self.version or self.minorversion:
+    if module or version:
       return (module or DEFAULT_MODULE) + '-' + (version or DEFAULT_VERSION)
-    return self.target_id
+    return self.description
 
   @errors.HandleHttpError
   def GetBreakpoint(self, breakpoint_id):

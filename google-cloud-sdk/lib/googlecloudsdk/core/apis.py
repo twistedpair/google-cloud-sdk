@@ -16,7 +16,6 @@
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.third_party.apis import apis_map
 
 
@@ -125,6 +124,25 @@ def GetDefaultVersion(api_name):
   return None
 
 
+def GetVersions(api_name):
+  """Return available versions for given api.
+
+  Args:
+    api_name: str, The API name (or the command surface name, if different).
+
+  Raises:
+    UnknownAPIError: If api_name does not exist in the APIs map.
+
+  Returns:
+    list, of version names.
+  """
+  api_name, _ = _GetApiNameAndAlias(api_name)
+  version_map = apis_map.MAP.get(api_name, None)
+  if version_map is None:
+    raise UnknownAPIError(api_name)
+  return version_map.keys()
+
+
 def ResolveVersion(api_name, default_override=None):
   """Resolves the version for an API based on the APIs map and API overrides.
 
@@ -212,11 +230,20 @@ def GetClientInstance(api_name, api_version=None, no_http=False):
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   endpoint_override = endpoint_overrides.get(api_name, '')
 
+  # pylint: disable=g-import-not-at-top
+  if no_http:
+    http_client = None
+  else:
+    # Import http only when needed, as it depends on credential infrastructure
+    # which is not needed in all cases.
+    from googlecloudsdk.core.credentials import http
+    http_client = http.Http()
+
   client_class = GetClientClass(api_name, api_version)
   return client_class(
       url=endpoint_override,
       get_credentials=False,
-      http=None if no_http else http.Http())
+      http=http_client)
 
 
 def GetMessagesModule(api_name, api_version=None):

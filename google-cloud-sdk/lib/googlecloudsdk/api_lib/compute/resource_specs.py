@@ -967,7 +967,7 @@ def _GetSpecsForVersion(api_version):
   """
   if api_version == 'v1' or api_version == 'v2beta1':
     return _SPECS_V1
-  if api_version == 'alpha':
+  if 'alpha' in api_version:
     return _SPECS_ALPHA
   return _SPECS_BETA
 

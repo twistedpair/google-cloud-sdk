@@ -751,7 +751,7 @@
     },
     "Visibility": {
       "id": "Visibility",
-      "description": "`Visibility` defines restrictions for the visibility of service\nelements.  Restrictions are specified using visibility labels\n(e.g., TRUSTED_TESTER) that are elsewhere linked to users and projects.\n\nUser and projects can have access to more than one visibility label. The\neffective visibility for multiple labels is the union of each label's\nelements, plus any unrestricted elements. You must list any supported label\ncombinations in `label_combinations`.\n\nIf an element and its parents have no restrictions, visibility is\nunconditionally granted.\n\nExample:\n\n    visibility:\n      label_combinations:\n      - GOOGLE_INTERNAL, TRUSTED_TESTER\n      rules:\n      - selector: google.calendar.Calendar.EnhancedSearch\n        restriction: TRUSTED_TESTER\n      - selector: google.calendar.Calendar.Delegate\n        restriction: GOOGLE_INTERNAL\n\nHere, all methods are publicly visible except for the restricted methods\nEnhancedSearch and Delegate. In addition, since `label_combinations`\nlists both GOOGLE_INTERNAL and TRUSTED_TESTER, users and projects can be\ngiven access to a combined visibility with both EnhancedSearch and Delegate.",
+      "description": "`Visibility` defines restrictions for the visibility of service\nelements.  Restrictions are specified using visibility labels\n(e.g., TRUSTED_TESTER) that are elsewhere linked to users and projects.\n\nUsers and projects can have access to more than one visibility label. The\neffective visibility for multiple labels is the union of each label's\nelements, plus any unrestricted elements.\n\nIf an element and its parents have no restrictions, visibility is\nunconditionally granted.\n\nExample:\n\n    visibility:\n      rules:\n      - selector: google.calendar.Calendar.EnhancedSearch\n        restriction: TRUSTED_TESTER\n      - selector: google.calendar.Calendar.Delegate\n        restriction: GOOGLE_INTERNAL\n\nHere, all methods are publicly visible except for the restricted methods\nEnhancedSearch and Delegate.",
       "type": "object",
       "properties": {
         "rules": {
@@ -759,13 +759,6 @@
           "type": "array",
           "items": {
             "$ref": "VisibilityRule"
-          }
-        },
-        "labelCombinations": {
-          "description": "Lists valid label combinations for this service in comma-delimited form.\nThis lets users and projects see the union of these labels' elements.\n\nRemoving a label combination can be a breaking change, as clients with\naccess to the combination will now see non-restricted elements only.",
-          "type": "array",
-          "items": {
-            "type": "string"
           }
         },
         "enforceRuntimeVisibility": {
@@ -1936,14 +1929,14 @@
       "type": "object",
       "properties": {
         "consumerOverrides": {
-          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is '<GROUP_NAME>\/<LIMIT_NAME>' where GROUP_NAME\nis the google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.",
+          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for quotas defined within quota groups,\nwhere GROUP_NAME is the google.api.QuotaGroup.name field and\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig.  For example: 'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for quotas defined without quota groups, where LIMIT_NAME\nis the google.api.QuotaLimit.name field from the service config. For\nexample: 'borrowedCountPerOrganization'.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
           }
         },
         "producerOverrides": {
-          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is '<GROUP_NAME>\/<LIMIT_NAME>' where GROUP_NAME\nis the google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.",
+          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for quotas defined within quota groups,\nwhere GROUP_NAME is the google.api.QuotaGroup.name field and\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig.  For example: 'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for quotas defined without quota groups, where LIMIT_NAME\nis the google.api.QuotaLimit.name field from the service config. For\nexample: 'borrowedCountPerOrganization'.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
@@ -2169,79 +2162,6 @@
         }
       }
     },
-    "ServiceAccessPolicy": {
-      "id": "ServiceAccessPolicy",
-      "description": "Policy describing who can access a service and any visibility labels on that\nservice.",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "description": "The service protected by this policy.",
-          "type": "string"
-        },
-        "accessList": {
-          "description": "ACL for access to the unrestricted surface of the service.",
-          "$ref": "ServiceAccessList"
-        },
-        "visibilityLabelAccessLists": {
-          "description": "ACLs for access to restricted parts of the service.  The map key is the\nvisibility label that is being controlled.  Note that access to any label\nalso implies access to the unrestricted surface.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "ServiceAccessList"
-          }
-        }
-      }
-    },
-    "ServiceAccessList": {
-      "id": "ServiceAccessList",
-      "description": "List of users and groups that are granted access to a service or visibility\nlabel.",
-      "type": "object",
-      "properties": {
-        "members": {
-          "description": "Members that are granted access.\n\n- \"user:{$user_email}\" - Grant access to an individual user\n- \"group:{$group_email}\" - Grant access to direct members of the group\n- \"domain:{$domain}\" - Grant access to all members of the domain. For now,\n     domain membership check will be similar to Devconsole\/TT check:\n     compare domain part of the user email to configured domain name.\n     When IAM integration is complete, this will be replaced with IAM\n     check.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "QueryUserAccessResponse": {
-      "id": "QueryUserAccessResponse",
-      "description": "Request message for QueryUserAccess method.",
-      "type": "object",
-      "properties": {
-        "canAccessService": {
-          "description": "True if the user can access the service and any unrestricted API surface.",
-          "type": "boolean"
-        },
-        "accessibleVisibilityLabels": {
-          "description": "Any visibility labels on the service that are accessible by the user.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "CustomerSettings": {
-      "id": "CustomerSettings",
-      "description": "Settings that control how a customer (identified by a billing account) uses\na service",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
-          "type": "string"
-        },
-        "customerId": {
-          "description": "ID for the customer that consumes the service (see above).\nThe supported types of customers are:\n\n1. domain:{domain}\nA Google Apps domain name. For example, google.com.\n\n2. billingAccount:{billing_account_id}\nA Google Cloud Plafrom billing account. For Example, 123456-7890ab-cdef12.\n",
-          "type": "string"
-        },
-        "quotaSettings": {
-          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects owned by the customer collectively.",
-          "$ref": "QuotaSettings"
-        }
-      }
-    },
     "ConvertConfigRequest": {
       "id": "ConvertConfigRequest",
       "description": "Request message for `ConvertConfig` method.",
@@ -2332,6 +2252,79 @@
         "message": {
           "description": "The string message of the diagnostic information.",
           "type": "string"
+        }
+      }
+    },
+    "ServiceAccessPolicy": {
+      "id": "ServiceAccessPolicy",
+      "description": "Policy describing who can access a service and any visibility labels on that\nservice.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The service protected by this policy.",
+          "type": "string"
+        },
+        "accessList": {
+          "description": "ACL for access to the unrestricted surface of the service.",
+          "$ref": "ServiceAccessList"
+        },
+        "visibilityLabelAccessLists": {
+          "description": "ACLs for access to restricted parts of the service.  The map key is the\nvisibility label that is being controlled.  Note that access to any label\nalso implies access to the unrestricted surface.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ServiceAccessList"
+          }
+        }
+      }
+    },
+    "ServiceAccessList": {
+      "id": "ServiceAccessList",
+      "description": "List of users and groups that are granted access to a service or visibility\nlabel.",
+      "type": "object",
+      "properties": {
+        "members": {
+          "description": "Members that are granted access.\n\n- \"user:{$user_email}\" - Grant access to an individual user\n- \"group:{$group_email}\" - Grant access to direct members of the group\n- \"domain:{$domain}\" - Grant access to all members of the domain. For now,\n     domain membership check will be similar to Devconsole\/TT check:\n     compare domain part of the user email to configured domain name.\n     When IAM integration is complete, this will be replaced with IAM\n     check.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "QueryUserAccessResponse": {
+      "id": "QueryUserAccessResponse",
+      "description": "Request message for QueryUserAccess method.",
+      "type": "object",
+      "properties": {
+        "canAccessService": {
+          "description": "True if the user can access the service and any unrestricted API surface.",
+          "type": "boolean"
+        },
+        "accessibleVisibilityLabels": {
+          "description": "Any visibility labels on the service that are accessible by the user.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CustomerSettings": {
+      "id": "CustomerSettings",
+      "description": "Settings that control how a customer (identified by a billing account) uses\na service",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.",
+          "type": "string"
+        },
+        "customerId": {
+          "description": "ID for the customer that consumes the service (see above).\nThe supported types of customers are:\n\n1. domain:{domain}\nA Google Apps domain name. For example, google.com.\n\n2. billingAccount:{billing_account_id}\nA Google Cloud Plafrom billing account. For Example, 123456-7890ab-cdef12.\n",
+          "type": "string"
+        },
+        "quotaSettings": {
+          "description": "Settings that control how much or how fast the service can be used by the\nconsumer projects owned by the customer collectively.",
+          "$ref": "QuotaSettings"
         }
       }
     },
@@ -2517,6 +2510,61 @@
             "https://www.googleapis.com/auth/service.management"
           ]
         },
+        "delete": {
+          "id": "servicemanagement.services.delete",
+          "path": "v1/services/{serviceName}",
+          "flatPath": "v1/services/{serviceName}",
+          "httpMethod": "DELETE",
+          "description": "Deletes the specified service resource, making the service unavailable\nto service consumers.\n\nOperation<response: google.protobuf.Empty>",
+          "parameters": {
+            "serviceName": {
+              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "serviceName"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ]
+        },
+        "getConfig": {
+          "id": "servicemanagement.services.getConfig",
+          "path": "v1/services/{serviceName}/config",
+          "flatPath": "v1/services/{serviceName}/config",
+          "httpMethod": "GET",
+          "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
+          "parameters": {
+            "serviceName": {
+              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "configId": {
+              "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "serviceName"
+          ],
+          "response": {
+            "$ref": "Service"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ]
+        },
         "update": {
           "id": "servicemanagement.services.update",
           "path": "v1/services/{serviceName}",
@@ -2579,61 +2627,6 @@
           },
           "response": {
             "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ]
-        },
-        "delete": {
-          "id": "servicemanagement.services.delete",
-          "path": "v1/services/{serviceName}",
-          "flatPath": "v1/services/{serviceName}",
-          "httpMethod": "DELETE",
-          "description": "Deletes the specified service resource, making the service unavailable\nto service consumers.\n\nOperation<response: google.protobuf.Empty>",
-          "parameters": {
-            "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "serviceName"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ]
-        },
-        "getConfig": {
-          "id": "servicemanagement.services.getConfig",
-          "path": "v1/services/{serviceName}/config",
-          "flatPath": "v1/services/{serviceName}/config",
-          "httpMethod": "GET",
-          "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
-          "parameters": {
-            "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "configId": {
-              "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "serviceName"
-          ],
-          "response": {
-            "$ref": "Service"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",

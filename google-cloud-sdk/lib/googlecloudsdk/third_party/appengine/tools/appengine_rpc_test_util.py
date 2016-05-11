@@ -30,6 +30,10 @@ class TestRpcServerMixin(object):
     """Enables strict mode."""
     self.opener.set_strict(strict)
 
+  def set_save_request_data(self, save_request_data=True):
+    """Enables saving request data for every request."""
+    self.opener.set_save_request_data(save_request_data)
+
   def _GetOpener(self):
     """Returns a MockOpener.
 
@@ -88,15 +92,21 @@ class TestRpcServerMixin(object):
 
     def __init__(self):
       """Creates a new MockOpener."""
+      self.request_data = []
       self.requests = []
       self.responses = {}
       self.ordered_responses = {}
       self.cookie = None
       self.strict = False
+      self.save_request_data = False
 
     def set_strict(self, strict=True):
       """Enables strict mode."""
       self.strict = strict
+
+    def set_save_request_data(self, save_request_data=True):
+      """Enables saving request data for every request."""
+      self.save_request_data = save_request_data
 
     def open(self, request):
       """Logs the request and returns a MockResponse object."""
@@ -111,6 +121,9 @@ class TestRpcServerMixin(object):
         assert "User-agent" in request.headers
       request_data = (full_url, bool(request.data))
       self.requests.append(request_data)
+      if self.save_request_data:
+        self.request_data.append((full_url, request.data))
+
       if self.cookie:
         request.headers["Cookie"] = self.cookie
         response = self.responses[url](request)

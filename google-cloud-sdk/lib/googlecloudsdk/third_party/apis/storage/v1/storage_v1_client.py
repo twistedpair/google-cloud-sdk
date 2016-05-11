@@ -37,6 +37,7 @@ class StorageV1(base_api.BaseApiClient):
     self.buckets = self.BucketsService(self)
     self.channels = self.ChannelsService(self)
     self.defaultObjectAccessControls = self.DefaultObjectAccessControlsService(self)
+    self.notifications = self.NotificationsService(self)
     self.objectAccessControls = self.ObjectAccessControlsService(self)
     self.objects = self.ObjectsService(self)
 
@@ -639,6 +640,119 @@ class StorageV1(base_api.BaseApiClient):
         (ObjectAccessControl) The response message.
       """
       config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class NotificationsService(base_api.BaseApiService):
+    """Service class for the notifications resource."""
+
+    _NAME = u'notifications'
+
+    def __init__(self, client):
+      super(StorageV1.NotificationsService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'storage.notifications.delete',
+              ordered_params=[u'notification'],
+              path_params=[u'notification'],
+              query_params=[],
+              relative_path=u'notifications/{notification}',
+              request_field='',
+              request_type_name=u'StorageNotificationsDeleteRequest',
+              response_type_name=u'StorageNotificationsDeleteResponse',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'storage.notifications.get',
+              ordered_params=[u'notification'],
+              path_params=[u'notification'],
+              query_params=[],
+              relative_path=u'notifications/{notification}',
+              request_field='',
+              request_type_name=u'StorageNotificationsGetRequest',
+              response_type_name=u'Notification',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'storage.notifications.insert',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'notifications',
+              request_field='<request>',
+              request_type_name=u'Notification',
+              response_type_name=u'Notification',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'storage.notifications.list',
+              ordered_params=[u'bucket'],
+              path_params=[],
+              query_params=[u'bucket'],
+              relative_path=u'notifications',
+              request_field='',
+              request_type_name=u'StorageNotificationsListRequest',
+              response_type_name=u'Notifications',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Permanently deletes a notification subscription.
+
+      Args:
+        request: (StorageNotificationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageNotificationsDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """View a notification configuration.
+
+      Args:
+        request: (StorageNotificationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Notification) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a notification subscription for a given bucket.
+
+      Args:
+        request: (Notification) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Notification) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of notification subscriptions for a given bucket.
+
+      Args:
+        request: (StorageNotificationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Notifications) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 

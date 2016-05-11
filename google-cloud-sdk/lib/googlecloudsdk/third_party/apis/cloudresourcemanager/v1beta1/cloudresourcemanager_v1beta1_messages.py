@@ -12,6 +12,16 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'cloudresourcemanager'
 
 
+class Ancestor(_messages.Message):
+  """Identifying information for a single ancestor of a project.
+
+  Fields:
+    resourceId: Resource id of the ancestor.
+  """
+
+  resourceId = _messages.MessageField('ResourceId', 1)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -133,6 +143,19 @@ class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
 
 
+class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
+  """A CloudresourcemanagerProjectsGetAncestryRequest object.
+
+  Fields:
+    getAncestryRequest: A GetAncestryRequest resource to be passed as the
+      request body.
+    projectId: The Project ID (for example, `my-project-123`).  Required.
+  """
+
+  getAncestryRequest = _messages.MessageField('GetAncestryRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
 class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerProjectsGetIamPolicyRequest object.
 
@@ -243,6 +266,24 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GetAncestryRequest(_messages.Message):
+  """The request sent to the
+GetAncestry
+method."""
+
+
+class GetAncestryResponse(_messages.Message):
+  """Response from the GetAncestry method.
+
+  Fields:
+    ancestor: Ancestors are ordered from bottom to top of the resource
+      hierarchy. The first ancestor is the project itself, followed by the
+      project's parent, etc.
+  """
+
+  ancestor = _messages.MessageField('Ancestor', 1, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):

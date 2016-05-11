@@ -1070,8 +1070,8 @@ class GenomicsVariantsetsPatchRequest(_messages.Message):
 
   Fields:
     updateMask: An optional mask specifying which fields to update. Supported
-      fields:  * metadata.  Leaving `updateMask` unset is equivalent to
-      specifying all mutable fields.
+      fields:  * metadata. * name. * description.  Leaving `updateMask` unset
+      is equivalent to specifying all mutable fields.
     variantSet: A VariantSet resource to be passed as the request body.
     variantSetId: The ID of the variant to be updated (must already exist).
   """

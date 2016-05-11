@@ -276,23 +276,9 @@
           "$ref": "InternalEntityId"
         },
         "projectNumber": {
-          "description": "Gaia Id of a project",
+
           "type": "string",
           "format": "int64"
-        },
-        "organizationNumber": {
-          "description": "Gaia Id of an organization",
-          "type": "string",
-          "format": "int64"
-        },
-        "folderNumber": {
-          "description": "Gaia Id of a folder",
-          "type": "string",
-          "format": "int64"
-        },
-        "billingAccountId": {
-          "description": "Unique identifier of a billing account",
-          "type": "string"
         },
         "writerEmailAddress": {
 

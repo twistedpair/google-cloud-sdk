@@ -284,6 +284,18 @@ by key id.
               response_type_name=u'SignBlobResponse',
               supports_download=False,
           ),
+          'SignJwt': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'iam.projects.serviceAccounts.signJwt',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[],
+              relative_path=u'v1/{+name}:signJwt',
+              request_field=u'signJwtRequest',
+              request_type_name=u'IamProjectsServiceAccountsSignJwtRequest',
+              response_type_name=u'SignJwtResponse',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'iam.projects.serviceAccounts.testIamPermissions',
@@ -401,6 +413,21 @@ by key id.
         (SignBlobResponse) The response message.
       """
       config = self.GetMethodConfig('SignBlob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SignJwt(self, request, global_params=None):
+      """Signs a jwt using a service account.
+A default expiry of 1 hour in the future will be provided
+but if a value greater than that is passed, we will fail.
+
+      Args:
+        request: (IamProjectsServiceAccountsSignJwtRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SignJwtResponse) The response message.
+      """
+      config = self.GetMethodConfig('SignJwt')
       return self._RunMethod(
           config, request, global_params=global_params)
 

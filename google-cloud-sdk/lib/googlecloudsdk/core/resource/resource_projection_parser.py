@@ -17,9 +17,9 @@
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
+from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
-from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
@@ -51,20 +51,20 @@ class Parser(object):
 
   _BOOLEAN_ATTRIBUTES = ['reverse']
 
-  def __init__(self, defaults=None, symbols=None, compiler=None):
+  def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Constructor.
 
     Args:
       defaults: resource_projection_spec.ProjectionSpec defaults.
       symbols: Transform function symbol table dict indexed by function name.
+      aliases: Resource key alias dictionary.
       compiler: The projection compiler method for nested projections.
     """
     self.__key_attributes_only = False
     self._projection = resource_projection_spec.ProjectionSpec(
-        defaults=defaults, symbols=symbols, compiler=compiler)
+        defaults=defaults, symbols=symbols, aliases=aliases, compiler=compiler)
     self._snake_headings = {}
     self._snake_re = None
-    self._builtin_transforms = resource_transform
 
   class _Tree(object):
     """Defines a Projection tree node.
@@ -93,6 +93,7 @@ class Parser(object):
       align: The column alignment name: left, center, or right.
       transform: obj = func(obj,...) function applied during projection.
       subformat: Sub-format string.
+      hidden: Attribute is projected but not displayed.
     """
 
     def __init__(self, flag):
@@ -100,8 +101,9 @@ class Parser(object):
       self.order = None
       self.label = None
       self.reverse = None
+      self.hidden = False
       self.align = resource_projection_spec.ALIGN_DEFAULT
-      self.transform = []
+      self.transform = None
       self.subformat = None
 
     def __str__(self):
@@ -112,37 +114,8 @@ class Parser(object):
               order=('UNORDERED' if self.order is None else str(self.order)),
               label=repr(self.label),
               align=self.align,
-              active=self.transform[0].active if self.transform else None,
-              transform='[{0}]'.format('.'.join(map(str, self.transform)))))
-
-  class _Transform(object):
-    """A key transform function with actual args.
-
-    Attributes:
-      name: The transform function name.
-      func: The transform function.
-      active: The parent projection active level. A transform is active if
-        transform.active is None or equal to the current projection.active.
-      map_transform: If r is a list then apply the transform to each list item.
-      args: List of function call actual arg strings.
-      kwargs: List of function call actual keyword arg strings.
-    """
-
-    def __init__(self, name, func, active, map_transform, args, kwargs):
-      self.name = name
-      self.func = func
-      self.active = active
-      self.map_transform = map_transform
-      self.args = args
-      self.kwargs = kwargs
-
-    def __str__(self):
-      return '{0}{1}({2})'.format('map().' if self.map_transform else '',
-                                  self.name, ','.join(self.args))
-
-    def __deepcopy__(self, memo):
-      # This avoids recursive ProjectionSpec transforms that deepcopy chokes on.
-      return copy.copy(self)
+              active=self.transform.active if self.transform else None,
+              transform=self.transform))
 
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.
@@ -208,6 +181,7 @@ class Parser(object):
         attribute = copy.copy(tree[name].attribute)
       else:
         attribute = tree[name].attribute
+      attribute.hidden = False
     elif isinstance(name, (int, long)) and None in tree:
       # New projection for explicit name using slice defaults.
       tree[name] = copy.deepcopy(tree[None])
@@ -215,6 +189,8 @@ class Parser(object):
     else:
       # New projection.
       attribute = attribute_add
+      if self.__key_attributes_only and attribute.order:
+        attribute.hidden = True
       if key or attribute.transform:
         tree[name] = self._Tree(attribute)
 
@@ -237,54 +213,13 @@ class Parser(object):
       attribute.subformat = attribute_add.subformat
     self._projection.AddAlias(attribute.label, key)
 
-    if not self.__key_attributes_only:
+    if not self.__key_attributes_only or attribute.hidden:
       # This key is in the projection.
       attribute.flag = self._projection.PROJECT
       self._projection.AddKey(key, attribute)
     elif not name_in_tree:
       # This is a new attributes only key.
       attribute.flag = self._projection.DEFAULT
-
-  def _ParseTransform(self, func_name, active, map_transform):
-    """Parses a transform function call.
-
-    Args:
-      func_name: The transform function name.
-      active: The transform active level or None if always active.
-      map_transform: Apply the transform to each resource list item.
-
-    Returns:
-      A _Transform call item. The caller appends these to a list that is used
-      to apply the transform functions.
-
-    Raises:
-      ExpressionSyntaxError: The expression has a syntax error.
-    """
-    here = self._lex.GetPosition()
-    if (not self._projection.symbols or
-        func_name not in self._projection.symbols):
-      raise resource_exceptions.ExpressionSyntaxError(
-          'Unknown transform function {0} [{1}].'.format(
-              func_name, self._lex.Annotate(here)))
-    func = self._projection.symbols[func_name]
-    args = []
-    kwargs = {}
-    doc = func.func_doc
-    if doc and resource_projection_spec.PROJECTION_ARG_DOC in doc:
-      # The second transform arg is the parent ProjectionSpec.
-      args.append(self._projection)
-    if func.func_defaults:
-      # Separate the args from the kwargs.
-      for arg in self._lex.Args():
-        name, sep, val = arg.partition('=')
-        if sep:
-          kwargs[name] = val
-        else:
-          args.append(arg)
-    else:
-      # No kwargs.
-      args += self._lex.Args()
-    return self._Transform(func_name, func, active, map_transform, args, kwargs)
 
   def _ParseKeyAttributes(self, key, attribute):
     """Parses one or more key attributes and adds them to attribute.
@@ -356,43 +291,29 @@ class Parser(object):
       The parsed key.
     """
     key = self._lex.Key()
-    here = self._lex.GetPosition()
     attribute = self._Attribute(self._projection.PROJECT)
     if self._lex.IsCharacter('(', eoi_ok=True):
       func_name = key.pop()
-      active = self._projection.active
-      map_transform = False
-      while True:
-        transform = self._ParseTransform(func_name, active, map_transform)
-        if transform.func == self._builtin_transforms.TransformAlways:
-          active = None  # Always active.
-          func_name = None
-        elif transform.func == self._builtin_transforms.TransformMap:
-          map_transform = True
-          func_name = None
-        else:
-          # always() applies to all transforms for key.
-          # map() applies to the next transform.
-          map_transform = False
-          attribute.transform.append(transform)
-        if not self._lex.IsCharacter('.', eoi_ok=True):
-          break
-        call = self._lex.Key()
-        here = self._lex.GetPosition()
-        if not self._lex.IsCharacter('('):
-          raise resource_exceptions.ExpressionSyntaxError(
-              'Transform function expected [{0}].'.format(
-                  self._lex.Annotate(here)))
-        if len(call) != 1:
-          raise resource_exceptions.ExpressionSyntaxError(
-              'Unknown transform function {0} [{1}].'.format(
-                  '.'.join(call), self._lex.Annotate(here)))
-        func_name = call.pop()
+      attribute.transform = self._lex.Transform(func_name,
+                                                self._projection.active)
+      func_name = attribute.transform.Name()
     else:
       func_name = None
     self._lex.SkipSpace()
     if self._lex.IsCharacter(':'):
       self._ParseKeyAttributes(key, attribute)
+    if attribute.transform and attribute.transform.conditional:
+      # Parse and evaluate if() transform conditional expression,
+      conditionals = self._projection.symbols.get('__conditionals__')
+
+      def GlobalRestriction(key):
+        return getattr(conditionals, key, None)
+
+      defaults = resource_projection_spec.ProjectionSpec(
+          symbols={'global': GlobalRestriction})
+      if not resource_filter.Compile(attribute.transform.conditional,
+                                     defaults=defaults).Evaluate(conditionals):
+        return
     if func_name and attribute.label is None and not key:
       attribute.label = self._AngrySnakeCase([func_name])
     self._AddKey(key, attribute)
@@ -465,8 +386,7 @@ class Parser(object):
     self._projection.SetEmpty(
         self._Tree(self._Attribute(self._projection.PROJECT)))
     if expression:
-      self._lex = resource_lex.Lexer(expression,
-                                     aliases=self._projection.aliases)
+      self._lex = resource_lex.Lexer(expression, self._projection)
       defaults = False
       self.__key_attributes_only = False
       while self._lex.SkipSpace():
@@ -494,17 +414,18 @@ class Parser(object):
     return self._projection
 
 
-def Parse(expression, defaults=None, symbols=None, compiler=None):
+def Parse(expression, defaults=None, symbols=None, aliases=None, compiler=None):
   """Parses a resource projector expression.
 
   Args:
     expression: The resource projection expression string.
     defaults: resource_projection_spec.ProjectionSpec defaults.
     symbols: Transform function symbol table dict indexed by function name.
+    aliases: Resource key alias dictionary.
     compiler: The projection compiler method for nested projections.
 
   Returns:
     A ProjectionSpec for the expression.
   """
-  return Parser(
-      defaults=defaults, symbols=symbols, compiler=compiler).Parse(expression)
+  return Parser(defaults=defaults, symbols=symbols, aliases=aliases,
+                compiler=compiler).Parse(expression)

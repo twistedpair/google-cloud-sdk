@@ -89,7 +89,7 @@ def FormatTimestamp(timestamp):
   Returns:
     A timestamp string in format, which is accepted by Cloud Logging.
   """
-  return timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+  return timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
 
 def GetError(error):

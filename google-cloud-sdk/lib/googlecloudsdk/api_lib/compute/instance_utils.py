@@ -22,16 +22,11 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis as core_apis
 
 
-MESSAGES = core_apis.GetMessagesModule('compute', 'v1')
+MIGRATION_OPTIONS = ['MIGRATE', 'TERMINATE']
 
-MIGRATION_OPTIONS = sorted(
-    MESSAGES.Scheduling.OnHostMaintenanceValueValuesEnum.to_dict().keys())
-
-LOCAL_SSD_INTERFACES = sorted(
-    MESSAGES.AttachedDisk.InterfaceValueValuesEnum.to_dict().keys())
+LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
 
 
 def AddImageArgs(parser):

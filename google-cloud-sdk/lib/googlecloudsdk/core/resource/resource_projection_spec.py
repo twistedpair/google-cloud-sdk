@@ -47,7 +47,7 @@ class ProjectionSpec(object):
   resource projection specification from a projection expression string.
 
   Attributes:
-    aliases: The short key name alias dictionary.
+    aliases: Resource key alias dictionary.
     _active: The transform active level. Incremented each time Defaults() is
       called. Used to determine active transforms.
     attributes: Projection attributes dict indexed by attribute name.
@@ -78,15 +78,16 @@ class ProjectionSpec(object):
       self.key = key
       self.attribute = attribute
 
-  def __init__(self, defaults=None, symbols=None, compiler=None):
+  def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Initializes a projection.
 
     Args:
       defaults: resource_projection_spec.ProjectionSpec defaults.
       symbols: Transform function symbol table dict indexed by function name.
+      aliases: Resource key alias dictionary.
       compiler: The projection compiler method for nested projections.
     """
-    self.aliases = {}
+    self.aliases = aliases or {}
     self.attributes = {}
     self._columns = []
     self._compiler = compiler
@@ -101,11 +102,12 @@ class ProjectionSpec(object):
       self.symbols = copy.deepcopy(symbols) if symbols else {}
       if defaults.symbols:
         self.symbols.update(defaults.symbols)
-      self.aliases.update(defaults.aliases)
+      if defaults.aliases:
+        self.aliases.update(defaults.aliases)
     else:
       self._active = 0
       self._tree = None
-      self.symbols = symbols
+      self.symbols = symbols or {}
 
   @property
   def active(self):

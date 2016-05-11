@@ -742,6 +742,8 @@ class ExternalDataConfiguration(_messages.Message):
       ignored for Google Cloud Bigtable, Google Cloud Datastore backups and
       Avro formats.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
+    googleSheetsOptions: [Optional] Additional options if sourceFormat is set
+      to GOOGLE_SHEETS.
     ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as
@@ -761,12 +763,13 @@ class ExternalDataConfiguration(_messages.Message):
       JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
       Datastore backups, and Avro formats.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
-      For newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro
-      files, specify "AVRO". For Google Cloud Datastore backups, specify
-      "DATASTORE_BACKUP". [Experimental] For Google Cloud Bigtable, specify
-      "BIGTABLE". Please note that reading from Google Cloud Bigtable is
-      experimental and has to be enabled for your project. Please contact
-      Google Cloud Support to enable this for your project.
+      For Google sheets, specify "GOOGLE_SHEETS". For newline-delimited JSON,
+      specify "NEWLINE_DELIMITED_JSON". For Avro files, specify "AVRO". For
+      Google Cloud Datastore backups, specify "DATASTORE_BACKUP".
+      [Experimental] For Google Cloud Bigtable, specify "BIGTABLE". Please
+      note that reading from Google Cloud Bigtable is experimental and has to
+      be enabled for your project. Please contact Google Cloud Support to
+      enable this for your project.
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
       '*' wildcard character and it must come after the 'bucket' name. Size
@@ -783,11 +786,12 @@ class ExternalDataConfiguration(_messages.Message):
   bigtableOptions = _messages.MessageField('BigtableOptions', 2)
   compression = _messages.StringField(3)
   csvOptions = _messages.MessageField('CsvOptions', 4)
-  ignoreUnknownValues = _messages.BooleanField(5)
-  maxBadRecords = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 7)
-  sourceFormat = _messages.StringField(8)
-  sourceUris = _messages.StringField(9, repeated=True)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 5)
+  ignoreUnknownValues = _messages.BooleanField(6)
+  maxBadRecords = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  schema = _messages.MessageField('TableSchema', 8)
+  sourceFormat = _messages.StringField(9)
+  sourceUris = _messages.StringField(10, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -833,6 +837,27 @@ class GetQueryResultsResponse(_messages.Message):
   schema = _messages.MessageField('TableSchema', 9)
   totalBytesProcessed = _messages.IntegerField(10)
   totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+
+
+class GoogleSheetsOptions(_messages.Message):
+  """A GoogleSheetsOptions object.
+
+  Fields:
+    skipLeadingRows: [Optional] The number of rows at the top of a sheet that
+      BigQuery will skip when reading the data. The default value is 0. This
+      property is useful if you have header rows that should be skipped. When
+      autodetect is on, behavior is the following: * skipLeadingRows
+      unspecified - Autodetect tries to detect headers in the first row. If
+      they are not detected, the row is read as data. Otherwise data is read
+      starting from the second row. * skipLeadingRows is 0 - Instructs
+      autodetect that there are no headers and data should be read starting
+      from the first row. * skipLeadingRows = N > 0 - Autodetect skips N-1
+      rows and tries to detect headers in row N. If headers are not detected,
+      row N is just skipped. Otherwise row N is used to extract column names
+      for the detected schema.
+  """
+
+  skipLeadingRows = _messages.IntegerField(1)
 
 
 class Job(_messages.Message):
@@ -941,6 +966,8 @@ class JobConfigurationLoad(_messages.Message):
     allowQuotedNewlines: Indicates if BigQuery should allow quoted data
       sections that contain newline characters in a CSV file. The default
       value is false.
+    autodetect: [Experimental] Indicates if we should automatically infer the
+      options and schema for CSV and JSON sources.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1016,21 +1043,22 @@ class JobConfigurationLoad(_messages.Message):
 
   allowJaggedRows = _messages.BooleanField(1)
   allowQuotedNewlines = _messages.BooleanField(2)
-  createDisposition = _messages.StringField(3)
-  destinationTable = _messages.MessageField('TableReference', 4)
-  encoding = _messages.StringField(5)
-  fieldDelimiter = _messages.StringField(6)
-  ignoreUnknownValues = _messages.BooleanField(7)
-  maxBadRecords = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  projectionFields = _messages.StringField(9, repeated=True)
-  quote = _messages.StringField(10, default=u'"')
-  schema = _messages.MessageField('TableSchema', 11)
-  schemaInline = _messages.StringField(12)
-  schemaInlineFormat = _messages.StringField(13)
-  skipLeadingRows = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(15)
-  sourceUris = _messages.StringField(16, repeated=True)
-  writeDisposition = _messages.StringField(17)
+  autodetect = _messages.BooleanField(3)
+  createDisposition = _messages.StringField(4)
+  destinationTable = _messages.MessageField('TableReference', 5)
+  encoding = _messages.StringField(6)
+  fieldDelimiter = _messages.StringField(7)
+  ignoreUnknownValues = _messages.BooleanField(8)
+  maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  projectionFields = _messages.StringField(10, repeated=True)
+  quote = _messages.StringField(11, default=u'"')
+  schema = _messages.MessageField('TableSchema', 12)
+  schemaInline = _messages.StringField(13)
+  schemaInlineFormat = _messages.StringField(14)
+  skipLeadingRows = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(16)
+  sourceUris = _messages.StringField(17, repeated=True)
+  writeDisposition = _messages.StringField(18)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1600,6 +1628,8 @@ class Table(_messages.Message):
       This value is inherited from the dataset.
     numBytes: [Output-only] The size of this table in bytes, excluding any
       data in the streaming buffer.
+    numLongTermBytes: [Output-only] The number of bytes in the table that are
+      considered "long-term storage".
     numRows: [Output-only] The number of rows of data in this table, excluding
       any data in the streaming buffer.
     schema: [Optional] Describes the schema of this table.
@@ -1631,14 +1661,15 @@ class Table(_messages.Message):
   lastModifiedTime = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   location = _messages.StringField(10)
   numBytes = _messages.IntegerField(11)
-  numRows = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  schema = _messages.MessageField('TableSchema', 13)
-  selfLink = _messages.StringField(14)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 15)
-  tableReference = _messages.MessageField('TableReference', 16)
-  timePartitioning = _messages.MessageField('TimePartitioning', 17)
-  type = _messages.StringField(18)
-  view = _messages.MessageField('ViewDefinition', 19)
+  numLongTermBytes = _messages.IntegerField(12)
+  numRows = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
+  schema = _messages.MessageField('TableSchema', 14)
+  selfLink = _messages.StringField(15)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 16)
+  tableReference = _messages.MessageField('TableReference', 17)
+  timePartitioning = _messages.MessageField('TimePartitioning', 18)
+  type = _messages.StringField(19)
+  view = _messages.MessageField('ViewDefinition', 20)
 
 
 class TableCell(_messages.Message):

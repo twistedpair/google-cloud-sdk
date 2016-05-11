@@ -23,20 +23,12 @@ def AddDescription(parser):
       help='An optional, textual description for the backend.')
 
 
-def AddInstanceGroup(parser, multizonal=False):
+def AddInstanceGroup(parser, operation_type, multizonal=False):
   """Add arguments to define instance group."""
-  g = parser.add_mutually_exclusive_group(required=True)
-
-  g.add_argument(
-      '--group',
-      help=('The name of the legacy instance group '
-            '(deprecated resourceViews API) that will receive the traffic. '
-            'Use --instance-group flag instead.'))
-
-  g.add_argument(
+  parser.add_argument(
       '--instance-group',
-      help=('The name or URI of a Google Cloud Instance Group that can receive'
-            ' traffic.'))
+      required=True,
+      help='The name or URI of a Google Cloud Instance Group.')
 
   scope_parser = parser
   if multizonal:
@@ -44,11 +36,11 @@ def AddInstanceGroup(parser, multizonal=False):
     flags.AddRegionFlag(
         scope_parser,
         resource_type='instance group',
-        operation_type='add to the backend service')
+        operation_type='{0} the backend service'.format(operation_type))
   flags.AddZoneFlag(
       scope_parser,
       resource_type='instance group',
-      operation_type='add to the backend service')
+      operation_type='{0} the backend service'.format(operation_type))
 
 
 def AddBalancingMode(parser):

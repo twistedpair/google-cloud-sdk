@@ -68,19 +68,19 @@ class Backend(object):
   def ExprNOT(self, expr):
     return _ExprNOT(self, expr)
 
-  def ExprGlobal(self, func, args):
-    return _ExprGlobal(self, func, args)
+  def ExprGlobal(self, call):
+    return _ExprGlobal(self, call)
 
   def ExprOperand(self, value):
     return _ExprOperand(self, value)
 
-  def ExprLT(self, key, operand, transform=None, args=None):
-    return _ExprLT(self, key, operand, transform, args)
+  def ExprLT(self, key, operand, transform=None):
+    return _ExprLT(self, key, operand, transform)
 
-  def ExprLE(self, key, operand, transform=None, args=None):
-    return _ExprLE(self, key, operand, transform, args)
+  def ExprLE(self, key, operand, transform=None):
+    return _ExprLE(self, key, operand, transform)
 
-  def ExprHAS(self, key, operand, transform=None, args=None):
+  def ExprHAS(self, key, operand, transform=None):
     """Case insensitive membership node.
 
     This is the pre-compile Expr for the ':' operator. It compiles into either
@@ -92,21 +92,20 @@ class Backend(object):
     Args:
       key: Resource object key (list of str, int and/or None values).
       operand: The term ExprOperand operand.
-      transform: Optional key value transform function.
-      args: Optional key value transform function actual args.
+      transform: Optional key value transform calls.
 
     Returns:
       _ExprInMatch if operand is an anchored pattern, _ExprIn otherwise.
     """
     if operand.list_value is not None or '*' not in operand.string_value:
-      return _ExprIn(self, key, operand, transform, args)
+      return _ExprIn(self, key, operand, transform)
     pattern = operand.string_value.lower()
     i = pattern.find('*')
     prefix = pattern[:i]
     suffix = pattern[i + 1:]
-    return _ExprInMatch(self, key, operand, transform, args, prefix, suffix)
+    return _ExprInMatch(self, key, operand, transform, prefix, suffix)
 
-  def ExprEQ(self, key, operand, transform=None, args=None):
+  def ExprEQ(self, key, operand, transform=None):
     """Case sensitive EQ node.
 
     Checks for prefix*suffix operand.
@@ -116,34 +115,33 @@ class Backend(object):
     Args:
       key: Resource object key (list of str, int and/or None values).
       operand: The term ExprOperand operand.
-      transform: Optional key value transform function.
-      args: Optional key value transform function actual args.
+      transform: Optional key value transform calls.
 
     Returns:
       _ExprMatch if operand is an anchored pattern, _ExprEqual otherwise.
     """
     if '*' not in operand.string_value:
-      return _ExprEqual(self, key, operand, transform, args)
+      return _ExprEqual(self, key, operand, transform)
     pattern = operand.string_value
     i = pattern.find('*')
     prefix = pattern[:i]
     suffix = pattern[i + 1:]
-    return _ExprMatch(self, key, operand, transform, args, prefix, suffix)
+    return _ExprMatch(self, key, operand, transform, prefix, suffix)
 
-  def ExprNE(self, key, operand, transform=None, args=None):
-    return _ExprNE(self, key, operand, transform, args)
+  def ExprNE(self, key, operand, transform=None):
+    return _ExprNE(self, key, operand, transform)
 
-  def ExprGE(self, key, operand, transform=None, args=None):
-    return _ExprGE(self, key, operand, transform, args)
+  def ExprGE(self, key, operand, transform=None):
+    return _ExprGE(self, key, operand, transform)
 
-  def ExprGT(self, key, operand, transform=None, args=None):
-    return _ExprGT(self, key, operand, transform, args)
+  def ExprGT(self, key, operand, transform=None):
+    return _ExprGT(self, key, operand, transform)
 
-  def ExprRE(self, key, operand, transform=None, args=None):
-    return _ExprRE(self, key, operand, transform, args)
+  def ExprRE(self, key, operand, transform=None):
+    return _ExprRE(self, key, operand, transform)
 
-  def ExprNotRE(self, key, operand, transform=None, args=None):
-    return _ExprNotRE(self, key, operand, transform, args)
+  def ExprNotRE(self, key, operand, transform=None):
+    return _ExprNotRE(self, key, operand, transform)
 
 
 # _Expr* class instantiations are done by the Backend.Expr* methods.
@@ -238,25 +236,15 @@ class _ExprGlobal(_Expr):
   """Global restriction function call node.
 
   Attributes:
-    func: The function implementation Expr. Must match this description:
-          func(obj, args)
-
-          Args:
-            obj: The current resource object.
-            args: The possibly empty list of arguments.
-
-          Returns:
-            True on success.
-    args: List of function call actual arguments.
+    _call: The function call object.
   """
 
-  def __init__(self, backend, func, args):
+  def __init__(self, backend, call):
     super(_ExprGlobal, self).__init__(backend)
-    self._func = func
-    self._args = args
+    self._call = call
 
-  def Evaluate(self, unused_obj):
-    return self._func(*self._args)
+  def Evaluate(self, obj):
+    return self._call.Evaluate(obj)
 
 
 class _ExprOperand(object):
@@ -306,18 +294,16 @@ class _ExprOperator(_Expr):
   Attributes:
     _key: Resource object key (list of str, int and/or None values).
     _operand: The term ExprOperand operand.
-    _transform: Optional key value transform function.
-    _args: Optional list of transform actual args.
+    _transform: Optional key value transform calls.
   """
 
   __metaclass__ = abc.ABCMeta
 
-  def __init__(self, backend, key, operand, transform, args):
+  def __init__(self, backend, key, operand, transform):
     super(_ExprOperator, self).__init__(backend)
     self._key = key
     self._operand = operand
     self._transform = transform
-    self._args = args
 
   def Evaluate(self, obj):
     """Evaluate a term node.
@@ -330,10 +316,7 @@ class _ExprOperator(_Expr):
     value = resource_property.Get(obj, self._key)
     if self._transform:
       try:
-        if self._key:
-          value = self._transform(value, *self._args)
-        else:
-          value = self._transform(*self._args)
+        value = self._transform.Evaluate(value)
       except (AttributeError, TypeError, ValueError):
         value = None
     if self._operand.list_value:
@@ -394,19 +377,18 @@ class _ExprLE(_ExprOperator):
 class _ExprInMatch(_ExprOperator):
   """Membership and anchored prefix*suffix match node."""
 
-  def __init__(self, backend, key, operand, transform, args, prefix, suffix):
+  def __init__(self, backend, key, operand, transform, prefix, suffix):
     """Initializes the anchored prefix and suffix patterns.
 
     Args:
       backend: The parser backend object.
       key: Resource object key (list of str, int and/or None values).
       operand: The term ExprOperand operand.
-      transform: Optional key value transform function.
-      args: Optional key value transform function actual args.
+      transform: Optional key value transform calls.
       prefix: The anchored prefix pattern string.
       suffix: The anchored suffix pattern string.
     """
-    super(_ExprInMatch, self).__init__(backend, key, operand, transform, args)
+    super(_ExprInMatch, self).__init__(backend, key, operand, transform)
     self._prefix = prefix
     self._suffix = suffix
 
@@ -427,8 +409,8 @@ class _ExprInMatch(_ExprOperator):
 class _ExprIn(_ExprOperator):
   """Membership case-insensitive match node."""
 
-  def __init__(self, backend, key, operand, transform, args):
-    super(_ExprIn, self).__init__(backend, key, operand, transform, args)
+  def __init__(self, backend, key, operand, transform):
+    super(_ExprIn, self).__init__(backend, key, operand, transform)
     if self._operand.list_value is not None:
       for operand in self._operand.list_value:
         operand.string_value = operand.string_value.lower()
@@ -483,19 +465,18 @@ class _ExprIn(_ExprOperator):
 class _ExprMatch(_ExprOperator):
   """Anchored prefix*suffix match node."""
 
-  def __init__(self, backend, key, operand, transform, args, prefix, suffix):
+  def __init__(self, backend, key, operand, transform, prefix, suffix):
     """Initializes the anchored prefix and suffix patterns.
 
     Args:
       backend: The parser backend object.
       key: Resource object key (list of str, int and/or None values).
       operand: The term ExprOperand operand.
-      transform: Optional key value transform function.
-      args: Optional key value transform function actual args.
+      transform: Optional key value transform calls.
       prefix: The anchored prefix pattern string.
       suffix: The anchored suffix pattern string.
     """
-    super(_ExprMatch, self).__init__(backend, key, operand, transform, args)
+    super(_ExprMatch, self).__init__(backend, key, operand, transform)
     self._prefix = prefix
     self._suffix = suffix
 
@@ -538,8 +519,8 @@ class _ExprGT(_ExprOperator):
 class _ExprRE(_ExprOperator):
   """Unanchored RE match node."""
 
-  def __init__(self, backend, key, operand, transform, args):
-    super(_ExprRE, self).__init__(backend, key, operand, transform, args)
+  def __init__(self, backend, key, operand, transform):
+    super(_ExprRE, self).__init__(backend, key, operand, transform)
     self.pattern = re.compile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
@@ -552,8 +533,8 @@ class _ExprRE(_ExprOperator):
 class _ExprNotRE(_ExprOperator):
   """Unanchored RE not match node."""
 
-  def __init__(self, backend, key, operand, transform, args):
-    super(_ExprNotRE, self).__init__(backend, key, operand, transform, args)
+  def __init__(self, backend, key, operand, transform):
+    super(_ExprNotRE, self).__init__(backend, key, operand, transform)
     self.pattern = re.compile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):

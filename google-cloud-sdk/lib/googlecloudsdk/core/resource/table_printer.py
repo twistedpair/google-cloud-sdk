@@ -70,13 +70,15 @@ class SubFormat(object):
 
   Attributes:
     index: The parent column index.
+    hidden: Column is projected but not displayed.
     printer: The nested printer object.
     out: The nested printer output stream.
     rows: The nested format aggregate rows if the parent has no columns.
   """
 
-  def __init__(self, index, printer, out):
+  def __init__(self, index, hidden, printer, out):
     self.index = index
+    self.hidden = hidden
     self.printer = printer
     self.out = out
     self.rows = []
@@ -111,6 +113,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     _page_count: The output page count, incremented before each page.
     _rows_per_page: The number of rows in each resource page. 0 for no paging.
     _rows: The list of all resource columns indexed by row.
+    _visible: Ordered list of visible columns indexes.
   """
 
   # TODO(user): Drop TablePrinter._rows_per_page 3Q2016.
@@ -118,7 +121,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     """Creates a new TablePrinter."""
     self._rows = []
-    self._nest = []
     super(TablePrinter, self).__init__(*args, by_columns=True,
                                        non_empty_projection_required=True,
                                        **kwargs)
@@ -138,11 +140,12 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
 
     # Check for subformat columns.
     self._subformats = []
+    self._has_subprinters = False
     has_subformats = False
     self._aggregate = True
     if self.column_attributes:
       for col in self.column_attributes.Columns():
-        if col.attribute.subformat:
+        if col.attribute.subformat or col.attribute.hidden:
           has_subformats = True
         else:
           self._aggregate = False
@@ -154,14 +157,22 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr,
                                  defaults=self.column_attributes)
+          self._has_subprinters = True
         else:
           out = None
           printer = None
-        self._subformats.append(SubFormat(index, printer, out))
+        self._subformats.append(
+            SubFormat(index, col.attribute.hidden, printer, out))
         index += 1
+    self._visible = None
     if not has_subformats:
       self._subformats = None
       self._aggregate = False
+    elif self._subformats and not self._aggregate:
+      self._visible = []
+      for subformat in self._subformats:
+        if not subformat.hidden and not subformat.printer:
+          self._visible.append(subformat.index)
 
   def _AddRecord(self, record, delimit=True):
     """Adds a list of columns. Output delayed until Finish().
@@ -172,15 +183,16 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     """
     if self._rows_per_page and len(self._rows) >= self._rows_per_page:
       self.Page()
-    if self._subformats and not self._aggregate:
-      row = []
-      for subformat in self._subformats:
-        if not subformat.printer:
-          row.append(record[subformat.index])
-      self._rows.append(row)
-      self._nest.append(record)
-    else:
-      self._rows.append(record)
+    self._rows.append(record)
+
+  def _Visible(self, row):
+    """Return the list visible items in row."""
+    if not self._visible or not row:
+      return row
+    visible = []
+    for index in self._visible:
+      visible.append(row[index])
+    return visible
 
   def Finish(self, last_page=True):
     """Prints the table.
@@ -219,15 +231,48 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       if self._page_count > 1:
         self._out.write('\n')
 
-    # Determine the max column widths of heading + rows
+    # Stringify all column cells for all rows.
     rows = [[_Stringify(cell) for cell in row] for row in self._rows]
-    self._rows = []
+    if not self._has_subprinters:
+      self._rows = []
+
+    # Sort by columns if requested.
+    if self.column_attributes:
+      # Order() is a list of (key,reverse) tuples from highest to lowest key
+      # precedence. This loop partitions the keys into groups with the same
+      # reverse value. The groups are then applied in reverse order to maintain
+      # the original precedence.
+      groups = []  # [(keys, reverse)] LIFO to preserve precedence
+      keys = []  # keys for current group
+      for key_index, key_reverse in self.column_attributes.Order():
+        if not keys:
+          # This only happens the first time through the loop.
+          reverse = key_reverse
+        if reverse != key_reverse:
+          groups.insert(0, (keys, reverse))
+          keys = []
+          reverse = key_reverse
+        keys.append(key_index)
+      if keys:
+        groups.insert(0, (keys, reverse))
+      for keys, reverse in groups:
+        rows = sorted(rows, key=operator.itemgetter(*keys), reverse=reverse)
+      align = self.column_attributes.Alignments()
+    else:
+      align = None
+
+    # Remove the hidden/subformat alignments and columns from rows.
+    if self._visible:
+      rows = [self._Visible(row) for row in rows]
+      align = self._Visible(align)
+
+    # Determine the max column widths of heading + rows
     heading = []
     if 'no-heading' not in self.attributes:
       if self._heading:
         labels = self._heading
       elif self.column_attributes:
-        labels = self.column_attributes.Labels()
+        labels = self._Visible(self.column_attributes.Labels())
       else:
         labels = None
       if labels:
@@ -311,31 +356,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         self._out.write(m_rule)
         self._out.write('\n')
 
-    # Sort by columns if requested.
-    if self.column_attributes:
-      # Order() is a list of (key,reverse) tuples from highest to lowest key
-      # precedence. This loop partitions the keys into groups with the same
-      # reverse value. The groups are then applied in reverse order to maintain
-      # the original precedence.
-      groups = []  # [(keys, reverse)] LIFO to preserve precedence
-      keys = []  # keys for current group
-      for key_index, key_reverse in self.column_attributes.Order():
-        if not keys:
-          # This only happens the first time through the loop.
-          reverse = key_reverse
-        if reverse != key_reverse:
-          groups.insert(0, (keys, reverse))
-          keys = []
-          reverse = key_reverse
-        keys.append(key_index)
-      if keys:
-        groups.insert(0, (keys, reverse))
-      for keys, reverse in groups:
-        rows = sorted(rows, key=operator.itemgetter(*keys), reverse=reverse)
-      align = self.column_attributes.Alignments()
-    else:
-      align = None
-
     # Print the left-adjusted columns with space stripped from rightmost column.
     # We must flush directly to the output just in case there is a Windows-like
     # colorizer. This complicates the trailing space logic.
@@ -384,7 +404,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
             pad += table_column_pad + self._console_attr.DisplayWidth(value)
       if box:
         self._out.write(box.v)
-      if self._nest:
+      if self._rows:
         self._out.write('\n')
         if heading:
           heading = []
@@ -392,7 +412,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         if box:
           self._out.write(b_rule)
           self._out.write('\n')
-        r = self._nest.pop(0)
+        r = self._rows.pop(0)
         for subformat in self._subformats:
           if subformat.printer:
             # Indent the nested printer lines.
@@ -417,4 +437,3 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     self._page_count += 1
     self.Finish(last_page=False)
     self._rows = []
-    self._nest = []

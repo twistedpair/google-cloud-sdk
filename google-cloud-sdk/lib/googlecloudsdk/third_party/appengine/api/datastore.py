@@ -330,6 +330,9 @@ class DatastoreAdapter(datastore_rpc.AbstractAdapter):
           entity_pb.Index_Property.DESCENDING: Index.DESCENDING
       }
 
+  def __init__(self, _id_resolver=None):
+    super(DatastoreAdapter, self).__init__(_id_resolver)
+
   def key_to_pb(self, key):
     return key._Key__reference
 
@@ -376,7 +379,11 @@ def __InitConnection():
   # is not a reliable way to check if the state has been initialized.
   if os.getenv(_ENV_KEY) and hasattr(_thread_local, 'connection_stack'):
     return
-  _thread_local.connection_stack = [datastore_rpc.Connection(adapter=_adapter)]
+  # pylint: disable=protected-access
+  _thread_local.connection_stack = [
+      datastore_rpc._CreateDefaultConnection(datastore_rpc.Connection,
+                                             adapter=_adapter)]
+
   # Record that we initialized the connection.
   os.environ[_ENV_KEY] = '1'
 

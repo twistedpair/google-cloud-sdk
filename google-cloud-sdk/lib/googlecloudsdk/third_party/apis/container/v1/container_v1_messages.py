@@ -654,6 +654,10 @@ class NodeConfig(_messages.Message):
       ](/container-registry/)).  If unspecified, no scopes are added, unless
       Cloud Logging or Cloud Monitoring are enabled, in which case their
       required scopes will be added.
+    tags: The list of instance tags applied to all nodes. Tags are used to
+      identify valid sources or targets for network firewalls and are
+      specified by the client during cluster or node pool creation. Each tag
+      within the list must comply with RFC1035.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -726,6 +730,7 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(5)
   metadata = _messages.MessageField('MetadataValue', 6)
   oauthScopes = _messages.StringField(7, repeated=True)
+  tags = _messages.StringField(8, repeated=True)
 
 
 class NodePool(_messages.Message):

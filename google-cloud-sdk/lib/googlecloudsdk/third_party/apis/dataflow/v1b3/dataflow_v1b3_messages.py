@@ -654,28 +654,6 @@ class FlattenInstruction(_messages.Message):
   inputs = _messages.MessageField('InstructionInput', 1, repeated=True)
 
 
-class FloatingPointList(_messages.Message):
-  """A counter value representing a list of floating point numbers.
-
-  Fields:
-    element: Elements of the list.
-  """
-
-  element = _messages.FloatField(1, repeated=True)
-
-
-class FloatingPointMean(_messages.Message):
-  """A representation of a floating point mean metric contribution.
-
-  Fields:
-    count: The number of values being aggregated.
-    sum: The sum of all values being aggregated.
-  """
-
-  count = _messages.MessageField('SplitInt64', 1)
-  sum = _messages.FloatField(2)
-
-
 class InstructionInput(_messages.Message):
   """An input of an instruction, as a reference to an output of a producer
   instruction.
@@ -732,28 +710,6 @@ class InstructionOutput(_messages.Message):
   codec = _messages.MessageField('CodecValue', 1)
   name = _messages.StringField(2)
   systemName = _messages.StringField(3)
-
-
-class IntegerList(_messages.Message):
-  """A counter value representing a list of integers.
-
-  Fields:
-    element: Elements of the list.
-  """
-
-  element = _messages.MessageField('SplitInt64', 1, repeated=True)
-
-
-class IntegerMean(_messages.Message):
-  """A representation of an integer mean metric contribution.
-
-  Fields:
-    count: The number of values being aggregated.
-    sum: The sum of all values being aggregated.
-  """
-
-  count = _messages.MessageField('SplitInt64', 1)
-  sum = _messages.MessageField('SplitInt64', 2)
 
 
 class Job(_messages.Message):
@@ -1305,7 +1261,7 @@ class MetricUpdate(_messages.Message):
       WorkItem. By default this is false, indicating that this metric is
       reported as a delta that is not associated with any WorkItem.
     internal: Worker-computed aggregate value for internal use by the Dataflow
-      service. Deprecated. Newer SDKs should use the value field.
+      service.
     kind: Metric aggregation kind.  The possible metric aggregation kinds are
       "Sum", "Max", "Min", "Mean", "Set", "And", and "Or". The specified
       aggregation kind is case-insensitive.  If omitted, this is not an
@@ -1313,26 +1269,22 @@ class MetricUpdate(_messages.Message):
     meanCount: Worker-computed aggregate value for the "Mean" aggregation
       kind. This holds the count of the aggregated values and is used in
       combination with mean_sum above to obtain the actual mean aggregate
-      value. The only possible value type is Long. Deprecated. Newer SDKs
-      should use the value field.
+      value. The only possible value type is Long.
     meanSum: Worker-computed aggregate value for the "Mean" aggregation kind.
       This holds the sum of the aggregated values and is used in combination
       with mean_count below to obtain the actual mean aggregate value. The
-      only possible value types are Long and Double. Deprecated. Newer SDKs
-      should use the value field.
+      only possible value types are Long and Double.
     name: Name of the metric.
     scalar: Worker-computed aggregate value for aggregation kinds "Sum",
       "Max", "Min", "And", and "Or".  The possible value types are Long,
-      Double, and Boolean. Deprecated. Newer SDKs should use the value field.
+      Double, and Boolean.
     set: Worker-computed aggregate value for the "Set" aggregation kind.  The
       only possible value type is a list of Values whose type can be Long,
       Double, or String, according to the metric's type.  All Values in the
-      list must be of the same type. Deprecated. Newer SDKs should use the
-      value field.
+      list must be of the same type.
     updateTime: Timestamp associated with the metric value. Optional when
       workers are reporting work progress; it will be filled in responses from
       the metrics API.
-    value: New format for the value of a metric.
   """
 
   cumulative = _messages.BooleanField(1)
@@ -1344,34 +1296,6 @@ class MetricUpdate(_messages.Message):
   scalar = _messages.MessageField('extra_types.JsonValue', 7)
   set = _messages.MessageField('extra_types.JsonValue', 8)
   updateTime = _messages.StringField(9)
-  value = _messages.MessageField('MetricValue', 10)
-
-
-class MetricValue(_messages.Message):
-  """The value of a metric.
-
-  Fields:
-    boolean: Boolean value for And, Or.
-    floatingPoint: Floating point value for Sum, Max, Min.
-    floatingPointMean: Floating point mean aggregation value for Mean.
-    floatingPointSet: List of floating point numbers, for Set.
-    integer: Integer value for Sum, Max, Min.
-    integerMean: Integer mean aggregation value for Mean.
-    integerSet: List of integers, for Set.
-    internal: Value for internally-defined metrics use by the Dataflow
-      service.
-    stringSet: List of strings, for Set.
-  """
-
-  boolean = _messages.BooleanField(1)
-  floatingPoint = _messages.FloatField(2)
-  floatingPointMean = _messages.MessageField('FloatingPointMean', 3)
-  floatingPointSet = _messages.MessageField('FloatingPointList', 4)
-  integer = _messages.MessageField('SplitInt64', 5)
-  integerMean = _messages.MessageField('IntegerMean', 6)
-  integerSet = _messages.MessageField('IntegerList', 7)
-  internal = _messages.MessageField('extra_types.JsonValue', 8)
-  stringSet = _messages.MessageField('StringList', 9)
 
 
 class MountedDataDisk(_messages.Message):
@@ -2189,19 +2113,6 @@ class SourceSplitShard(_messages.Message):
   source = _messages.MessageField('Source', 2)
 
 
-class SplitInt64(_messages.Message):
-  """A representation of an int64 n that is immune to precision loss when
-  encoded in JSON.
-
-  Fields:
-    highBits: The high order bits, including the sign: n >> 32.
-    lowBits: The low order bits: n & 0xffffffff.
-  """
-
-  highBits = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  lowBits = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-
-
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -2522,16 +2433,6 @@ class StreamingStageLocation(_messages.Message):
   """
 
   streamId = _messages.StringField(1)
-
-
-class StringList(_messages.Message):
-  """A counter value representing a list of strings.
-
-  Fields:
-    element: Elements of the list.
-  """
-
-  element = _messages.StringField(1, repeated=True)
 
 
 class TaskRunnerSettings(_messages.Message):

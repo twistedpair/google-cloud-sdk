@@ -10,7 +10,7 @@ class DataprocV1(base_api.BaseApiClient):
   MESSAGES_MODULE = messages
 
   _PACKAGE = u'dataproc'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -33,92 +33,11 @@ class DataprocV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
-    self.media = self.MediaService(self)
     self.projects_regions_clusters = self.ProjectsRegionsClustersService(self)
     self.projects_regions_jobs = self.ProjectsRegionsJobsService(self)
     self.projects_regions_operations = self.ProjectsRegionsOperationsService(self)
     self.projects_regions = self.ProjectsRegionsService(self)
     self.projects = self.ProjectsService(self)
-
-  class MediaService(base_api.BaseApiService):
-    """Service class for the media resource."""
-
-    _NAME = u'media'
-
-    def __init__(self, client):
-      super(DataprocV1.MediaService, self).__init__(client)
-      self._method_configs = {
-          'Download': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.media.download',
-              ordered_params=[u'resourceName'],
-              path_params=[u'resourceName'],
-              query_params=[],
-              relative_path=u'v1/media/{+resourceName}',
-              request_field='',
-              request_type_name=u'DataprocMediaDownloadRequest',
-              response_type_name=u'Media',
-              supports_download=True,
-          ),
-          'Upload': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.media.upload',
-              ordered_params=[u'resourceName'],
-              path_params=[u'resourceName'],
-              query_params=[],
-              relative_path=u'v1/media/{+resourceName}',
-              request_field='<request>',
-              request_type_name=u'Media',
-              response_type_name=u'Media',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          'Upload': base_api.ApiUploadInfo(
-              accept=['*/*'],
-              max_size=None,
-              resumable_multipart=None,
-              resumable_path=None,
-              simple_multipart=True,
-              simple_path=u'/upload/v1/media/{+resourceName}',
-          ),
-          }
-
-    def Download(self, request, global_params=None, download=None):
-      """Method for media download. Download is supported.
-on the URI `/v1/media/{+name}?alt=media`.
-
-      Args:
-        request: (DataprocMediaDownloadRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
-      Returns:
-        (Media) The response message.
-      """
-      config = self.GetMethodConfig('Download')
-      return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
-
-    def Upload(self, request, global_params=None, upload=None):
-      """Method for media upload. Upload is supported on.
-the URI `/upload/v1/media/{+name}`.
-
-      Args:
-        request: (Media) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-        upload: (Upload, default: None) If present, upload
-            this stream with the request.
-      Returns:
-        (Media) The response message.
-      """
-      config = self.GetMethodConfig('Upload')
-      upload_config = self.GetUploadConfig('Upload')
-      return self._RunMethod(
-          config, request, global_params=global_params,
-          upload=upload, upload_config=upload_config)
 
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""
@@ -176,18 +95,6 @@ the URI `/upload/v1/media/{+name}`.
               response_type_name=u'Cluster',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.clusters.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsClustersGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'dataproc.projects.regions.clusters.list',
@@ -210,30 +117,6 @@ the URI `/upload/v1/media/{+name}`.
               request_field=u'cluster',
               request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',
               response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.clusters.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'DataprocProjectsRegionsClustersSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.clusters.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'DataprocProjectsRegionsClustersTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -295,21 +178,6 @@ contains `DiagnoseClusterOutputLocation`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a `resource`.
-Returns an empty policy if the resource exists and does not have a policy
-set.
-
-      Args:
-        request: (DataprocProjectsRegionsClustersGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def List(self, request, global_params=None):
       """Lists all regions/{region}/clusters in a project.
 
@@ -333,33 +201,6 @@ set.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-      Args:
-        request: (DataprocProjectsRegionsClustersSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (DataprocProjectsRegionsClustersTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -407,18 +248,6 @@ existing policy.
               response_type_name=u'Job',
               supports_download=False,
           ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.jobs.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsJobsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'dataproc.projects.regions.jobs.list',
@@ -431,18 +260,6 @@ existing policy.
               response_type_name=u'ListJobsResponse',
               supports_download=False,
           ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.jobs.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'DataprocProjectsRegionsJobsSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
           'Submit': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'dataproc.projects.regions.jobs.submit',
@@ -453,18 +270,6 @@ existing policy.
               request_field=u'submitJobRequest',
               request_type_name=u'DataprocProjectsRegionsJobsSubmitRequest',
               response_type_name=u'Job',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.jobs.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'DataprocProjectsRegionsJobsTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
               supports_download=False,
           ),
           }
@@ -515,21 +320,6 @@ and the response returns `FAILED_PRECONDITION`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a `resource`.
-Returns an empty policy if the resource exists and does not have a policy
-set.
-
-      Args:
-        request: (DataprocProjectsRegionsJobsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def List(self, request, global_params=None):
       """Lists regions/{region}/jobs in a project.
 
@@ -543,20 +333,6 @@ set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-      Args:
-        request: (DataprocProjectsRegionsJobsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
     def Submit(self, request, global_params=None):
       """Submits a job to a cluster.
 
@@ -567,19 +343,6 @@ existing policy.
         (Job) The response message.
       """
       config = self.GetMethodConfig('Submit')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (DataprocProjectsRegionsJobsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

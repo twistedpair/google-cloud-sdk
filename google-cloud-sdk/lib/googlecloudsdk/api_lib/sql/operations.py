@@ -26,7 +26,7 @@ class _BaseOperations(object):
 
   _PRE_START_SLEEP_SEC = 1
   _INITIAL_SLEEP_MS = 2000
-  _MAX_WAIT_MS = 180000
+  _MAX_WAIT_MS = 300000
   _WAIT_CEILING_MS = 20000
   _HTTP_MAX_RETRY_MS = 2000
 
@@ -37,7 +37,7 @@ class _BaseOperations(object):
     No operation is done instantly. Wait for it to finish following this logic:
     First wait 1s, then query, then retry waiting exponentially more from 2s.
     We want to limit to 20s between retries to maintain some responsiveness.
-    Finally, we want to limit the whole process to a conservative 180s. If we
+    Finally, we want to limit the whole process to a conservative 300s. If we
     get to that point it means something is wrong and we can throw an exception.
 
     Args:
@@ -50,7 +50,7 @@ class _BaseOperations(object):
 
     Raises:
       OperationError: If the operation has an error code, is in UNKNOWN state,
-          or if the operation takes more than 180s.
+          or if the operation takes more than 300s.
     """
 
     def ShouldRetryFunc(result, state):

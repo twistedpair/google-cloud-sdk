@@ -81,6 +81,7 @@ Example:
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_expr
 from googlecloudsdk.core.resource import resource_lex
+from googlecloudsdk.core.resource import resource_projection_spec
 
 
 class _Parser(object):
@@ -97,23 +98,21 @@ class _Parser(object):
   Attributes:
     _LOGICAL: List of logical operator names.
     _backend: The expression tree generator module.
+    _defaults: Resource projection defaults (for default symbols and aliases).
     _lex: The resource_lex.Lexer filter expression lexer.
     _operator: Dictionary of all search term operators.
     _operator_char_1: The first char of all search term operators.
     _operator_char_2: The second char of all search term operators.
     _parenthesize: A LIFO stack of _OP_* sets for each (...) level. Used to
       determine when AND and OR are combined in the same parenthesis group.
-    _symbols: Filter function symbol table dict indexed by function name.
   """
   _OP_AND, _OP_OR = range(2)
 
   _LOGICAL = ['AND', 'NOT', 'OR']
 
-  def __init__(self, symbols=None, backend=None):
-    self._symbols = {}
-    if symbols:
-      self._symbols.update(symbols)
+  def __init__(self, backend=None, defaults=None):
     self._backend = backend or resource_expr.Backend()
+    self._defaults = defaults or resource_projection_spec.ProjectionSpec()
     self._operator_char_1 = ''
     self._operator_char_2 = ''
     self._operator = {
@@ -166,44 +165,26 @@ class _Parser(object):
           'are combined [{0}].'.format(self._lex.Annotate()))
 
   def _ParseKey(self):
-    """Parses a key with optional trailing transform.
+    """Parses a key with optional trailing transforms.
 
     Raises:
       ExpressionSyntaxError: Missing term, unknown transform function.
 
     Returns:
-      (key, transform, args):
+      (key, transform):
         key: The key expression, None means transform is a global restriction.
-        transform: A transform function if not None. If key is None then the
+        transform: A transform call object if not None. If key is None then the
           transform is a global restriction.
-        args: The transform actual args, None if transform is None or of there
-          are no args.
     """
     here = self._lex.GetPosition()
     key = self._lex.Key()
     if key and key[0] in self._LOGICAL:
       raise resource_exceptions.ExpressionSyntaxError(
           'Term expected [{0}].'.format(self._lex.Annotate(here)))
-    if not self._lex.IsCharacter('(', eoi_ok=True):
-      return key, None, None
-
-    # A global restriction function or key transform.
-    args = self._lex.Args(convert=True)
-    name = key.pop()
-    if name not in self._symbols:
-      # Symbol table lookup could be delayed until evaluation time, but
-      # catching errors early on is good practice in the Cloud SDK. Otherwise:
-      # - a filter expression applied client-side could fetch part or all of
-      #   a server resource before failing
-      # - a filter expression applied server-side would add another
-      #   client-server failure case to handle
-      # Doing the symbol table lookup here makes the return value of Compile()
-      # a hermetic unit. This will make it easier to:
-      # - apply optimizations based on function semantics
-      # - apply client-side vs server-side expression splitting
-      raise resource_exceptions.ExpressionSyntaxError(
-          'Unknown transform function [{0}].'.format(self._lex.Annotate(here)))
-    return key, self._symbols[name], args
+    if self._lex.IsCharacter('(', eoi_ok=True):
+      func_name = key.pop()
+      return key, self._lex.Transform(func_name, 0, restriction=not key)
+    return key, None
 
   def _ParseOperator(self):
     """Parses an operator token.
@@ -273,7 +254,7 @@ class _Parser(object):
     invert = self._lex.IsCharacter('-')
 
     # Parse the key.
-    key, transform, args = self._ParseKey()
+    key, transform = self._ParseKey()
 
     # Parse the operator.
     here = self._lex.GetPosition()
@@ -281,15 +262,18 @@ class _Parser(object):
     if not operator:
       if transform and not key:
         # A global restriction function.
-        tree = self._backend.ExprGlobal(transform, args)
-      elif len(key) == 1:
+        tree = self._backend.ExprGlobal(transform)
+      elif not transform and len(key) == 1:
         # A global restriction on key[0].
-        transform = self._symbols.get('global', None)
-        if not transform:
+        func_name = 'global'
+        func = self._defaults.symbols.get(func_name, None)
+        if not func:
           raise resource_exceptions.ExpressionSyntaxError(
               'Global restriction not supported [{0}].'.format(
                   self._lex.Annotate(here)))
-        tree = self._backend.ExprGlobal(transform, key)
+        transform = resource_lex.MakeTransform(func_name, func, args=key,
+                                               restriction=True)
+        tree = self._backend.ExprGlobal(transform)
       else:
         raise resource_exceptions.ExpressionSyntaxError(
             'Operator expected [{0}].'.format(self._lex.Annotate(here)))
@@ -315,7 +299,7 @@ class _Parser(object):
 
     # Make an Expr node for the term.
     tree = operator(key=key, operand=self._backend.ExprOperand(operand),
-                    transform=transform, args=args)
+                    transform=transform)
     if invert:
       tree = self._backend.ExprNOT(tree)
     return tree
@@ -439,7 +423,7 @@ class _Parser(object):
           'Term expected [{0}].'.format(self._lex.Annotate()))
     return tree
 
-  def Parse(self, expression, aliases=None):
+  def Parse(self, expression):
     """Parses a resource list filter expression.
 
     This is a hand-rolled recursive descent parser based directly on the
@@ -448,7 +432,6 @@ class _Parser(object):
 
     Args:
       expression: A resource list filter expression string.
-      aliases: Resource key alias dictionary.
 
     Raises:
       ExpressionSyntaxError: The expression has a syntax error.
@@ -456,7 +439,7 @@ class _Parser(object):
     Returns:
       tree: The backend expression tree.
     """
-    self._lex = resource_lex.Lexer(expression, aliases=aliases)
+    self._lex = resource_lex.Lexer(expression, defaults=self._defaults)
     tree = self._ParseExpr()
     if not self._lex.EndOfInput():
       raise resource_exceptions.ExpressionSyntaxError(
@@ -465,14 +448,11 @@ class _Parser(object):
     return tree or self._backend.ExprTRUE()
 
 
-def Compile(expression, symbols=None, aliases=None, defaults=None,
-            backend=None):
+def Compile(expression, defaults=None, backend=None):
   """Compiles a resource list filter expression.
 
   Args:
     expression: A resource list filter expression string.
-    symbols: Filter function symbol table dict indexed by function name.
-    aliases: Resource key alias dictionary.
     defaults: Resource projection defaults (for default symbols and aliases).
     backend: The backend expression tree generator module, resource_expr
       if None.
@@ -486,16 +466,4 @@ def Compile(expression, symbols=None, aliases=None, defaults=None,
       if query.Evaluate(resource):
         ProcessMatchedResource(resource)
   """
-  all_symbols = {}
-  all_aliases = {}
-  if defaults:
-    if defaults.symbols:
-      all_symbols.update(defaults.symbols)
-    if defaults.aliases:
-      all_aliases.update(defaults.aliases)
-  if symbols:
-    all_symbols.update(symbols)
-  if aliases:
-    all_aliases.update(aliases)
-  return _Parser(symbols=all_symbols,
-                 backend=backend).Parse(expression, aliases=all_aliases)
+  return _Parser(defaults=defaults, backend=backend).Parse(expression)

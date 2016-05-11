@@ -789,28 +789,24 @@
           "description": "True if this metric is reported as the total cumulative aggregate\nvalue accumulated since the worker started working on this WorkItem.\nBy default this is false, indicating that this metric is reported\nas a delta that is not associated with any WorkItem.",
           "type": "boolean"
         },
-        "value": {
-          "description": "New format for the value of a metric.",
-          "$ref": "MetricValue"
-        },
         "scalar": {
-          "description": "Worker-computed aggregate value for aggregation kinds \"Sum\", \"Max\", \"Min\",\n\"And\", and \"Or\".  The possible value types are Long, Double, and Boolean.\nDeprecated. Newer SDKs should use the value field.",
+          "description": "Worker-computed aggregate value for aggregation kinds \"Sum\", \"Max\", \"Min\",\n\"And\", and \"Or\".  The possible value types are Long, Double, and Boolean.",
           "type": "any"
         },
         "meanSum": {
-          "description": "Worker-computed aggregate value for the \"Mean\" aggregation kind.\nThis holds the sum of the aggregated values and is used in combination\nwith mean_count below to obtain the actual mean aggregate value.\nThe only possible value types are Long and Double.\nDeprecated. Newer SDKs should use the value field.",
+          "description": "Worker-computed aggregate value for the \"Mean\" aggregation kind.\nThis holds the sum of the aggregated values and is used in combination\nwith mean_count below to obtain the actual mean aggregate value.\nThe only possible value types are Long and Double.",
           "type": "any"
         },
         "meanCount": {
-          "description": "Worker-computed aggregate value for the \"Mean\" aggregation kind.\nThis holds the count of the aggregated values and is used in combination\nwith mean_sum above to obtain the actual mean aggregate value.\nThe only possible value type is Long.\nDeprecated. Newer SDKs should use the value field.",
+          "description": "Worker-computed aggregate value for the \"Mean\" aggregation kind.\nThis holds the count of the aggregated values and is used in combination\nwith mean_sum above to obtain the actual mean aggregate value.\nThe only possible value type is Long.",
           "type": "any"
         },
         "set": {
-          "description": "Worker-computed aggregate value for the \"Set\" aggregation kind.  The only\npossible value type is a list of Values whose type can be Long, Double,\nor String, according to the metric's type.  All Values in the list must\nbe of the same type.\nDeprecated. Newer SDKs should use the value field.",
+          "description": "Worker-computed aggregate value for the \"Set\" aggregation kind.  The only\npossible value type is a list of Values whose type can be Long, Double,\nor String, according to the metric's type.  All Values in the list must\nbe of the same type.",
           "type": "any"
         },
         "internal": {
-          "description": "Worker-computed aggregate value for internal use by the Dataflow\nservice. Deprecated. Newer SDKs should use the value field.",
+          "description": "Worker-computed aggregate value for internal use by the Dataflow\nservice.",
           "type": "any"
         },
         "updateTime": {
@@ -837,141 +833,6 @@
           "description": "Zero or more labeled fields which identify the part of the job this\nmetric is associated with, such as the name of a step or collection.\n\nFor example, built-in counters associated with steps will have\ncontext['step'] = <step-name>. Counters associated with PCollections\nin the SDK will have context['pcollection'] = <pcollection-name>.",
           "type": "object",
           "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "MetricValue": {
-      "id": "MetricValue",
-      "description": "The value of a metric.",
-      "type": "object",
-      "properties": {
-        "integer": {
-          "description": "Integer value for Sum, Max, Min.",
-          "$ref": "SplitInt64"
-        },
-        "floatingPoint": {
-          "description": "Floating point value for Sum, Max, Min.",
-          "type": "number",
-          "format": "double"
-        },
-        "boolean": {
-          "description": "Boolean value for And, Or.",
-          "type": "boolean"
-        },
-        "integerMean": {
-          "description": "Integer mean aggregation value for Mean.",
-          "$ref": "IntegerMean"
-        },
-        "floatingPointMean": {
-          "description": "Floating point mean aggregation value for Mean.",
-          "$ref": "FloatingPointMean"
-        },
-        "integerSet": {
-          "description": "List of integers, for Set.",
-          "$ref": "IntegerList"
-        },
-        "floatingPointSet": {
-          "description": "List of floating point numbers, for Set.",
-          "$ref": "FloatingPointList"
-        },
-        "stringSet": {
-          "description": "List of strings, for Set.",
-          "$ref": "StringList"
-        },
-        "internal": {
-          "description": "Value for internally-defined metrics use by the Dataflow service.",
-          "type": "any"
-        }
-      }
-    },
-    "SplitInt64": {
-      "id": "SplitInt64",
-      "description": "A representation of an int64 n that is immune to precision loss when encoded\nin JSON.",
-      "type": "object",
-      "properties": {
-        "lowBits": {
-          "description": "The low order bits: n & 0xffffffff.",
-          "type": "integer",
-          "format": "uint32"
-        },
-        "highBits": {
-          "description": "The high order bits, including the sign: n >> 32.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "IntegerMean": {
-      "id": "IntegerMean",
-      "description": "A representation of an integer mean metric contribution.",
-      "type": "object",
-      "properties": {
-        "sum": {
-          "description": "The sum of all values being aggregated.",
-          "$ref": "SplitInt64"
-        },
-        "count": {
-          "description": "The number of values being aggregated.",
-          "$ref": "SplitInt64"
-        }
-      }
-    },
-    "FloatingPointMean": {
-      "id": "FloatingPointMean",
-      "description": "A representation of a floating point mean metric contribution.",
-      "type": "object",
-      "properties": {
-        "sum": {
-          "description": "The sum of all values being aggregated.",
-          "type": "number",
-          "format": "double"
-        },
-        "count": {
-          "description": "The number of values being aggregated.",
-          "$ref": "SplitInt64"
-        }
-      }
-    },
-    "IntegerList": {
-      "id": "IntegerList",
-      "description": "A counter value representing a list of integers.",
-      "type": "object",
-      "properties": {
-        "element": {
-          "description": "Elements of the list.",
-          "type": "array",
-          "items": {
-            "$ref": "SplitInt64"
-          }
-        }
-      }
-    },
-    "FloatingPointList": {
-      "id": "FloatingPointList",
-      "description": "A counter value representing a list of floating point numbers.",
-      "type": "object",
-      "properties": {
-        "element": {
-          "description": "Elements of the list.",
-          "type": "array",
-          "items": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      }
-    },
-    "StringList": {
-      "id": "StringList",
-      "description": "A counter value representing a list of strings.",
-      "type": "object",
-      "properties": {
-        "element": {
-          "description": "Elements of the list.",
-          "type": "array",
-          "items": {
             "type": "string"
           }
         }

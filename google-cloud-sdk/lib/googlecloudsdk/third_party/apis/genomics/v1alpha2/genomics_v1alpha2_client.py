@@ -10,7 +10,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
   MESSAGES_MODULE = messages
 
   _PACKAGE = u'genomics'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/genomics']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/genomics']
   _VERSION = u'v1alpha2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

@@ -312,10 +312,9 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
       returncode = proc.wait()
     except OSError as e:
       raise SshLikeCmdFailed(cmd_args[0], message=e.strerror)
-    except subprocess.CalledProcessError as e:
-      if strict_error_checking or e.returncode == _SSH_ERROR_EXIT_CODE:
-        raise SshLikeCmdFailed(cmd_args[0], return_code=e.returncode)
-      return e.returncode
+    if ((returncode and strict_error_checking) or
+        returncode == _SSH_ERROR_EXIT_CODE):
+      raise SshLikeCmdFailed(cmd_args[0], return_code=returncode)
     return returncode
 
 

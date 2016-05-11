@@ -2,6 +2,39 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 109.0.0 (2016/05/11)
+
+### Google App Engine
+
+*   Google App Engine components updated to 1.9.37.
+    * Please visit the following release notes for details:
+      * Python - https://cloud.google.com/appengine/docs/python/release-notes
+      * Java - https://cloud.google.com/appengine/docs/java/release-notes
+*   Fixed issue with failed uploads in gcloud preview app-deploy
+    (https://code.google.com/p/google-cloud-sdk/issues/detail?id=784).
+*   Deprecated --server flag for app commands; its use is unsupported.
+
+### Google Compute Engine
+
+*   Removed the `gcloud alpha compute autoscaler` command group.
+*   Removed deprecated `gcloud compute backend-services add-backend` --group
+    flag in favor of --instance-group.
+*   `gcloud compute copy-files` now exits with the return code of the called
+    `scp` process.
+*   Added support for customer-supplied encryption keys to the
+    `gcloud beta compute disks snapshot` command.
+*   Remove google-containers from default gcloud public image project.
+
+### Google Container Engine
+
+*   Fixed bug listing clusters with no node pools.
+*   `gcloud container resize` command now supports multi-zone clusters.
+
+### Google Error Reporting
+
+*   Added the `gcloud beta error-reporting events delete` command to cleanup
+    Stackdriver Error Reporting data.
+
 ## 108.0.0 (2016/05/04)
 
 ### Breaking Changes
@@ -53,7 +86,7 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google App Engine
 
-* GAE components updated to 1.9.36.
+* Google App Engine components updated to 1.9.36.
  * Please visit the following release notes for details:
    * Python - https://cloud.google.com/appengine/docs/python/release-notes
    * Java - https://cloud.google.com/appengine/docs/java/release-notes

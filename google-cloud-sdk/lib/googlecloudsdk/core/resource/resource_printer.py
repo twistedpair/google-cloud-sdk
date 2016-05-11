@@ -40,6 +40,7 @@ from googlecloudsdk.core.resource import json_printer
 from googlecloudsdk.core.resource import list_printer
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
@@ -167,8 +168,8 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
     An initialized ResourcePrinter class or None if printing is disabled.
   """
   projector = resource_projector.Compile(
-      expression=print_format, defaults=defaults,
-      symbols=resource_transform.GetTransforms())
+      expression=print_format, defaults=resource_projection_spec.ProjectionSpec(
+          defaults=defaults, symbols=resource_transform.GetTransforms()))
   printer_name = projector.Projection().Name()
   if not printer_name:
     return None

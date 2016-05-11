@@ -19,8 +19,7 @@ from googlecloudsdk.calliope import base
 
 SERVER_FLAG = base.Argument(
     '--server',
-    help='The App Engine server to connect to.  You will not typically need to '
-    'change this value.')
+    help=argparse.SUPPRESS)
 
 VERSION_FLAG = base.Argument(
     '--version',

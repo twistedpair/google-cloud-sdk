@@ -79,6 +79,7 @@ class Displayer(object):
     self._printer_is_initialized = False
     self._resources = resources
     symbols = {}
+    symbols['__conditionals__'] = args
     if self._info:
       symbols['collection'] = (
           lambda r, undefined='': self._info.collection or undefined)

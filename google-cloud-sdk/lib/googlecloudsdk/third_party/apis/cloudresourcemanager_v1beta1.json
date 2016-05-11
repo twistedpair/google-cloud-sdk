@@ -220,6 +220,38 @@
       "properties": {
       }
     },
+    "GetAncestryRequest": {
+      "id": "GetAncestryRequest",
+      "description": "The request sent to the\nGetAncestry\nmethod.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GetAncestryResponse": {
+      "id": "GetAncestryResponse",
+      "description": "Response from the GetAncestry method.",
+      "type": "object",
+      "properties": {
+        "ancestor": {
+          "description": "Ancestors are ordered from bottom to top of the resource hierarchy. The\nfirst ancestor is the project itself, followed by the project's parent,\netc.",
+          "type": "array",
+          "items": {
+            "$ref": "Ancestor"
+          }
+        }
+      }
+    },
+    "Ancestor": {
+      "id": "Ancestor",
+      "description": "Identifying information for a single ancestor of a project.",
+      "type": "object",
+      "properties": {
+        "resourceId": {
+          "description": "Resource id of the ancestor.",
+          "$ref": "ResourceId"
+        }
+      }
+    },
     "GetIamPolicyRequest": {
       "id": "GetIamPolicyRequest",
       "description": "Request message for `GetIamPolicy` method.",
@@ -520,6 +552,34 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "getAncestry": {
+          "id": "cloudresourcemanager.projects.getAncestry",
+          "path": "v1beta1/projects/{projectId}:getAncestry",
+          "flatPath": "v1beta1/projects/{projectId}:getAncestry",
+          "httpMethod": "POST",
+          "description": "Gets a list of ancestors in the resource hierarchy for the Project\nidentified by the specified `project_id` (for example, `my-project-123`).\n\nThe caller must have read permissions for this Project.",
+          "parameters": {
+            "projectId": {
+              "description": "The Project ID (for example, `my-project-123`).\n\nRequired.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "GetAncestryRequest"
+          },
+          "response": {
+            "$ref": "GetAncestryResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
           ]
         },
         "getIamPolicy": {

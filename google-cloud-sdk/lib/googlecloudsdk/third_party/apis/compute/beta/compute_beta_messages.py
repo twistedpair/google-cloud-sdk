@@ -7122,7 +7122,11 @@ class Firewall(_messages.Message):
       both of sourceRanges and sourceTags may be set.  If both properties are
       set, an inbound connection is allowed if the range matches the
       sourceRanges OR the tag of the source matches the sourceTags property.
-      The connection does not need to match both properties.
+      The connection does not need to match both properties.  Source tags
+      cannot be used to allow access to an instance's external IP address.
+      Because tags are associated with an instance, not an IP address, source
+      tags can only be used to control traffic traveling from an instance
+      inside the same network as the firewall.
     targetTags: A list of instance tags indicating sets of instances located
       in the network that may make network connections as specified in
       allowed[]. If no targetTags are specified, the firewall rule applies to
@@ -7993,8 +7997,8 @@ class Instance(_messages.Message):
     serviceAccounts: A list of service accounts, with their specified scopes,
       authorized for this instance. Service accounts generate access tokens
       that can be accessed through the metadata server and used to
-      authenticate applications on the instance. See Authenticating from
-      Google Compute Engine for more information.
+      authenticate applications on the instance. See Service Accounts for more
+      information.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
@@ -9276,7 +9280,8 @@ class MachineType(_messages.Message):
       the instance.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    isSharedCpu: [Output Only] Whether this machine type has a shared CPU.
+    isSharedCpu: [Output Only] Whether this machine type has a shared CPU. See
+      Shared-core machine types for more information.
     kind: [Output Only] The type of the resource. Always compute#machineType
       for machine types.
     maximumPersistentDisks: [Output Only] Maximum persistent disks allowed.
@@ -9766,9 +9771,9 @@ class NetworkInterface(_messages.Message):
       are all valid URLs:   - https://www.googleapis.com/compute/v1/projects/p
       roject/global/networks/network  -
       projects/project/global/networks/network  - global/networks/default
-    networkIP: An IPV4 internal network address to assign to the instance for
-      this network interface. If not specified by user an unused internal IP
-      is assigned by system.
+    networkIP: An IPv4 internal network address to assign to the instance for
+      this network interface. If not specified by the user, an unused internal
+      IP is assigned by the system.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not provide this property. If the
       network is in auto subnet mode, providing the subnetwork is optional. If

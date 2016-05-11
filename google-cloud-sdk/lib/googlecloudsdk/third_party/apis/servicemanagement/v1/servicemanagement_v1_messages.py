@@ -2039,10 +2039,13 @@ class QuotaSettings(_messages.Message):
     ConsumerOverridesValue: Quota overrides set by the consumer. Consumer
       overrides will only have an effect up to the max_limit specified in the
       service config, or the the producer override, if one exists.  The key
-      for this map is '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
+      for this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
+      quotas defined within quota groups, where GROUP_NAME is the
       google.api.QuotaGroup.name field and LIMIT_NAME is the
       google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.
+      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
+      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
+      from the service config. For example: 'borrowedCountPerOrganization'.
     EffectiveQuotasValue: The effective quota limits for each group, derived
       from the service defaults together with any producer or consumer
       overrides. For each limit, the effective value is the minimum of the
@@ -2052,19 +2055,25 @@ class QuotaSettings(_messages.Message):
     ProducerOverridesValue: Quota overrides set by the producer. Note that if
       a consumer override is also specified, then the minimum of the two will
       be used. This allows consumers to cap their usage voluntarily.  The key
-      for this map is '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
+      for this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
+      quotas defined within quota groups, where GROUP_NAME is the
       google.api.QuotaGroup.name field and LIMIT_NAME is the
       google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.
+      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
+      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
+      from the service config. For example: 'borrowedCountPerOrganization'.
 
   Fields:
     consumerOverrides: Quota overrides set by the consumer. Consumer overrides
       will only have an effect up to the max_limit specified in the service
       config, or the the producer override, if one exists.  The key for this
-      map is '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
+      map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas
+      defined within quota groups, where GROUP_NAME is the
       google.api.QuotaGroup.name field and LIMIT_NAME is the
       google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.
+      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
+      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
+      from the service config. For example: 'borrowedCountPerOrganization'.
     effectiveQuotaGroups: Use this field for quota limits defined under quota
       groups. Combines service quota configuration and project-specific
       settings, as a map from quota group name to the effective quota
@@ -2077,10 +2086,13 @@ class QuotaSettings(_messages.Message):
     producerOverrides: Quota overrides set by the producer. Note that if a
       consumer override is also specified, then the minimum of the two will be
       used. This allows consumers to cap their usage voluntarily.  The key for
-      this map is '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
+      this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
+      quotas defined within quota groups, where GROUP_NAME is the
       google.api.QuotaGroup.name field and LIMIT_NAME is the
       google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.
+      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
+      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
+      from the service config. For example: 'borrowedCountPerOrganization'.
     variableTermQuotas: Quotas that are active over a specified time period.
       Only writeable by the producer.
   """
@@ -2089,11 +2101,14 @@ class QuotaSettings(_messages.Message):
   class ConsumerOverridesValue(_messages.Message):
     """Quota overrides set by the consumer. Consumer overrides will only have
     an effect up to the max_limit specified in the service config, or the the
-    producer override, if one exists.  The key for this map is
-    '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
-    google.api.QuotaGroup.name field and LIMIT_NAME is the
-    google.api.QuotaLimit.name field from the service config.  For example:
-    'ReadGroup/ProjectDaily'.
+    producer override, if one exists.  The key for this map is one of the
+    following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas defined within quota
+    groups, where GROUP_NAME is the google.api.QuotaGroup.name field and
+    LIMIT_NAME is the google.api.QuotaLimit.name field from the service
+    config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
+    quotas defined without quota groups, where LIMIT_NAME is the
+    google.api.QuotaLimit.name field from the service config. For example:
+    'borrowedCountPerOrganization'.
 
     Messages:
       AdditionalProperty: An additional property for a ConsumerOverridesValue
@@ -2150,11 +2165,14 @@ class QuotaSettings(_messages.Message):
   class ProducerOverridesValue(_messages.Message):
     """Quota overrides set by the producer. Note that if a consumer override
     is also specified, then the minimum of the two will be used. This allows
-    consumers to cap their usage voluntarily.  The key for this map is
-    '<GROUP_NAME>/<LIMIT_NAME>' where GROUP_NAME is the
-    google.api.QuotaGroup.name field and LIMIT_NAME is the
-    google.api.QuotaLimit.name field from the service config.  For example:
-    'ReadGroup/ProjectDaily'.
+    consumers to cap their usage voluntarily.  The key for this map is one of
+    the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas defined within
+    quota groups, where GROUP_NAME is the google.api.QuotaGroup.name field and
+    LIMIT_NAME is the google.api.QuotaLimit.name field from the service
+    config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
+    quotas defined without quota groups, where LIMIT_NAME is the
+    google.api.QuotaLimit.name field from the service config. For example:
+    'borrowedCountPerOrganization'.
 
     Messages:
       AdditionalProperty: An additional property for a ProducerOverridesValue
@@ -3164,20 +3182,15 @@ class VariableTermQuota(_messages.Message):
 class Visibility(_messages.Message):
   """`Visibility` defines restrictions for the visibility of service elements.
   Restrictions are specified using visibility labels (e.g., TRUSTED_TESTER)
-  that are elsewhere linked to users and projects.  User and projects can have
-  access to more than one visibility label. The effective visibility for
+  that are elsewhere linked to users and projects.  Users and projects can
+  have access to more than one visibility label. The effective visibility for
   multiple labels is the union of each label's elements, plus any unrestricted
-  elements. You must list any supported label combinations in
-  `label_combinations`.  If an element and its parents have no restrictions,
-  visibility is unconditionally granted.  Example:      visibility:
-  label_combinations:       - GOOGLE_INTERNAL, TRUSTED_TESTER       rules:
-  - selector: google.calendar.Calendar.EnhancedSearch         restriction:
+  elements.  If an element and its parents have no restrictions, visibility is
+  unconditionally granted.  Example:      visibility:       rules:       -
+  selector: google.calendar.Calendar.EnhancedSearch         restriction:
   TRUSTED_TESTER       - selector: google.calendar.Calendar.Delegate
   restriction: GOOGLE_INTERNAL  Here, all methods are publicly visible except
-  for the restricted methods EnhancedSearch and Delegate. In addition, since
-  `label_combinations` lists both GOOGLE_INTERNAL and TRUSTED_TESTER, users
-  and projects can be given access to a combined visibility with both
-  EnhancedSearch and Delegate.
+  for the restricted methods EnhancedSearch and Delegate.
 
   Fields:
     enforceRuntimeVisibility: Controls whether visibility rules are enforced
@@ -3188,18 +3201,12 @@ class Visibility(_messages.Message):
       true.  Note, the `enforce_runtime_visibility` specified in a visibility
       rule overrides this setting for the APIs or methods asscoiated with the
       rule.
-    labelCombinations: Lists valid label combinations for this service in
-      comma-delimited form. This lets users and projects see the union of
-      these labels' elements.  Removing a label combination can be a breaking
-      change, as clients with access to the combination will now see non-
-      restricted elements only.
     rules: A list of visibility rules providing visibility configuration for
       individual API elements.
   """
 
   enforceRuntimeVisibility = _messages.BooleanField(1)
-  labelCombinations = _messages.StringField(2, repeated=True)
-  rules = _messages.MessageField('VisibilityRule', 3, repeated=True)
+  rules = _messages.MessageField('VisibilityRule', 2, repeated=True)
 
 
 class VisibilityRule(_messages.Message):

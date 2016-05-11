@@ -174,6 +174,10 @@ class APIAdapter(object):
         params={'clusterId': cluster_id},
         collection='container.projects.zones.clusters.nodePools')
 
+  def ParseIGM(self, igm_id):
+    return self.registry.Parse(igm_id,
+                               collection='compute.instanceGroupManagers')
+
   def CreateCluster(self, cluster_ref, **options):
     raise NotImplementedError('CreateCluster is not overriden')
 
@@ -406,6 +410,7 @@ class CreateClusterOptions(object):
                subnetwork=None,
                disable_addons=None,
                local_ssd_count=None,
+               tags=None,
                image_family=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -424,6 +429,7 @@ class CreateClusterOptions(object):
     self.subnetwork = subnetwork
     self.disable_addons = disable_addons
     self.local_ssd_count = local_ssd_count
+    self.tags = tags
     self.image_family = image_family
 
 
@@ -458,12 +464,14 @@ class CreateNodePoolOptions(object):
                scopes=None,
                num_nodes=None,
                local_ssd_count=None,
+               tags=None,
                image_family=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
+    self.tags = tags
     self.image_family = image_family
 
 
@@ -503,6 +511,11 @@ class V1Adapter(APIAdapter):
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
+
+    if options.tags:
+      node_config.tags = options.tags
+    else:
+      node_config.tags = []
 
     if options.image_family:
       node_config.imageFamily = options.image_family
@@ -608,6 +621,10 @@ class V1Adapter(APIAdapter):
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
+    if options.tags:
+      node_config.tags = options.tags
+    else:
+      node_config.tags = []
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,

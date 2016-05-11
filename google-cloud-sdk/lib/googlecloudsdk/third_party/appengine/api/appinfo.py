@@ -41,14 +41,12 @@ import wsgiref.util
 
 # pylint: disable=g-import-not-at-top
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
-  from google.appengine.api import pagespeedinfo
   from google.appengine.api import validation
   from google.appengine.api import yaml_builder
   from google.appengine.api import yaml_listener
   from google.appengine.api import yaml_object
 else:
   # This case covers both Python 2.5 and unittests, which are 2.5 only.
-  from googlecloudsdk.third_party.appengine.api import pagespeedinfo
   from googlecloudsdk.third_party.appengine.api import validation
   from googlecloudsdk.third_party.appengine.api import yaml_builder
   from googlecloudsdk.third_party.appengine.api import yaml_listener
@@ -263,7 +261,6 @@ DATASTORE_AUTO_ID_POLICY = 'auto_id_policy'
 API_CONFIG = 'api_config'
 CODE_LOCK = 'code_lock'
 ENV_VARIABLES = 'env_variables'
-PAGESPEED = 'pagespeed'
 
 SOURCE_REPO_RE_STRING = r'^[a-z][a-z0-9\-\+\.]*:[^#]*$'
 SOURCE_REVISION_RE_STRING = r'^[0-9a-fA-F]+$'
@@ -1850,7 +1847,6 @@ class AppInfoExternal(validation.Validated):
       API_CONFIG: validation.Optional(ApiConfigHandler),
       CODE_LOCK: validation.Optional(bool),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
-      PAGESPEED: validation.Optional(pagespeedinfo.PagespeedEntry),
   }
 
   def CheckInitialized(self):

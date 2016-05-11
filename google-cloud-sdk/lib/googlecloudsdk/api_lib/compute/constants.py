@@ -82,7 +82,6 @@ PUBLIC_IMAGE_PROJECTS = [
     'centos-cloud',
     'coreos-cloud',
     'debian-cloud',
-    'google-containers',
     'opensuse-cloud',
     'rhel-cloud',
     'suse-cloud',

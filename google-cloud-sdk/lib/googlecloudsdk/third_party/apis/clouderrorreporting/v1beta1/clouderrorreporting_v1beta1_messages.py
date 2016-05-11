@@ -365,12 +365,9 @@ class ServiceContext(_messages.Message):
       low number of values that are relatively stable over time, as opposed to
       `version`, which can be changed whenever new code is deployed.  Contains
       the module name for error reports extracted from Google App Engine logs
-      or `default` if the App Engine default module is used. If empty, the
-      value is set to `default`.
+      or `default` if the App Engine default module is used.
     version: Represents the source code version that the developer provided,
       which could represent a version label or a Git SHA-1 hash, for example.
-      If the developer did not provide a version, the value is set to
-      `default`. For App Engine, the version is set to the version of the app.
   """
 
   service = _messages.StringField(1)

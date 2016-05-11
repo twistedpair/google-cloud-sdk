@@ -32,7 +32,6 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import remote_completion
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
 
@@ -257,11 +256,7 @@ class ArgumentParser(argparse.ArgumentParser):
     if '_ARGCOMPLETE' in os.environ:
       # pylint:disable=protected-access
       if self._calliope_command._sub_parser:
-        choices = dict()
-        for choice in self._calliope_command.AllSubElements():
-          choices[choice.replace('_', '-')] = None
-        # pylint:disable=protected-access
-        self._calliope_command._sub_parser.choices = choices
+        self._calliope_command.LoadAllSubElements()
     elif self._is_group:
       shorthelp = usage_text.ShortHelpText(
           self._calliope_command, self._calliope_command.ai)
@@ -327,6 +322,10 @@ class ArgumentParser(argparse.ArgumentParser):
         # ones for which a value was not actually provided.  If it is provided,
         # save the metavar name or the destination name.
         name = action.metavar if action.metavar else action.dest
+        if action.nargs and action.nargs != '?':
+          # This arg takes in multiple values, record how many were provided.
+          # (? means 0 or 1, so treat that as an arg that takes a single value.
+          name += ':' + str(len(arg_strings))
       if name:
         self._flag_collection.append(name)
     return super(ArgumentParser, self)._get_values(action, arg_strings)
@@ -1393,6 +1392,12 @@ class Command(CommandCommon):
 
     tool_context = self._config_hooks.load_context()
     last_group = None
+
+    # TODO(user): do not manage http client in calliope.
+    # Now that command execution began lets load http module.
+    # pylint:disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import http
+
     for context_filter in self._config_hooks.context_filters:
       last_group = context_filter(tool_context, http.Http, args)
 

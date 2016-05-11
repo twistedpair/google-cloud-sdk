@@ -2653,6 +2653,168 @@ class TransactionalConnection(BaseConnection):
     self.check_rpc_success(rpc)
 
 
+_DATASTORE_APP_ID_ENV = 'DATASTORE_APP_ID'
+_DATASTORE_PROJECT_ID_ENV = 'DATASTORE_PROJECT_ID'
+_DATASTORE_ADDITIONAL_APP_IDS_ENV = 'DATASTORE_ADDITIONAL_APP_IDS'
+_DATASTORE_USE_PROJECT_ID_AS_APP_ID_ENV = 'DATASTORE_USE_PROJECT_ID_AS_APP_ID'
+
+
+# pylint: disable=protected-access,invalid-name
+def _CreateDefaultConnection(connection_fn, **kwargs):
+  """Creates a new connection to Datastore.
+
+  Uses environment variables to determine if the connection should be made
+  to Cloud Datastore v1beta3 or to Datastore's private App Engine API.
+  If DATASTORE_PROJECT_ID exists, connect to Datastore v1beta3. In this case,
+  either DATASTORE_APP_ID or DATASTORE_USE_PROJECT_ID_AS_APP_ID must be set to
+  indicate what the environment's application should be.
+
+  Args:
+    connection_fn: The function to use to create the connection.
+    **kwargs: Addition arguments to pass to the connection_fn.
+
+  Raises:
+    ValueError: If DATASTORE_PROJECT_ID is set but DATASTORE_APP_ID or
+       DATASTORE_USE_PROJECT_ID_AS_APP_ID is not. If DATASTORE_APP_ID doesn't
+       resolve to DATASTORE_PROJECT_ID. If DATASTORE_APP_ID doesn't match
+       an existing APPLICATION_ID.
+
+  Returns:
+    the connection object returned from connection_fn.
+  """
+  datastore_app_id = os.environ.get(_DATASTORE_APP_ID_ENV, None)
+  datastore_project_id = os.environ.get(_DATASTORE_PROJECT_ID_ENV, None)
+  if datastore_app_id or datastore_project_id:
+    # We will create a Cloud Datastore context.
+    app_id_override = bool(os.environ.get(
+        _DATASTORE_USE_PROJECT_ID_AS_APP_ID_ENV, False))
+    if not datastore_app_id and not app_id_override:
+      raise ValueError('Could not determine app id. To use project id (%s) '
+                       'instead, set %s=true. This will affect the '
+                       'serialized form of entities and should not be used '
+                       'if serialized entities will be shared between '
+                       'code running on App Engine and code running off '
+                       'App Engine. Alternatively, set %s=<app id>.'
+                       % (datastore_project_id,
+                          _DATASTORE_USE_PROJECT_ID_AS_APP_ID_ENV,
+                          _DATASTORE_APP_ID_ENV))
+    elif datastore_app_id:
+      if app_id_override:
+        raise ValueError('App id was provided (%s) but %s was set to true. '
+                         'Please unset either %s or %s.' %
+                         (datastore_app_id,
+                          _DATASTORE_USE_PROJECT_ID_AS_APP_ID_ENV,
+                          _DATASTORE_APP_ID_ENV,
+                          _DATASTORE_USE_PROJECT_ID_AS_APP_ID_ENV))
+      elif datastore_project_id:
+        # Project id and app id provided, make sure they are the same.
+        id_resolver = datastore_pbs.IdResolver([datastore_app_id])
+        if (datastore_project_id !=
+            id_resolver.resolve_project_id(datastore_app_id)):
+          raise ValueError('App id "%s" does not match project id "%s".'
+                           % (datastore_app_id, datastore_project_id))
+
+    datastore_app_id = datastore_app_id or datastore_project_id
+    additional_app_str = os.environ.get(_DATASTORE_ADDITIONAL_APP_IDS_ENV, '')
+    additional_apps = (app.strip() for app in additional_app_str.split(','))
+    return _CreateCloudDatastoreConnection(connection_fn,
+                                           datastore_app_id,
+                                           additional_apps,
+                                           kwargs)
+  return connection_fn(**kwargs)
+
+
+# pylint: disable=protected-access,invalid-name
+def _CreateCloudDatastoreConnection(connection_fn,
+                                    app_id,
+                                    external_app_ids,
+                                    kwargs):
+  """Creates a new context to connect to a remote Cloud Datastore instance.
+
+  This should only be used outside of Google App Engine.
+
+  Args:
+    connection_fn: A connection function which accepts both an _api_version
+      and an _id_resolver argument.
+    app_id: The application id to connect to. This differs from the project
+      id as it may have an additional prefix, e.g. "s~" or "e~".
+    external_app_ids: A list of apps that may be referenced by data in your
+      application. For example, if you are connected to s~my-app and store keys
+      for s~my-other-app, you should include s~my-other-app in the external_apps
+      list.
+    kwargs: The additional kwargs to pass to the connection_fn.
+
+  Raises:
+    ValueError: if the app_id provided doesn't match the current environment's
+        APPLICATION_ID.
+
+  Returns:
+    An ndb.Context that can connect to a Remote Cloud Datastore. You can use
+    this context by passing it to ndb.set_context.
+  """
+  # Late import to avoid circular deps.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.third_party.appengine.datastore import cloud_datastore_v1_remote_stub
+
+  if not datastore_pbs._CLOUD_DATASTORE_ENABLED:
+    raise datastore_errors.BadArgumentError(
+        datastore_pbs.MISSING_CLOUD_DATASTORE_MESSAGE)
+
+  current_app_id = os.environ.get('APPLICATION_ID', None)
+  if current_app_id and current_app_id != app_id:
+    # TODO(user): We should support this so users can connect to different
+    # applications.
+    raise ValueError('Cannot create a Cloud Datastore context that connects '
+                     'to an application (%s) that differs from the application '
+                     'already connected to (%s).' % (app_id, current_app_id))
+  os.environ['APPLICATION_ID'] = app_id
+
+  id_resolver = datastore_pbs.IdResolver((app_id,) + tuple(external_app_ids))
+  project_id = id_resolver.resolve_project_id(app_id)
+  endpoint = googledatastore.helper.get_project_endpoint_from_env(project_id)
+  datastore = googledatastore.Datastore(
+      project_endpoint=endpoint,
+      credentials=googledatastore.helper.get_credentials_from_env())
+  kwargs['_api_version'] = _CLOUD_DATASTORE_V1
+  kwargs['_id_resolver'] = id_resolver
+  conn = connection_fn(**kwargs)
+
+  # If necessary, install the stubs
+  # pylint: disable=bare-except
+  try:
+    stub = cloud_datastore_v1_remote_stub.CloudDatastoreV1RemoteStub(datastore)
+    apiproxy_stub_map.apiproxy.RegisterStub(_CLOUD_DATASTORE_V1,
+                                            stub)
+  except:
+    pass  # The stub is already installed.
+  # TODO(user): Ensure the current stub is connected to the right project.
+
+  # Install a memcache and taskqueue stub which throws on everything.
+  try:
+    apiproxy_stub_map.apiproxy.RegisterStub('memcache', _ThrowingStub())
+  except:
+    pass  # The stub is already installed.
+  try:
+    apiproxy_stub_map.apiproxy.RegisterStub('taskqueue', _ThrowingStub())
+  except:
+    pass  # The stub is already installed.
+
+  return conn
+
+
+class _ThrowingStub(object):
+  """A Stub implementation which always throws a NotImplementedError."""
+
+  # pylint: disable=invalid-name
+  def MakeSyncCall(self, service, call, request, response):
+    raise NotImplementedError('In order to use %s.%s you must '
+                              'install the Remote API.' % (service, call))
+
+  # pylint: disable=invalid-name
+  def CreateRPC(self):
+    return apiproxy_rpc.RPC(stub=self)
+
+
 # TODO(user): Consider moving these to datastore_errors.py.
 # TODO(user): Write unittests for these?
 

@@ -84,31 +84,18 @@ class Projector(object):
     else:
       self._transforms_enabled_attribute = None
 
-  def _ProjectTransform(self, obj, transforms):
-    """Applies transforms to obj.
+  def _TransformIsEnabled(self, transform):
+    """Returns True if transform is enabled.
 
     Args:
-      obj: The object to transform.
-      transforms: The list of resource_projection_parser._Transform objects.
+      transform: The resource_projection_parser._Transform object.
 
     Returns:
-      The transformed object.
+      True if the transform is enabled, False if not.
     """
-    if not self._transforms_enabled:
-      if self._transforms_enabled is not None:
-        return obj
-      if transforms[0].active not in (None, self._projection.active):
-        return obj
-    for transform in transforms:
-      if transform.map_transform and resource_property.IsListLike(obj):
-        # A transform mapped on a list - transform each list item.
-        items = obj
-        obj = []
-        for item in items:
-          obj.append(transform.func(item, *transform.args, **transform.kwargs))
-      elif obj or not transform.map_transform:
-        obj = transform.func(obj, *transform.args, **transform.kwargs)
-    return obj
+    if self._transforms_enabled is not None:
+      return self._transforms_enabled
+    return transform.active in (None, self._projection.active)
 
   def _ProjectAttribute(self, obj, projection, flag):
     """Applies projection.attribute.transform in projection if any to obj.
@@ -124,9 +111,10 @@ class Projector(object):
     if flag < self._projection.PROJECT:
       # Unprojected values are skipped.
       return None
-    if projection and projection.attribute and projection.attribute.transform:
+    if (projection and projection.attribute and projection.attribute.transform
+        and self._TransformIsEnabled(projection.attribute.transform)):
       # Transformed values end the DFS on this branch of the tree.
-      return self._ProjectTransform(obj, projection.attribute.transform)
+      return projection.attribute.transform.Evaluate(obj)
     # leaf=True makes sure we don't get back here with the same obj.
     return self._Project(obj, projection, flag, leaf=True)
 
@@ -356,9 +344,10 @@ class Projector(object):
         # class object or collections.namedtuple() (via the _fields test).
         obj = self._ProjectClass(obj, self._projection.GetEmpty(), flag)
       if (projection and projection.attribute and
-          projection.attribute.transform):
+          projection.attribute.transform and
+          self._TransformIsEnabled(projection.attribute.transform)):
         # Transformed nodes prune here.
-        obj = self._ProjectTransform(obj, projection.attribute.transform)
+        obj = projection.attribute.transform.Evaluate(obj)
       elif ((flag >= self._projection.PROJECT or projection and projection.tree)
             and hasattr(obj, '__iter__')):
         if hasattr(obj, 'iteritems'):
@@ -417,8 +406,9 @@ class Projector(object):
     columns = []
     for column in self._columns:
       val = resource_property.Get(obj, column.key) if column.key else obj
-      if column.attribute.transform:
-        val = self._ProjectTransform(val, column.attribute.transform)
+      if (column.attribute.transform and
+          self._TransformIsEnabled(column.attribute.transform)):
+        val = column.attribute.transform.Evaluate(val)
       columns.append(val)
     return columns
 

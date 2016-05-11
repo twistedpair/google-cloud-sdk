@@ -347,7 +347,7 @@ def TransformFirstOf(r, *args):
   return ''
 
 
-def TransformFloat(r, precision=6, spec=None):
+def TransformFloat(r, precision=6, spec=None, undefined=''):
   """Returns the string representation of a floating point number.
 
   One of these formats is used (1) ". _precision_ _spec_" if _spec_ is specified
@@ -357,6 +357,7 @@ def TransformFloat(r, precision=6, spec=None):
     r: A JSON-serializable object.
     precision: The maximum number of digits before and after the decimal point.
     spec: The printf(3) floating point format "e", "f" or "g" spec character.
+    undefined: Returns this value if the resource is not a float.
 
   Returns:
     The string representation of the floating point number r.
@@ -377,7 +378,7 @@ def TransformFloat(r, precision=6, spec=None):
   try:
     number = float(r)
   except (TypeError, ValueError):
-    return None
+    return undefined
   if spec is not None:
     fmt = '{{number:.{precision}{spec}}}'.format(precision=precision, spec=spec)
     return fmt.format(number=number)
@@ -461,6 +462,26 @@ def TransformGroup(r, *args):
           buf.write(unicode(value))
       buf.write(']')
   return buf.getvalue()
+
+
+def TransformIf(r, expr):
+  """Disables the projection key if the flag name filter expr is false.
+
+  Args:
+    r: A JSON-serializable object.
+    expr: A command flag filter name expression. See `gcloud topic filters` for
+      details on filter expressions. The expression variables are flag names
+      without the leading *--* prefix and dashes replaced by underscores.
+
+  Example:
+    The "table(name, value.if(NOT short_format))" format will list a value
+    column if the *--short-format* command line flag is not specified.
+
+  Returns:
+    r
+  """
+  _ = expr
+  return r
 
 
 def TransformIso(r, undefined='T'):
@@ -901,6 +922,7 @@ _BUILTIN_TRANSFORMS = {
     'float': TransformFloat,
     'format': TransformFormat,
     'group': TransformGroup,
+    'if': TransformIf,
     'iso': TransformIso,
     'join': TransformJoin,
     'len': TransformLen,
@@ -923,6 +945,8 @@ _BUILTIN_TRANSFORMS = {
 _API_TO_TRANSFORMS = {
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
     'debug': ('googlecloudsdk.api_lib.debug.transforms', 'GetTransforms'),
+    'service_registry': ('googlecloudsdk.api_lib.service_registry.transforms',
+                         'GetTransforms'),
 }
 
 

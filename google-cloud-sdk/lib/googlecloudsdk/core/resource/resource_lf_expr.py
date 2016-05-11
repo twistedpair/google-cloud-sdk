@@ -177,8 +177,8 @@ class Backend(object):
   def ExprNOT(self, expr):
     return _ExprNOT(self, expr)
 
-  def ExprGlobal(self, func, args):
-    return _ExprGlobal(self, func, args)
+  def ExprGlobal(self, call):
+    return _ExprGlobal(self, call)
 
   def ExprOperand(self, value):
     return _ExprOperand(self, value)
@@ -337,29 +337,16 @@ class _ExprGlobal(_Expr):
   """Global restriction function call node.
 
   Attributes:
-    func: The function implementation Expr. Must match this description:
-          func(obj, args)
-
-          Args:
-            obj: The current resource object.
-            args: The possibly empty list of arguments.
-
-          Returns:
-            True on success.
-    args: List of function call actual arguments.
+    call: The fucntion call object.
   """
 
-  def __init__(self, backend, func, args):
+  def __init__(self, backend, call):
     super(_ExprGlobal, self).__init__(backend)
-    self._func = func
-    self._args = args
+    self._call = call
 
-  def Evaluate(self, unused_obj):
+  def Evaluate(self, obj):
     """Global restriction (function)."""
-    if not self._args or len(self._args) != 1:
-      # Global restriction function not supported.
-      return None
-    return self._func(self._args[0])
+    return self._call.Evaluate(obj)
 
 
 class _ExprOperand(object):

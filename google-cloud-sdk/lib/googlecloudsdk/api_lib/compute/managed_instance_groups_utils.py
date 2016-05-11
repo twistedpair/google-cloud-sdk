@@ -26,13 +26,11 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.core import apis as core_apis
 
 
-_ALPHA_MESSAGES = core_apis.GetMessagesModule('compute', 'alpha')
-_ALLOWED_UTILIZATION_TARGET_TYPES = sorted(
-    _ALPHA_MESSAGES.AutoscalingPolicyCustomMetricUtilization
-    .UtilizationTargetTypeValueValuesEnum.to_dict().keys())
+_ALLOWED_UTILIZATION_TARGET_TYPES = [
+    'DELTA_PER_MINUTE', 'DELTA_PER_SECOND', 'GAUGE']
+
 _MAX_AUTOSCALER_NAME_LENGTH = 63
 # 4 character chosen from between lowercase letters and numbers give >1.6M
 # possibilities with no more than 100 Autoscalers in one Zone and Project

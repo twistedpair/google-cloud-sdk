@@ -50,8 +50,6 @@ import yaml
 
 def PrintTable(resources, table_cols):
   """Prints a table of the given resources."""
-  # TODO(user): Switch over to console_io.TablePrinter once the
-  # class is refactored to support tables without ASCII borders.
   printer = resource_printer.TablePrinter(out=log.out)
 
   header = []
@@ -78,16 +76,18 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   def __init__(self, *args, **kwargs):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
-    # Set the default project for resource resolution
+    self.__resource_spec = None
 
-    if self.resource_type:
+  @property
+  def _resource_spec(self):
+    if not self.resource_type:
+      return None
+    if self.__resource_spec is None:
       # Constructing the spec can be potentially expensive (e.g.,
       # generating the set of valid fields from the protobuf message),
-      # so we fetch it once in the constructor.
-      self._resource_spec = resource_specs.GetSpec(
+      self.__resource_spec = resource_specs.GetSpec(
           self.resource_type, self.messages, self.context['api-version'])
-    else:
-      self._resource_spec = None
+    return self.__resource_spec
 
   @property
   def transformations(self):

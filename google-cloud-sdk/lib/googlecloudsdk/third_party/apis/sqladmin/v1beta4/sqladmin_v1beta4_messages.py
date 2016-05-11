@@ -780,11 +780,10 @@ class Settings(_messages.Message):
       are enabled. This property is only applicable to First Generation
       instances.
     dataDiskSizeGb: The size of data disk, in GB. The data disk size minimum
-      is 10GB. This property is only applicable to Second Generation
-      instances.
+      is 10GB. Applies only to Second Generation instances.
     dataDiskType: The type of data disk. Only supported for Second Generation
-      instances. The default type is PD_SSD. This property is only applicable
-      to Second Generation instances.
+      instances. The default type is PD_SSD. Applies only to Second Generation
+      instances.
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.
@@ -799,7 +798,7 @@ class Settings(_messages.Message):
       applicable to First Generation instances.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance may be restarted for maintenance purposes.
-      This property is only applicable to Second Generation instances.
+      Applies only to Second Generation instances.
     pricingPlan: The pricing plan for this instance. This can be either
       PER_USE or PACKAGE. Only PER_USE is supported for Second Generation
       instances.
@@ -810,6 +809,8 @@ class Settings(_messages.Message):
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
       this instance and do not try to update this value.
+    storageAutoResize: Configuration to increase storage size automatically.
+      The default value is false. Applies only to Second Generation instances.
     tier: The tier of service for this instance, for example D1, D2. For more
       information, see pricing.
   """
@@ -829,7 +830,8 @@ class Settings(_messages.Message):
   pricingPlan = _messages.StringField(13)
   replicationType = _messages.StringField(14)
   settingsVersion = _messages.IntegerField(15)
-  tier = _messages.StringField(16)
+  storageAutoResize = _messages.BooleanField(16)
+  tier = _messages.StringField(17)
 
 
 class SqlBackupRunsDeleteRequest(_messages.Message):

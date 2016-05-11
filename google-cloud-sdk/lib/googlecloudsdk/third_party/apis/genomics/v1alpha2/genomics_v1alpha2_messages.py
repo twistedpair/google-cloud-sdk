@@ -723,8 +723,9 @@ class RunPipelineArgs(_messages.Message):
       must have WRITER access to all Google Cloud services and resources (e.g.
       Google Compute Engine) will be used.
     resources: Specifies resource requirements/overrides for the pipeline run.
-    serviceAccount: Required. The Google Cloud Service Account that will be
-      used to access data and services.
+    serviceAccount: The Google Cloud Service Account that will be used to
+      access data and services. By default, the compute service account
+      associated with `projectId` is used.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

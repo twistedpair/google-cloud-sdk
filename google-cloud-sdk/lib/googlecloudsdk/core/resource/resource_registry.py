@@ -198,6 +198,19 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # bigtable
+
+    'bigtable.clusters.list': ResourceInfo(
+        list_format="""
+          table[box](
+            displayName:label=NAME,
+            clusterId:label=ID,
+            zoneId:label=ZONE,
+            serveNodes:label=NODES
+          )
+        """,
+    ),
+
     # cloud billing
 
     'cloudbilling.billingAccounts': ResourceInfo(
@@ -752,24 +765,23 @@ RESOURCE_REGISTRY = {
           table(
             name,
             zone,
-            clusterApiVersion,
+            currentMasterVersion:label=MASTER_VERSION,
             endpoint:label=MASTER_IP,
-            machineType,
-            sourceImage,
-            numNodes:label=NODES,
+            nodeConfig.machineType,
+            currentNodeVersion:label=NODE_VERSION,
+            currentNodeCount:label=NUM_NODES,
             status
           )
         """,
     ),
 
-    'container.projects.zones.nodePools': ResourceInfo(
+    'container.projects.zones.clusters.nodePools': ResourceInfo(
         list_format="""
           table(
             name,
-            zone,
-            machineType,
-            diskSizeGb,
-            version
+            config.machineType,
+            config.diskSizeGb,
+            version:label=NODE_VERSION
           )
         """,
     ),
@@ -780,9 +792,9 @@ RESOURCE_REGISTRY = {
             name,
             operationType:label=TYPE,
             zone,
-            target,
-            status,
-            errorMessage
+            targetLink.basename():label=TARGET,
+            statusMessage,
+            status
           )
         """,
     ),
@@ -1086,6 +1098,17 @@ RESOURCE_REGISTRY = {
 
     # pubsub
 
+    'pubsub.pull': ResourceInfo(
+        list_format="""
+          table[box](
+            message.data.decode(base64),
+            message.messageId,
+            message.attributes.list(separator=' '),
+            ackId.if(NOT auto_ack)
+          )
+        """,
+    ),
+
     'pubsub.subscriptions': ResourceInfo(
         list_format="""
           table[box](
@@ -1119,11 +1142,10 @@ RESOURCE_REGISTRY = {
     'service_registry.endpoints': ResourceInfo(
         async_collection='service_registry.operations',
         list_format="""
-          table(
+          table[box](
             name,
-            description,
             state,
-            addresses[].address:label=ADDRESSES
+            addresses[].map().endpoint_address().list(separator=' | '):label=ADDRESSES
           )
         """,
         simple_format="""

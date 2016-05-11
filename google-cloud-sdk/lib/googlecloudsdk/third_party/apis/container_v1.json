@@ -323,6 +323,13 @@
           "description": "The number of local SSD disks that to be attached to the node.\n\nThe limit for this value is dependant upon the maximum number of\ndisks available on a machine per zone. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#local_ssd_limits\nfor more information.\n",
           "type": "integer",
           "format": "int32"
+        },
+        "tags": {
+          "description": "The list of instance tags applied to all nodes. Tags are used to identify\nvalid sources or targets for network firewalls and are specified by\nthe client during cluster or node pool creation. Each tag within the list\nmust comply with RFC1035.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -657,11 +664,6 @@
         "nodePool": {
           "description": "The node pool to create.",
           "$ref": "NodePool"
-        },
-        "initialNodeCount": {
-          "description": "This field is deprecated and will soon be removed. Please use NodePool's\ninitial_node_count field instead.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },

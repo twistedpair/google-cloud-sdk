@@ -70,11 +70,132 @@ Typical resource usage:
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
+from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
 # Reserved operator characters. Resource keys cannot contain unquoted operator
 # characters. This prevents key/operator clashes in expressions.
 _RESERVED_OPERATOR_CHARS = '[].(){},:=!<>+*/%&|^~@#;?'
+
+
+class _TransformCall(object):
+  """A key transform function call with actual args.
+
+  Attributes:
+    name: The transform function name.
+    func: The transform function.
+    active: The parent projection active level. A transform is active if
+      transform.active is None or equal to the caller active level.
+    map_transform: If r is a list then apply the transform to each list item.
+    args: List of function call actual arg strings.
+    kwargs: List of function call actual keyword arg strings.
+    restriction: Call is a global restriction that does not have an obj arg.
+  """
+
+  def __init__(self, name, func, active=0, map_transform=None, args=None,
+               kwargs=None, restriction=False):
+    self.name = name
+    self.func = func
+    self.active = active
+    self.map_transform = map_transform
+    self.args = args or []
+    self.kwargs = kwargs or {}
+    self.restriction = restriction
+
+  def __str__(self):
+    args = ['<projecton>' if isinstance(
+        arg, resource_projection_spec.ProjectionSpec) else arg
+            for arg in self.args]
+    return '{0}{1}({2})'.format('map().' if self.map_transform else '',
+                                self.name, ','.join(args))
+
+  def __deepcopy__(self, memo):
+    # This avoids recursive ProjectionSpec transforms that deepcopy chokes on.
+    return copy.copy(self)
+
+
+class _Transform(object):
+  """An object that contains an ordered list of _TransformCall objects.
+
+  Attributes:
+    _conditional: The resource_filter expression string for the if() transform.
+    _transforms: The list of _TransformCall objects.
+  """
+
+  def __init__(self):
+    self._conditional = None
+    self._transforms = []
+
+  def __str__(self):
+    return '[{0}]'.format('.'.join(map(str, self._transforms)))
+
+  @property
+  def active(self):
+    """The transform active level or None if always active."""
+    return self._transforms[0].active
+
+  @property
+  def conditional(self):
+    """The if() transform conditional expression string."""
+    return self._conditional
+
+  def IsActive(self, active):
+    """Returns True if the Transform active level is None or active."""
+    return self._transforms and self.active in (None, active)
+
+  def Add(self, transform):
+    """Adds a transform to the list."""
+    self._transforms.append(transform)
+
+  def Name(self):
+    """Returns the name of the last transform."""
+    return self._transforms[-1].name if self._transforms else ''
+
+  def SetConditional(self, expr):
+    """Sets the conditional expression string."""
+    self._conditional = expr
+
+  def SetRestriction(self):
+    """Sets the restriction attribute of the first transform."""
+    self._transforms[0].restriction = True
+
+  def Evaluate(self, obj):
+    """Apply the list of transforms to obj and return the transformed value."""
+    for transform in self._transforms:
+      if transform.map_transform and resource_property.IsListLike(obj):
+        # A transform mapped on a list - transform each list item.
+        items = obj
+        obj = []
+        for item in items:
+          obj.append(transform.func(item, *transform.args, **transform.kwargs))
+      elif obj or not transform.map_transform:
+        if transform.restriction:
+          obj = transform.func(*transform.args, **transform.kwargs)
+        else:
+          obj = transform.func(obj, *transform.args, **transform.kwargs)
+    return obj
+
+
+def MakeTransform(func_name, func, args=None, kwargs=None, restriction=False):
+  """Returns a transform call object for func(*args, **kwargs).
+
+  Args:
+    func_name: The function name.
+    func: The function object.
+    args: The actual call args.
+    kwargs: The actual call kwargs.
+    restriction: Call is a global restriction that does not have an obj arg.
+
+  Returns:
+    A transform call object for func(obj, *args, **kwargs).
+  """
+  calls = _Transform()
+  calls.Add(_TransformCall(func_name, func, args=args, kwargs=kwargs,
+                           restriction=restriction))
+  return calls
 
 
 class Lexer(object):
@@ -88,26 +209,23 @@ class Lexer(object):
   Attributes:
     _ESCAPE: The quote escape character.
     _QUOTES: The quote characters.
+    _defaults: ProjectionSpec object for aliases and symbols defaults.
     _expr: The expression string.
     _position: The index of the next character in _expr to parse.
-    _aliases: Parsed key alias dict indexed by the first key name.
   """
   _ESCAPE = '\\'
   _QUOTES = '\'"'
 
-  def __init__(self, expression, aliases=None):
+  def __init__(self, expression, defaults=None):
     """Initializes a resource lexer.
 
     Args:
       expression: The expression string.
-      aliases: Parsed key alias dict indexed by the first key name.
+      defaults: ProjectionSpec object for aliases and symbols defaults.
     """
     self._expr = expression or ''
     self._position = 0
-    # There is a subtle difference betwee None and {} here.
-    # If aliases is {} then it is a dict to add more aliases to.
-    # If aliases is None then use a local dict and discard it when done.
-    self._aliases = {} if aliases is None else aliases
+    self._defaults = defaults or resource_projection_spec.ProjectionSpec()
 
   def EndOfInput(self, position=None):
     """Checks if the current expression string position is at the end of input.
@@ -233,7 +351,8 @@ class Lexer(object):
       return True
     return False
 
-  def Token(self, terminators='', space=True, convert=False):
+  def Token(self, terminators='', balance_parens=False, space=True,
+            convert=False):
     """Parses a possibly quoted token from the current expression position.
 
     The quote characters are in _QUOTES. The _ESCAPE character can prefix
@@ -248,6 +367,7 @@ class Lexer(object):
       terminators: A set of characters that terminate the token. isspace()
         characters always terminate the token. It may be a string, tuple, list
           or set.
+      balance_parens: True if (...) must be balanced.
       space: True if space characters should be skipped after the token. Space
         characters are always skipped before the token.
       convert: Converts unquoted numeric string tokens to numbers if True.
@@ -263,6 +383,7 @@ class Lexer(object):
     quote = None  # The current quote character, None if not in quote.
     quoted = False  # True if the token is constructed from quoted parts.
     token = None  # The token char list, None for no token, [] for empty token.
+    paren_count = 0
     i = self.GetPosition()
     while not self.EndOfInput(i):
       c = self._expr[i]
@@ -285,10 +406,21 @@ class Lexer(object):
         quoted = True
         if token is None:
           token = []
-      elif not quote and c in terminators:
+      elif not quote and balance_parens and c in '()':
+        if c == '(':
+          paren_count += 1
+        else:
+          if c in terminators and not paren_count:
+            break
+          paren_count -= 1
+        # Append c to the token string.
+        if token is None:
+          token = []
+        token.append(c)
+      elif not quote and not paren_count and c in terminators:
         # Only unquoted terminators terminate the token.
         break
-      elif quote or not c.isspace():
+      elif quote or not c.isspace() or token is not None and balance_parens:
         # Append c to the token string.
         if token is None:
           token = []
@@ -337,7 +469,7 @@ class Lexer(object):
     args = []
     while True:
       here = self.GetPosition()
-      arg = self.Token(',)', convert=convert)
+      arg = self.Token(',)', balance_parens=True, convert=convert)
       end = self.IsCharacter(')')
       if arg is not None:
         args.append(arg)
@@ -346,10 +478,7 @@ class Lexer(object):
             'Argument expected [{0}].'.format(self.Annotate(here)))
       if end:
         break
-      if not self.IsCharacter(','):
-        raise resource_exceptions.ExpressionSyntaxError(
-            'Closing ) expected in argument list [{0}].'.format(
-                self.Annotate(here)))
+      self.IsCharacter(',')
       required = True
     return args
 
@@ -381,8 +510,8 @@ class Lexer(object):
       name = self.Token(_RESERVED_OPERATOR_CHARS, space=False)
       if name:
         is_not_function = not self.IsCharacter('(', peek=True, eoi_ok=True)
-        if not key and is_not_function and name in self._aliases:
-          key.extend(self._aliases[name])
+        if not key and is_not_function and name in self._defaults.aliases:
+          key.extend(self._defaults.aliases[name])
         else:
           key.append(name)
       elif not self.IsCharacter('[', peek=True):
@@ -410,6 +539,107 @@ class Lexer(object):
         raise resource_exceptions.ExpressionSyntaxError(
             'Non-empty key name expected [{0}].'.format(self.Annotate()))
     return key
+
+  def _ParseTransform(self, func_name, active=0, map_transform=None,
+                      restriction=False):
+    """Parses a transform function call.
+
+    The cursor is positioned at the '(' after func_name.
+
+    Args:
+      func_name: The transform function name.
+      active: The transform active level or None if always active.
+      map_transform: Apply the transform to each resource list item.
+      restriction: Transform is a global restriction that does not have an obj
+        arg.
+
+    Returns:
+      A _TransformCall object. The caller appends these to a list that is used
+      to apply the transform functions.
+
+    Raises:
+      ExpressionSyntaxError: The expression has a syntax error.
+    """
+    here = self.GetPosition()
+    if func_name not in self._defaults.symbols:
+      raise resource_exceptions.ExpressionSyntaxError(
+          'Unknown transform function {0} [{1}].'.format(
+              func_name, self.Annotate(here)))
+    func = self._defaults.symbols[func_name]
+    args = []
+    kwargs = {}
+    doc = getattr(func, 'func_doc', None)
+    if doc and resource_projection_spec.PROJECTION_ARG_DOC in doc:
+      # The second transform arg is the caller projection.
+      args.append(self._defaults)
+    if getattr(func, 'func_defaults', None):
+      # Separate the args from the kwargs.
+      for arg in self.Args():
+        name, sep, val = arg.partition('=')
+        if sep:
+          kwargs[name] = val
+        else:
+          args.append(arg)
+    else:
+      # No kwargs.
+      args += self.Args()
+    return _TransformCall(func_name, func, active=active,
+                          map_transform=map_transform, args=args,
+                          kwargs=kwargs, restriction=restriction)
+
+  def Transform(self, func_name, active=0, restriction=False):
+    """Parses one or more transform calls and returns a _Transform call object.
+
+    The cursor is positioned at the '(' just after the transform name.
+
+    Args:
+      func_name: The name of the first transform function.
+      active: The transform active level, None for always active.
+      restriction: Transform is a global restriction that does not have an obj
+        arg.
+
+    Returns:
+      The _Transform object containing the ordered list of transform calls.
+    """
+    here = self.GetPosition()
+    calls = _Transform()
+    map_transform = False
+    while True:
+      transform = self._ParseTransform(func_name, active=active,
+                                       map_transform=map_transform,
+                                       restriction=restriction)
+      restriction = False
+      if transform.func == resource_transform.TransformAlways:
+        active = None  # Always active.
+        func_name = None
+      elif transform.func == resource_transform.TransformMap:
+        map_transform = True
+        func_name = None
+      elif transform.func == resource_transform.TransformIf:
+        if len(transform.args) != 1:
+          raise resource_exceptions.ExpressionSyntaxError(
+              'Conditional filter expression expected [{0}].'.format(
+                  self.Annotate(here)))
+        calls.SetConditional(transform.args[0])
+      else:
+        # always() applies to all transforms for key.
+        # map() applies to the next transform.
+        map_transform = False
+        calls.Add(transform)
+      if not self.IsCharacter('.', eoi_ok=True):
+        break
+      call = self.Key()
+      here = self.GetPosition()
+      if not self.IsCharacter('('):
+        raise resource_exceptions.ExpressionSyntaxError(
+            'Transform function expected [{0}].'.format(
+                self.Annotate(here)))
+      if len(call) != 1:
+        raise resource_exceptions.ExpressionSyntaxError(
+            'Unknown transform function {0} [{1}].'.format(
+                '.'.join(call), self.Annotate(here)))
+      func_name = call.pop()
+    return calls
 
 
 def GetKeyName(key):

@@ -249,6 +249,18 @@ existing policy.
               response_type_name=u'Project',
               supports_download=False,
           ),
+          'GetAncestry': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'cloudresourcemanager.projects.getAncestry',
+              ordered_params=[u'projectId'],
+              path_params=[u'projectId'],
+              query_params=[],
+              relative_path=u'v1beta1/projects/{projectId}:getAncestry',
+              request_field=u'getAncestryRequest',
+              request_type_name=u'CloudresourcemanagerProjectsGetAncestryRequest',
+              response_type_name=u'GetAncestryResponse',
+              supports_download=False,
+          ),
           'GetIamPolicy': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'cloudresourcemanager.projects.getIamPolicy',
@@ -395,6 +407,22 @@ The caller must have read permissions for this Project.
         (Project) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetAncestry(self, request, global_params=None):
+      """Gets a list of ancestors in the resource hierarchy for the Project.
+identified by the specified `project_id` (for example, `my-project-123`).
+
+The caller must have read permissions for this Project.
+
+      Args:
+        request: (CloudresourcemanagerProjectsGetAncestryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetAncestryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetAncestry')
       return self._RunMethod(
           config, request, global_params=global_params)
 

@@ -574,6 +574,10 @@ class CLI(object):
   def _TopElement(self):
     return self.__top_element
 
+  @property
+  def name(self):
+    return self.__name
+
   def IsValidCommand(self, cmd):
     """Checks if given command exists.
 
