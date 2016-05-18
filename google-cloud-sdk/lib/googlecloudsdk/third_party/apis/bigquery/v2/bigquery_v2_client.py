@@ -8,6 +8,7 @@ class BigqueryV2(base_api.BaseApiClient):
   """Generated client library for service bigquery version v2."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/bigquery/v2/'
 
   _PACKAGE = u'bigquery'
   _SCOPES = [u'https://www.googleapis.com/auth/bigquery', u'https://www.googleapis.com/auth/bigquery.insertdata', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/devstorage.full_control', u'https://www.googleapis.com/auth/devstorage.read_only', u'https://www.googleapis.com/auth/devstorage.read_write']
@@ -25,7 +26,7 @@ class BigqueryV2(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new bigquery handle."""
-    url = url or u'https://www.googleapis.com/bigquery/v2/'
+    url = url or self.BASE_URL
     super(BigqueryV2, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

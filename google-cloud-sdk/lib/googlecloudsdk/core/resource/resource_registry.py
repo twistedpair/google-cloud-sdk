@@ -84,7 +84,8 @@ RESOURCE_REGISTRY = {
             service:sort=1,
             version:sort=2,
             id:sort=3,
-            instance.status
+            instance.vmStatus.yesno(no="N/A"),
+            instance.vmUnlocked.yesno(yes="YES", no=""):label=DEBUG_MODE
           )
         """,
     ),
@@ -117,19 +118,6 @@ RESOURCE_REGISTRY = {
             last_deployed_time.date("%Y-%m-%dT%H:%M:%S%Oz", undefined="-")
               :label=LAST_DEPLOYED,
             version.servingStatus:label=SERVING_STATUS
-          )
-        """,
-    ),
-
-    # autoscaler
-
-    'autoscaler.instances': ResourceInfo(
-        list_format="""
-          table(
-            name,
-            description.yesno(no="-"),
-            state.yesno(no="-"),
-            state_details.yesno(no="-")
           )
         """,
     ),
@@ -245,6 +233,17 @@ RESOURCE_REGISTRY = {
             projectId:sort=101,
             name,
             projectNumber
+          )
+        """,
+    ),
+
+    'cloudresourcemanager.organizations': ResourceInfo(
+        cache_command='organizations list',
+        list_format="""
+          table(
+            displayName,
+            organizationId,
+            owner.directoryCustomerId
           )
         """,
     ),
@@ -543,41 +542,6 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'compute.replicaPools': ResourceInfo(
-        list_format="""
-          table(
-            name,
-            currentNumReplicas
-          )
-        """,
-    ),
-
-    'compute.replicaPoolsReplicas': ResourceInfo(
-        list_format="""
-          table(
-            name,
-            status.templateVersion,
-            status.state:label=STATUS
-          )
-        """,
-    ),
-
-    'compute.resourceViews': ResourceInfo(
-        list_format="""
-          value(
-            uri()
-          )
-        """,
-    ),
-
-    'compute.resourceViewsResources': ResourceInfo(
-        list_format="""
-          value(
-            uri()
-          )
-        """,
-    ),
-
     'compute.routers': ResourceInfo(
         cache_command='compute routers list',
         list_format="""
@@ -852,11 +816,26 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             id,
+            userEmail.if(all_users):label=USER,
             location,
-            logLevel.name:label=LEVEL,
+            logLevel:label=LEVEL,
+            createTime.if(include_expired),
             short_status():label=STATUS,
-            condition,
-            log_message_format
+            logMessageFormat,
+            condition
+          )
+        """,
+    ),
+
+    'debug.logpoints.create': ResourceInfo(
+        list_format="""
+          list(
+            format("id: {0}", id),
+            format("location: {0}", location),
+            format("logLevel: {0}", logLevel),
+            format("logMessageFormat: {0}", logMessageFormat),
+            format("condition: {0}", condition),
+            format("status: {0}", full_status())
           )
         """,
     ),
@@ -865,9 +844,22 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             id,
+            userEmail.if(all_users):label=USER,
             location,
             short_status():label=STATUS,
+            finalTime.if(include_inactive != 0):label=COMPLETED_TIME,
             consoleViewUrl:label=VIEW
+          )
+        """
+    ),
+
+    'debug.snapshots.create': ResourceInfo(
+        list_format="""
+          list(
+            format("id: {0}", id),
+            format("location: {0}", location),
+            format("status: {0}", full_status()),
+            format("consoleViewUrl: {0}", consoleViewUrl)
           )
         """
     ),
@@ -887,12 +879,12 @@ RESOURCE_REGISTRY = {
     'deploymentmanager.deployments': ResourceInfo(
         list_format="""
           table(
-            name,
-            operation.operationType:label=LAST_OPERATION_TYPE,
-            operation.status,
-            description,
-            manifest.basename(),
-            update.errors.group(code, message)
+            deployment:format=yaml,
+            resources:format='table(
+              name,
+              type,
+              update.state.yesno(no="COMPLETED"),
+              update.error.errors.group(code, message))'
           )
         """,
         simple_format="""
@@ -1038,6 +1030,27 @@ RESOURCE_REGISTRY = {
             end,
             referenceBases,
             alternateBases
+          )
+        """,
+    ),
+
+    # iam
+
+    'iam.service_accounts': ResourceInfo(
+        list_format="""
+          table(
+            displayName:label=NAME,
+            email
+          )
+        """,
+    ),
+
+    'iam.service_accounts.keys': ResourceInfo(
+        list_format="""
+          table(
+            name.scope(keys):label=KEY_ID,
+            validAfterTime:label=CREATED_AT,
+            validBeforeTime:label=EXPIRES_AT
           )
         """,
     ),
@@ -1365,29 +1378,6 @@ RESOURCE_REGISTRY = {
             androidCatalog.yesno("*", "-"),
             linuxCatalog.yesno("*", "-"),
             windowsCatalog.yesno("*", "-")
-          )
-        """,
-    ),
-
-    # updater
-
-    'replicapoolupdater.rollingUpdates': ResourceInfo(
-        list_format="""
-          table(
-            id,
-            instanceGroupManager.basename():label=GROUP_NAME,
-            instanceTemplate.basename("-"):label=TEMPLATE_NAME,
-            status,
-            statusMessage
-          )
-        """,
-    ),
-
-    'replicapoolupdater.rollingUpdates.instanceUpdates': ResourceInfo(
-        list_format="""
-          table(
-            instance.basename():label=INSTANCE_NAME,
-            status
           )
         """,
     ),

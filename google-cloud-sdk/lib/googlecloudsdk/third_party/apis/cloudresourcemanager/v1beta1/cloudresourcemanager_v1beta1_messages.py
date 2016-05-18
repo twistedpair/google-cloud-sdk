@@ -333,11 +333,17 @@ class Organization(_messages.Message):
   """The root node in the resource hierarchy to which a particular entity's
   (e.g., company) resources belong.
 
+  Enums:
+    LifecycleStateValueValuesEnum: The organization's current lifecycle state.
+      Assigned by the server. @OutputOnly
+
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
       server. @OutputOnly
     displayName: A friendly string to be used to refer to the Organization in
       the UI. This field is required.
+    lifecycleState: The organization's current lifecycle state. Assigned by
+      the server. @OutputOnly
     organizationId: An immutable id for the Organization that is assigned on
       creation. This should be omitted when creating a new Organization. This
       field is read-only.
@@ -345,10 +351,26 @@ class Organization(_messages.Message):
       creation. Once set, it cannot be changed. This field is required.
   """
 
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    """The organization's current lifecycle state. Assigned by the server.
+    @OutputOnly
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only useful for
+        distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETE_REQUESTED: The organization has been marked for deletion by the
+        user
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETE_REQUESTED = 2
+
   creationTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  organizationId = _messages.StringField(3)
-  owner = _messages.MessageField('OrganizationOwner', 4)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
+  organizationId = _messages.StringField(4)
+  owner = _messages.MessageField('OrganizationOwner', 5)
 
 
 class OrganizationOwner(_messages.Message):

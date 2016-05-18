@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160428",
+ "revision": "20160510",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1001,6 +1001,20 @@
     }
    }
   },
+  "BackendSSLPolicy": {
+   "id": "BackendSSLPolicy",
+   "type": "object",
+   "description": "Message containing backend SSL policies.",
+   "properties": {
+    "pinnedPeerCertificates": {
+     "type": "array",
+     "description": "List of PEM-encoded peer certificates, from which the public keys are extracted for authenticating the backend service.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "BackendService": {
    "id": "BackendService",
    "type": "object",
@@ -1010,6 +1024,10 @@
      "type": "integer",
      "description": "Lifetime of cookies in seconds if session_affinity is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value for TTL is one day.",
      "format": "int32"
+    },
+    "backendSslPolicy": {
+     "$ref": "BackendSSLPolicy",
+     "description": "Backend SSL policies to enforce."
     },
     "backends": {
      "type": "array",
@@ -1276,7 +1294,7 @@
     },
     "value": {
      "type": "string",
-     "description": "The object of the condition. Exactly one of these must be set."
+     "description": "DEPRECATED. Use 'values' instead."
     },
     "values": {
      "type": "array",
@@ -1436,6 +1454,17 @@
     "options": {
      "type": "string",
      "description": "Internal use only."
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the disk resides. Only applicable for regional resources."
+    },
+    "replicaZones": {
+     "type": "array",
+     "description": "URLs of the zones where the disk should be replicated to. Only applicable for regional resources.",
+     "items": {
+      "type": "string"
+     }
     },
     "selfLink": {
      "type": "string",
@@ -2084,6 +2113,13 @@
     "portRange": {
      "type": "string",
      "description": "Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges."
+    },
+    "ports": {
+     "type": "array",
+     "description": "When the load balancing scheme is INTERNAL, a single port or a list of single ports may be specified.",
+     "items": {
+      "type": "string"
+     }
     },
     "region": {
      "type": "string",
@@ -2982,7 +3018,7 @@
     },
     "status": {
      "type": "string",
-     "description": "[Output Only] The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.",
+     "description": "[Output Only] The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and TERMINATED.",
      "enum": [
       "PROVISIONING",
       "RUNNING",
@@ -3451,10 +3487,10 @@
     },
     "minimalAction": {
      "type": "string",
-     "description": "Minimal action to be taken on an instance. The order of action types is: REBOOT \u003c REPLACE.",
+     "description": "Minimal action to be taken on an instance. The order of action types is: RESTART \u003c REPLACE.",
      "enum": [
-      "REBOOT",
-      "REPLACE"
+      "REPLACE",
+      "RESTART"
      ],
      "enumDescriptions": [
       "",
@@ -3497,7 +3533,7 @@
     },
     "tag": {
      "type": "string",
-     "description": "Tag describing the version. Changing it may trigger an action configured in UpdatePolicy."
+     "description": "Tag describing the version. Used to trigger rollout of a target version even if instance_template remains unchanged."
     },
     "targetSize": {
      "$ref": "FixedOrPercent",
@@ -3923,6 +3959,13 @@
      "description": "An array of disks that are associated with the instances that are created from this template.",
      "items": {
       "$ref": "AttachedDisk"
+     }
+    },
+    "labels": {
+     "type": "object",
+     "description": "Labels to apply to instances that are created from this template. Each label key/value pair must comply with RFC1035. Label values may be empty.",
+     "additionalProperties": {
+      "type": "string"
      }
     },
     "machineType": {
@@ -4554,6 +4597,10 @@
      "enumDescriptions": [
       ""
      ]
+    },
+    "tag": {
+     "type": "string",
+     "description": "[Output Only] Tag describing the version."
     }
    }
   },
@@ -6115,7 +6162,7 @@
    "properties": {
     "bestRoutes": {
      "type": "array",
-     "description": "Best routes for this router.",
+     "description": "Best routes for this router's network.",
      "items": {
       "$ref": "Route"
      }
@@ -6203,6 +6250,16 @@
     },
     "result": {
      "$ref": "RouterStatus"
+    }
+   }
+  },
+  "RoutersPreviewResponse": {
+   "id": "RoutersPreviewResponse",
+   "type": "object",
+   "properties": {
+    "resource": {
+     "$ref": "Router",
+     "description": "Preview of given router."
     }
    }
   },
@@ -17189,6 +17246,51 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "preview": {
+     "id": "compute.routers.preview",
+     "path": "{project}/regions/{region}/routers/{router}/preview",
+     "httpMethod": "POST",
+     "description": "Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to query.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "request": {
+      "$ref": "Router"
+     },
+     "response": {
+      "$ref": "RoutersPreviewResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
     "testIamPermissions": {

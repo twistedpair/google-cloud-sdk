@@ -309,3 +309,51 @@ class RequiredArgumentException(ToolException):
 
 class BadFileException(ToolException):
   """BadFileException is for problems reading or writing a file."""
+
+
+# pylint: disable=g-import-not-at-top, Delay the import of this because
+# importing store is relatively expensive.
+def _GetTokenRefreshError():
+  from googlecloudsdk.core.credentials import store
+  return store.TokenRefreshError
+
+
+# In general, lower level libraries should be catching exceptions and re-raising
+# exceptions that extend core.Error so nice error messages come out. There are
+# some error classes that want to be handled as recoverable errors, but cannot
+# import the core_exceptions module (and therefore the Error class) for various
+# reasons (e.g. circular dependencies). To work around this, we keep a list of
+# known "friendly" error types, which we handle in the same way as core.Error.
+# Additionally, we provide an alternate exception class to convert the errors
+# to which may add additional information.  We use strings here so that we don't
+# have to import all these libraries all the time, just to be able to handle the
+# errors when they come up.  Only add errors here if there is no other way to
+# handle them.
+_KNOWN_ERRORS = {
+    'googlecloudsdk.core.util.files.Error': lambda: None,
+    'ssl.SSLError': lambda: core_exceptions.NetworkIssueError,
+    'httplib.ResponseNotReady': lambda: core_exceptions.NetworkIssueError,
+    'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
+}
+
+
+def ConvertKnownError(exc):
+  """Convert the given exception into an alternate type if it is known.
+
+  Args:
+    exc: Exception, the exception to convert.
+
+  Returns:
+    None if this is not a known type, otherwise a new exception that should be
+    logged.
+  """
+  name = exc.__class__.__module__ + '.' + exc.__class__.__name__
+  if name not in _KNOWN_ERRORS:
+    # This is not a known error type
+    return None
+  alt_exc_class = _KNOWN_ERRORS.get(name)()
+  if not alt_exc_class:
+    # There is no alternate exception, just return the original exception
+    return exc
+  # Convert to the new exception type.
+  return alt_exc_class(exc)

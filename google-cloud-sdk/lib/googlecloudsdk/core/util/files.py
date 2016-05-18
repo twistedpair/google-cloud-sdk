@@ -596,11 +596,12 @@ class Checksum(object):
     return self.__files
 
 
-def OpenForWritingPrivate(path):
+def OpenForWritingPrivate(path, access_mode='w'):
   """Open a file for writing, with the right permissions for user-private files.
 
   Args:
     path: str, The full path to the file.
+    access_mode: Can be 'w' or 'wb'. Default to 'w'.
 
   Returns:
     A file context manager.
@@ -616,7 +617,7 @@ def OpenForWritingPrivate(path):
     flags |= os.O_NOINHERIT
 
   fd = os.open(path, flags, 0600)
-  return os.fdopen(fd, 'w')
+  return os.fdopen(fd, access_mode)
 
 
 class Context(object):

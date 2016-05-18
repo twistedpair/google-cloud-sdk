@@ -5,7 +5,7 @@
  "name": "serviceregistry",
  "canonicalName": "Service Registry",
  "version": "v1alpha",
- "revision": "20160428",
+ "revision": "20160510",
  "title": "Google Cloud Service Registry API",
  "description": "Manages service endpoints in Service Registry and provides integration with DNS for service discovery and name resolution.",
  "ownerDomain": "google.com",
@@ -91,6 +91,7 @@
   "Endpoint": {
    "id": "Endpoint",
    "type": "object",
+   "description": "Next available tag: 13",
    "properties": {
     "addresses": {
      "type": "array",
@@ -110,10 +111,6 @@
     "dnsIntegration": {
      "$ref": "EndpointDnsIntegration",
      "description": "The DNS Integration configuration for this endpoint. This must be a list of fully-qualified URLs to Compute Engine networks."
-    },
-    "dnsName": {
-     "type": "string",
-     "description": "[Output Only] Fully qualified domain name for the endpoint."
     },
     "fingerprint": {
      "type": "string",
@@ -161,6 +158,10 @@
    "id": "EndpointDnsIntegration",
    "type": "object",
    "properties": {
+    "internalDnsName": {
+     "type": "string",
+     "description": "[Output Only] Fully qualified domain name for the endpoint; used when addressing the endpoint from within Compute Networks specified in the networks field."
+    },
     "networks": {
      "type": "array",
      "description": "Google Compute Engine networks for which the name of this endpoint should be resolvable through DNS.",

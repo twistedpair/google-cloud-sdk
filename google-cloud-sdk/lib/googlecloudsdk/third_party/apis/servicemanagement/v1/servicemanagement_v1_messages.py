@@ -182,14 +182,7 @@ class AuthenticationRule(_messages.Message):
 
 
 class Backend(_messages.Message):
-  """`Backend` defines the backend configuration for a service.  Example:
-  backend:       rules:       - selector: "*"         address: calendar-prod-
-  backend.gslb.googleapis.com       - selector:
-  google.calendar.Calendar.Delegate         address: calendar-dogfood-
-  backend.gslb.googleapis.com  Here, the default backend for all methods in
-  the service is set to `calendar-prod-backend.gslb.googleapis.com`.  For the
-  method `Delegate`, this is overriden by `calendar-dogfood-
-  backend.gslb.googleapis.com`.
+  """`Backend` defines the backend configuration for a service.
 
   Fields:
     rules: A list of backend rules providing configuration for individual API
@@ -273,6 +266,95 @@ class BillingStatusRule(_messages.Message):
   selector = _messages.StringField(2)
 
 
+class CompositeOperationMetadata(_messages.Message):
+  """Metadata for composite operations.
+
+  Messages:
+    OriginalRequestValue: Original request that triggered this operation.
+    ResponseFieldMasksValue: Defines which part of the response a child
+      operation will contribute. Each key of the map is the name of a child
+      operation. Each value is a field mask that identifies what that child
+      operation contributes to the response, for example, "quota_settings",
+      "visiblity_settings", etc.
+
+  Fields:
+    childOperations: The child operations. The details of the asynchronous
+      child operations are stored in a separate row and not in this metadata.
+      Only the operation name is stored here.
+    originalRequest: Original request that triggered this operation.
+    persisted: Indicates whether the requested state change has been
+      persisted. Once this field is set, it is guaranteed to propagate to all
+      backends eventually, but it may not be visible immediately. Clients that
+      are not concerned with waiting on propagation can stop polling the
+      operation once the persisted field is set
+    responseFieldMasks: Defines which part of the response a child operation
+      will contribute. Each key of the map is the name of a child operation.
+      Each value is a field mask that identifies what that child operation
+      contributes to the response, for example, "quota_settings",
+      "visiblity_settings", etc.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OriginalRequestValue(_messages.Message):
+    """Original request that triggered this operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a OriginalRequestValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @ype with
+        type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a OriginalRequestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseFieldMasksValue(_messages.Message):
+    """Defines which part of the response a child operation will contribute.
+    Each key of the map is the name of a child operation. Each value is a
+    field mask that identifies what that child operation contributes to the
+    response, for example, "quota_settings", "visiblity_settings", etc.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseFieldMasksValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResponseFieldMasksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResponseFieldMasksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  childOperations = _messages.MessageField('Operation', 1, repeated=True)
+  originalRequest = _messages.MessageField('OriginalRequestValue', 2)
+  persisted = _messages.BooleanField(3)
+  responseFieldMasks = _messages.MessageField('ResponseFieldMasksValue', 4)
+
+
 class ConfigFile(_messages.Message):
   """Generic specification of a source configuration file
 
@@ -350,12 +432,7 @@ class ContextRule(_messages.Message):
 class Control(_messages.Message):
   """Selects and configures the service controller used by the service.  The
   service controller handles features like abuse, quota, billing, logging,
-  monitoring, etc.  Example:      control:       environment:
-  usagemanager.googleprod.com  Supported Usage Manager environments:  *
-  `usagemanager.googleprod.com` * `staging-usagemanager.googleprod.com`
-  Supported Service Control environments:  * `servicecontrol.googleapis.com` *
-  `staging-servicecontrol.sandbox.googleapis.com` * `testgaia-
-  servicecontrol.sandbox.googleapis.com`
+  monitoring, etc.
 
   Fields:
     environment: The service control environment to use. If empty, no control
@@ -368,7 +445,13 @@ class Control(_messages.Message):
 class ConvertConfigRequest(_messages.Message):
   """Request message for `ConvertConfig` method.
 
+  Messages:
+    ConfigSpecValue: Input configuration For this version of API, the
+      supported type is OpenApiSpec
+
   Fields:
+    configSpec: Input configuration For this version of API, the supported
+      type is OpenApiSpec
     openApiSpec: The OpenAPI specification for an API.
     serviceName: The service name to use for constructing the normalized
       service configuration equivalent of the provided configuration
@@ -376,9 +459,36 @@ class ConvertConfigRequest(_messages.Message):
     swaggerSpec: The swagger specification for an API.
   """
 
-  openApiSpec = _messages.MessageField('OpenApiSpec', 1)
-  serviceName = _messages.StringField(2)
-  swaggerSpec = _messages.MessageField('SwaggerSpec', 3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigSpecValue(_messages.Message):
+    """Input configuration For this version of API, the supported type is
+    OpenApiSpec
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigSpecValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @ype with
+        type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ConfigSpecValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configSpec = _messages.MessageField('ConfigSpecValue', 1)
+  openApiSpec = _messages.MessageField('OpenApiSpec', 2)
+  serviceName = _messages.StringField(3)
+  swaggerSpec = _messages.MessageField('SwaggerSpec', 4)
 
 
 class ConvertConfigResponse(_messages.Message):
@@ -802,52 +912,57 @@ class HttpRule(_messages.Message):
   to fields in the request message, as in the example below which describes a
   REST GET operation on a resource collection of messages:  ```proto service
   Messaging {   rpc GetMessage(GetMessageRequest) returns (Message) {
-  option (google.api.http).get = "/v1/messages/{message_id}";   } } message
-  GetMessageRequest {   string message_id = 1; // mapped to the URL } message
-  Message {   string text = 1; // content of the resource } ```  This
-  definition enables an automatic, bidrectional mapping of HTTP JSON to RPC.
-  Example:  HTTP | RPC -----|----- `GET /v1/messages/123456`  |
-  `GetMessage(message_id: "123456")`  In general, not only fields but also
-  field paths can be referenced from a path pattern. Fields mapped to the path
-  pattern cannot be repeated and must have a primitive (non-message) type.
-  Any fields in the request message which are not bound by the path pattern
-  automatically become (optional) HTTP query parameters. Assume the following
-  definition of the request message:  ```proto message GetMessageRequest {
-  string message_id = 1; // mapped to the URL   int64 revision = 2;    //
-  becomes a parameter } ```  This enables a HTTP JSON to RPC mapping as below:
-  HTTP | RPC -----|----- `GET /v1/messages/123456?revision=2` |
-  `GetMessage(message_id: "123456" revision: 2)`  Note that fields which are
-  mapped to HTTP parameters must have a primitive type or a repeated primitive
-  type. Message types are not allowed. In the case of a repeated type, the
-  parameter can be repeated in the URL, as in `...?param=A&param=B`.  For HTTP
-  method kinds which allow a request body, the `body` field specifies the
-  mapping. Consider a REST update method on the message resource collection:
-  ```proto service Messaging {   rpc UpdateMessage(UpdateMessageRequest)
-  returns (Message) {     option (google.api.http) = {       put:
-  "/v1/messages/{message_id}"       body: "message"     };   } } message
-  UpdateMessageRequest {   string message_id = 1; // mapped to the URL
-  Message message = 2;   // mapped to the body } ```  The following HTTP JSON
-  to RPC mapping is enabled, where the representation of the JSON in the
-  request body is determined by protos JSON encoding:  HTTP | RPC -----|-----
-  `PUT /v1/messages/123456 { "text": "Hi!" }` | `UpdateMessage(message_id:
-  "123456" message { text: "Hi!" })`  The special name `*` can be used in the
-  body mapping to define that every field not bound by the path template
-  should be mapped to the request body.  This enables the following
-  alternative definition of the update method:  ```proto service Messaging {
-  rpc UpdateMessage(Message) returns (Message) {     option (google.api.http)
-  = {       put: "/v1/messages/{message_id}"       body: "*"     };   } }
-  message Message {   string message_id = 1;   string text = 2; } ```  The
-  following HTTP JSON to RPC mapping is enabled:  HTTP | RPC -----|----- `PUT
-  /v1/messages/123456 { "text": "Hi!" }` | `UpdateMessage(message_id: "123456"
-  text: "Hi!")`  Note that when using `*` in the body mapping, it is not
-  possible to have HTTP parameters, as all fields not bound by the path end in
-  the body. This makes this option more rarely used in practice of defining
-  REST APIs. The common usage of `*` is in custom methods which don't use the
-  URL at all for transferring data.  It is possible to define multiple HTTP
-  methods for one RPC by using the `additional_bindings` option. Example:
-  ```proto service Messaging {   rpc GetMessage(GetMessageRequest) returns
-  (Message) {     option (google.api.http) = {       get:
-  "/v1/messages/{message_id}"       additional_bindings {         get:
+  option (google.api.http).get = "/v1/messages/{message_id}/{sub.subfield}";
+  } } message GetMessageRequest {   message SubMessage {     string subfield =
+  1;   }   string message_id = 1; // mapped to the URL   SubMessage sub = 2;
+  // `sub.subfield` is url-mapped } message Message {   string text = 1; //
+  content of the resource } ```  This definition enables an automatic,
+  bidrectional mapping of HTTP JSON to RPC. Example:  HTTP | RPC -----|-----
+  `GET /v1/messages/123456`  | `GetMessage(message_id: "123456")`  In general,
+  not only fields but also field paths can be referenced from a path pattern.
+  Fields mapped to the path pattern cannot be repeated and must have a
+  primitive (non-message) type.  Any fields in the request message which are
+  not bound by the path pattern automatically become (optional) HTTP query
+  parameters. Assume the following definition of the request message:
+  ```proto message GetMessageRequest {   message SubMessage {     string
+  subfield = 1;   }   string message_id = 1; // mapped to the URL   int64
+  revision = 2;    // becomes a parameter   SubMessage sub = 3;    //
+  `sub.subfield` becomes a parameter } ```  This enables a HTTP JSON to RPC
+  mapping as below:  HTTP | RPC -----|----- `GET
+  /v1/messages/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id:
+  "123456" revision: 2 sub: SubMessage(subfield: "foo"))`  Note that fields
+  which are mapped to HTTP parameters must have a primitive type or a repeated
+  primitive type. Message types are not allowed. In the case of a repeated
+  type, the parameter can be repeated in the URL, as in `...?param=A&param=B`.
+  For HTTP method kinds which allow a request body, the `body` field specifies
+  the mapping. Consider a REST update method on the message resource
+  collection:  ```proto service Messaging {   rpc
+  UpdateMessage(UpdateMessageRequest) returns (Message) {     option
+  (google.api.http) = {       put: "/v1/messages/{message_id}"       body:
+  "message"     };   } } message UpdateMessageRequest {   string message_id =
+  1; // mapped to the URL   Message message = 2;   // mapped to the body } ```
+  The following HTTP JSON to RPC mapping is enabled, where the representation
+  of the JSON in the request body is determined by protos JSON encoding:  HTTP
+  | RPC -----|----- `PUT /v1/messages/123456 { "text": "Hi!" }` |
+  `UpdateMessage(message_id: "123456" message { text: "Hi!" })`  The special
+  name `*` can be used in the body mapping to define that every field not
+  bound by the path template should be mapped to the request body.  This
+  enables the following alternative definition of the update method:  ```proto
+  service Messaging {   rpc UpdateMessage(Message) returns (Message) {
+  option (google.api.http) = {       put: "/v1/messages/{message_id}"
+  body: "*"     };   } } message Message {   string message_id = 1;   string
+  text = 2; } ```  The following HTTP JSON to RPC mapping is enabled:  HTTP |
+  RPC -----|----- `PUT /v1/messages/123456 { "text": "Hi!" }` |
+  `UpdateMessage(message_id: "123456" text: "Hi!")`  Note that when using `*`
+  in the body mapping, it is not possible to have HTTP parameters, as all
+  fields not bound by the path end in the body. This makes this option more
+  rarely used in practice of defining REST APIs. The common usage of `*` is in
+  custom methods which don't use the URL at all for transferring data.  It is
+  possible to define multiple HTTP methods for one RPC by using the
+  `additional_bindings` option. Example:  ```proto service Messaging {   rpc
+  GetMessage(GetMessageRequest) returns (Message) {     option
+  (google.api.http) = {       get: "/v1/messages/{message_id}"
+  additional_bindings {         get:
   "/v1/users/{user_id}/messages/{message_id}"       }     };   } } message
   GetMessageRequest {   string message_id = 1;   string user_id = 2; } ```
   This enables the following two alternative HTTP JSON to RPC mappings:  HTTP
@@ -2225,9 +2340,8 @@ class Service(_messages.Message):
   interfaces, and delegates other aspects to configuration sub-sections.
   Example:      type: google.api.Service     config_version: 1     name:
   calendar.googleapis.com     title: Google Calendar API     apis:     - name:
-  google.calendar.Calendar     visibility:       rules:       - selector: "*"
-  restriction: TRUSTED_TESTER     backend:       rules:       - selector: "*"
-  address: calendar-prod-backend.gslb.googleapis.com
+  google.calendar.Calendar     backend:       rules:       - selector: "*"
+  address: calendar.example.com
 
   Fields:
     apis: A list of API interfaces exported by this service. Only the `name`

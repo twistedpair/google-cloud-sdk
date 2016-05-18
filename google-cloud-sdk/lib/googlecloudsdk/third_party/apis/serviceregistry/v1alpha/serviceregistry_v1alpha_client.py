@@ -8,6 +8,7 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
   """Generated client library for service serviceregistry version v1alpha."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/serviceregistry/v1alpha/'
 
   _PACKAGE = u'serviceregistry'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']
@@ -25,7 +26,7 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new serviceregistry handle."""
-    url = url or u'https://www.googleapis.com/serviceregistry/v1alpha/'
+    url = url or self.BASE_URL
     super(ServiceregistryV1alpha, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

@@ -17,9 +17,22 @@ import argparse
 
 
 # TODO(b/28318474): move flags common across commands here.
-def AddImageFamilyFlag(parser):
-  """Adds a --image-family flag to the given parser."""
-  parser.add_argument(
-      '--image-family', help=argparse.SUPPRESS)
+def AddImageTypeFlag(parser, target, suppressed):
+  """Adds a --image-type flag to the given parser."""
+  help_text = argparse.SUPPRESS if suppressed else """\
+The image type to use for the {target}. Defaults to server-specified.
+
+Image Type specifies the base OS that the nodes in the {target} will run on.
+If an image type is specified, that will be assigned to the {target} and all
+future upgrades will use the specified image type. If it is not specified the
+server will pick the default image type.
+
+The default image type and the list of valid image types are available
+using the following command.
+
+  $ gcloud container get-server-config
+""".format(target=target)
+
+  parser.add_argument('--image-type', help=help_text)
 
 

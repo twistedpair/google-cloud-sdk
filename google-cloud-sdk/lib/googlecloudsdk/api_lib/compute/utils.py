@@ -59,9 +59,30 @@ def CollectionToResourceType(collection):
   return collection.split('.', 1)[1]
 
 
-def CollectionToApi(collection):
+def _GetApiNameFromCollection(collection):
   """Converts a collection to an api: 'compute.disks' -> 'compute'."""
   return collection.split('.', 1)[0]
+
+
+def GetApiCollection(resource_type):
+  """Coverts a resource type to a collection."""
+  if resource_type in ['users', 'groups', 'globalAccountsOperations']:
+    return 'clouduseraccounts.' + resource_type
+  return 'compute.' + resource_type
+
+
+def HasApiParamDefaultValue(api_resources, resource_type, param):
+  """Returns whether the param has a default value."""
+  collection = GetApiCollection(resource_type)
+  api = _GetApiNameFromCollection(collection)
+  try:
+    api_resources.GetParamDefault(
+        api=api,
+        collection=resource_type,
+        param=param)
+  except properties.RequiredPropertyError:
+    return False
+  return True
 
 
 def NormalizeGoogleStorageUri(uri):
@@ -189,11 +210,10 @@ def SetResourceParamDefaults():
         resolver=resolvers.FromProperty(prop))
 
 
-def UpdateContextEndpointEntries(context, http, api_client_default='v1'):
-  """Updates context to set API enpoints; requires context['http'] be set."""
+def UpdateContextEndpointEntries(context, api_client_default='v1'):
+  """Updates context to set API endpoints."""
 
   context['project'] = properties.VALUES.core.project.Get(required=True)
-  context['http'] = http
 
   api_client = core_apis.ResolveVersion('compute', api_client_default)
   compute = core_apis.GetClientInstance('compute', api_client)

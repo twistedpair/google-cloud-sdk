@@ -20,6 +20,8 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 
+COMPUTE_RESOURCE_URL = 'https://www.googleapis.com/compute/v1/projects/{0}/global/networks/{1}'
+
 
 class ArgEndpointAddress(arg_parsers.ArgType):
   """Interpret an argument value as an EndpointAddress."""
@@ -177,6 +179,28 @@ def AddTargetArg(parser):
       metavar='TARGET')
 
 
+def ExpandNetworks(networks, project):
+  """Parses networks into fully qualified Compute Engine network URLs.
+
+  The URLs will be a compute/v1 reference.
+
+  Args:
+    networks: A list of full Compute Engine network URLs or just the network
+      name.
+    project: The project name these networks are associated with.
+
+  Returns:
+    A full GCP network url String.
+  """
+  expanded_networks = []
+  for network in networks:
+    if network.startswith('https://'):
+      expanded_networks.append(network)
+    else:
+      expanded_networks.append(COMPUTE_RESOURCE_URL.format(project, network))
+  return expanded_networks
+
+
 def AddNetworksArg(parser):
   """Called by commands to add a networks argument.
 
@@ -186,10 +210,13 @@ def AddNetworksArg(parser):
   parser.add_argument(
       '--networks',
       type=arg_parsers.ArgList(),
-      help='A list of networks your endpoint should have private DNS records '
-      'created in. Each network is represented by a full resource url. '
-      'For example\n\n'
-      '   "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default"',  # pylint:disable=line-too-long
+      help='A comma separated list of networks your endpoint should have '
+      'private DNS records created in. Each network is represented by its name '
+      'or a full resource url. For example, to refer to the default network '
+      ' in "my-project", you can use\n\n'
+      '   default\n\n'
+      'or\n\n'
+      '   https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default\n\n',  # pylint:disable=line-too-long
       metavar='NETWORKS',
       default=[])
 

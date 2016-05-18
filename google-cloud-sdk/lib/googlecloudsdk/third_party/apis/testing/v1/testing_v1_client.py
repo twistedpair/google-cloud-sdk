@@ -8,6 +8,7 @@ class TestingV1(base_api.BaseApiClient):
   """Generated client library for service testing version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://testing.googleapis.com/'
 
   _PACKAGE = u'testing'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
@@ -25,7 +26,7 @@ class TestingV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new testing handle."""
-    url = url or u'https://testing.googleapis.com/'
+    url = url or self.BASE_URL
     super(TestingV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -35,7 +36,6 @@ class TestingV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.projects_devices = self.ProjectsDevicesService(self)
     self.projects_testMatrices = self.ProjectsTestMatricesService(self)
-    self.projects_webdriver = self.ProjectsWebdriverService(self)
     self.projects = self.ProjectsService(self)
     self.testEnvironmentCatalog = self.TestEnvironmentCatalogService(self)
 
@@ -374,175 +374,6 @@ May return any of the following canonical error codes:
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListTestMatricesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-  class ProjectsWebdriverService(base_api.BaseApiService):
-    """Service class for the projects_webdriver resource."""
-
-    _NAME = u'projects_webdriver'
-
-    def __init__(self, client):
-      super(TestingV1.ProjectsWebdriverService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.webdriver.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/webdriver',
-              request_field=u'webDriver',
-              request_type_name=u'TestingProjectsWebdriverCreateRequest',
-              response_type_name=u'WebDriver',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'testing.projects.webdriver.delete',
-              ordered_params=[u'projectId', u'webdriverId'],
-              path_params=[u'projectId', u'webdriverId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/webdriver/{webdriverId}',
-              request_field='',
-              request_type_name=u'TestingProjectsWebdriverDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.webdriver.get',
-              ordered_params=[u'projectId', u'webdriverId'],
-              path_params=[u'projectId', u'webdriverId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/webdriver/{webdriverId}',
-              request_field='',
-              request_type_name=u'TestingProjectsWebdriverGetRequest',
-              response_type_name=u'WebDriver',
-              supports_download=False,
-          ),
-          'Keepalive': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.webdriver.keepalive',
-              ordered_params=[u'projectId', u'webdriverId'],
-              path_params=[u'projectId', u'webdriverId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/webdriver/{webdriverId}:keepalive',
-              request_field=u'webDriverKeepAliveRequest',
-              request_type_name=u'TestingProjectsWebdriverKeepaliveRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.webdriver.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/webdriver',
-              request_field='',
-              request_type_name=u'TestingProjectsWebdriverListRequest',
-              response_type_name=u'ListWebDriverResponse',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      """Creates a new WebDriver environment and returns the endpoint for the user.
-to access.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to write to project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the WebDriver environment or project does not exist
-
-      Args:
-        request: (TestingProjectsWebdriverCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WebDriver) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Delete(self, request, global_params=None):
-      """Deletes a WebDriver environment instance.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the project does not exist
-
-      Args:
-        request: (TestingProjectsWebdriverDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Get(self, request, global_params=None):
-      """Returns the WebDriver environment.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the WebDriver environment or project does not exist
-
-      Args:
-        request: (TestingProjectsWebdriverGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WebDriver) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Keepalive(self, request, global_params=None):
-      """Issues a keep-alive to the WebDriver environment instance.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the project does not exist
-
-      Args:
-        request: (TestingProjectsWebdriverKeepaliveRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Keepalive')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def List(self, request, global_params=None):
-      """Lists all the WebDriver environments.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the project does not exist
-
-      Args:
-        request: (TestingProjectsWebdriverListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListWebDriverResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(

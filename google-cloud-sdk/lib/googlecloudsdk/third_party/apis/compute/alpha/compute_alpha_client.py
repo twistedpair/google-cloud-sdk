@@ -8,6 +8,7 @@ class ComputeAlpha(base_api.BaseApiClient):
   """Generated client library for service compute version alpha."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/compute/alpha/'
 
   _PACKAGE = u'compute'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/compute.readonly', u'https://www.googleapis.com/auth/devstorage.full_control', u'https://www.googleapis.com/auth/devstorage.read_only', u'https://www.googleapis.com/auth/devstorage.read_write']
@@ -25,7 +26,7 @@ class ComputeAlpha(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new compute handle."""
-    url = url or u'https://www.googleapis.com/compute/alpha/'
+    url = url or self.BASE_URL
     super(ComputeAlpha, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -5549,6 +5550,18 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'Preview': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routers.preview',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}/preview',
+              request_field=u'routerResource',
+              request_type_name=u'ComputeRoutersPreviewRequest',
+              response_type_name=u'RoutersPreviewResponse',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.routers.testIamPermissions',
@@ -5666,6 +5679,19 @@ If an empty request body is given, clears the deprecation status instead.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Preview(self, request, global_params=None):
+      """Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
+
+      Args:
+        request: (ComputeRoutersPreviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersPreviewResponse) The response message.
+      """
+      config = self.GetMethodConfig('Preview')
       return self._RunMethod(
           config, request, global_params=global_params)
 

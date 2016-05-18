@@ -276,13 +276,14 @@ class Lexer(object):
       cursor += ' '
     return '{0}{1}{2}'.format(self._expr[0:here], cursor, self._expr[here:])
 
-  def SkipSpace(self, token=None):
+  def SkipSpace(self, token=None, terminators=''):
     """Skips spaces in the expression string.
 
     Args:
       token: The expected next token description string, None if end of input is
         OK. This string is used in the exception message. It is not used to
         validate the type of the next token.
+      terminators: Space characters in this string will not be skipped.
 
     Raises:
       ExpressionSyntaxError: End of input reached after skipping and a token is
@@ -292,7 +293,8 @@ class Lexer(object):
       True if the expression is not at end of input.
     """
     while not self.EndOfInput():
-      if not self._expr[self._position].isspace():
+      c = self._expr[self._position]
+      if not c.isspace() or c in terminators:
         return True
       self._position += 1
     if token:
@@ -366,7 +368,7 @@ class Lexer(object):
     Args:
       terminators: A set of characters that terminate the token. isspace()
         characters always terminate the token. It may be a string, tuple, list
-          or set.
+        or set. Terminator characters are not consumed.
       balance_parens: True if (...) must be balanced.
       space: True if space characters should be skipped after the token. Space
         characters are always skipped before the token.
@@ -406,6 +408,8 @@ class Lexer(object):
         quoted = True
         if token is None:
           token = []
+      elif not quote and c.isspace() and token is None:
+        pass
       elif not quote and balance_parens and c in '()':
         if c == '(':
           paren_count += 1
@@ -434,7 +438,7 @@ class Lexer(object):
           'Unterminated [{0}] quote [{1}].'.format(quote, self.Annotate()))
     self.SetPosition(i)
     if space:
-      self.SkipSpace()
+      self.SkipSpace(terminators=terminators)
     if token is not None:
       # Convert the list of token chars to a string.
       token = ''.join(token)
@@ -449,8 +453,8 @@ class Lexer(object):
           pass
     return token
 
-  def Args(self, convert=False):
-    """Parses a ,-separated, )-terminated arg list.
+  def Args(self, convert=False, separators=','):
+    """Parses a separators-separated, )-terminated arg list.
 
     The initial '(' has already been consumed by the caller. The arg list may
     be empty. Otherwise the first ',' must be preceded by a non-empty argument,
@@ -458,6 +462,7 @@ class Lexer(object):
 
     Args:
       convert: Converts unquoted numeric string args to numbers if True.
+      separators: A string of argument separator characters.
 
     Raises:
       ExpressionSyntaxError: The expression has a syntax error.
@@ -467,19 +472,33 @@ class Lexer(object):
     """
     required = False  # True if there must be another argument token.
     args = []
+    terminators = separators + ')'  # The closing ')' also terminates an arg.
     while True:
       here = self.GetPosition()
-      arg = self.Token(',)', balance_parens=True, convert=convert)
+      arg = self.Token(terminators, balance_parens=True, convert=convert)
       end = self.IsCharacter(')')
+      if end:
+        sep = end
+      else:
+        sep = self.IsCharacter(separators, eoi_ok=True)
+        if not sep:
+          # This branch "cannot happen". End of input, separators and
+          # terminators have already been handled. Retained to guard against
+          # future ingenuity.
+          here = self.GetPosition()
+          raise resource_exceptions.ExpressionSyntaxError(
+              'Closing ) expected in argument list [{0}].'.format(
+                  self.Annotate(here)))
       if arg is not None:
-        args.append(arg)
+        # No empty args with space separators.
+        if arg or not sep.isspace():
+          args.append(arg)
       elif required or not end:
         raise resource_exceptions.ExpressionSyntaxError(
             'Argument expected [{0}].'.format(self.Annotate(here)))
       if end:
         break
-      self.IsCharacter(',')
-      required = True
+      required = not sep.isspace()
     return args
 
   def Key(self):

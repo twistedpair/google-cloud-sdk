@@ -12,18 +12,6 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'testing'
 
 
-class Account(_messages.Message):
-  """A Account object.
-
-  Fields:
-    googleAuto: A GoogleAuto attribute.
-    googleUsernamePassword: A GoogleUsernamePassword attribute.
-  """
-
-  googleAuto = _messages.MessageField('GoogleAuto', 1)
-  googleUsernamePassword = _messages.MessageField('GoogleUsernamePassword', 2)
-
-
 class AndroidDevice(_messages.Message):
   """A single Android device.
 
@@ -126,8 +114,6 @@ class AndroidModel(_messages.Message):
   Fields:
     brand: The company that this device is branded with. Example: "Google",
       "Samsung" @OutputOnly
-    buildTags: Build tags (generally release-keys or dev-keys) This
-      corresponds to ro.build.tags @OutputOnly
     codename: The name of the industrial design. This corresponds to
       android.os.Build.DEVICE @OutputOnly
     form: Whether this device is virtual or physical. @OutputOnly
@@ -165,18 +151,17 @@ class AndroidModel(_messages.Message):
     PHYSICAL = 2
 
   brand = _messages.StringField(1)
-  buildTags = _messages.StringField(2, repeated=True)
-  codename = _messages.StringField(3)
-  form = _messages.EnumField('FormValueValuesEnum', 4)
-  id = _messages.StringField(5)
-  manufacturer = _messages.StringField(6)
-  name = _messages.StringField(7)
-  screenDensity = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(11, repeated=True)
-  supportedVersionIds = _messages.StringField(12, repeated=True)
-  tags = _messages.StringField(13, repeated=True)
+  codename = _messages.StringField(2)
+  form = _messages.EnumField('FormValueValuesEnum', 3)
+  id = _messages.StringField(4)
+  manufacturer = _messages.StringField(5)
+  name = _messages.StringField(6)
+  screenDensity = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(10, repeated=True)
+  supportedVersionIds = _messages.StringField(11, repeated=True)
+  tags = _messages.StringField(12, repeated=True)
 
 
 class AndroidMonkeyTest(_messages.Message):
@@ -220,9 +205,6 @@ class AndroidRoboTest(_messages.Message):
       Default is 50. Optional
     maxSteps: The max number of steps Robo can execute. Default is no limit.
       Optional
-    protoConf: A FileReference attribute.
-    randomizeSteps: Whether Robo follows a random order of steps on a given
-      activity state. Optional
   """
 
   appApk = _messages.MessageField('FileReference', 1)
@@ -230,8 +212,6 @@ class AndroidRoboTest(_messages.Message):
   appPackageId = _messages.StringField(3)
   maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  protoConf = _messages.MessageField('FileReference', 6)
-  randomizeSteps = _messages.BooleanField(7)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):
@@ -272,64 +252,6 @@ class AndroidVersion(_messages.Message):
   releaseDate = _messages.MessageField('Date', 5)
   tags = _messages.StringField(6, repeated=True)
   versionString = _messages.StringField(7)
-
-
-class Apk(_messages.Message):
-  """An Android package file to install.
-
-  Fields:
-    location: The path to an APK to be installed on the device before the test
-      begins. Optional
-    packageName: The java package for the APK to be installed. Optional, value
-      is determined by examining the application's manifest.
-  """
-
-  location = _messages.MessageField('FileReference', 1)
-  packageName = _messages.StringField(2)
-
-
-class BlobstoreFile(_messages.Message):
-  """Reference to a blob in Blobstore.
-
-  Fields:
-    blobId: A blob ID. Example: /android_test/blobs/4e9AAT9sqHRY_oBBzIKHSEFgg
-      Required
-    md5Hash: The MD5 hash of the referenced blob. (This is necessary to create
-      a Bigstore object directly from the Blobstore reference.) Required
-  """
-
-  blobId = _messages.StringField(1)
-  md5Hash = _messages.StringField(2)
-
-
-class Browser(_messages.Message):
-  """An available browser.
-
-  Fields:
-    androidCatalog: The catalog of Android devices for which we offer this
-      browser. @OutputOnly
-    id: A human readable id for this Browser version. Use this id to invoke
-      the TestExecutionService. Examples: "chrome-stable-channel", "firefox-
-      beta-channel" @OutputOnly
-    linuxCatalog: The catalog of Linux machines which we offer this browser.
-      @OutputOnly
-    name: A string representing the browser name. Examples: "chrome",
-      "firefox", "ie" @OutputOnly
-    release: The release of the browser. Examples: "stable-channel", "beta-
-      channel", "10" (for ie), etc @OutputOnly
-    versionString: A string representing the version of the browser. Examples:
-      "42.12.34.1234", "37.01", "10.0.9200.16384" (for ie) @OutputOnly
-    windowsCatalog: The catalog of Windows machines which we offer this
-      browser. @OutputOnly
-  """
-
-  androidCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
-  id = _messages.StringField(2)
-  linuxCatalog = _messages.MessageField('LinuxMachineCatalog', 3)
-  name = _messages.StringField(4)
-  release = _messages.StringField(5)
-  versionString = _messages.StringField(6)
-  windowsCatalog = _messages.MessageField('WindowsMachineCatalog', 7)
 
 
 class CancelTestMatrixResponse(_messages.Message):
@@ -506,12 +428,10 @@ class DeviceFile(_messages.Message):
   """A single device file description.
 
   Fields:
-    obbFile: A ObbFile attribute.
-    regularFile: A RegularFile attribute.
+    obbFile: A reference to an opaque binary blob file
   """
 
   obbFile = _messages.MessageField('ObbFile', 1)
-  regularFile = _messages.MessageField('RegularFile', 2)
 
 
 class DeviceStateDetails(_messages.Message):
@@ -577,13 +497,11 @@ class FileReference(_messages.Message):
   """A reference to a file, used for user inputs.
 
   Fields:
-    blob: A blob in Blobstore.
     gcsPath: A path to a file in Google Cloud Storage. Example: gs://build-
       app-1414623860166/app-debug-unaligned.apk
   """
 
-  blob = _messages.MessageField('BlobstoreFile', 1)
-  gcsPath = _messages.StringField(2)
+  gcsPath = _messages.StringField(1)
 
 
 class GceInstanceDetails(_messages.Message):
@@ -606,17 +524,6 @@ class GceInstanceDetails(_messages.Message):
   zone = _messages.StringField(3)
 
 
-class GoogleAuto(_messages.Message):
-  """Enables automatic Google account login. If set, the service will
-  automatically generate a Google test account and add it to the device,
-  before executing the test. Note that test accounts might be reused. Many
-  applications show their full set of functionalities when an account is
-  present on the device. Logging into the device with these generated accounts
-  allows testing more functionalities.
-  """
-
-
-
 class GoogleCloudStorage(_messages.Message):
   """A storage location within Google cloud storage (GCS).
 
@@ -627,55 +534,6 @@ class GoogleCloudStorage(_messages.Message):
   """
 
   gcsPath = _messages.StringField(1)
-
-
-class GoogleUsernamePassword(_messages.Message):
-  """Enables login to a user-specified Google account, to be used for testing.
-
-  Fields:
-    password: Required
-    username: The username, which is normally an email address. Required
-  """
-
-  password = _messages.StringField(1)
-  username = _messages.StringField(2)
-
-
-class LinuxMachine(_messages.Message):
-  """A single Linux machine.
-
-  Fields:
-    versionId: The version id of the Linux OS to be used. Use the
-      EnvironmentDiscoveryService to get supported options.
-  """
-
-  versionId = _messages.StringField(1)
-
-
-class LinuxMachineCatalog(_messages.Message):
-  """The currently supported Linux machines.
-
-  Fields:
-    versions: The set of supported Linux versions. @OutputOnly
-  """
-
-  versions = _messages.MessageField('LinuxVersion', 1, repeated=True)
-
-
-class LinuxVersion(_messages.Message):
-  """A verison of a Linux OS.
-
-  Fields:
-    id: The unique opaque id for this Linux Version. @OutputOnly
-    tags: Tags for this version. Examples: "default"
-    versionString: A string representing this version of the Linux OS.
-      Examples: "debian-7-wheezy-v20150325", "debian-7-wheezy-v30150325"
-      @OutputOnly
-  """
-
-  id = _messages.StringField(1)
-  tags = _messages.StringField(2, repeated=True)
-  versionString = _messages.StringField(3)
 
 
 class ListDevicesResponse(_messages.Message):
@@ -701,20 +559,6 @@ class ListTestMatricesResponse(_messages.Message):
   testMatrices = _messages.MessageField('TestMatrix', 1, repeated=True)
 
 
-class ListWebDriverResponse(_messages.Message):
-  """Response containing a list of WebDriver environments. Supports
-  pagination.
-
-  Fields:
-    nextPageToken: The pagination token to retrieve the next page of WebDriver
-      results.
-    webdriverEnvironments: The WebDriver environments to be returned.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  webdriverEnvironments = _messages.MessageField('WebDriver', 2, repeated=True)
-
-
 class Locale(_messages.Message):
   """A location/region designation for language.
 
@@ -734,7 +578,8 @@ class Locale(_messages.Message):
 
 
 class ObbFile(_messages.Message):
-  """A ObbFile object.
+  """An opaque binary blob file to install on the device before the test
+  starts
 
   Fields:
     obb: Opaque Binary Blob (OBB) file(s) to install on the device Required
@@ -761,30 +606,6 @@ class Orientation(_messages.Message):
   id = _messages.StringField(1)
   name = _messages.StringField(2)
   tags = _messages.StringField(3, repeated=True)
-
-
-class RegularFile(_messages.Message):
-  """A file or directory to install on the device before the test starts
-
-  Fields:
-    content: Required
-    devicePath: Where to put the content on the device. Must be an absolute,
-      whitelisted path. If it exists, it will be replaced. The following
-      device-side directories and any of their subdirectories are whitelisted:
-      <p>${EXTERNAL_STORAGE}, or /sdcard</p> <p>${ANDROID_DATA}/local/tmp, or
-      /data/local/tmp</p> <p>Specifying a path outside of these directory
-      trees is invalid.  <p> The paths /sdcard and /data will be made
-      available and treated as implicit path substitutions. E.g. if /sdcard on
-      a particular device does not map to external storage, the system will
-      replace it with the external storage path prefix for that device and
-      copy the file there.  <p> It is strongly advised to use the <a href=
-      "http://developer.android.com/reference/android/os/Environment.html">
-      Environment API</a> in app and test code to access files on the device
-      in a portable way. Required
-  """
-
-  content = _messages.MessageField('FileReference', 1)
-  devicePath = _messages.StringField(2)
 
 
 class ResultStorage(_messages.Message):
@@ -893,11 +714,9 @@ class TestEnvironmentCatalog(_messages.Message):
   Fields:
     androidDeviceCatalog: Android devices suitable for running Android
       Instrumentation Tests.
-    webDriverCatalog: WebDriver environments suitable for running web tests.
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
-  webDriverCatalog = _messages.MessageField('WebDriverCatalog', 2)
 
 
 class TestExecution(_messages.Message):
@@ -1059,20 +878,14 @@ class TestSetup(_messages.Message):
   """A description of how to set up the device prior to running the test
 
   Fields:
-    account: The device will be logged in on this account for the duration of
-      the test. Optional
-    additionalApks: APKs to install in addition to those being directly
-      tested. Currently capped at three. Optional
     directoriesToPull: The directories on the device to upload to GCS at the
       end of the test; they must be absolute, whitelisted paths. Refer to
       RegularFile for whitelisted paths. Optional
     filesToPush: Optional
   """
 
-  account = _messages.MessageField('Account', 1)
-  additionalApks = _messages.MessageField('Apk', 2, repeated=True)
-  directoriesToPull = _messages.StringField(3, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 4, repeated=True)
+  directoriesToPull = _messages.StringField(1, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 2, repeated=True)
 
 
 class TestSpecification(_messages.Message):
@@ -1232,76 +1045,6 @@ class TestingProjectsTestMatricesListRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
 
 
-class TestingProjectsWebdriverCreateRequest(_messages.Message):
-  """A TestingProjectsWebdriverCreateRequest object.
-
-  Fields:
-    projectId: The GCP project under which to create the WebDriver
-      environment.
-    webDriver: A WebDriver resource to be passed as the request body.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  webDriver = _messages.MessageField('WebDriver', 2)
-
-
-class TestingProjectsWebdriverDeleteRequest(_messages.Message):
-  """A TestingProjectsWebdriverDeleteRequest object.
-
-  Fields:
-    projectId: The GCP project that contains the WebDriver endpoint to be
-      deleted.
-    webdriverId: The GCE WebDriver environment to be deleted specified from
-      the WebDriver id.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  webdriverId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsWebdriverGetRequest(_messages.Message):
-  """A TestingProjectsWebdriverGetRequest object.
-
-  Fields:
-    projectId: The GCP project that contains this WebDriver instance.
-    webdriverId: The GCE WebDriver environment to be deleted specified from
-      the WebDriver id.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  webdriverId = _messages.StringField(2, required=True)
-
-
-class TestingProjectsWebdriverKeepaliveRequest(_messages.Message):
-  """A TestingProjectsWebdriverKeepaliveRequest object.
-
-  Fields:
-    projectId: The GCP project that contains the webdriver to be issued the
-      keep-alive.
-    webDriverKeepAliveRequest: A WebDriverKeepAliveRequest resource to be
-      passed as the request body.
-    webdriverId: The WebDriver environment to be issued the keep-alive.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  webDriverKeepAliveRequest = _messages.MessageField('WebDriverKeepAliveRequest', 2)
-  webdriverId = _messages.StringField(3, required=True)
-
-
-class TestingProjectsWebdriverListRequest(_messages.Message):
-  """A TestingProjectsWebdriverListRequest object.
-
-  Fields:
-    pageSize: Used to specify the max number of results to be returned.
-    pageToken: Used to request a specific page of the results list.
-    projectId: The GCP project to list the environments from.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
-
-
 class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
   """A TestingTestEnvironmentCatalogGetRequest object.
 
@@ -1319,11 +1062,9 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: <no description>
       ANDROID: <no description>
-      WEBDRIVER: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
-    WEBDRIVER = 2
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
 
@@ -1371,124 +1112,6 @@ class ToolResultsStep(_messages.Message):
   historyId = _messages.StringField(2)
   projectId = _messages.StringField(3)
   stepId = _messages.StringField(4)
-
-
-class VMDetails(_messages.Message):
-  """A VMDetails object.
-
-  Enums:
-    StateValueValuesEnum: State of the device. @OutputOnly
-
-  Fields:
-    creationTime: The time this device was initially created. @OutputOnly
-    deviceDetails: Information about the backing GCE instance and connection.
-      @OutputOnly
-    state: State of the device. @OutputOnly
-    stateDetails: Details about the state of the device. @OutputOnly
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """State of the device. @OutputOnly
-
-    Values:
-      DEVICE_UNSPECIFIED: Do not use.  For proto versioning only.
-      PREPARING: The device is in the process of spinning up.
-      READY: The device is created and ready to use.
-      CLOSED: The device has been closed.
-      DEVICE_ERROR: There has been an error.
-    """
-    DEVICE_UNSPECIFIED = 0
-    PREPARING = 1
-    READY = 2
-    CLOSED = 3
-    DEVICE_ERROR = 4
-
-  creationTime = _messages.StringField(1)
-  deviceDetails = _messages.MessageField('DeviceDetails', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  stateDetails = _messages.MessageField('DeviceStateDetails', 4)
-
-
-class WebDriver(_messages.Message):
-  """A WebDriver environment.
-
-  Fields:
-    androidDevice: An Android device.
-    browserId: The id of the browser to be used. Use the
-      EnvironmentDiscoveryService to get supported values. Required
-    endpoint: The endpoint in host:port format where the target running the
-      specified browser accepts WebDriver protocol commands. @OutputOnly
-    id: Unique id set by the system. @OutputOnly
-    linuxMachine: A Linux virtual machine.
-    projectId: The GCE project for this WebDriver test environment.
-      @OutputOnly
-    sshPublicKey: The public key to be set on the VM in order to SSH into it.
-    vmDetails: The state details of the target device/machine. @OutputOnly
-    windowsMachine: A Windows virtual machine.
-  """
-
-  androidDevice = _messages.MessageField('AndroidDevice', 1)
-  browserId = _messages.StringField(2)
-  endpoint = _messages.StringField(3)
-  id = _messages.StringField(4)
-  linuxMachine = _messages.MessageField('LinuxMachine', 5)
-  projectId = _messages.StringField(6)
-  sshPublicKey = _messages.StringField(7)
-  vmDetails = _messages.MessageField('VMDetails', 8)
-  windowsMachine = _messages.MessageField('WindowsMachine', 9)
-
-
-class WebDriverCatalog(_messages.Message):
-  """The currently supported WebDriver VM resources.
-
-  Fields:
-    browsers: The set of supported browsers. @OutputOnly
-  """
-
-  browsers = _messages.MessageField('Browser', 1, repeated=True)
-
-
-class WebDriverKeepAliveRequest(_messages.Message):
-  """Request to issue a keep-alive to a WebDriver environment instance by
-  project and webdriver ids.
-  """
-
-
-
-class WindowsMachine(_messages.Message):
-  """A single Windows machine.
-
-  Fields:
-    versionId: The version id of the Windows OS to be used. Use the
-      EnvironmentDiscoveryService to get supported options.
-  """
-
-  versionId = _messages.StringField(1)
-
-
-class WindowsMachineCatalog(_messages.Message):
-  """The currently supported Windows machines.
-
-  Fields:
-    versions: The set of supported Windows versions. @OutputOnly
-  """
-
-  versions = _messages.MessageField('WindowsVersion', 1, repeated=True)
-
-
-class WindowsVersion(_messages.Message):
-  """A version of a Windows OS.
-
-  Fields:
-    id: The unique opaque id for this Windows Version. @OutputOnly
-    tags: Tags for this version. Examples: "default"
-    versionString: A string representing this version of the Windows OS.
-      Examples: "windows-server-2008-r2-dc-v20150331", windows-7" @OutputOnly
-  """
-
-  id = _messages.StringField(1)
-  tags = _messages.StringField(2, repeated=True)
-  versionString = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

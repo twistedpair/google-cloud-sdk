@@ -228,11 +228,12 @@ def GetFileAsMessage(path, message, client):
   return result
 
 
-def ArgDictToAdditionalPropertiesList(list_of_argdicts, message):
+def ArgDictToAdditionalPropertiesList(argdict, message):
   result = []
-  for d in list_of_argdicts:
-    for k, v in d.iteritems():
-      result.append(message(key=k, value=v))
+  if argdict is None:
+    return result
+  for k, v in argdict.iteritems():
+    result.append(message(key=k, value=v))
   return result
 
 

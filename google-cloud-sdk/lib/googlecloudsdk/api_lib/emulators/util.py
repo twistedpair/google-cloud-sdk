@@ -23,7 +23,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
@@ -136,7 +136,7 @@ def WriteEnvYaml(env, output_dir):
   """
   env_file_path = os.path.join(output_dir, 'env.yaml')
   with files.Context(open(env_file_path, 'w')) as env_file:
-    resource_printer.YamlPrinter(env_file).AddRecord(env)
+    resource_printer.Print([env], print_format='yaml', out=env_file)
 
 
 def ReadEnvYaml(output_dir):

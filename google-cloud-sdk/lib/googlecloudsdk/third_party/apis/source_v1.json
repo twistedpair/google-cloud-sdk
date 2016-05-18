@@ -612,7 +612,7 @@
               "path": "v1/projects/{projectId}/repos/{repoName}",
               "flatPath": "v1/projects/{projectId}/repos/{repoName}",
               "httpMethod": "PUT",
-              "description": "Updates an existing repo. The only things you can change about a repo are\nits repo_sync_config (and then only to add one that is not present) and its\nlast-updated time.",
+              "description": "Updates an existing repo. The only things you can change about a repo are:\n  1) its repo_sync_config (and then only to add one that is not present);\n  2) its last-updated time; and\n  3) its name.",
               "parameters": {
                 "projectId": {
                   "description": "The ID of the project.",

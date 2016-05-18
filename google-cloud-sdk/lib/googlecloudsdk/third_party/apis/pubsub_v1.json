@@ -320,8 +320,8 @@
           "description": "An operator to apply the subject with.",
           "enumDescriptions": [
             "Default no-op.",
-            "Equality check.",
-            "Non-equality check.",
+            "DEPRECATED. Use IN instead.",
+            "DEPRECATED. Use NOT_IN instead.",
             "Set-inclusion check.",
             "Set-exclusion check.",
             "Subject is discharged"
@@ -337,7 +337,7 @@
           ]
         },
         "value": {
-          "description": "The object of the condition. Exactly one of these must be set.",
+          "description": "DEPRECATED. Use 'values' instead.",
           "type": "string"
         },
         "values": {

@@ -35,39 +35,16 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 import yaml
-
-
-def PrintTable(resources, table_cols):
-  """Prints a table of the given resources."""
-  printer = resource_printer.TablePrinter(out=log.out)
-
-  header = []
-  for name, _ in table_cols:
-    header.append(name)
-  printer.AddRow(header)
-
-  try:
-    for resource in resources:
-      row = []
-      for _, action in table_cols:
-        if isinstance(action, property_selector.PropertyGetter):
-          row.append(action.Get(resource) or '')
-        elif callable(action):
-          row.append(action(resource))
-      printer.AddRow(row)
-  finally:
-    printer.Print()
 
 
 class BaseCommand(base.Command, scope_prompter.ScopePrompter):
@@ -77,6 +54,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
+    self._http_client = http.Http()
 
   @property
   def _resource_spec(self):
@@ -104,7 +82,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def http(self):
     """Specifies the http client to be used for requests."""
-    return self.context['http']
+    return self._http_client
 
   @property
   def project(self):
@@ -469,21 +447,10 @@ class MultiScopeLister(BaseLister):
     max_results = constants.MAX_RESULTS_PER_PAGE
     project = self.project
 
-    # If --global is present OR no scope flags are present then we have to fetch
-    # the global resources.
-    if has_global:
-      requests.append(
-          (self.global_service,
-           'List',
-           self.global_service.GetRequestType('List')(
-               filter=filter_expr,
-               maxResults=max_results,
-               project=project)))
-
     # If --regions is present with no arguments OR no scope flags are present
     # then we have to do an aggregated list
     # pylint:disable=g-explicit-bool-comparison
-    if no_scope_flags:
+    if no_scope_flags and self.aggregation_service:
       requests.append(
           (self.aggregation_service,
            'AggregatedList',
@@ -519,6 +486,16 @@ class MultiScopeLister(BaseLister):
                  maxResults=max_results,
                  zone=zone_name,
                  project=project)))
+    else:
+      # Either --global was specified or we do not have aggregation service.
+      # Note that --global, --region and --zone are mutually exclusive.
+      requests.append(
+          (self.global_service,
+           'List',
+           self.global_service.GetRequestType('List')(
+               filter=filter_expr,
+               maxResults=max_results,
+               project=project)))
 
     return request_helper.MakeRequests(
         requests=requests,

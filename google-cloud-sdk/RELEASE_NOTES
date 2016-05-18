@@ -2,6 +2,65 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 110.0.0 (2016/05/18)
+
+### Google IAM
+
+*   The `gcloud iam` command group is now available in GA. The `gcloud beta iam`
+    will still be available for several more releases.
+
+### Google App Engine
+
+*   Fixed issue with the `--docker-build=local` flag in the `gcloud preview app
+    deploy` command with docker version 1.10+. Note that local Docker builds
+    with Docker version 1.11 will still fail when using the new Docker external
+    credentials; please downgrade to the plain credential store.
+    https://code.google.com/p/google-cloud-sdk/issues/detail?id=802
+
+### Google Container Engine
+
+*   `gcloud beta container` commands (e.g. `container create`) now support
+    specifying ImageTypes.
+*   The `gcloud container clusters list` command now sorts the clusters based on
+    zone and then on cluster name.
+*   The `gcloud container clusters create` command now allows specifying
+    --max-nodes-per-pool (default 1000) to create multiple node pools for large
+    clusters.
+
+### Google Compute Engine
+
+*   The `gcloud compute backend-services` backend commands now support
+    --instance-group-zone and --instance-group-region to qualify instance group
+    specifically. Before --zone, --region was used to qualify all resource
+    arguments, where as now it is used to qualify backend service.
+
+### Google Genomics
+
+*   The `genomics variantsets create` command now supports the --name and
+    --description flags.
+*   The `genomics variantsets delete` command displays the name of the variant
+    set before prompting the user to delete it.
+*   The genomics `variantsets describe/list` commands display variant set names
+    and descriptions.
+
+### Emulators
+
+*   The Google Cloud Datastore emulator supports a new environment variable for
+    client library configuration.
+*   The Google Cloud Datastore emulator flag --store-on-disk has been fixed to
+    accept a false value using --no-store-on-disk. Previously,
+    --store-on-disk=False could be specified but wasn't respected.
+
+### Debug
+
+*   The `The gcloud debug` command group is now in Beta.
+
+### Misc.
+
+*   The Cloud SDK Windows installer is now dual signed SHA1 and SHA256. The
+    executable is signed with both authenticode and RFC3161 signatures.
+*   The winkeygen.exe executable is also now dual signed, like above.
+
 ## 109.0.0 (2016/05/11)
 
 ### Google App Engine

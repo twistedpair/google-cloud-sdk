@@ -8,6 +8,7 @@ class SourceV1(base_api.BaseApiClient):
   """Generated client library for service source version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://source.googleapis.com/'
 
   _PACKAGE = u'source'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -25,7 +26,7 @@ class SourceV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new source handle."""
-    url = url or u'https://source.googleapis.com/'
+    url = url or self.BASE_URL
     super(SourceV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -318,9 +319,10 @@ response list is sorted by name with the default repo listed first.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates an existing repo. The only things you can change about a repo are.
-its repo_sync_config (and then only to add one that is not present) and its
-last-updated time.
+      """Updates an existing repo. The only things you can change about a repo are:.
+  1) its repo_sync_config (and then only to add one that is not present);
+  2) its last-updated time; and
+  3) its name.
 
       Args:
         request: (SourceProjectsReposUpdateRequest) input message

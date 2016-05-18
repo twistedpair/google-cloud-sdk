@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Billing API",
-  "description": "Retrieves Google Developers Console billing accounts and associates them with projects.\n",
+  "description": "Retrieves Google Cloud Console billing accounts and associates them with projects.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -119,7 +119,7 @@
   "schemas": {
     "BillingAccount": {
       "id": "BillingAccount",
-      "description": "A billing account in [Google Developers\nConsole](https:\/\/console.developers.google.com\/). You can assign a billing\naccount to one or more projects.",
+      "description": "A billing account in [Google Cloud\nConsole](https:\/\/console.cloud.google.com\/). You can assign a billing account\nto one or more projects.",
       "type": "object",
       "properties": {
         "name": {
@@ -131,7 +131,7 @@
           "type": "boolean"
         },
         "displayName": {
-          "description": "The display name given to the billing account, such as `My Billing\nAccount`. This name is displayed in the Google Developers Console.",
+          "description": "The display name given to the billing account, such as `My Billing\nAccount`. This name is displayed in the Google Cloud Console.",
           "type": "string"
         }
       }
@@ -174,7 +174,7 @@
     },
     "ProjectBillingInfo": {
       "id": "ProjectBillingInfo",
-      "description": "Encapsulation of billing information for a Developers Console project. A\nproject has at most one associated billing account at a time (but a billing\naccount can be assigned to multiple projects).",
+      "description": "Encapsulation of billing information for a Cloud Console project. A project\nhas at most one associated billing account at a time (but a billing account\ncan be assigned to multiple projects).",
       "type": "object",
       "properties": {
         "name": {
@@ -329,7 +329,7 @@
           "path": "v1/{+name}/billingInfo",
           "flatPath": "v1/projects/{projectsId}/billingInfo",
           "httpMethod": "PUT",
-          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the Google Developers Console may be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account.",
+          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the Google Cloud Console may be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account.",
           "parameters": {
             "name": {
               "description": "The resource name of the project associated with the billing information\nthat you want to update. For example, `projects\/tokyo-rain-123`.",

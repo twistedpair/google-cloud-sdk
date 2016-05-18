@@ -216,12 +216,8 @@ class AppengineClient(object):
       version: str, The version of the service to update.
       instance: str, The instance id of a single instance to update.
       wait: bool, True to wait until it takes effect.
-
-    Returns:
-      None, if not waiting.  If waiting, returns (bool, message) for the last
-      attempt at checking state.
     """
-    return self._SetManagedBy(service, version, instance, '/api/vms/lock', wait)
+    self._SetManagedBy(service, version, instance, '/api/vms/lock', wait)
 
   def SetManagedBySelf(self, service, version, instance=None, wait=True):
     """Sets a service version (optionally a single instance) as self managed.
@@ -234,13 +230,8 @@ class AppengineClient(object):
       version: str, The version of the service to update.
       instance: str, The instance id of a single instance to update.
       wait: bool, True to wait until it takes effect.
-
-    Returns:
-      None, if not waiting.  If waiting, returns (bool, message) for the last
-      attempt at checking state.
     """
-    return self._SetManagedBy(service, version, instance, '/api/vms/debug',
-                              wait)
+    self._SetManagedBy(service, version, instance, '/api/vms/debug', wait)
 
   def _SetManagedBy(self, service, version, instance, url, wait):
     """Switches a service version between management modes.
@@ -252,9 +243,8 @@ class AppengineClient(object):
       url: str, The URL of the API to call to make the update.
       wait: bool, True to wait until it takes effect.
 
-    Returns:
-      None, if not waiting.  If waiting, returns (bool, message) for the last
-      attempt at checking state.
+    Raises:
+      Error: if changing the instance debug state failed.
     """
     rpcserver = self._GetRpcServer()
     kwargs = {'app_id': self.project,
@@ -272,14 +262,17 @@ class AppengineClient(object):
             module=service)
         state = yaml.safe_load(yaml_data)
         done = state['state'] != 'PENDING'
-        return (done, state['message'])
+        return (done, (state['state'], state['message']))
 
-      def PrintRetryMessage(msg, delay):
+      def PrintRetryMessage((unused_state, msg), delay):
         log.status.Print('{0}.  Will try again in {1} seconds.'
                          .format(msg, delay))
 
-      return util.RetryWithBackoff(GetState, PrintRetryMessage, initial_delay=1,
-                                   backoff_factor=2, max_delay=5, max_tries=20)
+      _, (state, message) = util.RetryWithBackoff(
+          GetState, PrintRetryMessage, initial_delay=1, backoff_factor=2,
+          max_delay=5, max_tries=20)
+      if state == 'ERROR':
+        raise Error(message)
 
   def StartService(self, service, version):
     """Starts serving a the given version of the service.

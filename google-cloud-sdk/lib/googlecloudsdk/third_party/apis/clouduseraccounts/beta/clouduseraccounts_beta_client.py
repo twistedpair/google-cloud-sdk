@@ -8,6 +8,7 @@ class ClouduseraccountsBeta(base_api.BaseApiClient):
   """Generated client library for service clouduseraccounts version beta."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/clouduseraccounts/beta/'
 
   _PACKAGE = u'clouduseraccounts'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/cloud.useraccounts', u'https://www.googleapis.com/auth/cloud.useraccounts.readonly']
@@ -25,7 +26,7 @@ class ClouduseraccountsBeta(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new clouduseraccounts handle."""
-    url = url or u'https://www.googleapis.com/clouduseraccounts/beta/'
+    url = url or self.BASE_URL
     super(ClouduseraccountsBeta, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

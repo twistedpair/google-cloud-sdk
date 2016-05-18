@@ -518,7 +518,7 @@ class _SectionApp(_Section):
     def CloudBuildTimeoutValidator(cloud_build_timeout):
       if cloud_build_timeout is None:
         return
-      max_timeout = 30 * 60
+      max_timeout = 5 * 60 * 60
       try:
         if int(cloud_build_timeout) > max_timeout:
           raise InvalidValueError(
@@ -777,6 +777,7 @@ class _SectionMetrics(_Section):
   def __init__(self):
     super(_SectionMetrics, self).__init__('metrics', hidden=True)
     self.environment = self._Add('environment', hidden=True)
+    self.environment_version = self._Add('environment_version', hidden=True)
     self.command_name = self._Add('command_name', internal=True)
 
 

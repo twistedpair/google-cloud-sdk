@@ -8,6 +8,7 @@ class SqladminV1beta3(base_api.BaseApiClient):
   """Generated client library for service sqladmin version v1beta3."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/sql/v1beta3/'
 
   _PACKAGE = u'sqladmin'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/sqlservice.admin']
@@ -25,7 +26,7 @@ class SqladminV1beta3(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new sqladmin handle."""
-    url = url or u'https://www.googleapis.com/sql/v1beta3/'
+    url = url or self.BASE_URL
     super(SqladminV1beta3, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

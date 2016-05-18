@@ -1376,7 +1376,7 @@ class _EntityConverter(object):
     """
     check_conversion(v1_value.HasField('string_value'),
                      'Value does not contain a string value.')
-    return v1_value.string_value
+    return v1_value.string_value.encode('utf-8')
 
   def __v1_integer_property(self, entity, name, value, indexed):
     """Populates a single-integer-valued v1 Property.

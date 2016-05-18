@@ -8,6 +8,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
   """Generated client library for service servicemanagement version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://servicemanagement.googleapis.com/'
 
   _PACKAGE = u'servicemanagement'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/service.management']
@@ -25,7 +26,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new servicemanagement handle."""
-    url = url or u'https://servicemanagement.googleapis.com/'
+    url = url or self.BASE_URL
     super(ServicemanagementV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -176,7 +177,9 @@ the service.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a google.api.Service under the specified service.
+      """Creates a new service config (version) for a managed service. This method.
+only stores the service config, but does not apply the service config to
+any backend services.
 
       Args:
         request: (ServicemanagementServicesConfigsCreateRequest) input message
@@ -189,9 +192,8 @@ the service.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Retrieves the [google.api.Service] resource for the given service name.
-and config id. If no config id is specified, the latest service resource
-will be returned.
+      """Gets a service config (version) for a managed service. If `config_id` is.
+not specified, the latest service config will be returned.
 
       Args:
         request: (ServicemanagementServicesConfigsGetRequest) input message
@@ -204,7 +206,8 @@ will be returned.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """List all google.api.Service resources under the given service name.
+      """Lists the history of the service config for a managed service,.
+from the newest to the oldest.
 
       Args:
         request: (ServicemanagementServicesConfigsListRequest) input message
@@ -391,6 +394,18 @@ Operation<response: ProjectSettings>
     def __init__(self, client):
       super(ServicemanagementV1.ServicesService, self).__init__(client)
       self._method_configs = {
+          'ConvertConfig': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.convertConfig',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1/services:convertConfig',
+              request_field='<request>',
+              request_type_name=u'ConvertConfigRequest',
+              response_type_name=u'ConvertConfigResponse',
+              supports_download=False,
+          ),
           'Create': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'servicemanagement.services.create',
@@ -528,9 +543,22 @@ Operation<response: ProjectSettings>
       self._upload_configs = {
           }
 
+    def ConvertConfig(self, request, global_params=None):
+      """Converts an API specification (e.g. Swagger spec) to an equivalent.
+`google.api.Service`.
+
+      Args:
+        request: (ConvertConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConvertConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('ConvertConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Create(self, request, global_params=None):
-      """Creates a new service resource, allowing the Google API platform to.
-manage the service.
+      """Creates a new managed service.
 
 Operation<response: ManagedService>
 
@@ -545,8 +573,7 @@ Operation<response: ManagedService>
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified service resource, making the service unavailable.
-to service consumers.
+      """Deletes a managed service.
 
 Operation<response: google.protobuf.Empty>
 
@@ -561,9 +588,8 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Retrieves a service resource for specified service name.  Optionally.
-also retrieves service project settings and/or pending operations on
-the service resource.
+      """Gets a managed service. If the `consumer_project_id` is specified,.
+the project's settings for the specified service are also returned.
 
       Args:
         request: (ServicemanagementServicesGetRequest) input message
@@ -589,9 +615,8 @@ the service resource.
           config, request, global_params=global_params)
 
     def GetConfig(self, request, global_params=None):
-      """Retrieves the [google.api.Service] resource for the given service name.
-and config id. If no config id is specified, the latest service resource
-will be returned.
+      """Gets a service config (version) for a managed service. If `config_id` is.
+not specified, the latest service config will be returned.
 
       Args:
         request: (ServicemanagementServicesGetConfigRequest) input message
@@ -604,9 +629,8 @@ will be returned.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves a list of services for a set of query parameters.  Optionally.
-also retrieves service project settings and/or pending operations on
-the service resource.
+      """Lists all managed services. If the `consumer_project_id` is specified,.
+the project's settings for the specified service are also returned.
 
       Args:
         request: (ServicemanagementServicesListRequest) input message

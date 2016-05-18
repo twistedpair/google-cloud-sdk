@@ -400,9 +400,8 @@ _SUPPORTED_LIBRARIES = [
         'django',
         'http://www.djangoproject.com/',
         'A full-featured web application framework for Python.',
-        ['1.2', '1.3', '1.4', '1.5'],
+        ['1.2', '1.3', '1.4', '1.5', '1.9'],
         latest_version='1.4',
-        experimental_versions=['1.5'],
         ),
     _VersionedLibrary(
         'endpoints',

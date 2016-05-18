@@ -17,29 +17,31 @@
 import abc
 import re
 
+from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
 
 
-def _IsIn(matcher, operand, value):
-  """Applies matcher to determine if the expression operand is in value.
+def _IsIn(matcher, value, operand):
+  """Applies matcher to determine if value matches/contains operand.
+
+  Both value and operand can be lists.
 
   Args:
     matcher: Boolean match function that takes value as an argument and
-      returns True if the expression operand is in value.
-    operand: Number or string operand.
-    value: The value to match against.
+      returns True if the value matches/contains the expression operand.
+    value: The key value or list of values.
+    operand: Operand value or list of values.
 
   Returns:
-    True if the expression operand is in value.
+    True if the value (or any element in value if it is a list) matches/contains
+    operand (or any element in operand if it is a list).
   """
-  if matcher(operand, value):
-    return True
-  try:
-    for index in value:
-      if matcher(operand, index):
+  values = value if isinstance(value, (dict, list, tuple)) else [value]
+  operands = operand if isinstance(operand, (dict, list, tuple)) else [operand]
+  for v in values:
+    for o in operands:
+      if matcher(v, o):
         return True
-  except TypeError:
-    pass
   return False
 
 
@@ -83,9 +85,8 @@ class Backend(object):
   def ExprHAS(self, key, operand, transform=None):
     """Case insensitive membership node.
 
-    This is the pre-compile Expr for the ':' operator. It compiles into either
-    an _ExprInMatch node for prefix*suffix matching or an _ExprIn node for
-    membership.
+    This is the pre-compile Expr for the ':' operator. It compiles into an
+    _ExprHAS node for prefix*suffix matching.
 
     The * operator splits the operand into prefix and suffix matching strings.
 
@@ -95,38 +96,22 @@ class Backend(object):
       transform: Optional key value transform calls.
 
     Returns:
-      _ExprInMatch if operand is an anchored pattern, _ExprIn otherwise.
+      _ExprHAS.
     """
-    if operand.list_value is not None or '*' not in operand.string_value:
-      return _ExprIn(self, key, operand, transform)
-    pattern = operand.string_value.lower()
-    i = pattern.find('*')
-    prefix = pattern[:i]
-    suffix = pattern[i + 1:]
-    return _ExprInMatch(self, key, operand, transform, prefix, suffix)
+    return _ExprHAS(self, key, operand, transform)
 
   def ExprEQ(self, key, operand, transform=None):
     """Case sensitive EQ node.
 
-    Checks for prefix*suffix operand.
-
-    The * operator splits the operand into prefix and suffix matching strings.
-
     Args:
       key: Resource object key (list of str, int and/or None values).
       operand: The term ExprOperand operand.
       transform: Optional key value transform calls.
 
     Returns:
-      _ExprMatch if operand is an anchored pattern, _ExprEqual otherwise.
+      _ExprEQ.
     """
-    if '*' not in operand.string_value:
-      return _ExprEqual(self, key, operand, transform)
-    pattern = operand.string_value
-    i = pattern.find('*')
-    prefix = pattern[:i]
-    suffix = pattern[i + 1:]
-    return _ExprMatch(self, key, operand, transform, prefix, suffix)
+    return _ExprEQ(self, key, operand, transform)
 
   def ExprNE(self, key, operand, transform=None):
     return _ExprNE(self, key, operand, transform)
@@ -337,7 +322,7 @@ class _ExprOperator(_Expr):
       except (AttributeError, ValueError):
         pass
       except TypeError:
-        if not isinstance(value, basestring):
+        if not isinstance(value, (basestring, dict, list)):
           try:
             if self.Apply(unicode(value), operand.string_value):
               return True
@@ -374,92 +359,119 @@ class _ExprLE(_ExprOperator):
     return value <= operand
 
 
-class _ExprInMatch(_ExprOperator):
-  """Membership and anchored prefix*suffix match node."""
-
-  def __init__(self, backend, key, operand, transform, prefix, suffix):
-    """Initializes the anchored prefix and suffix patterns.
-
-    Args:
-      backend: The parser backend object.
-      key: Resource object key (list of str, int and/or None values).
-      operand: The term ExprOperand operand.
-      transform: Optional key value transform calls.
-      prefix: The anchored prefix pattern string.
-      suffix: The anchored suffix pattern string.
-    """
-    super(_ExprInMatch, self).__init__(backend, key, operand, transform)
-    self._prefix = prefix
-    self._suffix = suffix
-
-  def Apply(self, value, operand):
-    """Applies the : anchored case insensitive match operation."""
-
-    def _InMatch(unused_operand, value):
-      """Applies case insensitive string prefix/suffix match to value."""
-      if value is None:
-        return False
-      v = unicode(value).lower()
-      return ((not self._prefix or v.startswith(self._prefix)) and
-              (not self._suffix or v.endswith(self._suffix)))
-
-    return _IsIn(_InMatch, operand, value)
-
-
-class _ExprIn(_ExprOperator):
-  """Membership case-insensitive match node."""
+class _ExprHAS(_ExprOperator):
+  """Membership HAS match node."""
 
   def __init__(self, backend, key, operand, transform):
-    super(_ExprIn, self).__init__(backend, key, operand, transform)
+    super(_ExprHAS, self).__init__(backend, key, operand, transform)
+    self._patterns = []
     if self._operand.list_value is not None:
       for operand in self._operand.list_value:
-        operand.string_value = operand.string_value.lower()
-    else:
-      self._operand.string_value = self._operand.string_value.lower()
+        if operand.string_value:
+          self._AddPattern(operand.string_value)
+          operand.string_value = unicode(operand.string_value).lower()
+    elif self._operand.string_value:
+      self._AddPattern(self._operand.string_value)
+
+  def _AddPattern(self, pattern):
+    """Adds a HAS match pattern to self._patterns.
+
+    The pattern is a list of strings of length 1 or 2:
+      [string]: The subject string must be equal to string ignoring case.
+      [prefix, suffix]: The subject string must start with prefix and and with
+        suffix ignoring case.
+
+    Args:
+      pattern: A string containing at most one * glob character.
+
+    Raises:
+      resource_exceptions.ExpressionSyntaxError if the pattern contains more
+        than one * glob character.
+    """
+    parts = unicode(pattern).lower().split('*')
+    if len(parts) > 2:
+      raise resource_exceptions.ExpressionSyntaxError(
+          'Zero or one * expected in : patterns.')
+    self._patterns.append(parts)
+
+  @staticmethod
+  def _Has(value, pattern):
+    """Returns True if value HAS matches pattern."""
+    try:
+      value = value.lower()
+    except AttributeError:
+      pass
+    if len(pattern) == 1:
+      try:
+        if int(pattern[0]) == value:
+          return True
+      except ValueError:
+        pass
+      try:
+        if float(pattern[0]) == value:
+          return True
+        if str(float(pattern[0])) == str(value):
+          # Formatting gets rid of epsilon diffs, close enough for filteirng.
+          return True
+      except ValueError:
+        pass
+      return pattern[0] == value
+    if pattern[0]:
+      if not value.startswith(pattern[0]):
+        return False
+      if not pattern[1]:
+        return True
+    if pattern[1]:
+      return value.endswith(pattern[1])
+    # key:* (empty prefix and suffix) special-cased for non-empty string match.
+    return bool(value)
+
+  def Apply(self, value, unused_operand):
+    """Checks if value HAS matches operand ignoring case differences.
+
+    Args:
+      value: The number, string, dict or list object value.
+      unused_operand: Ignored. Precompiled into self._patterns.
+
+    Returns:
+      True if value HAS matches operand (or any value in operand if it is a
+      list) ignoring case differences.
+    """
+    return _IsIn(self._Has, value, self._patterns)
+
+
+class _ExprEQ(_ExprOperator):
+  """Membership equality match node."""
+
+  @staticmethod
+  def _Equals(value, operand):
+    """Applies string equality check to operand."""
+    if value == operand:
+      return True
+    try:
+      if value == float(operand):
+        return True
+    except ValueError:
+      pass
+    try:
+      if value == int(operand):
+        return True
+    except ValueError:
+      pass
+    return False
 
   def Apply(self, value, operand):
-    """Checks if operand is a member of value ignoring case differences.
+    """Checks if value is equal to operand.
 
     Args:
       value: The number, string, dict or list object value.
       operand: Number or string or list of Number or String.
 
     Returns:
-      True if operand is a member of value ignoring case differences.
+      True if value is equal to operand (or any value in operand if it is a
+      list).
     """
-
-    def _InEq(operand, subject):
-      """Applies case insensitive string contains check to subject."""
-      if operand == subject:
-        return True
-      try:
-        if operand == subject.lower():
-          return True
-      except AttributeError:
-        pass
-      try:
-        if operand in subject:
-          return True
-      except TypeError:
-        pass
-      try:
-        if operand in subject.lower():
-          return True
-      except AttributeError:
-        pass
-      try:
-        if int(operand) in subject:
-          return True
-      except ValueError:
-        pass
-      try:
-        if float(operand) in subject:
-          return True
-      except ValueError:
-        pass
-      return False
-
-    return _IsIn(_InEq, operand, value)
+    return _IsIn(self._Equals, value, operand)
 
 
 class _ExprMatch(_ExprOperator):
@@ -485,13 +497,6 @@ class _ExprMatch(_ExprOperator):
             (not self._suffix or value.endswith(self._suffix)))
 
 
-class _ExprEqual(_ExprOperator):
-  """Case sensitive EQ node with no match optimization."""
-
-  def Apply(self, value, operand):
-    return operand == value
-
-
 class _ExprNE(_ExprOperator):
   """NE node."""
 
@@ -499,7 +504,7 @@ class _ExprNE(_ExprOperator):
     try:
       return operand != value.lower()
     except AttributeError:
-      return operand != value
+      return value != operand
 
 
 class _ExprGE(_ExprOperator):

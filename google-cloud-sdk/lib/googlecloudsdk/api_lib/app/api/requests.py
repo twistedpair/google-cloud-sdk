@@ -19,7 +19,7 @@ import io
 import json
 
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 import httplib2

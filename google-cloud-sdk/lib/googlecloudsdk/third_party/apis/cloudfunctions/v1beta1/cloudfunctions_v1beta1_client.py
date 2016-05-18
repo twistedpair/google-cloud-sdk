@@ -8,6 +8,7 @@ class CloudfunctionsV1beta1(base_api.BaseApiClient):
   """Generated client library for service cloudfunctions version v1beta1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://cloudfunctions.googleapis.com/'
 
   _PACKAGE = u'cloudfunctions'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/devstorage.read_write', u'https://www.googleapis.com/auth/logging.write', u'https://www.googleapis.com/auth/pubsub']
@@ -25,7 +26,7 @@ class CloudfunctionsV1beta1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new cloudfunctions handle."""
-    url = url or u'https://cloudfunctions.googleapis.com/'
+    url = url or self.BASE_URL
     super(CloudfunctionsV1beta1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

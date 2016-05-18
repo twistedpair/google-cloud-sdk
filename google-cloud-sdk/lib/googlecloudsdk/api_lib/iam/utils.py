@@ -13,16 +13,13 @@
 # limitations under the License.
 """Module for miscellaneous utility functions."""
 
-import functools
 import httplib
-import pickle
 import re
 
-from googlecloudsdk.calliope.exceptions import HttpException
-from googlecloudsdk.calliope.exceptions import ToolException
+from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.core import apis as core_apis
-from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
@@ -126,50 +123,33 @@ def KeyTypeFromCreateKeyType(key_type):
     return KEY_TYPES.TYPE_UNSPECIFIED
 
 
-def CatchServiceAccountErrors(func):
-  """Decorator to automatically manage HTTP errors related to api calls."""
+class IAMServiceAccountException(core_exceptions.Error):
+  """An exception for IAM service account related errors."""
 
-  @functools.wraps(func)
-
-  # pylint:disable=invalid-name
-  def wrapper(*args, **kwargs):
-    self = args[0]
-    try:
-      return func(*args, **kwargs)
-    except exceptions.HttpError as error:
-      error_msg = None
-      if error.status_code == httplib.NOT_FOUND:
-        error_msg = 'Not found'
-      elif error.status_code == httplib.FORBIDDEN:
-        error_msg = 'Permission denied'
-
-      if error_msg:
-        if self.key_id:
-          log.error('{0}: key [{1}] for service account [{2}]'.format(
-              error_msg, self.key_id, self.address))
-        else:
-          log.error(
-              '{0}: service account [{1}]'.format(error_msg, self.address))
-        return
-      raise ToolException.FromCurrent()
-
-  return CatchHttpErrors(wrapper)
+  def __init__(self, status_msg, address, key_id=None):
+    error_msg = status_msg
+    if key_id:
+      error_msg = '{0}: key [{1}] for service account [{2}]'.format(
+          error_msg, key_id, address)
+    else:
+      error_msg = '{0}: service account [{1}]'.format(error_msg, address)
+    super(IAMServiceAccountException, self).__init__(error_msg)
 
 
-def CatchHttpErrors(func):
-  """Decorator to gracefully quit when any unhandled HTTP error occurs."""
+def ConvertToServiceAccountException(http_error, address, key_id=None):
+  """Convert HTTP error to IAM specific exception, based on the status code."""
+  error_msg = None
+  if http_error.status_code == httplib.NOT_FOUND:
+    error_msg = 'Not found'
+  elif http_error.status_code == httplib.FORBIDDEN:
+    error_msg = 'Permission denied'
+  elif http_error.status_code == httplib.CONFLICT:
+    return http_error  # Let it retry.
 
-  @functools.wraps(func)
-
-  # pylint:disable=invalid-name
-  def wrapper(*args, **kwargs):
-    try:
-      return func(*args, **kwargs)
-    except exceptions.HttpError as error:
-      log.error('Error:\n' + error.content)
-      raise HttpException.FromCurrent()
-
-  return wrapper
+  if error_msg:
+    return IAMServiceAccountException(error_msg, address, key_id)
+  # TODO(user): Add a test for this exception type.
+  return gcloud_exceptions.ToolException.FromCurrent()
 
 
 def ValidateEmail(email):
@@ -211,7 +191,3 @@ def EmailAndKeyToResourceName(email, key):
 def GetKeyIdFromResourceName(name):
   """Gets the key id from a resource name. No validation is done."""
   return name.split('/')[5]
-
-
-def DeepCopy(obj):
-  return pickle.loads(pickle.dumps(obj))

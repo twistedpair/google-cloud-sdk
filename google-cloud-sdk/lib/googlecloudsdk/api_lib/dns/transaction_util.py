@@ -21,7 +21,7 @@ from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 import yaml
 
 
@@ -44,8 +44,7 @@ def WriteToYamlFile(yaml_file, change):
     yaml_file: file, File into which the change should be written.
     change: Change, Change to be written out.
   """
-  printer = resource_printer.YamlPrinter(yaml_file)
-  printer.AddRecord(change)
+  resource_printer.Print([change], print_format='yaml', out=yaml_file)
 
 
 def _RecordSetsFromDictionaries(record_set_dictionaries):

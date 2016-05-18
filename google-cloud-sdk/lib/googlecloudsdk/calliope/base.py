@@ -279,8 +279,7 @@ class _Common(object):
   _legacy_release_track = None
   _valid_release_tracks = None
 
-  def __init__(self, http_func):
-    self._http_func = http_func
+  def __init__(self):
     self.exit_code = 0
 
   @staticmethod
@@ -451,20 +450,6 @@ class _Common(object):
       return cls._cli_generator.Generate
     return None
 
-  def Http(self, auth=True, creds=None, **kwargs):
-    """Get the http object to be used during service requests.
-
-    Args:
-      auth: bool, True if the http object returned should be authorized.
-      creds: oauth2client.client.Credentials, If auth is True and creds is not
-          None, use those credentials to authorize the httplib2.Http object.
-      **kwargs: keyword arguments to forward to httplib2.Http()
-
-    Returns:
-      httplib2.Http, http object to be used during service requests.
-    """
-    return self._http_func(auth=auth, creds=creds, **kwargs)
-
 
 class Group(_Common):
   """Group is a base class for groups to implement.
@@ -474,8 +459,8 @@ class Group(_Common):
         service requests.
   """
 
-  def __init__(self, http_func):
-    super(Group, self).__init__(http_func)
+  def __init__(self):
+    super(Group, self).__init__()
 
   def Filter(self, context, args):
     """Modify the context that will be given to this group's commands when run.
@@ -496,8 +481,6 @@ class Command(_Common):
     cli: calliope.cli.CLI, The CLI object representing this command line tool.
     context: {str:object}, A set of key-value pairs that can be used for
         common initialization among commands.
-    group: base.Group, The instance of the group class above this command.  You
-        can use this to access common methods within a group.
     http_func: function that returns an http object that can be used during
         service requests.
     __format_string: str, The default resource printer format string.
@@ -506,11 +489,10 @@ class Command(_Common):
 
   __metaclass__ = abc.ABCMeta
 
-  def __init__(self, cli, context, group, http_func, format_string):
-    super(Command, self).__init__(http_func)
+  def __init__(self, cli, context, format_string):
+    super(Command, self).__init__()
     self.cli = cli
     self.context = context
-    self.group = group
     self.__format_string = format_string
     self._uri_cache_enabled = False
 

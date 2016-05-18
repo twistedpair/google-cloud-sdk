@@ -30,7 +30,15 @@ class NoEndpointError(DebugError):
   def __str__(self):
     return (
         'Debug endpoint not initialized. DebugObject.InitializeApiClients must '
-        'be called before using this module.')
+        'be called before using this module.\n')
+
+
+class BreakpointNotFoundError(DebugError):
+
+  def __init__(self, breakpoint_ids, type_name):
+    super(BreakpointNotFoundError, self).__init__(
+        '{0} ID not found: {1}'.format(type_name.capitalize(),
+                                       ', '.join(breakpoint_ids)))
 
 
 class UnknownHttpError(DebugError):
@@ -38,7 +46,7 @@ class UnknownHttpError(DebugError):
 
   def __init__(self, error):
     error_content = json.loads(error.content)['error']
-    message = '%s %s' % (error_content['code'], error_content['message'])
+    message = '%s %s\n' % (error_content['code'], error_content['message'])
     super(UnknownHttpError, self).__init__(message)
 
 
@@ -51,20 +59,34 @@ class MultipleDebuggeesError(DebugError):
     else:
       pattern_msg = ''
     super(MultipleDebuggeesError, self).__init__(
-        'Multiple possible targets found{0}: {1}'.format(
-            pattern_msg, debuggees))
+        'Multiple possible targets found{0}:\n    {1}\n'.format(
+            pattern_msg, '\n    '.join([d.name for d in debuggees])))
+
+
+class NoMatchError(DebugError):
+  """No object matched the search criteria."""
+
+  def __init__(self, object_type, pattern=None):
+    if pattern:
+      super(NoMatchError, self).__init__(
+          'No {0} matched the pattern "{1}"'.format(object_type, pattern))
+    else:
+      super(NoMatchError, self).__init__(
+          'No {0} was found for this project.'.format(object_type))
 
 
 class NoDebuggeeError(DebugError):
-  """No target matched the search criteria."""
+  """No debug target matched the search criteria."""
 
-  def __init__(self, pattern=None):
+  def __init__(self, pattern=None, debuggees=None):
     if pattern:
-      super(NoDebuggeeError, self).__init__(
-          'No active debug target matched the pattern "{0}"'.format(pattern))
+      msg = 'No active debug target matched the pattern "{0}"\n'.format(pattern)
     else:
-      super(NoDebuggeeError, self).__init__(
-          'No active debug targets were found for this project.')
+      msg = 'No active debug targets were found for this project.\n'
+    if debuggees:
+      msg += 'Choose one of the following targets:\n    {0}\n'.format(
+          '\n    '.join([d.name for d in debuggees]))
+    super(NoDebuggeeError, self).__init__(msg)
 
 
 def ErrorFromHttpError(error):

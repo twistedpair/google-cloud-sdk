@@ -8,6 +8,7 @@ class ContainerV1(base_api.BaseApiClient):
   """Generated client library for service container version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://container.googleapis.com/'
 
   _PACKAGE = u'container'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/userinfo.email']
@@ -25,7 +26,7 @@ class ContainerV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new container handle."""
-    url = url or u'https://container.googleapis.com/'
+    url = url or self.BASE_URL
     super(ContainerV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -131,10 +132,41 @@ to make modifications to its user's project.
     def __init__(self, client):
       super(ContainerV1.MasterProjectsZonesService, self).__init__(client)
       self._method_configs = {
+          'Authorize': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'container.masterProjects.zones.authorize',
+              ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+              path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+              query_params=[],
+              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize',
+              request_field=u'authorizeRequest',
+              request_type_name=u'ContainerMasterProjectsZonesAuthorizeRequest',
+              response_type_name=u'AuthorizeResponse',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
           }
+
+    def Authorize(self, request, global_params=None):
+      """Processes the attributes of a user request and determines whether or not.
+to authorize the request. If unauthorized, a reason is also provided. The
+AuthorizeResponse also contains fields from the AuthorizeRequest. The
+server is expected to only fill in the AuthorizeResponse.Status. This is
+due to how the Authorization types are defined for the Kubernetes webhook
+authorizer:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsZonesAuthorizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizeResponse) The response message.
+      """
+      config = self.GetMethodConfig('Authorize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
   class MasterProjectsService(base_api.BaseApiService):
     """Service class for the masterProjects resource."""

@@ -548,7 +548,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: The object of the condition. Exactly one of these must be set.
+    value: DEPRECATED. Use 'values' instead.
     values: The objects of the condition. This is mutually exclusive with
       'value'.
   """

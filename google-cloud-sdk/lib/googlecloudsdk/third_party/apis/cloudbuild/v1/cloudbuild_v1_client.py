@@ -8,6 +8,7 @@ class CloudbuildV1(base_api.BaseApiClient):
   """Generated client library for service cloudbuild version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://cloudbuild.googleapis.com/'
 
   _PACKAGE = u'cloudbuild'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -25,7 +26,7 @@ class CloudbuildV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new cloudbuild handle."""
-    url = url or u'https://cloudbuild.googleapis.com/'
+    url = url or self.BASE_URL
     super(CloudbuildV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

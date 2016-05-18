@@ -8,6 +8,7 @@ class CloudbillingV1(base_api.BaseApiClient):
   """Generated client library for service cloudbilling version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://cloudbilling.googleapis.com/'
 
   _PACKAGE = u'cloudbilling'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -25,7 +26,7 @@ class CloudbillingV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new cloudbilling handle."""
-    url = url or u'https://cloudbilling.googleapis.com/'
+    url = url or self.BASE_URL
     super(CloudbillingV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -206,7 +207,7 @@ billing account, this method changes the billing account used for resource
 usage charges.
 
 *Note:* Incurred charges that have not yet been reported in the transaction
-history of the Google Developers Console may be billed to the new billing
+history of the Google Cloud Console may be billed to the new billing
 account, even if the charge occurred before the new billing account was
 assigned to the project.
 

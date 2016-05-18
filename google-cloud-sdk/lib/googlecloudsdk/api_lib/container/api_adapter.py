@@ -45,6 +45,8 @@ NO_NODE_POOL_SELECTED_ERROR_MSG = """\
 Please specify one of the following node pools:
 """
 
+MAX_NODES_PER_POOL = 1000
+
 
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
@@ -411,7 +413,8 @@ class CreateClusterOptions(object):
                disable_addons=None,
                local_ssd_count=None,
                tags=None,
-               image_family=None):
+               image_type=None,
+               max_nodes_per_pool=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -430,7 +433,8 @@ class CreateClusterOptions(object):
     self.disable_addons = disable_addons
     self.local_ssd_count = local_ssd_count
     self.tags = tags
-    self.image_family = image_family
+    self.image_type = image_type
+    self.max_nodes_per_pool = max_nodes_per_pool
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -446,14 +450,14 @@ class UpdateClusterOptions(object):
                node_pool=None,
                monitoring_service=None,
                disable_addons=None,
-               image_family=None):
+               image_type=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.disable_addons = disable_addons
-    self.image_family = image_family
+    self.image_type = image_type
 
 
 class CreateNodePoolOptions(object):
@@ -462,17 +466,19 @@ class CreateNodePoolOptions(object):
                machine_type=None,
                disk_size_gb=None,
                scopes=None,
+               enable_cloud_endpoints=None,
                num_nodes=None,
                local_ssd_count=None,
                tags=None,
-               image_family=None):
+               image_type=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
+    self.enable_cloud_endpoints = enable_cloud_endpoints
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.tags = tags
-    self.image_family = image_family
+    self.image_type = image_type
 
 
 class V1Adapter(APIAdapter):
@@ -517,13 +523,31 @@ class V1Adapter(APIAdapter):
     else:
       node_config.tags = []
 
-    if options.image_family:
-      node_config.imageFamily = options.image_family
+    if options.image_type:
+      node_config.imageType = options.image_type
+
+    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
+    pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
+    if pools == 1:
+      pool_names = ['default-pool']  # pool consistency with server default
+    else:
+      # default-pool-0, -1, ...
+      pool_names = ['default-pool-{0}'.format(i) for i in range(0, pools)]
+
+    pools = []
+    per_pool = (options.num_nodes + len(pool_names) - 1) / len(pool_names)
+    to_add = options.num_nodes
+    for name in pool_names:
+      nodes = per_pool if (to_add > per_pool) else to_add
+      pools.append(self.messages.NodePool(
+          name=name,
+          initialNodeCount=nodes,
+          config=node_config))
+      to_add -= nodes
 
     cluster = self.messages.Cluster(
         name=cluster_ref.clusterId,
-        initialNodeCount=options.num_nodes,
-        nodeConfig=node_config,
+        nodePools=pools,
         masterAuth=self.messages.MasterAuth(username=options.user,
                                             password=options.password))
     if options.additional_zones:
@@ -562,7 +586,7 @@ class V1Adapter(APIAdapter):
       update = self.messages.ClusterUpdate(
           desiredNodeVersion=options.version,
           desiredNodePoolId=options.node_pool,
-          desiredImageFamily=options.image_family)
+          desiredImageType=options.image_type)
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
@@ -615,9 +639,11 @@ class V1Adapter(APIAdapter):
       node_config.machineType = options.machine_type
     if options.disk_size_gb:
       node_config.diskSizeGb = options.disk_size_gb
-    if options.image_family:
-      node_config.imageFamily = options.image_family
+    if options.image_type:
+      node_config.imageType = options.image_type
     scope_uris = ExpandScopeURIs(options.scopes)
+    if options.enable_cloud_endpoints:
+      scope_uris += _ENDPOINTS_SCOPES
     node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count

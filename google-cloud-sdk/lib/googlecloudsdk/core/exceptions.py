@@ -79,3 +79,14 @@ class RequiresAdminRightsError(Error):
       message += (
           'Re-run the command with sudo: sudo {0} ...'.format(gcloud_path))
     super(RequiresAdminRightsError, self).__init__(message)
+
+
+class NetworkIssueError(Error):
+  """An error to wrap a general network issue."""
+
+  def __init__(self, message):
+    super(NetworkIssueError, self).__init__(
+        '{message}\n'
+        'This may be due to network connectivity issues. Please check your '
+        'network settings, and the status of the service you are trying to '
+        'reach.'.format(message=message))

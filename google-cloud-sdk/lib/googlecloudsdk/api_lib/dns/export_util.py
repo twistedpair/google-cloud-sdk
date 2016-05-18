@@ -19,7 +19,7 @@ from dns import rdata
 from dns import rdataclass
 from dns import rdatatype
 from dns import zone
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 
 
 def WriteToZoneFile(zone_file, record_sets, domain):
@@ -51,6 +51,4 @@ def WriteToYamlFile(yaml_file, record_sets):
     yaml_file: file, File into which the records should be written.
     record_sets: list, ResourceRecordSets to be written out.
   """
-  printer = resource_printer.YamlPrinter(yaml_file)
-  for record_set in record_sets:
-    printer.AddRecord(record_set)
+  resource_printer.Print(record_sets, print_format='yaml', out=yaml_file)

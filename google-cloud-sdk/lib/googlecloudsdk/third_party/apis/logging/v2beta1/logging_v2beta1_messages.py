@@ -147,6 +147,10 @@ class ListLogEntriesRequest(_messages.Message):
     projectIds: Required. One or more project IDs or project numbers from
       which to retrieve log entries.  Examples of a project ID: `"my-project-
       1A"`, `"1234567890"`.
+    resourceNames: One or more cloud resources from which to retrieve log
+      entries. These will be combined with the project resources from
+      project_ids above. Examples are "projects/my-project-id",
+      "organizations/google", "billingaccounts/ABC1234"
   """
 
   filter = _messages.StringField(1)
@@ -156,6 +160,7 @@ class ListLogEntriesRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   partialSuccess = _messages.BooleanField(6)
   projectIds = _messages.StringField(7, repeated=True)
+  resourceNames = _messages.StringField(8, repeated=True)
 
 
 class ListLogEntriesResponse(_messages.Message):

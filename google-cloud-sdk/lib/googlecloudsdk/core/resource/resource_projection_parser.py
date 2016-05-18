@@ -49,7 +49,7 @@ class Parser(object):
     _snake_re: Compiled re for converting key names to angry snake case.
   """
 
-  _BOOLEAN_ATTRIBUTES = ['reverse']
+  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse']
 
   def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Constructor.
@@ -85,37 +85,53 @@ class Parser(object):
     formatter uses the label attribute for the column heading for the key.
 
     Attributes:
+      align: The column alignment name: left, center, or right.
       flag: The projection algorithm flag, one of DEFAULT, INNER, PROJECT.
+      hidden: Attribute is projected but not displayed.
+      label: A string associated with each projection key.
+      optional: Column data is optional if True.
       order: The column sort order, None if not ordered. Lower values have
         higher sort precedence.
-      label: A string associated with each projection key.
       reverse: Reverse column sort if True.
-      align: The column alignment name: left, center, or right.
-      transform: obj = func(obj,...) function applied during projection.
       subformat: Sub-format string.
-      hidden: Attribute is projected but not displayed.
+      transform: obj = func(obj,...) function applied during projection.
     """
 
     def __init__(self, flag):
-      self.flag = flag
-      self.order = None
-      self.label = None
-      self.reverse = None
-      self.hidden = False
       self.align = resource_projection_spec.ALIGN_DEFAULT
-      self.transform = None
+      self.flag = flag
+      self.hidden = False
+      self.label = None
+      self.optional = None
+      self.order = None
+      self.reverse = None
       self.subformat = None
+      self.transform = None
 
     def __str__(self):
+      option = []
+      if self.hidden:
+        option.append('hidden')
+      if self.optional:
+        option.append('optional')
+      if self.reverse:
+        option.append('reverse')
+      if self.subformat:
+        option.append('subformat')
+      if option:
+        options = ', [{0}]'.format('|'.join(option))
+      else:
+        options = ''
       return (
           '({flag}, {order}, {label}, {align}, {active},'
-          ' {transform})'.format(
+          ' {transform}{options})'.format(
               flag=self.flag,
               order=('UNORDERED' if self.order is None else str(self.order)),
               label=repr(self.label),
               align=self.align,
               active=self.transform.active if self.transform else None,
-              transform=self.transform))
+              transform=self.transform,
+              options=options))
 
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.
@@ -203,6 +219,10 @@ class Parser(object):
       attribute.label = self._AngrySnakeCase(key)
     if attribute_add.align != resource_projection_spec.ALIGN_DEFAULT:
       attribute.align = attribute_add.align
+    if attribute_add.optional is not None:
+      attribute.optional = attribute_add.optional
+    elif attribute.optional is None:
+      attribute.optional = False
     if attribute_add.reverse is not None:
       attribute.reverse = attribute_add.reverse
     elif attribute.reverse is None:
@@ -269,6 +289,8 @@ class Parser(object):
         attribute.subformat = value or ''
       elif name == 'label':
         attribute.label = value or ''
+      elif name == 'optional':
+        attribute.optional = value
       elif name == 'reverse':
         attribute.reverse = value
       elif name == 'sort':

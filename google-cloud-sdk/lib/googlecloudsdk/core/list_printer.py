@@ -229,6 +229,13 @@ COLLECTION_COLUMNS = {
         ('BILLING_ENABLED', _Select('billingEnabled')),
     ),
 
+    # CLOUD RESOURCE MANAGER
+    'cloudresourcemanager.organizations': (
+        ('ORGNIAZATION_ID', _Select('organizationId')),
+        ('DISPLAY_NAME', _Select('displayName')),
+        ('DIRECTORY_CUSTOMER_ID', _Select('owner.directoryCustomerId')),
+    ),
+
     # COMPUTE
     'compute.instances': (
         ('NAME', _Select('name')),
@@ -245,8 +252,9 @@ COLLECTION_COLUMNS = {
         ('ZONE', _Select('zone')),
         ('MASTER_VERSION', _Select('currentMasterVersion')),
         ('MASTER_IP', _Select('endpoint')),
-        ('MACHINE_TYPE', _Select('nodeConfig', transform=lambda x:
-                                 ('%s' % (x.machineType)) if x else None)),
+        ('MACHINE_TYPE', _Select('nodePools[0].config',
+                                 transform=lambda x: (
+                                     '%s' % (x.machineType)) if x else None)),
         ('NODE_VERSION', _Select('currentNodeVersion')),
         ('NUM_NODES', _Select('currentNodeCount')),
         ('STATUS', _Select('status')),
@@ -396,6 +404,8 @@ COLLECTION_COLUMNS = {
 
     'genomics.variantsets': (
         ('ID', _Select('id')),
+        ('NAME', _Select('name')),
+        ('DESCRIPTION', _Select('description')),
     ),
 
     # SQL
@@ -475,19 +485,6 @@ COLLECTION_COLUMNS = {
     'source.captures.list': (
         ('PROJECT_ID ', _Select('project_id')),
         ('CAPTURE_ID', _Select('id')),
-    ),
-
-    # Cloud Updater
-    'replicapoolupdater.rollingUpdates': (
-        ('ID', _Select('id')),
-        ('GROUP_NAME', _Select('instanceGroupManager', _NameOnly)),
-        ('TEMPLATE_NAME', _Select('instanceTemplate', _NameOnly)),
-        ('STATUS', _Select('status')),
-        ('STATUS_MESSAGE', _Select('statusMessage')),
-    ),
-    'replicapoolupdater.rollingUpdates.instanceUpdates': (
-        ('INSTANCE_NAME', _Select('instance', _NameOnly)),
-        ('STATUS', _Select('status')),
     ),
 
     # TEST

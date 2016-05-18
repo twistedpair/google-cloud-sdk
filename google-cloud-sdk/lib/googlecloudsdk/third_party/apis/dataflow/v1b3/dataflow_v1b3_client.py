@@ -8,6 +8,7 @@ class DataflowV1b3(base_api.BaseApiClient):
   """Generated client library for service dataflow version v1b3."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://dataflow.googleapis.com/'
 
   _PACKAGE = u'dataflow'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/userinfo.email']
@@ -25,7 +26,7 @@ class DataflowV1b3(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new dataflow handle."""
-    url = url or u'https://dataflow.googleapis.com/'
+    url = url or self.BASE_URL
     super(DataflowV1b3, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

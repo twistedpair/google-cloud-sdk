@@ -30,6 +30,52 @@ class AddonsConfig(_messages.Message):
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
 
 
+class AuthorizeRequest(_messages.Message):
+  """A request to authorize a user action. The request contains the attributes
+  of the action the user is attempting. These attributes are mapped to a GKE
+  IAM permission and policy to check.  This should look very close to the
+  SubjectAccessReview struct in http://github.com/kubernetes/kubernetes/blob/m
+  aster/pkg/apis/authorization/types.go. This message has 4 GKE-specific
+  fields that get mapped from the path, but the other fields (the expected
+  JSON payload) must match SubjectAccessReview.
+
+  Fields:
+    apiVersion: The api version of the SubjectAccessReview object.
+    kind: Fields from "pkg/apis/authorization/v1beta1".SubjectAccessReview:
+      The "kind" of the SubjectAccessReview object.
+    spec: The information about the user action being evaluated.
+    status: The response for the provided request (this won't be filled in for
+      an AuthorizeRequest, but it is part of the struct, so we need it here to
+      be safe).
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  spec = _messages.MessageField('SubjectAccessReviewSpec', 3)
+  status = _messages.MessageField('SubjectAccessReviewStatus', 4)
+
+
+class AuthorizeResponse(_messages.Message):
+  """A response to a request for authorization. This should match exactly with
+  the SubjectAccessReview struct from http://github.com/kubernetes/kubernetes/
+  blob/master/pkg/apis/authorization/types.go.
+
+  Fields:
+    apiVersion: The api version of the SubjectAccessReview object.
+    kind: The "kind" of the SubjectAccessReview object.
+    spec: The information about the request that was evaluated. This field
+      (along with kind & api_version) are returned unchanged from the
+      AuthorizeRequest. The caller probably doesn't care, but it would allow
+      the caller to verify the question the server thought it was answering.
+    status: The response for the provided request.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  spec = _messages.MessageField('SubjectAccessReviewSpec', 3)
+  status = _messages.MessageField('SubjectAccessReviewStatus', 4)
+
+
 class Cluster(_messages.Message):
   """A Google Container Engine cluster.
 
@@ -182,8 +228,8 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
-    desiredImageFamily: The desired image family for the node pool. NOTE: Set
-      the "desired_node_pool" field as well.
+    desiredImageType: The desired image type for the node pool. NOTE: Set the
+      "desired_node_pool" field as well.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -196,7 +242,7 @@ class ClusterUpdate(_messages.Message):
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolId: The node pool to be upgraded. This field is mandatory
-      if the "desired_node_version" or "desired_image_family" is specified and
+      if the "desired_node_version" or "desired_image_type" is specified and
       there is more than one node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
@@ -204,12 +250,35 @@ class ClusterUpdate(_messages.Message):
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredImageFamily = _messages.StringField(2)
+  desiredImageType = _messages.StringField(2)
   desiredMasterMachineType = _messages.StringField(3)
   desiredMasterVersion = _messages.StringField(4)
   desiredMonitoringService = _messages.StringField(5)
   desiredNodePoolId = _messages.StringField(6)
   desiredNodeVersion = _messages.StringField(7)
+
+
+class ContainerMasterProjectsZonesAuthorizeRequest(_messages.Message):
+  """A ContainerMasterProjectsZonesAuthorizeRequest object.
+
+  Fields:
+    authorizeRequest: A AuthorizeRequest resource to be passed as the request
+      body.
+    clusterId: The name of this master's cluster.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    projectNumber: The project number for which the request is being
+      authorized.  This is the project in which this master's cluster resides.
+      This is an int64, so it must be a project number, not a project ID.
+    zone: The zone of this master's cluster.
+  """
+
+  authorizeRequest = _messages.MessageField('AuthorizeRequest', 1)
+  clusterId = _messages.StringField(2, required=True)
+  masterProjectId = _messages.StringField(3, required=True)
+  projectNumber = _messages.IntegerField(4, required=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ContainerMasterProjectsZonesSignedUrlsCreateRequest(_messages.Message):
@@ -617,8 +686,8 @@ class NodeConfig(_messages.Message):
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
-    imageFamily: The image family to use for this node. Note that for a given
-      image family, the latest version of it will be used.
+    imageType: The image type to use for this node. Note that for a given
+      image type, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the
@@ -724,7 +793,7 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  imageFamily = _messages.StringField(2)
+  imageType = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   localSsdCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   machineType = _messages.StringField(5)
@@ -798,6 +867,19 @@ class NodePool(_messages.Message):
   version = _messages.StringField(8)
 
 
+class NonResourceAttributes(_messages.Message):
+  """The authorization attributes of a non-resource request. This should match
+  the NonResourceAttributes struct in pkg/apis/authorization/v1beta1/types.go.
+
+  Fields:
+    path: The URL path of the request.
+    verb: The verb of the request
+  """
+
+  path = _messages.StringField(1)
+  verb = _messages.StringField(2)
+
+
 class Operation(_messages.Message):
   """This operation resource represents operations that may have happened or
   are happening on the cluster. All fields are output only.
@@ -868,6 +950,29 @@ class Operation(_messages.Message):
   zone = _messages.StringField(8)
 
 
+class ResourceAttributes(_messages.Message):
+  """The authorization attributes of the resource request. This should match
+  the ResourceAttributes struct in pkg/apis/authorization/v1beta1/types.go.
+
+  Fields:
+    group: The API group of the resource.
+    name: The name of the resource in the request.
+    namespace: The namespace of the request.
+    resource: The type of the resource in the request.
+    subresource: The type of the subresource in the request.
+    verb: The Kubernetes verb of the request (e.g. get, create, list, etc.)
+    version: The API version of the resource.
+  """
+
+  group = _messages.StringField(1)
+  name = _messages.StringField(2)
+  namespace = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  subresource = _messages.StringField(5)
+  verb = _messages.StringField(6)
+  version = _messages.StringField(7)
+
+
 class ServerConfig(_messages.Message):
   """Container Engine service configuration.
 
@@ -875,15 +980,15 @@ class ServerConfig(_messages.Message):
     buildClientInfo: apiserver build BuildData::ClientInfo()
     defaultClusterVersion: Version of Kubernetes the service deploys by
       default.
-    defaultImageFamily: Default image family.
-    validImageFamilies: List of valid image families.
+    defaultImageType: Default image type.
+    validImageTypes: List of valid image types.
     validNodeVersions: List of valid node upgrade target versions.
   """
 
   buildClientInfo = _messages.StringField(1)
   defaultClusterVersion = _messages.StringField(2)
-  defaultImageFamily = _messages.StringField(3)
-  validImageFamilies = _messages.StringField(4, repeated=True)
+  defaultImageType = _messages.StringField(3)
+  validImageTypes = _messages.StringField(4, repeated=True)
   validNodeVersions = _messages.StringField(5, repeated=True)
 
 
@@ -964,6 +1069,41 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
+
+
+class SubjectAccessReviewSpec(_messages.Message):
+  """The description of the request for authorization. This should match the
+  SubjectAccessReviewSpec struct in pkg/apis/authorization/v1beta1/types.go
+
+  Fields:
+    groups: Any groups this user may be a part of (this is not used for GKE
+      IAM).
+    nonResourceAttributes: The attributes of the request for a non-resource
+      request. If this field is set, ResourceAttributes should not be set (and
+      will be ignored).
+    resourceAttributes: The attributes of the request for a resource request.
+      If this field is set, NonResourceAttributes should not be set (and will
+      be ignored).
+    user: The user making the request.
+  """
+
+  groups = _messages.StringField(1, repeated=True)
+  nonResourceAttributes = _messages.MessageField('NonResourceAttributes', 2)
+  resourceAttributes = _messages.MessageField('ResourceAttributes', 3)
+  user = _messages.StringField(4)
+
+
+class SubjectAccessReviewStatus(_messages.Message):
+  """The result of the request for authorization. This should match the
+  SubjectAccessReviewStatus struct in pkg/apis/authorization/v1beta1/types.go.
+
+  Fields:
+    allowed: Is the action authorized.
+    reason: Error message if unauthorized.
+  """
+
+  allowed = _messages.BooleanField(1)
+  reason = _messages.StringField(2)
 
 
 class Token(_messages.Message):

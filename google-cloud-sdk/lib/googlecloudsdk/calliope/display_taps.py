@@ -72,7 +72,7 @@ class Filterer(peek_iterable.Tap):
     """
     if resource_printer_base.IsResourceMarker(resource):
       return True
-    return self._match(resource)
+    return self._match(resource_projector.MakeSerializable(resource))
 
 
 class Flattener(peek_iterable.Tap):

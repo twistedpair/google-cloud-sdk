@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for manipulating GCE instances running an App Engine project."""
 
+import re
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -27,15 +29,15 @@ class SelectInstanceError(exceptions.Error):
   pass
 
 
-def _GetInstanceMetadata(instance):
-  items = instance['metadata'].get('items', [])
-  return dict([(item['key'], item['value']) for item in items])
-
-
-class AppEngineInstance(object):
+class Instance(object):
   """Value class for instances running the current App Engine project."""
 
-  _NUM_PATH_PARTS = 3
+  # TODO(b/27900246): Once API supports "Get" verb, convert to use resource
+  # parser.
+  _INSTANCE_NAME_PATTERN = ('apps/(?P<project>.*)/'
+                            'modules/(?P<service>.*)/'
+                            'versions/(?P<version>.*)/'
+                            'instances/(?P<instance>.*)')
 
   def __init__(self, service, version, id_, instance=None):
     self.service = service
@@ -43,50 +45,12 @@ class AppEngineInstance(object):
     self.id = id_
     self.instance = instance
 
-  # TODO(user): remove after API support for listing instances (b/24778093).
   @classmethod
-  def IsInstance(cls, instance):
-    """Return whether instance was created by App Engine.
-
-    Can return false positives, if a user gives their instance a name patterned
-    like the automatically created ones.
-
-    Args:
-      instance: a Compute Engine instance
-
-    Returns:
-      bool, whether instance is an automatically created instance.
-    """
-    metadata = _GetInstanceMetadata(instance)
-    return ('gae_backend_name' in metadata and
-            'gae_backend_version' in metadata and
-            len(instance['name'].rsplit('-', 1)) > 1)
-
-  # TODO(user): remove after API support for listing instances (b/24778093).
-  @classmethod
-  def FromComputeEngineInstance(cls, instance):
-    """Create an AppEngineInstance object from its Compute Engine instance.
-
-    Args:
-      instance: dict representing a Compute Engine instance (ex. an entity from
-        the output of `gcloud compute instances list`).
-
-    Raises:
-      KeyError, if the required metadata is missing (ex. the Compute Engine
-        instance is not an App Engine VM)
-
-    Returns:
-      AppEngineInstance, instance object wrapping the Compute Engine instance
-        with appropriate metadata parsed.
-    """
-    metadata = _GetInstanceMetadata(instance)
-    service = metadata['gae_backend_name']
-    version = metadata['gae_backend_version']
-    # The name of the instance is the only place that contains the instance id;
-    # we have to resort to string manipulation here. (The name will be something
-    # like 'gae-service-version-inst', where 'inst' is the instance id.)
-    id_ = instance['name'].rsplit('-', 1)[-1]
-    return cls(service, version, id_, instance)
+  def FromInstanceResource(cls, instance):
+    match = re.match(cls._INSTANCE_NAME_PATTERN, instance.name)
+    service = match.group('service')
+    version = match.group('version')
+    return cls(service, version, instance.id, instance)
 
   @classmethod
   def FromResourcePath(cls, path, service=None, version=None):

@@ -30,8 +30,10 @@ Pythonicness of the Transform*() methods:
       including ones that would raise exceptions.
 """
 
+import re
 
-def TransformShortStatus(r, undefined=''):
+
+def TransformShortStatus(r, undefined='UNKNOWN_ERROR'):
   """Returns a short description of the status of a logpoint or snapshot.
 
   Status will be one of ACTIVE, COMPLETED, or a short error description. If
@@ -46,21 +48,91 @@ def TransformShortStatus(r, undefined=''):
     One of ACTIVE, COMPLETED, or an error description.
 
   Example:
-    --format="table(id, location, short_status()())"
+    --format="table(id, location, short_status())"
   """
+  short_status, _ = _TransformStatuses(r, undefined)
+  return short_status
+
+
+def TransformFullStatus(r, undefined='UNKNOWN_ERROR'):
+  """Returns a full description of the status of a logpoint or snapshot.
+
+  Status will be one of ACTIVE, COMPLETED, or a verbose error description. If
+  the status is an error, there will be additional information available in the
+  status field of the object.
+
+  Args:
+    r: a JSON-serializable object
+    undefined: Returns this value if the resource is not a valid status.
+
+  Returns:
+    One of ACTIVE, COMPLETED, or a verbose error description.
+
+  Example:
+    --format="table(id, location, full_status())"
+  """
+  short_status, full_status = _TransformStatuses(r, undefined)
+  if full_status:
+    return '{0}: {1}'.format(short_status, full_status)
+  else:
+    return short_status
+
+
+def _TransformStatuses(r, undefined):
+  """Returns a full description of the status of a logpoint or snapshot.
+
+  Status will be one of ACTIVE, COMPLETED, or a verbose error description. If
+  the status is an error, there will be additional information available in the
+  status field of the object.
+
+  Args:
+    r: a JSON-serializable object
+    undefined: Returns this value if the resource is not a valid status.
+
+  Returns:
+    String, String - The first string will be a short error description,
+    and the second a more detailed description.
+  """
+  short_status = undefined
   if isinstance(r, dict):
     if not r.get('isFinalState'):
-      return 'ACTIVE'
+      return 'ACTIVE', None
     status = r.get('status')
     if not status or not isinstance(status, dict) or not status.get('isError'):
-      return 'COMPLETED'
+      return 'COMPLETED', None
     refers_to = status.get('refersTo')
+    description = status.get('description')
     if refers_to:
-      return '{0}_ERROR'.format(refers_to)
-  return undefined
+      short_status = '{0}_ERROR'.format(refers_to).replace('BREAKPOINT_', '')
+    if description:
+      fmt = description.get('format')
+      params = description.get('parameters') or []
+      try:
+        return short_status, _SubstituteErrorParams(fmt, params)
+      except (IndexError, KeyError):
+        return short_status, 'Malformed status message: {0}'.format(status)
+  return short_status, None
+
+
+def _SubstituteErrorParams(fmt, params):
+  """Replaces $N with the Nth param in fmt.
+
+  Args:
+    fmt: A format string which may contain substitutions of the form $N, where
+      N is any decimal integer between 0 and len(params) - 1.
+    params: A set of parameters to substitute in place of the $N string.
+  Returns:
+    A string containing fmt with each $N substring replaced with its
+    corresponding parameter.
+  """
+  if not params:
+    return fmt
+  return re.sub(r'\$([0-9]+)', r'{\1}', fmt).format(*params)
+
 
 _TRANSFORMS = {
     'short_status': TransformShortStatus,
+    'full_status': TransformFullStatus
 }
 
 

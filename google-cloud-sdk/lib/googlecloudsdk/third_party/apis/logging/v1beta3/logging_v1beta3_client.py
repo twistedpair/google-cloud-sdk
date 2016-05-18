@@ -8,6 +8,7 @@ class LoggingV1beta3(base_api.BaseApiClient):
   """Generated client library for service logging version v1beta3."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://logging.googleapis.com/'
 
   _PACKAGE = u'logging'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']
@@ -25,7 +26,7 @@ class LoggingV1beta3(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new logging handle."""
-    url = url or u'https://logging.googleapis.com/'
+    url = url or self.BASE_URL
     super(LoggingV1beta3, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

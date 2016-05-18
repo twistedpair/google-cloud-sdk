@@ -6439,8 +6439,8 @@ class Instance(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
-      the following values: PROVISIONING, STAGING, RUNNING, STOPPING, and
-      TERMINATED.
+      the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
+      SUSPENDED, SUSPENDING, and TERMINATED.
 
   Fields:
     canIpForward: Allows this instance to send and receive packets with non-
@@ -6490,7 +6490,8 @@ class Instance(_messages.Message):
       authenticate applications on the instance. See Service Accounts for more
       information.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING,
+      and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: A list of tags to apply to this instance. Tags are used to identify
@@ -6502,7 +6503,8 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and
+    TERMINATED.
 
     Values:
       PROVISIONING: <no description>
@@ -10633,6 +10635,10 @@ class VpnTunnel(_messages.Message):
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway.
     region: [Output Only] URL of the region where the VPN tunnel resides.
+    remoteTrafficSelector: Remote traffic selectors to use when establishing
+      the VPN tunnel with peer VPN gateway. The value should be a CIDR
+      formatted string, for example: 192.168.0.0/16. The ranges should be
+      disjoint.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
       Cloud VPN gateway and the peer VPN gateway.
@@ -10682,11 +10688,12 @@ class VpnTunnel(_messages.Message):
   name = _messages.StringField(8)
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  sharedSecret = _messages.StringField(12)
-  sharedSecretHash = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  targetVpnGateway = _messages.StringField(15)
+  remoteTrafficSelector = _messages.StringField(11, repeated=True)
+  selfLink = _messages.StringField(12)
+  sharedSecret = _messages.StringField(13)
+  sharedSecretHash = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  targetVpnGateway = _messages.StringField(16)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

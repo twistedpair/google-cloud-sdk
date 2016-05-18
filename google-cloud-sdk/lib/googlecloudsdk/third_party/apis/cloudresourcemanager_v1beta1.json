@@ -379,6 +379,20 @@
           "description": "Timestamp when the Organization was created. Assigned by the server.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
+        },
+        "lifecycleState": {
+          "description": "The organization's current lifecycle state. Assigned by the server.\n@OutputOnly",
+          "enumDescriptions": [
+            "Unspecified state.  This is only useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The organization has been marked for deletion by the user"
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ]
         }
       }
     },

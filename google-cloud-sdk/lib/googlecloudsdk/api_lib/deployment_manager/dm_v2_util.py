@@ -15,14 +15,14 @@
 """Common helper methods for DeploymentManager V2 Deployments."""
 
 import json
-import sys
 import time
+
 from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.exceptions import HttpException
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resource_printer
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 import yaml
 
@@ -51,28 +51,6 @@ def GetError(error, verbose=False):
   code = data['error']['code']
   message = data['error']['message']
   return 'ResponseError: code={0}, message={1}'.format(code, message)
-
-
-def _SanitizeLimitFlag(limit):
-  """Sanitizes and returns a limit flag value.
-
-  Args:
-    limit: the limit flag value to sanitize.
-  Returns:
-    Sanitized limit flag value.
-  Raises:
-    DeploymentManagerError: if the provided limit flag value is not a positive
-        integer.
-  """
-  if limit is None:
-    limit = sys.maxint
-  else:
-    if limit > sys.maxint:
-      limit = sys.maxint
-    elif limit <= 0:
-      raise DeploymentManagerError(
-          '--limit must be a positive integer; received: {0}'.format(limit))
-  return limit
 
 
 def WaitForOperation(operation_name, project, context, operation_description,
@@ -146,12 +124,12 @@ def PrintTable(header, resource_list):
     resource_list: A list of resource objects, each corresponding to a row
         in the table to print.
   """
-  printer = resource_printer.TablePrinter(out=log.out)
-  printer.AddRow(header)
+  printer = resource_printer.Printer('table', out=log.out)
+  printer.AddHeading(header)
   for resource in resource_list:
-    printer.AddRow([resource[column] if column in resource else ''
-                    for column in header])
-  printer.Print()
+    printer.AddRecord([resource[column] if column in resource else ''
+                       for column in header])
+  printer.Finish()
 
 
 def _GetNextPage(list_method, request, resource_field, page_token=None,

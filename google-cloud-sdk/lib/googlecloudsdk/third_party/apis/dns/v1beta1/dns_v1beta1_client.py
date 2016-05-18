@@ -8,6 +8,7 @@ class DnsV1beta1(base_api.BaseApiClient):
   """Generated client library for service dns version v1beta1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/dns/v1beta1/'
 
   _PACKAGE = u'dns'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.clouddns.readonly', u'https://www.googleapis.com/auth/ndev.clouddns.readwrite']
@@ -25,7 +26,7 @@ class DnsV1beta1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new dns handle."""
-    url = url or u'https://www.googleapis.com/dns/v1beta1/'
+    url = url or self.BASE_URL
     super(DnsV1beta1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

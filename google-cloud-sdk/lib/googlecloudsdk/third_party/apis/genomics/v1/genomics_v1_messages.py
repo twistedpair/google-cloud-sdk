@@ -3036,8 +3036,10 @@ class VariantSet(_messages.Message):
 
   Fields:
     datasetId: The dataset to which this variant set belongs.
+    description: A textual description of this variant set.
     id: The server-generated variant set ID, unique across all variant sets.
     metadata: The metadata associated with this variant set.
+    name: User-specified, mutable name.
     referenceBounds: A list of all references used by the variants in a
       variant set with associated coordinate upper bounds for each one.
     referenceSetId: The reference set to which the variant set is mapped. The
@@ -3052,10 +3054,12 @@ class VariantSet(_messages.Message):
   """
 
   datasetId = _messages.StringField(1)
-  id = _messages.StringField(2)
-  metadata = _messages.MessageField('VariantSetMetadata', 3, repeated=True)
-  referenceBounds = _messages.MessageField('ReferenceBound', 4, repeated=True)
-  referenceSetId = _messages.StringField(5)
+  description = _messages.StringField(2)
+  id = _messages.StringField(3)
+  metadata = _messages.MessageField('VariantSetMetadata', 4, repeated=True)
+  name = _messages.StringField(5)
+  referenceBounds = _messages.MessageField('ReferenceBound', 6, repeated=True)
+  referenceSetId = _messages.StringField(7)
 
 
 class VariantSetMetadata(_messages.Message):

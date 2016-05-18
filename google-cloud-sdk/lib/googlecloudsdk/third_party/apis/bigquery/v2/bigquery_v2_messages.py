@@ -773,13 +773,12 @@ class ExternalDataConfiguration(_messages.Message):
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
       '*' wildcard character and it must come after the 'bucket' name. Size
-      limits related to load jobs apply to external data sources, plus an
-      additional limit of 10 GB maximum size across all URIs. For Google Cloud
-      Bigtable URIs: Exactly one URI can be specified and it has be a fully
-      specified and valid HTTPS URL for a Google Cloud Bigtable table. For
-      Google Cloud Datastore backups, exactly one URI can be specified, and it
-      must end with '.backup_info'. Also, the '*' wildcard character is not
-      allowed.
+      limits related to load jobs apply to external data sources. For Google
+      Cloud Bigtable URIs: Exactly one URI can be specified and it has be a
+      fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
+      For Google Cloud Datastore backups, exactly one URI can be specified,
+      and it must end with '.backup_info'. Also, the '*' wildcard character is
+      not allowed.
   """
 
   autodetect = _messages.BooleanField(1)
@@ -1907,11 +1906,17 @@ class ViewDefinition(_messages.Message):
   Fields:
     query: [Required] A query that BigQuery executes when the view is
       referenced.
+    useLegacySql: [Experimental] Specifies whether to use BigQuery's legacy
+      SQL for this view. The default value is true. If set to false, the view
+      will use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
+      reference/ Queries and views that reference this view must use the same
+      flag value.
     userDefinedFunctionResources: [Experimental] Describes user-defined
       function resources used in the query.
   """
 
   query = _messages.StringField(1)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 2, repeated=True)
+  useLegacySql = _messages.BooleanField(2)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 3, repeated=True)
 
 

@@ -8,6 +8,7 @@ class ManagerV1beta2(base_api.BaseApiClient):
   """Generated client library for service manager version v1beta2."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/manager/v1beta2/'
 
   _PACKAGE = u'manager'
   _SCOPES = [u'https://www.googleapis.com/auth/appengine.admin', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/devstorage.read_write', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']
@@ -25,7 +26,7 @@ class ManagerV1beta2(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new manager handle."""
-    url = url or u'https://www.googleapis.com/manager/v1beta2/'
+    url = url or self.BASE_URL
     super(ManagerV1beta2, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

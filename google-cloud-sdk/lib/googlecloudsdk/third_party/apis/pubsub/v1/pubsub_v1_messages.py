@@ -84,7 +84,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: The object of the condition. Exactly one of these must be set.
+    value: DEPRECATED. Use 'values' instead.
     values: The objects of the condition. This is mutually exclusive with
       'value'.
   """
@@ -106,8 +106,8 @@ class Condition(_messages.Message):
 
     Values:
       NO_OP: Default no-op.
-      EQUALS: Equality check.
-      NOT_EQUALS: Non-equality check.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
       IN: Set-inclusion check.
       NOT_IN: Set-exclusion check.
       DISCHARGED: Subject is discharged

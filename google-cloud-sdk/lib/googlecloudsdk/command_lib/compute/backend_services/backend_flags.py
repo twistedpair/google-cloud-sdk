@@ -15,6 +15,7 @@
 """Flags and helpers for the compute backend-services backend commands."""
 
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.core import log
 
 
 def AddDescription(parser):
@@ -23,7 +24,8 @@ def AddDescription(parser):
       help='An optional, textual description for the backend.')
 
 
-def AddInstanceGroup(parser, operation_type, multizonal=False):
+def AddInstanceGroup(parser, operation_type,
+                     multizonal=False, with_deprecated_zone=False):
   """Add arguments to define instance group."""
   parser.add_argument(
       '--instance-group',
@@ -36,11 +38,26 @@ def AddInstanceGroup(parser, operation_type, multizonal=False):
     flags.AddRegionFlag(
         scope_parser,
         resource_type='instance group',
-        operation_type='{0} the backend service'.format(operation_type))
+        operation_type='{0} the backend service'.format(operation_type),
+        flag_prefix='instance-group')
+  if with_deprecated_zone:
+    scope_parser = scope_parser.add_mutually_exclusive_group()
+    flags.AddZoneFlag(
+        scope_parser,
+        resource_type='instance group',
+        operation_type='{0} the backend service'.format(operation_type),
+        explanation='DEPRECATED, use --instance-group-zone flag instead.')
   flags.AddZoneFlag(
       scope_parser,
       resource_type='instance group',
-      operation_type='{0} the backend service'.format(operation_type))
+      operation_type='{0} the backend service'.format(operation_type),
+      flag_prefix='instance-group')
+
+
+def WarnOnDeprecatedFlags(args):
+  if getattr(args, 'zone', None):  # TODO(b/28518663).
+    log.warn('The --zone flag is deprecated, please use --instance-group-zone'
+             ' instead. It will be removed in a future release.')
 
 
 def AddBalancingMode(parser):

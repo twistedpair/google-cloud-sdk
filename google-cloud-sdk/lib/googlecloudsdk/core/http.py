@@ -87,13 +87,15 @@ def MakeUserAgentString(cmd_path=None):
           ' command/{1}'
           ' invocation-id/{2}'
           ' environment/{3}'
-          ' interactive/{4}'
-          ' python/{5}'
-          ' {6}').format(
+          ' environment-version/{4}'
+          ' interactive/{5}'
+          ' python/{6}'
+          ' {7}').format(
               config.CLOUD_SDK_VERSION,
               cmd_path or properties.VALUES.metrics.command_name.Get(),
               uuid.uuid4().hex,
               properties.GetMetricsEnvironment(),
+              properties.VALUES.metrics.environment_version.Get(),
               console_io.IsInteractive(error=True, heuristic=True),
               platform.python_version(),
               platforms.Platform.Current().UserAgentFragment())

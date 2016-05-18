@@ -27,7 +27,6 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import docker_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
-from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -36,7 +35,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 from googlecloudsdk.third_party.appengine.api import appinfo
-
+from googlecloudsdk.third_party.appengine.tools import context_util
 
 DEFAULT_DOMAIN = 'appspot.com'
 DEFAULT_SERVICE = 'default'
@@ -234,15 +233,16 @@ def _BuildImagesWithCloudBuild(project, services, version_id, code_bucket_ref,
     try:
       image = docker_image.Image(
           dockerfile_dir=os.path.dirname(info.file),
-          tag=_GetImageName(project, service, version_id),
-          nocache=False)
+          repo=_GetImageName(project, service, version_id),
+          nocache=False,
+          tag=config.DOCKER_IMAGE_TAG)
       cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                               image.tag, storage_client)
+                               image.tagged_repo, storage_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-      cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tag,
-                                    image.tag, cloudbuild_client)
+      cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
+                                    image.tagged_repo, cloudbuild_client)
       metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-      images[service] = image.tag
+      images[service] = image.tagged_repo
     finally:
       cleanup_dockerfile()
       cleanup_context()
@@ -283,11 +283,11 @@ def BuildAndPushDockerImage(appyaml_path, docker_client, image_name):
   """
   dockerfile_dir = os.path.dirname(appyaml_path)
 
-  image = docker_image.Image(dockerfile_dir=dockerfile_dir, tag=image_name,
-                             nocache=False)
+  image = docker_image.Image(dockerfile_dir=dockerfile_dir, repo=image_name,
+                             tag=config.DOCKER_IMAGE_TAG, nocache=False)
   image.Build(docker_client)
   image.Push(docker_client)
-  return image.tag
+  return image.tagged_repo
 
 
 def UseSsl(handlers):

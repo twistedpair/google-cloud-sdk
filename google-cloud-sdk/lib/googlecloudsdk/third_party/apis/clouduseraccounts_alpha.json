@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20160428",
+ "revision": "20160510",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -202,7 +202,7 @@
     },
     "value": {
      "type": "string",
-     "description": "The object of the condition. Exactly one of these must be set."
+     "description": "DEPRECATED. Use 'values' instead."
     },
     "values": {
      "type": "array",

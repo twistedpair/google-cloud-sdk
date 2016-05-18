@@ -18,18 +18,25 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 
 
-def AddBackendServiceName(parser, is_regional=False, is_global=True):
+def AddBackendServiceName(parser,
+                          is_plural=False, is_regional=False, is_global=True):
   """Add args to specify regional, global (or both) backend service.
 
   Some commands accept both regional and global resources.
+
   Args:
     parser: argparse parser.
+    is_plural: bool, whether to accept multiple values.
     is_regional: bool, include region flag.
     is_global: bool, if also regional add global flag, otherwise do nothing.
   """
   parser.add_argument(
-      'name',
-      help='The name of the backend service.')
+      'name' + ('s' if is_plural else ''),
+      metavar='NAME',
+      nargs='+' if is_plural else None,
+      completion_resource='compute.backendServices',
+      help='The name{0} of the backend service{0}.'
+      .format('s' if is_plural else ''))
 
   if is_regional:
     # Only add --global flag if we are supporting regional resource.
@@ -137,12 +144,11 @@ def AddHttpsHealthChecks(parser):
       """
 
 
-def AddSessionAffinity(parser, default='none'):
+def AddSessionAffinity(parser):
   session_affinity = parser.add_argument(
       '--session-affinity',
-      choices=['CLIENT_IP', 'CLIENT_IP_PORT_PROTO',
-               'CLIENT_IP_PROTO', 'GENERATED_COOKIE', 'NONE'],
-      default=default,
+      choices=['CLIENT_IP', 'GENERATED_COOKIE', 'NONE'],
+      default=None,  # Tri-valued, None => don't include property.
       type=lambda x: x.upper(),
       help='The type of session affinity to use.')
   session_affinity.detailed_help = """\
@@ -157,11 +163,11 @@ def AddSessionAffinity(parser, default='none'):
       """
 
 
-def AddAffinityCookieTtl(parser, default=0):
+def AddAffinityCookieTtl(parser):
   affinity_cookie_ttl = parser.add_argument(
       '--affinity-cookie-ttl',
       type=int,
-      default=default,
+      default=None,  # Tri-valued, None => don't include property.
       help=("""If session-affinity is set to "generated_cookie", this flag sets
             the TTL, in seconds, of the resulting cookie."""))
   affinity_cookie_ttl.detailed_helpr = """\

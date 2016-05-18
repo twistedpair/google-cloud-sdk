@@ -729,6 +729,10 @@ class ListVersionsResponse(_messages.Message):
   versions = _messages.MessageField('Version', 2, repeated=True)
 
 
+class LocationMetadata(_messages.Message):
+  """Metadata for the given google.cloud.location.Location."""
+
+
 class ManualScaling(_messages.Message):
   """A module with manual scaling runs continuously, allowing you to perform
   complex initialization and rely on the state of its memory over time.
@@ -923,6 +927,27 @@ class OperationMetadata(_messages.Message):
   operationType = _messages.StringField(4)
   target = _messages.StringField(5)
   user = _messages.StringField(6)
+
+
+class OperationMetadataV1(_messages.Message):
+  """Metadata for the given google.longrunning.Operation.
+
+  Fields:
+    endTime: Timestamp that this operation was completed. (Not present if the
+      operation is still in progress.)  @OutputOnly
+    insertTime: Timestamp that this operation was received.  @OutputOnly
+    method: API method name that initiated the operation. Example:
+      "google.appengine.v1.Version.CreateVersion".  @OutputOnly
+    target: Resource that this operation is acting on. Example:
+      "apps/myapp/services/default".  @OutputOnly
+    user: The user who requested this operation.  @OutputOnly
+  """
+
+  endTime = _messages.StringField(1)
+  insertTime = _messages.StringField(2)
+  method = _messages.StringField(3)
+  target = _messages.StringField(4)
+  user = _messages.StringField(5)
 
 
 class OperationMetadataV1Beta5(_messages.Message):

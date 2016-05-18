@@ -19,7 +19,29 @@ import sys
 
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apitools.base.py import exceptions
+
+
+class RepoCreationError(exceptions.Error):
+  """Unable to create repo."""
+
+  def __init__(self, message):
+    super(RepoCreationError, self).__init__(message)
+
+
+class RepoDeletionError(exceptions.Error):
+  """Unable to delete repo."""
+
+  def __init__(self, message):
+    super(RepoDeletionError, self).__init__(message)
+
+
+class RepoNoExistError(exceptions.Error):
+  """Repo does not exist."""
+
+  def __init__(self, message):
+    super(RepoNoExistError, self).__init__(message)
 
 
 # TODO(user): Avoid initializing this at import time.
@@ -194,6 +216,17 @@ class Project(Source):
         name=repo_name,
         vcs=vcs)
     return self._client.projects_repos.Create(request)
+
+  def DeleteRepo(self, repo_name):
+    """Deletes a repo.
+
+    Args:
+      repo_name: (string) The name of the repo to delete.
+    """
+    request = messages.SourceProjectsReposDeleteRequest(
+        projectId=self._id,
+        repoName=repo_name)
+    self._client.projects_repos.Delete(request)
 
 
 class Repo(Source):

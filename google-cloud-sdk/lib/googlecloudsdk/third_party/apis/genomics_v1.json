@@ -1776,6 +1776,14 @@
           "items": {
             "$ref": "VariantSetMetadata"
           }
+        },
+        "name": {
+          "description": "User-specified, mutable name.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A textual description of this variant set.",
+          "type": "string"
         }
       }
     },

@@ -857,8 +857,13 @@ class BackendService(_messages.Message):
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
       and SSL.
+    SessionAffinityValueValuesEnum: Type of session affinity to use.
 
   Fields:
+    affinityCookieTtlSec: Lifetime of cookies in seconds if session_affinity
+      is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
+      only until the end of the browser session (or equivalent). The maximum
+      allowed value for TTL is one day.
     backends: The list of backends that serve this BackendService.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -892,6 +897,7 @@ class BackendService(_messages.Message):
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
+    sessionAffinity: Type of session affinity to use.
     timeoutSec: How many seconds to wait for the backend before considering it
       a failed request. Default is 30 seconds.
   """
@@ -907,21 +913,37 @@ class BackendService(_messages.Message):
     HTTP = 0
     HTTPS = 1
 
-  backends = _messages.MessageField('Backend', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCDN = _messages.BooleanField(4)
-  fingerprint = _messages.BytesField(5)
-  healthChecks = _messages.StringField(6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#backendService')
-  name = _messages.StringField(9)
-  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(11)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  timeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  class SessionAffinityValueValuesEnum(_messages.Enum):
+    """Type of session affinity to use.
+
+    Values:
+      CLIENT_IP: <no description>
+      CLIENT_IP_PROTO: <no description>
+      GENERATED_COOKIE: <no description>
+      NONE: <no description>
+    """
+    CLIENT_IP = 0
+    CLIENT_IP_PROTO = 1
+    GENERATED_COOKIE = 2
+    NONE = 3
+
+  affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backends = _messages.MessageField('Backend', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCDN = _messages.BooleanField(5)
+  fingerprint = _messages.BytesField(6)
+  healthChecks = _messages.StringField(7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#backendService')
+  name = _messages.StringField(10)
+  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(12)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 16)
+  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -7935,8 +7957,8 @@ class Instance(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
-      the following values: PROVISIONING, STAGING, RUNNING, STOPPING, and
-      TERMINATED.
+      the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
+      SUSPENDED, SUSPENDING, and TERMINATED.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -8000,7 +8022,8 @@ class Instance(_messages.Message):
       authenticate applications on the instance. See Service Accounts for more
       information.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING,
+      and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: A list of tags to apply to this instance. Tags are used to identify
@@ -8012,7 +8035,8 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and
+    TERMINATED.
 
     Values:
       PROVISIONING: <no description>
@@ -10800,7 +10824,7 @@ class RouterStatus(_messages.Message):
   """A RouterStatus object.
 
   Fields:
-    bestRoutes: Best routes for this router.
+    bestRoutes: Best routes for this router's network.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     network: URI of the network to which this router belongs.
   """
@@ -11998,11 +12022,13 @@ class TargetPool(_messages.Message):
     Values:
       CLIENT_IP: <no description>
       CLIENT_IP_PROTO: <no description>
+      GENERATED_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PROTO = 1
-    NONE = 2
+    GENERATED_COOKIE = 2
+    NONE = 3
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -12730,6 +12756,10 @@ class VpnTunnel(_messages.Message):
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway.
     region: [Output Only] URL of the region where the VPN tunnel resides.
+    remoteTrafficSelector: Remote traffic selectors to use when establishing
+      the VPN tunnel with peer VPN gateway. The value should be a CIDR
+      formatted string, for example: 192.168.0.0/16. The ranges should be
+      disjoint.
     router: URL of router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
@@ -12780,12 +12810,13 @@ class VpnTunnel(_messages.Message):
   name = _messages.StringField(8)
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
-  router = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  sharedSecret = _messages.StringField(13)
-  sharedSecretHash = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  targetVpnGateway = _messages.StringField(16)
+  remoteTrafficSelector = _messages.StringField(11, repeated=True)
+  router = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  sharedSecret = _messages.StringField(14)
+  sharedSecretHash = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  targetVpnGateway = _messages.StringField(17)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

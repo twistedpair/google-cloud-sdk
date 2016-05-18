@@ -57,31 +57,6 @@ class ScopePrompter(object):
 
   __metaclass__ = abc.ABCMeta
 
-  def GetCollection(self, resource_type):
-    """Coverts a resource type to a collection."""
-    resource_type = resource_type or self.resource_type
-    if resource_type == 'zoneViews':
-      return 'resourceviews.' + resource_type
-    elif (resource_type == 'users' or
-          resource_type == 'groups' or
-          resource_type == 'globalAccountsOperations'):
-      return 'clouduseraccounts.' + resource_type
-    else:
-      return 'compute.' + resource_type
-
-  def HasDefaultValue(self, resource_type, scope_name):
-    """Returns whether the scope has a default value."""
-    collection = self.GetCollection(resource_type)
-    api = utils.CollectionToApi(collection)
-    try:
-      self.resources.GetParamDefault(
-          api=api,
-          collection=resource_type,
-          param=scope_name)
-      return True
-    except properties.RequiredPropertyError:
-      return False
-
   def FetchChoiceResources(self, attribute, service, flag_names,
                            prefix_filter=None):
     """Returns a list of choices used to prompt with."""
@@ -235,7 +210,7 @@ class ScopePrompter(object):
         try:
           resource_ref = self.resources.Parse(
               resource_name,
-              collection=self.GetCollection(resource_type),
+              collection=utils.GetApiCollection(resource_type),
               params={},
               resolve=False)
           # TODO(user): resource_ref is created right above, so scope_name
@@ -275,24 +250,27 @@ class ScopePrompter(object):
     """Returns a list of resolved resource references for scoped resources."""
     resource_refs = []
     ambiguous_refs = []
+    resource_type = resource_type or self.resource_type
+    collection = utils.GetApiCollection(resource_type)
     for resource_name in resource_names:
       resource_ref = self.resources.Parse(
           resource_name,
-          collection=self.GetCollection(resource_type),
+          collection=collection,
           params={scope_name: scope_arg},
           resolve=False)
       resource_refs.append(resource_ref)
       if not getattr(resource_ref, scope_name):
         ambiguous_refs.append((resource_name, resource_ref))
 
-    has_default = self.HasDefaultValue(resource_type, scope_name)
+    has_default = utils.HasApiParamDefaultValue(
+        self.resources, resource_type, scope_name)
     if ambiguous_refs and not scope_arg and not has_default:
       # We need to prompt.
       self.PromptForScope(
           ambiguous_refs=ambiguous_refs,
           attributes=[scope_name],
           services=[scope_service],
-          resource_type=resource_type or self.resource_type,
+          resource_type=resource_type,
           flag_names=flag_names,
           prefix_filter=prefix_filter)
 
@@ -359,7 +337,8 @@ class ScopePrompter(object):
     for resource_name in resource_names:
       resource_refs.append(self.resources.Parse(
           resource_name,
-          collection=self.GetCollection(resource_type)))
+          collection=utils.GetApiCollection(
+              resource_type or self.resource_type)))
     return resource_refs
 
   def CreateGlobalReference(self, resource_name, resource_type=None):
@@ -371,7 +350,8 @@ class ScopePrompter(object):
     for resource_name in resource_names:
       resource_refs.append(self.clouduseraccounts_resources.Parse(
           resource_name,
-          collection=self.GetCollection(resource_type)))
+          collection=utils.GetApiCollection(
+              resource_type or self.resource_type)))
     return resource_refs
 
   def CreateAccountsReference(self, resource_name, resource_type=None):

@@ -15,10 +15,8 @@
 """The calliope CLI/API is a framework for building library interfaces."""
 
 import argparse
-import httplib
 import os
 import re
-import ssl
 import sys
 import uuid
 
@@ -34,23 +32,9 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
 
-# There are some error classes that want to be handled as recoverable errors,
-# but cannot import the core_exceptions module (and therefore the Error class)
-# for various reasons (e.g. circular dependencies). To work around this, we keep
-# a list of known "friendly" error types, which we handle in the same way.
-# Additionally, we provide useful message suffixes for these error types.
-_NETWORK_ISSUES_ERROR_STRING = (
-    'This may be due to network connectivity issues. Please check your network '
-    'settings, and the status of the service you are trying to reach.')
-KNOWN_ERRORS = {
-    files.Error: '',
-    ssl.SSLError: _NETWORK_ISSUES_ERROR_STRING,
-    httplib.ResponseNotReady: _NETWORK_ISSUES_ERROR_STRING,
-}
 _COMMAND_SUFFIX = '.py'
 
 
@@ -101,7 +85,7 @@ class CLILoader(object):
   PATH_RE = re.compile(r'(?:([\w\.]+)\.)?([^\.]+)')
 
   def __init__(self, name, command_root_directory,
-               allow_non_existing_modules=False, load_context=None,
+               allow_non_existing_modules=False,
                logs_dir=config.Paths().logs_dir, version_func=None):
     """Initialize Calliope.
 
@@ -112,8 +96,6 @@ class CLILoader(object):
         CLI module.
       allow_non_existing_modules: True to allow extra module directories to not
         exist, False to raise an exception if a module does not exist.
-      load_context: A function that returns a context dict, or None for a
-        default which always returns {}.
       logs_dir: str, The path to the root directory to store logs in, or None
         for no log files.
       version_func: func, A function to call for a top-level -v and
@@ -130,7 +112,6 @@ class CLILoader(object):
 
     self.__allow_non_existing_modules = allow_non_existing_modules
 
-    self.__config_hooks = backend.ConfigHooks(load_context=load_context)
     self.__logs_dir = logs_dir
     self.__version_func = version_func
 
@@ -429,7 +410,7 @@ class CLILoader(object):
     (module_root, module, name, release_track) = group_info
     return backend.CommandGroup(
         module_root, module, [name], release_track, uuid.uuid4().hex, self,
-        None, self.__config_hooks)
+        None)
 
   def __AddBuiltinGlobalFlags(self, top_element):
     """Adds in calliope builtin global flags.
@@ -662,10 +643,7 @@ class CLI(object):
       self._HandleKnownError(command_path_string, exc, flag_names,
                              print_error=True)
     except Exception as exc:
-      if type(exc) in KNOWN_ERRORS:
-        self._HandleKnownError(command_path_string, exc, flag_names,
-                               print_error=True)
-      else:
+      if not self._MaybeHandleKnownError(command_path_string, exc, flag_names):
         # Make sure any uncaught exceptions still make it into the log file.
         exc_printable = self.SafeExceptionToString(exc)
         log.debug(exc_printable, exc_info=sys.exc_info())
@@ -696,9 +674,28 @@ class CLI(object):
       # See http://stackoverflow.com/questions/3715865/unicodeencodeerror-ascii.
       return unicode(exc).encode('utf-8', 'replace')
 
+  def _MaybeHandleKnownError(self, command_path_string, exc, flag_names):
+    """Attempt to recognize the given exception as a known type and handle it.
+
+    Args:
+      command_path_string: str, The command that was run.
+      exc: Exception, The exception that was raised.
+      flag_names: [str], The names of the flags that were used during this
+        execution.
+
+    Returns:
+      True if it was handled, False otherwise.
+    """
+    known_exc = exceptions.ConvertKnownError(exc)
+    if not known_exc:
+      return False
+    self._HandleKnownError(command_path_string, known_exc, flag_names,
+                           print_error=True, orig_exc=exc)
+    return True
+
   def _HandleKnownError(self, command_path_string, exc, flag_names,
-                        print_error=True):
-    """For exceptions we know about, just print the error and exit.
+                        print_error=True, orig_exc=None):
+    """Print the error and exit for exceptions of known type.
 
     Args:
       command_path_string: str, The command that was run.
@@ -707,16 +704,15 @@ class CLI(object):
         execution.
       print_error: bool, True to print an error message, False to just exit with
         the given error code.
+      orig_exc: Exception or None, The original exception for metrics purposes
+        if the exception was converted to a new type.
     """
-    # If this is a known error, we may have an additional message suffix.
-    message_suffix = KNOWN_ERRORS.get(type(exc), '')
-    msg = '({0}) {1} {2}'.format(
-        command_path_string, self.SafeExceptionToString(exc),
-        message_suffix).rstrip()
+    msg = '({0}) {1}'.format(
+        command_path_string, self.SafeExceptionToString(exc))
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)
-    metrics.Error(command_path_string, exc, flag_names)
+    metrics.Error(command_path_string, orig_exc or exc, flag_names)
     self._Exit(exc)
 
   def _Exit(self, exc):

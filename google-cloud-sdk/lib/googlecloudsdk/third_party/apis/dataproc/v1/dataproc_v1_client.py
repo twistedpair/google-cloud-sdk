@@ -8,6 +8,7 @@ class DataprocV1(base_api.BaseApiClient):
   """Generated client library for service dataproc version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://dataproc.googleapis.com/'
 
   _PACKAGE = u'dataproc'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -25,7 +26,7 @@ class DataprocV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new dataproc handle."""
-    url = url or u'https://dataproc.googleapis.com/'
+    url = url or self.BASE_URL
     super(DataprocV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

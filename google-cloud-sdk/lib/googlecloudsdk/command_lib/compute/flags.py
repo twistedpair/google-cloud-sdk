@@ -74,13 +74,26 @@ A list of regions can be fetched by running:
 """
 
 
-def AddZoneFlag(parser, resource_type, operation_type,
+def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                 explanation=ZONE_PROPERTY_EXPLANATION):
-  """Adds a --zone flag to the given parser."""
+  """Adds a --zone flag to the given parser.
+
+  Args:
+    parser: argparse parser.
+    resource_type: str, human readable name for the resource type this flag is
+                   qualifying, for example "instance group".
+    operation_type: str, human readable name for the operation, for example
+                    "update" or "delete".
+    flag_prefix: str, flag will be named --{flag_prefix}-zone.
+    explanation: str, detailed explanation of the flag.
+  """
   short_help = 'The zone of the {0} to {1}.'.format(
       resource_type, operation_type)
+  flag_name = 'zone'
+  if flag_prefix is not None:
+    flag_name = flag_prefix + '-' + flag_name
   zone = parser.add_argument(
-      '--zone',
+      '--' + flag_name,
       help=short_help,
       completion_resource='compute.zones',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
@@ -89,12 +102,26 @@ def AddZoneFlag(parser, resource_type, operation_type,
 
 
 def AddRegionFlag(parser, resource_type, operation_type,
+                  flag_prefix=None,
                   explanation=REGION_PROPERTY_EXPLANATION):
-  """Adds a --region flag to the given parser."""
+  """Adds a --region flag to the given parser.
+
+  Args:
+    parser: argparse parser.
+    resource_type: str, human readable name for the resource type this flag is
+                   qualifying, for example "instance group".
+    operation_type: str, human readable name for the operation, for example
+                    "update" or "delete".
+    flag_prefix: str, flag will be named --{flag_prefix}-region.
+    explanation: str, detailed explanation of the flag.
+  """
   short_help = 'The region of the {0} to {1}.'.format(
       resource_type, operation_type)
+  flag_name = 'region'
+  if flag_prefix is not None:
+    flag_name = flag_prefix + '-' + flag_name
   region = parser.add_argument(
-      '--region',
+      '--' + flag_name,
       help=short_help,
       completion_resource='compute.regions',
       action=actions.StoreProperty(properties.VALUES.compute.region))

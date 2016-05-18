@@ -37,6 +37,16 @@ class ProjectAccessError(exceptions.Error):
     super(ProjectAccessError, self).__init__(message)
 
 
+class ProjectMoveError(exceptions.Error):
+  """The specified project already has a parent and can't be moved."""
+
+  def __init__(self, project, organization_id):
+    message = (
+        'Cannot move project [%s] into organization [%s], it already has '
+        'parent %s') % (project.projectId, organization_id, project.parent)
+    super(ProjectMoveError, self).__init__(message)
+
+
 class UnknownError(exceptions.Error):
   """An unknown error occurred."""
 

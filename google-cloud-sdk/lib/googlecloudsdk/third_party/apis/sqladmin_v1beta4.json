@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20160428",
+ "revision": "20160510",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -1240,12 +1240,16 @@
    "properties": {
     "clientCert": {
      "$ref": "SslCertDetail",
-     "description": "The new client certificate and private key. The new certificate will not work until the instance is restarted."
+     "description": "The new client certificate and private key. The new certificate will not work until the instance is restarted for First Generation instances."
     },
     "kind": {
      "type": "string",
      "description": "This is always sql#sslCertsInsert.",
      "default": "sql#sslCertsInsert"
+    },
+    "operation": {
+     "$ref": "Operation",
+     "description": "The operation to track the ssl certs insert request."
     },
     "serverCaCert": {
      "$ref": "SslCert",

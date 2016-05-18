@@ -156,6 +156,10 @@
             "CANCELLED"
           ]
         },
+        "statusDetail": {
+          "description": "Customer-readable message about the current status.\n@OutputOnly",
+          "type": "string"
+        },
         "source": {
           "description": "Describes where to find the source files to build.",
           "$ref": "Source"

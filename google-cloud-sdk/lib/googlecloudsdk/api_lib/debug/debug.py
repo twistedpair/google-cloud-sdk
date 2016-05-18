@@ -19,8 +19,11 @@ import threading
 import urllib
 
 from googlecloudsdk.api_lib.debug import errors
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import config
+from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
 # Names for default module and version. In App Engine, the default module and
@@ -55,7 +58,7 @@ def SplitLogExpressions(format_string):
   Returns:
     string, [string] - The new format string and the array of expressions.
   Raises:
-    ValueError: if the string has unbalanced braces.
+    InvalidArgumentException: if the string has unbalanced braces.
   """
   expressions = []
   log_format = ''
@@ -82,7 +85,6 @@ def SplitLogExpressions(format_string):
       brace_count -= 1
       if brace_count == 0:
         # Finish processing the expression
-        brace_count = 0
         if current_expression in expressions:
           i = expressions.index(current_expression)
         else:
@@ -101,7 +103,9 @@ def SplitLogExpressions(format_string):
       log_format += c
   if brace_count:
     # Unbalanced left brace.
-    raise ValueError('Too many "{" characters in format string')
+    raise exceptions.InvalidArgumentException(
+        'LOG_FORMAT_STRING',
+        'Too many "{" characters in format string')
   return log_format, expressions
 
 
@@ -138,7 +142,7 @@ def DebugViewUrl(breakpoint):
   debug_view_url = 'https://console.developers.google.com/debug/fromgcloud?'
   data = [
       ('project', breakpoint.project),
-      ('dbgee', breakpoint.target_uniquifier),
+      ('dbgee', breakpoint.target_id),
       ('bp', breakpoint.id)
   ]
   location = breakpoint.location
@@ -185,10 +189,16 @@ class DebugObject(object):
     cls.SNAPSHOT_TYPE = (
         cls._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE)
     cls.LOGPOINT_TYPE = cls._debug_messages.Breakpoint.ActionValueValuesEnum.LOG
+    cls._resource_parser = resources.REGISTRY.CloneAndSwitchAPIs(
+        cls._debug_client)
 
   @classmethod
-  def InitializeClientVersion(cls, version):
-    cls.CLIENT_VERSION = version
+  def TryParse(cls, *args, **kwargs):
+    try:
+      return cls._resource_parser.Parse(*args, **kwargs)
+    except (resources.InvalidResourceException,
+            resources.UnknownCollectionException):
+      return None
 
 
 class Debugger(DebugObject):
@@ -218,55 +228,29 @@ class Debugger(DebugObject):
     """Find the default debuggee.
 
     Returns:
-      The Debuggee for the default module and version, if there is exactly one
-      such.
+      The default debug target, which is either the only target available
+      or the latest minor version of the application, if all targets have the
+      same module and version.
     Raises:
-      errors.NoDebuggeeError if the default can't be determined.
+      errors.NoDebuggeeError if no debuggee was found.
+      errors.MultipleDebuggeesError if there is not a unique default.
     """
     debuggees = self.ListDebuggees()
     if len(debuggees) == 1:
       # Just one possible target
       return debuggees[0]
+
     if not debuggees:
       raise errors.NoDebuggeeError()
-    # If they're multiple minor versions of a single version (which we
-    # assume to be the default), return the highest-numbered version.
+
+    # If there are multiple minor versions of a single module and version,
+    # return the highest-numbered minor version.
     latest = _FindLatestMinorVersion(debuggees)
     if latest:
       return latest
 
-    # Find all versions of the default module
-    by_module = [d for d in debuggees if not d.module]
-    if not by_module:
-      # No default module. Can't determine the default target.
-      raise errors.MultipleDebuggeesError(None, debuggees)
-    if len(by_module) == 1:
-      return by_module[0]
-    # If there are multiple minor versions of a single version of the
-    # default module, return the highest-numbered version.
-    latest = _FindLatestMinorVersion(by_module)
-    if latest:
-      return latest
-
-    # The default module may have multiple versions. Choose the default, if it
-    # can be determined.
-    by_version = [d for d in by_module if not d.version]
-    if len(by_version) == 1:
-      return by_version[0]
-    if not by_version:
-      # No default version. Can't determine the default target.
-      raise errors.MultipleDebuggeesError(None, debuggees)
-    # If there are multiple minor versions of the default version of the
-    # default module, return the highest-numbered version.
-    latest = _FindLatestMinorVersion(by_version)
-    if latest:
-      return latest
-
-    # Could not find default version. Note that in the case where the debuggee
-    # is an App Engine module version, it is possible to query the module and
-    # find the name of the default version. That information is not visible in
-    # the corresponding Debuggee object, unfortunately.
-    raise errors.NoDebuggeeError()
+    # More than one module or version. Can't determine the default target.
+    raise errors.MultipleDebuggeesError(None, debuggees)
 
   def FindDebuggee(self, pattern=None):
     """Find the unique debuggee matching the given pattern.
@@ -282,20 +266,26 @@ class Debugger(DebugObject):
       errors.NoDebuggeeError if the pattern matches no debuggees.
     """
     if not pattern:
-      return self.DefaultDebuggee()
+      debuggee = self.DefaultDebuggee()
+      log.status.write(
+          'Debug target not specified. Using default target: {0}\n'.format(
+              debuggee.name))
+      return debuggee
     all_debuggees = self.ListDebuggees()
+    if not all_debuggees:
+      raise errors.NoDebuggeeError()
     match_re = re.compile(pattern)
     debuggees = [d for d in all_debuggees
                  if d.target_id == pattern or match_re.search(d.name)]
     if not debuggees:
       # Try matching on description.
       debuggees = [d for d in all_debuggees
-                   if match_re.search(d.description)]
+                   if d.description and match_re.search(d.description)]
     if len(debuggees) == 1:
       # Just one possible target
       return debuggees[0]
     if not debuggees:
-      raise errors.NoDebuggeeError(pattern)
+      raise errors.NoDebuggeeError(pattern, debuggees=all_debuggees)
 
     # Multiple possibilities. Find the latest minor version, if they all
     # point to the same module and version.
@@ -382,6 +372,14 @@ class Debuggee(DebugObject):
       return (module or DEFAULT_MODULE) + '-' + (version or DEFAULT_VERSION)
     return self.description
 
+  def _BreakpointDescription(self, restrict_to_type):
+    if not restrict_to_type:
+      return 'breakpoint'
+    elif restrict_to_type == self.SNAPSHOT_TYPE:
+      return 'snapshot'
+    else:
+      return 'logpoint'
+
   @errors.HandleHttpError
   def GetBreakpoint(self, breakpoint_id):
     """Gets the details for a breakpoint.
@@ -412,23 +410,9 @@ class Debuggee(DebugObject):
     self._debug_client.debugger_debuggees_breakpoints.Delete(request)
 
   @errors.HandleHttpError
-  def ListBreakpoints(self, include_all_users=False, include_inactive=False,
+  def ListBreakpoints(self, location_regexp_or_ids=None,
+                      include_all_users=False, include_inactive=False,
                       restrict_to_type=None):
-    self._CheckClient()
-    request = (self._debug_messages.
-               ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(
-                   debuggeeId=self.target_id,
-                   includeAllUsers=include_all_users,
-                   includeInactive=include_inactive,
-                   clientVersion=self.CLIENT_VERSION))
-    response = self._debug_client.debugger_debuggees_breakpoints.List(request)
-    return self._FilteredDictListWithInfo(response.breakpoints,
-                                          restrict_to_type)
-
-  @errors.HandleHttpError
-  def ListMatchingBreakpoints(self, location_regexp_or_ids,
-                              include_all_users=False, include_inactive=False,
-                              restrict_to_type=None):
     """Returns all breakpoints matching the given IDs or patterns.
 
     Lists all breakpoints for this debuggee, and returns every breakpoint
@@ -439,30 +423,84 @@ class Debuggee(DebugObject):
       location_regexp_or_ids: A list of regular expressions or breakpoint IDs.
         Regular expressions will be compared against the location ('path:line')
         of the breakpoints. Exact breakpoint IDs will be retrieved regardless
-        of the include_all_users or include_inactive flags.
+        of the include_all_users or include_inactive flags.  If empty or None,
+        all breakpoints will be returned.
       include_all_users: If true, search breakpoints created by all users.
       include_inactive: If true, search breakpoints that are in the final state.
+        This option controls whether regular expressions can match inactive
+        breakpoints. If an object is specified by ID, it will be returned
+        whether or not this flag is set.
       restrict_to_type: An optional breakpoint type (LOGPOINT_TYPE or
         SNAPSHOT_TYPE)
     Returns:
       A list of all matching breakpoints.
+    Raises:
+      InvalidArgumentException if a regular expression is not valid.
     """
     self._CheckClient()
-    ids = set([i for i in location_regexp_or_ids
-               if _BREAKPOINT_ID_PATTERN.match(i)])
-    patterns = [re.compile(p) for p in set(location_regexp_or_ids) - ids]
+    # Try using the resource parser on every argument, and save the resulting
+    # (argument, resource) pairs
+    parsed_args = [
+        (arg, self.TryParse(
+            arg, params={'debuggeeId': self.target_id},
+            collection='clouddebugger.debugger.debuggees.breakpoints'))
+        for arg in location_regexp_or_ids or []]
+
+    # Pass through the results and find anything that looks like a breakpoint
+    # ID. This will include things that looked like an ID originally, plus
+    # any IDs the resource parser detected.
+    ids = set([r.Name() for _, r in parsed_args
+               if r and _BREAKPOINT_ID_PATTERN.match(r.Name())])
+
+    # Treat everything that's not an ID (i.e. everything that either wasn't
+    # parsable as a resource or whose name doesn't look like an ID) as a reqular
+    # expression to be checked against the breakpoint location.
+    try:
+      patterns = [re.compile(arg) for arg, r in parsed_args
+                  if not r or (r.Name() not in ids)]
+    except re.error as e:
+      raise exceptions.InvalidArgumentException('LOCATION-REGEXP', str(e))
+
     request = (self._debug_messages.
                ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(
                    debuggeeId=self.target_id,
                    includeAllUsers=include_all_users,
-                   includeInactive=include_inactive,
+                   includeInactive=include_inactive or bool(ids),
                    clientVersion=self.CLIENT_VERSION))
     response = self._debug_client.debugger_debuggees_breakpoints.List(request)
-    result = [bp for bp in response.breakpoints
-              if _MatchesIdOrRegexp(bp, ids, patterns)]
+    if not location_regexp_or_ids:
+      return self._FilteredDictListWithInfo(response.breakpoints,
+                                            restrict_to_type)
+
+    if include_inactive:
+      # Match everything (including inactive breakpoints) against all ids and
+      # patterns.
+      result = [bp for bp in response.breakpoints
+                if _BreakpointMatchesIdOrRegexp(bp, ids, patterns)]
+    else:
+      # Return everything that is listed by ID, plus every breakpoint that
+      # is inactive (i.e. isFinalState is true) which matches any pattern.
+      # Breakpoints that are inactive should not be matched against the
+      # patterns.
+      result = [bp for bp in response.breakpoints
+                if _BreakpointMatchesIdOrRegexp(
+                    bp, ids, [] if bp.isFinalState else patterns)]
+
+    # Check if any ids were missing, and fetch them individually. This can
+    # happen if an ID for another user's breakpoint was specified, but the
+    # all_users flag was false. This code will also raise an error for any
+    # missing IDs.
     missing_ids = ids - set([bp.id for bp in result])
-    for i in missing_ids:
-      result.append(self.GetBreakpoint(i))
+    if missing_ids:
+      raise errors.BreakpointNotFoundError(
+          missing_ids, self._BreakpointDescription(restrict_to_type))
+
+    # Verify that all patterns matched at least one breakpoint.
+    for p in patterns:
+      if not [bp for bp in result
+              if _BreakpointMatchesIdOrRegexp(bp, [], [p])]:
+        raise errors.NoMatchError(self._BreakpointDescription(restrict_to_type),
+                                  p.pattern)
     return self._FilteredDictListWithInfo(result, restrict_to_type)
 
   @errors.HandleHttpError
@@ -529,13 +567,16 @@ class Debuggee(DebugObject):
     Returns:
       The created Breakpoint message.
     Raises:
-      ValueError: if location or log_format is empty or malformed.
+      InvalidArgumentException: if location or log_format is empty or malformed.
     """
     self._CheckClient()
     if not location:
-      raise ValueError('The location must not be empty.')
+      raise exceptions.InvalidArgumentException(
+          'LOCATION', 'The location must not be empty.')
     if not log_format_string:
-      raise ValueError('The log format string must not be empty.')
+      raise exceptions.InvalidArgumentException(
+          'LOG_FORMAT_STRING',
+          'The log format string must not be empty.')
     labels_value = None
     if labels:
       labels_value = self._debug_messages.Breakpoint.LabelsValue(
@@ -637,13 +678,23 @@ class Debuggee(DebugObject):
         'target_id': self.target_id})
     result['consoleViewUrl'] = DebugViewUrl(result)
 
+    # Restore some default values if they were stripped
+    if (message.action ==
+        self._debug_messages.Breakpoint.ActionValueValuesEnum.LOG and
+        not message.logLevel):
+      result['logLevel'] = (
+          self._debug_messages.Breakpoint.LogLevelValueValuesEnum.INFO)
+
+    if message.isFinalState is None:
+      result['isFinalState'] = False
+
     # Reformat a few fields for readability
     if message.location:
       result['location'] = '{0}:{1}'.format(message.location.path,
                                             message.location.line)
     if message.logMessageFormat:
-      fmt = re.sub(r'\$([0-9]+)', r'{{{\1}}}', message.logMessageFormat)
-      result['logMessageFormat'] = fmt.format(*message.expressions)
+      result['logMessageFormat'] = MergeLogExpressions(message.logMessageFormat,
+                                                       message.expressions)
       result.HideExistingField('expressions')
     return result
 
@@ -655,13 +706,21 @@ class Debuggee(DebugObject):
     Returns:
       The corresponding SourceLocation message.
     Raises:
-      ValueError: if the line is not of the form path:line
+      InvalidArgumentException: if the line is not of the form path:line
     """
     components = location.split(':')
     if len(components) != 2:
-      raise ValueError('Location must be of the form "path:line"')
-    return self._debug_messages.SourceLocation(path=components[0],
-                                               line=int(components[1]))
+      raise exceptions.InvalidArgumentException(
+          'LOCATION',
+          'Location must be of the form "path:line"')
+    try:
+      return self._debug_messages.SourceLocation(path=components[0],
+                                                 line=int(components[1]))
+    except ValueError:
+      raise exceptions.InvalidArgumentException(
+          'LOCATION',
+          'Location must be of the form "path:line", where "line" must be an '
+          'integer.')
 
   def _FilteredDictListWithInfo(self, result, restrict_to_type):
     """Filters a result list to contain only breakpoints of the given type.
@@ -747,22 +806,23 @@ class _BreakpointWaiter(object):
     return self._results
 
 
-def _MatchesIdOrRegexp(snapshot, ids, patterns):
-  """Check if a snapshot matches any of the given IDs or regexps.
+def _BreakpointMatchesIdOrRegexp(breakpoint, ids, patterns):
+  """Check if a breakpoint matches any of the given IDs or regexps.
 
   Args:
-    snapshot: Any _debug_messages.Breakpoint message object.
-    ids: A set of strings to search for exact matches on snapshot ID.
+    breakpoint: Any _debug_messages.Breakpoint message object.
+    ids: A set of strings to search for exact matches on breakpoint ID.
     patterns: A list of regular expressions to match against the file:line
-      location of the snapshot.
+      location of the breakpoint.
   Returns:
-    True if the snapshot matches any ID or pattern.
+    True if the breakpoint matches any ID or pattern.
   """
-  if snapshot.id in ids:
+  if breakpoint.id in ids:
     return True
-  if not snapshot.location:
+  if not breakpoint.location:
     return False
-  location = '{0}:{1}'.format(snapshot.location.path, snapshot.location.line)
+  location = '{0}:{1}'.format(breakpoint.location.path,
+                              breakpoint.location.line)
   for p in patterns:
     if p.search(location):
       return True

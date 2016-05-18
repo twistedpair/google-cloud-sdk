@@ -74,7 +74,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: The object of the condition. Exactly one of these must be set.
+    value: DEPRECATED. Use 'values' instead.
     values: The objects of the condition. This is mutually exclusive with
       'value'.
   """
@@ -96,8 +96,8 @@ class Condition(_messages.Message):
 
     Values:
       NO_OP: Default no-op.
-      EQUALS: Equality check.
-      NOT_EQUALS: Non-equality check.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
       IN: Set-inclusion check.
       NOT_IN: Set-exclusion check.
       DISCHARGED: Subject is discharged
@@ -150,23 +150,23 @@ class CreateServiceAccountKeyRequest(_messages.Message):
   """The service account key create request.
 
   Enums:
-    PrivateKeyTypeValueValuesEnum: The type of the private key requested.
-      GOOGLE_CREDENTIALS is the default key type.
+    PrivateKeyTypeValueValuesEnum: The output format of the private key.
+      `GOOGLE_CREDENTIALS_FILE` is the default output format.
 
   Fields:
-    privateKeyType: The type of the private key requested. GOOGLE_CREDENTIALS
-      is the default key type.
+    privateKeyType: The output format of the private key.
+      `GOOGLE_CREDENTIALS_FILE` is the default output format.
   """
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the private key requested. GOOGLE_CREDENTIALS is the
-    default key type.
+    """The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the
+    default output format.
 
     Values:
-      TYPE_UNSPECIFIED: Unspecified. Defaults to Google Credentials File
-        format.
+      TYPE_UNSPECIFIED: Unspecified. Equivalent to
+        `TYPE_GOOGLE_CREDENTIALS_FILE`.
       TYPE_PKCS12_FILE: PKCS12 format. The password for the PKCS12 file is
-        'notasecret'. For more information, see
+        `notasecret`. For more information, see
         https://tools.ietf.org/html/rfc7292.
       TYPE_GOOGLE_CREDENTIALS_FILE: Google Credentials File format.
     """
@@ -184,9 +184,9 @@ class CreateServiceAccountRequest(_messages.Message):
     accountId: Required. The account id that is used to generate the service
       account email address and a stable unique id. It is unique within a
       project, must be 1-63 characters long, and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9]) to comply with RFC1035.
+      `[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.
     serviceAccount: The ServiceAccount resource to create. Currently, only the
-      following values are user assignable: display_name .
+      following values are user assignable: `display_name` .
   """
 
   accountId = _messages.StringField(1)
@@ -213,14 +213,14 @@ class GetPolicyDetailsRequest(_messages.Message):
 
   Fields:
     fullResourcePath: REQUIRED: The full resource path of the current policy
-      being requested, e.g., //dataflow.googleapis.com/projects/../jobs/..
+      being requested, e.g., `//dataflow.googleapis.com/projects/../jobs/..`.
     pageSize: Limit on the number of policies to include in the response.
       Further accounts can subsequently be obtained by including the
-      [GetPolicyDetailsResponse.next_page_token] in a subsequent request. If
+      GetPolicyDetailsResponse.next_page_token in a subsequent request. If
       zero, the default page size 20 will be used. Must be given a value in
       range [0, 100], otherwise an invalid argument error will be returned.
     pageToken: Optional pagination token returned in an earlier
-      [GetPolicyDetailsResponse.next_page_token].
+      GetPolicyDetailsResponse.next_page_token response.
   """
 
   fullResourcePath = _messages.StringField(1)
@@ -229,12 +229,12 @@ class GetPolicyDetailsRequest(_messages.Message):
 
 
 class GetPolicyDetailsResponse(_messages.Message):
-  """The response to the GetPolicyDetailsRequest containing the current policy
-  and the policies on the inherited resources the user has access to.
+  """The response to the `GetPolicyDetailsRequest` containing the current
+  policy and the policies on the inherited resources the user has access to.
 
   Fields:
     nextPageToken: To retrieve the next page of results, set
-      [GetPolicyDetailsRequest.page_token] to this value. If this value is
+      GetPolicyDetailsRequest.page_token to this value. If this value is
       empty, then there are not any further policies that the user has access
       to. The lifetime is 60 minutes. An "Expired pagination token" error will
       be returned if exceeded.
@@ -253,7 +253,7 @@ class IamProjectsServiceAccountsCreateRequest(_messages.Message):
     createServiceAccountRequest: A CreateServiceAccountRequest resource to be
       passed as the request body.
     name: Required. The resource name of the project associated with the
-      service accounts, such as "projects/my-project-123"
+      service accounts, such as `projects/my-project-123`.
   """
 
   createServiceAccountRequest = _messages.MessageField('CreateServiceAccountRequest', 1)
@@ -264,10 +264,11 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
   """A IamProjectsServiceAccountsDeleteRequest object.
 
   Fields:
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard
+      for the project will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -291,10 +292,11 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
   """A IamProjectsServiceAccountsGetRequest object.
 
   Fields:
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard
+      for the project will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -306,10 +308,11 @@ class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
   Fields:
     createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
       to be passed as the request body.
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard
+      for the project will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
   """
 
   createServiceAccountKeyRequest = _messages.MessageField('CreateServiceAccountKeyRequest', 1)
@@ -320,11 +323,11 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
   """A IamProjectsServiceAccountsKeysDeleteRequest object.
 
   Fields:
-    name: The resource name of the service account key in the format
-      "projects/{project}/serviceAccounts/{account}/keys/{key}". Using '-' as
-      a wildcard for the project will infer the project from the account. The
-      account value can be the email address or the unique_id of the service
-      account.
+    name: The resource name of the service account key in the following
+      format: `projects/{project}/serviceAccounts/{account}/keys/{key}`. Using
+      `-` as a wildcard for the project will infer the project from the
+      account. The `account` value can be the `email` address or the
+      `unique_id` of the service account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -334,21 +337,22 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
   """A IamProjectsServiceAccountsKeysGetRequest object.
 
   Enums:
-    PublicKeyTypeValueValuesEnum: The type of the public key requested.
-      X509_PEM is the default key type.
+    PublicKeyTypeValueValuesEnum: The output format of the public key
+      requested. X509_PEM is the default output format.
 
   Fields:
-    name: The resource name of the service account key in the format
-      "projects/{project}/serviceAccounts/{account}/keys/{key}". Using '-' as
-      a wildcard for the project will infer the project from the account. The
-      account value can be the email address or the unique_id of the service
-      account.
-    publicKeyType: The type of the public key requested. X509_PEM is the
-      default key type.
+    name: The resource name of the service account key in the following
+      format: `projects/{project}/serviceAccounts/{account}/keys/{key}`.
+      Using `-` as a wildcard for the project will infer the project from the
+      account. The `account` value can be the `email` address or the
+      `unique_id` of the service account.
+    publicKeyType: The output format of the public key requested. X509_PEM is
+      the default output format.
   """
 
   class PublicKeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the public key requested. X509_PEM is the default key type.
+    """The output format of the public key requested. X509_PEM is the default
+    output format.
 
     Values:
       TYPE_NONE: <no description>
@@ -367,22 +371,25 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
   """A IamProjectsServiceAccountsKeysListRequest object.
 
   Enums:
-    KeyTypesValueValuesEnum: The type of keys the user wants to list. If
-      empty, all key types are included in the response. Duplicate key types
-      are not allowed.
+    KeyTypesValueValuesEnum: Filters the types of keys the user wants to
+      include in the list response. Duplicate key types are not allowed. If no
+      key type is provided, all keys are returned.
 
   Fields:
-    keyTypes: The type of keys the user wants to list. If empty, all key types
-      are included in the response. Duplicate key types are not allowed.
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    keyTypes: Filters the types of keys the user wants to include in the list
+      response. Duplicate key types are not allowed. If no key type is
+      provided, all keys are returned.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`.  Using `-` as a wildcard
+      for the project, will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
   """
 
   class KeyTypesValueValuesEnum(_messages.Enum):
-    """The type of keys the user wants to list. If empty, all key types are
-    included in the response. Duplicate key types are not allowed.
+    """Filters the types of keys the user wants to include in the list
+    response. Duplicate key types are not allowed. If no key type is provided,
+    all keys are returned.
 
     Values:
       KEY_TYPE_UNSPECIFIED: <no description>
@@ -402,13 +409,12 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the project associated with the
-      service accounts, such as "projects/my-project-123"
+      service accounts, such as `projects/my-project-123`.
     pageSize: Optional limit on the number of service accounts to include in
       the response. Further accounts can subsequently be obtained by including
-      the [ListServiceAccountsResponse.next_page_token] in a subsequent
-      request.
+      the ListServiceAccountsResponse.next_page_token in a subsequent request.
     pageToken: Optional pagination token returned in an earlier
-      [ListServiceAccountsResponse.next_page_token].
+      ListServiceAccountsResponse.next_page_token.
     removeDeletedServiceAccounts: Do not list service accounts deleted from
       Gaia. <b><font color="red">DO NOT INCLUDE IN EXTERNAL
       DOCUMENTATION</font></b>.
@@ -441,10 +447,11 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   """A IamProjectsServiceAccountsSignBlobRequest object.
 
   Fields:
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard
+      for the project will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
     signBlobRequest: A SignBlobRequest resource to be passed as the request
       body.
   """
@@ -457,10 +464,11 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
   """A IamProjectsServiceAccountsSignJwtRequest object.
 
   Fields:
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard
-      for the project, will infer the project from the account. The account
-      value can be the email address or the unique_id of the service account.
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard
+      for the project will infer the project from the account. The `account`
+      value can be the `email` address or the `unique_id` of the service
+      account.
     signJwtRequest: A SignJwtRequest resource to be passed as the request
       body.
   """
@@ -502,7 +510,7 @@ class ListServiceAccountsResponse(_messages.Message):
   Fields:
     accounts: The list of matching service accounts.
     nextPageToken: To retrieve the next page of results, set
-      [ListServiceAccountsRequest.page_token] to this value.
+      ListServiceAccountsRequest.page_token to this value.
   """
 
   accounts = _messages.MessageField('ServiceAccount', 1, repeated=True)
@@ -592,9 +600,9 @@ class PolicyDetail(_messages.Message):
 
   Fields:
     fullResourcePath: The full resource path of the policy e.g.,
-      //dataflow.googleapis.com/projects/../jobs/.. Note that a resource and
-      its inherited resource have different full_resource_path.
-    policy: The policy of a resource/project/folder.
+      `//dataflow.googleapis.com/projects/../jobs/..`. Note that a resource
+      and its inherited resource have different `full_resource_path`.
+    policy: The policy of a `resource/project/folder`.
   """
 
   fullResourcePath = _messages.StringField(1)
@@ -605,10 +613,10 @@ class QueryGrantableRolesRequest(_messages.Message):
   """The grantable role query request.
 
   Fields:
-    fullResourceName: Required. The full resource name to query the list of
-      grantable roles for.  This will follow the GCP resource format. For
-      example, a GCP project of ID "my-project" will be named
-      "//cloudresourcemanager.googleapis.com/projects/my-project".
+    fullResourceName: Required. The full resource name to query from the list
+      of grantable roles.  The name follows the Google Cloud Platform resource
+      format. For example, a Cloud Platform project with id `my-project` will
+      be named `//cloudresourcemanager.googleapis.com/projects/my-project`.
   """
 
   fullResourceName = _messages.StringField(1)
@@ -630,8 +638,8 @@ class Role(_messages.Message):
   Fields:
     apiTokens: A string attribute.
     description: Optional.  A human-readable description for the role.
-    name: The name of the role.  Examples of roles names are: "roles/editor",
-      "roles/viewer" and "roles/logging.viewer"
+    name: The name of the role.  Examples of roles names are: `roles/editor`,
+      `roles/viewer` and `roles/logging.viewer`.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """
@@ -697,33 +705,33 @@ class Rule(_messages.Message):
 
 class ServiceAccount(_messages.Message):
   """A service account in the Identity and Access Management API.  To create a
-  service account, you specify the project_id and account_id for the account.
-  The account_id is unique within the project, and used to generate the
-  service account email address and a stable unique id.  All other methods can
-  identify accounts using the format
-  "projects/{project}/serviceAccounts/{account}". Using '-' as a wildcard for
-  the project, will infer the project from the account. The account value can
-  be the email address or the unique_id of the service account.
+  service account, specify the `project_id` and the `account_id` for the
+  account.  The `account_id` is unique within the project, and is used to
+  generate the service account email address and a stable `unique_id`.  All
+  other methods can identify the service account using the format
+  `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard for
+  the project will infer the project from the account. The `account` value can
+  be the `email` address or the `unique_id` of the service account.
 
   Fields:
     description: Optional. A user-specified opaque description of the service
       account.
     displayName: Optional. A user-specified description of the service
       account.  Must be fewer than 100 UTF-8 bytes.
-    email: @OutputOnly Email address of the service account.
+    email: @OutputOnly The email address of the service account.
     etag: Used to perform a consistent read-modify-write.
-    name: The resource name of the service account in the format
-      "projects/{project}/serviceAccounts/{account}".  In requests using '-'
-      as a wildcard for the project, will infer the project from the account
-      and the account value can be the email address or the unique_id of the
+    name: The resource name of the service account in the following format:
+      `projects/{project}/serviceAccounts/{account}`.  Requests using `-` as a
+      wildcard for the project will infer the project from the `account` and
+      the `account` value can be the `email` address or the `unique_id` of the
       service account.  In responses the resource name will always be in the
-      format "projects/{project}/serviceAccounts/{email}".
+      format `projects/{project}/serviceAccounts/{email}`.
     oauth2ClientId: @OutputOnly. The OAuth2 client id for the service account.
       This is used in conjunction with the OAuth2 clientconfig API to make
       three legged OAuth2 (3LO) flows to access the data of Google users.
     projectId: @OutputOnly The id of the project that owns the service
       account.
-    uniqueId: @OutputOnly unique and stable id of the service account.
+    uniqueId: @OutputOnly The unique and stable id of the service account.
   """
 
   description = _messages.StringField(1)
@@ -737,31 +745,49 @@ class ServiceAccount(_messages.Message):
 
 
 class ServiceAccountKey(_messages.Message):
-  """Represents a service account key.  A service account can have 0 or more
-  key pairs. The private keys for these are not stored by Google.
-  ServiceAccountKeys are immutable.
+  """Represents a service account key.  A service account has two sets of key-
+  pairs: user-managed, and system-managed.  User-managed key-pairs can be
+  created and deleted by users.  Users are responsible for rotating these keys
+  periodically to ensure security of their service accounts.  Users retain the
+  private key of these key-pairs, and Google retains ONLY the public key.
+  System-managed key-pairs are managed automatically by Google, and rotated
+  daily without user intervention.  The private key never leaves Google's
+  servers to maximize security.  Public keys for all service accounts are also
+  published at the OAuth2 Service Account API.
 
   Enums:
-    PrivateKeyTypeValueValuesEnum: The type of the private key.
+    PrivateKeyTypeValueValuesEnum: The output format for the private key. Only
+      provided in `CreateServiceAccountKey` responses, not in
+      `GetServiceAccountKey` or `ListServiceAccountKey` responses.  Google
+      never exposes system-managed private keys, and never retains user-
+      managed private keys.
 
   Fields:
-    name: The resource name of the service account key in the format
-      "projects/{project}/serviceAccounts/{email}/keys/{key}".
-    privateKeyData: The private key data.
-    privateKeyType: The type of the private key.
-    publicKeyData: The public key data.
+    name: The resource name of the service account key in the following format
+      `projects/{project}/serviceAccounts/{account}/keys/{key}`.
+    privateKeyData: The private key data. Only provided in
+      `CreateServiceAccountKey` responses.
+    privateKeyType: The output format for the private key. Only provided in
+      `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
+      `ListServiceAccountKey` responses.  Google never exposes system-managed
+      private keys, and never retains user-managed private keys.
+    publicKeyData: The public key data. Only provided in
+      `GetServiceAccountKey` responses.
     validAfterTime: The key can be used after this timestamp.
     validBeforeTime: The key can be used before this timestamp.
   """
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the private key.
+    """The output format for the private key. Only provided in
+    `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
+    `ListServiceAccountKey` responses.  Google never exposes system-managed
+    private keys, and never retains user-managed private keys.
 
     Values:
-      TYPE_UNSPECIFIED: Unspecified. Defaults to Google Credentials File
-        format.
+      TYPE_UNSPECIFIED: Unspecified. Equivalent to
+        `TYPE_GOOGLE_CREDENTIALS_FILE`.
       TYPE_PKCS12_FILE: PKCS12 format. The password for the PKCS12 file is
-        'notasecret'. For more information, see
+        `notasecret`. For more information, see
         https://tools.ietf.org/html/rfc7292.
       TYPE_GOOGLE_CREDENTIALS_FILE: Google Credentials File format.
     """
@@ -794,7 +820,7 @@ class SignBlobRequest(_messages.Message):
   """The service account sign blob request.
 
   Fields:
-    bytesToSign: The bytes to sign
+    bytesToSign: The bytes to sign.
   """
 
   bytesToSign = _messages.BytesField(1)
@@ -813,21 +839,21 @@ class SignBlobResponse(_messages.Message):
 
 
 class SignJwtRequest(_messages.Message):
-  """The service account sign jwt request.
+  """The service account sign JWT request.
 
   Fields:
-    payload: The jwt payload to sign.
+    payload: The JWT payload to sign, a JSON JWT Claim set.
   """
 
   payload = _messages.StringField(1)
 
 
 class SignJwtResponse(_messages.Message):
-  """The service account sign jwt response.
+  """The service account sign JWT response.
 
   Fields:
-    keyId: The id of the key used to sign the jwt.
-    signedJwt: The signed jwt.
+    keyId: The id of the key used to sign the JWT.
+    signedJwt: The signed JWT.
   """
 
   keyId = _messages.StringField(1)

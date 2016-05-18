@@ -8,6 +8,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
   """Generated client library for service genomics version v1alpha2."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://genomics.googleapis.com/'
 
   _PACKAGE = u'genomics'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/genomics']
@@ -25,7 +26,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new genomics handle."""
-    url = url or u'https://genomics.googleapis.com/'
+    url = url or self.BASE_URL
     super(GenomicsV1alpha2, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

@@ -205,7 +205,9 @@ class _MetricsCollector(object):
         ('cd3', 'environment', properties.GetMetricsEnvironment()),
         ('cd4', 'interactive', console_io.IsInteractive(error=True,
                                                         heuristic=True)),
-        ('cd5', 'python_version', platform.python_version())]
+        ('cd5', 'python_version', platform.python_version()),
+        ('cd7', 'environment_version',
+         properties.VALUES.metrics.environment_version.Get())]
 
     self._ga_params = [
         ('v', '1'),

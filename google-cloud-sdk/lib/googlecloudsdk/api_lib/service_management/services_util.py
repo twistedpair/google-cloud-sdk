@@ -15,17 +15,15 @@
 """Common helper methods for Service Management commands."""
 
 import json
-import os
 import re
 
 from dateutil import parser
 from dateutil import tz
 
-from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resource_printer
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
@@ -271,31 +269,3 @@ def LoadJsonOrYaml(input_string):
 
   # First, try to decode JSON. If that fails, try to decode YAML.
   return TryJson() or TryYaml()
-
-
-def ProcessEndpointsServices(app_config_services, project):
-  """Pushes service configs to the Endpoints handler.
-
-  First, this method checks each service in the list of services to see
-  whether it's to be handled by Cloud Endpoints. If so, it pushes the config.
-
-  Args:
-    app_config_services: The list of services from an app config.
-    project: The name of the GCP project.
-  """
-  for _, service in app_config_services:
-    if service and service.parsed and service.parsed.beta_settings:
-      bs = service.parsed.beta_settings
-      use_endpoints = bs.get('use_endpoints_api_management', '').lower()
-      swagger_file = bs.get('endpoints_swagger_spec_file')
-      if use_endpoints in ('true', '1', 'yes') and swagger_file:
-        if os.path.isabs(swagger_file):
-          swagger_abs_path = swagger_file
-        else:
-          swagger_abs_path = os.path.normpath(os.path.join(
-              os.path.dirname(service.file), swagger_file))
-        cloud_endpoints.PushServiceConfig(
-            swagger_abs_path,
-            project,
-            apis.GetClientInstance('servicemanagement', 'v1'),
-            GetMessagesModule())

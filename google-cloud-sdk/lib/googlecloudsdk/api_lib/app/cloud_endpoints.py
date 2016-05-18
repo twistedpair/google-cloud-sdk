@@ -17,6 +17,9 @@
 import json
 import os.path
 
+from googlecloudsdk.api_lib.service_management import services_util
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apitools.base import py as apitools_base
@@ -39,6 +42,34 @@ class SwaggerUploadException(exceptions.Error):
 def _GetErrorMessage(error):
   content_obj = json.loads(error.content)
   return content_obj.get('error', {}).get('message', '')
+
+
+def ProcessEndpointsServices(app_config_services, project):
+  """Pushes service configs to the Endpoints handler.
+
+  First, this method checks each service in the list of services to see
+  whether it's to be handled by Cloud Endpoints. If so, it pushes the config.
+
+  Args:
+    app_config_services: The list of service resources from an app config.
+    project: The name of the GCP project.
+  """
+  for service in app_config_services:
+    if service and service.parsed and service.parsed.beta_settings:
+      bs = service.parsed.beta_settings
+      use_endpoints = bs.get('use_endpoints_api_management', '').lower()
+      swagger_file = bs.get('endpoints_swagger_spec_file')
+      if use_endpoints in ('true', '1', 'yes') and swagger_file:
+        if os.path.isabs(swagger_file):
+          swagger_abs_path = swagger_file
+        else:
+          swagger_abs_path = os.path.normpath(os.path.join(
+              os.path.dirname(service.file), swagger_file))
+        PushServiceConfig(
+            swagger_abs_path,
+            project,
+            apis.GetClientInstance('servicemanagement', 'v1'),
+            apis.GetMessagesModule('servicemanagement', 'v1'))
 
 
 def PushServiceConfig(swagger_file, project, client, messages):
@@ -121,11 +152,15 @@ def PushServiceConfig(swagger_file, project, client, messages):
       managedService=managed_service,
   )
   try:
-    client.services.Update(request)
-    # TODO(b/27295262): wait here until the asynchronous operation in the
-    # response has finished.
+    update_op = client.services.Update(request)
   except apitools_base.exceptions.HttpError as error:
     raise SwaggerUploadException(_GetErrorMessage(error))
+
+  # Wait on the operation to complete
+  try:
+    services_util.WaitForOperation(update_op.name, client)
+  except calliope_exceptions.ToolException:
+    raise SwaggerUploadException('Failed to upload service configuration.')
 
   # Next, enable the service for the producer project
   usage_settings = messages.UsageSettings(

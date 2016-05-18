@@ -417,6 +417,13 @@
             "type": "string"
           }
         },
+        "resourceNames": {
+          "description": "One or more cloud resources from which to retrieve log entries. These will\nbe combined with the project resources from project_ids above.\nExamples are \"projects\/my-project-id\", \"organizations\/google\",\n\"billingaccounts\/ABC1234\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "filter": {
           "description": "Optional. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe filter is compared against all log entries in the projects specified by\n`projectIds`.  Only entries that match the filter are retrieved.  An empty\nfilter matches all log entries.",
           "type": "string"

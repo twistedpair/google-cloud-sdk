@@ -1306,6 +1306,42 @@
           "type": "string"
         }
       }
+    },
+    "OperationMetadataV1": {
+      "id": "OperationMetadataV1",
+      "description": "Metadata for the given google.longrunning.Operation.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "API method name that initiated the operation. Example:\n\"google.appengine.v1.Version.CreateVersion\".\n\n@OutputOnly",
+          "type": "string"
+        },
+        "insertTime": {
+          "description": "Timestamp that this operation was received.\n\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Timestamp that this operation was completed. (Not present if the operation\nis still in progress.)\n\n@OutputOnly",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "user": {
+          "description": "The user who requested this operation.\n\n@OutputOnly",
+          "type": "string"
+        },
+        "target": {
+          "description": "Resource that this operation is acting on. Example:\n\"apps\/myapp\/services\/default\".\n\n@OutputOnly",
+          "type": "string"
+        }
+      }
+    },
+    "LocationMetadata": {
+      "id": "LocationMetadata",
+      "description": "Metadata for the given google.cloud.location.Location.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

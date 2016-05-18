@@ -8,6 +8,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
   """Generated client library for service deploymentmanager version v2."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/deploymentmanager/v2/'
 
   _PACKAGE = u'deploymentmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']
@@ -25,7 +26,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new deploymentmanager handle."""
-    url = url or u'https://www.googleapis.com/deploymentmanager/v2/'
+    url = url or self.BASE_URL
     super(DeploymentmanagerV2, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

@@ -2046,9 +2046,9 @@ class Query(_BaseQuery):
     # Settings filters and ancestor.
     if self.filter_predicate and v1_ancestor_filter:
       comp_filter_pb = v1_query.filter.composite_filter
-      comp_filter_pb.operator = googledatastore.CompositeFilter.AND
-      comp_filter_pb.filter.add().CopyFrom(filter_predicate_pb)
-      comp_filter_pb.filter.add().CopyFrom(v1_ancestor_filter)
+      comp_filter_pb.op = googledatastore.CompositeFilter.AND
+      comp_filter_pb.filters.add().CopyFrom(filter_predicate_pb)
+      comp_filter_pb.filters.add().CopyFrom(v1_ancestor_filter)
     elif self.filter_predicate:
       v1_query.filter.CopyFrom(filter_predicate_pb)
     elif v1_ancestor_filter:

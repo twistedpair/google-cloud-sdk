@@ -132,18 +132,18 @@
           }
         },
         "nextPageToken": {
-          "description": "To retrieve the next page of results, set\n[ListServiceAccountsRequest.page_token] to this value.",
+          "description": "To retrieve the next page of results, set\nListServiceAccountsRequest.page_token\nto this value.",
           "type": "string"
         }
       }
     },
     "ServiceAccount": {
       "id": "ServiceAccount",
-      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, you specify the project_id and account_id\nfor the account.  The account_id is unique within the project, and used\nto generate the service account email address and a stable\nunique id.\n\nAll other methods can identify accounts using the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, specify the `project_id` and the `account_id`\nfor the account.  The `account_id` is unique within the project, and is used\nto generate the service account email address and a stable\n`unique_id`.\n\nAll other methods can identify the service account using the format\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\n\nIn requests using '-' as a wildcard for the project, will infer the project\nfrom the account and the account value can be the email address or the\nunique_id of the service account.\n\nIn responses the resource name will always be in the format\n\"projects\/{project}\/serviceAccounts\/{email}\".",
+          "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\n\nRequests using `-` as a wildcard for the project will infer the project\nfrom the `account` and the `account` value can be the `email` address or\nthe `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{project}\/serviceAccounts\/{email}`.",
           "type": "string"
         },
         "projectId": {
@@ -151,11 +151,11 @@
           "type": "string"
         },
         "uniqueId": {
-          "description": "@OutputOnly unique and stable id of the service account.",
+          "description": "@OutputOnly The unique and stable id of the service account.",
           "type": "string"
         },
         "email": {
-          "description": "@OutputOnly Email address of the service account.",
+          "description": "@OutputOnly The email address of the service account.",
           "type": "string"
         },
         "displayName": {
@@ -183,11 +183,11 @@
       "type": "object",
       "properties": {
         "accountId": {
-          "description": "Required. The account id that is used to generate the service account\nemail address and a stable unique id. It is unique within a project,\nmust be 1-63 characters long, and match the regular expression\n[a-z]([-a-z0-9]*[a-z0-9]) to comply with RFC1035.",
+          "description": "Required. The account id that is used to generate the service account\nemail address and a stable unique id. It is unique within a project,\nmust be 1-63 characters long, and match the regular expression\n`[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.",
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to create. Currently, only the following\nvalues are user assignable: display_name .",
+          "description": "The ServiceAccount resource to create.\nCurrently, only the following values are user assignable:\n`display_name` .",
           "$ref": "ServiceAccount"
         }
       }
@@ -215,18 +215,18 @@
     },
     "ServiceAccountKey": {
       "id": "ServiceAccountKey",
-      "description": "Represents a service account key.\n\nA service account can have 0 or more key pairs. The private keys for these\nare not stored by Google.\nServiceAccountKeys are immutable.",
+      "description": "Represents a service account key.\n\nA service account has two sets of key-pairs: user-managed, and\nsystem-managed.\n\nUser-managed key-pairs can be created and deleted by users.  Users are\nresponsible for rotating these keys periodically to ensure security of\ntheir service accounts.  Users retain the private key of these key-pairs,\nand Google retains ONLY the public key.\n\nSystem-managed key-pairs are managed automatically by Google, and rotated\ndaily without user intervention.  The private key never leaves Google's\nservers to maximize security.\n\nPublic keys for all service accounts are also published at the OAuth2\nService Account API.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the service account key in the format\n\"projects\/{project}\/serviceAccounts\/{email}\/keys\/{key}\".",
+          "description": "The resource name of the service account key in the following format\n`projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}`.",
           "type": "string"
         },
         "privateKeyType": {
-          "description": "The type of the private key.",
+          "description": "The output format for the private key.\nOnly provided in `CreateServiceAccountKey` responses, not\nin `GetServiceAccountKey` or `ListServiceAccountKey` responses.\n\nGoogle never exposes system-managed private keys, and never retains\nuser-managed private keys.",
           "enumDescriptions": [
-            "Unspecified. Defaults to Google Credentials File format.",
-            "PKCS12 format.\nThe password for the PKCS12 file is 'notasecret'.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
+            "Unspecified. Equivalent to `TYPE_GOOGLE_CREDENTIALS_FILE`.",
+            "PKCS12 format.\nThe password for the PKCS12 file is `notasecret`.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
             "Google Credentials File format."
           ],
           "type": "string",
@@ -237,12 +237,12 @@
           ]
         },
         "privateKeyData": {
-          "description": "The private key data.",
+          "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses.",
           "type": "string",
           "format": "byte"
         },
         "publicKeyData": {
-          "description": "The public key data.",
+          "description": "The public key data. Only provided in `GetServiceAccountKey` responses.",
           "type": "string",
           "format": "byte"
         },
@@ -264,10 +264,10 @@
       "type": "object",
       "properties": {
         "privateKeyType": {
-          "description": "The type of the private key requested. GOOGLE_CREDENTIALS is the default\nkey type.",
+          "description": "The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the\ndefault output format.",
           "enumDescriptions": [
-            "Unspecified. Defaults to Google Credentials File format.",
-            "PKCS12 format.\nThe password for the PKCS12 file is 'notasecret'.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
+            "Unspecified. Equivalent to `TYPE_GOOGLE_CREDENTIALS_FILE`.",
+            "PKCS12 format.\nThe password for the PKCS12 file is `notasecret`.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
             "Google Credentials File format."
           ],
           "type": "string",
@@ -285,7 +285,7 @@
       "type": "object",
       "properties": {
         "bytesToSign": {
-          "description": "The bytes to sign",
+          "description": "The bytes to sign.",
           "type": "string",
           "format": "byte"
         }
@@ -309,26 +309,26 @@
     },
     "SignJwtRequest": {
       "id": "SignJwtRequest",
-      "description": "The service account sign jwt request.",
+      "description": "The service account sign JWT request.",
       "type": "object",
       "properties": {
         "payload": {
-          "description": "The jwt payload to sign.",
+          "description": "The JWT payload to sign, a JSON JWT Claim set.",
           "type": "string"
         }
       }
     },
     "SignJwtResponse": {
       "id": "SignJwtResponse",
-      "description": "The service account sign jwt response.",
+      "description": "The service account sign JWT response.",
       "type": "object",
       "properties": {
         "keyId": {
-          "description": "The id of the key used to sign the jwt.",
+          "description": "The id of the key used to sign the JWT.",
           "type": "string"
         },
         "signedJwt": {
-          "description": "The signed jwt.",
+          "description": "The signed JWT.",
           "type": "string"
         }
       }
@@ -522,8 +522,8 @@
           "description": "An operator to apply the subject with.",
           "enumDescriptions": [
             "Default no-op.",
-            "Equality check.",
-            "Non-equality check.",
+            "DEPRECATED. Use IN instead.",
+            "DEPRECATED. Use NOT_IN instead.",
             "Set-inclusion check.",
             "Set-exclusion check.",
             "Subject is discharged"
@@ -539,7 +539,7 @@
           ]
         },
         "value": {
-          "description": "The object of the condition. Exactly one of these must be set.",
+          "description": "DEPRECATED. Use 'values' instead.",
           "type": "string"
         },
         "values": {
@@ -644,7 +644,7 @@
       "type": "object",
       "properties": {
         "fullResourceName": {
-          "description": "Required. The full resource name to query the list of grantable roles for.\n\nThis will follow the GCP resource format.\nFor example, a GCP project of ID \"my-project\" will be named\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my-project\".",
+          "description": "Required. The full resource name to query from the list of grantable roles.\n\nThe name follows the Google Cloud Platform resource format.\nFor example, a Cloud Platform project with id `my-project` will be named\n`\/\/cloudresourcemanager.googleapis.com\/projects\/my-project`.",
           "type": "string"
         }
       }
@@ -669,7 +669,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the role.\n\nExamples of roles names are:\n\"roles\/editor\", \"roles\/viewer\" and \"roles\/logging.viewer\"",
+          "description": "The name of the role.\n\nExamples of roles names are:\n`roles\/editor`, `roles\/viewer` and `roles\/logging.viewer`.",
           "type": "string"
         },
         "title": {
@@ -695,15 +695,15 @@
       "type": "object",
       "properties": {
         "fullResourcePath": {
-          "description": "REQUIRED: The full resource path of the current policy being\nrequested, e.g., \/\/dataflow.googleapis.com\/projects\/..\/jobs\/..",
+          "description": "REQUIRED: The full resource path of the current policy being\nrequested, e.g., `\/\/dataflow.googleapis.com\/projects\/..\/jobs\/..`.",
           "type": "string"
         },
         "pageToken": {
-          "description": "Optional pagination token returned in an earlier\n[GetPolicyDetailsResponse.next_page_token].",
+          "description": "Optional pagination token returned in an earlier\nGetPolicyDetailsResponse.next_page_token\nresponse.",
           "type": "string"
         },
         "pageSize": {
-          "description": "Limit on the number of policies to include in the response.\nFurther accounts can subsequently be obtained by including the\n[GetPolicyDetailsResponse.next_page_token] in a subsequent request.\nIf zero, the default page size 20 will be used.\nMust be given a value in range [0, 100], otherwise an invalid argument\nerror will be returned.",
+          "description": "Limit on the number of policies to include in the response.\nFurther accounts can subsequently be obtained by including the\nGetPolicyDetailsResponse.next_page_token\nin a subsequent request.\nIf zero, the default page size 20 will be used.\nMust be given a value in range [0, 100], otherwise an invalid argument\nerror will be returned.",
           "type": "integer",
           "format": "int32"
         }
@@ -711,7 +711,7 @@
     },
     "GetPolicyDetailsResponse": {
       "id": "GetPolicyDetailsResponse",
-      "description": "The response to the GetPolicyDetailsRequest containing the current policy and\nthe policies on the inherited resources the user has access to.",
+      "description": "The response to the `GetPolicyDetailsRequest` containing the current policy and\nthe policies on the inherited resources the user has access to.",
       "type": "object",
       "properties": {
         "policies": {
@@ -722,7 +722,7 @@
           }
         },
         "nextPageToken": {
-          "description": "To retrieve the next page of results, set\n[GetPolicyDetailsRequest.page_token] to this value.\nIf this value is empty, then there are not any further policies that the\nuser has access to.\nThe lifetime is 60 minutes. An \"Expired pagination token\" error will be\nreturned if exceeded.",
+          "description": "To retrieve the next page of results, set\nGetPolicyDetailsRequest.page_token\nto this value.\nIf this value is empty, then there are not any further policies that the\nuser has access to.\nThe lifetime is 60 minutes. An \"Expired pagination token\" error will be\nreturned if exceeded.",
           "type": "string"
         }
       }
@@ -733,11 +733,11 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "The policy of a resource\/project\/folder.",
+          "description": "The policy of a `resource\/project\/folder`.",
           "$ref": "Policy"
         },
         "fullResourcePath": {
-          "description": "The full resource path of the policy\ne.g., \/\/dataflow.googleapis.com\/projects\/..\/jobs\/..\nNote that a resource and its inherited resource have different\nfull_resource_path.",
+          "description": "The full resource path of the policy\ne.g., `\/\/dataflow.googleapis.com\/projects\/..\/jobs\/..`.\nNote that a resource and its inherited resource have different\n`full_resource_path`.",
           "type": "string"
         }
       }
@@ -753,23 +753,23 @@
               "path": "v1/{+name}/serviceAccounts",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts",
               "httpMethod": "GET",
-              "description": "Lists service accounts for a project.",
+              "description": "Lists ServiceAccounts for a project.",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the project associated with the service\naccounts, such as \"projects\/my-project-123\"",
+                  "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*$",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional limit on the number of service accounts to include in the\nresponse. Further accounts can subsequently be obtained by including the\n[ListServiceAccountsResponse.next_page_token] in a subsequent request.",
+                  "description": "Optional limit on the number of service accounts to include in the\nresponse. Further accounts can subsequently be obtained by including the\nListServiceAccountsResponse.next_page_token\nin a subsequent request.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "Optional pagination token returned in an earlier\n[ListServiceAccountsResponse.next_page_token].",
+                  "description": "Optional pagination token returned in an earlier\nListServiceAccountsResponse.next_page_token.",
                   "location": "query",
                   "type": "string"
                 },
@@ -794,10 +794,10 @@
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "GET",
-              "description": "Gets a ServiceAccount",
+              "description": "Gets a ServiceAccount.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -819,10 +819,10 @@
               "path": "v1/{+name}/serviceAccounts",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts",
               "httpMethod": "POST",
-              "description": "Creates a service account and returns it.",
+              "description": "Creates a ServiceAccount\nand returns it.",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the project associated with the service\naccounts, such as \"projects\/my-project-123\"",
+                  "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*$",
@@ -847,10 +847,10 @@
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "PUT",
-              "description": "Updates a service account.\n\nCurrently, only the following fields are updatable:\n'display_name' .\nThe 'etag' is mandatory.",
+              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\n\nIn requests using '-' as a wildcard for the project, will infer the project\nfrom the account and the account value can be the email address or the\nunique_id of the service account.\n\nIn responses the resource name will always be in the format\n\"projects\/{project}\/serviceAccounts\/{email}\".",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\n\nRequests using `-` as a wildcard for the project will infer the project\nfrom the `account` and the `account` value can be the `email` address or\nthe `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{project}\/serviceAccounts\/{email}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -875,10 +875,10 @@
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a service acount.",
+              "description": "Deletes a ServiceAccount.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -900,10 +900,10 @@
               "path": "v1/{+name}:signBlob",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signBlob",
               "httpMethod": "POST",
-              "description": "Signs a blob using a service account.",
+              "description": "Signs a blob using a service account's system-managed private key.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -928,10 +928,10 @@
               "path": "v1/{+name}:signJwt",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signJwt",
               "httpMethod": "POST",
-              "description": "Signs a jwt using a service account.\nA default expiry of 1 hour in the future will be provided\nbut if a value greater than that is passed, we will fail.",
+              "description": "Signs a JWT using a service account's system-managed private key.\n\nIf no `exp` (expiry) time is contained in the claims, we will\nprovide an expiry of one hour in the future. If an expiry\nof more than one hour in the future is requested, the request\nwill fail.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -1042,17 +1042,17 @@
                   "path": "v1/{+name}/keys",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys",
                   "httpMethod": "GET",
-                  "description": "Lists service account keys",
+                  "description": "Lists ServiceAccountKeys.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                      "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\n\nUsing `-` as a wildcard for the project, will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
                       "type": "string"
                     },
                     "keyTypes": {
-                      "description": "The type of keys the user wants to list. If empty, all\nkey types are included in the response. Duplicate key\ntypes are not allowed.",
+                      "description": "Filters the types of keys the user wants to include in the list\nresponse. Duplicate key types are not allowed. If no key type\nis provided, all keys are returned.",
                       "location": "query",
                       "repeated": true,
                       "type": "string",
@@ -1081,14 +1081,14 @@
                   "description": "Gets the ServiceAccountKey\nby key id.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account key in the format\n\"projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}\".\nUsing '-' as a wildcard for the project will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                      "description": "The resource name of the service account key in the following format:\n`projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}`.\n\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*\/keys\/[^\/]*$",
                       "type": "string"
                     },
                     "publicKeyType": {
-                      "description": "The type of the public key requested. X509_PEM is the default key type.",
+                      "description": "The output format of the public key requested.\nX509_PEM is the default output format.",
                       "location": "query",
                       "type": "string",
                       "enum": [
@@ -1113,10 +1113,10 @@
                   "path": "v1/{+name}/keys",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys",
                   "httpMethod": "POST",
-                  "description": "Creates a service account key and returns it.",
+                  "description": "Creates a ServiceAccountKey\nand returns it.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account in the format\n\"projects\/{project}\/serviceAccounts\/{account}\".\nUsing '-' as a wildcard for the project, will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                      "description": "The resource name of the service account in the following format:\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -1141,10 +1141,10 @@
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a service account key.",
+                  "description": "Deletes a ServiceAccountKey.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account key in the format\n\"projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}\".\nUsing '-' as a wildcard for the project will infer the project from\nthe account. The account value can be the email address or the unique_id\nof the service account.",
+                      "description": "The resource name of the service account key in the following format:\n`projects\/{project}\/serviceAccounts\/{account}\/keys\/{key}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*\/keys\/[^\/]*$",
@@ -1198,7 +1198,7 @@
           "path": "v1/iamPolicies:getPolicyDetails",
           "flatPath": "v1/iamPolicies:getPolicyDetails",
           "httpMethod": "POST",
-          "description": "Returns the current policy and the policies on the inherited resources\nthe user has access to.",
+          "description": "Returns the current IAM policy and the policies on the inherited resources\nthat the user has access to.",
           "parameters": {
           },
           "parameterOrder": [

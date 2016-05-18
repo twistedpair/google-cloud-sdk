@@ -179,7 +179,7 @@
     },
     "Service": {
       "id": "Service",
-      "description": "`Service` is the root object of the configuration schema. It\ndescribes basic information like the name of the service and the\nexposed API interfaces, and delegates other aspects to configuration\nsub-sections.\n\nExample:\n\n    type: google.api.Service\n    config_version: 1\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.Calendar\n    visibility:\n      rules:\n      - selector: \"*\"\n        restriction: TRUSTED_TESTER\n    backend:\n      rules:\n      - selector: \"*\"\n        address: calendar-prod-backend.gslb.googleapis.com",
+      "description": "`Service` is the root object of the configuration schema. It\ndescribes basic information like the name of the service and the\nexposed API interfaces, and delegates other aspects to configuration\nsub-sections.\n\nExample:\n\n    type: google.api.Service\n    config_version: 1\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.Calendar\n    backend:\n      rules:\n      - selector: \"*\"\n        address: calendar.example.com",
       "type": "object",
       "properties": {
         "configVersion": {
@@ -788,7 +788,7 @@
     },
     "Backend": {
       "id": "Backend",
-      "description": "`Backend` defines the backend configuration for a service.\n\nExample:\n\n    backend:\n      rules:\n      - selector: \"*\"\n        address: calendar-prod-backend.gslb.googleapis.com\n      - selector: google.calendar.Calendar.Delegate\n        address: calendar-dogfood-backend.gslb.googleapis.com\n\nHere, the default backend for all methods in the service is set to\n`calendar-prod-backend.gslb.googleapis.com`.  For the method\n`Delegate`, this is overriden by\n`calendar-dogfood-backend.gslb.googleapis.com`.",
+      "description": "`Backend` defines the backend configuration for a service.",
       "type": "object",
       "properties": {
         "rules": {
@@ -836,7 +836,7 @@
     },
     "HttpRule": {
       "id": "HttpRule",
-      "description": "`HttpRule` defines the mapping of an RPC method to one or more HTTP\nREST APIs.  The mapping determines what portions of the request\nmessage are populated from the path, query parameters, or body of\nthe HTTP request.  The mapping is typically specified as an\n`google.api.http` annotation, see \"google\/api\/annotations.proto\"\nfor details.\n\nThe mapping consists of a field specifying the path template and\nmethod kind.  The path template can refer to fields in the request\nmessage, as in the example below which describes a REST GET\noperation on a resource collection of messages:\n\n```proto\nservice Messaging {\n  rpc GetMessage(GetMessageRequest) returns (Message) {\n    option (google.api.http).get = \"\/v1\/messages\/{message_id}\";\n  }\n}\nmessage GetMessageRequest {\n  string message_id = 1; \/\/ mapped to the URL\n}\nmessage Message {\n  string text = 1; \/\/ content of the resource\n}\n```\n\nThis definition enables an automatic, bidrectional mapping of HTTP\nJSON to RPC. Example:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456`  | `GetMessage(message_id: \"123456\")`\n\nIn general, not only fields but also field paths can be referenced\nfrom a path pattern. Fields mapped to the path pattern cannot be\nrepeated and must have a primitive (non-message) type.\n\nAny fields in the request message which are not bound by the path\npattern automatically become (optional) HTTP query\nparameters. Assume the following definition of the request message:\n\n```proto\nmessage GetMessageRequest {\n  string message_id = 1; \/\/ mapped to the URL\n  int64 revision = 2;    \/\/ becomes a parameter\n}\n```\n\nThis enables a HTTP JSON to RPC mapping as below:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456?revision=2` | `GetMessage(message_id: \"123456\" revision: 2)`\n\nNote that fields which are mapped to HTTP parameters must have a\nprimitive type or a repeated primitive type. Message types are not\nallowed. In the case of a repeated type, the parameter can be\nrepeated in the URL, as in `...?param=A&param=B`.\n\nFor HTTP method kinds which allow a request body, the `body` field\nspecifies the mapping. Consider a REST update method on the\nmessage resource collection:\n\n```proto\nservice Messaging {\n  rpc UpdateMessage(UpdateMessageRequest) returns (Message) {\n    option (google.api.http) = {\n      put: \"\/v1\/messages\/{message_id}\"\n      body: \"message\"\n    };\n  }\n}\nmessage UpdateMessageRequest {\n  string message_id = 1; \/\/ mapped to the URL\n  Message message = 2;   \/\/ mapped to the body\n}\n```\n\nThe following HTTP JSON to RPC mapping is enabled, where the\nrepresentation of the JSON in the request body is determined by\nprotos JSON encoding:\n\nHTTP | RPC\n-----|-----\n`PUT \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" message { text: \"Hi!\" })`\n\nThe special name `*` can be used in the body mapping to define that\nevery field not bound by the path template should be mapped to the\nrequest body.  This enables the following alternative definition of\nthe update method:\n\n```proto\nservice Messaging {\n  rpc UpdateMessage(Message) returns (Message) {\n    option (google.api.http) = {\n      put: \"\/v1\/messages\/{message_id}\"\n      body: \"*\"\n    };\n  }\n}\nmessage Message {\n  string message_id = 1;\n  string text = 2;\n}\n```\n\nThe following HTTP JSON to RPC mapping is enabled:\n\nHTTP | RPC\n-----|-----\n`PUT \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" text: \"Hi!\")`\n\nNote that when using `*` in the body mapping, it is not possible to\nhave HTTP parameters, as all fields not bound by the path end in\nthe body. This makes this option more rarely used in practice of\ndefining REST APIs. The common usage of `*` is in custom methods\nwhich don't use the URL at all for transferring data.\n\nIt is possible to define multiple HTTP methods for one RPC by using\nthe `additional_bindings` option. Example:\n\n```proto\nservice Messaging {\n  rpc GetMessage(GetMessageRequest) returns (Message) {\n    option (google.api.http) = {\n      get: \"\/v1\/messages\/{message_id}\"\n      additional_bindings {\n        get: \"\/v1\/users\/{user_id}\/messages\/{message_id}\"\n      }\n    };\n  }\n}\nmessage GetMessageRequest {\n  string message_id = 1;\n  string user_id = 2;\n}\n```\n\nThis enables the following two alternative HTTP JSON to RPC\nmappings:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456` | `GetMessage(message_id: \"123456\")`\n`GET \/v1\/users\/me\/messages\/123456` | `GetMessage(user_id: \"me\" message_id: \"123456\")`\n\n# Rules for HTTP mapping\n\nThe rules for mapping HTTP path, query parameters, and body fields\nto the request message are as follows:\n\n1. The `body` field specifies either `*` or a field path, or is\n   omitted. If omitted, it assumes there is no HTTP body.\n2. Leaf fields (recursive expansion of nested messages in the\n   request) can be classified into three types:\n    (a) Matched in the URL template.\n    (b) Covered by body (if body is `*`, everything except (a) fields;\n        else everything under the body field)\n    (c) All other fields.\n3. URL query parameters found in the HTTP request are mapped to (c) fields.\n4. Any body sent with an HTTP request can contain only (b) fields.\n\nThe syntax of the path template is as follows:\n\n    Template = \"\/\" Segments [ Verb ] ;\n    Segments = Segment { \"\/\" Segment } ;\n    Segment  = \"*\" | \"**\" | LITERAL | Variable ;\n    Variable = \"{\" FieldPath [ \"=\" Segments ] \"}\" ;\n    FieldPath = IDENT { \".\" IDENT } ;\n    Verb     = \":\" LITERAL ;\n\nThe syntax `*` matches a single path segment. It follows the semantics of\n[RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.2 Simple String\nExpansion.\n\nThe syntax `**` matches zero or more path segments. It follows the semantics\nof [RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.3 Reserved\nExpansion.\n\nThe syntax `LITERAL` matches literal text in the URL path.\n\nThe syntax `Variable` matches the entire path as specified by its template;\nthis nested template must not contain further variables. If a variable\nmatches a single path segment, its template may be omitted, e.g. `{var}`\nis equivalent to `{var=*}`.\n\nNOTE: the field paths in variables and in the `body` must not refer to\nrepeated fields or map fields.\n\nUse CustomHttpPattern to specify any HTTP method that is not included in the\n`pattern` field, such as HEAD, or \"*\" to leave the HTTP method unspecified for\na given URL path rule. The wild-card rule is useful for services that provide\ncontent to Web (HTML) clients.",
+      "description": "`HttpRule` defines the mapping of an RPC method to one or more HTTP\nREST APIs.  The mapping determines what portions of the request\nmessage are populated from the path, query parameters, or body of\nthe HTTP request.  The mapping is typically specified as an\n`google.api.http` annotation, see \"google\/api\/annotations.proto\"\nfor details.\n\nThe mapping consists of a field specifying the path template and\nmethod kind.  The path template can refer to fields in the request\nmessage, as in the example below which describes a REST GET\noperation on a resource collection of messages:\n\n```proto\nservice Messaging {\n  rpc GetMessage(GetMessageRequest) returns (Message) {\n    option (google.api.http).get = \"\/v1\/messages\/{message_id}\/{sub.subfield}\";\n  }\n}\nmessage GetMessageRequest {\n  message SubMessage {\n    string subfield = 1;\n  }\n  string message_id = 1; \/\/ mapped to the URL\n  SubMessage sub = 2;    \/\/ `sub.subfield` is url-mapped\n}\nmessage Message {\n  string text = 1; \/\/ content of the resource\n}\n```\n\nThis definition enables an automatic, bidrectional mapping of HTTP\nJSON to RPC. Example:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456`  | `GetMessage(message_id: \"123456\")`\n\nIn general, not only fields but also field paths can be referenced\nfrom a path pattern. Fields mapped to the path pattern cannot be\nrepeated and must have a primitive (non-message) type.\n\nAny fields in the request message which are not bound by the path\npattern automatically become (optional) HTTP query\nparameters. Assume the following definition of the request message:\n\n```proto\nmessage GetMessageRequest {\n  message SubMessage {\n    string subfield = 1;\n  }\n  string message_id = 1; \/\/ mapped to the URL\n  int64 revision = 2;    \/\/ becomes a parameter\n  SubMessage sub = 3;    \/\/ `sub.subfield` becomes a parameter\n}\n```\n\nThis enables a HTTP JSON to RPC mapping as below:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id: \"123456\" revision: 2 sub: SubMessage(subfield: \"foo\"))`\n\nNote that fields which are mapped to HTTP parameters must have a\nprimitive type or a repeated primitive type. Message types are not\nallowed. In the case of a repeated type, the parameter can be\nrepeated in the URL, as in `...?param=A&param=B`.\n\nFor HTTP method kinds which allow a request body, the `body` field\nspecifies the mapping. Consider a REST update method on the\nmessage resource collection:\n\n```proto\nservice Messaging {\n  rpc UpdateMessage(UpdateMessageRequest) returns (Message) {\n    option (google.api.http) = {\n      put: \"\/v1\/messages\/{message_id}\"\n      body: \"message\"\n    };\n  }\n}\nmessage UpdateMessageRequest {\n  string message_id = 1; \/\/ mapped to the URL\n  Message message = 2;   \/\/ mapped to the body\n}\n```\n\nThe following HTTP JSON to RPC mapping is enabled, where the\nrepresentation of the JSON in the request body is determined by\nprotos JSON encoding:\n\nHTTP | RPC\n-----|-----\n`PUT \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" message { text: \"Hi!\" })`\n\nThe special name `*` can be used in the body mapping to define that\nevery field not bound by the path template should be mapped to the\nrequest body.  This enables the following alternative definition of\nthe update method:\n\n```proto\nservice Messaging {\n  rpc UpdateMessage(Message) returns (Message) {\n    option (google.api.http) = {\n      put: \"\/v1\/messages\/{message_id}\"\n      body: \"*\"\n    };\n  }\n}\nmessage Message {\n  string message_id = 1;\n  string text = 2;\n}\n```\n\nThe following HTTP JSON to RPC mapping is enabled:\n\nHTTP | RPC\n-----|-----\n`PUT \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" text: \"Hi!\")`\n\nNote that when using `*` in the body mapping, it is not possible to\nhave HTTP parameters, as all fields not bound by the path end in\nthe body. This makes this option more rarely used in practice of\ndefining REST APIs. The common usage of `*` is in custom methods\nwhich don't use the URL at all for transferring data.\n\nIt is possible to define multiple HTTP methods for one RPC by using\nthe `additional_bindings` option. Example:\n\n```proto\nservice Messaging {\n  rpc GetMessage(GetMessageRequest) returns (Message) {\n    option (google.api.http) = {\n      get: \"\/v1\/messages\/{message_id}\"\n      additional_bindings {\n        get: \"\/v1\/users\/{user_id}\/messages\/{message_id}\"\n      }\n    };\n  }\n}\nmessage GetMessageRequest {\n  string message_id = 1;\n  string user_id = 2;\n}\n```\n\nThis enables the following two alternative HTTP JSON to RPC\nmappings:\n\nHTTP | RPC\n-----|-----\n`GET \/v1\/messages\/123456` | `GetMessage(message_id: \"123456\")`\n`GET \/v1\/users\/me\/messages\/123456` | `GetMessage(user_id: \"me\" message_id: \"123456\")`\n\n# Rules for HTTP mapping\n\nThe rules for mapping HTTP path, query parameters, and body fields\nto the request message are as follows:\n\n1. The `body` field specifies either `*` or a field path, or is\n   omitted. If omitted, it assumes there is no HTTP body.\n2. Leaf fields (recursive expansion of nested messages in the\n   request) can be classified into three types:\n    (a) Matched in the URL template.\n    (b) Covered by body (if body is `*`, everything except (a) fields;\n        else everything under the body field)\n    (c) All other fields.\n3. URL query parameters found in the HTTP request are mapped to (c) fields.\n4. Any body sent with an HTTP request can contain only (b) fields.\n\nThe syntax of the path template is as follows:\n\n    Template = \"\/\" Segments [ Verb ] ;\n    Segments = Segment { \"\/\" Segment } ;\n    Segment  = \"*\" | \"**\" | LITERAL | Variable ;\n    Variable = \"{\" FieldPath [ \"=\" Segments ] \"}\" ;\n    FieldPath = IDENT { \".\" IDENT } ;\n    Verb     = \":\" LITERAL ;\n\nThe syntax `*` matches a single path segment. It follows the semantics of\n[RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.2 Simple String\nExpansion.\n\nThe syntax `**` matches zero or more path segments. It follows the semantics\nof [RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.3 Reserved\nExpansion.\n\nThe syntax `LITERAL` matches literal text in the URL path.\n\nThe syntax `Variable` matches the entire path as specified by its template;\nthis nested template must not contain further variables. If a variable\nmatches a single path segment, its template may be omitted, e.g. `{var}`\nis equivalent to `{var=*}`.\n\nNOTE: the field paths in variables and in the `body` must not refer to\nrepeated fields or map fields.\n\nUse CustomHttpPattern to specify any HTTP method that is not included in the\n`pattern` field, such as HEAD, or \"*\" to leave the HTTP method unspecified for\na given URL path rule. The wild-card rule is useful for services that provide\ncontent to Web (HTML) clients.",
       "type": "object",
       "properties": {
         "selector": {
@@ -1349,7 +1349,7 @@
     },
     "Control": {
       "id": "Control",
-      "description": "Selects and configures the service controller used by the service.  The\nservice controller handles features like abuse, quota, billing, logging,\nmonitoring, etc.\n\nExample:\n\n    control:\n      environment: usagemanager.googleprod.com\n\nSupported Usage Manager environments:\n\n* `usagemanager.googleprod.com`\n* `staging-usagemanager.googleprod.com`\n\nSupported Service Control environments:\n\n* `servicecontrol.googleapis.com`\n* `staging-servicecontrol.sandbox.googleapis.com`\n* `testgaia-servicecontrol.sandbox.googleapis.com`",
+      "description": "Selects and configures the service controller used by the service.  The\nservice controller handles features like abuse, quota, billing, logging,\nmonitoring, etc.\n",
       "type": "object",
       "properties": {
         "environment": {
@@ -2178,6 +2178,14 @@
         "serviceName": {
           "description": "The service name to use for constructing the normalized service\nconfiguration equivalent of the provided configuration specification.",
           "type": "string"
+        },
+        "configSpec": {
+          "description": "Input configuration\nFor this version of API, the supported type is OpenApiSpec",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @ype with type URL."
+          }
         }
       }
     },
@@ -2328,6 +2336,40 @@
         }
       }
     },
+    "CompositeOperationMetadata": {
+      "id": "CompositeOperationMetadata",
+      "description": "Metadata for composite operations.",
+      "type": "object",
+      "properties": {
+        "childOperations": {
+          "description": "The child operations. The details of the asynchronous\nchild operations are stored in a separate row and not in this\nmetadata. Only the operation name is stored here.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "originalRequest": {
+          "description": "Original request that triggered this operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @ype with type URL."
+          }
+        },
+        "responseFieldMasks": {
+          "description": "Defines which part of the response a child operation will contribute.\nEach key of the map is the name of a child operation. Each value is a\nfield mask that identifies what that child operation contributes to the\nresponse, for example, \"quota_settings\", \"visiblity_settings\", etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "google-fieldmask"
+          }
+        },
+        "persisted": {
+          "description": "Indicates whether the requested state change has been persisted. Once this\nfield is set, it is guaranteed to propagate to all backends eventually, but\nit may not be visible immediately. Clients that are not concerned with\nwaiting on propagation can stop polling the operation once the persisted\nfield is set",
+          "type": "boolean"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "The metadata associated with a long running operation resource.",
@@ -2397,7 +2439,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Retrieves a list of services for a set of query parameters.  Optionally\nalso retrieves service project settings and\/or pending operations on\nthe service resource.",
+          "description": "Lists all managed services. If the `consumer_project_id` is specified,\nthe project's settings for the specified service are also returned.",
           "parameters": {
             "producerProjectId": {
               "description": "Include services produced by the specified project.",
@@ -2447,7 +2489,7 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "GET",
-          "description": "Retrieves a service resource for specified service name.  Optionally\nalso retrieves service project settings and\/or pending operations on\nthe service resource.",
+          "description": "Gets a managed service. If the `consumer_project_id` is specified,\nthe project's settings for the specified service are also returned.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2494,7 +2536,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "POST",
-          "description": "Creates a new service resource, allowing the Google API platform to\nmanage the service.\n\nOperation<response: ManagedService>",
+          "description": "Creates a new managed service.\n\nOperation<response: ManagedService>",
           "parameters": {
           },
           "parameterOrder": [
@@ -2515,7 +2557,7 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "DELETE",
-          "description": "Deletes the specified service resource, making the service unavailable\nto service consumers.\n\nOperation<response: google.protobuf.Empty>",
+          "description": "Deletes a managed service.\n\nOperation<response: google.protobuf.Empty>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2540,7 +2582,7 @@
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "GET",
-          "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
+          "description": "Gets a service config (version) for a managed service. If `config_id` is\nnot specified, the latest service config will be returned.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2559,6 +2601,27 @@
           ],
           "response": {
             "$ref": "Service"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ]
+        },
+        "convertConfig": {
+          "id": "servicemanagement.services.convertConfig",
+          "path": "v1/services:convertConfig",
+          "flatPath": "v1/services:convertConfig",
+          "httpMethod": "POST",
+          "description": "Converts an API specification (e.g. Swagger spec) to an equivalent\n`google.api.Service`.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "ConvertConfigRequest"
+          },
+          "response": {
+            "$ref": "ConvertConfigResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
@@ -2764,7 +2827,7 @@
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "GET",
-              "description": "List all google.api.Service resources under the given service name.\n",
+              "description": "Lists the history of the service config for a managed service,\nfrom the newest to the oldest.\n",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2800,7 +2863,7 @@
               "path": "v1/services/{serviceName}/configs/{configId}",
               "flatPath": "v1/services/{serviceName}/configs/{configId}",
               "httpMethod": "GET",
-              "description": "Retrieves the [google.api.Service] resource for the given service name\nand config id. If no config id is specified, the latest service resource\nwill be returned.",
+              "description": "Gets a service config (version) for a managed service. If `config_id` is\nnot specified, the latest service config will be returned.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2832,7 +2895,7 @@
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "POST",
-              "description": "Creates a google.api.Service under the specified service.\n",
+              "description": "Creates a new service config (version) for a managed service. This method\nonly stores the service config, but does not apply the service config to\nany backend services.\n",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",

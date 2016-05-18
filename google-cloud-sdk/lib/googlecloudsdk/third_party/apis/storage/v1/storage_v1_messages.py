@@ -418,8 +418,12 @@ class Notification(_messages.Message):
     id: The ID of the notification.
     kind: The kind of item this is. For notifications, this is always
       storage#notification.
+    object_metadata_format: If payload_content is OBJECT_METADATA, controls
+      the format of that metadata. Otherwise, must not be set.
+    object_name_prefix: If present, only apply this notification configuration
+      to object names that begin with this prefix.
     payload_content: The desired content of the Payload. Defaults to
-      OBJECT_METADATA_JSON_V1.
+      OBJECT_METADATA.
     selfLink: The canonical URL of this notification.
     topic: The Cloud PubSub topic to which this subscription publishes.
       Formatted as: '//pubsub.googleapis.com/projects/{project-
@@ -459,9 +463,11 @@ class Notification(_messages.Message):
   event_types = _messages.StringField(4, repeated=True)
   id = _messages.StringField(5)
   kind = _messages.StringField(6, default=u'storage#notification')
-  payload_content = _messages.StringField(7, default=u'OBJECT_METADATA_JSON_V1')
-  selfLink = _messages.StringField(8)
-  topic = _messages.StringField(9)
+  object_metadata_format = _messages.StringField(7, default=u'JSON_API_V1')
+  object_name_prefix = _messages.StringField(8)
+  payload_content = _messages.StringField(9, default=u'OBJECT_METADATA')
+  selfLink = _messages.StringField(10)
+  topic = _messages.StringField(11)
 
 
 class Notifications(_messages.Message):
@@ -496,7 +502,8 @@ class Object(_messages.Message):
     contentDisposition: Content-Disposition of the object data.
     contentEncoding: Content-Encoding of the object data.
     contentLanguage: Content-Language of the object data.
-    contentType: Content-Type of the object data.
+    contentType: Content-Type of the object data. If contentType is not
+      specified, object downloads will be served as application/octet-stream.
     crc32c: CRC32c checksum, as described in RFC 4960, Appendix B; encoded
       using base64 in big-endian byte order. For more information about using
       the CRC32c checksum, see Hashes and ETags: Best Practices.
@@ -703,12 +710,13 @@ class Policy(_messages.Message):
       permissions, and members who may assume that role.
     etag: HTTP 1.1  Entity tag for the policy.
     kind: The kind of item this is. For policies, this is always
-      storage#policy.
+      storage#policy. This field is ignored on input.
     resourceId: The ID of the resource to which this policy belongs. Will be
       of the form buckets/bucket for buckets, and
       buckets/bucket/objects/object for objects. A specific generation may be
       specified by appending #generationNumber to the end of the object name,
-      e.g. buckets/my-bucket/objects/data.txt#17.
+      e.g. buckets/my-bucket/objects/data.txt#17. The current generation can
+      be denoted with #0. This field is ignored on input.
   """
 
   class BindingsValueListEntry(_messages.Message):
@@ -718,19 +726,22 @@ class Policy(_messages.Message):
       members: A collection of identifiers for members who may assume the
         provided role. Recognized identifiers are as follows:   - allUsers \u2014 A
         special identifier that represents anyone on the internet; with or
-        without a Google account.   - allAuthenticatedUsers> \u2014 A special
+        without a Google account.   - allAuthenticatedUsers \u2014 A special
         identifier that represents anyone who is authenticated with a Google
         account or a service account.   - user:emailid \u2014 An email address that
-        represents a specific account. For example, alice@gmail.com or
-        joe@example.com.   - serviceAccount:emailid \u2014 An email address that
-        represents a service account. For example, my-other-
-        app@appspot.gserviceaccount.com.   - group:emailid \u2014 An email address
-        that represents a Google group. For example, admins@example.com.   -
-        domain:domain \u2014 A Google Apps domain name that represents all the
-        users of that domain. For example, google.com or example.com.   -
-        projectOwner:projectid \u2014 Owners of the given project.   -
-        projectEditor:projectid \u2014 Editors of the given project.   -
-        projectViewer:projectid \u2014 Viewers of the given project.
+        represents a specific account. For example, user:alice@gmail.com or
+        user:joe@example.com.   - serviceAccount:emailid \u2014 An email address
+        that represents a service account. For example,  serviceAccount:my-
+        other-app@appspot.gserviceaccount.com .   - group:emailid \u2014 An email
+        address that represents a Google group. For example,
+        group:admins@example.com.   - domain:domain \u2014 A Google Apps domain
+        name that represents all the users of that domain. For example,
+        domain:google.com or domain:example.com.   - projectOwner:projectid \u2014
+        Owners of the given project. For example, projectOwner:my-example-
+        project   - projectEditor:projectid \u2014 Editors of the given project.
+        For example, projectEditor:my-example-project   -
+        projectViewer:projectid \u2014 Viewers of the given project. For example,
+        projectViewer:my-example-project
       role: The role to which members belong. Two types of roles are
         supported: new IAM roles, which grant permissions that do not map
         directly to those provided by ACLs, and legacy IAM roles, which do map
@@ -740,16 +751,16 @@ class Policy(_messages.Message):
         - roles/storage.objectViewer \u2014 Read-Only access to Google Cloud
         Storage objects.   - roles/storage.objectCreator \u2014 Access to create
         objects in Google Cloud Storage.   - roles/storage.objectAdmin \u2014 Full
-        control of Google Cloud Storage objects.   The legacy IAM roles are: -
-        roles/storage.legacyObjectReader \u2014 Read-only access to objects without
-        listing. Equivalent to an ACL entry on an object with the READER role.
-        - roles/storage.legacyObjectOwner \u2014 Read/write access to existing
-        objects without listing. Equivalent to an ACL entry on an object with
-        the OWNER role.   - roles/storage.legacyBucketReader \u2014 Read access to
-        buckets with object listing. Equivalent to an ACL entry on a bucket
-        with the READER role.   - roles/storage.legacyBucketWriter \u2014 Read
-        access to buckets with object listing/creation/deletion. Equivalent to
-        an ACL entry on a bucket with the WRITER role.   -
+        control of Google Cloud Storage objects.   The legacy IAM roles are:
+        - roles/storage.legacyObjectReader \u2014 Read-only access to objects
+        without listing. Equivalent to an ACL entry on an object with the
+        READER role.   - roles/storage.legacyObjectOwner \u2014 Read/write access
+        to existing objects without listing. Equivalent to an ACL entry on an
+        object with the OWNER role.   - roles/storage.legacyBucketReader \u2014
+        Read access to buckets with object listing. Equivalent to an ACL entry
+        on a bucket with the READER role.   - roles/storage.legacyBucketWriter
+        \u2014 Read access to buckets with object listing/creation/deletion.
+        Equivalent to an ACL entry on a bucket with the WRITER role.   -
         roles/storage.legacyBucketOwner \u2014 Read and write access to existing
         buckets with object listing/creation/deletion. Equivalent to an ACL
         entry on a bucket with the OWNER role.

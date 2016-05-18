@@ -1053,6 +1053,17 @@ class BackendBucketList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class BackendSSLPolicy(_messages.Message):
+  """Message containing backend SSL policies.
+
+  Fields:
+    pinnedPeerCertificates: List of PEM-encoded peer certificates, from which
+      the public keys are extracted for authenticating the backend service.
+  """
+
+  pinnedPeerCertificates = _messages.StringField(1, repeated=True)
+
+
 class BackendService(_messages.Message):
   """A BackendService resource. This resource defines a group of backend
   virtual machines and their serving capacity.
@@ -1069,6 +1080,7 @@ class BackendService(_messages.Message):
       is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
       only until the end of the browser session (or equivalent). The maximum
       allowed value for TTL is one day.
+    backendSslPolicy: Backend SSL policies to enforce.
     backends: The list of backends that serve this BackendService.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -1165,25 +1177,26 @@ class BackendService(_messages.Message):
     NONE = 4
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  backends = _messages.MessageField('Backend', 2, repeated=True)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  enableCDN = _messages.BooleanField(6)
-  failoverRatio = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  fingerprint = _messages.BytesField(8)
-  healthChecks = _messages.StringField(9, repeated=True)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(11, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(15)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
-  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  backendSslPolicy = _messages.MessageField('BackendSSLPolicy', 2)
+  backends = _messages.MessageField('Backend', 3, repeated=True)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  enableCDN = _messages.BooleanField(7)
+  failoverRatio = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  fingerprint = _messages.BytesField(9)
+  healthChecks = _messages.StringField(10, repeated=True)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(16)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
+  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -5780,6 +5793,22 @@ class ComputeRoutersPatchRequest(_messages.Message):
   routerResource = _messages.MessageField('Router', 4)
 
 
+class ComputeRoutersPreviewRequest(_messages.Message):
+  """A ComputeRoutersPreviewRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
 class ComputeRoutersTestIamPermissionsRequest(_messages.Message):
   """A ComputeRoutersTestIamPermissionsRequest object.
 
@@ -7757,7 +7786,7 @@ class Condition(_messages.Message):
     svc: Trusted attributes discharged by the service.
     sys: Trusted attributes supplied by any service that owns resources and
       uses the IAM system for access control.
-    value: The object of the condition. Exactly one of these must be set.
+    value: DEPRECATED. Use 'values' instead.
     values: The objects of the condition. This is mutually exclusive with
       'value'.
   """
@@ -7971,6 +8000,10 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    region: [Output Only] URL of the region where the disk resides. Only
+      applicable for regional resources.
+    replicaZones: URLs of the zones where the disk should be replicated to.
+      Only applicable for regional resources.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     sizeGb: Size of the persistent disk, specified in GB. You can specify this
@@ -8087,19 +8120,21 @@ class Disk(_messages.Message):
   licenses = _messages.StringField(10, repeated=True)
   name = _messages.StringField(11)
   options = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  sizeGb = _messages.IntegerField(14)
-  sourceImage = _messages.StringField(15)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceImageId = _messages.StringField(17)
-  sourceSnapshot = _messages.StringField(18)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceSnapshotId = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 22)
-  type = _messages.StringField(23)
-  users = _messages.StringField(24, repeated=True)
-  zone = _messages.StringField(25)
+  region = _messages.StringField(13)
+  replicaZones = _messages.StringField(14, repeated=True)
+  selfLink = _messages.StringField(15)
+  sizeGb = _messages.IntegerField(16)
+  sourceImage = _messages.StringField(17)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceImageId = _messages.StringField(19)
+  sourceSnapshot = _messages.StringField(20)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceSnapshotId = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 24)
+  type = _messages.StringField(25)
+  users = _messages.StringField(26, repeated=True)
+  zone = _messages.StringField(27)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -8688,6 +8723,8 @@ class ForwardingRule(_messages.Message):
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
       have disjoint port ranges.
+    ports: When the load balancing scheme is INTERNAL, a single port or a list
+      of single ports may be specified.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -8748,10 +8785,11 @@ class ForwardingRule(_messages.Message):
   name = _messages.StringField(9)
   network = _messages.StringField(10)
   portRange = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  subnetwork = _messages.StringField(14)
-  target = _messages.StringField(15)
+  ports = _messages.StringField(12, repeated=True)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  subnetwork = _messages.StringField(15)
+  target = _messages.StringField(16)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -9594,8 +9632,8 @@ class Instance(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
-      the following values: PROVISIONING, STAGING, RUNNING, STOPPING, and
-      TERMINATED.
+      the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
+      SUSPENDED, SUSPENDING, and TERMINATED.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -9669,7 +9707,8 @@ class Instance(_messages.Message):
       authenticate applications on the instance. See Service Accounts for more
       information.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING,
+      and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: A list of tags to apply to this instance. Tags are used to identify
@@ -9681,7 +9720,8 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, and TERMINATED.
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and
+    TERMINATED.
 
     Values:
       PROVISIONING: <no description>
@@ -10170,7 +10210,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
 
   Enums:
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
-      The order of action types is: REBOOT < REPLACE.
+      The order of action types is: RESTART < REPLACE.
     StandbyModeValueValuesEnum: Standby mode of all the standby instances
       managed by the IGM.
     TypeValueValuesEnum:
@@ -10190,21 +10230,21 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     minReadySec: Minimum number of seconds to wait for after a newly created
       instance becomes available.
     minimalAction: Minimal action to be taken on an instance. The order of
-      action types is: REBOOT < REPLACE.
+      action types is: RESTART < REPLACE.
     standbyMode: Standby mode of all the standby instances managed by the IGM.
     type: A TypeValueValuesEnum attribute.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     """Minimal action to be taken on an instance. The order of action types
-    is: REBOOT < REPLACE.
+    is: RESTART < REPLACE.
 
     Values:
-      REBOOT: <no description>
       REPLACE: <no description>
+      RESTART: <no description>
     """
-    REBOOT = 0
-    REPLACE = 1
+    REPLACE = 0
+    RESTART = 1
 
   class StandbyModeValueValuesEnum(_messages.Enum):
     """Standby mode of all the standby instances managed by the IGM.
@@ -10244,8 +10284,8 @@ class InstanceGroupManagerVersion(_messages.Message):
       of what is the value of targetSize.fixed or targetSize.percent. Standby
       instances are useful during the update, when the user wants to be able
       to quickly rollout/rollback to the target version.
-    tag: Tag describing the version. Changing it may trigger an action
-      configured in UpdatePolicy.
+    tag: Tag describing the version. Used to trigger rollout of a target
+      version even if instance_template remains unchanged.
     targetSize: Intended number of instances that are created from
       instanceTemplate. The final number of instances created from
       instanceTemplate will be equal to: * if expressed as fixed number:
@@ -10712,6 +10752,11 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   """InstanceProperties message type.
 
+  Messages:
+    LabelsValue: Labels to apply to instances that are created from this
+      template. Each label key/value pair must comply with RFC1035. Label
+      values may be empty.
+
   Fields:
     canIpForward: Enables instances created based on this template to send
       packets with source IP addresses other than their own and receive
@@ -10723,6 +10768,9 @@ class InstanceProperties(_messages.Message):
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    labels: Labels to apply to instances that are created from this template.
+      Each label key/value pair must comply with RFC1035. Label values may be
+      empty.
     machineType: The machine type to use for instances that are created from
       this template.
     metadata: The metadata key/value pairs to assign to instances that are
@@ -10743,15 +10791,41 @@ class InstanceProperties(_messages.Message):
       within the list must comply with RFC1035.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to instances that are created from this template. Each
+    label key/value pair must comply with RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  machineType = _messages.StringField(4)
-  metadata = _messages.MessageField('Metadata', 5)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 6, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 7)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 8, repeated=True)
-  tags = _messages.MessageField('Tags', 9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineType = _messages.StringField(5)
+  metadata = _messages.MessageField('Metadata', 6)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 8)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 9, repeated=True)
+  tags = _messages.MessageField('Tags', 10)
 
 
 class InstanceReference(_messages.Message):
@@ -11378,6 +11452,7 @@ class ManagedInstance(_messages.Message):
       delete the instance.
     standbyMode: [Output Only] Standby mode of the instance. This field is
       non-empty iff the instance is a standby.
+    tag: [Output Only] Tag describing the version.
   """
 
   class CurrentActionValueValuesEnum(_messages.Enum):
@@ -11458,6 +11533,7 @@ class ManagedInstance(_messages.Message):
   instanceTemplate = _messages.StringField(5)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
   standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 7)
+  tag = _messages.StringField(8)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -12925,7 +13001,7 @@ class RouterStatus(_messages.Message):
   """A RouterStatus object.
 
   Fields:
-    bestRoutes: Best routes for this router.
+    bestRoutes: Best routes for this router's network.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     network: URI of the network to which this router belongs.
   """
@@ -12989,6 +13065,16 @@ class RouterStatusResponse(_messages.Message):
 
   kind = _messages.StringField(1, default=u'compute#routerStatusResponse')
   result = _messages.MessageField('RouterStatus', 2)
+
+
+class RoutersPreviewResponse(_messages.Message):
+  """A RoutersPreviewResponse object.
+
+  Fields:
+    resource: Preview of given router.
+  """
+
+  resource = _messages.MessageField('Router', 1)
 
 
 class RoutersScopedList(_messages.Message):

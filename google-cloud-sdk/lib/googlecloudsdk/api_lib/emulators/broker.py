@@ -13,10 +13,12 @@
 # limitations under the License.
 """Library for controlling instances of cloud-testenv-broker processes."""
 
+import errno
 import httplib
 import json
 import os
 import os.path
+import socket
 import subprocess
 import threading
 import time
@@ -28,6 +30,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
+import httplib2
 
 
 class BrokerError(exceptions.Error):
@@ -35,6 +38,10 @@ class BrokerError(exceptions.Error):
 
 
 class BrokerNotRunningError(BrokerError):
+  pass
+
+
+class BrokerRequestTimeoutError(BrokerError):
   pass
 
 
@@ -67,21 +74,19 @@ class Broker(object):
   as well.
   """
 
-  def __init__(self, address, config_file=None, conn_factory=None):
+  def __init__(self, address, config_file=None):
     """Constructor.
 
     Args:
       address: The host or host-port of the broker server. The server may
           already be running.
       config_file: The full path to the broker config file.
-      conn_factory: Factory for HTTPConnection objects.
     """
     if config_file is not None:
       assert os.path.isabs(config_file)
 
     self._address = address
     self._config_file = config_file
-    self._conn_factory = conn_factory
 
     self._host_port = arg_parsers.HostPort.Parse(address)
     self._broker_dir = os.path.join(util.GetCloudSDKRoot(), 'bin', 'broker')
@@ -136,9 +141,10 @@ class Broker(object):
   def IsRunning(self):
     # We issue an RPC to check if the broker is running.
     try:
-      response, _ = self._SendJsonRequest('GET', _EmulatorPath())
+      response, _ = self._SendJsonRequest('GET', _EmulatorPath(),
+                                          timeout_secs=1.0)
       return response.status == httplib.OK
-    except IOError:
+    except (BrokerRequestTimeoutError, IOError):
       return False
 
   def Shutdown(self, wait_secs=10):
@@ -157,13 +163,15 @@ class Broker(object):
       # Invoke the /shutdown handler.
       try:
         self._SendJsonRequest('POST', '/shutdown')
-      except IOError:
-        raise BrokerError('Broker failed to shutdown: '
-                          'failed to send shutdown request')
-      except httplib.HTTPException:
-        # We may get an exception reading the response to the shutdown request,
-        # because the shutdown may preempt the response.
-        pass
+      except socket.error as e:
+        if e.errno == errno.WSAECONNRESET:
+          # We may get an exception reading the response to the shutdown
+          # request, because the shutdown may preempt the response.
+          pass
+        else:
+          raise BrokerError('Broker failed to shutdown: %s' % e)
+      except IOError as e:
+        raise BrokerError('Broker failed to shutdown: %s' % e)
 
     if not _Await(lambda: not self.IsRunning(), wait_secs):
       log.warn('Failed to shutdown broker: still running after {0}s'.format(
@@ -310,37 +318,36 @@ class Broker(object):
     """Returns the path to the broker binary."""
     return '{0}/broker'.format(self._broker_dir)
 
-  def _NewConnection(self):
-    """Returns a new HTTPConnection to the broker address."""
-    if self._conn_factory:
-      return self._conn_factory(self._address)
-    return httplib.HTTPConnection(self._address)
-
-  def _SendJsonRequest(self, method, url, body=None):
+  def _SendJsonRequest(self, method, path, body=None, timeout_secs=300):
     """Sends a request to the broker.
 
     Args:
       method: (str) The HTTP method.
-      url: (str) The URL path.
+      path: (str) The URI path.
       body: (str) The request body.
+      timeout_secs: (float) The request timeout, in seconds.
 
     Returns:
       (HTTPResponse, str) or (None, None).
 
     Raises:
-      IOError: The request could not be sent.
+      BrokerRequestTimeoutError: The request timed-out.
+      httplib2.HttpLib2Error: The request could not be completed (e.g. protocol
+          or address resolution errors).
+      IOError: The request could not be sent (e.g. socket-level errors).
     """
-    conn = self._NewConnection()
-    headers = {}
-    if body is not None:
-      headers['Content-Type'] = 'application/json'
+    uri = 'http://{0}{1}'.format(self._address, path)
+    http_client = httplib2.Http(timeout=timeout_secs)
     try:
-      conn.request(method, url, body=body, headers=headers)
-      resp = conn.getresponse()
-      data = resp.read()
-      return (resp, data)
+      return http_client.request(
+          uri=uri,
+          method=method,
+          headers={'Content-Type': 'application/json; charset=UTF-8'},
+          body=body)
+    except socket.timeout as e:
+      raise BrokerRequestTimeoutError(e)
+    except httplib.ResponseNotReady as e:
+      raise BrokerRequestTimeoutError(e)
     except IOError as e:
       log.debug('Error sending request: %r', e)
       raise
-    finally:
-      conn.close()

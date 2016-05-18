@@ -15,6 +15,7 @@
 
 import json
 
+from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
@@ -171,6 +172,47 @@ class AppengineApiClient(object):
         patch_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
+  def ListInstances(self, versions):
+    """Lists all instances for the given versions.
+
+    Args:
+      versions: list of version_util.Version
+
+    Returns:
+      list of instances_util.Instance for the given versions
+    """
+    instances = []
+    for version in versions:
+      list_req = self.messages.AppengineAppsModulesVersionsInstancesListRequest(
+          name=self._FormatVersion(self.project, version.service, version.id))
+      instances += map(instances_util.Instance.FromInstanceResource,
+                       requests.MakeRequest(
+                           self.client.apps_modules_versions_instances.List,
+                           list_req).instances)
+    return instances
+
+  def GetAllInstances(self, service=None, version=None):
+    """List all instances, optionally filtering by service or version.
+
+    Args:
+      service: str, the ID of the service to filter by.
+      version: str, the ID of the service to filter by.
+
+    Returns:
+      list of instance_util.Instance
+    """
+    services = self.ListServices()
+    log.debug('All services: {0}'.format(services))
+    services = service_util.GetMatchingServices(
+        services, [service] if service else None)
+
+    versions = self.ListVersions(services)
+    log.debug('Versions: {0}'.format(map(str, versions)))
+    versions = version_util.GetMatchingVersions(
+        versions, [version] if version else None, service)
+
+    return self.ListInstances(versions)
+
   def StopVersion(self, module_name, version_id):
     """Stops the specified version.
 
@@ -294,6 +336,7 @@ class AppengineApiClient(object):
     version_resource.id = version_id
     return version_resource
 
+  # TODO(b/24562881): Once the API is updated, convert to use resource parser.
   def _FormatApp(self, app_id):
     return 'apps/{app_id}'.format(app_id=app_id)
 

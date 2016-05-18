@@ -8,6 +8,7 @@ class ComputeBeta(base_api.BaseApiClient):
   """Generated client library for service compute version beta."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://www.googleapis.com/compute/beta/'
 
   _PACKAGE = u'compute'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/compute.readonly', u'https://www.googleapis.com/auth/devstorage.full_control', u'https://www.googleapis.com/auth/devstorage.read_only', u'https://www.googleapis.com/auth/devstorage.read_write']
@@ -25,7 +26,7 @@ class ComputeBeta(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new compute handle."""
-    url = url or u'https://www.googleapis.com/compute/beta/'
+    url = url or self.BASE_URL
     super(ComputeBeta, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,

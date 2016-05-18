@@ -308,8 +308,8 @@
             "type": "string"
           }
         },
-        "imageFamily": {
-          "description": "The image family to use for this node. Note that for a given image family,\nthe latest version of it will be used.",
+        "imageType": {
+          "description": "The image type to use for this node. Note that for a given image type,\nthe latest version of it will be used.",
           "type": "string"
         },
         "labels": {
@@ -571,11 +571,11 @@
           "$ref": "AddonsConfig"
         },
         "desiredNodePoolId": {
-          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_family\" is specified and\nthere is more than one node pool on the cluster.",
+          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_type\" is specified and\nthere is more than one node pool on the cluster.",
           "type": "string"
         },
-        "desiredImageFamily": {
-          "description": "The desired image family for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
+        "desiredImageType": {
+          "description": "The desired image type for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
         },
         "desiredMasterVersion": {
@@ -629,12 +629,12 @@
             "type": "string"
           }
         },
-        "defaultImageFamily": {
-          "description": "Default image family.",
+        "defaultImageType": {
+          "description": "Default image type.",
           "type": "string"
         },
-        "validImageFamilies": {
-          "description": "List of valid image families.",
+        "validImageTypes": {
+          "description": "List of valid image types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -733,6 +733,143 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "AuthorizeRequest": {
+      "id": "AuthorizeRequest",
+      "description": "A request to authorize a user action. The request contains the attributes of\nthe action the user is attempting. These attributes are mapped to a GKE IAM\npermission and policy to check.\n\nThis should look very close to the SubjectAccessReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match SubjectAccessReview.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Fields from \"pkg\/apis\/authorization\/v1beta1\".SubjectAccessReview:\n\nThe \"kind\" of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the user action being evaluated.",
+          "$ref": "SubjectAccessReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request (this won't be filled in for an\nAuthorizeRequest, but it is part of the struct, so we need it here to be\nsafe).",
+          "$ref": "SubjectAccessReviewStatus"
+        }
+      }
+    },
+    "SubjectAccessReviewSpec": {
+      "id": "SubjectAccessReviewSpec",
+      "description": "The description of the request for authorization.\nThis should match the SubjectAccessReviewSpec struct in\npkg\/apis\/authorization\/v1beta1\/types.go",
+      "type": "object",
+      "properties": {
+        "resourceAttributes": {
+          "description": "The attributes of the request for a resource request. If this field is set,\nNonResourceAttributes should not be set (and will be ignored).",
+          "$ref": "ResourceAttributes"
+        },
+        "nonResourceAttributes": {
+          "description": "The attributes of the request for a non-resource request. If this field is\nset, ResourceAttributes should not be set (and will be ignored).",
+          "$ref": "NonResourceAttributes"
+        },
+        "user": {
+          "description": "The user making the request.",
+          "type": "string"
+        },
+        "groups": {
+          "description": "Any groups this user may be a part of (this is not used for GKE IAM).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ResourceAttributes": {
+      "id": "ResourceAttributes",
+      "description": "The authorization attributes of the resource request.\nThis should match the ResourceAttributes struct in\npkg\/apis\/authorization\/v1beta1\/types.go.",
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "description": "The namespace of the request.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "The Kubernetes verb of the request (e.g. get, create, list, etc.)",
+          "type": "string"
+        },
+        "group": {
+          "description": "The API group of the resource.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The API version of the resource.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The type of the resource in the request.",
+          "type": "string"
+        },
+        "subresource": {
+          "description": "The type of the subresource in the request.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the resource in the request.",
+          "type": "string"
+        }
+      }
+    },
+    "NonResourceAttributes": {
+      "id": "NonResourceAttributes",
+      "description": "The authorization attributes of a non-resource request.\nThis should match the NonResourceAttributes struct in\npkg\/apis\/authorization\/v1beta1\/types.go.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The URL path of the request.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "The verb of the request",
+          "type": "string"
+        }
+      }
+    },
+    "SubjectAccessReviewStatus": {
+      "id": "SubjectAccessReviewStatus",
+      "description": "The result of the request for authorization.\nThis should match the SubjectAccessReviewStatus struct in\npkg\/apis\/authorization\/v1beta1\/types.go.",
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "description": "Is the action authorized.",
+          "type": "boolean"
+        },
+        "reason": {
+          "description": "Error message if unauthorized.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthorizeResponse": {
+      "id": "AuthorizeResponse",
+      "description": "A response to a request for authorization.\nThis should match exactly with the SubjectAccessReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/types.go.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "The \"kind\" of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the request that was evaluated.\nThis field (along with kind & api_version) are returned unchanged from the\nAuthorizeRequest. The caller probably doesn't care, but it would allow the\ncaller to verify the question the server thought it was answering.",
+          "$ref": "SubjectAccessReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request.",
+          "$ref": "SubjectAccessReviewStatus"
         }
       }
     }
@@ -1218,6 +1355,58 @@
     "masterProjects": {
       "resources": {
         "zones": {
+          "methods": {
+            "authorize": {
+              "id": "container.masterProjects.zones.authorize",
+              "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize",
+              "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize",
+              "httpMethod": "POST",
+              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "zone": {
+                  "description": "The zone of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "zone",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuthorizeRequest"
+              },
+              "response": {
+                "$ref": "AuthorizeResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            }
+          }
+          ,
           "resources": {
             "tokens": {
               "methods": {

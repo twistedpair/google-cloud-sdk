@@ -742,46 +742,6 @@ class ArgumentInterceptor(object):
     return s2
 
 
-class ConfigHooks(object):
-  """This class holds function hooks for context and config loading/saving."""
-
-  def __init__(self, load_context=None, context_filters=None):
-    """Create a new object with the given hooks.
-
-    Args:
-      load_context: a function returns the context to be sent to commands.
-      context_filters: a list of functions that take (contex, args),
-          that will be called in order before a command is run. They are
-          described in the README under the heading GROUP SPECIFICATION.
-    """
-    self.load_context = load_context if load_context else lambda: {}
-    self.context_filters = context_filters if context_filters else []
-
-  def OverrideWithBase(self, group_base):
-    """Get a new ConfigHooks object with overridden functions based on module.
-
-    If module defines any of the function, they will be used instead of what
-    is in this object.  Anything that is not defined will use the existing
-    behavior.
-
-    Args:
-      group_base: The base.Group class corresponding to the group.
-
-    Returns:
-      A new ConfigHooks object updated with any newly found hooks
-    """
-
-    def ContextFilter(context, http_func, args):
-      group = group_base(http_func)
-      group.Filter(context, args)
-      return group
-    # We want the new_context_filters to be a completely new list, if there is
-    # a change.
-    new_context_filters = self.context_filters + [ContextFilter]
-    return ConfigHooks(load_context=self.load_context,
-                       context_filters=new_context_filters)
-
-
 class CommandCommon(object):
   """A base class for CommandGroup and Command.
 
@@ -790,7 +750,7 @@ class CommandCommon(object):
   """
 
   def __init__(self, common_type, path, release_track, cli_generator,
-               config_hooks, parser_group, allow_positional_args, parent_group):
+               parser_group, allow_positional_args, parent_group):
     """Create a new CommandCommon.
 
     Args:
@@ -803,7 +763,6 @@ class CommandCommon(object):
       release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
         this command group is in.  This will apply to all commands under it.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
-      config_hooks: a ConfigHooks object to use for loading context.
       parser_group: argparse.Parser, The parser that this command or group will
         live in.
       allow_positional_args: bool, True if this command can have positional
@@ -811,7 +770,6 @@ class CommandCommon(object):
       parent_group: CommandGroup, The parent of this command or group. None if
         at the root.
     """
-    self._config_hooks = config_hooks
     self._parent_group = parent_group
 
     self.name = path[-1]
@@ -1083,8 +1041,8 @@ class CommandGroup(CommandCommon):
   """A class to encapsulate a group of commands."""
 
   def __init__(self, module_dir, module_path, path, release_track,
-               construction_id, cli_generator, parser_group, config_hooks,
-               parent_group=None, allow_empty=False):
+               construction_id, cli_generator, parser_group, parent_group=None,
+               allow_empty=False):
     """Create a new command group.
 
     Args:
@@ -1103,7 +1061,6 @@ class CommandGroup(CommandCommon):
       parser_group: the current argparse parser, or None if this is the root
         command group.  The root command group will allocate the initial
         top level argparse parser.
-      config_hooks: a ConfigHooks object to use for loading context
       parent_group: CommandGroup, The parent of this group. None if at the
         root.
       allow_empty: bool, True to allow creating this group as empty to start
@@ -1124,7 +1081,6 @@ class CommandGroup(CommandCommon):
         path=path,
         release_track=release_track,
         cli_generator=cli_generator,
-        config_hooks=config_hooks,
         allow_positional_args=False,
         parser_group=parser_group,
         parent_group=parent_group)
@@ -1133,7 +1089,6 @@ class CommandGroup(CommandCommon):
     self._module_path = module_path
     self._construction_id = construction_id
 
-    self._config_hooks = self._config_hooks.OverrideWithBase(self._common_type)
     # find sub groups and commands
     self.groups = {}
     self.commands = {}
@@ -1299,14 +1254,14 @@ class CommandGroup(CommandCommon):
         element = CommandGroup(
             module_dir, module_path, self._path + [name], track,
             self._construction_id, self._cli_generator, self.SubParser(),
-            self._config_hooks, parent_group=self, allow_empty=allow_empty)
+            parent_group=self, allow_empty=allow_empty)
         self.groups[element.name] = element
       elif name in self._commands_to_load:
         (module_dir, module_path, name, track) = self._commands_to_load[name]
         element = Command(
             module_dir, module_path, self._path + [name], track,
-            self._construction_id, self._cli_generator, self._config_hooks,
-            self.SubParser(), parent_group=self)
+            self._construction_id, self._cli_generator, self.SubParser(),
+            parent_group=self)
         self.commands[element.name] = element
     except base.ReleaseTrackNotImplementedException as e:
       self._unloadable_elements.add(name)
@@ -1329,13 +1284,26 @@ class CommandGroup(CommandCommon):
                              release_track=item.ReleaseTrack(for_help=True)))
         for item in self.groups.values())
 
+  def RunGroupFilter(self, context, args):
+    """Constructs and runs the Filter() method of all parent groups.
+
+    This recurses up to the root group and then constructs each group and runs
+    its Filter() method down the tree.
+
+    Args:
+      context: {}, The context dictionary that Filter() can modify.
+      args: The argparse namespace.
+    """
+    if self._parent_group:
+      self._parent_group.RunGroupFilter(context, args)
+    self._common_type().Filter(context, args)
+
 
 class Command(CommandCommon):
   """A class that encapsulates the configuration for a single command."""
 
   def __init__(self, module_dir, module_path, path, release_track,
-               construction_id, cli_generator, config_hooks, parser_group,
-               parent_group=None):
+               construction_id, cli_generator, parser_group, parent_group=None):
     """Create a new command.
 
     Args:
@@ -1350,7 +1318,6 @@ class Command(CommandCommon):
       construction_id: str, A unique identifier for the CLILoader that is
         being constructed.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
-      config_hooks: a ConfigHooks object to use for loading context
       parser_group: argparse.Parser, The parser to be used for this command.
       parent_group: CommandGroup, The parent of this command.
     """
@@ -1366,7 +1333,6 @@ class Command(CommandCommon):
         path=path,
         release_track=release_track,
         cli_generator=cli_generator,
-        config_hooks=config_hooks,
         allow_positional_args=True,
         parser_group=parser_group,
         parent_group=parent_group)
@@ -1390,22 +1356,13 @@ class Command(CommandCommon):
     """
     metrics.Loaded()
 
-    tool_context = self._config_hooks.load_context()
-    last_group = None
-
-    # TODO(user): do not manage http client in calliope.
-    # Now that command execution began lets load http module.
-    # pylint:disable=g-import-not-at-top
-    from googlecloudsdk.core.credentials import http
-
-    for context_filter in self._config_hooks.context_filters:
-      last_group = context_filter(tool_context, http.Http, args)
+    tool_context = {}
+    if self._parent_group:
+      self._parent_group.RunGroupFilter(tool_context, args)
 
     command_instance = self._common_type(
         cli=cli,
         context=tool_context,
-        group=last_group,
-        http_func=http.Http,
         format_string=args.format or 'yaml')
 
     log.debug('Running %s with %s.', self.dotted_name, args)

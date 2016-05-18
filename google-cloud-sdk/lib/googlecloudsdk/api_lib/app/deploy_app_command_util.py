@@ -21,11 +21,11 @@ import shutil
 
 from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.source import context_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import retry
+from googlecloudsdk.third_party.appengine.tools import context_util
 
 
 def _GetSha1(input_path):

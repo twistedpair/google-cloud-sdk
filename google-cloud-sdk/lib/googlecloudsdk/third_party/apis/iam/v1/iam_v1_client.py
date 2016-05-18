@@ -8,6 +8,7 @@ class IamV1(base_api.BaseApiClient):
   """Generated client library for service iam version v1."""
 
   MESSAGES_MODULE = messages
+  BASE_URL = u'https://iam.googleapis.com/'
 
   _PACKAGE = u'iam'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -25,7 +26,7 @@ class IamV1(base_api.BaseApiClient):
                credentials_args=None, default_global_params=None,
                additional_http_headers=None):
     """Create a new iam handle."""
-    url = url or u'https://iam.googleapis.com/'
+    url = url or self.BASE_URL
     super(IamV1, self).__init__(
         url, credentials=credentials,
         get_credentials=get_credentials, http=http, model=model,
@@ -65,8 +66,8 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def GetPolicyDetails(self, request, global_params=None):
-      """Returns the current policy and the policies on the inherited resources.
-the user has access to.
+      """Returns the current IAM policy and the policies on the inherited resources.
+that the user has access to.
 
       Args:
         request: (GetPolicyDetailsRequest) input message
@@ -140,7 +141,8 @@ the user has access to.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a service account key and returns it.
+      """Creates a ServiceAccountKey.
+and returns it.
 
       Args:
         request: (IamProjectsServiceAccountsKeysCreateRequest) input message
@@ -153,7 +155,7 @@ the user has access to.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes a service account key.
+      """Deletes a ServiceAccountKey.
 
       Args:
         request: (IamProjectsServiceAccountsKeysDeleteRequest) input message
@@ -180,7 +182,7 @@ by key id.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists service account keys.
+      """Lists ServiceAccountKeys.
 
       Args:
         request: (IamProjectsServiceAccountsKeysListRequest) input message
@@ -326,7 +328,8 @@ by key id.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a service account and returns it.
+      """Creates a ServiceAccount.
+and returns it.
 
       Args:
         request: (IamProjectsServiceAccountsCreateRequest) input message
@@ -339,7 +342,7 @@ by key id.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes a service acount.
+      """Deletes a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsDeleteRequest) input message
@@ -378,7 +381,7 @@ by key id.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists service accounts for a project.
+      """Lists ServiceAccounts for a project.
 
       Args:
         request: (IamProjectsServiceAccountsListRequest) input message
@@ -404,7 +407,7 @@ by key id.
           config, request, global_params=global_params)
 
     def SignBlob(self, request, global_params=None):
-      """Signs a blob using a service account.
+      """Signs a blob using a service account's system-managed private key.
 
       Args:
         request: (IamProjectsServiceAccountsSignBlobRequest) input message
@@ -417,9 +420,12 @@ by key id.
           config, request, global_params=global_params)
 
     def SignJwt(self, request, global_params=None):
-      """Signs a jwt using a service account.
-A default expiry of 1 hour in the future will be provided
-but if a value greater than that is passed, we will fail.
+      """Signs a JWT using a service account's system-managed private key.
+
+If no `exp` (expiry) time is contained in the claims, we will
+provide an expiry of one hour in the future. If an expiry
+of more than one hour in the future is requested, the request
+will fail.
 
       Args:
         request: (IamProjectsServiceAccountsSignJwtRequest) input message
@@ -446,11 +452,11 @@ for the specified IAM resource.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates a service account.
+      """Updates a ServiceAccount.
 
 Currently, only the following fields are updatable:
-'display_name' .
-The 'etag' is mandatory.
+`display_name` .
+The `etag` is mandatory.
 
       Args:
         request: (ServiceAccount) input message

@@ -48,13 +48,16 @@ class ImageBuildError(exceptions.Error):
 class Image(object):
   """Docker image that requires building and should be removed afterwards."""
 
-  def __init__(self, dockerfile_dir=None, tag=None, nocache=False, rm=True):
+  def __init__(self, dockerfile_dir=None, repo=None, tag=None, nocache=False,
+               rm=True):
     """Initializer for Image.
 
     Args:
       dockerfile_dir: str, Path to the directory with the Dockerfile.
-      tag: str, Repository name (and optionally a tag) to be applied to the
-          image in case of successful build.
+      repo: str, Repository name to be applied to the image in case of
+          successful build.
+      tag: str, Repository tag to be applied to the image in case of successful
+          build.
       nocache: boolean, True if cache should not be used when building the
           image.
       rm: boolean, True if intermediate images should be removed after a
@@ -62,6 +65,7 @@ class Image(object):
           default value used by "docker build" command.
     """
     self._dockerfile_dir = dockerfile_dir
+    self._repo = repo
     self._tag = tag
     self._nocache = nocache
     self._rm = rm
@@ -80,9 +84,19 @@ class Image(object):
     return self._id
 
   @property
+  def repo(self):
+    """Returns image repo string."""
+    return self._repo
+
+  @property
   def tag(self):
     """Returns image tag string."""
     return self._tag
+
+  @property
+  def tagged_repo(self):
+    """Returns image repo string with tag, if it exists."""
+    return '{0}:{1}'.format(self.repo, self.tag) if self.tag else self.repo
 
   def Build(self, docker_client):
     """Calls "docker build" command.
@@ -93,15 +107,15 @@ class Image(object):
     Raises:
       ImageBuildError: if the image could not be built.
     """
-    log.info('Building docker image %s from %s/Dockerfile:',
-             self.tag, self._dockerfile_dir)
+    log.info('Building docker image {0} from {1}/Dockerfile:'.format(
+        self.tagged_repo, self._dockerfile_dir))
 
     width, _ = console_attr_os.GetTermSize()
     log.status.Print(DOCKER_OUTPUT_BEGIN.center(width, DOCKER_OUTPUT_LINE_CHAR))
 
     build_res = docker_client.build(
-        path=self._dockerfile_dir, tag=self.tag, quiet=False, fileobj=None,
-        nocache=self._nocache, rm=self._rm, pull=False)
+        path=self._dockerfile_dir, tag=self.tagged_repo, quiet=False,
+        fileobj=None, nocache=self._nocache, rm=self._rm, pull=False)
 
     info = None
     error = None
@@ -133,7 +147,8 @@ class Image(object):
 
     if not log_records:
       raise ImageBuildError(
-          'Error building docker image {0} [with no output]'.format(self.tag))
+          'Error building docker image {0} [with no output]'.format(
+              self.tagged_repo))
 
     success_message = log_records[-1].get(_STREAM)
     if success_message:
@@ -141,7 +156,7 @@ class Image(object):
       if m:
         # The build was successful.
         self._id = m.group(1)
-        log.info('Image %s built, id = %s', self.tag, self.id)
+        log.info('Image %s built, id = %s', self.tagged_repo, self.id)
         return
 
     raise ImageBuildError('Docker build aborted: ' + error)
@@ -155,10 +170,10 @@ class Image(object):
     Raises:
       Error: if the push fails, even after retries.
     """
-    docker_client.tag(self.id, self.tag, force=True)
+    docker_client.tag(self.id, self.repo, tag=self.tag, force=True)
     log.info('Pushing image to Google Container Registry...\n')
     def InnerPush():
-      for line in docker_client.push(self.tag, stream=True):
+      for line in docker_client.push(self.repo, tag=self.tag, stream=True):
         # Check for errors.
         _ProcessStreamingOutput(line)
 
@@ -188,7 +203,7 @@ def _Retry(func, *args, **kwargs):
             e=e, func=func.__name__))
         time.sleep(1)
       else:
-        raise e
+        raise
 
 
 def _ProcessStreamingOutput(line):

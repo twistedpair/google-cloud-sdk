@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
+from googlecloudsdk.core.credentials import http
 
 
 # Copy into dataproc for cleaner separation
@@ -46,20 +47,19 @@ class ZoneWrapper(object):
 class ConfigurationHelper(scope_prompter.ScopePrompter):
   """Helper that uses compute component logic to build GceConfiguration."""
 
-  def __init__(self, batch_url, compute, http, project, resources):
+  def __init__(self, batch_url, compute, project, resources):
     """Sets fields expected by ScopePrompter."""
     self.batch_url = batch_url
     self.compute = compute
-    self.http = http
     self.project = project
     self.resources = resources
     self.resource_type = None
+    self.http = http.Http()
 
   @classmethod
   def FromContext(cls, context):
     """Updates required global state and constructs ConfigurationHelper."""
-    http = context['http']
-    compute_utils.UpdateContextEndpointEntries(context, http)
+    compute_utils.UpdateContextEndpointEntries(context)
     batch_url = context['batch-url']
     compute = context['compute']
     resources = context['resources']
@@ -70,7 +70,7 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
         'compute', None, 'project', resolvers.FromProperty(project_prop))
     resources.SetParamDefault(
         'compute', None, 'zone', resolvers.FromProperty(zone_prop))
-    return cls(batch_url, compute, http, project, resources)
+    return cls(batch_url, compute, project, resources)
 
   def _GetResourceUri(
       self, resource_name, resource_type, region=None, zone=None):
@@ -92,7 +92,8 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
   def _GetZoneRef(self, cluster_name):
     """Get GCE zone resource prompting if necessary."""
     # Instances is an arbitrary GCE zonal resource type.
-    if self.HasDefaultValue('instances', 'zone'):
+    if compute_utils.HasApiParamDefaultValue(
+        self.resources, 'instances', 'zone'):
       zone = None
     else:
       # Dummy wrapper to let PromptForScope set the zone of.

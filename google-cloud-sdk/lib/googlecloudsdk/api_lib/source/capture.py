@@ -19,13 +19,12 @@ import os
 import re
 import uuid
 import zipfile
-from googlecloudsdk.api_lib.source import context_util as contexts
 from googlecloudsdk.api_lib.source import git
 from googlecloudsdk.api_lib.source import source
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-
+from googlecloudsdk.third_party.appengine.tools import context_util as contexts
 
 # CAPTURE_PREFIX is an arbitrary string used to distinguish capture workspaces
 # from other types of workspaces.

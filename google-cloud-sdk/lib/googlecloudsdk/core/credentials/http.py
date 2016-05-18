@@ -28,16 +28,6 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-class CannotRefreshAuthTokenError(Error, client.AccessTokenRefreshError):
-  """An exception raised when the auth tokens fail to refresh."""
-
-  def __init__(self, msg):
-    auth_command = '$ gcloud auth login'
-    message = ('There was a problem refreshing your current auth tokens: '
-               '{0}.  Please run\n  {1}.'.format(msg, auth_command))
-    super(CannotRefreshAuthTokenError, self).__init__(message)
-
-
 def Http(auth=True, creds=None, timeout='unset'):
   """Get an httplib2.Http client for working with the Google API.
 
@@ -154,12 +144,15 @@ def _WrapRequestForAuthErrHandling(http_client):
     except client.AccessTokenRefreshError as e:
       log.debug('Exception caught during HTTP request: %s', e.message,
                 exc_info=True)
-      raise CannotRefreshAuthTokenError(e.message)
+      raise store.TokenRefreshError(e.message)
 
   http_client.request = RequestWithErrHandling
 
   # apitools needs this attribute to do credential refreshes during batch API
-  # requests.
+  # requests.  Ideally we would patch the refresh() method on the credentials to
+  # catch the same error as above, but if we do, the credentials are no longer
+  # serializable.  The batch API bypasses the error handling we add above so
+  # we just need a top level error handler in the CLI for that.
   if hasattr(orig_request, 'credentials'):
     setattr(http_client.request, 'credentials', orig_request.credentials)
 

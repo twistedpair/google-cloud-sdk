@@ -83,6 +83,16 @@ class NoActiveAccountException(AuthenticationException):
         'You do not currently have an active account selected.')
 
 
+class TokenRefreshError(AuthenticationException,
+                        client.AccessTokenRefreshError):
+  """An exception raised when the auth tokens fail to refresh."""
+
+  def __init__(self, error):
+    message = ('There was a problem refreshing your current auth tokens: {0}'
+               .format(error))
+    super(TokenRefreshError, self).__init__(message)
+
+
 class InvalidCredentialFileException(Error):
   """Exception for when an external credential file could not be loaded."""
 
@@ -94,10 +104,6 @@ class InvalidCredentialFileException(Error):
 
 class FlowError(Error):
   """Exception for when something goes wrong with a web flow."""
-
-
-class RefreshError(Error):
-  """Exception for when there was a problem refreshing."""
 
 
 class RevokeError(Error):
@@ -243,7 +249,7 @@ def Load(account=None, scopes=None):
         available for the provided or active account.
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
         be reached.
-    RefreshError: If the credentials fail to refresh.
+    TokenRefreshError: If the credentials fail to refresh.
   """
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
@@ -299,12 +305,12 @@ def Refresh(creds, http_client=None):
     http_client: httplib2.Http, The http transport to refresh with.
 
   Raises:
-    RefreshError: If the credentials fail to refresh.
+    TokenRefreshError: If the credentials fail to refresh.
   """
   try:
     creds.refresh(http_client or http.Http())
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
-    raise RefreshError(e)
+    raise TokenRefreshError(e.message)
 
 
 def Store(creds, account=None, scopes=None):
@@ -522,7 +528,7 @@ def AcquireFromGCE(account=None):
   Raises:
     c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
       be reached.
-    RefreshError: If the credentials fail to refresh.
+    TokenRefreshError: If the credentials fail to refresh.
     Error: If a non-default service account is used.
   """
   default_account = c_gce.Metadata().DefaultAccount()

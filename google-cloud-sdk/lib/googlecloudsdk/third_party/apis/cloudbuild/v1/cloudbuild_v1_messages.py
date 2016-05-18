@@ -37,6 +37,8 @@ class Build(_messages.Message):
     source: Describes where to find the source files to build.
     startTime: Time at which execution of the build was started. @OutputOnly
     status: Status of the build. @OutputOnly
+    statusDetail: Customer-readable message about the current status.
+      @OutputOnly
     steps: Describes the operations to be performed on the workspace.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
@@ -76,8 +78,9 @@ class Build(_messages.Message):
   source = _messages.MessageField('Source', 8)
   startTime = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
-  steps = _messages.MessageField('BuildStep', 11, repeated=True)
-  timeout = _messages.StringField(12)
+  statusDetail = _messages.StringField(11)
+  steps = _messages.MessageField('BuildStep', 12, repeated=True)
+  timeout = _messages.StringField(13)
 
 
 class BuildOperationMetadata(_messages.Message):

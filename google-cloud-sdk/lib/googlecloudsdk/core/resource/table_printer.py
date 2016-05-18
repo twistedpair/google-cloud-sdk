@@ -104,16 +104,19 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
       _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
+    optional: Does not display the column if it is empty.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
       the table box if *box* is enabled.
 
   Attributes:
+    _optional: True if at least one column is optional. An optional
+      column is not displayed if it contains no data.
     _page_count: The output page count, incremented before each page.
     _rows_per_page: The number of rows in each resource page. 0 for no paging.
     _rows: The list of all resource columns indexed by row.
-    _visible: Ordered list of visible columns indexes.
+    _visible: Ordered list of visible column indexes.
   """
 
   # TODO(user): Drop TablePrinter._rows_per_page 3Q2016.
@@ -139,6 +142,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     self._page_count = 0
 
     # Check for subformat columns.
+    self._optional = False
     self._subformats = []
     self._has_subprinters = False
     has_subformats = False
@@ -149,6 +153,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           has_subformats = True
         else:
           self._aggregate = False
+        if col.attribute.optional:
+          self._optional = True
       index = 0
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
@@ -186,7 +192,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     self._rows.append(record)
 
   def _Visible(self, row):
-    """Return the list visible items in row."""
+    """Return the visible list items in row."""
     if not self._visible or not row:
       return row
     visible = []
@@ -285,10 +291,34 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         else:
           heading = [[_Stringify(cell) for cell in labels]]
     col_widths = [0] * max(len(x) for x in rows + heading)
-    for row in rows + heading:
-      for i in range(len(row)):
-        col_widths[i] = max(col_widths[i],
-                            self._console_attr.DisplayWidth(row[i]))
+    for row in rows:
+      for i, col in enumerate(row):
+        col_widths[i] = max(col_widths[i], self._console_attr.DisplayWidth(col))
+    if self._optional:
+      # Delete optional columns that have no data.
+      optional = False
+      visible = []
+      # col_widths[i] == 0 => column i has no data.
+      for i, col in enumerate(self._Visible(self.column_attributes.Columns())):
+        if not col.attribute.optional or col_widths[i]:
+          visible.append(i)
+        else:
+          optional = True
+      if optional:
+        # At least one optional column has no data. Adjust all column lists.
+        if not visible:
+          # All columns are optional and have no data => no output.
+          self._empty = True
+          return
+        self._visible = visible
+        rows = [self._Visible(row) for row in rows]
+        align = self._Visible(align)
+        heading = [self._Visible(heading[0])]
+        col_widths = self._Visible(col_widths)
+    if heading:
+      # Check the heading widths too.
+      for i, col in enumerate(heading[0]):
+        col_widths[i] = max(col_widths[i], self._console_attr.DisplayWidth(col))
 
     # Print the title if specified.
     title = self.attributes.get('title') if self._page_count <= 1 else None
