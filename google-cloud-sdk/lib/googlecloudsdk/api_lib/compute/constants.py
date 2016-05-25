@@ -97,6 +97,8 @@ SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'ssh-keys'
 SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
+GOOGLE_SSH_KNOWN_HOSTS_FILE = os.path.join('~', '.ssh',
+                                           'google_compute_known_hosts')
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'

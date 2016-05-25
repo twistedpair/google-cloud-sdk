@@ -511,7 +511,7 @@ class MarkdownGenerator(object):
 
     This is a subjective choice for aesthetically pleasing renderings.
     """
-    pat = re.compile(r"(``([^`]*\w{2,}[^`']*)'')")
+    pat = re.compile(r"[^`](``([^`]*\w{2,}[^`']*)'')")
     pos = 0
     rep = ''
     while True:

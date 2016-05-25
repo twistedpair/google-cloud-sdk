@@ -343,16 +343,3 @@ class ScopePrompter(object):
 
   def CreateGlobalReference(self, resource_name, resource_type=None):
     return self.CreateGlobalReferences([resource_name], resource_type)[0]
-
-  def CreateAccountsReferences(self, resource_names, resource_type=None):
-    """Returns a list of resolved compute account resource references."""
-    resource_refs = []
-    for resource_name in resource_names:
-      resource_refs.append(self.clouduseraccounts_resources.Parse(
-          resource_name,
-          collection=utils.GetApiCollection(
-              resource_type or self.resource_type)))
-    return resource_refs
-
-  def CreateAccountsReference(self, resource_name, resource_type=None):
-    return self.CreateAccountsReferences([resource_name], resource_type)[0]

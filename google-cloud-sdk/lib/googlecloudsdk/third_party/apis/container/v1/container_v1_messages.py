@@ -30,14 +30,60 @@ class AddonsConfig(_messages.Message):
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
 
 
+class AuthenticateRequest(_messages.Message):
+  """A request to authenticate a user based on a provided OAuth2 token.  This
+  should look very close to the TokenReview struct in http://github.com/kubern
+  etes/kubernetes/blob/master/pkg/apis/authentication.k8s.io/v1beta1/types.go.
+  This message has 4 GKE-specific fields that get mapped from the path, but
+  the other fields (the expected JSON payload) must match TokenReview.
+
+  Fields:
+    apiVersion: The api version of the TokenReview object.
+    kind: Fields from "pkg/apis/authentication.k8s.io/v1beta1".TokenReview:
+      The "kind" of the TokenReview object.
+    spec: The information about the request being evaluated. It contains the
+      token that the server should authenticate.
+    status: The response for the provided request. (this won't be filled in
+      for an AuthenticateRequest, but it is part of the struct, so we need it
+      here to be safe).
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  spec = _messages.MessageField('TokenReviewSpec', 3)
+  status = _messages.MessageField('TokenReviewStatus', 4)
+
+
+class AuthenticateResponse(_messages.Message):
+  """A response with the authenticated identity. This should match exactly
+  with the TokenReview struct from http://github.com/kubernetes/kubernetes/blo
+  b/master/pkg/apis/authentication.k8s.io/types.go.
+
+  Fields:
+    apiVersion: The api version of the TokenReview object.
+    kind: The "kind" of the TokenReview object.
+    spec: The information about the request that was evaluated. This field
+      (along with kind & api_version) are returned unchanged from the
+      AuthenticateRequest. The caller probably doesn't care, but it would
+      allow the caller to verify the question the server thought it was
+      answering.
+    status: The response for the provided request.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  spec = _messages.MessageField('TokenReviewSpec', 3)
+  status = _messages.MessageField('TokenReviewStatus', 4)
+
+
 class AuthorizeRequest(_messages.Message):
   """A request to authorize a user action. The request contains the attributes
   of the action the user is attempting. These attributes are mapped to a GKE
   IAM permission and policy to check.  This should look very close to the
   SubjectAccessReview struct in http://github.com/kubernetes/kubernetes/blob/m
-  aster/pkg/apis/authorization/types.go. This message has 4 GKE-specific
-  fields that get mapped from the path, but the other fields (the expected
-  JSON payload) must match SubjectAccessReview.
+  aster/pkg/apis/authorization/v1beta1/types.go. This message has 4 GKE-
+  specific fields that get mapped from the path, but the other fields (the
+  expected JSON payload) must match SubjectAccessReview.
 
   Fields:
     apiVersion: The api version of the SubjectAccessReview object.
@@ -58,7 +104,7 @@ class AuthorizeRequest(_messages.Message):
 class AuthorizeResponse(_messages.Message):
   """A response to a request for authorization. This should match exactly with
   the SubjectAccessReview struct from http://github.com/kubernetes/kubernetes/
-  blob/master/pkg/apis/authorization/types.go.
+  blob/master/pkg/apis/v1beta1/authorization/types.go.
 
   Fields:
     apiVersion: The api version of the SubjectAccessReview object.
@@ -241,9 +287,14 @@ class ClusterUpdate(_messages.Message):
       write metrics. Currently available options:  *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
+    desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
+      specified in desired_node_pool_id. If there is only one pool in the
+      cluster and desired_node_pool_id is not provided then the change applies
+      to that single node pool.
     desiredNodePoolId: The node pool to be upgraded. This field is mandatory
-      if the "desired_node_version" or "desired_image_type" is specified and
-      there is more than one node pool on the cluster.
+      if "desired_node_version", "desired_image_family" or
+      "desired_node_pool_autoscaling" is specified and there is more than one
+      node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
       supported by the server.
@@ -254,8 +305,32 @@ class ClusterUpdate(_messages.Message):
   desiredMasterMachineType = _messages.StringField(3)
   desiredMasterVersion = _messages.StringField(4)
   desiredMonitoringService = _messages.StringField(5)
-  desiredNodePoolId = _messages.StringField(6)
-  desiredNodeVersion = _messages.StringField(7)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 6)
+  desiredNodePoolId = _messages.StringField(7)
+  desiredNodeVersion = _messages.StringField(8)
+
+
+class ContainerMasterProjectsZonesAuthenticateRequest(_messages.Message):
+  """A ContainerMasterProjectsZonesAuthenticateRequest object.
+
+  Fields:
+    authenticateRequest: A AuthenticateRequest resource to be passed as the
+      request body.
+    clusterId: The name of this master's cluster.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    projectNumber: The project number for which the signed URLs are being
+      requested.  This is the project in which this master's cluster resides.
+      Note that this must be a project number, not a project ID.
+    zone: The zone of this master's cluster.
+  """
+
+  authenticateRequest = _messages.MessageField('AuthenticateRequest', 1)
+  clusterId = _messages.StringField(2, required=True)
+  masterProjectId = _messages.StringField(3, required=True)
+  projectNumber = _messages.IntegerField(4, required=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ContainerMasterProjectsZonesAuthorizeRequest(_messages.Message):
@@ -814,6 +889,8 @@ class NodePool(_messages.Message):
     StatusValueValuesEnum: The status of the nodes in this pool instance.
 
   Fields:
+    autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
+      enabled only if a valid configuration is present.
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool. You must ensure
       that your Compute Engine <a href="/compute/docs/resource-
@@ -857,14 +934,32 @@ class NodePool(_messages.Message):
     STOPPING = 5
     ERROR = 6
 
-  config = _messages.MessageField('NodeConfig', 1)
-  initialNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
-  statusMessage = _messages.StringField(7)
-  version = _messages.StringField(8)
+  autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
+  config = _messages.MessageField('NodeConfig', 2)
+  initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  statusMessage = _messages.StringField(8)
+  version = _messages.StringField(9)
+
+
+class NodePoolAutoscaling(_messages.Message):
+  """NodePoolAutoscaling contains information required by cluster autoscaler
+  to adjust the size of the node pool to the current cluster usage.
+
+  Fields:
+    enabled: Is autoscaling enabled for this node pool.
+    maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
+      min_node_count. There has to enough quota to scale up the cluster.
+    minNodeCount: Minimum number of nodes in the NodePool. Must be >= 1 and <=
+      max_node_count.
+  """
+
+  enabled = _messages.BooleanField(1)
+  maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class NonResourceAttributes(_messages.Message):
@@ -1120,6 +1215,31 @@ class Token(_messages.Message):
   expireTime = _messages.StringField(2)
 
 
+class TokenReviewSpec(_messages.Message):
+  """The description of the request for review of an OAuth2 token for purposes
+  of authentication. This should match the TokenReviewSpec struct in
+  pkg/apis/authentication.k8s.io/v1beta1/types.go
+
+  Fields:
+    token: The token for the server to authenticate.
+  """
+
+  token = _messages.StringField(1)
+
+
+class TokenReviewStatus(_messages.Message):
+  """The result of the request for authentication. This should match the
+  TokenReviewStatus struct in pkg/apis/authentication.k8s.io/v1beta1/types.go
+
+  Fields:
+    authenticated: Whether the server was able to authenticate the token.
+    user: The authenticated user associated with the token.
+  """
+
+  authenticated = _messages.BooleanField(1)
+  user = _messages.MessageField('UserInfo', 2)
+
+
 class UpdateClusterRequest(_messages.Message):
   """UpdateClusterRequest updates the settings of a cluster.
 
@@ -1128,6 +1248,24 @@ class UpdateClusterRequest(_messages.Message):
   """
 
   update = _messages.MessageField('ClusterUpdate', 1)
+
+
+class UserInfo(_messages.Message):
+  """The attributes of an authenticated user. This should match the UserInfo
+  struct in pkg/apis/authentication.k8s.io/v1beta1/types.go
+
+  Fields:
+    groups: Groups that this user is a part of. This is not currently filled
+      in for GKE.
+    uid: A unique identifier (across time) for the user. This is not currently
+      filled in for GKE.
+    username: The name of the user. This should be the email address
+      associated with the GAIA identity of the user.
+  """
+
+  groups = _messages.StringField(1, repeated=True)
+  uid = _messages.StringField(2)
+  username = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

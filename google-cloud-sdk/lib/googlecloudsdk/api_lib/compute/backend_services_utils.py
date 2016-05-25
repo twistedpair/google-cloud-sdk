@@ -15,6 +15,7 @@
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis
 
 
 def GetHealthChecks(args, resource_parser):
@@ -74,3 +75,48 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
 
   def Format(self, args):
     return self.ListFormat(args)
+
+
+def ValidateBalancingModeArgs(add_or_update_backend_args,
+                              current_balancing_mode=None):
+  """Check whether the setup of the backend LB related fields is valid.
+
+  Args:
+    add_or_update_backend_args: argparse Namespace. The arguments
+      provided to add-backend or update-backend commands.
+    current_balancing_mode: BalancingModeValueValuesEnum. The balancing mode
+      of the existing backend, in case of update-backend command. Must be
+      None otherwise.
+  """
+  messages = apis.GetMessagesModule('compute', 'alpha')
+  balancing_mode = current_balancing_mode
+  if add_or_update_backend_args.balancing_mode:
+    balancing_mode = messages.Backend.BalancingModeValueValuesEnum(
+        add_or_update_backend_args.balancing_mode)
+
+  invalid_arg = None
+  if balancing_mode == messages.Backend.BalancingModeValueValuesEnum.RATE:
+    if add_or_update_backend_args.max_utilization is not None:
+      invalid_arg = '--max-utilization'
+    elif add_or_update_backend_args.max_connections is not None:
+      invalid_arg = '--max-connections'
+    elif add_or_update_backend_args.max_connections_per_instance is not None:
+      invalid_arg = '--max-connections-per-instance'
+
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with RATE balancing mode')
+  elif (balancing_mode ==
+        messages.Backend.BalancingModeValueValuesEnum.CONNECTION):
+    if add_or_update_backend_args.max_utilization is not None:
+      invalid_arg = '--max-utilization'
+    elif add_or_update_backend_args.max_rate is not None:
+      invalid_arg = '--max-rate'
+    elif add_or_update_backend_args.max_rate_per_instance is not None:
+      invalid_arg = '--max-rate-per-instance'
+
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with CONNECTION balancing mode')

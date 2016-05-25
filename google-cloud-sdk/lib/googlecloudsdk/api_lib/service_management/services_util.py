@@ -32,6 +32,9 @@ import yaml
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
+OP_BASE_CMD = 'gcloud alpha service-management operations '
+OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
+OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
 
 
 def GetMessagesModule():
@@ -131,6 +134,30 @@ def ValidateEmailString(email):
 
 
 def ProcessOperationResult(result, async=False):
+  """Validate and process Operation outcome for user display.
+
+  Args:
+    result: The message to process (expected to be of type Operation)'
+    async: If False, the method will block until the operation completes.
+
+  Returns:
+    The message string confirming that the Operation finished successfully.
+  """
+  op = GetProcessedOperationResult(result, async)
+  cmd = OP_DESCRIBE_CMD.format(op.get('name'))
+  if async:
+    cmd = OP_WAIT_CMD.format(op.get('name'))
+    log.status.Print('Asynchronous operation is in progress... '
+                     'Use the following command to wait for its '
+                     'completion: \n {0}'.format(cmd))
+  else:
+    cmd = OP_DESCRIBE_CMD.format(op.get('name'))
+    log.status.Print('Operation finished successfully. '
+                     'The following command can describe '
+                     'the Operation details: \n  {0}'.format(cmd))
+
+
+def GetProcessedOperationResult(result, async=False):
   """Validate and process Operation result message for user display.
 
   This method checks to make sure the result is of type Operation and
@@ -154,8 +181,9 @@ def ProcessOperationResult(result, async=False):
   result_dict = encoding.MessageToDict(result)
 
   if not async:
-    log.status.Print('Waiting for operation to complete...')
     op_name = result_dict['name']
+    log.status.Print(
+        'Waiting for async operation {0} to complete...'.format(op_name))
     result_dict = encoding.MessageToDict(WaitForOperation(
         op_name, apis.GetClientInstance('servicemanagement', 'v1')))
 
@@ -224,10 +252,10 @@ def WaitForOperation(op_name, client):
 
   # Wait for no more than 30 minutes while retrying the Operation retrieval
   try:
-    retry.Retryer(exponential_sleep_multiplier=1.5, wait_ceiling_ms=60000,
-                  max_wait_ms=60*30*1000).RetryOnResult(
+    retry.Retryer(exponential_sleep_multiplier=1.1, wait_ceiling_ms=10000,
+                  max_wait_ms=30*60*1000).RetryOnResult(
                       _CheckOperation, [op_name], should_retry_if=False,
-                      sleep_ms=5000)
+                      sleep_ms=1500)
   except retry.MaxRetrialsException:
     raise exceptions.ToolException('Timed out while waiting for '
                                    'operation %s. Note that the operation '
@@ -235,7 +263,8 @@ def WaitForOperation(op_name, client):
 
   # Check to see if the operation resulted in an error
   if WaitForOperation.operation_response.error is not None:
-    raise exceptions.ToolException('The operation resulted in a failure.')
+    raise exceptions.ToolException(
+        'The operation with ID {0} resulted in a failure.'.format(op_name))
 
   # If we've gotten this far, the operation completed successfully,
   # so return the Operation object

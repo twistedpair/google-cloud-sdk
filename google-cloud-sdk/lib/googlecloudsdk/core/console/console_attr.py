@@ -520,7 +520,7 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
 
   Args:
     encoding: Encoding override.
-      ascii -- ASCII art. This is the default.
+      ascii -- ASCII. This is the default.
       utf8 -- UTF-8 unicode.
       win -- Windows code page 437.
     out: The console output file stream, ConsoleAttr default if None.
@@ -585,3 +585,70 @@ def GetCharacterDisplayWidth(char):
   else:
     # Don't use this function on control chars.
     return 1
+
+
+def EncodeForOutput(string, encoding=None, escape=True):
+  r"""Returns string encoded to prevent output codec exceptions.
+
+  This function can be used to massage output strings that may have been encoded
+  with an encoding incompatible with the standard output encoding. This happens
+  frequently in tests and error messages where the string is obtained from a
+  source of unknown encoding.
+
+  Args:
+    string: A string that may contain an encoding incompatible with the
+      standard output encoding.
+    encoding: The output encoding name. Defaults to
+      GetConsoleAttr().GetEncoding().
+    escape: Replace unencodable characters with a \uXXXX or \xXX equivalent if
+      True. Otherwise replace unencodable characters with an appropriate unknown
+      character, '?' for ASCII, and the unicode unknown replacement character
+      \uFFFE for unicode.
+
+  Returns:
+    The string encoded to avoid output codec exceptions.
+  """
+  if not encoding:
+    encoding = GetConsoleAttr().GetEncoding()
+  try:
+    # No change needed if the string encodes to the output encoding.
+    string.encode(encoding)
+    return string
+  except UnicodeError:
+    pass
+  try:
+    # The string is encoded using the standard output encoding. Decoding here
+    # gets the string in a form that will print to the standard output.
+    string = string.decode(encoding)
+  except UnicodeError:
+    # We don't know the string encoding.
+    try:
+      # Check if the encoding is UTF-8. If the output encoding were UTF-8 it
+      # would have been caught above.
+      string = string.decode('utf8')
+    except UnicodeError:
+      # Its not UTF-8. That's OK. The fallback below will handle it.
+      if isinstance(string, str):
+        # This branch works around a Python str.encode() "feature" that throws
+        # an ASCII *decode* exception on str strings that contain 8th bit set
+        # bytes. For example, this sequence throws an exception:
+        #   string = '\xdc'  # iso-8859-1 'Ü'
+        #   string = string.encode('ascii', 'backslashreplace')
+        # even though 'backslashreplace' is documented to handle encoding
+        # errors. We work around the problem by first decoding the str string
+        # from an 8-bit encoding to unicode, selecting any 8-bit encoding that
+        # uses all 256 bytes (such as ISO-8559-1):
+        #   string = string.decode('iso-8859-1')
+        # Using this produces a sequence that works:
+        #   string = '\xdc'
+        #   string = string.decode('iso-8859-1')
+        #   string = string.encode('ascii', 'backslashreplace')
+        try:
+          string = string.decode('iso-8859-1')
+        except UnicodeError:
+          pass
+    # Fall back to the output encoding with unencodable characters handled
+    # according to escape.
+    string = string.encode(
+        encoding, 'backslashreplace' if escape else 'replace')
+  return string

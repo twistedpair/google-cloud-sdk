@@ -132,7 +132,8 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
 
 
 # pylint: disable=redefined-builtin, external expression expects format kwarg.
-def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
+def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
+                  tz=None, tz_default=None):
   """Formats the resource as a strftime() format.
 
   Args:
@@ -141,23 +142,27 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
     format: The strftime(3) format.
     unit: If the resource is a Timestamp then divide by _unit_ to yield seconds.
     undefined: Returns this value if the resource is not a valid time.
-    tz: Fixed timezone string, local timezone if not specified. For example,
-      EST5EDT, US/Pacific, UTC, WEST.
+    tz: Return the time relative to the tz timezone if specified, the explicit
+      timezone in the resource if it has one, otherwise the local timezone.
+      For example, ...date(tz=EST5EDT, tz_default=UTC).
+    tz_default: The default timezone if the resource does not have a timezone
+      suffix.
 
   Returns:
     The strftime() date format for r or undefined if r does not contain a valid
     time.
   """
-  tzinfo = times.GetTimeZone(tz) if tz else None
   # Check if r has an isoformat() method.
   try:
     r = r.isoformat()
   except (AttributeError, TypeError, ValueError):
     pass
+
+  tz_in = times.GetTimeZone(tz_default) if tz_default else None
   # Check if r is a timestamp.
   try:
     timestamp = float(r) / float(unit)
-    dt = times.GetDateTimeFromTimeStamp(timestamp, tzinfo)
+    dt = times.GetDateTimeFromTimeStamp(timestamp, tz_in)
     return times.FormatDateTime(dt, format)
   except (TypeError, ValueError):
     pass
@@ -167,10 +172,11 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
   if original_repr and isinstance(original_repr, basestring):
     r = original_repr
 
+  tz_out = times.GetTimeZone(tz) if tz else None
   # Check if r is a date/time string.
   try:
-    dt = times.ParseDateTime(r, tzinfo)
-    return times.FormatDateTime(dt, format)
+    dt = times.ParseDateTime(r, tz_in)
+    return times.FormatDateTime(dt, format, tz_out)
   except (AttributeError, ImportError, TypeError, ValueError):
     pass
 
@@ -186,7 +192,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
     """
     valid = 0
     parts = []
-    now = datetime.datetime.now(tzinfo)
+    now = datetime.datetime.now(tz_in)
     for part in ('year', 'month', 'day', 'hour', 'minute', 'second'):
       value = resource_property.Get(r, [part], None)
       if value is None:
@@ -206,9 +212,9 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='', tz=None):
     # combination of 3 non-subsecond date/time parts.
     if valid < 3:
       raise ValueError
-    parts.append(tzinfo)
+    parts.append(tz_in)
     dt = datetime.datetime(*parts)
-    return times.FormatDateTime(dt, format)
+    return times.FormatDateTime(dt, format, tz_out)
 
   try:
     return _FormatFromParts()
@@ -276,6 +282,32 @@ def TransformEncode(r, encoding, undefined=''):
     except:  # pylint: disable=bare-except, undefined for any exception
       pass
   return undefined
+
+
+def TransformEnum(r, projection, enums, inverse=False, undefined=''):
+  """Returns the enums dictionary description for the resource.
+
+  Args:
+    r: A JSON-serializable object.
+    projection: The parent ProjectionSpec.
+    enums: The name of a message enum dictionary.
+    inverse: Do inverse lookup.
+    undefined: Returns this value if there is no matching enum description.
+
+  Returns:
+    The enums dictionary description for the resource.
+  """
+  type_name = GetTypeDataName(enums, 'inverse-enum' if inverse else 'enum')
+  descriptions = projection.symbols.get(type_name)
+  if not descriptions and inverse:
+    normal = projection.symbols.get(GetTypeDataName(enums, 'enum'))
+    if normal:
+      # Create the inverse dict and memoize it in projection.symbols.
+      descriptions = {}
+      for k, v in normal.iteritems():
+        descriptions[v] = k
+      projection.symbols[type_name] = descriptions
+  return descriptions.get(r, undefined) if descriptions else undefined
 
 
 def TransformError(r, message=None):
@@ -495,7 +527,8 @@ def TransformIso(r, undefined='T'):
   Returns:
     The numeric ISO time format for r or undefined if r is not a time.
   """
-  return r.isoformat() if hasattr(r, 'isoformat') else undefined
+  return TransformDate(r, format='%Y-%m-%dT%H:%M:%S.%3f%Oz',
+                       undefined=undefined)
 
 
 def TransformJoin(r, sep='/', undefined=''):
@@ -915,6 +948,7 @@ _BUILTIN_TRANSFORMS = {
     'decode': TransformDecode,
     'duration': TransformDuration,
     'encode': TransformEncode,
+    'enum': TransformEnum,
     'error': TransformError,
     'extract': TransformExtract,
     'fatal': TransformFatal,
@@ -945,6 +979,10 @@ _BUILTIN_TRANSFORMS = {
 _API_TO_TRANSFORMS = {
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
     'debug': ('googlecloudsdk.api_lib.debug.transforms', 'GetTransforms'),
+    'runtimeconfig': (
+        'googlecloudsdk.api_lib.deployment_manager.runtime_configs.transforms',
+        'GetTransforms'
+    ),
     'service_registry': ('googlecloudsdk.api_lib.service_registry.transforms',
                          'GetTransforms'),
 }
@@ -973,3 +1011,16 @@ def GetTransforms(collection=None):
   module = __import__(module_path, fromlist=[method_name])
   method = getattr(module, method_name)
   return method()
+
+
+def GetTypeDataName(name, type_name='object'):
+  """Returns the data name for name of type type_name.
+
+  Args:
+    name: The data name.
+    type_name: The data type name.
+
+  Returns:
+    The data name for name of type type_name.
+  """
+  return '{name}::{type_name}'.format(name=name, type_name=type_name)

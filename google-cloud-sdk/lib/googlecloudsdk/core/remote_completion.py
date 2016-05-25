@@ -526,42 +526,28 @@ class RemoteCompletion(object):
     """
     if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
       return None
-    ro_resource = resource
-    ro_command_line = command_line or resource
-    ro_list_command_callback_fn = list_command_callback_fn
 
     def RemoteCompleter(parsed_args, **unused_kwargs):
       """Runs list command on resource to generate completion data."""
-      resource = ro_resource
-      command_line = ro_command_line
-      list_command_callback_fn = ro_list_command_callback_fn
       list_command_updates_cache = False
-
       info = resource_registry.Get(resource)
       if info.cache_command:
         command = info.cache_command.split(' ')
+        list_command_updates_cache = True
       elif list_command_callback_fn:
         command = list_command_callback_fn(parsed_args)
-      else:
+      elif command_line:
         command = command_line.split('.') + ['list']
+      else:
+        command = resource.split('.') + ['list']
 
       if info.bypass_cache:
         # Don't cache - use the cache_command results directly.
         return RemoteCompletion.RunListCommand(
             cli, command, parse_output=True)
-      list_command_updates_cache = True
 
       options = []
       try:
-        if hasattr(parsed_args, 'property'):
-          if parsed_args.property == 'compute/region':
-            resource = 'compute.regions'
-            command = resource.split('.') + ['list']
-          elif parsed_args.property == 'compute/zone':
-            resource = 'compute.zones'
-            command = resource.split('.') + ['list']
-          elif parsed_args.property != 'project':
-            return options
         line = os.getenv('COMP_LINE')
         prefix = ''
         if line:

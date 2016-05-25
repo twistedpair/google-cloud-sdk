@@ -552,7 +552,12 @@ class Command(_Common):
       raise resource_exceptions.ResourceRegistryAttributeError(
           'Collection [{collection}] does not have an async_collection '
           'attribute.'.format(collection=collection))
-    return resource_registry.Get(async_collection)
+    info = resource_registry.Get(info.async_collection)
+    # One more indirection allowed for commands that have a different operations
+    # format for --async and operations list.
+    if info.async_collection:
+      info = resource_registry.Get(info.async_collection)
+    return info
 
   def Format(self, unused_args):
     """Returns the default format string."""
@@ -571,6 +576,10 @@ class Command(_Common):
       resources_were_displayed: True if resources were displayed.
     """
     _ = resources_were_displayed
+
+  def Defaults(self):
+    """Returns the command projection defaults."""
+    return None
 
   def GetReferencedKeyNames(self, args):
     """Returns the key names referenced by the filter and format expressions."""

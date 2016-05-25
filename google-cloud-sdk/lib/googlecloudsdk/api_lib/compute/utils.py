@@ -66,8 +66,6 @@ def _GetApiNameFromCollection(collection):
 
 def GetApiCollection(resource_type):
   """Coverts a resource type to a collection."""
-  if resource_type in ['users', 'groups', 'globalAccountsOperations']:
-    return 'clouduseraccounts.' + resource_type
   return 'compute.' + resource_type
 
 

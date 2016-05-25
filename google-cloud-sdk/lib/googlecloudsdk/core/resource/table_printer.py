@@ -43,17 +43,20 @@ def _Stringify(value):  # pylint: disable=invalid-name
 
 
 class _Justify(object):
-  """Represents a unicode object for justification using display width.
+  """Represents a string object for justification using display width.
 
   Attributes:
     _adjust: The justification width adjustment. The builtin justification
-      functions use len() but unicode data requires console_attr.DisplayWidth().
-    _string: The unicode string to justify.
+      functions use len() which counts characters, but some character encodings
+      require console_attr.DisplayWidth() which returns the encoded character
+      display width.
+    _string: The output encoded string to justify.
   """
 
   def __init__(self, attr, string):
-    self._adjust = attr.DisplayWidth(string) - len(string)
-    self._string = string
+    self._string = console_attr.EncodeForOutput(
+        string, encoding=attr.GetEncoding(), escape=False)
+    self._adjust = attr.DisplayWidth(self._string) - len(self._string)
 
   def ljust(self, width):
     return self._string.ljust(width - self._adjust)
@@ -346,9 +349,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         line += box.dl
         self._out.write(line)
         self._out.write('\n')
-        line = box.v + title.center(width) + box.v
+        line = u'{0}{1}{2}'.format(
+            box.v, _Justify(self._console_attr, title).center(width), box.v)
       else:
-        line = title.center(width)
+        width += table_column_pad * (len(col_widths) - 1)
+        line = _Justify(self._console_attr, title).center(width).rstrip()
       self._out.write(line)
       self._out.write('\n')
 

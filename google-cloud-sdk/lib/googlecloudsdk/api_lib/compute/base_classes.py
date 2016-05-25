@@ -19,7 +19,7 @@ import cStringIO
 import json
 import textwrap
 
-from enum import Enum
+import enum
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
@@ -38,7 +38,7 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import http as http_client
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
@@ -54,7 +54,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
-    self._http_client = http.Http()
+    self._http_client = http_client.Http()
 
   @property
   def _resource_spec(self):
@@ -376,7 +376,7 @@ def GetZonalListerHelp(resource):
   }
 
 
-class ScopeType(Enum):
+class ScopeType(enum.Enum):
   """Scope type of compute resource."""
   global_scope = 1
   regional_scope = 2
@@ -979,13 +979,6 @@ class NoOutputAsyncMutator(BaseAsyncMutator):
     return 'none'
 
 
-class InstanceGroupFilteringMode(Enum):
-  """Filtering mode for Instance Groups based on dynamic properties."""
-  all_groups = 1
-  only_managed_groups = 2
-  only_unmanaged_groups = 3
-
-
 class InstanceGroupManagerDynamicProperiesMixin(object):
   """Mixin class to compute dynamic information for instance groups."""
 
@@ -1065,53 +1058,6 @@ class InstanceGroupManagerDynamicProperiesMixin(object):
         size = ''
 
       item['size'] = str(size)
-      yield item
-
-
-class InstanceGroupDynamicProperiesMixin(object):
-  """Mixin class to compute dynamic information for instance groups."""
-
-  def ComputeInstanceGroupManagerMembership(self, items,
-                                            filter_mode=(
-                                                InstanceGroupFilteringMode
-                                                .all_groups)):
-    """Add information if instance group is managed."""
-    errors = []
-    items = list(items)
-    zone_names = set([path_simplifier.Name(result['zone']) for result in items])
-
-    instance_group_managers = lister.GetZonalResources(
-        service=self.compute.instanceGroupManagers,
-        project=self.project,
-        requested_zones=zone_names,
-        filter_expr=None,
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors)
-    instance_group_managers_refs = set([
-        path_simplifier.ScopedSuffix(igm.selfLink)
-        for igm in instance_group_managers])
-
-    if errors:
-      utils.RaiseToolException(errors)
-
-    for item in items:
-      self_link = item['selfLink']
-      igm_self_link = self_link.replace(
-          '/instanceGroups/', '/instanceGroupManagers/')
-      scoped_suffix = path_simplifier.ScopedSuffix(igm_self_link)
-      is_managed = scoped_suffix in instance_group_managers_refs
-
-      if (is_managed and
-          filter_mode == InstanceGroupFilteringMode.only_unmanaged_groups):
-        continue
-      elif (not is_managed and
-            filter_mode == InstanceGroupFilteringMode.only_managed_groups):
-        continue
-
-      item['isManaged'] = ('Yes' if is_managed else 'No')
-      if is_managed:
-        item['instanceGroupManagerUri'] = igm_self_link
       yield item
 
 

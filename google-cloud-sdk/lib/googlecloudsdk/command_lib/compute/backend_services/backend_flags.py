@@ -60,10 +60,12 @@ def WarnOnDeprecatedFlags(args):
              ' instead. It will be removed in a future release.')
 
 
-def AddBalancingMode(parser):
+def AddBalancingMode(parser, with_connection=False):
+  """Add balancing mode arguments."""
   balancing_mode = parser.add_argument(
       '--balancing-mode',
-      choices=['RATE', 'UTILIZATION'],
+      choices=(['RATE', 'UTILIZATION', 'CONNECTION'] if with_connection
+               else ['RATE', 'UTILIZATION']),
       type=lambda x: x.upper(),
       help='Defines the strategy for balancing load.')
   balancing_mode.detailed_help = """\
@@ -81,6 +83,24 @@ def AddBalancingMode(parser):
       addition to CPU by setting either ``--max-rate-per-instance'' or
       ``--max-rate''.
       """
+  if with_connection:
+    balancing_mode.detailed_help += """\
+
+      (ALPHA) ``RATE'' and the max rate arguments are availbale only
+      in backend services with HTTP based protocols.
+
+      For backend services with TCP/SSL protocol either ``UTILIZATION'' or
+      ``CONNECTION'' are available. ``CONNECTION'' will spread load based
+      on how many concurrent connections the group can handle. There are two
+      ways to specify max connections: ``--max-connections'' which defines
+      the max number of connections for the whole group or
+      ``--max-connections-per-instance'', which defines the max number of
+      connections on a per-instance basis.
+
+      In ``UTILIZATION'', you can optionally also limit based on connections
+      (for TCP/SSL) in addition to CPU by setting ``--max-connections'' or
+      ``--max-connections-per-instance''.
+      """
 
 
 def AddMaxUtilization(parser):
@@ -96,18 +116,31 @@ def AddMaxUtilization(parser):
       """
 
 
-def AddRate(parser):
-  rate_group = parser.add_mutually_exclusive_group()
+def AddCapacityLimits(parser, with_connection=False):
+  """Add capacity thresholds arguments."""
+  AddMaxUtilization(parser)
+  capacity_group = parser.add_mutually_exclusive_group()
 
-  rate_group.add_argument(
+  capacity_group.add_argument(
       '--max-rate',
       type=int,
       help='Maximum requests per second (RPS) that the group can handle.')
 
-  rate_group.add_argument(
+  capacity_group.add_argument(
       '--max-rate-per-instance',
       type=float,
       help='The maximum per-instance requests per second (RPS).')
+
+  if with_connection:
+    capacity_group.add_argument(
+        '--max-connections',
+        type=int,
+        help='Maximum concurrent connections that the group can handle.')
+
+    capacity_group.add_argument(
+        '--max-connections-per-instance',
+        type=int,
+        help='The maximum concurrent connections per-instance.')
 
 
 def AddCapacityScalar(parser):

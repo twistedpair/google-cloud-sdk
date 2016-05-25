@@ -892,6 +892,22 @@ _SPECS_ALPHA['healthChecks'] = _InternalSpec(
     transformations=[],
     editables=None,
 )
+_SPECS_ALPHA['instanceGroups'] = _InternalSpec(
+    message_class_name='InstanceGroup',
+    table_cols=[
+        ('NAME', 'name'),
+        ('LOCATION', _LocationName),
+        ('SCOPE', _LocationScopeType),
+        ('NETWORK', 'network'),
+        ('MANAGED', 'isManaged'),
+        ('INSTANCES', 'size'),
+    ],
+    transformations=[
+        ('network', path_simplifier.Name),
+        ('size', str),
+    ],
+    editables=None,
+)
 _SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(
     message_class_name='InstanceGroupManager',
     table_cols=[

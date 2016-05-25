@@ -35,6 +35,7 @@ from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
+_DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
 
 
 # Other tools like the python docker library (used by gcloud app)
@@ -146,14 +147,18 @@ def UpdateDockerCredentials(server):
   # which has the full duration available.
   store.Refresh(cred)
   if not cred.access_token:
-    raise exceptions.Error('No access token could be obtained '
-                           'from the current credentials.')
+    raise exceptions.Error(
+        'No access token could be obtained from the current credentials.')
 
   try:
     # Update the credentials stored by docker, passing the access token
     # as a password, and benign values as the email and username.
     _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
-  except exceptions.Error:
+  except exceptions.Error as e:
+    # Only catch docker-not-found error
+    if str(e) != _DOCKER_NOT_FOUND_ERROR:
+      raise
+
     # Fall back to the previous manual .dockercfg manipulation
     # in order to support gcloud app's docker-binaryless use case.
     # TODO(user) when app deploy is using Argo to take over builds,
@@ -161,7 +166,7 @@ def UpdateDockerCredentials(server):
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
     log.warn(
         "'docker' was not discovered on the path. Credentials have been "
-        "stored, but are not guaranteed to work with the 1.11 Docker client if"
+        "stored, but are not guaranteed to work with the 1.11 Docker client if "
         "an external credential store is configured.")
 
 
@@ -192,7 +197,45 @@ def _DockerLogin(server, email, username, access_token):
   docker_args.append('--password=' + access_token)
   docker_args.append(server)  # The auth endpoint must be the last argument.
 
-  return Execute(docker_args)
+  docker_p = _GetProcess(docker_args,
+                         stdin_file=sys.stdin,
+                         stdout_file=subprocess.PIPE,
+                         stderr_file=subprocess.PIPE)
+
+  # Wait for docker to finished executing and retrieve its stdout/stderr.
+  stdoutdata, stderrdata = docker_p.communicate()
+
+  if docker_p.returncode == 0:
+    # If the login was successful, print only unexpected info.
+    _SurfaceUnexpectedInfo(stdoutdata, stderrdata)
+  else:
+    # If the login failed, print everything.
+    sys.stdout.write(stdoutdata)
+    sys.stderr.write(stderrdata)
+    raise exceptions.Error('Docker login failed.')
+
+
+def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
+  # Reads docker's output and surface lines which aren't expected given success.
+
+  # Split the outputs by lines.
+  stdout = [s.strip() for s in stdoutdata.splitlines()]
+  stderr = [s.strip() for s in stderrdata.splitlines()]
+
+  for line in stdout:
+    # Swallow 'Login Succeeded,' surface any other std output.
+    if line != 'Login Succeeded':
+      sys.stdout.write(line)
+
+  for line in stderr:
+    # Swallow warnings about --email and 'saved in', surface any other error
+    # output.
+    if '\'--email\' is deprecated' in line:
+      continue
+    if 'login credentials saved in' in line:
+      continue
+
+    sys.stderr.write(line)
 
 
 def _UpdateDockerConfig(server, username, access_token):
@@ -253,7 +296,7 @@ def EnsureDocker(func):
       return func(*args, **kwargs)
     except OSError as e:
       if e.errno == errno.ENOENT:
-        raise exceptions.Error('Docker is not installed.')
+        raise exceptions.Error(_DOCKER_NOT_FOUND_ERROR)
       else:
         raise
   return DockerFunc
@@ -273,3 +316,13 @@ def Execute(args):
                          stdin=sys.stdin,
                          stdout=sys.stdout,
                          stderr=sys.stderr)
+
+
+@EnsureDocker
+def _GetProcess(docker_args, stdin_file, stdout_file, stderr_file):
+  # Wraps the construction of a docker subprocess object with the specified
+  # arguments and I/O files.
+  return subprocess.Popen(['docker'] + docker_args,
+                          stdin=stdin_file,
+                          stdout=stdout_file,
+                          stderr=stderr_file)

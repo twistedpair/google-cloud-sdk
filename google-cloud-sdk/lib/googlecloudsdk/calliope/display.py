@@ -78,18 +78,19 @@ class Displayer(object):
     self._printer = None
     self._printer_is_initialized = False
     self._resources = resources
-    symbols = {}
-    symbols['__conditionals__'] = args
+    self._defaults = resource_projection_parser.Parse(
+        None, defaults=command.Defaults())
+    self._defaults.symbols[
+        resource_transform.GetTypeDataName('conditionals')] = args
     if self._info:
-      symbols['collection'] = (
+      self._defaults.symbols['collection'] = (
           lambda r, undefined='': self._info.collection or undefined)
     geturi = command.GetUriFunc()
     if geturi:
       self._transform_uri = lambda r, undefined='': geturi(r) or undefined
-      symbols['uri'] = self._transform_uri
+      self._defaults.symbols['uri'] = self._transform_uri
     else:
       self._transform_uri = resource_transform.TransformUri
-    self._defaults = resource_projection_parser.Parse(None, symbols=symbols)
 
   def _GetFlag(self, flag_name):
     """Returns the value of flag_name in args, None if it is unknown or unset.

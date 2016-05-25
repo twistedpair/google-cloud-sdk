@@ -13,6 +13,8 @@
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
 import abc
+import enum
+
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
@@ -52,8 +54,7 @@ def _UnwrapResponse(responses, attr_name):
       yield item
 
 
-class InstanceGroupDescribe(base_classes.ZonalDescriber,
-                            base_classes.InstanceGroupDynamicProperiesMixin):
+class InstanceGroupDescribe(base_classes.ZonalDescriber):
   """Describe an instance group."""
 
   @staticmethod
@@ -69,9 +70,13 @@ class InstanceGroupDescribe(base_classes.ZonalDescriber,
     return 'instanceGroups'
 
   def ComputeDynamicProperties(self, args, items):
-    return self.ComputeInstanceGroupManagerMembership(
+    return ComputeInstanceGroupManagerMembership(
+        compute=self.compute,
+        project=self.project,
+        http=self.http,
+        batch_url=self.batch_url,
         items=items,
-        filter_mode=base_classes.InstanceGroupFilteringMode.all_groups)
+        filter_mode=InstanceGroupFilteringMode.ALL_GROUPS)
 
   detailed_help = {
       'brief': 'Describe an instance group',
@@ -538,3 +543,91 @@ class InstancesReferenceMixin(object):
       return [instance_ref.instance for instance_ref in results
               if path_simplifier.Name(instance_ref.instance) in instance_names
               or instance_ref.instance in instance_names]
+
+
+class InstanceGroupFilteringMode(enum.Enum):
+  """Filtering mode for Instance Groups based on dynamic properties."""
+  ALL_GROUPS = 1
+  ONLY_MANAGED_GROUPS = 2
+  ONLY_UNMANAGED_GROUPS = 3
+
+
+def ComputeInstanceGroupManagerMembership(
+    compute, project, http, batch_url, items,
+    filter_mode=(InstanceGroupFilteringMode.ALL_GROUPS)):
+  """Add information if instance group is managed.
+
+  Args:
+    compute: GCE Compute API client,
+    project: str, project name
+    http: http client,
+    batch_url: str, batch url
+    items: list of instance group messages,
+    filter_mode: InstanceGroupFilteringMode, managed/unmanaged filtering options
+  Returns:
+    list of instance groups with computed dynamic properties
+  """
+  errors = []
+  items = list(items)
+  zone_names = set([path_simplifier.Name(ig['zone'])
+                    for ig in items if 'zone' in ig])
+  region_names = set([path_simplifier.Name(ig['region'])
+                      for ig in items if 'region' in ig])
+
+  if zone_names:
+    zonal_instance_group_managers = lister.GetZonalResources(
+        service=compute.instanceGroupManagers,
+        project=project,
+        requested_zones=zone_names,
+        filter_expr=None,
+        http=http,
+        batch_url=batch_url,
+        errors=errors)
+  else:
+    zonal_instance_group_managers = []
+
+  if region_names and hasattr(compute, 'regionInstanceGroups'):
+    # regional instance groups are just in 'alpha' API
+    regional_instance_group_managers = lister.GetRegionalResources(
+        service=compute.regionInstanceGroupManagers,
+        project=project,
+        requested_regions=region_names,
+        filter_expr=None,
+        http=http,
+        batch_url=batch_url,
+        errors=errors)
+  else:
+    regional_instance_group_managers = []
+
+  instance_group_managers = (
+      list(zonal_instance_group_managers)
+      + list(regional_instance_group_managers))
+  instance_group_managers_refs = set([
+      path_simplifier.ScopedSuffix(igm.selfLink)
+      for igm in instance_group_managers])
+
+  if errors:
+    utils.RaiseToolException(errors)
+
+  results = []
+  for item in items:
+    self_link = item['selfLink']
+    igm_self_link = self_link.replace(
+        '/instanceGroups/', '/instanceGroupManagers/')
+    scoped_suffix = path_simplifier.ScopedSuffix(igm_self_link)
+    is_managed = scoped_suffix in instance_group_managers_refs
+
+    if (is_managed and
+        filter_mode == InstanceGroupFilteringMode.ONLY_UNMANAGED_GROUPS):
+      continue
+    elif (not is_managed and
+          filter_mode == InstanceGroupFilteringMode.ONLY_MANAGED_GROUPS):
+      continue
+
+    item['isManaged'] = ('Yes' if is_managed else 'No')
+    if is_managed:
+      item['instanceGroupManagerUri'] = igm_self_link
+    results.append(item)
+
+  return results
+

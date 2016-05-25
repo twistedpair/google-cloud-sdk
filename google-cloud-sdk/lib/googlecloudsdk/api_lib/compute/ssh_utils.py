@@ -416,6 +416,19 @@ def IsRunningOnWindows():
   return current_os is platforms.OperatingSystem.WINDOWS
 
 
+def ReadFile(file_path):
+  """Returns the contents of the file or ''."""
+  try:
+    with open(file_path) as f:
+      return f.read()
+  except IOError as e:
+    if e.errno == errno.ENOENT:
+      return ''
+    else:
+      raise exceptions.ToolException('There was a problem reading [{0}]: {1}'
+                                     .format(file_path, e.message))
+
+
 def _SdkHelperBin():
   """Returns the SDK helper executable bin directory."""
   return os.path.join(config.Paths().sdk_root, 'bin', 'sdk')
@@ -681,6 +694,8 @@ class BaseSSHCommand(base_classes.BaseCommand,
 
     self.ssh_key_file = os.path.realpath(os.path.expanduser(
         args.ssh_key_file or constants.DEFAULT_SSH_KEY_FILE))
+    self.known_hosts_file = os.path.realpath(os.path.expanduser(
+        constants.GOOGLE_SSH_KNOWN_HOSTS_FILE))
 
 
 class BaseSSHCLICommand(BaseSSHCommand):
@@ -703,17 +718,27 @@ class BaseSSHCLICommand(BaseSSHCommand):
     plain.detailed_help = """\
         Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
         is useful if you want to take care of authentication yourself or
-        re-enable strict host checking.
+        use specific ssh/scp features.
+        """
+
+    strict_host_key = parser.add_argument(
+        '--strict-host-key-checking',
+        choices=['yes', 'no', 'ask'],
+        help='Override the default behavior for ssh/scp StrictHostKeyChecking')
+    strict_host_key.detailed_help = """\
+        Override the default behavior of StrictHostKeyChecking. By default,
+        StrictHostKeyChecking is set to 'no' the first time you connect to an
+        instance and will be set to 'yes' for all subsequent connections. Use
+        this flag to specify a value for the connection.
         """
 
   def GetDefaultFlags(self):
     """Returns a list of default commandline flags."""
     return [
         '-i', self.ssh_key_file,
-        '-o', 'UserKnownHostsFile=/dev/null',
+        '-o', 'UserKnownHostsFile={0}'.format(self.known_hosts_file),
         '-o', 'IdentitiesOnly=yes',  # ensure our SSH key trumps any ssh_agent
-        '-o', 'CheckHostIP=no',
-        '-o', 'StrictHostKeyChecking=no',
+        '-o', 'CheckHostIP=no'
     ]
 
   def GetInstance(self, instance_ref):
@@ -738,10 +763,13 @@ class BaseSSHCLICommand(BaseSSHCommand):
           error_message='Could not fetch instance:')
     return objects[0]
 
-  def WaitUntilSSHable(self, user, external_ip_address):
+  def WaitUntilSSHable(self, user, args, instance):
     """Blocks until SSHing to the given host succeeds."""
+    external_ip_address = GetExternalIPAddress(instance)
     ssh_args_for_polling = [self.ssh_executable]
     ssh_args_for_polling.extend(self.GetDefaultFlags())
+    ssh_args_for_polling.extend(self.GetHostKeyArgs(args, instance))
+
     ssh_args_for_polling.append(UserHost(user, external_ip_address))
     ssh_args_for_polling.append('true')
     ssh_args_for_polling = self.LocalizeCommand(ssh_args_for_polling)
@@ -813,6 +841,38 @@ class BaseSSHCLICommand(BaseSSHCommand):
     if positionals == 1 and cmd_args[0] == self.ssh_executable:
       args[0] = self.ssh_term_executable
     return args
+
+  def IsHostKeyAliasInKnownHosts(self, host_key_alias):
+    known_hosts = ReadFile(self.known_hosts_file)
+    if known_hosts:
+      return host_key_alias in known_hosts
+    else:
+      return False
+
+  def GetHostKeyArgs(self, args, instance):
+    """Returns default values for HostKeyAlias and StrictHostKeyChecking.
+
+    Args:
+      args: argparse.Namespace, The calling command invocation args.
+      instance: Instance resource that ssh/scp is connecting to.
+
+    Returns:
+      list, list of arguments to add to the ssh command line.
+    """
+    if args.plain or IsRunningOnWindows():
+      return []
+    host_key_alias = 'compute.{0}'.format(instance.id)
+
+    if args.strict_host_key_checking:
+      strict_host_key_value = args.strict_host_key_checking
+    elif self.IsHostKeyAliasInKnownHosts(host_key_alias):
+      strict_host_key_value = 'yes'
+    else:
+      strict_host_key_value = 'no'
+
+    cmd_args = ['-o', 'HostKeyAlias={0}'.format(host_key_alias), '-o',
+                'StrictHostKeyChecking={0}'.format(strict_host_key_value)]
+    return cmd_args
 
   def ActuallyRun(self, args, cmd_args, user, instance,
                   strict_error_checking=True, use_account_service=False,
@@ -899,7 +959,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
                                                            iam_keys=True)
 
     if keys_newly_added and wait_for_sshable:
-      self.WaitUntilSSHable(user, GetExternalIPAddress(instance))
+      self.WaitUntilSSHable(user, args, instance)
 
     logging.debug('%s command: %s', cmd_args[0], ' '.join(cmd_args))
 

@@ -27,7 +27,6 @@ class ResourceInfo(object):
     collection: Memoized collection name set by Get().
     cache_command: The gcloud command string that updates the URI cache.
     list_format: The default list format string for resource_printer.Print().
-    simple_format: The --simple-list format string for resource_printer.Print().
     defaults: The resource projection transform defaults.
     transforms: Memoized combined transform symbols dict set by GetTransforms().
 
@@ -39,14 +38,13 @@ class ResourceInfo(object):
   """
 
   def __init__(self, async_collection=None, bypass_cache=False,
-               cache_command=None, list_format=None, simple_format=None,
-               defaults=None, transforms=None):
+               cache_command=None, list_format=None, defaults=None,
+               transforms=None):
     self.collection = None  # memoized by Get().
     self.async_collection = async_collection
     self.bypass_cache = bypass_cache
     self.cache_command = cache_command
     self.list_format = list_format
-    self.simple_format = simple_format
     self.defaults = defaults
     self.transforms = transforms  # memoized by GetTransforms().
 
@@ -418,7 +416,8 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             name,
-            zone.basename(),
+            location():label=LOCATION,
+            location_scope():label=SCOPE,
             network.basename(),
             isManaged:label=MANAGED,
             size:label=INSTANCES
@@ -815,14 +814,14 @@ RESOURCE_REGISTRY = {
     'debug.logpoints': ResourceInfo(
         list_format="""
           table(
-            id,
-            userEmail.if(all_users):label=USER,
-            location,
-            logLevel:label=LEVEL,
-            createTime.if(include_expired),
             short_status():label=STATUS,
+            userEmail.if(all_users),
+            location,
+            condition,
+            logLevel,
+            createTime.if(include_expired):sort=1,
             logMessageFormat,
-            condition
+            id
           )
         """,
     ),
@@ -843,11 +842,12 @@ RESOURCE_REGISTRY = {
     'debug.snapshots': ResourceInfo(
         list_format="""
           table(
-            id,
-            userEmail.if(all_users):label=USER,
-            location,
             short_status():label=STATUS,
+            userEmail.if(all_users),
+            location,
+            condition,
             finalTime.if(include_inactive != 0):label=COMPLETED_TIME,
+            id,
             consoleViewUrl:label=VIEW
           )
         """
@@ -887,11 +887,6 @@ RESOURCE_REGISTRY = {
               update.error.errors.group(code, message))'
           )
         """,
-        simple_format="""
-          value(
-            name
-          )
-        """,
     ),
 
     'deploymentmanager.operations': ResourceInfo(
@@ -904,11 +899,6 @@ RESOURCE_REGISTRY = {
             error.errors.group(code, message)
           )
         """,
-        simple_format="""
-          value(
-            name
-          )
-        """,
     ),
 
     'deploymentmanager.resources': ResourceInfo(
@@ -919,11 +909,6 @@ RESOURCE_REGISTRY = {
             type,
             update.state.yesno(no="COMPLETED"),
             update.error.errors.group(code, message)
-          )
-        """,
-        simple_format="""
-          value(
-            name
           )
         """,
     ),
@@ -1134,6 +1119,38 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # runtime config
+
+    'runtimeconfig.configurations': ResourceInfo(
+        list_format="""
+          table(
+            name,
+            description
+          )
+        """,
+    ),
+
+    'runtimeconfig.variables': ResourceInfo(
+        list_format="""
+          table(
+            name,
+            updateTime.date()
+          )
+        """,
+    ),
+
+    'runtimeconfig.waiters': ResourceInfo(
+        async_collection='runtimeconfig.waiters',
+        list_format="""
+          table(
+            name,
+            createTime.date(),
+            waiter_status(),
+            error.message
+          )
+        """,
+    ),
+
     # service management (inception)
 
     'servicemanagement-v1.services': ResourceInfo(
@@ -1141,11 +1158,6 @@ RESOURCE_REGISTRY = {
           table(
             serviceName:label=NAME,
             serviceConfig.title
-          )
-        """,
-        simple_format="""
-          value(
-            serviceName
           )
         """,
     ),
@@ -1161,11 +1173,6 @@ RESOURCE_REGISTRY = {
             addresses[].map().endpoint_address().list(separator=' | '):label=ADDRESSES
           )
         """,
-        simple_format="""
-          value(
-            name
-          )
-        """,
     ),
 
     'service_registry.operations': ResourceInfo(
@@ -1177,11 +1184,6 @@ RESOURCE_REGISTRY = {
             targetLink.basename():label=TARGET,
             insertTime.date(format="%Y-%m-%d"):label=DATE,
             error.errors.group(code, message)
-          )
-        """,
-        simple_format="""
-          value(
-            name
           )
         """,
     ),

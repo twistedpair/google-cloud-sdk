@@ -22,6 +22,8 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
+CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
+                 'customer-supplied-encryption')
 EXPECTED_RECORD_KEY_KEYS = set(['uri', 'key', 'key-type'])
 BASE64_RAW_KEY_LENGTH_IN_CHARS = 44
 BASE64_RSA_ENCRYPTED_KEY_LENGTH_IN_CHARS = 344
@@ -190,15 +192,15 @@ class MissingCsekKeyException(exceptions.ToolException):
 
 def AddCsekKeyArgs(parser, flags_about_creation=True):
   """Adds arguments related to csek keys."""
-
   csek_key_file = parser.add_argument(
       '--csek-key-file',
-      help='Path to a csek key file',
+      help='Path to a CSEK key file',
       metavar='FILE')
   csek_key_file.detailed_help = (
-      'Path to a csek key file, mapping Google Compute Engine resources to '
-      'user managed keys to be used when creating, mounting, or snapshotting '
-      'disks. ')
+      'Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping '
+      'Google Compute Engine resources to user managed keys to be used when '
+      'creating, mounting, or snapshotting disks. '
+      'See {0} for more details.').format(CSEK_HELP_URL)
   # TODO(user)
   # Argument - indicates the key file should be read from stdin.'
 
@@ -209,11 +211,12 @@ def AddCsekKeyArgs(parser, flags_about_creation=True):
         default=True,
         help='Create resources protected by csek key.')
     require_csek_key_create.detailed_help = (
-        'When invoked with --csek-key-file gcloud will refuse to create '
-        'resources not protected by a user managed key in the key file.  This '
-        'is intended to prevent incorrect gcloud invocations from accidentally '
-        'creating resources with no user managed key.  Disabling the check '
-        'allows creation of resources without csek keys.')
+        'Refuse to create resources not protected by a user managed key in the '
+        'key file when --csek-key-file is given. This behavior is enabled by '
+        'default to prevent incorrect gcloud invocations from accidentally '
+        'creating resources with no user managed key. Disabling the check '
+        'allows creation of some resources without Customer-Supplied '
+        'Encryption Keys. See {0} for more details').format(CSEK_HELP_URL)
 
 
 class UriPattern(object):

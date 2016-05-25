@@ -20,6 +20,7 @@ from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 
@@ -326,7 +327,8 @@ class Parser(object):
       self._ParseKeyAttributes(key, attribute)
     if attribute.transform and attribute.transform.conditional:
       # Parse and evaluate if() transform conditional expression,
-      conditionals = self._projection.symbols.get('__conditionals__')
+      conditionals = self._projection.symbols.get(
+          resource_transform.GetTypeDataName('conditionals'))
 
       def GlobalRestriction(key):
         return getattr(conditionals, key, None)

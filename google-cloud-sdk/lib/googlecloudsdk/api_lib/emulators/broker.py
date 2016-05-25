@@ -26,14 +26,15 @@ import urllib
 
 from googlecloudsdk.api_lib.emulators import util
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 import httplib2
 
 
-class BrokerError(exceptions.Error):
+class BrokerError(exceptions.ToolException):
+  """All errors raised by this module subclass BrokerError."""
   pass
 
 
@@ -41,8 +42,25 @@ class BrokerNotRunningError(BrokerError):
   pass
 
 
-class BrokerRequestTimeoutError(BrokerError):
+class RequestError(BrokerError):
+  """Errors associated with failed HTTP requests subclass RequestError."""
   pass
+
+
+class RequestTimeoutError(RequestError):
+  pass
+
+
+class RequestConnResetError(RequestError):
+  pass
+
+
+def SocketConnResetErrno():
+  """The errno value for a socket connection reset error."""
+  current_os = platforms.OperatingSystem.Current()
+  if current_os == platforms.OperatingSystem.WINDOWS:
+    return errno.WSAECONNRESET
+  return errno.ECONNRESET
 
 
 def _Await(fn, timeout_secs):
@@ -74,28 +92,44 @@ class Broker(object):
   as well.
   """
 
-  def __init__(self, address, config_file=None):
+  def __init__(self, address, config_file=None, broker_dir=None):
     """Constructor.
 
     Args:
-      address: The host or host-port of the broker server. The server may
+      address: (str) The host or host-port of the broker server. The server may
           already be running.
-      config_file: The full path to the broker config file.
+      config_file: (str) The full path to the broker config file.
+      broker_dir: (str) A custom path to the broker directory.
     """
     if config_file is not None:
       assert os.path.isabs(config_file)
 
     self._address = address
     self._config_file = config_file
+    if broker_dir:
+      self._broker_dir = broker_dir
+    else:
+      self._broker_dir = os.path.join(util.GetCloudSDKRoot(), 'bin', 'broker')
 
     self._host_port = arg_parsers.HostPort.Parse(address)
-    self._broker_dir = os.path.join(util.GetCloudSDKRoot(), 'bin', 'broker')
     self._current_platform = platforms.Platform.Current()
     self._process = None
     self._comm_thread = None
 
   def Start(self, redirect_output=False, logtostderr=False, wait_secs=10):
-    """Starts the broker server, optionally with output redirection."""
+    """Starts the broker server, optionally with output redirection.
+
+    Args:
+      redirect_output: (bool) Whether to merge the stdout and stderr of the
+          broker server with the current process' output.
+      logtostderr: (bool) Whether the broker should log to stderr instead of
+          to a log file.
+      wait_secs: (float) The maximum time to wait for the broker to start
+          serving.
+
+    Raises:
+      BrokerError: If start failed.
+    """
     if self._process or self.IsRunning():
       # Already started, possibly by another process.
       return
@@ -139,16 +173,24 @@ class Broker(object):
     log.info('Started broker: %s' % self._address)
 
   def IsRunning(self):
+    """Returns True iff the broker is known to be running."""
     # We issue an RPC to check if the broker is running.
     try:
       response, _ = self._SendJsonRequest('GET', _EmulatorPath(),
                                           timeout_secs=1.0)
       return response.status == httplib.OK
-    except (BrokerRequestTimeoutError, IOError):
+    except RequestError:
       return False
 
   def Shutdown(self, wait_secs=10):
-    """Shuts down the broker server."""
+    """Shuts down the broker server.
+
+    Args:
+      wait_secs: (float) The maximum time to wait for the broker to shutdown.
+
+    Raises:
+      BrokerError: If shutdown failed.
+    """
     if self._process:
       try:
         execution_utils.KillSubprocess(self._process)
@@ -163,15 +205,10 @@ class Broker(object):
       # Invoke the /shutdown handler.
       try:
         self._SendJsonRequest('POST', '/shutdown')
-      except socket.error as e:
-        if e.errno == errno.WSAECONNRESET:
-          # We may get an exception reading the response to the shutdown
-          # request, because the shutdown may preempt the response.
-          pass
-        else:
-          raise BrokerError('Broker failed to shutdown: %s' % e)
-      except IOError as e:
-        raise BrokerError('Broker failed to shutdown: %s' % e)
+      except RequestConnResetError as e:
+        # We may get an exception reading the response to the shutdown
+        # request, because the shutdown may preempt the response.
+        pass
 
     if not _Await(lambda: not self.IsRunning(), wait_secs):
       log.warn('Failed to shutdown broker: still running after {0}s'.format(
@@ -186,7 +223,22 @@ class Broker(object):
                      args,
                      target_patterns,
                      resolved_host=None):
-    """Creates a new emulator entry."""
+    """Creates a new emulator entry.
+
+    Args:
+      emulator_id: (str) The emulator id
+      path: (str) The path to the emulator binary.
+      args: (list of str) The command line arguments to the emulator.
+      target_patterns: (list or str) The regular expressions used to match
+          input targets for the emulator.
+      resolved_host: (str) The address to use when resolving the new emulator.
+          Only specified if the lifetime of this emulator is not managed by
+          this broker.
+
+    Raises:
+      BrokerNotRunningError: If the broker is not running.
+      BrokerError: If the creation failed.
+    """
     if not self.IsRunning():
       raise BrokerNotRunningError('Failed to create emulator')
 
@@ -206,27 +258,31 @@ class Broker(object):
 
     url = _EmulatorPath()
     body = json.dumps(emulator)
-    try:
-      response, data = self._SendJsonRequest('POST', url, body=body)
-      if response.status != httplib.OK:
-        log.warn('Failed to create emulator: {0} ({1})'.format(response.reason,
-                                                               response.status))
-        raise BrokerError('Failed to create emulator: %s' % data)
-    except IOError:
-      raise BrokerError('Failed to create emulator: '
-                        'failed to send create request')
+    response, data = self._SendJsonRequest('POST', url, body=body)
+    if response.status != httplib.OK:
+      log.warn('Failed to create emulator: {0} ({1})'.format(response.reason,
+                                                             response.status))
+      raise BrokerError('Failed to create emulator: %s' % data)
 
   def GetEmulator(self, emulator_id):
-    """Returns emulator entry (Json dict)."""
+    """Returns emulator entry (Json dict).
+
+    Args:
+      emulator_id: (str) The id of the emulator to get.
+
+    Returns:
+      A Json dict representation of a google.emulators.Emulator proto message.
+
+    Raises:
+      BrokerNotRunningError: If the broker is not running.
+      BrokerError: If the get failed.
+    """
     if not self.IsRunning():
       raise BrokerNotRunningError('Failed to get emulator: %s' % emulator_id)
 
-    try:
-      response, data = self._SendJsonRequest('GET', _EmulatorPath(emulator_id))
-      if response.status != httplib.OK:
-        raise BrokerError('Failed to get emulator: %s' % data)
-    except IOError:
-      raise BrokerError('Failed to get emulator: failed to send get request')
+    response, data = self._SendJsonRequest('GET', _EmulatorPath(emulator_id))
+    if response.status != httplib.OK:
+      raise BrokerError('Failed to get emulator: %s' % data)
 
     return json.loads(data)
 
@@ -234,8 +290,8 @@ class Broker(object):
     """Returns the list of emulators, or None.
 
     Returns:
-      A list of emulator objects (Json dicts), or None if the list operation
-      fails.
+      A list of Json dicts representing google.emulators.Emulator proto
+      messages, or None if the list operation fails.
 
     Raises:
       BrokerNotRunningError: If the broker is not running.
@@ -249,7 +305,7 @@ class Broker(object):
         log.warn('Failed to list emulators: {0} ({1})'.format(response.reason,
                                                               response.status))
         return
-    except IOError:
+    except RequestError:
       return
 
     list_response = json.loads(data)
@@ -277,15 +333,11 @@ class Broker(object):
       raise BrokerNotRunningError('Failed to start emulator: %s' % emulator_id)
 
     url = _EmulatorPath(emulator_id, verb='start')
-    try:
-      response, data = self._SendJsonRequest('POST', url)
-      if response.status != httplib.OK:
-        log.warn('Failed to start emulator {0}: {1} ({2})'.format(
-            emulator_id, response.reason, response.status))
-        raise BrokerError('Failed to start emulator: %s' % data)
-    except IOError:
-      raise BrokerError('Failed to start emulator: '
-                        'failed to send start request')
+    response, data = self._SendJsonRequest('POST', url)
+    if response.status != httplib.OK:
+      log.warn('Failed to start emulator {0}: {1} ({2})'.format(
+          emulator_id, response.reason, response.status))
+      raise BrokerError('Failed to start emulator: %s' % data)
 
   def StopEmulator(self, emulator_id):
     """Stops the specified emulator via the broker, which must be running.
@@ -305,14 +357,11 @@ class Broker(object):
       raise BrokerNotRunningError('Failed to stop emulator: %s' % emulator_id)
 
     url = _EmulatorPath(emulator_id, verb='stop')
-    try:
-      response, data = self._SendJsonRequest('POST', url)
-      if response.status != httplib.OK:
-        log.warn('Failed to stop emulator {0}: {1} ({2})'.format(
-            emulator_id, response.reason, response.status))
-        raise BrokerError('Failed to stop emulator: %s' % data)
-    except IOError:
-      raise BrokerError('Failed to stop emulator: failed to send stop request')
+    response, data = self._SendJsonRequest('POST', url)
+    if response.status != httplib.OK:
+      log.warn('Failed to stop emulator {0}: {1} ({2})'.format(
+          emulator_id, response.reason, response.status))
+      raise BrokerError('Failed to stop emulator: %s' % data)
 
   def _BrokerBinary(self):
     """Returns the path to the broker binary."""
@@ -331,10 +380,9 @@ class Broker(object):
       (HTTPResponse, str) or (None, None).
 
     Raises:
-      BrokerRequestTimeoutError: The request timed-out.
-      httplib2.HttpLib2Error: The request could not be completed (e.g. protocol
-          or address resolution errors).
-      IOError: The request could not be sent (e.g. socket-level errors).
+      RequestTimeoutError: The request timed-out.
+      RequestConnResetError: The connection was reset.
+      RequestError: The request errored out in some other way.
     """
     uri = 'http://{0}{1}'.format(self._address, path)
     http_client = httplib2.Http(timeout=timeout_secs)
@@ -344,10 +392,15 @@ class Broker(object):
           method=method,
           headers={'Content-Type': 'application/json; charset=UTF-8'},
           body=body)
-    except socket.timeout as e:
-      raise BrokerRequestTimeoutError(e)
-    except httplib.ResponseNotReady as e:
-      raise BrokerRequestTimeoutError(e)
-    except IOError as e:
-      log.debug('Error sending request: %r', e)
-      raise
+    except socket.error as e:
+      if isinstance(e, socket.timeout):
+        raise RequestTimeoutError(e)
+      if e.errno == SocketConnResetErrno():
+        raise RequestConnResetError(e)
+      raise RequestError(e)
+    except httplib.HTTPException as e:
+      if isinstance(e, httplib.ResponseNotReady):
+        raise RequestTimeoutError(e)
+      raise RequestError(e)
+    except httplib2.HttpLib2Error as e:
+      raise RequestError(e)

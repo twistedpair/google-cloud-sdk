@@ -132,6 +132,18 @@ to make modifications to its user's project.
     def __init__(self, client):
       super(ContainerV1.MasterProjectsZonesService, self).__init__(client)
       self._method_configs = {
+          'Authenticate': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'container.masterProjects.zones.authenticate',
+              ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+              path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+              query_params=[],
+              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate',
+              request_field=u'authenticateRequest',
+              request_type_name=u'ContainerMasterProjectsZonesAuthenticateRequest',
+              response_type_name=u'AuthenticateResponse',
+              supports_download=False,
+          ),
           'Authorize': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'container.masterProjects.zones.authorize',
@@ -148,6 +160,25 @@ to make modifications to its user's project.
 
       self._upload_configs = {
           }
+
+    def Authenticate(self, request, global_params=None):
+      """Processes a request to authenticate a token. If it is able to authenticate.
+the token, the email for the authorized user is also returned.
+AuthenticateResponse also contains fields from the AuthenticateRequest. The
+server is expected to only fill in the AuthenticateResponse.Status. This is
+due to how the Authentication types are defined for the Kubernetes webhook
+authenticator:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s.io/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsZonesAuthenticateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthenticateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Authenticate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def Authorize(self, request, global_params=None):
       """Processes the attributes of a user request and determines whether or not.

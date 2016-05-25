@@ -895,6 +895,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.iam = self._Add('iam')
     self.logging = self._Add('logging')
     self.projects = self._Add('projects')
+    self.runtimeconfig = self._Add('runtimeconfig')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
     self.servicemanagement = self._Add('servicemanagement')

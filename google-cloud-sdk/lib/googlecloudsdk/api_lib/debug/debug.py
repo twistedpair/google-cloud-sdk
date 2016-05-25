@@ -197,7 +197,8 @@ class DebugObject(object):
     try:
       return cls._resource_parser.Parse(*args, **kwargs)
     except (resources.InvalidResourceException,
-            resources.UnknownCollectionException):
+            resources.UnknownCollectionException,
+            resources.WrongFieldNumberException):
       return None
 
 
@@ -454,9 +455,11 @@ class Debuggee(DebugObject):
 
     # Treat everything that's not an ID (i.e. everything that either wasn't
     # parsable as a resource or whose name doesn't look like an ID) as a reqular
-    # expression to be checked against the breakpoint location.
+    # expression to be checked against the breakpoint location. Tweak the RE
+    # so it will also match just the trailing file name component(s) + line
+    # number, since the server may chose to return the full path.
     try:
-      patterns = [re.compile(arg) for arg, r in parsed_args
+      patterns = [re.compile(r'^(.*/)?(' + arg + ')$') for arg, r in parsed_args
                   if not r or (r.Name() not in ids)]
     except re.error as e:
       raise exceptions.InvalidArgumentException('LOCATION-REGEXP', str(e))
@@ -676,7 +679,8 @@ class Debuggee(DebugObject):
         'project': self.project,
         'target_uniquifier': self.target_uniquifier,
         'target_id': self.target_id})
-    result['consoleViewUrl'] = DebugViewUrl(result)
+    if not message.status or not message.status.isError:
+      result['consoleViewUrl'] = DebugViewUrl(result)
 
     # Restore some default values if they were stripped
     if (message.action ==
@@ -824,7 +828,7 @@ def _BreakpointMatchesIdOrRegexp(breakpoint, ids, patterns):
   location = '{0}:{1}'.format(breakpoint.location.path,
                               breakpoint.location.line)
   for p in patterns:
-    if p.search(location):
+    if p.match(location):
       return True
   return False
 

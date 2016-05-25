@@ -455,6 +455,31 @@
         "statusMessage": {
           "description": "[Output only] Additional information about the current status of this\nnode pool instance, if available.",
           "type": "string"
+        },
+        "autoscaling": {
+          "description": "Autoscaler configuration for this NodePool. Autoscaler is enabled\nonly if a valid configuration is present.",
+          "$ref": "NodePoolAutoscaling"
+        }
+      }
+    },
+    "NodePoolAutoscaling": {
+      "id": "NodePoolAutoscaling",
+      "description": "NodePoolAutoscaling contains information required by cluster autoscaler to\nadjust the size of the node pool to the current cluster usage.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Is autoscaling enabled for this node pool.",
+          "type": "boolean"
+        },
+        "minNodeCount": {
+          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxNodeCount": {
+          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There\nhas to enough quota to scale up the cluster.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -571,12 +596,16 @@
           "$ref": "AddonsConfig"
         },
         "desiredNodePoolId": {
-          "description": "The node pool to be upgraded. This field is mandatory if the\n\"desired_node_version\" or \"desired_image_type\" is specified and\nthere is more than one node pool on the cluster.",
+          "description": "The node pool to be upgraded. This field is mandatory if\n\"desired_node_version\", \"desired_image_family\" or\n\"desired_node_pool_autoscaling\" is specified and there is more than one\nnode pool on the cluster.",
           "type": "string"
         },
         "desiredImageType": {
           "description": "The desired image type for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
+        },
+        "desiredNodePoolAutoscaling": {
+          "description": "Autoscaler configuration for the node pool specified in\ndesired_node_pool_id. If there is only one pool in the\ncluster and desired_node_pool_id is not provided then\nthe change applies to that single node pool.",
+          "$ref": "NodePoolAutoscaling"
         },
         "desiredMasterVersion": {
           "description": "\nWhitelisted and internal users can change the master to any version.\n\nThe Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
@@ -736,9 +765,103 @@
         }
       }
     },
+    "AuthenticateRequest": {
+      "id": "AuthenticateRequest",
+      "description": "A request to authenticate a user based on a provided OAuth2 token.\n\nThis should look very close to the TokenReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match TokenReview.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Fields from \"pkg\/apis\/authentication.k8s.io\/v1beta1\".TokenReview:\n\nThe \"kind\" of the TokenReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the TokenReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the request being evaluated. It contains the token\nthat the server should authenticate.",
+          "$ref": "TokenReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request. (this won't be filled in for an\nAuthenticateRequest, but it is part of the struct, so we need it here to be\nsafe).",
+          "$ref": "TokenReviewStatus"
+        }
+      }
+    },
+    "TokenReviewSpec": {
+      "id": "TokenReviewSpec",
+      "description": "The description of the request for review of an OAuth2 token for\npurposes of authentication.\nThis should match the TokenReviewSpec struct in\npkg\/apis\/authentication.k8s.io\/v1beta1\/types.go",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "The token for the server to authenticate.",
+          "type": "string"
+        }
+      }
+    },
+    "TokenReviewStatus": {
+      "id": "TokenReviewStatus",
+      "description": "The result of the request for authentication.\nThis should match the TokenReviewStatus struct in\npkg\/apis\/authentication.k8s.io\/v1beta1\/types.go",
+      "type": "object",
+      "properties": {
+        "authenticated": {
+          "description": "Whether the server was able to authenticate the token.",
+          "type": "boolean"
+        },
+        "user": {
+          "description": "The authenticated user associated with the token.",
+          "$ref": "UserInfo"
+        }
+      }
+    },
+    "UserInfo": {
+      "id": "UserInfo",
+      "description": "The attributes of an authenticated user.\nThis should match the UserInfo struct in\npkg\/apis\/authentication.k8s.io\/v1beta1\/types.go",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "The name of the user. This should be the email address associated with the\nGAIA identity of the user.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "A unique identifier (across time) for the user. This is not currently\nfilled in for GKE.",
+          "type": "string"
+        },
+        "groups": {
+          "description": "Groups that this user is a part of. This is not currently filled in for\nGKE.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AuthenticateResponse": {
+      "id": "AuthenticateResponse",
+      "description": "A response with the authenticated identity.\nThis should match exactly with the TokenReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/types.go.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "The \"kind\" of the TokenReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the TokenReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the request that was evaluated.\nThis field (along with kind & api_version) are returned unchanged from the\nAuthenticateRequest. The caller probably doesn't care, but it would allow\nthe caller to verify the question the server thought it was answering.",
+          "$ref": "TokenReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request.",
+          "$ref": "TokenReviewStatus"
+        }
+      }
+    },
     "AuthorizeRequest": {
       "id": "AuthorizeRequest",
-      "description": "A request to authorize a user action. The request contains the attributes of\nthe action the user is attempting. These attributes are mapped to a GKE IAM\npermission and policy to check.\n\nThis should look very close to the SubjectAccessReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match SubjectAccessReview.",
+      "description": "A request to authorize a user action. The request contains the attributes of\nthe action the user is attempting. These attributes are mapped to a GKE IAM\npermission and policy to check.\n\nThis should look very close to the SubjectAccessReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match SubjectAccessReview.",
       "type": "object",
       "properties": {
         "kind": {
@@ -852,7 +975,7 @@
     },
     "AuthorizeResponse": {
       "id": "AuthorizeResponse",
-      "description": "A response to a request for authorization.\nThis should match exactly with the SubjectAccessReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/types.go.",
+      "description": "A response to a request for authorization.\nThis should match exactly with the SubjectAccessReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/v1beta1\/authorization\/types.go.",
       "type": "object",
       "properties": {
         "kind": {
@@ -1356,6 +1479,55 @@
       "resources": {
         "zones": {
           "methods": {
+            "authenticate": {
+              "id": "container.masterProjects.zones.authenticate",
+              "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate",
+              "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate",
+              "httpMethod": "POST",
+              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "zone": {
+                  "description": "The zone of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the signed URLs are being requested.  This is\nthe project in which this master's cluster resides.\n\nNote that this must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "zone",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuthenticateRequest"
+              },
+              "response": {
+                "$ref": "AuthenticateResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
             "authorize": {
               "id": "container.masterProjects.zones.authorize",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize",

@@ -2,6 +2,53 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 111.0.0 (2016/05/25)
+
+### Google App Engine
+
+*   `gcloud docker` commands are now less verbose during the authentication
+    operation.
+
+### Google Container Engine
+
+*   `gcloud container clusters update` command now GA.
+*   `gcloud container node-pools` commands are now GA.
+
+### Google Compute Engine
+
+*   Enabled Strict Host Key Checking for SSH connections (after the first
+    connection) to instances. Also adds a new flag to `gcloud compute ssh`
+    called `--strict-host-key-checking` to control the StrictHostKeyChecking
+    option.
+*   Add support for customer-supplied encryption keys to `gcloud beta compute
+    instances start`. (in beta track)
+*   Implemented backend-service connection based balancing mode.
+
+### Google Service Registry
+
+*   Launched `gcloud alpha service-registry`. (alpha track)
+    Users will need to sign up
+    [here](https://docs.google.com/forms/d/11SfJGB3LUGgT_aSMlVzWoJ0ec2fHKwk0J4e-zTNw0Bs/viewform?edit_requested=true)
+    before enabling this API in their projects.
+
+### Deployment Manager
+
+*   Added `gcloud alpha deployment-manager runtime-configs`. Alpha commands for
+    Deployment Manager's Runtime Config API.
+
+### Emulators
+
+*   Adds a `--legacy` flag to gcloud beta emulators datastore. The flag is set
+    by default and maintains existing behavior with support for Cloud Datastore
+    API v1beta2. Passing `--no-legacy` uses a new version of the Cloud Datastore
+    Emulator which supports Cloud Datastore API v1beta3 over gRPC, JSON, and
+    proto-over-HTTP. The default behavior of the legacy flag will change in a
+    future release.
+
+### Organizations
+
+*   Launched `gcloud alpha orgranizations`. (alpha track)
+
 ## 110.0.0 (2016/05/18)
 
 ### Google IAM
