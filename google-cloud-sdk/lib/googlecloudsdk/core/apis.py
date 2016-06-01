@@ -227,9 +227,6 @@ def GetClientInstance(api_name, api_version=None, no_http=False):
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
-  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  endpoint_override = endpoint_overrides.get(api_name, '')
-
   # pylint: disable=g-import-not-at-top
   if no_http:
     http_client = None
@@ -241,9 +238,19 @@ def GetClientInstance(api_name, api_version=None, no_http=False):
 
   client_class = GetClientClass(api_name, api_version)
   return client_class(
-      url=endpoint_override,
+      url=GetEffectiveApiEndpoint(api_name, api_version, client_class),
       get_credentials=False,
       http=http_client)
+
+
+def GetEffectiveApiEndpoint(api_name, api_version=None, client_class=None):
+  """Returns effective endpoint for given api."""
+  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
+  endpoint_override = endpoint_overrides.get(api_name, '')
+  if endpoint_override:
+    return endpoint_override
+  client_class = client_class or GetClientClass(api_name, api_version)
+  return client_class.BASE_URL
 
 
 def GetMessagesModule(api_name, api_version=None):

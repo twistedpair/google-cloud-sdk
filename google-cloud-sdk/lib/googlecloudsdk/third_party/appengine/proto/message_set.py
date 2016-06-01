@@ -13,7 +13,6 @@
 # limitations under the License.
 #
 # Copyright 2005 Google Inc.
-# Author: kenton@google.com (Kenton Varda)
 
 """This module contains the MessageSet class, which is a special kind of
 protocol message which can contain other protocol messages without knowing

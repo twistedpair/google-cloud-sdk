@@ -313,9 +313,9 @@ class AttachedDisk(_messages.Message):
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
-      encryption key.  If you are creating a new disk, encrypts the new disk
-      using an encryption key that you provide. If you are attaching an
-      existing disk that is already encrypted, this field decrypts the disk
+      encryption key.  If you are creating a new disk, this field encrypts the
+      new disk using an encryption key that you provide. If you are attaching
+      an existing disk that is already encrypted, this field decrypts the disk
       using the customer-supplied encryption key.  If you encrypt a disk using
       a customer-supplied key, you must provide the same key again when you
       attempt to use this resource at a later time. For example, you must
@@ -323,7 +323,9 @@ class AttachedDisk(_messages.Message):
       when you attach the disk to a virtual machine instance.  If you do not
       provide an encryption key, then the disk will be encrypted using an
       automatically generated key and you do not need to provide a key to use
-      the disk later.
+      the disk later.  Instance templates do not store customer-supplied
+      encryption keys, so you cannot use your own keys to encrypt disks in a
+      managed instance group.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -439,7 +441,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
-      supplied encryption key.
+      supplied encryption key.  Instance templates do not store customer-
+      supplied encryption keys, so you cannot create disks for instances in a
+      managed instance group if the source images are encrypted with your own
+      keys.
   """
 
   class DiskStorageTypeValueValuesEnum(_messages.Enum):
@@ -816,6 +821,15 @@ class Backend(_messages.Message):
       are allowed to use same Instance Group resource.  Note that you must
       specify an Instance Group resource using the fully-qualified URL, rather
       than a partial URL.
+    maxConnections: The max number of simultaneous connections for the group.
+      Can be used with either CONNECTION or UTILIZATION balancing modes. For
+      CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
+      be set.
+    maxConnectionsPerInstance: The max number of simultaneous connections that
+      a single backend instance can handle. This is used to calculate the
+      capacity of the group. Can be used in either CONNECTION or UTILIZATION
+      balancing modes. For CONNECTION mode, either maxConnections or
+      maxConnectionsPerInstance must be set.
     maxRate: The max requests per second (RPS) of the group. Can be used with
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
       For RATE mode, either maxRate or maxRatePerInstance must be set.
@@ -834,19 +848,23 @@ class Backend(_messages.Message):
     RATE.
 
     Values:
+      CONNECTION: <no description>
       RATE: <no description>
       UTILIZATION: <no description>
     """
-    RATE = 0
-    UTILIZATION = 1
+    CONNECTION = 0
+    RATE = 1
+    UTILIZATION = 2
 
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
   group = _messages.StringField(4)
-  maxRate = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class BackendService(_messages.Message):
@@ -909,9 +927,13 @@ class BackendService(_messages.Message):
     Values:
       HTTP: <no description>
       HTTPS: <no description>
+      SSL: <no description>
+      TCP: <no description>
     """
     HTTP = 0
     HTTPS = 1
+    SSL = 2
+    TCP = 3
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     """Type of session affinity to use.
@@ -963,16 +985,13 @@ class BackendServiceList(_messages.Message):
   """Contains a list of BackendService resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of BackendService resources.
     kind: [Output Only] Type of resource. Always compute#backendServiceList
       for lists of backend services.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -5788,6 +5807,159 @@ class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetSslProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesGetRequest(_messages.Message):
+  """A ComputeTargetSslProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetSslProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: A TargetSslProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.MessageField('TargetSslProxy', 2)
+
+
+class ComputeTargetSslProxiesListRequest(_messages.Message):
+  """A ComputeTargetSslProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: When
+      filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetBackendServiceRequest: A
+      TargetSslProxiesSetBackendServiceRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose BackendService
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetProxyHeaderRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetProxyHeaderRequest: A
+      TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose ProxyHeader is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetProxyHeaderRequest = _messages.MessageField('TargetSslProxiesSetProxyHeaderRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetSslCertificatesRequest: A
+      TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose SslCertificate
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeTargetSslProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -6421,17 +6593,17 @@ class CustomerEncryptionKey(_messages.Message):
 
   Fields:
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
-      base64 to either encrypt or decrypt this resource.
-    rsaEncryptedKey: Specifies a base64 encoded, RSA-wrapped 2048-bit
-      customer-supplied encryption key to either encrypt or decrypt this
-      resource.  The key must meet the following requirements before you can
-      provide it to Compute Engine:   - The key is wrapped using a RSA public
-      key certificate provided by Google.  - After being wrapped, the key must
-      be encoded in base64 encoding.  Get the RSA public key certificate
-      provided by Google at: https://cloud-certs.storage.googleapis.com
-      /google-cloud-csek-ingress.pem
-    sha256: [Output only] The base64 encoded SHA-256 hash of the customer-
-      supplied encryption key that protects this resource.
+      RFC 4648 base64 to either encrypt or decrypt this resource.
+    rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
+      2048-bit customer-supplied encryption key to either encrypt or decrypt
+      this resource.  The key must meet the following requirements before you
+      can provide it to Compute Engine:   - The key is wrapped using a RSA
+      public key certificate provided by Google.  - After being wrapped, the
+      key must be encoded in RFC 4648 base64 encoding.  Get the RSA public key
+      certificate provided by Google at: https://cloud-
+      certs.storage.googleapis.com/google-cloud-csek-ingress.pem
+    sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
+      customer-supplied encryption key that protects this resource.
   """
 
   rawKey = _messages.StringField(1)
@@ -7792,7 +7964,7 @@ class Image(_messages.Message):
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method. Each label key/value pair must comply with RFC1035.
       Label values may be empty.
-    licenses: Any applicable publicly visible licenses.
+    licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -8285,7 +8457,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """A InstanceGroupManager object.
+  """An Instance Template Manager resource.
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -8941,7 +9113,8 @@ class InstanceProperties(_messages.Message):
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the canIpForward documentation for more information.
+      false. See the Enable IP forwarding for instances documentation for more
+      information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -12290,6 +12463,133 @@ class TargetReference(_messages.Message):
   """
 
   target = _messages.StringField(1)
+
+
+class TargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A TargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    service: The URL of the new BackendService resource for the
+      targetSslProxy.
+  """
+
+  service = _messages.StringField(1)
+
+
+class TargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A TargetSslProxiesSetProxyHeaderRequest object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: The new type of proxy header to append before
+      sending data to the backend. NONE or PROXY_V1 are allowed.
+
+  Fields:
+    proxyHeader: The new type of proxy header to append before sending data to
+      the backend. NONE or PROXY_V1 are allowed.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """The new type of proxy header to append before sending data to the
+    backend. NONE or PROXY_V1 are allowed.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 1)
+
+
+class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A TargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    sslCertificates: New set of URLs to SslCertificate resources to associate
+      with this TargetSslProxy. Currently exactly one ssl certificate must be
+      specified.
+  """
+
+  sslCertificates = _messages.StringField(1, repeated=True)
+
+
+class TargetSslProxy(_messages.Message):
+  """A TargetSslProxy resource. This resource defines an SSL proxy.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#targetSslProxy
+      for target SSL proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    service: URL to the BackendService resource.
+    sslCertificates: URLs to SslCertificate resources that are used to
+      authenticate connections to Backends. Currently exactly one SSL
+      certificate must be specified.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetSslProxy')
+  name = _messages.StringField(5)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  service = _messages.StringField(8)
+  sslCertificates = _messages.StringField(9, repeated=True)
+
+
+class TargetSslProxyList(_messages.Message):
+  """Contains a list of TargetSslProxy resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of TargetSslProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetSslProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetSslProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class TargetVpnGateway(_messages.Message):

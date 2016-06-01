@@ -57,6 +57,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regions = self.RegionsService(self)
+    self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
@@ -2030,7 +2031,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 7. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -2918,6 +2919,18 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'StartWithEncryptionKey': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.startWithEncryptionKey',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey',
+              request_field=u'instancesStartWithEncryptionKeyRequest',
+              request_type_name=u'ComputeInstancesStartWithEncryptionKeyRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Stop': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.stop',
@@ -3153,6 +3166,19 @@ If an empty request body is given, clears the deprecation status instead.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def StartWithEncryptionKey(self, request, global_params=None):
+      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+
+      Args:
+        request: (ComputeInstancesStartWithEncryptionKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartWithEncryptionKey')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -3694,6 +3720,219 @@ If an empty request body is given, clears the deprecation status instead.
         (RegionList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RoutersService(base_api.BaseApiService):
+    """Service class for the routers resource."""
+
+    _NAME = u'routers'
+
+    def __init__(self, client):
+      super(ComputeV1.RoutersService, self).__init__(client)
+      self._method_configs = {
+          'AggregatedList': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.routers.aggregatedList',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/aggregated/routers',
+              request_field='',
+              request_type_name=u'ComputeRoutersAggregatedListRequest',
+              response_type_name=u'RouterAggregatedList',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.routers.delete',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+              request_field='',
+              request_type_name=u'ComputeRoutersDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.routers.get',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+              request_field='',
+              request_type_name=u'ComputeRoutersGetRequest',
+              response_type_name=u'Router',
+              supports_download=False,
+          ),
+          'GetRouterStatus': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.routers.getRouterStatus',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}/getRouterStatus',
+              request_field='',
+              request_type_name=u'ComputeRoutersGetRouterStatusRequest',
+              response_type_name=u'RouterStatusResponse',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routers.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers',
+              request_field=u'router',
+              request_type_name=u'ComputeRoutersInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.routers.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/routers',
+              request_field='',
+              request_type_name=u'ComputeRoutersListRequest',
+              response_type_name=u'RouterList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.routers.patch',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+              request_field=u'routerResource',
+              request_type_name=u'ComputeRoutersPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.routers.update',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}',
+              request_field=u'routerResource',
+              request_type_name=u'ComputeRoutersUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of routers.
+
+      Args:
+        request: (ComputeRoutersAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RouterAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified Router resource.
+
+      Args:
+        request: (ComputeRoutersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified Router resource. Get a list of available routers by making a list() request.
+
+      Args:
+        request: (ComputeRoutersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Router) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetRouterStatus(self, request, global_params=None):
+      """Retrieves runtime information of the specified router.
+
+      Args:
+        request: (ComputeRoutersGetRouterStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RouterStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetRouterStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a Router resource in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRoutersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of Router resources available to the specified project.
+
+      Args:
+        request: (ComputeRoutersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RouterList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Updates the entire content of the Router resource. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRoutersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates the entire content of the Router resource.
+
+      Args:
+        request: (ComputeRoutersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 

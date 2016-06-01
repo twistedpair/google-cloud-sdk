@@ -484,7 +484,6 @@ class CLILoader(object):
 
     top_element.ai.add_argument(
         '--log-http',
-        nargs=0,
         default=None,  # Tri-valued, None => don't override the property.
         action=actions.StoreBooleanProperty(properties.VALUES.core.log_http),
         help='Log all HTTP server requests and responses to stderr.')

@@ -891,8 +891,15 @@
             "$ref": "Status"
           }
         },
-        "metricUpdates": {
+        "workItemMetricUpdates": {
           "description": "Worker output metrics (counters) for this WorkItem.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkItemMetricUpdate"
+          }
+        },
+        "metricUpdates": {
+          "description": "DEPRECATED in favor of worker_metric_update.",
           "type": "array",
           "items": {
             "$ref": "MetricUpdate"
@@ -947,6 +954,169 @@
               "type": "any",
               "description": "Properties of the object. Contains field @ype with type URL."
             }
+          }
+        }
+      }
+    },
+    "WorkItemMetricUpdate": {
+      "id": "WorkItemMetricUpdate",
+      "description": "An update to a metric sent from a worker.\nUnlike MetricUpdate, this format does not support:\n  messages: use WorkerMessage API\n  CloudMetrics: use MetricUpdate until this includes structured names",
+      "type": "object",
+      "properties": {
+        "nameAndKind": {
+          "description": "Metric name and aggregation type.",
+          "$ref": "NameAndKind"
+        },
+        "shortId": {
+          "description": "The service-generated short identifier for this metric.\nThe short_id -> (name, metadata) mapping is constant for the lifetime of\na job.",
+          "type": "string",
+          "format": "int64"
+        },
+        "cumulative": {
+          "description": "True if this metric is reported as the total cumulative aggregate\nvalue accumulated since the worker started working on this WorkItem.\nBy default this is false, indicating that this metric is reported\nas a delta that is not associated with any WorkItem.",
+          "type": "boolean"
+        },
+        "integer": {
+          "description": "Integer value for Sum, Max, Min.",
+          "$ref": "SplitInt64"
+        },
+        "floatingPoint": {
+          "description": "Floating point value for Sum, Max, Min.",
+          "type": "number",
+          "format": "double"
+        },
+        "boolean": {
+          "description": "Boolean value for And, Or.",
+          "type": "boolean"
+        },
+        "integerMean": {
+          "description": "Integer mean aggregation value for Mean.",
+          "$ref": "IntegerMean"
+        },
+        "floatingPointMean": {
+          "description": "Floating point mean aggregation value for Mean.",
+          "$ref": "FloatingPointMean"
+        },
+        "integerList": {
+          "description": "List of integers, for Set.",
+          "$ref": "IntegerList"
+        },
+        "floatingPointList": {
+          "description": "List of floating point numbers, for Set.",
+          "$ref": "FloatingPointList"
+        },
+        "stringList": {
+          "description": "List of strings, for Set.",
+          "$ref": "StringList"
+        },
+        "internal": {
+          "description": "Value for internally-defined metrics use by the Dataflow service.",
+          "type": "any"
+        }
+      }
+    },
+    "NameAndKind": {
+      "id": "NameAndKind",
+      "description": "Basic metadata about a metric.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the metric.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Metric aggregation kind.  The possible metric aggregation kinds are\n\"Sum\", \"Max\", \"Min\", \"Mean\", \"Set\", \"And\", and \"Or\".\nThe specified aggregation kind is case-insensitive.\n\nIf omitted, this is not an aggregated value but instead\na single metric sample value.",
+          "type": "string"
+        }
+      }
+    },
+    "SplitInt64": {
+      "id": "SplitInt64",
+      "description": "A representation of an int64, n, that is immune to precision loss when\nencoded in JSON.",
+      "type": "object",
+      "properties": {
+        "lowBits": {
+          "description": "The low order bits: n & 0xffffffff.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "highBits": {
+          "description": "The high order bits, including the sign: n >> 32.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "IntegerMean": {
+      "id": "IntegerMean",
+      "description": "A representation of an integer mean metric contribution.",
+      "type": "object",
+      "properties": {
+        "sum": {
+          "description": "The sum of all values being aggregated.",
+          "$ref": "SplitInt64"
+        },
+        "count": {
+          "description": "The number of values being aggregated.",
+          "$ref": "SplitInt64"
+        }
+      }
+    },
+    "FloatingPointMean": {
+      "id": "FloatingPointMean",
+      "description": "A representation of a floating point mean metric contribution.",
+      "type": "object",
+      "properties": {
+        "sum": {
+          "description": "The sum of all values being aggregated.",
+          "type": "number",
+          "format": "double"
+        },
+        "count": {
+          "description": "The number of values being aggregated.",
+          "$ref": "SplitInt64"
+        }
+      }
+    },
+    "IntegerList": {
+      "id": "IntegerList",
+      "description": "A metric value representing a list of integers.",
+      "type": "object",
+      "properties": {
+        "elements": {
+          "description": "Elements of the list.",
+          "type": "array",
+          "items": {
+            "$ref": "SplitInt64"
+          }
+        }
+      }
+    },
+    "FloatingPointList": {
+      "id": "FloatingPointList",
+      "description": "A metric value representing a list of floating point numbers.",
+      "type": "object",
+      "properties": {
+        "elements": {
+          "description": "Elements of the list.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "StringList": {
+      "id": "StringList",
+      "description": "A metric value representing a list of strings.",
+      "type": "object",
+      "properties": {
+        "elements": {
+          "description": "Elements of the list.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -1322,6 +1492,13 @@
           "type": "string",
           "format": "int64"
         },
+        "metricShortId": {
+          "description": "The short ids that workers should use in subsequent metric updates.\nWorkers should strive to use short ids whenever possible, but it is ok\nto request the short_id again if a worker lost track of it\n(e.g. if the worker is recovering from a crash).\nNOTE: it is possible that the response may have short ids for a subset\nof the metrics.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricShortId"
+          }
+        },
         "suggestedStopPosition": {
           "description": "Obsolete, always empty.",
           "$ref": "Position"
@@ -1345,6 +1522,23 @@
           "description": "A fraction at which to split the work item, from 0.0 (beginning of the\ninput) to 1.0 (end of the input).",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "MetricShortId": {
+      "id": "MetricShortId",
+      "description": "The metric short id is returned to the user alongside an offset into\nReportWorkItemStatusRequest",
+      "type": "object",
+      "properties": {
+        "metricIndex": {
+          "description": "The index of the corresponding metric in\nthe ReportWorkItemStatusRequest. Required.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "shortId": {
+          "description": "The service-generated short identifier for the metric.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1445,6 +1639,10 @@
         "streamingComputationTask": {
           "description": "Additional information for StreamingComputationTask WorkItems.",
           "$ref": "StreamingComputationTask"
+        },
+        "streamingConfigTask": {
+          "description": "Additional information for StreamingConfigTask WorkItems.",
+          "$ref": "StreamingConfigTask"
         },
         "reportStatusInterval": {
           "description": "Recommended reporting interval.",
@@ -2214,6 +2412,53 @@
         "dataDisk": {
           "description": "The name of the data disk where data for this range is stored.\nThis name is local to the Google Cloud Platform project and uniquely\nidentifies the disk within that project, for example\n\"myproject-1014-104817-4c2-harness-0-disk-1\".",
           "type": "string"
+        }
+      }
+    },
+    "StreamingConfigTask": {
+      "id": "StreamingConfigTask",
+      "description": "A task that carries configuration information for streaming computations.",
+      "type": "object",
+      "properties": {
+        "streamingComputationConfigs": {
+          "description": "Set of computation configuration information.",
+          "type": "array",
+          "items": {
+            "$ref": "StreamingComputationConfig"
+          }
+        },
+        "userStepToStateFamilyNameMap": {
+          "description": "Map from user step names to state families.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "StreamingComputationConfig": {
+      "id": "StreamingComputationConfig",
+      "description": "Configuration information for a single streaming computation.",
+      "type": "object",
+      "properties": {
+        "computationId": {
+          "description": "Unique identifier for this computation.",
+          "type": "string"
+        },
+        "systemName": {
+          "description": "System defined name for this computation.",
+          "type": "string"
+        },
+        "stageName": {
+          "description": "Stage name of this computation.",
+          "type": "string"
+        },
+        "instructions": {
+          "description": "Instructions that comprise the computation.",
+          "type": "array",
+          "items": {
+            "$ref": "ParallelInstruction"
+          }
         }
       }
     },

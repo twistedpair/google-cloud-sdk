@@ -5,7 +5,7 @@
  "name": "serviceregistry",
  "canonicalName": "Service Registry",
  "version": "v1alpha",
- "revision": "20160510",
+ "revision": "20160525",
  "title": "Google Cloud Service Registry API",
  "description": "Manages service endpoints in Service Registry and provides integration with DNS for service discovery and name resolution.",
  "ownerDomain": "google.com",
@@ -14,7 +14,7 @@
   "x16": "http://www.google.com/images/icons/product/search-16.gif",
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
- "documentationLink": "https://developers.google.com/cloud-serviceregistry/",
+ "documentationLink": "https://cloud.google.com/service-registry/",
  "labels": [
   "limited_availability"
  ],
@@ -95,7 +95,7 @@
    "properties": {
     "addresses": {
      "type": "array",
-     "description": "User-provided addresses / ports of the service represented by an endpoint.",
+     "description": "User-provided addresses and ports of the service represented by an endpoint.",
      "items": {
       "$ref": "EndpointAddress"
      }
@@ -110,7 +110,7 @@
     },
     "dnsIntegration": {
      "$ref": "EndpointDnsIntegration",
-     "description": "The DNS Integration configuration for this endpoint. This must be a list of fully-qualified URLs to Compute Engine networks."
+     "description": "The DNS configuration for this endpoint. This must be a list of fully-qualified URLs to Compute Engine networks."
     },
     "fingerprint": {
      "type": "string",
@@ -139,15 +139,15 @@
   "EndpointAddress": {
    "id": "EndpointAddress",
    "type": "object",
-   "description": "Information about a single address and corresponding ports for an endpoint.",
+   "description": "Information about a single address and the corresponding ports for an endpoint.",
    "properties": {
     "address": {
      "type": "string",
-     "description": "User-provided addresses of the service represented by an endpoint. Each address can be an IPv4 or IPv6 address, or a hostname."
+     "description": "A list of addresses of the service represented by an endpoint. Each address can be an IPv4 or IPv6 address, or a hostname."
     },
     "ports": {
      "type": "array",
-     "description": "User provided information about ports to be used with this address.",
+     "description": "A list of ports to be used with this address.",
      "items": {
       "$ref": "EndpointPort"
      }
@@ -158,13 +158,21 @@
    "id": "EndpointDnsIntegration",
    "type": "object",
    "properties": {
+    "enableExternal": {
+     "type": "boolean",
+     "description": "True if a cloud.goog DNS entry should be created to expose this endpoint externally."
+    },
+    "externalDnsName": {
+     "type": "string",
+     "description": "[Output Only] Externally visible fully qualified domain name for the endpoint."
+    },
     "internalDnsName": {
      "type": "string",
      "description": "[Output Only] Fully qualified domain name for the endpoint; used when addressing the endpoint from within Compute Networks specified in the networks field."
     },
     "networks": {
      "type": "array",
-     "description": "Google Compute Engine networks for which the name of this endpoint should be resolvable through DNS.",
+     "description": "A list of Google Compute Engine networks for which the name of this endpoint is resolvable through DNS.",
      "items": {
       "type": "string"
      }
@@ -178,16 +186,16 @@
    "properties": {
     "name": {
      "type": "string",
-     "description": "User provided name of the port. It's optional if only one port is defined for the endpoint."
+     "description": "The name of the port. This is optional if only one port is defined for the endpoint."
     },
     "portNumber": {
      "type": "integer",
-     "description": "User provided port number of the endpoint.",
+     "description": "The port number of the endpoint.",
      "format": "int32"
     },
     "protocol": {
      "type": "string",
-     "description": "Optional user provided protocol for this port. Must be one of the following well known protocol strings: tcp, udp, icmp, esp, ah or sctp. Default is tcp."
+     "description": "An optional user-supplied protocol for this port. Must be one of the following protocol strings: tcp, udp, icmp, esp, ah, or sctp. The default is tcp."
     }
    }
   },

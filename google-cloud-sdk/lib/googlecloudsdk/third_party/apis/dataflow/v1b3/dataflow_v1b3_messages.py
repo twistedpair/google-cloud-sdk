@@ -657,6 +657,28 @@ class FlattenInstruction(_messages.Message):
   inputs = _messages.MessageField('InstructionInput', 1, repeated=True)
 
 
+class FloatingPointList(_messages.Message):
+  """A metric value representing a list of floating point numbers.
+
+  Fields:
+    elements: Elements of the list.
+  """
+
+  elements = _messages.FloatField(1, repeated=True)
+
+
+class FloatingPointMean(_messages.Message):
+  """A representation of a floating point mean metric contribution.
+
+  Fields:
+    count: The number of values being aggregated.
+    sum: The sum of all values being aggregated.
+  """
+
+  count = _messages.MessageField('SplitInt64', 1)
+  sum = _messages.FloatField(2)
+
+
 class InstructionInput(_messages.Message):
   """An input of an instruction, as a reference to an output of a producer
   instruction.
@@ -713,6 +735,28 @@ class InstructionOutput(_messages.Message):
   codec = _messages.MessageField('CodecValue', 1)
   name = _messages.StringField(2)
   systemName = _messages.StringField(3)
+
+
+class IntegerList(_messages.Message):
+  """A metric value representing a list of integers.
+
+  Fields:
+    elements: Elements of the list.
+  """
+
+  elements = _messages.MessageField('SplitInt64', 1, repeated=True)
+
+
+class IntegerMean(_messages.Message):
+  """A representation of an integer mean metric contribution.
+
+  Fields:
+    count: The number of values being aggregated.
+    sum: The sum of all values being aggregated.
+  """
+
+  count = _messages.MessageField('SplitInt64', 1)
+  sum = _messages.MessageField('SplitInt64', 2)
 
 
 class Job(_messages.Message):
@@ -1198,6 +1242,20 @@ class MapTask(_messages.Message):
   systemName = _messages.StringField(3)
 
 
+class MetricShortId(_messages.Message):
+  """The metric short id is returned to the user alongside an offset into
+  ReportWorkItemStatusRequest
+
+  Fields:
+    metricIndex: The index of the corresponding metric in the
+      ReportWorkItemStatusRequest. Required.
+    shortId: The service-generated short identifier for the metric.
+  """
+
+  metricIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  shortId = _messages.IntegerField(2)
+
+
 class MetricStructuredName(_messages.Message):
   """Identifies a metric, by describing the source which generated the metric.
 
@@ -1322,6 +1380,21 @@ class MultiOutputInfo(_messages.Message):
   """
 
   tag = _messages.StringField(1)
+
+
+class NameAndKind(_messages.Message):
+  """Basic metadata about a metric.
+
+  Fields:
+    kind: Metric aggregation kind.  The possible metric aggregation kinds are
+      "Sum", "Max", "Min", "Mean", "Set", "And", and "Or". The specified
+      aggregation kind is case-insensitive.  If omitted, this is not an
+      aggregated value but instead a single metric sample value.
+    name: Name of the metric.
+  """
+
+  kind = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class Package(_messages.Message):
@@ -2116,6 +2189,19 @@ class SourceSplitShard(_messages.Message):
   source = _messages.MessageField('Source', 2)
 
 
+class SplitInt64(_messages.Message):
+  """A representation of an int64, n, that is immune to precision loss when
+  encoded in JSON.
+
+  Fields:
+    highBits: The high order bits, including the sign: n >> 32.
+    lowBits: The low order bits: n & 0xffffffff.
+  """
+
+  highBits = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  lowBits = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -2347,6 +2433,22 @@ class StreamLocation(_messages.Message):
   streamingStageLocation = _messages.MessageField('StreamingStageLocation', 4)
 
 
+class StreamingComputationConfig(_messages.Message):
+  """Configuration information for a single streaming computation.
+
+  Fields:
+    computationId: Unique identifier for this computation.
+    instructions: Instructions that comprise the computation.
+    stageName: Stage name of this computation.
+    systemName: System defined name for this computation.
+  """
+
+  computationId = _messages.StringField(1)
+  instructions = _messages.MessageField('ParallelInstruction', 2, repeated=True)
+  stageName = _messages.StringField(3)
+  systemName = _messages.StringField(4)
+
+
 class StreamingComputationRanges(_messages.Message):
   """Describes full or partial data disk assignment information of the
   computation ranges.
@@ -2394,6 +2496,49 @@ class StreamingComputationTask(_messages.Message):
   taskType = _messages.EnumField('TaskTypeValueValuesEnum', 3)
 
 
+class StreamingConfigTask(_messages.Message):
+  """A task that carries configuration information for streaming computations.
+
+  Messages:
+    UserStepToStateFamilyNameMapValue: Map from user step names to state
+      families.
+
+  Fields:
+    streamingComputationConfigs: Set of computation configuration information.
+    userStepToStateFamilyNameMap: Map from user step names to state families.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserStepToStateFamilyNameMapValue(_messages.Message):
+    """Map from user step names to state families.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UserStepToStateFamilyNameMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UserStepToStateFamilyNameMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a UserStepToStateFamilyNameMapValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 1, repeated=True)
+  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 2)
+
+
 class StreamingSetupTask(_messages.Message):
   """A task which initializes part of a streaming Dataflow job.
 
@@ -2436,6 +2581,16 @@ class StreamingStageLocation(_messages.Message):
   """
 
   streamId = _messages.StringField(1)
+
+
+class StringList(_messages.Message):
+  """A metric value representing a list of strings.
+
+  Fields:
+    elements: Elements of the list.
+  """
+
+  elements = _messages.StringField(1, repeated=True)
 
 
 class TaskRunnerSettings(_messages.Message):
@@ -2573,6 +2728,8 @@ class WorkItem(_messages.Message):
       WorkItems.
     streamingComputationTask: Additional information for
       StreamingComputationTask WorkItems.
+    streamingConfigTask: Additional information for StreamingConfigTask
+      WorkItems.
     streamingSetupTask: Additional information for StreamingSetupTask
       WorkItems.
   """
@@ -2590,7 +2747,48 @@ class WorkItem(_messages.Message):
   shellTask = _messages.MessageField('ShellTask', 11)
   sourceOperationTask = _messages.MessageField('SourceOperationRequest', 12)
   streamingComputationTask = _messages.MessageField('StreamingComputationTask', 13)
-  streamingSetupTask = _messages.MessageField('StreamingSetupTask', 14)
+  streamingConfigTask = _messages.MessageField('StreamingConfigTask', 14)
+  streamingSetupTask = _messages.MessageField('StreamingSetupTask', 15)
+
+
+class WorkItemMetricUpdate(_messages.Message):
+  """An update to a metric sent from a worker. Unlike MetricUpdate, this
+  format does not support:   messages: use WorkerMessage API   CloudMetrics:
+  use MetricUpdate until this includes structured names
+
+  Fields:
+    boolean: Boolean value for And, Or.
+    cumulative: True if this metric is reported as the total cumulative
+      aggregate value accumulated since the worker started working on this
+      WorkItem. By default this is false, indicating that this metric is
+      reported as a delta that is not associated with any WorkItem.
+    floatingPoint: Floating point value for Sum, Max, Min.
+    floatingPointList: List of floating point numbers, for Set.
+    floatingPointMean: Floating point mean aggregation value for Mean.
+    integer: Integer value for Sum, Max, Min.
+    integerList: List of integers, for Set.
+    integerMean: Integer mean aggregation value for Mean.
+    internal: Value for internally-defined metrics use by the Dataflow
+      service.
+    nameAndKind: Metric name and aggregation type.
+    shortId: The service-generated short identifier for this metric. The
+      short_id -> (name, metadata) mapping is constant for the lifetime of a
+      job.
+    stringList: List of strings, for Set.
+  """
+
+  boolean = _messages.BooleanField(1)
+  cumulative = _messages.BooleanField(2)
+  floatingPoint = _messages.FloatField(3)
+  floatingPointList = _messages.MessageField('FloatingPointList', 4)
+  floatingPointMean = _messages.MessageField('FloatingPointMean', 5)
+  integer = _messages.MessageField('SplitInt64', 6)
+  integerList = _messages.MessageField('IntegerList', 7)
+  integerMean = _messages.MessageField('IntegerMean', 8)
+  internal = _messages.MessageField('extra_types.JsonValue', 9)
+  nameAndKind = _messages.MessageField('NameAndKind', 10)
+  shortId = _messages.IntegerField(11)
+  stringList = _messages.MessageField('StringList', 12)
 
 
 class WorkItemServiceState(_messages.Message):
@@ -2605,6 +2803,11 @@ class WorkItemServiceState(_messages.Message):
     harnessData: Other data returned by the service, specific to the
       particular worker harness.
     leaseExpireTime: Time at which the current lease will expire.
+    metricShortId: The short ids that workers should use in subsequent metric
+      updates. Workers should strive to use short ids whenever possible, but
+      it is ok to request the short_id again if a worker lost track of it
+      (e.g. if the worker is recovering from a crash). NOTE: it is possible
+      that the response may have short ids for a subset of the metrics.
     nextReportIndex: The index value to use for the next report sent by the
       worker. Note: If the report call fails for whatever reason, the worker
       should reuse this index for subsequent report attempts.
@@ -2643,11 +2846,12 @@ class WorkItemServiceState(_messages.Message):
 
   harnessData = _messages.MessageField('HarnessDataValue', 1)
   leaseExpireTime = _messages.StringField(2)
-  nextReportIndex = _messages.IntegerField(3)
-  reportStatusInterval = _messages.StringField(4)
-  splitRequest = _messages.MessageField('ApproximateSplitRequest', 5)
-  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 6)
-  suggestedStopPosition = _messages.MessageField('Position', 7)
+  metricShortId = _messages.MessageField('MetricShortId', 3, repeated=True)
+  nextReportIndex = _messages.IntegerField(4)
+  reportStatusInterval = _messages.StringField(5)
+  splitRequest = _messages.MessageField('ApproximateSplitRequest', 6)
+  suggestedStopPoint = _messages.MessageField('ApproximateProgress', 7)
+  suggestedStopPosition = _messages.MessageField('Position', 8)
 
 
 class WorkItemStatus(_messages.Message):
@@ -2660,7 +2864,7 @@ class WorkItemStatus(_messages.Message):
     errors: Specifies errors which occurred during processing.  If errors are
       provided, and completed = true, then the WorkItem is considered to have
       failed.
-    metricUpdates: Worker output metrics (counters) for this WorkItem.
+    metricUpdates: DEPRECATED in favor of worker_metric_update.
     progress: DEPRECATED in favor of reported_progress.
     reportIndex: The report index.  When a WorkItem is leased, the lease will
       contain an initial report index.  When a WorkItem's status is reported
@@ -2703,6 +2907,7 @@ class WorkItemStatus(_messages.Message):
       and in a potential subsequent dynamic_source_split into {P', R'}, P' and
       R' must be together equivalent to P, etc.
     workItemId: Identifies the WorkItem.
+    workItemMetricUpdates: Worker output metrics (counters) for this WorkItem.
   """
 
   completed = _messages.BooleanField(1)
@@ -2717,6 +2922,7 @@ class WorkItemStatus(_messages.Message):
   sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 10)
   stopPosition = _messages.MessageField('Position', 11)
   workItemId = _messages.StringField(12)
+  workItemMetricUpdates = _messages.MessageField('WorkItemMetricUpdate', 13, repeated=True)
 
 
 class WorkerHealthReport(_messages.Message):

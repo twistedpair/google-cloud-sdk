@@ -75,6 +75,7 @@ _MAX_STRING_LENGTH = 1500
 #
 # The URL RFCs don't specify a maximum length, so this is somewhat arbitrary:
 # it's the well-documented maximum URL length supported by Internet Explorer.
+# See http://b/1005416 for discussion.
 #
 # This should be kept in sync with j/c/g/apphosting/datastore/Paths.java,
 # apphosting/demos/documentation/templates/apis.html and the
@@ -374,6 +375,7 @@ class Key(object):
         # both provide a ProtocolBufferDecodeError, but python considers them
         # different types. 'except ProtocolBufferDecodeError' catches the
         # python one but not the C one. hence this monstrosity.
+        # see http://b/1067354.
         if e.__class__.__name__ == 'ProtocolBufferDecodeError':
           raise datastore_errors.BadKeyError('Invalid string key %s.' % encoded)
         else:
@@ -1836,6 +1838,7 @@ def FromPropertyPb(pb):
   """
   # This method is performance critical. Some key optimizations:
   # 1. use unicode(s, 'utf-8') rather than s.decode('utf-8') to avoid a codec
+  #    registry lookup on every conversion (see http://b/5588971).
   pbval = pb.value()
   meaning = pb.meaning()
 

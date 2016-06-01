@@ -2763,7 +2763,7 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 7. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -3814,6 +3814,18 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'SetServiceAccount': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.instances.setServiceAccount',
+              ordered_params=[u'project', u'zone', u'instance'],
+              path_params=[u'instance', u'project', u'zone'],
+              query_params=[],
+              relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setServiceAccount',
+              request_field=u'instancesSetServiceAccountRequest',
+              request_type_name=u'ComputeInstancesSetServiceAccountRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'SetTags': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.instances.setTags',
@@ -4125,6 +4137,19 @@ If an empty request body is given, clears the deprecation status instead.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def SetServiceAccount(self, request, global_params=None):
+      """Sets the service account on the instance.
+
+      Args:
+        request: (ComputeInstancesSetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def SetTags(self, request, global_params=None):
       """Sets tags for the specified instance to the data included in the request.
 
@@ -4385,6 +4410,18 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'NetworkList',
               supports_download=False,
           ),
+          'SwitchToCustomMode': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.networks.switchToCustomMode',
+              ordered_params=[u'project', u'network'],
+              path_params=[u'network', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/networks/{network}/switchToCustomMode',
+              request_field='',
+              request_type_name=u'ComputeNetworksSwitchToCustomModeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.networks.testIamPermissions',
@@ -4451,6 +4488,19 @@ If an empty request body is given, clears the deprecation status instead.
         (NetworkList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SwitchToCustomMode(self, request, global_params=None):
+      """Switches the network mode from auto subnet mode to custom subnet mode.
+
+      Args:
+        request: (ComputeNetworksSwitchToCustomModeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SwitchToCustomMode')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -5365,6 +5415,78 @@ If an empty request body is given, clears the deprecation status instead.
     def __init__(self, client):
       super(ComputeAlpha.RegionalBackendServicesService, self).__init__(client)
       self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.regionalBackendServices.delete',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field='',
+              request_type_name=u'ComputeRegionalBackendServicesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionalBackendServices.get',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field='',
+              request_type_name=u'ComputeRegionalBackendServicesGetRequest',
+              response_type_name=u'BackendService',
+              supports_download=False,
+          ),
+          'GetHealth': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionalBackendServices.getHealth',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
+              request_field=u'resourceGroupReference',
+              request_type_name=u'ComputeRegionalBackendServicesGetHealthRequest',
+              response_type_name=u'BackendServiceGroupHealth',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionalBackendServices.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices',
+              request_field=u'backendService',
+              request_type_name=u'ComputeRegionalBackendServicesInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionalBackendServices.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/backendServices',
+              request_field='',
+              request_type_name=u'ComputeRegionalBackendServicesListRequest',
+              response_type_name=u'BackendServiceList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.regionalBackendServices.patch',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field=u'backendServiceResource',
+              request_type_name=u'ComputeRegionalBackendServicesPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.regionalBackendServices.testIamPermissions',
@@ -5377,10 +5499,100 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'TestPermissionsResponse',
               supports_download=False,
           ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.regionalBackendServices.update',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field=u'backendServiceResource',
+              request_type_name=u'ComputeRegionalBackendServicesUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
           }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionalBackendServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionalBackendServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetHealth(self, request, global_params=None):
+      """Gets the most recent health check results for this regional BackendService.
+
+      Args:
+        request: (ComputeRegionalBackendServicesGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceGroupHealth) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionalBackendServicesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of regional BackendService resources available to the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionalBackendServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionalBackendServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
@@ -5392,6 +5604,19 @@ If an empty request body is given, clears the deprecation status instead.
         (TestPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionalBackendServicesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6169,6 +6394,18 @@ For more information, see Deleting snaphots.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'ExpandIpCidrRange': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.expandIpCidrRange',
+              ordered_params=[u'project', u'region', u'subnetwork'],
+              path_params=[u'project', u'region', u'subnetwork'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}/expandIpCidrRange',
+              request_field=u'subnetworksExpandIpCidrRangeRequest',
+              request_type_name=u'ComputeSubnetworksExpandIpCidrRangeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'compute.subnetworks.get',
@@ -6179,6 +6416,18 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeSubnetworksGetRequest',
               response_type_name=u'Subnetwork',
+              supports_download=False,
+          ),
+          'GetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.subnetworks.getIamPolicy',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/getIamPolicy',
+              request_field='',
+              request_type_name=u'ComputeSubnetworksGetIamPolicyRequest',
+              response_type_name=u'Policy',
               supports_download=False,
           ),
           'Insert': base_api.ApiMethodInfo(
@@ -6203,6 +6452,18 @@ For more information, see Deleting snaphots.
               request_field='',
               request_type_name=u'ComputeSubnetworksListRequest',
               response_type_name=u'SubnetworkList',
+              supports_download=False,
+          ),
+          'SetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.subnetworks.setIamPolicy',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
+              request_field=u'policy',
+              request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
+              response_type_name=u'Policy',
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
@@ -6248,6 +6509,19 @@ For more information, see Deleting snaphots.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def ExpandIpCidrRange(self, request, global_params=None):
+      """Expands the IP CIDR range of the subnetwork to a specified value.
+
+      Args:
+        request: (ComputeSubnetworksExpandIpCidrRangeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExpandIpCidrRange')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def Get(self, request, global_params=None):
       """Returns the specified subnetwork. Get a list of available subnetworks list() request.
 
@@ -6258,6 +6532,19 @@ For more information, see Deleting snaphots.
         (Subnetwork) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeSubnetworksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -6284,6 +6571,19 @@ For more information, see Deleting snaphots.
         (SubnetworkList) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeSubnetworksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 

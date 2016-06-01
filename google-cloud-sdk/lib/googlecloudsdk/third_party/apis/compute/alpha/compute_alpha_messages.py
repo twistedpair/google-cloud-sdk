@@ -313,9 +313,9 @@ class AttachedDisk(_messages.Message):
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
-      encryption key.  If you are creating a new disk, encrypts the new disk
-      using an encryption key that you provide. If you are attaching an
-      existing disk that is already encrypted, this field decrypts the disk
+      encryption key.  If you are creating a new disk, this field encrypts the
+      new disk using an encryption key that you provide. If you are attaching
+      an existing disk that is already encrypted, this field decrypts the disk
       using the customer-supplied encryption key.  If you encrypt a disk using
       a customer-supplied key, you must provide the same key again when you
       attempt to use this resource at a later time. For example, you must
@@ -323,7 +323,9 @@ class AttachedDisk(_messages.Message):
       when you attach the disk to a virtual machine instance.  If you do not
       provide an encryption key, then the disk will be encrypted using an
       automatically generated key and you do not need to provide a key to use
-      the disk later.
+      the disk later.  Instance templates do not store customer-supplied
+      encryption keys, so you cannot use your own keys to encrypt disks in a
+      managed instance group.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -439,7 +441,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       with family/family-name:  global/images/family/my-private-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
-      supplied encryption key.
+      supplied encryption key.  Instance templates do not store customer-
+      supplied encryption keys, so you cannot create disks for instances in a
+      managed instance group if the source images are encrypted with your own
+      keys.
   """
 
   class DiskStorageTypeValueValuesEnum(_messages.Enum):
@@ -944,8 +949,6 @@ class Backend(_messages.Message):
       offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    failover: This field designates whether this is a failover backend. More
-      than one failover backend can be configured for a given BackendService.
     group: The fully-qualified URL of a zonal Instance Group resource. This
       instance group defines the list of instances that serve traffic. Member
       virtual machine instances from each instance group must live in the same
@@ -991,13 +994,12 @@ class Backend(_messages.Message):
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
-  failover = _messages.BooleanField(4)
-  group = _messages.StringField(5)
-  maxConnections = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxConnectionsPerInstance = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxRate = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  group = _messages.StringField(4)
+  maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class BackendBucket(_messages.Message):
@@ -1088,16 +1090,6 @@ class BackendService(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.
-    failoverRatio: The value of the field must be in [0, 1]. If set,
-      'backends[].failover' must be set. They together define the fallback
-      behavior of the primary backend: if the ratio of the healthy VMs in the
-      primary backend is at or below this number, traffic arriving at the
-      load-balanced IP will be directed to the failover backend.  In case
-      where 'failoverRatio' is not set or all the VMs in the backup backend
-      are unhealthy, the traffic will be directed back to the primary backend
-      in the "force" mode, where traffic will be spread to the healthy VMs
-      with the best effort, or to all VMs when no VM is healthy.  This field
-      can only be used for regional BackendServices.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -1183,20 +1175,19 @@ class BackendService(_messages.Message):
   creationTimestamp = _messages.StringField(5)
   description = _messages.StringField(6)
   enableCDN = _messages.BooleanField(7)
-  failoverRatio = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
-  fingerprint = _messages.BytesField(9)
-  healthChecks = _messages.StringField(10, repeated=True)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(16)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
-  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  fingerprint = _messages.BytesField(8)
+  healthChecks = _messages.StringField(9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(15)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 19)
+  timeoutSec = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -1216,16 +1207,13 @@ class BackendServiceList(_messages.Message):
   """Contains a list of BackendService resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of BackendService resources.
     kind: [Output Only] Type of resource. Always compute#backendServiceList
       for lists of backend services.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -4516,6 +4504,23 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesSetServiceAccountRequest(_messages.Message):
+  """A ComputeInstancesSetServiceAccountRequest object.
+
+  Fields:
+    instance: Name of the instance resource to start.
+    instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetServiceAccountRequest = _messages.MessageField('InstancesSetServiceAccountRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesSetTagsRequest(_messages.Message):
   """A ComputeInstancesSetTagsRequest object.
 
@@ -4821,6 +4826,18 @@ class ComputeNetworksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
+  """A ComputeNetworksSwitchToCustomModeRequest object.
+
+  Fields:
+    network: Name of the network to be updated.
+    project: Project ID for this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
@@ -5540,6 +5557,136 @@ class ComputeRegionOperationsListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeRegionalBackendServicesDeleteRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesDeleteRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionalBackendServicesGetHealthRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesGetHealthRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the queried
+      instance belongs.
+    project: A string attribute.
+    region: Name of the region scoping this request.
+    resourceGroupReference: A ResourceGroupReference resource to be passed as
+      the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resourceGroupReference = _messages.MessageField('ResourceGroupReference', 4)
+
+
+class ComputeRegionalBackendServicesGetRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesGetRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionalBackendServicesInsertRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesInsertRequest object.
+
+  Fields:
+    backendService: A BackendService resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  backendService = _messages.MessageField('BackendService', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionalBackendServicesListRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: When
+      filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionalBackendServicesPatchRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesPatchRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to update.
+    backendServiceResource: A BackendService resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  backendServiceResource = _messages.MessageField('BackendService', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
 class ComputeRegionalBackendServicesTestIamPermissionsRequest(_messages.Message):
   """A ComputeRegionalBackendServicesTestIamPermissionsRequest object.
 
@@ -5555,6 +5702,23 @@ class ComputeRegionalBackendServicesTestIamPermissionsRequest(_messages.Message)
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionalBackendServicesUpdateRequest(_messages.Message):
+  """A ComputeRegionalBackendServicesUpdateRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to update.
+    backendServiceResource: A BackendService resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  backendServiceResource = _messages.MessageField('BackendService', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
 
 
 class ComputeRegionsGetRequest(_messages.Message):
@@ -6213,6 +6377,37 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   subnetwork = _messages.StringField(3, required=True)
 
 
+class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A ComputeSubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to update.
+    subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 4)
+
+
+class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
+  """A ComputeSubnetworksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSubnetworksGetRequest(_messages.Message):
   """A ComputeSubnetworksGetRequest object.
 
@@ -6291,6 +6486,22 @@ class ComputeSubnetworksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
+  """A ComputeSubnetworksSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
@@ -7862,17 +8073,17 @@ class CustomerEncryptionKey(_messages.Message):
 
   Fields:
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
-      base64 to either encrypt or decrypt this resource.
-    rsaEncryptedKey: Specifies a base64 encoded, RSA-wrapped 2048-bit
-      customer-supplied encryption key to either encrypt or decrypt this
-      resource.  The key must meet the following requirements before you can
-      provide it to Compute Engine:   - The key is wrapped using a RSA public
-      key certificate provided by Google.  - After being wrapped, the key must
-      be encoded in base64 encoding.  Get the RSA public key certificate
-      provided by Google at: https://cloud-certs.storage.googleapis.com
-      /google-cloud-csek-ingress.pem
-    sha256: [Output only] The base64 encoded SHA-256 hash of the customer-
-      supplied encryption key that protects this resource.
+      RFC 4648 base64 to either encrypt or decrypt this resource.
+    rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
+      2048-bit customer-supplied encryption key to either encrypt or decrypt
+      this resource.  The key must meet the following requirements before you
+      can provide it to Compute Engine:   - The key is wrapped using a RSA
+      public key certificate provided by Google.  - After being wrapped, the
+      key must be encoded in RFC 4648 base64 encoding.  Get the RSA public key
+      certificate provided by Google at: https://cloud-
+      certs.storage.googleapis.com/google-cloud-csek-ingress.pem
+    sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
+      customer-supplied encryption key that protects this resource.
   """
 
   rawKey = _messages.StringField(1)
@@ -9031,6 +9242,11 @@ class GlobalSetLabelsRequest(_messages.Message):
 class HTTP2HealthCheck(_messages.Message):
   """A HTTP2HealthCheck object.
 
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
   Fields:
     host: The value of the host header in the HTTP/2 health check request. If
       left empty (default value), the IP on behalf of which this health check
@@ -9039,18 +9255,37 @@ class HTTP2HealthCheck(_messages.Message):
       is 443.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP/2 health check request. The
       default value is /.
   """
 
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  requestPath = _messages.StringField(4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
 
 
 class HTTPHealthCheck(_messages.Message):
   """A HTTPHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
 
   Fields:
     host: The value of the host header in the HTTP health check request. If
@@ -9060,18 +9295,37 @@ class HTTPHealthCheck(_messages.Message):
       is 80.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP health check request. The
       default value is /.
   """
 
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  requestPath = _messages.StringField(4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
 
 
 class HTTPSHealthCheck(_messages.Message):
   """A HTTPSHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
 
   Fields:
     host: The value of the host header in the HTTPS health check request. If
@@ -9081,14 +9335,28 @@ class HTTPSHealthCheck(_messages.Message):
       is 443.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTPS health check request. The
       default value is /.
   """
 
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
-  requestPath = _messages.StringField(4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
 
 
 class HealthCheck(_messages.Message):
@@ -9467,7 +9735,7 @@ class Image(_messages.Message):
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method. Each label key/value pair must comply with RFC1035.
       Label values may be empty.
-    licenses: Any applicable publicly visible licenses.
+    licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -9663,7 +9931,9 @@ class Instance(_messages.Message):
       not provide an encryption key when creating the instance, then the local
       SSD and in-memory contents will be encrypted using an automatically
       generated key and you do not need to provide a key to start the instance
-      later.
+      later.  Instance templates do not store customer-supplied encryption
+      keys, so you cannot use your own keys to encrypt local SSDs and in-
+      memory content in a managed instance group.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -9973,7 +10243,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """A InstanceGroupManager object.
+  """An Instance Template Manager resource.
 
   Enums:
     FailoverActionValueValuesEnum: The action to perform in case of zone
@@ -10763,7 +11033,8 @@ class InstanceProperties(_messages.Message):
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the canIpForward documentation for more information.
+      false. See the Enable IP forwarding for instances documentation for more
+      information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -11113,6 +11384,18 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class InstancesSetServiceAccountRequest(_messages.Message):
+  """A InstancesSetServiceAccountRequest object.
+
+  Fields:
+    email: Email address of the service account.
+    scopes: The list of scopes to be made available for this service account.
+  """
+
+  email = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class InstancesStartWithEncryptionKeyRequest(_messages.Message):
@@ -13226,11 +13509,18 @@ class Rule(_messages.Message):
 class SSLHealthCheck(_messages.Message):
   """A SSLHealthCheck object.
 
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
   Fields:
     port: The TCP port number for the health check request. The default value
       is 443.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
     request: The application data to send once the SSL connection has been
       established (default value is empty). If both request and response are
       empty, the connection establishment alone will indicate health. The
@@ -13240,10 +13530,22 @@ class SSLHealthCheck(_messages.Message):
       The response data can only be ASCII.
   """
 
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   portName = _messages.StringField(2)
-  request = _messages.StringField(3)
-  response = _messages.StringField(4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Scheduling(_messages.Message):
@@ -13720,6 +14022,16 @@ class SubnetworkList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A SubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    ipCidrRange: A string attribute.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+
+
 class SubnetworksScopedList(_messages.Message):
   """A SubnetworksScopedList object.
 
@@ -13821,11 +14133,18 @@ class SubnetworksScopedList(_messages.Message):
 class TCPHealthCheck(_messages.Message):
   """A TCPHealthCheck object.
 
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
   Fields:
     port: The TCP port number for the health check request. The default value
       is 80.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
     request: The application data to send once the TCP connection has been
       established (default value is empty). If both request and response are
       empty, the connection establishment alone will indicate health. The
@@ -13835,10 +14154,22 @@ class TCPHealthCheck(_messages.Message):
       The response data can only be ASCII.
   """
 
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   portName = _messages.StringField(2)
-  request = _messages.StringField(3)
-  response = _messages.StringField(4)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Tags(_messages.Message):

@@ -18,7 +18,6 @@ import json
 import sys
 import tempfile
 
-from googlecloudsdk.api_lib import genomics as lib
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
 from googlecloudsdk.api_lib.genomics.exceptions import GenomicsInputFileError
 from googlecloudsdk.calliope import exceptions
@@ -108,6 +107,14 @@ def GetErrorMessage(error):
   return content_obj.get('error', {}).get('message', '')
 
 
+def GetGenomicsClient(version='v1'):
+  return core_apis.GetClientInstance('genomics', version)
+
+
+def GetGenomicsMessages(version='v1'):
+  return core_apis.GetMessagesModule('genomics', version)
+
+
 def ReraiseHttpExceptionPager(pager, rewrite_fn=None):
   """Wraps an HTTP paginator and converts errors to be gcloud-friendly.
 
@@ -143,9 +150,9 @@ def ReraiseHttpException(foo):
 
 
 @ReraiseHttpException
-def GetDataset(context, dataset_id):
-  apitools_client = context[lib.GENOMICS_APITOOLS_CLIENT_KEY]
-  genomics_messages = context[lib.GENOMICS_MESSAGES_MODULE_KEY]
+def GetDataset(dataset_id):
+  apitools_client = GetGenomicsClient()
+  genomics_messages = GetGenomicsMessages()
 
   request = genomics_messages.GenomicsDatasetsGetRequest(
       datasetId=str(dataset_id),
@@ -155,9 +162,9 @@ def GetDataset(context, dataset_id):
 
 
 @ReraiseHttpException
-def GetCallSet(context, call_set_id):
-  apitools_client = context[lib.GENOMICS_APITOOLS_CLIENT_KEY]
-  genomics_messages = context[lib.GENOMICS_MESSAGES_MODULE_KEY]
+def GetCallSet(call_set_id):
+  apitools_client = GetGenomicsClient()
+  genomics_messages = GetGenomicsMessages()
 
   request = genomics_messages.GenomicsCallsetsGetRequest(
       callSetId=str(call_set_id),

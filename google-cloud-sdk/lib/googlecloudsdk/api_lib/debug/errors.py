@@ -59,7 +59,9 @@ class MultipleDebuggeesError(DebugError):
     else:
       pattern_msg = ''
     super(MultipleDebuggeesError, self).__init__(
-        'Multiple possible targets found{0}:\n    {1}\n'.format(
+        'Multiple possible targets found{0}.\n'
+        'Use the --target option to select one of the following '
+        'targets:\n    {1}\n'.format(
             pattern_msg, '\n    '.join([d.name for d in debuggees])))
 
 
@@ -84,8 +86,10 @@ class NoDebuggeeError(DebugError):
     else:
       msg = 'No active debug targets were found for this project.\n'
     if debuggees:
-      msg += 'Choose one of the following targets:\n    {0}\n'.format(
-          '\n    '.join([d.name for d in debuggees]))
+      msg += (
+          'Use the --target option to select one of the following '
+          'targets:\n    {0}\n'.format(
+              '\n    '.join([d.name for d in debuggees])))
     super(NoDebuggeeError, self).__init__(msg)
 
 

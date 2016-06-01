@@ -17,11 +17,14 @@ import cStringIO
 import json
 import os
 
+import distutils.version as dist_version
+
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
@@ -86,6 +89,17 @@ def CheckKubectlInstalled():
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
 
+MIN_GCP_AUTH_PROVIDER_VERSION = '1.3.0'
+
+
+class MissingEndpointError(Error):
+  """Error for attempting to persist a cluster that has no endpoint."""
+
+  def __init__(self, cluster):
+    super(MissingEndpointError, self).__init__(
+        'cluster {0} is missing endpoint. Is it still PROVISIONING?'.format(
+            cluster.name))
+
 
 class ClusterConfig(object):
   """Encapsulates persistent cluster config data.
@@ -103,10 +117,12 @@ class ClusterConfig(object):
     self.zone_id = kwargs['zone_id']
     self.project_id = kwargs['project_id']
     self.server = kwargs['server']
-    # auth options are basic (user,password) OR bearer token.
+    # auth options are basic (user,password), bearer token, auth-provider, or
+    # client certificate.
     self.username = kwargs.get('username')
     self.password = kwargs.get('password')
     self.token = kwargs.get('token')
+    self.auth_provider = kwargs.get('auth_provider')
     self.ca_data = kwargs.get('ca_data')
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
@@ -130,11 +146,22 @@ class ClusterConfig(object):
 
   @property
   def has_cert_data(self):
-    return self.ca_data and self.client_key_data and self.client_cert_data
+    return self.client_key_data and self.client_cert_data
 
   @property
   def has_certs(self):
     return self.has_cert_data
+
+  @property
+  def has_ca_cert(self):
+    return self.ca_data
+
+  @staticmethod
+  def UseGCPAuthProvider(cluster):
+    return (cluster.currentMasterVersion and
+            dist_version.LooseVersion(cluster.currentMasterVersion) >=
+            dist_version.LooseVersion(MIN_GCP_AUTH_PROVIDER_VERSION) and
+            not properties.VALUES.container.use_client_certificate.GetBool())
 
   @staticmethod
   def GetConfigDir(cluster_name, zone_id, project_id):
@@ -157,9 +184,11 @@ class ClusterConfig(object):
         'token': self.token,
         'username': self.username,
         'password': self.password,
+        'auth_provider': self.auth_provider,
     }
-    if self.has_cert_data:
+    if self.has_ca_cert:
       cluster_kwargs['ca_data'] = self.ca_data
+    if self.has_cert_data:
       user_kwargs['cert_data'] = self.client_cert_data
       user_kwargs['key_data'] = self.client_key_data
 
@@ -189,7 +218,12 @@ class ClusterConfig(object):
       project_id: project that owns this cluster.
     Returns:
       ClusterConfig of the persisted data.
+    Raises:
+      Error: if cluster has no endpoint (will be the case for first few
+        seconds while cluster is PROVISIONING).
     """
+    if not cluster.endpoint:
+      raise MissingEndpointError(cluster)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,
@@ -197,26 +231,31 @@ class ClusterConfig(object):
         'server': 'https://' + cluster.endpoint,
     }
     auth = cluster.masterAuth
-    if auth.clientCertificate and auth.clientKey and auth.clusterCaCertificate:
+    if auth and auth.clusterCaCertificate:
       kwargs['ca_data'] = auth.clusterCaCertificate
-      kwargs['client_key_data'] = auth.clientKey
-      kwargs['client_cert_data'] = auth.clientCertificate
     else:
       # This should not happen unless the cluster is in an unusual error
       # state.
-      log.error('Cluster is missing certificate data.')
+      log.warn('Cluster is missing certificate authority data.')
 
-    # TODO(user): these are not needed if cluster has certs, though they
-    # are useful for testing, e.g. with curl. Consider removing if/when the
-    # apiserver no longer supports insecure (no certs) requests.
-    # TODO(user): use api_adapter instead of getattr, or remove bearerToken
-    # support
-    if getattr(auth, 'bearerToken', None):
-      kwargs['token'] = auth.bearerToken
+    if cls.UseGCPAuthProvider(cluster):
+      kwargs['auth_provider'] = 'gcp'
     else:
-      username = getattr(auth, 'user', None) or getattr(auth, 'username', None)
-      kwargs['username'] = username
-      kwargs['password'] = auth.password
+      if auth.clientCertificate and auth.clientKey:
+        kwargs['client_key_data'] = auth.clientKey
+        kwargs['client_cert_data'] = auth.clientCertificate
+      # TODO(user): these are not needed if cluster has certs, though they
+      # are useful for testing, e.g. with curl. Consider removing if/when the
+      # apiserver no longer supports insecure (no certs) requests.
+      # TODO(user): use api_adapter instead of getattr, or remove bearerToken
+      # support
+      if getattr(auth, 'bearerToken', None):
+        kwargs['token'] = auth.bearerToken
+      else:
+        username = getattr(auth, 'user', None) or getattr(auth, 'username',
+                                                          None)
+        kwargs['username'] = username
+        kwargs['password'] = auth.password
 
     c_config = cls(**kwargs)
     c_config.GenKubeconfig()
@@ -271,9 +310,13 @@ class ClusterConfig(object):
     username = user.get('username')
     password = user.get('password')
     token = user.get('token')
+    auth_provider = user.get('auth-provider')
     cert_data = user.get('client-certificate-data')
     key_data = user.get('client-key-data')
-    if (not username or not password) and not token:
+    cert_auth = cert_data and key_data
+    basic_auth = username and password
+    has_valid_auth = auth_provider or cert_auth or token or basic_auth
+    if not has_valid_auth:
       log.debug('missing auth info for user %s: %s', key, user)
       return None
     # Construct ClusterConfig
@@ -285,6 +328,7 @@ class ClusterConfig(object):
         'username': username,
         'password': password,
         'token': token,
+        'auth_provider': auth_provider,
         'ca_data': ca_data,
         'client_key_data': key_data,
         'client_cert_data': cert_data,

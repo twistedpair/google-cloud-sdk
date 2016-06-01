@@ -340,13 +340,13 @@ class LogEntry(_messages.Message):
       additional information about the log entry.
     logName: Required. The resource name of the log to which this log entry
       belongs. The format of the name is `"projects/<project-id>/logs/<log-
-      id>"`.  Examples: `"projects/my-projectid/logs/syslog"`,
-      `"projects/1234567890/logs/library.googleapis.com%2Fbook_log"`.  The log
-      ID part of resource name must be less than 512 characters long and can
-      only include the following characters: upper and lower case alphanumeric
-      characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
-      underscore, hyphen, and period. Forward-slash (`/`) characters in the
-      log ID must be URL-encoded.
+      id>"`.  Examples: `"projects/my-projectid/logs/syslog"`, `"projects/my-
+      projectid/logs/library.googleapis.com%2Fbook_log"`.  The log ID part of
+      resource name must be less than 512 characters long and can only include
+      the following characters: upper and lower case alphanumeric characters:
+      [A-Za-z0-9]; and punctuation characters: forward-slash, underscore,
+      hyphen, and period. Forward-slash (`/`) characters in the log ID must be
+      URL-encoded.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     projectNumber: A string attribute.

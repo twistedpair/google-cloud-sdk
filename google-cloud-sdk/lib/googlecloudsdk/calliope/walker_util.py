@@ -22,7 +22,6 @@ from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core.document_renderers import render_document
-from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
 
 
@@ -392,21 +391,3 @@ class GCloudTreeGenerator(walker.Walker):
       The subtree parent value, used here to construct an external rep node.
     """
     return cli_tree.Command(node, parent)
-
-
-def GenerateStaticCompletionTable(cli, table_file):
-  """Generate and write the static completion table to given file.
-
-  Args:
-    cli: The Cloud SDK CLI object using which the table should be generated.
-    table_file: File to which the table should be written.
-  """
-  # Global declarations required to convert json to a python dict.
-  table_file.write('null=None\n')
-  table_file.write('true=True\n')
-  table_file.write('false=False\n')
-
-  # Write completion table as python dict declaration.
-  table_file.write('table=')
-  tree = GCloudTreeGenerator(cli).Walk(hidden=True)
-  resource_printer.Print(resources=tree, print_format='json', out=table_file)

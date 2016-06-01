@@ -2,6 +2,49 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 112.0.0 (2016/06/01)
+
+### Cloud SDK
+
+* Updated error messages for `gcloud projects` surface.
+* `gcloud docker` commands now take less time to execute when the Docker client
+
+### Google App Engine
+
+  is not configured to use a credential helper.
+* The `--docker-build` flag and related `app/docker_build` property, as well as
+  `app/use_cloud_build` property have been deprecated and will be removed in a
+  future release. By default, Docker images are built remotely using Google
+  Container Builder. To perform a Docker build on a different host, you can run:
+
+    docker build -t gcr.io/project/service.version .
+    gcloud docker push gcr.io/project/service.version
+    gcloud preview app deploy --image-url=project/service.version
+
+### Google Compute Engine
+
+* Added --licenses flag to 'gcloud compute images create'.
+
+### Google Container Engine
+
+* Fixed bug where only 16-bit kubectl was installed on Windows.
+  Now Installs 32 and 64-bit.
+
+### Google Genomics
+
+* `gcloud alpha genomics datasets/callsets` name argument is a flag,
+  instead of positional.
+* `gcloud alpha genomics pipelines run` command now accepts "zones"
+  command-line argument.
+* `gcloud alpha genomics datasets restore/update` and
+  `variantsets delete/describe` now take string IDs instead of ints.
+
+### Deployment Manager
+
+* `gcloud deployment-manager deployments describe` output only reports errors
+  once, includes status for resources, and includes more useful fields.
+
+
 ## 111.0.0 (2016/05/25)
 
 ### Google App Engine

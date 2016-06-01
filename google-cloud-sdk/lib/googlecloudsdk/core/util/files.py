@@ -19,6 +19,7 @@ import hashlib
 import logging
 import os
 import shutil
+import stat
 import sys
 import tempfile
 import time
@@ -85,13 +86,14 @@ def _WaitForRetry(retries_left):
   time.sleep(time_to_wait)
 
 
-RETRY_ERROR_CODES = [32, 145]
+RETRY_ERROR_CODES = [5, 32, 145]
 
 
 def _ShouldRetryOperation(func, exc_info):
   """Matches specific error types that should be retried.
 
   This will retry the following errors:
+    WindowsError(5, 'Access is denied'), When trying to delete a readonly file
     WindowsError(32, 'The process cannot access the file because it is being '
       'used by another process'), When a file is in use.
     WindowsError(145, 'The directory is not empty'), When a directory cannot be
@@ -155,6 +157,11 @@ def _HandleRemoveError(func, failed_path, exc_info):
   logging.debug('Handling file system error: %s, %s, %s',
                 func, failed_path, exc_info)
 
+  # Access denied on Windows. This happens when trying to delete a readonly
+  # file. Change the permissions and retry the delete.
+  if exc_info[0] == WindowsError and exc_info[1].winerror == 5:
+    os.chmod(failed_path, stat.S_IWUSR)
+
   # Don't remove the trailing comma in the passed arg tuple.  It indicates that
   # it is a tuple of 1, rather than a tuple of characters that will get expanded
   # by *args.
@@ -165,6 +172,7 @@ def _HandleRemoveError(func, failed_path, exc_info):
     raise exc_info[0], exc_info[1], exc_info[2]
 
 
+# TODO(user): Add unit tests for Windows specific code paths, b/28869930
 def RmTree(path):
   """Calls shutil.rmtree() with error handling to fix Windows problems.
 

@@ -50,7 +50,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
               method_id=u'cloudresourcemanager.organizations.get',
               ordered_params=[u'organizationId'],
               path_params=[u'organizationId'],
-              query_params=[],
+              query_params=[u'name'],
               relative_path=u'v1beta1/organizations/{organizationId}',
               request_field='',
               request_type_name=u'CloudresourcemanagerOrganizationsGetRequest',
@@ -371,8 +371,8 @@ ACTIVE.
 This method changes the Project's lifecycle state from
 ACTIVE
 to DELETE_REQUESTED.
-The deletion starts at an unspecified time,
-at which point the lifecycle state changes to DELETE_IN_PROGRESS.
+The deletion starts at an unspecified time, at which point the project is
+no longer accessible.
 
 Until the deletion completes, you can check the lifecycle state
 checked by retrieving the Project with GetProject,
@@ -462,17 +462,34 @@ any existing policy.
 
 The following constraints apply when using `setIamPolicy()`:
 
-+ Project currently supports only `user:{emailid}` and
-`serviceAccount:{emailid}` members in a `Binding` of a `Policy`.
++ Project does not support `allUsers` and `allAuthenticatedUsers` as
+`members` in a `Binding` of a `Policy`.
 
-+ To be added as an `owner`, a user must be invited via Cloud Platform
-console and must accept the invitation.
++ The owner role can be granted only to `user`, `group`, and
+`serviceAccount`.
+
++ Service accounts and groups can be made owners of a project directly
+without any restrictions. However, to be added as an owner, a user must be
+invited via Cloud Platform console and must accept the invitation.
+
++ A user cannot be granted the owner role using `setIamPolicy()`. The user
+must be granted the owner role using the Cloud Platform Console and must
+explicitly accept the invitation.
+
++ Invitations to grant the owner role cannot be sent using `setIamPolicy()`;
+they must be sent only using the Cloud Platform Console.
+
++ Membership changes that leave the project without any owners that have
+accepted the Terms of Service (ToS) will be rejected.
 
 + Members cannot be added to more than one role in the same policy.
 
 + There must be at least one owner who has accepted the Terms of
 Service (ToS) agreement in the policy. Calling `setIamPolicy()` to
-to remove the last ToS-accepted owner from the policy will fail.
+to remove the last ToS-accepted owner from the policy will fail. This
+restriction also applies to legacy projects that no longer have owners
+who have accepted the ToS. Edits to IAM policies will be rejected until
+the lack of a ToS-accepting owner is rectified.
 
 + Calling this method requires enabling the App Engine Admin API.
 
@@ -508,9 +525,7 @@ how the service account is being used before removing or updating its roles.
 `project_id` (for example, `my-project-123`).
 You can only use this method for a Project that has a lifecycle state of
 DELETE_REQUESTED.
-After deletion starts, as indicated by a lifecycle state of
-DELETE_IN_PROGRESS,
-the Project cannot be restored.
+After deletion starts, the Project cannot be restored.
 
 The caller must have modify permissions for this Project.
 

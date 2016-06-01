@@ -17,8 +17,10 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
   """A ClouderrorreportingProjectsDeleteEventsRequest object.
 
   Fields:
-    projectName: The resource name of the Google Cloud Platform project.
-      Required. Example: `projects/my-project`.
+    projectName: [Required] The resource name of the Google Cloud Platform
+      project. Written as `projects/` plus the [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
+      /my-project-123`.
   """
 
   projectName = _messages.StringField(1, required=True)
@@ -32,15 +34,17 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
       range.
 
   Fields:
-    groupId: The group for which events shall be returned. Required.
-    pageSize: The maximum number of results to return per response.
-    pageToken: A `next_page_token` provided by a previous response.
-    projectName: The resource name of the Google Cloud Platform project.
-      Required. Example: projects/my-project
-    serviceFilter_service: The exact value to match against
+    groupId: [Required] The group for which events shall be returned.
+    pageSize: [Optional] The maximum number of results to return per response.
+    pageToken: [Optional] A `next_page_token` provided by a previous response.
+    projectName: [Required] The resource name of the Google Cloud Platform
+      project. Written as `projects/` plus the [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
+      /my-project-123`.
+    serviceFilter_service: [Optional] The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: The exact value to match against
+    serviceFilter_version: [Optional] The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
@@ -77,45 +81,45 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
   """A ClouderrorreportingProjectsGroupStatsListRequest object.
 
   Enums:
-    AlignmentValueValuesEnum: The alignment of the timed counts to be
-      returned. Default is `ALIGNMENT_EQUAL_AT_END`.
-    OrderValueValuesEnum: The sort order in which the results are returned.
-      Default is `COUNT_DESC`.
+    AlignmentValueValuesEnum: [Optional] The alignment of the timed counts to
+      be returned. Default is `ALIGNMENT_EQUAL_AT_END`.
+    OrderValueValuesEnum: [Optional] The sort order in which the results are
+      returned. Default is `COUNT_DESC`.
     TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
       range.
 
   Fields:
-    alignment: The alignment of the timed counts to be returned. Default is
-      `ALIGNMENT_EQUAL_AT_END`.
-    alignmentTime: Time where the timed counts shall be aligned if rounded
-      alignment is chosen. Default is 00:00 UTC.
-    groupId: List all `ErrorGroupStats` with these IDs. If not specified, all
-      error group stats with a non-zero error count for the given selection
-      criteria are returned.
-    order: The sort order in which the results are returned. Default is
-      `COUNT_DESC`.
-    pageSize: The maximum number of results to return per response. Default is
-      20.
-    pageToken: A `next_page_token` provided by a previous response. To view
-      additional results, pass this token along with the identical query
-      parameters as the first request.
-    projectName: The resource name of the Google Cloud Platform project.
-      Written as `projects/` plus the [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Required. Example:
-      `projects/my-project-123`.
-    serviceFilter_service: The exact value to match against
+    alignment: [Optional] The alignment of the timed counts to be returned.
+      Default is `ALIGNMENT_EQUAL_AT_END`.
+    alignmentTime: [Optional] Time where the timed counts shall be aligned if
+      rounded alignment is chosen. Default is 00:00 UTC.
+    groupId: [Optional] List all `ErrorGroupStats` with these IDs. If not
+      specified, all error group stats with a non-zero error count for the
+      given selection criteria are returned.
+    order: [Optional] The sort order in which the results are returned.
+      Default is `COUNT_DESC`.
+    pageSize: [Optional] The maximum number of results to return per response.
+      Default is 20.
+    pageToken: [Optional] A `next_page_token` provided by a previous response.
+      To view additional results, pass this token along with the identical
+      query parameters as the first request.
+    projectName: [Required] The resource name of the Google Cloud Platform
+      project. Written as `projects/` plus the [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
+      /my-project-123`.
+    serviceFilter_service: [Optional] The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: The exact value to match against
+    serviceFilter_version: [Optional] The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
-    timedCountDuration: The preferred duration for a single returned
-      `TimedCount`. If not set, no timed counts are returned.
+    timedCountDuration: [Optional] The preferred duration for a single
+      returned `TimedCount`. If not set, no timed counts are returned.
   """
 
   class AlignmentValueValuesEnum(_messages.Enum):
-    """The alignment of the timed counts to be returned. Default is
+    """[Optional] The alignment of the timed counts to be returned. Default is
     `ALIGNMENT_EQUAL_AT_END`.
 
     Values:
@@ -128,7 +132,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     ALIGNMENT_EQUAL_AT_END = 2
 
   class OrderValueValuesEnum(_messages.Enum):
-    """The sort order in which the results are returned. Default is
+    """[Optional] The sort order in which the results are returned. Default is
     `COUNT_DESC`.
 
     Values:
@@ -179,7 +183,7 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
   """A ClouderrorreportingProjectsGroupsGetRequest object.
 
   Fields:
-    groupName: Group resource name. Required. Example: `projects/my-
+    groupName: [Required] Group resource name. Example: `projects/my-
       project-123/groups/my-group`
   """
 
@@ -193,8 +197,7 @@ class DeleteEventsResponse(_messages.Message):
 class ErrorContext(_messages.Message):
   """A description of the context in which an error occurred. This data should
   be provided by the application when reporting an error, unless the error
-  report has been generated automatically from Google App Engine logs. All
-  fields are optional.
+  report has been generated automatically from Google App Engine logs.
 
   Fields:
     httpRequest: The HTTP request which was processed when the error was
@@ -227,7 +230,7 @@ class ErrorEvent(_messages.Message):
       If the report did not contain a timestamp, the time the error was
       received by the Error Reporting system is used.
     message: The stack trace that was reported or logged by the service.
-    serviceContext: The service_context for which this error was reported.
+    serviceContext: The `ServiceContext` for which this error was reported.
   """
 
   context = _messages.MessageField('ErrorContext', 1)
@@ -305,8 +308,7 @@ class ErrorGroupStats(_messages.Message):
 class HttpRequestContext(_messages.Message):
   """HTTP request data that is related to a reported error. This data should
   be provided by the application when reporting an error, unless the error
-  report has been generated automatically from Google App Engine logs. All
-  fields are optional.
+  report has been generated automatically from Google App Engine logs.
 
   Fields:
     method: The type of HTTP request, such as `GET`, `POST`, etc.

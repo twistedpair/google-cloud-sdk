@@ -47,6 +47,7 @@ _URL_REGEX = r'^/.*$'
 _TIMEZONE_REGEX = r'^.{0,100}$'
 _DESCRIPTION_REGEX = ur'^.{0,499}$'
 # TODO(user): Figure out what engine-related work needs to happen here.
+# http://b/issue?id=6237360
 SERVER_ID_RE_STRING = r'(?!-)[a-z\d\-]{1,63}'
 # NOTE(user): The length here must remain 100 for backwards compatibility,
 # see b/5485871 for more information.

@@ -15,6 +15,7 @@
 
 import functools
 import json
+import sys
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.third_party.apitools.base.py import exceptions
@@ -28,7 +29,8 @@ def HandleHttpError(func):
     try:
       return func(*args, **kwargs)
     except exceptions.HttpError as error:
-      raise GetError(error)
+      error_class, error_args = GetError(error)
+      raise error_class, error_args, sys.exc_info()[2]
 
   return CatchHTTPErrorRaiseHTTPException
 
@@ -40,18 +42,19 @@ def GetError(error):
     error: HttpError resulting from unsuccessful call to API.
 
   Returns:
-    Specific error based on error reason in HttpError.
+    Error class with error arguments tuple for use in a
+    "raise class, args, traceback" statement
   """
   # This will parse organization ID out of error url.
   #   url: .../v1beta1/organizations/BAD_ID?someParam=true&someOtherParam=false
   #   parsed_id: BAD_ID
   org_id = error.url.split('/')[-1].split('?')[0]
   if error.status_code == 403:
-    return OrganizationAccessError(org_id)
+    return (OrganizationAccessError, (org_id,))
   elif error.status_code == 404:
-    return OrganizationNotFoundError(org_id)
+    return (OrganizationNotFoundError, (org_id,))
   else:
-    return UnknownError(error)
+    return (UnknownError, (error,))
 
 
 class OrganizationNotFoundError(exceptions.Error):

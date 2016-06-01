@@ -16,9 +16,13 @@
 
 import re
 
+from googlecloudsdk.api_lib.app import metric_names
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
@@ -208,3 +212,100 @@ def DeleteVersions(api_client, versions):
             text.Pluralize(len(printable_errors), 'version'),
             ', '.join(printable_errors.keys())) +
         '\n\n'.join(printable_errors.values()))
+
+
+def PromoteVersion(all_services, new_version, clients, stop_previous_version):
+  """Promote the new version to receive all traffic.
+
+  Additionally, stops the previous version if applicable.
+
+  Args:
+    all_services: {str, Service}, A mapping of service id to Service objects
+      for all services in the app.
+    new_version: Version, The version to promote.
+    clients: deploy._AppEngineClients, The API clients for Google App Engine
+      APIs.
+    stop_previous_version: bool, True to stop the previous version which was
+      receiving all traffic, if any.
+  """
+  old_default_version = None
+  if stop_previous_version:
+    # Grab the list of versions before we promote, since we need to
+    # figure out what the previous default version was
+    old_default_version = _GetPreviousVersion(
+        all_services, new_version, clients.api)
+
+  clients.api.SetDefaultVersion(new_version.service, new_version.id)
+  metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
+
+  if old_default_version:
+    _StopPreviousVersionIfApplies(old_default_version, clients)
+
+
+def _GetPreviousVersion(all_services, new_version, api_client):
+  """Get the previous default version of which new_version is replacing.
+
+  If there is no such version, return None.
+
+  Args:
+    all_services: {str, Service}, A mapping of service id to Service objects
+      for all services in the app.
+    new_version: Version, The version to promote.
+    api_client: appengine_api_client.AppengineApiClient, The client for talking
+      to the App Engine Admin API.
+
+  Returns:
+    Version, The previous version or None.
+  """
+  service = all_services.get(new_version.service, None)
+  if not service:
+    return None
+  for old_version in api_client.ListVersions([service]):
+    # Make sure not to stop the just-deployed version!
+    # This can happen with a new service, or with a deployment over
+    # an existing version.
+    if (old_version.IsReceivingAllTraffic() and
+        old_version.id != new_version.id):
+      return old_version
+
+
+def _StopPreviousVersionIfApplies(old_default_version, clients):
+  """Stop the previous default version if applicable.
+
+  Cases where a version will not be stopped:
+
+  * If the previous default version is not serving, there is no need to stop it.
+  * If the previous default version is an automatically scaled standard
+    environment app, it cannot be stopped.
+
+  Args:
+    old_default_version: Version, The old default version to stop.
+    clients: deploy._AppEngineClients, The API clients for Google App Engine
+      APIs.
+  """
+  version_object = old_default_version.version
+  status_enum = clients.api.messages.Version.ServingStatusValueValuesEnum
+  if version_object.servingStatus != status_enum.SERVING:
+    log.info(
+        'Previous default version [{0}] not serving, so not stopping '
+        'it.'.format(old_default_version))
+    return
+  is_standard = not (version_object.vm or version_object.env == 'flex' or
+                     version_object.env == 'flexible')
+  if (is_standard and not version_object.basicScaling and
+      not version_object.manualScaling):
+    log.info(
+        'Previous default version [{0}] is an automatically scaled '
+        'standard environment app, so not stopping it.'.format(
+            old_default_version))
+    return
+
+  try:
+    clients.gae.StopService(service=old_default_version.service,
+                            version=old_default_version.id)
+  except util.RPCError as err:
+    log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
+                                                        str(err)))
+    log.warn('Version [{0}] is still running and you must stop or delete it '
+             'yourself in order to turn it off. (If you do not, you may be '
+             'charged.)'.format(old_default_version))

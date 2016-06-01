@@ -183,6 +183,7 @@ DATASTORE_ID_POLICY_DEFAULT = 'default'
 SECURE_HTTP = 'never'
 SECURE_HTTPS = 'always'
 SECURE_HTTP_OR_HTTPS = 'optional'
+# Used for missing values; see http://b/issue?id=2073962.
 SECURE_DEFAULT = 'default'
 
 REQUIRE_MATCHING_FILE = 'require_matching_file'
@@ -1078,6 +1079,13 @@ class URLMap(HandlerBase):
           ' also specified a mime_type of %r.' % (content_type, self.mime_type))
 
   def FixSecureDefaults(self):
+    """Force omitted 'secure: ...' handler fields to 'secure: optional'.
+
+    The effect is that handler.secure is never equal to the (nominal)
+    default.
+
+    See http://b/issue?id=2073962.
+    """
     if self.secure == SECURE_DEFAULT:
       self.secure = SECURE_HTTP_OR_HTTPS
 

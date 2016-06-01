@@ -417,10 +417,6 @@
           "description": "An Android robo test.",
           "$ref": "AndroidRoboTest"
         },
-        "androidMonkeyTest": {
-          "description": "An Android monkey test.",
-          "$ref": "AndroidMonkeyTest"
-        },
         "autoGoogleLogin": {
           "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and\nadd it to the device, before executing the test. Note that test accounts\nmight be reused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated\naccounts allows testing more functionalities.\nDefault is false.\nOptional",
           "type": "boolean"
@@ -445,6 +441,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "account": {
+          "description": "The device will be logged in on this account for the duration of the test.\nOptional",
+          "$ref": "Account"
         }
       }
     },
@@ -483,6 +483,24 @@
           "description": "A path to a file in Google Cloud Storage.\nExample: gs:\/\/build-app-1414623860166\/app-debug-unaligned.apk",
           "type": "string"
         }
+      }
+    },
+    "Account": {
+      "id": "Account",
+      "description": "Identifies an account and how to log into it",
+      "type": "object",
+      "properties": {
+        "googleAuto": {
+          "description": "An automatic google login account",
+          "$ref": "GoogleAuto"
+        }
+      }
+    },
+    "GoogleAuto": {
+      "id": "GoogleAuto",
+      "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and add\nit to the device, before executing the test. Note that test accounts might be\nreused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated accounts\nallows testing more functionalities.",
+      "type": "object",
+      "properties": {
       }
     },
     "AndroidInstrumentationTest": {
@@ -548,43 +566,13 @@
         }
       }
     },
-    "AndroidMonkeyTest": {
-      "id": "AndroidMonkeyTest",
-      "description": "A test of an Android application that uses the UI\/Application Exerciser\nMonkey from the Android SDK. (Not to be confused with the \"monkeyrunner\"\ntool, which is also included in the SDK.)\n\nSee http:\/\/developer.android.com\/tools\/help\/monkey.html for details.",
-      "type": "object",
-      "properties": {
-        "appApk": {
-          "description": "The APK for the application under test.\nRequired",
-          "$ref": "FileReference"
-        },
-        "appPackageId": {
-          "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
-          "type": "string"
-        },
-        "eventCount": {
-          "description": "Number of random monkey events (e.g. clicks, touches) to generate.\nOptional, defaults to 2000.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "eventDelay": {
-          "description": "Fixed delay between events.\nOptional, defaults to 10ms.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "randomSeed": {
-          "description": "Seed value for pseudo-random number generator.\nNote that, although specifying a seed causes the monkey to generate the\nsame sequence of events, it does not guarantee that a particular outcome\nwill be reproducible across runs.\nOptional",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "EnvironmentMatrix": {
       "id": "EnvironmentMatrix",
       "description": "The matrix of environments in which the test is to be executed.",
       "type": "object",
       "properties": {
         "androidMatrix": {
-          "description": "A matrix of Android devices",
+          "description": "A matrix of Android devices.",
           "$ref": "AndroidMatrix"
         }
       }

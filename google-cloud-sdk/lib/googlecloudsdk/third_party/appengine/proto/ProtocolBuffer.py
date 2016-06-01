@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # Copyright 2002, Google Inc.
-# Author: Keith Randall
 
 
 import array
@@ -21,6 +20,7 @@ import re
 import struct
 try:
   # NOTE(user): Using non-google-style import to workaround a zipimport_tinypar
+  # issue for zip files embedded in par files. See http://b/13811096
   import googlecloudsdk.third_party.appengine.proto.proto1 as proto1
 except ImportError:
   # Protect in case of missing deps / strange env (GAE?) / etc.

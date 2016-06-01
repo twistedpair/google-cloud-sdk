@@ -141,7 +141,7 @@
             "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
             "The normal and active state.",
             "The project has been marked for deletion by the user\n(by invoking DeleteProject)\nor by the system (Google Cloud Platform).\nThis can generally be reversed by invoking UndeleteProject.",
-            "The process of deleting the project has begun.  Reversing the deletion\nis no longer possible."
+            "This lifecycle state is no longer used and is not returned by the API."
           ],
           "type": "string",
           "enum": [
@@ -363,6 +363,10 @@
       "description": "The root node in the resource hierarchy to which a particular entity's\n(e.g., company) resources belong.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output Only. The resource name of the organization. This is the\norganization's relative path in the API. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".\nWarning: Support for this field is not yet implemented.",
+          "type": "string"
+        },
         "organizationId": {
           "description": "An immutable id for the Organization that is assigned on creation. This\nshould be omitted when creating a new Organization.\nThis field is read-only.",
           "type": "string"
@@ -385,7 +389,7 @@
           "enumDescriptions": [
             "Unspecified state.  This is only useful for distinguishing unset values.",
             "The normal and active state.",
-            "The organization has been marked for deletion by the user"
+            "The organization has been marked for deletion by the user."
           ],
           "type": "string",
           "enum": [
@@ -522,7 +526,7 @@
           "path": "v1beta1/projects/{projectId}",
           "flatPath": "v1beta1/projects/{projectId}",
           "httpMethod": "DELETE",
-          "description": "Marks the Project identified by the specified\n`project_id` (for example, `my-project-123`) for deletion.\nThis method will only affect the Project if the following criteria are met:\n\n+ The Project does not have a billing account associated with it.\n+ The Project has a lifecycle state of\nACTIVE.\n\nThis method changes the Project's lifecycle state from\nACTIVE\nto DELETE_REQUESTED.\nThe deletion starts at an unspecified time,\nat which point the lifecycle state changes to DELETE_IN_PROGRESS.\n\nUntil the deletion completes, you can check the lifecycle state\nchecked by retrieving the Project with GetProject,\nand the Project remains visible to ListProjects.\nHowever, you cannot update the project.\n\nAfter the deletion completes, the Project is not retrievable by\nthe  GetProject and\nListProjects methods.\n\nThe caller must have modify permissions for this Project.",
+          "description": "Marks the Project identified by the specified\n`project_id` (for example, `my-project-123`) for deletion.\nThis method will only affect the Project if the following criteria are met:\n\n+ The Project does not have a billing account associated with it.\n+ The Project has a lifecycle state of\nACTIVE.\n\nThis method changes the Project's lifecycle state from\nACTIVE\nto DELETE_REQUESTED.\nThe deletion starts at an unspecified time, at which point the project is\nno longer accessible.\n\nUntil the deletion completes, you can check the lifecycle state\nchecked by retrieving the Project with GetProject,\nand the Project remains visible to ListProjects.\nHowever, you cannot update the project.\n\nAfter the deletion completes, the Project is not retrievable by\nthe  GetProject and\nListProjects methods.\n\nThe caller must have modify permissions for this Project.",
           "parameters": {
             "projectId": {
               "description": "The Project ID (for example, `foo-bar-123`).\n\nRequired.",
@@ -546,7 +550,7 @@
           "path": "v1beta1/projects/{projectId}:undelete",
           "flatPath": "v1beta1/projects/{projectId}:undelete",
           "httpMethod": "POST",
-          "description": "Restores the Project identified by the specified\n`project_id` (for example, `my-project-123`).\nYou can only use this method for a Project that has a lifecycle state of\nDELETE_REQUESTED.\nAfter deletion starts, as indicated by a lifecycle state of\nDELETE_IN_PROGRESS,\nthe Project cannot be restored.\n\nThe caller must have modify permissions for this Project.",
+          "description": "Restores the Project identified by the specified\n`project_id` (for example, `my-project-123`).\nYou can only use this method for a Project that has a lifecycle state of\nDELETE_REQUESTED.\nAfter deletion starts, the Project cannot be restored.\n\nThe caller must have modify permissions for this Project.",
           "parameters": {
             "projectId": {
               "description": "The project ID (for example, `foo-bar-123`).\n\nRequired.",
@@ -629,7 +633,7 @@
           "path": "v1beta1/projects/{resource}:setIamPolicy",
           "flatPath": "v1beta1/projects/{resource}:setIamPolicy",
           "httpMethod": "POST",
-          "description": "Sets the IAM access control policy for the specified Project. Replaces\nany existing policy.\n\nThe following constraints apply when using `setIamPolicy()`:\n\n+ Project currently supports only `user:{emailid}` and\n`serviceAccount:{emailid}` members in a `Binding` of a `Policy`.\n\n+ To be added as an `owner`, a user must be invited via Cloud Platform\nconsole and must accept the invitation.\n\n+ Members cannot be added to more than one role in the same policy.\n\n+ There must be at least one owner who has accepted the Terms of\nService (ToS) agreement in the policy. Calling `setIamPolicy()` to\nto remove the last ToS-accepted owner from the policy will fail.\n\n+ Calling this method requires enabling the App Engine Admin API.\n\nNote: Removing service accounts from policies or changing their roles\ncan render services completely inoperable. It is important to understand\nhow the service account is being used before removing or updating its roles.",
+          "description": "Sets the IAM access control policy for the specified Project. Replaces\nany existing policy.\n\nThe following constraints apply when using `setIamPolicy()`:\n\n+ Project does not support `allUsers` and `allAuthenticatedUsers` as\n`members` in a `Binding` of a `Policy`.\n\n+ The owner role can be granted only to `user`, `group`, and\n`serviceAccount`.\n\n+ Service accounts and groups can be made owners of a project directly\nwithout any restrictions. However, to be added as an owner, a user must be\ninvited via Cloud Platform console and must accept the invitation.\n\n+ A user cannot be granted the owner role using `setIamPolicy()`. The user\nmust be granted the owner role using the Cloud Platform Console and must\nexplicitly accept the invitation.\n\n+ Invitations to grant the owner role cannot be sent using `setIamPolicy()`;\nthey must be sent only using the Cloud Platform Console.\n\n+ Membership changes that leave the project without any owners that have\naccepted the Terms of Service (ToS) will be rejected.\n\n+ Members cannot be added to more than one role in the same policy.\n\n+ There must be at least one owner who has accepted the Terms of\nService (ToS) agreement in the policy. Calling `setIamPolicy()` to\nto remove the last ToS-accepted owner from the policy will fail. This\nrestriction also applies to legacy projects that no longer have owners\nwho have accepted the ToS. Edits to IAM policies will be rejected until\nthe lack of a ToS-accepting owner is rectified.\n\n+ Calling this method requires enabling the App Engine Admin API.\n\nNote: Removing service accounts from policies or changing their roles\ncan render services completely inoperable. It is important to understand\nhow the service account is being used before removing or updating its roles.",
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `setIamPolicy` documentation.",
@@ -728,6 +732,11 @@
               "description": "The id of the Organization resource to fetch.",
               "location": "path",
               "required": true,
+              "type": "string"
+            },
+            "name": {
+              "description": "The resource name of the Organization to fetch. Its format is\n\"organizations\/[organization_id]\". For example, \"organizations\/1234\".\nWarning: Support for this field is not yet implemented.",
+              "location": "query",
               "type": "string"
             }
           },

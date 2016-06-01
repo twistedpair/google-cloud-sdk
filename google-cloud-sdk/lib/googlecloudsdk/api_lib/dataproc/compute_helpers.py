@@ -14,6 +14,7 @@
 
 """Constants for the dataproc tool."""
 
+from googlecloudsdk.api_lib.compute import client_adapter as compute_client
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils as compute_utils
@@ -59,9 +60,10 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
   @classmethod
   def FromContext(cls, context):
     """Updates required global state and constructs ConfigurationHelper."""
-    compute_utils.UpdateContextEndpointEntries(context)
-    batch_url = context['batch-url']
-    compute = context['compute']
+    client = compute_client.ClientAdapter()
+    compute_utils.UpdateContextEndpointEntries(context, client)
+    batch_url = client.batch_url
+    compute = client.apitools_client
     resources = context['resources']
     zone_prop = properties.VALUES.compute.zone
     project_prop = properties.VALUES.core.project

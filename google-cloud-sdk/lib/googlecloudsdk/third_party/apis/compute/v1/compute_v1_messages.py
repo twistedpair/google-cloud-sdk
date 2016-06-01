@@ -312,6 +312,20 @@ class AttachedDisk(_messages.Message):
       this disk, in the form persistent-disks-x, where x is a number assigned
       by Google Compute Engine. This field is only applicable for persistent
       disks.
+    diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
+      encryption key.  If you are creating a new disk, this field encrypts the
+      new disk using an encryption key that you provide. If you are attaching
+      an existing disk that is already encrypted, this field decrypts the disk
+      using the customer-supplied encryption key.  If you encrypt a disk using
+      a customer-supplied key, you must provide the same key again when you
+      attempt to use this resource at a later time. For example, you must
+      provide the key when you create a snapshot or an image from the disk or
+      when you attach the disk to a virtual machine instance.  If you do not
+      provide an encryption key, then the disk will be encrypted using an
+      automatically generated key and you do not need to provide a key to use
+      the disk later.  Instance templates do not store customer-supplied
+      encryption keys, so you cannot use your own keys to encrypt disks in a
+      managed instance group.
     index: Assigns a zero-based index to this disk, where 0 is reserved for
       the boot disk. For example, if you have many disks attached to an
       instance, each disk would have a unique index number. If not specified,
@@ -378,14 +392,15 @@ class AttachedDisk(_messages.Message):
   autoDelete = _messages.BooleanField(1)
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
-  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 5)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 6)
-  kind = _messages.StringField(7, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(8, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 9)
-  source = _messages.StringField(10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 6)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
+  kind = _messages.StringField(8, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(9, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 10)
+  source = _messages.StringField(11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -420,12 +435,19 @@ class AttachedDiskInitializeParams(_messages.Message):
       You can also specify a private image by its image family, which returns
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
+    sourceImageEncryptionKey: The customer-supplied encryption key of the
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.  Instance templates do not store customer-
+      supplied encryption keys, so you cannot create disks for instances in a
+      managed instance group if the source images are encrypted with your own
+      keys.
   """
 
   diskName = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2)
   diskType = _messages.StringField(3)
   sourceImage = _messages.StringField(4)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
 
 
 class Autoscaler(_messages.Message):
@@ -907,16 +929,13 @@ class BackendServiceList(_messages.Message):
   """Contains a list of BackendService resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of BackendService resources.
     kind: [Output Only] Type of resource. Always compute#backendServiceList
       for lists of backend services.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -3328,6 +3347,24 @@ class ComputeInstancesStartRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A ComputeInstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    instance: Name of the instance resource to start.
+    instancesStartWithEncryptionKeyRequest: A
+      InstancesStartWithEncryptionKeyRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesStartWithEncryptionKeyRequest = _messages.MessageField('InstancesStartWithEncryptionKeyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesStopRequest(_messages.Message):
   """A ComputeInstancesStopRequest object.
 
@@ -3716,6 +3753,178 @@ class ComputeRegionsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
+
+
+class ComputeRoutersAggregatedListRequest(_messages.Message):
+  """A ComputeRoutersAggregatedListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: When
+      filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeRoutersDeleteRequest(_messages.Message):
+  """A ComputeRoutersDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersGetRequest(_messages.Message):
+  """A ComputeRoutersGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersGetRouterStatusRequest(_messages.Message):
+  """A ComputeRoutersGetRouterStatusRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+
+
+class ComputeRoutersInsertRequest(_messages.Message):
+  """A ComputeRoutersInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.MessageField('Router', 3)
+
+
+class ComputeRoutersListRequest(_messages.Message):
+  """A ComputeRoutersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: When
+      filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+
+
+class ComputeRoutersPatchRequest(_messages.Message):
+  """A ComputeRoutersPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to update.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
+class ComputeRoutersUpdateRequest(_messages.Message):
+  """A ComputeRoutersUpdateRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to update.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
 
 
 class ComputeRoutesDeleteRequest(_messages.Message):
@@ -5127,6 +5336,34 @@ class ComputeZonesListRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class CustomerEncryptionKey(_messages.Message):
+  """Represents a customer-supplied encryption key
+
+  Fields:
+    rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
+      RFC 4648 base64 to either encrypt or decrypt this resource.
+    sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
+      customer-supplied encryption key that protects this resource.
+  """
+
+  rawKey = _messages.StringField(1)
+  sha256 = _messages.StringField(2)
+
+
+class CustomerEncryptionKeyProtectedDisk(_messages.Message):
+  """A CustomerEncryptionKeyProtectedDisk object.
+
+  Fields:
+    diskEncryptionKey: Decrypts data associated with the disk with a customer-
+      supplied encryption key.
+    source: Specifies a valid partial or full URL to an existing Persistent
+      Disk resource. This field is only applicable for persistent disks.
+  """
+
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+  source = _messages.StringField(2)
+
+
 class DeprecationStatus(_messages.Message):
   """Deprecation status for a public resource.
 
@@ -5192,6 +5429,14 @@ class Disk(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
+      key.  After you encrypt a disk with a customer-supplied key, you must
+      provide the same key if you use the disk later (e.g. to create a disk
+      snapshot or an image, or to attach the disk to a virtual machine).
+      Customer-supplied encryption keys do not protect access to metadata of
+      the disk.  If you do not provide an encryption key when creating the
+      disk, then the disk will be encrypted using an automatically generated
+      key and you do not need to provide a key to use the disk later.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -5228,6 +5473,9 @@ class Disk(_messages.Message):
       You can also specify a private image by its image family, which returns
       the latest version of the image in that family. Replace the image name
       with family/family-name:  global/images/family/my-private-family
+    sourceImageEncryptionKey: The customer-supplied encryption key of the
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
     sourceImageId: [Output Only] The ID value of the image used to create this
       disk. This value identifies the exact image that was used to create this
       persistent disk. For example, if you created the persistent disk from an
@@ -5239,6 +5487,9 @@ class Disk(_messages.Message):
       following are valid values:   - https://www.googleapis.com/compute/v1/pr
       ojects/project/global/snapshots/snapshot  -
       projects/project/global/snapshots/snapshot  - global/snapshots/snapshot
+    sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
+      source snapshot. Required if the source snapshot is protected by a
+      customer-supplied encryption key.
     sourceSnapshotId: [Output Only] The unique ID of the snapshot used to
       create this disk. This value identifies the exact snapshot that was used
       to create this persistent disk. For example, if you created the
@@ -5271,23 +5522,26 @@ class Disk(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#disk')
-  lastAttachTimestamp = _messages.StringField(5)
-  lastDetachTimestamp = _messages.StringField(6)
-  licenses = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  options = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  sizeGb = _messages.IntegerField(11)
-  sourceImage = _messages.StringField(12)
-  sourceImageId = _messages.StringField(13)
-  sourceSnapshot = _messages.StringField(14)
-  sourceSnapshotId = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  type = _messages.StringField(17)
-  users = _messages.StringField(18, repeated=True)
-  zone = _messages.StringField(19)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#disk')
+  lastAttachTimestamp = _messages.StringField(6)
+  lastDetachTimestamp = _messages.StringField(7)
+  licenses = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  options = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sizeGb = _messages.IntegerField(12)
+  sourceImage = _messages.StringField(13)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceImageId = _messages.StringField(15)
+  sourceSnapshot = _messages.StringField(16)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceSnapshotId = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  type = _messages.StringField(20)
+  users = _messages.StringField(21, repeated=True)
+  zone = _messages.StringField(22)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -6306,8 +6560,16 @@ class Image(_messages.Message):
       deprecated.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    imageEncryptionKey: Encrypts the image using a customer-supplied
+      encryption key.  After you encrypt an image with a customer-supplied
+      key, you must provide the same key if you use the image later (e.g. to
+      create a disk from the image).  Customer-supplied encryption keys do not
+      protect access to metadata of the disk.  If you do not provide an
+      encryption key when creating the image, then the disk will be encrypted
+      using an automatically generated key and you do not need to provide a
+      key to use the image later.
     kind: [Output Only] Type of the resource. Always compute#image for images.
-    licenses: Any applicable publicly visible licenses.
+    licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -6323,6 +6585,9 @@ class Image(_messages.Message):
       example, the following are valid values:   - https://www.googleapis.com/
       compute/v1/projects/project/zones/zone/disk/disk  -
       projects/project/zones/zone/disk/disk  - zones/zone/disks/disk
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
@@ -6400,15 +6665,17 @@ class Image(_messages.Message):
   diskSizeGb = _messages.IntegerField(5)
   family = _messages.StringField(6)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#image')
-  licenses = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  rawDisk = _messages.MessageField('RawDiskValue', 11)
-  selfLink = _messages.StringField(12)
-  sourceDisk = _messages.StringField(13)
-  sourceDiskId = _messages.StringField(14)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 15, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
+  kind = _messages.StringField(9, default=u'compute#image')
+  licenses = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  rawDisk = _messages.MessageField('RawDiskValue', 12)
+  selfLink = _messages.StringField(13)
+  sourceDisk = _messages.StringField(14)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceDiskId = _messages.StringField(16)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 17, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
 
 
 class ImageList(_messages.Message):
@@ -6725,7 +6992,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """A InstanceGroupManager object.
+  """An Instance Template Manager resource.
 
   Fields:
     baseInstanceName: The base instance name to use for instances in this
@@ -7319,7 +7586,8 @@ class InstanceProperties(_messages.Message):
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
-      false. See the canIpForward documentation for more information.
+      false. See the Enable IP forwarding for instances documentation for more
+      information.
     description: An optional text description for the instances that are
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
@@ -7573,6 +7841,20 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   machineType = _messages.StringField(1)
 
 
+class InstancesStartWithEncryptionKeyRequest(_messages.Message):
+  """A InstancesStartWithEncryptionKeyRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to start the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+
+
 class License(_messages.Message):
   """A license resource.
 
@@ -7610,6 +7892,8 @@ class MachineType(_messages.Message):
       is defined by the server.
     imageSpaceGb: [Deprecated] This property is deprecated and will never be
       populated with any relevant values.
+    isSharedCpu: [Output Only] Whether this machine type has a shared CPU. See
+      Shared-core machine types for more information.
     kind: [Output Only] The type of the resource. Always compute#machineType
       for machine types.
     maximumPersistentDisks: [Output Only] Maximum persistent disks allowed.
@@ -7640,14 +7924,15 @@ class MachineType(_messages.Message):
   guestCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   imageSpaceGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(7, default=u'compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(9)
-  memoryMb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  isSharedCpu = _messages.BooleanField(7)
+  kind = _messages.StringField(8, default=u'compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
+  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  scratchDisks = _messages.MessageField('ScratchDisksValueListEntry', 13, repeated=True)
+  selfLink = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -8587,6 +8872,8 @@ class Project(_messages.Message):
       information.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultServiceAccount: [Output Only] Default service account used by VMs
+      running in this project.
     description: An optional textual description of the resource.
     enabledFeatures: Restricted features enabled for use on this project.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -8604,14 +8891,15 @@ class Project(_messages.Message):
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enabledFeatures = _messages.StringField(4, repeated=True)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#project')
-  name = _messages.StringField(7)
-  quotas = _messages.MessageField('Quota', 8, repeated=True)
-  selfLink = _messages.StringField(9)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 10)
+  defaultServiceAccount = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enabledFeatures = _messages.StringField(5, repeated=True)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#project')
+  name = _messages.StringField(8)
+  quotas = _messages.MessageField('Quota', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
 
 
 class Quota(_messages.Message):
@@ -8645,6 +8933,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
@@ -8674,19 +8963,20 @@ class Quota(_messages.Message):
     IN_USE_ADDRESSES = 12
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
-    ROUTES = 15
-    SNAPSHOTS = 16
-    SSD_TOTAL_GB = 17
-    SSL_CERTIFICATES = 18
-    STATIC_ADDRESSES = 19
-    SUBNETWORKS = 20
-    TARGET_HTTPS_PROXIES = 21
-    TARGET_HTTP_PROXIES = 22
-    TARGET_INSTANCES = 23
-    TARGET_POOLS = 24
-    TARGET_VPN_GATEWAYS = 25
-    URL_MAPS = 26
-    VPN_TUNNELS = 27
+    ROUTERS = 15
+    ROUTES = 16
+    SNAPSHOTS = 17
+    SSD_TOTAL_GB = 18
+    SSL_CERTIFICATES = 19
+    STATIC_ADDRESSES = 20
+    SUBNETWORKS = 21
+    TARGET_HTTPS_PROXIES = 22
+    TARGET_HTTP_PROXIES = 23
+    TARGET_INSTANCES = 24
+    TARGET_POOLS = 25
+    TARGET_VPN_GATEWAYS = 26
+    URL_MAPS = 27
+    VPN_TUNNELS = 28
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -8958,6 +9248,345 @@ class RouteList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class Router(_messages.Message):
+  """Router resource.
+
+  Fields:
+    bgp: A RouterBgp attribute.
+    bgpPeers: A RouterBgpPeer attribute.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    interfaces: A RouterInterface attribute.
+    kind: [Output Only] Type of resource. Always compute#router for routers.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    network: URI of the network to which this router belongs.
+    region: [Output Only] URI of the region where the router resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  bgp = _messages.MessageField('RouterBgp', 1)
+  bgpPeers = _messages.MessageField('RouterBgpPeer', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
+  kind = _messages.StringField(7, default=u'compute#router')
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+
+
+class RouterAggregatedList(_messages.Message):
+  """Contains a list of routers.
+
+  Messages:
+    ItemsValue: A map of scoped router lists.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A map of scoped router lists.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    """A map of scoped router lists.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of routers.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RoutersScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RoutersScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#routerAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RouterBgp(_messages.Message):
+  """A RouterBgp object.
+
+  Fields:
+    asn: Local BGP Autonomous System Number (ASN). Must be an RFC6996 private
+      ASN, either 16-bit or 32-bit. The value will be fixed for this router
+      resource. All VPN tunnels that link to this router will have the same
+      local ASN.
+  """
+
+  asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+
+
+class RouterBgpPeer(_messages.Message):
+  """BGP information that needs to be configured into the routing stack to
+  establish the BGP peering. It must specify peer ASN and either interface
+  name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273
+
+  Fields:
+    advertisedRoutePriority: The priority of routes advertised to this BGP
+      peer. In the case where there is more than one matching route of maximum
+      length, the routes with lowest priority value win.
+    interfaceName: Name of the interface the BGP peer is associated with.
+    ipAddress: IP address of the interface inside Google Cloud Platform.
+    name: Name of this BGP peer. The name must be 1-63 characters long and
+      comply with RFC1035.
+    peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
+      value can be different for every tunnel.
+    peerIpAddress: IP address of the BGP interface outside Google cloud.
+  """
+
+  advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  interfaceName = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  name = _messages.StringField(4)
+  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(6)
+
+
+class RouterInterface(_messages.Message):
+  """Router interfaces. Each interface requires either one linked resource
+  (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
+
+  Fields:
+    ipRange: IP address and range of the interface. The IP range must be in
+      the RFC3927 link-local IP space. The value must be a CIDR-formatted
+      string, for example: 169.254.0.1/30. NOTE: Do not truncate the address
+      as it represents the IP address of the interface.
+    linkedVpnTunnel: URI of linked VPN tunnel. It must be in the same region
+      as the router. Each interface can have at most one linked resource.
+    name: Name of this interface entry. The name must be 1-63 characters long
+      and comply with RFC1035.
+  """
+
+  ipRange = _messages.StringField(1)
+  linkedVpnTunnel = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class RouterList(_messages.Message):
+  """Contains a list of Router resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of Router resources.
+    kind: [Output Only] Type of resource. Always compute#router for routers.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Router', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#routerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RouterStatus(_messages.Message):
+  """A RouterStatus object.
+
+  Fields:
+    bestRoutes: Best routes for this router's network.
+    bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
+    network: URI of the network to which this router belongs.
+  """
+
+  bestRoutes = _messages.MessageField('Route', 1, repeated=True)
+  bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 2, repeated=True)
+  network = _messages.StringField(3)
+
+
+class RouterStatusBgpPeerStatus(_messages.Message):
+  """A RouterStatusBgpPeerStatus object.
+
+  Enums:
+    StatusValueValuesEnum: Status of the BGP peer: {UP, DOWN}
+
+  Fields:
+    advertisedRoutes: Routes that were advertised to the remote BGP peer
+    ipAddress: IP address of the local BGP interface.
+    linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
+    name: Name of this BGP peer. Unique within the Routers resource.
+    numLearnedRoutes: Number of routes learned from the remote BGP Peer.
+    peerIpAddress: IP address of the remote BGP interface.
+    state: BGP state as specified in RFC1771.
+    status: Status of the BGP peer: {UP, DOWN}
+    uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
+      23 hours, 59 minutes, 59 seconds
+    uptimeSeconds: Time this session has been up, in seconds. Format: 145
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """Status of the BGP peer: {UP, DOWN}
+
+    Values:
+      DOWN: <no description>
+      UNKNOWN: <no description>
+      UP: <no description>
+    """
+    DOWN = 0
+    UNKNOWN = 1
+    UP = 2
+
+  advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
+  ipAddress = _messages.StringField(2)
+  linkedVpnTunnel = _messages.StringField(3)
+  name = _messages.StringField(4)
+  numLearnedRoutes = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(6)
+  state = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  uptime = _messages.StringField(9)
+  uptimeSeconds = _messages.StringField(10)
+
+
+class RouterStatusResponse(_messages.Message):
+  """A RouterStatusResponse object.
+
+  Fields:
+    kind: Type of resource.
+    result: A RouterStatus attribute.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#routerStatusResponse')
+  result = _messages.MessageField('RouterStatus', 2)
+
+
+class RoutersScopedList(_messages.Message):
+  """A RoutersScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of routers
+      when the list is empty.
+
+  Fields:
+    routers: List of routers contained in this scope.
+    warning: Informational warning which replaces the list of routers when the
+      list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    """Informational warning which replaces the list of routers when the list
+    is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      INJECTED_KERNELS_DEPRECATED = 3
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
+      NEXT_HOP_CANNOT_IP_FORWARD = 5
+      NEXT_HOP_INSTANCE_NOT_FOUND = 6
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
+      NEXT_HOP_NOT_RUNNING = 8
+      NOT_CRITICAL_ERROR = 9
+      NO_RESULTS_ON_PAGE = 10
+      REQUIRED_TOS_AGREEMENT = 11
+      RESOURCE_NOT_DELETED = 12
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
+      UNREACHABLE = 14
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  routers = _messages.MessageField('Router', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class Scheduling(_messages.Message):
   """Sets the scheduling options for an Instance.
 
@@ -9058,7 +9687,19 @@ class Snapshot(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
+    snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
+      encryption key.  After you encrypt a snapshot using a customer-supplied
+      key, you must provide the same key if you use the image later For
+      example, you must provide the encryption key when you create a disk from
+      the encrypted snapshot in a future request.  Customer-supplied
+      encryption keys do not protect access to metadata of the disk.  If you
+      do not provide an encryption key when creating the snapshot, then the
+      snapshot will be encrypted using an automatically generated key and you
+      do not need to provide a key to use the snapshot later.
     sourceDisk: [Output Only] The source disk used to create this snapshot.
+    sourceDiskEncryptionKey: The customer-supplied encryption key of the
+      source disk. Required if the source disk is protected by a customer-
+      supplied encryption key.
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
@@ -9112,11 +9753,13 @@ class Snapshot(_messages.Message):
   licenses = _messages.StringField(6, repeated=True)
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
-  sourceDisk = _messages.StringField(9)
-  sourceDiskId = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  storageBytes = _messages.IntegerField(12)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 13)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  sourceDisk = _messages.StringField(10)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  sourceDiskId = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  storageBytes = _messages.IntegerField(14)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
 
 
 class SnapshotList(_messages.Message):
@@ -10639,6 +11282,7 @@ class VpnTunnel(_messages.Message):
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
       disjoint.
+    router: URL of router resource to be used for dynamic routing.
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: Shared secret used to set the secure session between the
       Cloud VPN gateway and the peer VPN gateway.
@@ -10689,11 +11333,12 @@ class VpnTunnel(_messages.Message):
   peerIp = _messages.StringField(9)
   region = _messages.StringField(10)
   remoteTrafficSelector = _messages.StringField(11, repeated=True)
-  selfLink = _messages.StringField(12)
-  sharedSecret = _messages.StringField(13)
-  sharedSecretHash = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  targetVpnGateway = _messages.StringField(16)
+  router = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  sharedSecret = _messages.StringField(14)
+  sharedSecretHash = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  targetVpnGateway = _messages.StringField(17)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

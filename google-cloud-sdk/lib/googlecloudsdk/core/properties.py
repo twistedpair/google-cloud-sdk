@@ -505,6 +505,7 @@ class _SectionApp(_Section):
         hidden=True)
     self.stop_previous_version = self._AddBool(
         'stop_previous_version',
+        default=True,
         help_text='If True, when deploying a new version of a service, the '
         'previously deployed version is stopped. If False, older versions must '
         'be stopped manually.')
@@ -600,6 +601,14 @@ class _SectionContainer(_Section):
         'cluster',
         help_text='The name of the cluster to use by default when working with '
         'Container Engine.')
+    self.use_client_certificate = self._AddBool(
+        'use_client_certificate',
+        # TODO(b/28962426): Default to True (use legacy client cert auth) until
+        # we bundle a kubectl that understands how to use GCP auth. Once we ship
+        # a 1.3 kubectl, the default should change to False.
+        default=True,
+        help_text='Use the cluster\'s client certificate to authenticate to '
+        'the cluster API server.')
 
 
 def _GetGCEAccount():

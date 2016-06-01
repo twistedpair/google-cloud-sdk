@@ -186,7 +186,7 @@
           "format": "google-datetime"
         },
         "finishTime": {
-          "description": "Time at whihc execution of the build was finished.\n@OutputOnly",
+          "description": "Time at which execution of the build was finished.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },

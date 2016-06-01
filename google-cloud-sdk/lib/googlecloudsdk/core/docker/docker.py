@@ -36,6 +36,7 @@ from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
 _DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
+_CREDENTIAL_STORE_KEY = 'credsStore'
 
 
 # Other tools like the python docker library (used by gcloud app)
@@ -77,6 +78,27 @@ def _ReadFullDockerConfiguration():
   path, new_format = GetDockerConfig()
   with open(path, 'r') as reader:
     return json.loads(reader.read()), new_format
+
+
+def _CredentialHelperConfigured():
+  """Returns True if a credential helper is specified in the docker config.
+
+  Returns:
+    True if a credential helper is specified in the docker config.
+    False if the config file does not exist or does not contain a
+    'credsStore' key.
+  """
+  try:
+    new_config_1_7_0_plus, new_format = _ReadFullDockerConfiguration()
+    if new_format:
+      return _CREDENTIAL_STORE_KEY in new_config_1_7_0_plus
+    else:
+      # The old format is for Docker <1.7.0.
+      # Older Docker clients (<1.11.0) don't support credential helpers.
+      return False
+  except IOError:
+    # Config file doesn't exist.
+    return False
 
 
 def ReadDockerConfig():
@@ -150,24 +172,29 @@ def UpdateDockerCredentials(server):
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')
 
-  try:
-    # Update the credentials stored by docker, passing the access token
-    # as a password, and benign values as the email and username.
-    _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
-  except exceptions.Error as e:
-    # Only catch docker-not-found error
-    if str(e) != _DOCKER_NOT_FOUND_ERROR:
-      raise
+  if _CredentialHelperConfigured():
+    try:
+      # Update the credentials stored by docker, passing the access token
+      # as a password, and benign values as the email and username.
+      _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
+    except exceptions.Error as e:
+      # Only catch docker-not-found error
+      if str(e) != _DOCKER_NOT_FOUND_ERROR:
+        raise
 
-    # Fall back to the previous manual .dockercfg manipulation
-    # in order to support gcloud app's docker-binaryless use case.
-    # TODO(user) when app deploy is using Argo to take over builds,
-    # remove this.
+      # Fall back to the previous manual .dockercfg manipulation
+      # in order to support gcloud app's docker-binaryless use case.
+      # TODO(user) when app deploy is using Argo to take over builds,
+      # remove this.
+      _UpdateDockerConfig(server, _USERNAME, cred.access_token)
+      log.warn(
+          "'docker' was not discovered on the path. Credentials have been "
+          'stored, but are not guaranteed to work with the 1.11 Docker client '
+          ' if an external credential store is configured.')
+  else:
+    # The happy case! No credential helpers have been configured so we can
+    # inject our credentials directly.
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
-    log.warn(
-        "'docker' was not discovered on the path. Credentials have been "
-        "stored, but are not guaranteed to work with the 1.11 Docker client if "
-        "an external credential store is configured.")
 
 
 def _DockerLogin(server, email, username, access_token):
@@ -211,12 +238,21 @@ def _DockerLogin(server, email, username, access_token):
   else:
     # If the login failed, print everything.
     sys.stdout.write(stdoutdata)
+    sys.stdout.flush()
     sys.stderr.write(stderrdata)
+    sys.stderr.flush()
     raise exceptions.Error('Docker login failed.')
 
 
 def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
-  # Reads docker's output and surface lines which aren't expected given success.
+  """Reads docker's output and surfaces unexpected lines.
+
+  Docker's CLI has a certain amount of chattiness, even on successes.
+
+  Args:
+    stdoutdata: The raw data output from the pipe given to Popen as stdout.
+    stderrdata: The raw data output from the pipe given to Popen as stderr.
+  """
 
   # Split the outputs by lines.
   stdout = [s.strip() for s in stdoutdata.splitlines()]
@@ -227,6 +263,8 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
     if line != 'Login Succeeded':
       sys.stdout.write(line)
 
+  sys.stdout.flush()
+
   for line in stderr:
     # Swallow warnings about --email and 'saved in', surface any other error
     # output.
@@ -236,6 +274,8 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
       continue
 
     sys.stderr.write(line)
+
+  sys.stderr.flush()
 
 
 def _UpdateDockerConfig(server, username, access_token):

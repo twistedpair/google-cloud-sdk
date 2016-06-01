@@ -22,7 +22,7 @@ class Build(_messages.Message):
 
   Fields:
     createTime: Time at which the build was created. @OutputOnly
-    finishTime: Time at whihc execution of the build was finished. @OutputOnly
+    finishTime: Time at which execution of the build was finished. @OutputOnly
     id: Unique identifier of the build. @OutputOnly
     images: List of images expected to be built and pushed to Google Container
       Registry. If an image is listed here and the image is not produced by

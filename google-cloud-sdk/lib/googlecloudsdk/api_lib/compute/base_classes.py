@@ -38,7 +38,6 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as resource_exceptions
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import http as http_client
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.apitools.base.py import encoding
@@ -54,7 +53,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
-    self._http_client = http_client.Http()
 
   @property
   def _resource_spec(self):
@@ -64,7 +62,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
       # Constructing the spec can be potentially expensive (e.g.,
       # generating the set of valid fields from the protobuf message),
       self.__resource_spec = resource_specs.GetSpec(
-          self.resource_type, self.messages, self.context['api-version'])
+          self.resource_type, self.messages, self.compute_client.api_version)
     return self.__resource_spec
 
   @property
@@ -82,7 +80,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def http(self):
     """Specifies the http client to be used for requests."""
-    return self._http_client
+    return self.compute_client.apitools_client.http
 
   @property
   def project(self):
@@ -92,12 +90,17 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def batch_url(self):
     """Specifies the API batch URL."""
-    return self.context['batch-url']
+    return self.compute_client.batch_url
+
+  @property
+  def compute_client(self):
+    """Specifies the compute client."""
+    return self.context['client']
 
   @property
   def compute(self):
     """Specifies the compute client."""
-    return self.context['compute']
+    return self.compute_client.apitools_client
 
   @property
   def resources(self):
@@ -115,7 +118,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def messages(self):
     """Specifies the API message classes."""
-    return self.compute.MESSAGES_MODULE
+    return self.compute_client.messages
 
   def Collection(self):
     """Returns the resource collection path."""

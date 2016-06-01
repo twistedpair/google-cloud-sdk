@@ -112,6 +112,7 @@ def _GetDatastoreType(app=None):
   # TODO(user): Using the presence of a partition is a very fragile way to
   # detect the datastore type and does not work for dev_appserver. Switch to a
   # more robust system (e.g. RPC call to appserver). See
+  # http://b/issue?id=6469560.
   partition, _, _ = app_identity._ParseFullAppId(current_app)
   if partition:
     return BaseConnection.HIGH_REPLICATION_DATASTORE
@@ -1228,6 +1229,7 @@ class BaseConnection(object):
     rpc = apiproxy_stub_map.UserRPC(service_name, deadline, callback)
     return rpc
 
+  # Backwards compatible alias. # TODO(user): Remove. http://b/11856478.
   create_rpc = _create_rpc
 
   def _set_request_read_policy(self, request, config=None):
@@ -1334,6 +1336,7 @@ class BaseConnection(object):
     self._add_pending(rpc)
     return rpc
 
+  # Backwards compatible alias. # TODO(user): Remove. http://b/11856478.
   make_rpc_call = _make_rpc_call
 
   def check_rpc_success(self, rpc):

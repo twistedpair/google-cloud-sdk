@@ -252,7 +252,7 @@
       "type": "object",
       "properties": {
         "service": {
-          "description": "An identifier of the service, such as the name of the executable, job, or\nGoogle App Engine module name. This field is expected to have a low number\nof values that are relatively stable over time, as opposed to\n`version`, which can be changed whenever new code is deployed.\n\nContains the module name for error reports extracted from Google\nApp Engine logs or `default` if the App Engine default module is used.",
+          "description": "An identifier of the service, such as the name of the\nexecutable, job, or Google App Engine module name. This field is expected\nto have a low number of values that are relatively stable over time, as\nopposed to `version`, which can be changed whenever new code is deployed.\n\nContains the module name for error reports extracted from Google\nApp Engine logs or `default` if the App Engine default module is used.",
           "type": "string"
         },
         "version": {
@@ -272,7 +272,7 @@
           "format": "google-datetime"
         },
         "serviceContext": {
-          "description": "The service_context for which this error was reported.",
+          "description": "The `ServiceContext` for which this error was reported.",
           "$ref": "ServiceContext"
         },
         "message": {
@@ -287,11 +287,11 @@
     },
     "ErrorContext": {
       "id": "ErrorContext",
-      "description": "A description of the context in which an error occurred.\nThis data should be provided by the application when reporting an error,\nunless the\nerror report has been generated automatically from Google App Engine logs.\nAll fields are optional.",
+      "description": "A description of the context in which an error occurred.\nThis data should be provided by the application when reporting an error,\nunless the\nerror report has been generated automatically from Google App Engine logs.",
       "type": "object",
       "properties": {
         "httpRequest": {
-          "description": "The HTTP request which was processed when the error was triggered.",
+          "description": "The HTTP request which was processed when the error was\ntriggered.",
           "$ref": "HttpRequestContext"
         },
         "user": {
@@ -306,7 +306,7 @@
     },
     "HttpRequestContext": {
       "id": "HttpRequestContext",
-      "description": "HTTP request data that is related to a reported error.\nThis data should be provided by the application when reporting an error,\nunless the\nerror report has been generated automatically from Google App Engine logs.\nAll fields are optional.",
+      "description": "HTTP request data that is related to a reported error.\nThis data should be provided by the application when reporting an error,\nunless the\nerror report has been generated automatically from Google App Engine logs.",
       "type": "object",
       "properties": {
         "method": {
@@ -342,7 +342,7 @@
       "type": "object",
       "properties": {
         "filePath": {
-          "description": "The source code filename, which can include a truncated relative path, or\na full path from a production machine.",
+          "description": "The source code filename, which can include a truncated relative\npath, or a full path from a production machine.",
           "type": "string"
         },
         "lineNumber": {
@@ -393,7 +393,7 @@
           "description": "Deletes all error events of a given project.",
           "parameters": {
             "projectName": {
-              "description": "The resource name of the Google Cloud Platform project. Required.\nExample: `projects\/my-project`.",
+              "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]*$",
@@ -423,7 +423,7 @@
               "description": "Get the specified group.",
               "parameters": {
                 "groupName": {
-                  "description": "Group resource name. Required.\nExample: `projects\/my-project-123\/groups\/my-group`",
+                  "description": "[Required] Group resource name.\nExample: `projects\/my-project-123\/groups\/my-group`",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/groups\/[^\/]*$",
@@ -480,25 +480,25 @@
               "description": "Lists the specified groups.",
               "parameters": {
                 "projectName": {
-                  "description": "The resource name of the Google Cloud Platform project. Written as\n`projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nRequired. Example: `projects\/my-project-123`.",
+                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*$",
                   "type": "string"
                 },
                 "groupId": {
-                  "description": "List all `ErrorGroupStats` with these IDs.\nIf not specified, all error group stats with a non-zero error count\nfor the given selection criteria are returned.",
+                  "description": "[Optional] List all `ErrorGroupStats` with these IDs.\nIf not specified, all error group stats with a non-zero error count\nfor the given selection criteria are returned.",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
                 },
                 "serviceFilter.service": {
-                  "description": "The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.version": {
-                  "description": "The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
                   "location": "query",
                   "type": "string"
                 },
@@ -516,13 +516,13 @@
                   ]
                 },
                 "timedCountDuration": {
-                  "description": "The preferred duration for a single returned `TimedCount`.\nIf not set, no timed counts are returned.",
+                  "description": "[Optional] The preferred duration for a single returned `TimedCount`.\nIf not set, no timed counts are returned.",
                   "location": "query",
                   "type": "string",
                   "format": "google-duration"
                 },
                 "alignment": {
-                  "description": "The alignment of the timed counts to be returned.\nDefault is `ALIGNMENT_EQUAL_AT_END`.",
+                  "description": "[Optional] The alignment of the timed counts to be returned.\nDefault is `ALIGNMENT_EQUAL_AT_END`.",
                   "location": "query",
                   "type": "string",
                   "enum": [
@@ -532,13 +532,13 @@
                   ]
                 },
                 "alignmentTime": {
-                  "description": "Time where the timed counts shall be aligned if rounded alignment\nis chosen. Default is 00:00 UTC.",
+                  "description": "[Optional] Time where the timed counts shall be aligned if rounded\nalignment is chosen. Default is 00:00 UTC.",
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"
                 },
                 "order": {
-                  "description": "The sort order in which the results are returned.\nDefault is `COUNT_DESC`.",
+                  "description": "[Optional] The sort order in which the results are returned.\nDefault is `COUNT_DESC`.",
                   "location": "query",
                   "type": "string",
                   "enum": [
@@ -550,13 +550,13 @@
                   ]
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return per response.\nDefault is 20.",
+                  "description": "[Optional] The maximum number of results to return per response.\nDefault is 20.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A `next_page_token` provided by a previous response. To view additional\nresults, pass this token along with the identical query parameters as the\nfirst request.",
+                  "description": "[Optional] A `next_page_token` provided by a previous response. To view\nadditional results, pass this token along with the identical query\nparameters as the first request.",
                   "location": "query",
                   "type": "string"
                 }
@@ -583,24 +583,24 @@
               "description": "Lists the specified events.",
               "parameters": {
                 "projectName": {
-                  "description": "The resource name of the Google Cloud Platform project. Required.\nExample: projects\/my-project",
+                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*$",
                   "type": "string"
                 },
                 "groupId": {
-                  "description": "The group for which events shall be returned. Required.",
+                  "description": "[Required] The group for which events shall be returned.",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.service": {
-                  "description": "The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.version": {
-                  "description": "The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
+                  "description": "[Optional] The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
                   "location": "query",
                   "type": "string"
                 },
@@ -618,13 +618,13 @@
                   ]
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return per response.",
+                  "description": "[Optional] The maximum number of results to return per response.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A `next_page_token` provided by a previous response.",
+                  "description": "[Optional] A `next_page_token` provided by a previous response.",
                   "location": "query",
                   "type": "string"
                 }

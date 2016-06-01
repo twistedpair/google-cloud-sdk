@@ -31,6 +31,7 @@ which needs BadValueError, so it can't be defined in datastore.
 # this source file, please place them in comments only.
 
 # WARNING: Be careful when adding any new properties, since they can cause
+# backward incompatibility! See http://b/1836832 for an example.
 
 
 

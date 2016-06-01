@@ -18,7 +18,7 @@
 import argparse
 import cStringIO
 import re
-import urlparse
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
@@ -208,29 +208,22 @@ def SetResourceParamDefaults():
         resolver=resolvers.FromProperty(prop))
 
 
-def UpdateContextEndpointEntries(context, api_client_default='v1'):
+def UpdateContextEndpointEntries(context, compute_client):
   """Updates context to set API endpoints."""
 
   context['project'] = properties.VALUES.core.project.Get(required=True)
 
-  api_client = core_apis.ResolveVersion('compute', api_client_default)
-  compute = core_apis.GetClientInstance('compute', api_client)
-  context['api-version'] = api_client
-  context['compute'] = compute
-  context['resources'] = resources.REGISTRY.CloneAndSwitchAPIs(compute)
+  # TODO(user): reconsider using context for compute level constructs.
+  context['client'] = compute_client
+  context['resources'] = resources.REGISTRY.CloneAndSwitchAPIs(
+      compute_client.apitools_client)
 
-  # Turn the endpoint into just the host.
-  # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
-  compute_url = properties.VALUES.api_endpoint_overrides.compute.Get()
-  u_endpoint = urlparse.urlparse(compute_url or 'https://www.googleapis.com')
-  api_host = '%s://%s' % (u_endpoint.scheme, u_endpoint.netloc)
-  context['batch-url'] = urlparse.urljoin(api_host, 'batch')
-
+  # TODO(b/28798161): Do not initialize this for all compute commands.
   # Construct cloud user accounts client.
   try:
     # TODO(user): User a separate API override from compute.
     clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts',
-                                                    api_client)
+                                                    compute_client.api_version)
   except core_apis.UnknownVersionError:
     # Throw an error here once clouseuseraccounts has a v1 API version.
     clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts', 'beta')

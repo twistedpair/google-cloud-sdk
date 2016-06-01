@@ -400,6 +400,7 @@ CLOUDSDK_CLIENT_NOTSOSECRET = 'ZmssLNjJy2998hD4CTg2ejr2'
 
 CLOUDSDK_USER_AGENT = INSTALLATION_CONFIG.user_agent
 
+# Do not add more scopes here, see http://b/19019218.
 CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',

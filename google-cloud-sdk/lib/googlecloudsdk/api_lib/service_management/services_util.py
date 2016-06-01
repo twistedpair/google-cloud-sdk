@@ -41,6 +41,18 @@ def GetMessagesModule():
   return apis.GetMessagesModule('servicemanagement', 'v1')
 
 
+def GetClientInstance():
+  return apis.GetClientInstance('servicemanagement', 'v1')
+
+
+def GetEndpointsServiceName():
+  return 'endpoints.googleapis.com'
+
+
+def GetServiceManagementServiceName():
+  return 'servicemanagement.googleapis.com'
+
+
 def GetError(error, verbose=False):
   """Returns a ready-to-print string representation from the http response.
 

@@ -380,37 +380,3 @@ def GetAppHostname(app_id, service=None, version=None,
         scheme = 'https'
 
   return '{0}://{1}.{2}'.format(scheme, subdomain, domain)
-
-
-def GetStopPreviousVersionFromArgs(args):
-  """Returns whether to stop previous version, based on environment/arguments.
-
-  Whether to stop is determined based on the following (in decreasing
-  precedence order):
-  1. if a command-line flag is set
-  2. if the `stop_previous_version` property is set
-  3. the default: True
-
-  Issues appropriate warnings:
-  * if the user gives no indication of having seen the warning (i.e. no
-    `--[no-]stop_previous_version` flag and no `stop_previous_version` property
-    set, issue a comprehensive warning about changes coming and what to do about
-    it.
-
-  Args:
-    args: the parsed command-line arguments for the command invocation.
-
-  Returns:
-    bool, whether to promote the deployment
-  """
-  # 1. Check command-line flags
-  stop_previous_version = properties.VALUES.app.stop_previous_version.GetBool()
-  if args.stop_previous_version is not None:
-    return args.stop_previous_version
-
-  # 2. Check `stop_previous_version` property
-  if stop_previous_version is not None:
-    return stop_previous_version
-
-  # 3. Default value
-  return True

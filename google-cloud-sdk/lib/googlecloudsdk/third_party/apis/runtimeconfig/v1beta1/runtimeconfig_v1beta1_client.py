@@ -166,11 +166,13 @@ service.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a variable within the given configuration.
-Create variable will create all required intermediate path elements.
-It is a FAILED_PRECONDITION error to create a variable with a name that is
-a prefix of an existing variable name, or that has an existing variable
-name as a prefix.
+      """Creates a variable within the given configuration. You cannot create.
+a variable with a name that is a prefix of an existing variable name, or a
+name that has an existing variable name as a prefix.
+
+To learn more about creating a variable, read the
+[Setting and Getting Data](/deployment-manager/runtime-configurator/seta-and-get-variables)
+documentation.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesCreateRequest) input message
@@ -183,10 +185,12 @@ name as a prefix.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes variable or variables.
-If name denotes a variable, that variable is deleted. If name is a prefix
-and recursive is true, then all variables with that prefix are deleted,
-it's a FAILED_PRECONDITION to delete a prefix without recursive being true.
+      """Deletes a variable or multiple variables.
+
+If you specify a variable name, then that variable is deleted. If you
+specify a prefix and `recursive` is true, then all variables with that
+prefix are deleted. You must set a `recursive` to true if you delete
+variables by prefix.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesDeleteRequest) input message
@@ -199,7 +203,7 @@ it's a FAILED_PRECONDITION to delete a prefix without recursive being true.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Gets the variable resource object.
+      """Gets information about a single variable.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesGetRequest) input message
@@ -212,9 +216,8 @@ it's a FAILED_PRECONDITION to delete a prefix without recursive being true.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists variables within given RuntimeConfig object, matching optionally.
-provided filter.
-List contains only variable metadata, but not values.
+      """Lists variables within given a configuration, matching any provided filters.
+This only lists variable names, not the values.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesListRequest) input message
@@ -240,13 +243,19 @@ List contains only variable metadata, but not values.
           config, request, global_params=global_params)
 
     def Watch(self, request, global_params=None):
-      """WatchVariable watches for a variable to change and then returns the new.
-value or times out.
-If variable is deleted while being watched, VariableState will be DELETED
-and the Value will contain the last known value.
-If the operation deadline is set to a larger value than internal timeout
-existing, current variable value will be returned and Variable state will
-be VARIABLE_STATE_UNSPECIFIED.
+      """Watches a specific variable and waits for a change in the variable's value.
+When there is a change, this method returns the new value or times out.
+
+If a variable is deleted while being watched, the `variableState` state is
+set to `DELETED` and the method returns the last known variable `value`.
+
+If you set the deadline for watching to a larger value than internal timeout
+(60 seconds), the current variable value is returned and the `variableState`
+will be `VARIABLE_STATE_UNSPECIFIED`.
+
+To learn more about creating a watcher, read the
+[Watching a Variable for Changes](/deployment-manager/runtime-configurator/watching-a-variable)
+documentation.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesWatchRequest) input message
@@ -321,11 +330,10 @@ be VARIABLE_STATE_UNSPECIFIED.
 
     def Create(self, request, global_params=None):
       """Creates a Waiter resource. This operation returns a long-running Operation.
-resource which can be polled for completion. However, a Waiter with the
-given name will exist (and can be retrieved) prior to the resultant
-Operation completing. If the resultant Operation indicates a failure, the
-failed Waiter resource will still exist and must be deleted prior to
-subsequent creation attempts.
+resource which can be polled for completion. However, a waiter with the
+given name will exist (and can be retrieved) prior to the operation
+completing. If the operation fails, the failed Waiter resource will
+still exist and must be deleted prior to subsequent creation attempts.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersCreateRequest) input message
@@ -338,7 +346,7 @@ subsequent creation attempts.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the Waiter with the specified name.
+      """Deletes the waiter with the specified name.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersDeleteRequest) input message
@@ -351,7 +359,7 @@ subsequent creation attempts.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Gets the Waiter resource with the specified name.
+      """Gets information about a single waiter.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersGetRequest) input message
@@ -364,7 +372,7 @@ subsequent creation attempts.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """List Waiters within the given RuntimeConfig resource.
+      """List waiters within the given configuration.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersListRequest) input message
@@ -450,8 +458,8 @@ subsequent creation attempts.
           }
 
     def Create(self, request, global_params=None):
-      """CreateConfig creates a new config resource object.
-The configuration name must be unique within project.
+      """Creates a new RuntimeConfig resource. The configuration name must be.
+unique within project.
 
       Args:
         request: (RuntimeconfigProjectsConfigsCreateRequest) input message
@@ -464,7 +472,7 @@ The configuration name must be unique within project.
           config, request, global_params=global_params)
 
     def Delete(self, request, global_params=None):
-      """Deletes the config object.
+      """Deletes a RuntimeConfig resource.
 
       Args:
         request: (RuntimeconfigProjectsConfigsDeleteRequest) input message
@@ -477,7 +485,7 @@ The configuration name must be unique within project.
           config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
-      """Gets the config resource object.
+      """Gets information about a RuntimeConfig resource.
 
       Args:
         request: (RuntimeconfigProjectsConfigsGetRequest) input message
@@ -490,7 +498,7 @@ The configuration name must be unique within project.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists all the config objects within project.
+      """Lists all the RuntimeConfig resources within project.
 
       Args:
         request: (RuntimeconfigProjectsConfigsListRequest) input message
@@ -503,8 +511,7 @@ The configuration name must be unique within project.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates the config resource object.
-RuntimeConfig object must already exist.
+      """Updates a RuntimeConfig resource. The configuration must exist beforehand.
 
       Args:
         request: (RuntimeconfigProjectsConfigsUpdateRequest) input message

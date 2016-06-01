@@ -112,6 +112,12 @@ def StoreBooleanProperty(prop):
     boolean_property = prop
 
     def __init__(self, *args, **kwargs):
+      kwargs = dict(kwargs)
+      # Bool flags don't take any args.  There is one legacy one that needs to
+      # so only do this if the flag doesn't specifically register nargs.
+      if 'nargs' not in kwargs:
+        kwargs['nargs'] = 0
+
       option_strings = kwargs.get('option_strings')
       if option_strings:
         option_string = option_strings[0]
@@ -119,7 +125,6 @@ def StoreBooleanProperty(prop):
         option_string = None
       if option_string and option_string.startswith('--no-'):
         self._inverted = True
-        kwargs = dict(kwargs)
         kwargs['nargs'] = 0
         kwargs['const'] = None
         kwargs['choices'] = None

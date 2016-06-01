@@ -13,31 +13,19 @@
 # limitations under the License.
 
 """Errors for projects."""
-import json
-
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.calliope import exceptions
 
 
-class ProjectNotFoundError(exceptions.Error):
-  """The specified project does not exist."""
-
-  def __init__(self, project_id):
-    # TODO(user): Make the error message include how to create a project
-    #                 once create has been implemented.
-    message = ('Project [%s] does not exist.\nTo see available projects,'
-               ' run:\n  $ gcloud projects list' % project_id)
-    super(ProjectNotFoundError, self).__init__(message)
-
-
-class ProjectAccessError(exceptions.Error):
+class ProjectAccessError(exceptions.ToolException):
   """User does not have permission to access the project."""
 
   def __init__(self, project_id):
-    message = 'You do not have permission to access project [%s].' % project_id
+    message = ('Project [{0}] does not exist, or you do not have permission to '
+               'access it.').format(project_id)
     super(ProjectAccessError, self).__init__(message)
 
 
-class ProjectMoveError(exceptions.Error):
+class ProjectMoveError(exceptions.ToolException):
   """The specified project already has a parent and can't be moved."""
 
   def __init__(self, project, organization_id):
@@ -45,12 +33,3 @@ class ProjectMoveError(exceptions.Error):
         'Cannot move project [%s] into organization [%s], it already has '
         'parent %s') % (project.projectId, organization_id, project.parent)
     super(ProjectMoveError, self).__init__(message)
-
-
-class UnknownError(exceptions.Error):
-  """An unknown error occurred."""
-
-  def __init__(self, error):
-    error_content = json.loads(error.content)['error']
-    message = '%s %s' % (error_content['code'], error_content['message'])
-    super(UnknownError, self).__init__(message)

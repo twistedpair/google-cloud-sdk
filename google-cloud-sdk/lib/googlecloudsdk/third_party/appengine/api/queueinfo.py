@@ -209,6 +209,7 @@ class QueueEntry(validation.Validated):
       MAX_CONCURRENT_REQUESTS: validation.Optional(validation.TYPE_INT),
       RETRY_PARAMETERS: validation.Optional(RetryParameters),
       ACL: validation.Optional(validation.Repeated(Acl)),
+      # TODO(user): http://b/issue?id=6231287 to split this out to engine
       # and version.
       TARGET: validation.Optional(_VERSION_REGEX),
   }

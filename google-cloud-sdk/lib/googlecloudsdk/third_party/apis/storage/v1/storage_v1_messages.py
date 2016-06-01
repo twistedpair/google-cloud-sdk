@@ -26,7 +26,9 @@ class Bucket(_messages.Message):
     OwnerValue: The owner of the bucket. This is always the project team's
       owner group.
     VersioningValue: The bucket's versioning configuration.
-    WebsiteValue: The bucket's website configuration.
+    WebsiteValue: The bucket's website configuration, controlling how the
+      service behaves when accessing bucket contents as a web site. See the
+      Static Website Examples for more information.
 
   Fields:
     acl: Access controls on the bucket.
@@ -57,7 +59,9 @@ class Bucket(_messages.Message):
     timeCreated: The creation time of the bucket in RFC 3339 format.
     updated: The modification time of the bucket in RFC 3339 format.
     versioning: The bucket's versioning configuration.
-    website: The bucket's website configuration.
+    website: The bucket's website configuration, controlling how the service
+      behaves when accessing bucket contents as a web site. See the Static
+      Website Examples for more information.
   """
 
   class CorsValueListEntry(_messages.Message):
@@ -175,13 +179,19 @@ class Bucket(_messages.Message):
     enabled = _messages.BooleanField(1)
 
   class WebsiteValue(_messages.Message):
-    """The bucket's website configuration.
+    """The bucket's website configuration, controlling how the service behaves
+    when accessing bucket contents as a web site. See the Static Website
+    Examples for more information.
 
     Fields:
-      mainPageSuffix: Behaves as the bucket's directory index where missing
-        objects are treated as potential directories.
-      notFoundPage: The custom object to return when a requested resource is
-        not found.
+      mainPageSuffix: If the requested object path is missing, the service
+        will ensure the path has a trailing '/', append this suffix, and
+        attempt to retrieve the resulting object. This allows the creation of
+        index.html objects to represent directory pages.
+      notFoundPage: If the requested object path is missing, and any
+        mainPageSuffix object is missing, if applicable, the service will
+        return the named object from this bucket as the content for a 404 Not
+        Found result.
     """
 
     mainPageSuffix = _messages.StringField(1)

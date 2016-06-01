@@ -19,6 +19,7 @@ import socket
 import ssl
 
 from googlecloudsdk.core.credentials import http
+import httplib2
 
 
 class Failure(object):
@@ -62,7 +63,8 @@ def CheckReachability(urls, http_client=None):
     try:
       response, _ = http_client.request(url, method='HEAD')
     # TODO(user): Investigate other possible exceptions that might be thrown.
-    except (httplib.HTTPException, socket.error, ssl.SSLError) as err:
+    except (httplib.HTTPException, socket.error, ssl.SSLError,
+            httplib2.HttpLib2Error) as err:
       message = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
       failures.append(Failure(message=message, exception=err))
     else:

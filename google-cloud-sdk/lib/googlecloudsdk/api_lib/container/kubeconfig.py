@@ -66,8 +66,8 @@ class Kubeconfig(object):
     # We use os.open here to explicitly set file mode 0600.
     # the flags passed should mimic behavior of open(self._filename, 'w'),
     # which does write with truncate and creates file if not existing.
-    fd = os.open(self._filename, os.O_WRONLY | os.O_TRUNC | os.O_CREAT, 0o600)
-    with os.fdopen(fd, 'w') as fp:
+    flags = os.O_WRONLY | os.O_TRUNC | os.O_CREAT
+    with os.fdopen(os.open(self._filename, flags, 0o600), 'w') as fp:
       yaml.safe_dump(self._data, fp, default_flow_style=False)
 
   def SetCurrentContext(self, context):
@@ -147,7 +147,7 @@ def Cluster(name, server, ca_path=None, ca_data=None):
   }
 
 
-def User(name, token=None, username=None, password=None,
+def User(name, token=None, username=None, password=None, auth_provider=None,
          cert_path=None, cert_data=None, key_path=None, key_data=None):
   """Generate and return a user kubeconfig object.
 
@@ -156,6 +156,7 @@ def User(name, token=None, username=None, password=None,
     token: str, bearer token.
     username: str, basic auth user.
     password: str, basic auth password.
+    auth_provider: str, authentication provider.
     cert_path: str, path to client certificate file.
     cert_data: str, base64 encoded client certificate data.
     key_path: str, path to client key file.
@@ -166,10 +167,13 @@ def User(name, token=None, username=None, password=None,
   Raises:
     Error: if no auth info is provided (token or username AND password)
   """
-  if not token and (not username or not password):
-    raise Error('either token or username,password must be provided')
+  if not auth_provider and not token and (not username or not password):
+    raise Error('either auth_provider, token or username & password must be'
+                ' provided')
   user = {}
-  if token:
+  if auth_provider:
+    user['auth-provider'] = {'name': auth_provider}
+  elif token:
     user['token'] = token
   else:
     user['username'] = username

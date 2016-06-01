@@ -534,7 +534,8 @@ class Registry(object):
       api_name: str, The API name.
       api_version: if available, the version of the API being registered.
     """
-    if api_version and api_version in self.registered_apis.get(api_name, []):
+    registered_versions = self.registered_apis.get(api_name, [])
+    if api_version and api_version in registered_versions:
       # This API version has been registered.
       return
     if not api_version and api_name in self.registered_apis:
@@ -542,17 +543,11 @@ class Registry(object):
       # registered under this name.
       return
 
-    # Register only URL's if not default version.
-    if api_version is None:
-      # Default version is used if no version is provided.
-      urls_only = False
-    else:
-      default_version = core_apis.GetDefaultVersion(api_name)
-      urls_only = api_version != default_version
-
     api_client = core_apis.GetClientInstance(api_name, api_version,
                                              no_http=True)
-    self._RegisterAPI(api_client, urls_only, api_version)
+    self._RegisterAPI(api_client,
+                      urls_only=bool(registered_versions),
+                      api_version=api_version)
 
   def _RegisterAPI(self, api_client, urls_only=False, api_version=None):
     """Register a generated API with this registry.

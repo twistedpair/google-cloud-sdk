@@ -192,7 +192,7 @@
           "type": "string"
         },
         "nodePools": {
-          "description": "The node pools associated with this cluster. When creating a new cluster,\nonly a single node pool should be specified.\nThis field should not be set if \"node_config\" or \"initial_node_count\" are\nspecified.",
+          "description": "The node pools associated with this cluster.\nThis field should not be set if \"node_config\" or \"initial_node_count\" are\nspecified.",
           "type": "array",
           "items": {
             "$ref": "NodePool"
@@ -238,7 +238,7 @@
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the cluster is being created.",
-            "The RUNNING state indicates the cluster has been created and is fully usable.",
+            "The RUNNING state indicates the cluster has been created and is fully\nusable.",
             "The RECONCILING state indicates that some work is actively being done on\nthe cluster, such as upgrading the master or node software. Details can\nbe found in the `statusMessage` field.",
             "The STOPPING state indicates the cluster is being deleted.",
             "The ERROR state indicates the cluster may be unusable. Details\ncan be found in the `statusMessage` field."
@@ -258,7 +258,7 @@
           "type": "string"
         },
         "nodeIpv4CidrSize": {
-          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr` range.",
+          "description": "[Output only] The size of the address space on each node for hosting\ncontainers. This is provisioned from within the `container_ipv4_cidr`\nrange.",
           "type": "integer",
           "format": "int32"
         },
@@ -286,7 +286,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "The name of a Google Compute Engine [machine type](\/compute\/docs\/machine-types) (e.g.\n`n1-standard-1`).\n\nIf unspecified, the default machine type is\n`n1-standard-1`.",
+          "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types) (e.g.\n`n1-standard-1`).\n\nIf unspecified, the default machine type is\n`n1-standard-1`.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -300,6 +300,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "serviceAccount": {
+          "description": "The Google Cloud Platform Service Account to be used by the node VMs. If\nno Service Account is specified, the \"default\" service account is used.",
+          "type": "string"
         },
         "metadata": {
           "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the four reserved keys:\n\"instance-template\", \"kube-env\", \"startup-script\", and \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
@@ -416,11 +420,11 @@
           "format": "int32"
         },
         "selfLink": {
-          "description": "Server-defined URL for the resource.",
+          "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
         },
         "version": {
-          "description": "The version of the Kubernetes of this node.",
+          "description": "[Output only] The version of the Kubernetes of this node.",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -431,7 +435,7 @@
           }
         },
         "status": {
-          "description": "The status of the nodes in this pool instance.",
+          "description": "[Output only] The status of the nodes in this pool instance.",
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the node pool is being created.",
@@ -472,7 +476,7 @@
           "type": "boolean"
         },
         "minNodeCount": {
-          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <=\nmax_node_count.",
           "type": "integer",
           "format": "int32"
         },
@@ -489,7 +493,7 @@
       "type": "object",
       "properties": {
         "cluster": {
-          "description": "A [cluster resource](\/container-engine\/reference\/rest\/v1\/projects.zones.clusters)",
+          "description": "A [cluster\nresource](\/container-engine\/reference\/rest\/v1\/projects.zones.clusters)",
           "$ref": "Cluster"
         }
       }
@@ -612,7 +616,7 @@
           "type": "string"
         },
         "desiredMasterMachineType": {
-          "description": "The name of a Google Compute Engine [machine type](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
+          "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
           "type": "string"
         }
       }
@@ -1043,7 +1047,7 @@
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "GET",
-                  "description": "Lists all clusters owned by a project in either the specified zone or all zones.",
+                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",

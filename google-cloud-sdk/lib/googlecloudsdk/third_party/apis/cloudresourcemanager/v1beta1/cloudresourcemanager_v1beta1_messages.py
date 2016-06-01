@@ -68,10 +68,14 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
   """A CloudresourcemanagerOrganizationsGetRequest object.
 
   Fields:
+    name: The resource name of the Organization to fetch. Its format is
+      "organizations/[organization_id]". For example, "organizations/1234".
+      Warning: Support for this field is not yet implemented.
     organizationId: The id of the Organization resource to fetch.
   """
 
-  organizationId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1)
+  organizationId = _messages.StringField(2, required=True)
 
 
 class CloudresourcemanagerOrganizationsListRequest(_messages.Message):
@@ -344,6 +348,10 @@ class Organization(_messages.Message):
       the UI. This field is required.
     lifecycleState: The organization's current lifecycle state. Assigned by
       the server. @OutputOnly
+    name: Output Only. The resource name of the organization. This is the
+      organization's relative path in the API. Its format is
+      "organizations/[organization_id]". For example, "organizations/1234".
+      Warning: Support for this field is not yet implemented.
     organizationId: An immutable id for the Organization that is assigned on
       creation. This should be omitted when creating a new Organization. This
       field is read-only.
@@ -360,7 +368,7 @@ class Organization(_messages.Message):
         distinguishing unset values.
       ACTIVE: The normal and active state.
       DELETE_REQUESTED: The organization has been marked for deletion by the
-        user
+        user.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -369,8 +377,9 @@ class Organization(_messages.Message):
   creationTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
-  organizationId = _messages.StringField(4)
-  owner = _messages.MessageField('OrganizationOwner', 5)
+  name = _messages.StringField(4)
+  organizationId = _messages.StringField(5)
+  owner = _messages.MessageField('OrganizationOwner', 6)
 
 
 class OrganizationOwner(_messages.Message):
@@ -479,8 +488,8 @@ class Project(_messages.Message):
       DELETE_REQUESTED: The project has been marked for deletion by the user
         (by invoking DeleteProject) or by the system (Google Cloud Platform).
         This can generally be reversed by invoking UndeleteProject.
-      DELETE_IN_PROGRESS: The process of deleting the project has begun.
-        Reversing the deletion is no longer possible.
+      DELETE_IN_PROGRESS: This lifecycle state is no longer used and is not
+        returned by the API.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1

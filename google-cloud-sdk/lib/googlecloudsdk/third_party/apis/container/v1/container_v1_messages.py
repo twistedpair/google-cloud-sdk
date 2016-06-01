@@ -196,10 +196,8 @@ class Cluster(_messages.Message):
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range.
-    nodePools: The node pools associated with this cluster. When creating a
-      new cluster, only a single node pool should be specified. This field
-      should not be set if "node_config" or "initial_node_count" are
-      specified.
+    nodePools: The node pools associated with this cluster. This field should
+      not be set if "node_config" or "initial_node_count" are specified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -798,6 +796,9 @@ class NodeConfig(_messages.Message):
       ](/container-registry/)).  If unspecified, no scopes are added, unless
       Cloud Logging or Cloud Monitoring are enabled, in which case their
       required scopes will be added.
+    serviceAccount: The Google Cloud Platform Service Account to be used by
+      the node VMs. If no Service Account is specified, the "default" service
+      account is used.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -874,7 +875,8 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(5)
   metadata = _messages.MessageField('MetadataValue', 6)
   oauthScopes = _messages.StringField(7, repeated=True)
-  tags = _messages.StringField(8, repeated=True)
+  serviceAccount = _messages.StringField(8)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class NodePool(_messages.Message):
@@ -886,7 +888,8 @@ class NodePool(_messages.Message):
   the workload.
 
   Enums:
-    StatusValueValuesEnum: The status of the nodes in this pool instance.
+    StatusValueValuesEnum: [Output only] The status of the nodes in this pool
+      instance.
 
   Fields:
     autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
@@ -899,15 +902,15 @@ class NodePool(_messages.Message):
     instanceGroupUrls: [Output only] The resource URLs of [instance
       groups](/compute/docs/instance-groups/) associated with this node pool.
     name: The name of the node pool.
-    selfLink: Server-defined URL for the resource.
-    status: The status of the nodes in this pool instance.
+    selfLink: [Output only] Server-defined URL for the resource.
+    status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available.
-    version: The version of the Kubernetes of this node.
+    version: [Output only] The version of the Kubernetes of this node.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """The status of the nodes in this pool instance.
+    """[Output only] The status of the nodes in this pool instance.
 
     Values:
       STATUS_UNSPECIFIED: Not set.

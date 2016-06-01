@@ -171,6 +171,18 @@ the service.
               response_type_name=u'ListServiceConfigsResponse',
               supports_download=False,
           ),
+          'Submit': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.configs.submit',
+              ordered_params=[u'serviceName'],
+              path_params=[u'serviceName'],
+              query_params=[],
+              relative_path=u'v1/services/{serviceName}/configs:submit',
+              request_field=u'submitConfigSourceRequest',
+              request_type_name=u'ServicemanagementServicesConfigsSubmitRequest',
+              response_type_name=u'Service',
+              supports_download=False,
+          ),
           }
 
       self._upload_configs = {
@@ -216,6 +228,23 @@ from the newest to the oldest.
         (ListServiceConfigsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Submit(self, request, global_params=None):
+      """Creates a new service config (version) for a managed service based on.
+user-supplied configuration sources files (for example: OpenAPI
+Specification). This method stores the source configurations as well as the
+generated service config. It does NOT apply the service config to any
+backend services.
+
+      Args:
+        request: (ServicemanagementServicesConfigsSubmitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Submit')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -430,6 +459,30 @@ Operation<response: ProjectSettings>
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'Disable': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.disable',
+              ordered_params=[u'serviceName'],
+              path_params=[u'serviceName'],
+              query_params=[],
+              relative_path=u'v1/services/{serviceName}:disable',
+              request_field=u'disableServiceRequest',
+              request_type_name=u'ServicemanagementServicesDisableRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Enable': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.enable',
+              ordered_params=[u'serviceName'],
+              path_params=[u'serviceName'],
+              query_params=[],
+              relative_path=u'v1/services/{serviceName}:enable',
+              request_field=u'enableServiceRequest',
+              request_type_name=u'ServicemanagementServicesEnableRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'servicemanagement.services.get',
@@ -544,8 +597,11 @@ Operation<response: ProjectSettings>
           }
 
     def ConvertConfig(self, request, global_params=None):
-      """Converts an API specification (e.g. Swagger spec) to an equivalent.
-`google.api.Service`.
+      """DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
+config conversion moving forward.
+
+Converts an API specification (e.g. Swagger spec) to an
+equivalent `google.api.Service`.
 
       Args:
         request: (ConvertConfigRequest) input message
@@ -584,6 +640,39 @@ Operation<response: google.protobuf.Empty>
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Disable(self, request, global_params=None):
+      """Disable a managed service for a project.
+Google Service Management will only disable the managed service even if
+there are other services depend on the managed service.
+
+Operation<response: DisableServiceResponse>
+
+      Args:
+        request: (ServicemanagementServicesDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Enable(self, request, global_params=None):
+      """Enable a managed service for a project with default setting.
+If the managed service has dependencies, they will be enabled as well.
+
+Operation<response: EnableServiceResponse>
+
+      Args:
+        request: (ServicemanagementServicesEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
       return self._RunMethod(
           config, request, global_params=global_params)
 
@@ -746,8 +835,11 @@ Operation<response: google.api.Service>
           }
 
     def ConvertConfig(self, request, global_params=None):
-      """Converts an API specification (e.g. Swagger spec) to an equivalent.
-`google.api.Service`.
+      """DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
+config conversion moving forward.
+
+Converts an API specification (e.g. Swagger spec) to an
+equivalent `google.api.Service`.
 
       Args:
         request: (ConvertConfigRequest) input message

@@ -14,7 +14,6 @@
 
 """Util for projects."""
 
-from datetime import datetime
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
@@ -52,13 +51,13 @@ def GetMessages():
   return apis.GetMessagesModule('projects', 'v1beta1')
 
 
-lifecycle = GetMessages().Project.LifecycleStateValueValuesEnum
-lifecycle_description = {
-    lifecycle.LIFECYCLE_STATE_UNSPECIFIED: 'unknown',
-    lifecycle.ACTIVE: 'active',
-    lifecycle.DELETE_REQUESTED: 'pending delete',
-    lifecycle.DELETE_IN_PROGRESS: 'delete in progress',
-}
+def GetClient():
+  """Import and return the appropriate projects client.
+
+  Returns:
+    Cloud Resource Manager client for the appropriate release track.
+  """
+  return apis.GetClientInstance('projects', 'v1beta1')
 
 
 def IsActive(project):
@@ -69,7 +68,23 @@ def IsActive(project):
   Returns:
     True if the Project's lifecycle state is 'active,' else False.
   """
-  return project.lifecycleState == lifecycle.ACTIVE
+  lifecycle_enum = GetMessages().Project.LifecycleStateValueValuesEnum
+  return project.lifecycleState == lifecycle_enum.ACTIVE
+
+
+def GetLifecycleMap():
+  """Returns a mapping of reader friendly description of a project's state.
+
+  Returns:
+    Map from Project LifecycleStateValueValuesEnum values to strings.
+  """
+  lifecycle_enum = GetMessages().Project.LifecycleStateValueValuesEnum
+  return {
+      lifecycle_enum.LIFECYCLE_STATE_UNSPECIFIED: 'unknown',
+      lifecycle_enum.ACTIVE: 'active',
+      lifecycle_enum.DELETE_REQUESTED: 'pending delete',
+      lifecycle_enum.DELETE_IN_PROGRESS: 'delete in progress',
+  }
 
 
 def GetLifecycle(project):
@@ -81,47 +96,11 @@ def GetLifecycle(project):
   Returns:
     String description of lifecycle state.
   """
-  return lifecycle_description[project.lifecycleState]
-
-
-def MsToDate(ms):
-  """Takes a value of milliseconds since the epoch and returns readable date.
-
-  Args:
-    ms: Milliseconds since the epoch.
-
-  Returns:
-    Date in form YYYY-mm-dd HH:MM:SS
-
-  Example:
-    Input: 1371575781751
-    Returns: 2013-06-18 13:16:21
-  """
-  return datetime.fromtimestamp(ms/1000.0).strftime('%Y-%m-%d %H:%M:%S')
-
-
-def PrintAlignedColumns(writer, data):
-  """Prints data in nicely aligned columns.
-
-  Args:
-    writer: A printer with a Print method.
-    data: A list of lists/tuples.
-
-  Example:
-    Data of form:
-        [('1', 'apple'), ('twoooo!', 'banana'), ('3', 'clementine')]
-    will be printed as:
-        1         apple
-        twoooo!   banana
-        3         clementine
-  """
-  width = max(len(word) for row in data for word in row)
-  for row in data:
-    writer.Print(''.join(word.ljust(width) for word in row))
+  return GetLifecycleMap()[project.lifecycleState]
 
 
 def GetError(error):
-  """Returns a more specific error from an HttpError.
+  """Returns a more specific Projects error from an HttpError.
 
   Args:
     error: HttpError resulting from unsuccessful call to API.
@@ -135,31 +114,22 @@ def GetError(error):
    project_id = 'BAD_ID'
   """
   project_id = error.url.split('/')[-1].split('?')[0]
-  if error.status_code == 403:
+  if error.status_code == 403 or error.status_code == 404:
     return errors.ProjectAccessError(project_id)
-  elif error.status_code == 404:
-    return errors.ProjectNotFoundError(project_id)
-  else:
-    return errors.UnknownError(error)
+  return
 
 
-def HandleHttpError(func):
+def HandleKnownHttpErrors(func):
   """Decorator that catches HttpError and raises corresponding error."""
 
   @functools.wraps(func)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
+  def CatchHTTPErrorRaiseProjectError(*args, **kwargs):
     try:
       return func(*args, **kwargs)
     except exceptions.HttpError as error:
-      raise GetError(error)
+      processed_error = GetError(error)
+      if not processed_error:
+        raise
+      raise processed_error
 
-  return CatchHTTPErrorRaiseHTTPException
-
-
-def GetClient():
-  """Import and return the appropriate projects client.
-
-  Returns:
-    Cloud Resource Manager client for the appropriate release track.
-  """
-  return apis.GetClientInstance('projects', 'v1beta1')
+  return CatchHTTPErrorRaiseProjectError

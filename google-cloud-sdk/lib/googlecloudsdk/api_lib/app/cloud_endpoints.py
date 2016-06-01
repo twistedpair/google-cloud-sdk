@@ -17,6 +17,7 @@
 import json
 import os.path
 
+from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis
@@ -99,6 +100,8 @@ def PushServiceConfig(swagger_file, project, client, messages):
   if not messages:
     raise ValueError('Service Management client messages must be provided.')
 
+  swagger_path = os.path.dirname(swagger_file)
+
   # First, convert the swagger specification to Google Service Configuration
   try:
     with open(swagger_file) as f:
@@ -109,6 +112,10 @@ def PushServiceConfig(swagger_file, project, client, messages):
   except IOError:
     raise SwaggerOpenException(
         'Unable to read swagger spec file "{0}"'.format(swagger_file))
+
+  # Check to see if the Endpoints meta service needs to be enabled.
+  enable_api.EnableServiceIfDisabled(
+      project, services_util.GetEndpointsServiceName(), async=False)
 
   swagger_spec = messages.SwaggerSpec(swaggerFiles=[swagger_file])
   request = messages.ConvertConfigRequest(
@@ -129,12 +136,12 @@ def PushServiceConfig(swagger_file, project, client, messages):
   if not response.serviceConfig:
     raise SwaggerUploadException('Failed to upload service configuration.')
 
-  # Create a local ./endpoints directory which will contain the service.json
-  # file needed by ESP. This file+directory will be carried to the Managed VM
-  # via the app container.
+  # Create an endpoints directory under the location of the swagger config
+  # which will contain the service.json file needed by ESP.
+  # This file+directory will be carried to the Managed VM via the app container.
   # TODO(user): Remove this when ESP is able to pull this configuration
   # directly from Inception.
-  endpoints_dir = 'endpoints'
+  endpoints_dir = os.path.join(swagger_path, 'endpoints')
   if not os.path.exists(endpoints_dir):
     os.makedirs(endpoints_dir)
   with open(endpoints_dir + '/service.json', 'w') as out:

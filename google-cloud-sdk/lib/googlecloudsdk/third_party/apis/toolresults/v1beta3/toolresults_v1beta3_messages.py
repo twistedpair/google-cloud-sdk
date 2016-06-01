@@ -35,9 +35,9 @@ class Any(_messages.Message):
 
   Fields:
     typeUrl: A URL/resource name whose content describes the type of the
-      serialized protocol buffer message.  For URLs which use the schema
-      `http`, `https`, or no schema, the following restrictions and
-      interpretations apply:  * If no schema is provided, `https` is assumed.
+      serialized protocol buffer message.  For URLs which use the scheme
+      `http`, `https`, or no scheme, the following restrictions and
+      interpretations apply:  * If no scheme is provided, `https` is assumed.
       * The last segment of the URL's path must represent the fully qualified
       name of the type (as in `path/google.protobuf.Duration`). The name
       should be in a canonical form (e.g., leading "." is not accepted). * An
@@ -46,8 +46,8 @@ class Any(_messages.Message):
       lookup results based on the URL, or have them precompiled into a binary
       to avoid any lookup. Therefore, binary compatibility needs to be
       preserved on changes to types. (Use versioned type names to manage
-      breaking changes.)  Schemas other than `http`, `https` (or the empty
-      schema) might be used with implementation specific semantics.
+      breaking changes.)  Schemes other than `http`, `https` (or the empty
+      scheme) might be used with implementation specific semantics.
     value: Must be a valid serialized protocol buffer of the above specified
       type.
   """
@@ -174,12 +174,15 @@ class FailureDetail(_messages.Message):
       platform.
     otherNativeCrash: If a native process other than the app crashed.
     timedOut: If the test overran some time limit, and that is why it failed.
+    unableToCrawl: If the robo was unable to crawl the app; perhaps because
+      the app did not start.
   """
 
   crashed = _messages.BooleanField(1)
   notInstalled = _messages.BooleanField(2)
   otherNativeCrash = _messages.BooleanField(3)
   timedOut = _messages.BooleanField(4)
+  unableToCrawl = _messages.BooleanField(5)
 
 
 class FileReference(_messages.Message):

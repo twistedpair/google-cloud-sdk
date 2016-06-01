@@ -458,7 +458,8 @@ at the initial create time.
           config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
-      """Lists all clusters owned by a project in either the specified zone or all zones.
+      """Lists all clusters owned by a project in either the specified zone or all.
+zones.
 
       Args:
         request: (ContainerProjectsZonesClustersListRequest) input message

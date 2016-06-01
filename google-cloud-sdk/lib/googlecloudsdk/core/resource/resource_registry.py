@@ -240,7 +240,7 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             displayName,
-            organizationId,
+            organizationId:sort=101,
             owner.directoryCustomerId
           )
         """,

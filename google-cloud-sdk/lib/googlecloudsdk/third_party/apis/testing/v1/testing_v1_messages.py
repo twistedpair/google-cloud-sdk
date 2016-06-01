@@ -12,6 +12,16 @@ from googlecloudsdk.third_party.apitools.base.py import encoding
 package = 'testing'
 
 
+class Account(_messages.Message):
+  """Identifies an account and how to log into it
+
+  Fields:
+    googleAuto: An automatic google login account
+  """
+
+  googleAuto = _messages.MessageField('GoogleAuto', 1)
+
+
 class AndroidDevice(_messages.Message):
   """A single Android device.
 
@@ -162,32 +172,6 @@ class AndroidModel(_messages.Message):
   supportedAbis = _messages.StringField(10, repeated=True)
   supportedVersionIds = _messages.StringField(11, repeated=True)
   tags = _messages.StringField(12, repeated=True)
-
-
-class AndroidMonkeyTest(_messages.Message):
-  """A test of an Android application that uses the UI/Application Exerciser
-  Monkey from the Android SDK. (Not to be confused with the "monkeyrunner"
-  tool, which is also included in the SDK.)  See
-  http://developer.android.com/tools/help/monkey.html for details.
-
-  Fields:
-    appApk: The APK for the application under test. Required
-    appPackageId: The java package for the application under test. Optional,
-      default is determined by examining the application's manifest.
-    eventCount: Number of random monkey events (e.g. clicks, touches) to
-      generate. Optional, defaults to 2000.
-    eventDelay: Fixed delay between events. Optional, defaults to 10ms.
-    randomSeed: Seed value for pseudo-random number generator. Note that,
-      although specifying a seed causes the monkey to generate the same
-      sequence of events, it does not guarantee that a particular outcome will
-      be reproducible across runs. Optional
-  """
-
-  appApk = _messages.MessageField('FileReference', 1)
-  appPackageId = _messages.StringField(2)
-  eventCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  eventDelay = _messages.StringField(4)
-  randomSeed = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -487,7 +471,7 @@ class EnvironmentMatrix(_messages.Message):
   """The matrix of environments in which the test is to be executed.
 
   Fields:
-    androidMatrix: A matrix of Android devices
+    androidMatrix: A matrix of Android devices.
   """
 
   androidMatrix = _messages.MessageField('AndroidMatrix', 1)
@@ -522,6 +506,17 @@ class GceInstanceDetails(_messages.Message):
   name = _messages.StringField(1)
   projectId = _messages.StringField(2)
   zone = _messages.StringField(3)
+
+
+class GoogleAuto(_messages.Message):
+  """Enables automatic Google account login. If set, the service will
+  automatically generate a Google test account and add it to the device,
+  before executing the test. Note that test accounts might be reused. Many
+  applications show their full set of functionalities when an account is
+  present on the device. Logging into the device with these generated accounts
+  allows testing more functionalities.
+  """
+
 
 
 class GoogleCloudStorage(_messages.Message):
@@ -878,14 +873,17 @@ class TestSetup(_messages.Message):
   """A description of how to set up the device prior to running the test
 
   Fields:
+    account: The device will be logged in on this account for the duration of
+      the test. Optional
     directoriesToPull: The directories on the device to upload to GCS at the
       end of the test; they must be absolute, whitelisted paths. Refer to
       RegularFile for whitelisted paths. Optional
     filesToPush: Optional
   """
 
-  directoriesToPull = _messages.StringField(1, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 2, repeated=True)
+  account = _messages.MessageField('Account', 1)
+  directoriesToPull = _messages.StringField(2, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 3, repeated=True)
 
 
 class TestSpecification(_messages.Message):
@@ -893,7 +891,6 @@ class TestSpecification(_messages.Message):
 
   Fields:
     androidInstrumentationTest: An Android instrumentation test.
-    androidMonkeyTest: An Android monkey test.
     androidRoboTest: An Android robo test.
     autoGoogleLogin: Enables automatic Google account login. If set, the
       service will automatically generate a Google test account and add it to
@@ -909,11 +906,10 @@ class TestSpecification(_messages.Message):
   """
 
   androidInstrumentationTest = _messages.MessageField('AndroidInstrumentationTest', 1)
-  androidMonkeyTest = _messages.MessageField('AndroidMonkeyTest', 2)
-  androidRoboTest = _messages.MessageField('AndroidRoboTest', 3)
-  autoGoogleLogin = _messages.BooleanField(4)
-  testSetup = _messages.MessageField('TestSetup', 5)
-  testTimeout = _messages.StringField(6)
+  androidRoboTest = _messages.MessageField('AndroidRoboTest', 2)
+  autoGoogleLogin = _messages.BooleanField(3)
+  testSetup = _messages.MessageField('TestSetup', 4)
+  testTimeout = _messages.StringField(5)
 
 
 class TestingProjectsDevicesCreateRequest(_messages.Message):
