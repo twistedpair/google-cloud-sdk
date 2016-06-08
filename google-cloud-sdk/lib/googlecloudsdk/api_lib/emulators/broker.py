@@ -51,8 +51,12 @@ class RequestTimeoutError(RequestError):
   pass
 
 
-class RequestConnResetError(RequestError):
-  pass
+class RequestSocketError(RequestError):
+  """A socket error. Check the errno field."""
+
+  def __init__(self, *args, **kwargs):
+    super(RequestError, self).__init__(*args)
+    self.errno = None
 
 
 def SocketConnResetErrno():
@@ -61,6 +65,14 @@ def SocketConnResetErrno():
   if current_os == platforms.OperatingSystem.WINDOWS:
     return errno.WSAECONNRESET
   return errno.ECONNRESET
+
+
+def SocketConnRefusedErrno():
+  """The errno value for a socket connection refused error."""
+  current_os = platforms.OperatingSystem.Current()
+  if current_os == platforms.OperatingSystem.WINDOWS:
+    return errno.WSAECONNREFUSED
+  return errno.ECONNREFUSED
 
 
 def _Await(fn, timeout_secs):
@@ -205,10 +217,11 @@ class Broker(object):
       # Invoke the /shutdown handler.
       try:
         self._SendJsonRequest('POST', '/shutdown')
-      except RequestConnResetError as e:
+      except RequestSocketError as e:
+        if e.errno not in (SocketConnRefusedErrno(), SocketConnResetErrno()):
+          raise
         # We may get an exception reading the response to the shutdown
         # request, because the shutdown may preempt the response.
-        pass
 
     if not _Await(lambda: not self.IsRunning(), wait_secs):
       log.warn('Failed to shutdown broker: still running after {0}s'.format(
@@ -381,7 +394,7 @@ class Broker(object):
 
     Raises:
       RequestTimeoutError: The request timed-out.
-      RequestConnResetError: The connection was reset.
+      RequestSocketError: The request failed due to a socket error.
       RequestError: The request errored out in some other way.
     """
     uri = 'http://{0}{1}'.format(self._address, path)
@@ -395,9 +408,10 @@ class Broker(object):
     except socket.error as e:
       if isinstance(e, socket.timeout):
         raise RequestTimeoutError(e)
-      if e.errno == SocketConnResetErrno():
-        raise RequestConnResetError(e)
-      raise RequestError(e)
+      error = RequestSocketError(e)
+      if e.errno:
+        error.errno = e.errno
+      raise error
     except httplib.HTTPException as e:
       if isinstance(e, httplib.ResponseNotReady):
         raise RequestTimeoutError(e)

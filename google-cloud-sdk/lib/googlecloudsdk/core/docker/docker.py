@@ -259,8 +259,10 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
   stderr = [s.strip() for s in stderrdata.splitlines()]
 
   for line in stdout:
-    # Swallow 'Login Succeeded,' surface any other std output.
-    if line != 'Login Succeeded':
+    # Swallow 'Login Succeeded' and 'saved in,' surface any other std output.
+    if (line != 'Login Succeeded') and (
+        'login credentials saved in' not in line):
+      line = '%s%s' % (line, os.linesep)
       sys.stdout.write(line)
 
   sys.stdout.flush()
@@ -268,12 +270,10 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
   for line in stderr:
     # Swallow warnings about --email and 'saved in', surface any other error
     # output.
-    if '\'--email\' is deprecated' in line:
-      continue
-    if 'login credentials saved in' in line:
-      continue
-
-    sys.stderr.write(line)
+    if ('\'--email\' is deprecated' not in line) and (
+        'login credentials saved in' not in line):
+      line = '%s%s' % (line, os.linesep)
+      sys.stderr.write(line)
 
   sys.stderr.flush()
 

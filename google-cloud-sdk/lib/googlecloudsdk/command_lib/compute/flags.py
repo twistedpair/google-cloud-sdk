@@ -19,6 +19,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 ZONE_PROPERTY_EXPLANATION = """\
@@ -312,11 +313,20 @@ class ResourceArgument(object):
     else:
       collection = self.global_collection
 
+    expected_collections = [c for c in (self.global_collection,
+                                        self.regional_collection,
+                                        self.zonal_collection) if c]
     refs = []
     for name in names:
       ref = api_resource_registry.Parse(name, params=params,
-                                        collection=collection)
+                                        collection=collection,
+                                        enforce_collection=False)
       if ref:
+        if ref.Collection() not in expected_collections:
+          raise resources.WrongResourceCollectionException(
+              expected=','.join(expected_collections),
+              got=ref.Collection(),
+              path=ref.SelfLink())
         refs.append(ref)
 
     if self.plural:

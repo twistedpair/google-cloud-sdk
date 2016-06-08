@@ -239,7 +239,9 @@ def ArgDictToAdditionalPropertiesList(argdict, message):
   result = []
   if argdict is None:
     return result
-  for k, v in argdict.iteritems():
+  # For consistent results (especially for deterministic testing), make
+  # the return list ordered by key
+  for k, v in sorted(argdict.iteritems()):
     result.append(message(key=k, value=v))
   return result
 

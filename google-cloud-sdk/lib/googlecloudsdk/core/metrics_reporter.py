@@ -18,6 +18,8 @@ import os
 import pickle
 import sys
 
+from googlecloudsdk.core import http_proxy
+
 try:
   # pylint:disable=g-import-not-at-top
   import httplib2
@@ -40,7 +42,9 @@ def ReportMetrics(metrics_file_path):
     metrics = pickle.load(metrics_file)
   os.remove(metrics_file_path)
 
-  http = httplib2.Http(timeout=TIMEOUT_IN_SEC)
+  http = httplib2.Http(timeout=TIMEOUT_IN_SEC,
+                       proxy_info=http_proxy.GetHttpProxyInfo())
+
   for metric in metrics:
     headers = {'user-agent': metric[3]}
     http.request(metric[0], method=metric[1], body=metric[2], headers=headers)

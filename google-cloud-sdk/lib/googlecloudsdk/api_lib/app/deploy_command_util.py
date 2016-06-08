@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.images import docker_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
+from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -58,15 +59,12 @@ class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
 
 
-def _GetDockerfileCreator(info, config_cleanup=None):
+def _GetDockerfileCreator(info):
   """Returns a function to create a dockerfile if the user doesn't have one.
 
   Args:
     info: (googlecloudsdk.api_lib.app.yaml_parsing.ServiceYamlInfo)
       The service config.
-    config_cleanup: (callable() or None) If a temporary Dockerfile has already
-      been created during the course of the deployment, this should be a
-      callable that deletes it.
 
   Raises:
     DockerfileError: Raised if a user supplied a Dockerfile and a non-custom
@@ -83,11 +81,6 @@ def _GetDockerfileCreator(info, config_cleanup=None):
   # Dockerfile.
   dockerfile_dir = os.path.dirname(info.file)
   dockerfile = os.path.join(dockerfile_dir, 'Dockerfile')
-
-  if config_cleanup:
-    # Dockerfile has already been generated. It still needs to be cleaned up.
-    # This must be before the other conditions, since it's a special case.
-    return lambda: config_cleanup
 
   if info.runtime != 'custom' and os.path.exists(dockerfile):
     raise DockerfileError(
@@ -139,15 +132,9 @@ def _GetImageName(project, service, version):
               display=display, domain=domain, service=service, version=version)
 
 
-def BuildAndPushDockerImages(service_configs,
-                             version_id,
-                             cloudbuild_client,
-                             storage_client,
-                             code_bucket_ref,
-                             cli,
-                             remote,
-                             source_contexts,
-                             config_cleanup):
+def BuildAndPushDockerImages(
+    service_configs, version_id, cloudbuild_client, storage_client,
+    code_bucket_ref, cli, remote, source_contexts):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -161,9 +148,6 @@ def BuildAndPushDockerImages(service_configs,
     remote: Whether the user specified a remote build.
     source_contexts: A list of json-serializable source contexts to place in
       the application directory for each config.
-    config_cleanup: (callable() or None) If a temporary Dockerfile has already
-      been created during the course of the deployment, this should be a
-      callable that deletes it.
 
   Returns:
     A dictionary mapping services to the name of the pushed container image.
@@ -178,8 +162,8 @@ def BuildAndPushDockerImages(service_configs,
     if info.RequiresImage():
       context_creator = context_util.GetSourceContextFilesCreator(
           os.path.dirname(info.file), source_contexts)
-      services.append((name, info, _GetDockerfileCreator(info, config_cleanup),
-                       context_creator))
+      services.append(
+          (name, info, _GetDockerfileCreator(info), context_creator))
   if not services:
     # No images need to be built.
     return {}
@@ -380,3 +364,52 @@ def GetAppHostname(app_id, service=None, version=None,
         scheme = 'https'
 
   return '{0}://{1}.{2}'.format(scheme, subdomain, domain)
+
+
+DEFAULT_DEPLOYABLE = 'app.yaml'
+
+
+def EnsureAppYamlForAppDirectory(directory):
+  """Ensures that an app.yaml exists or creates it if necessary.
+
+  If the app.yaml exists, just use it.  If it does not exist, attempt to
+  fingerprint the directory and create one.  This is an interactive process.
+  If this does not raise an error, the app.yaml is guaranteed to exist once this
+  is done.
+
+  Args:
+    directory: str, The path to the directory to create the app.yaml in.
+
+  Raises:
+    NoAppIdentifiedError, If the application type could not be identified, or
+        if a yaml file could not be generated based on the state of the source.
+
+  Returns:
+    str, The path to the created or existing app.yaml file.
+  """
+  yaml_path = os.path.join(directory, DEFAULT_DEPLOYABLE)
+  if os.path.exists(yaml_path):
+    return yaml_path
+  console_io.PromptContinue(
+      'Deployment to Google App Engine requires an app.yaml file. '
+      'This command will run `gcloud preview app gen-config` to generate '
+      'an app.yaml file for you in the current directory (if the current '
+      'directory does not contain an App Engine service, please answer '
+      '"no").', cancel_on_no=True)
+  # This indicates we don't have an app.yaml, we do not want to generate
+  # docker files (we will do that in a single place later), and that we don't
+  # want to persist the dockerfiles.
+  params = ext_runtime.Params(appinfo=None, deploy=False, custom=False)
+  configurator = fingerprinter.IdentifyDirectory(directory, params=params)
+  if configurator is None:
+    raise app_exc.NoAppIdentifiedError(
+        'Could not identify an app in the current directory.\n\n'
+        'Please prepare an app.yaml file for your application manually '
+        'and deploy again.')
+  configurator.MaybeWriteAppYaml()
+  if not os.path.exists(yaml_path):
+    raise app_exc.NoAppIdentifiedError(
+        'Failed to create an app.yaml for your app.\n\n'
+        'Please prepare an app.yaml file for your application manually '
+        'and deploy again.')
+  return yaml_path

@@ -14,36 +14,48 @@
 """Organization API specific error handling exceptions and wrappers."""
 
 import functools
-import json
 import sys
 
-from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from googlecloudsdk.api_lib.util import http_error_handler
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 
 
 def HandleHttpError(func):
   """Decorator that catches HttpError and raises corresponding error."""
+  return http_error_handler.HandleHttpErrors(HandleKnownHttpError(func))
+
+
+def HandleKnownHttpError(func):
+  """Decorator that catches specific HttpErrors and raises friendlier errors."""
 
   @functools.wraps(func)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
+  def Wrapped(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except exceptions.HttpError as error:
-      error_class, error_args = GetError(error)
+    except api_exceptions.HttpError as error:
+      maybe_known_error = GetError(error)
+      if not maybe_known_error:
+        raise
+      # GetError returns either a tuple or None, the above check ensures it
+      # must be a tuple by this point.
+      # pylint: disable=unpacking-non-sequence
+      error_class, error_args = maybe_known_error
       raise error_class, error_args, sys.exc_info()[2]
 
-  return CatchHTTPErrorRaiseHTTPException
+  return Wrapped
 
 
 def GetError(error):
-  """Returns a more specific error from an HttpError.
+  """Attempts to return a more specific error from an HttpError.
 
   Args:
     error: HttpError resulting from unsuccessful call to API.
 
   Returns:
-    Error class with error arguments tuple for use in a
-    "raise class, args, traceback" statement
+    Either an error class with error arguments tuple for use in a
+    "raise class, args, traceback" statement or None if the error code does not
+    correspond to a well known error.
   """
   # This will parse organization ID out of error url.
   #   url: .../v1beta1/organizations/BAD_ID?someParam=true&someOtherParam=false
@@ -54,10 +66,10 @@ def GetError(error):
   elif error.status_code == 404:
     return (OrganizationNotFoundError, (org_id,))
   else:
-    return (UnknownError, (error,))
+    return None
 
 
-class OrganizationNotFoundError(exceptions.Error):
+class OrganizationNotFoundError(calliope_exceptions.ToolException):
   """The specified Organization does not exist."""
 
   def __init__(self, org_id):
@@ -68,19 +80,10 @@ class OrganizationNotFoundError(exceptions.Error):
     super(OrganizationNotFoundError, self).__init__(message)
 
 
-class OrganizationAccessError(exceptions.Error):
+class OrganizationAccessError(calliope_exceptions.ToolException):
   """User does not have permission to access the Organization."""
 
   def __init__(self, org_id):
     message = (
         'You do not have permission to access organization [%s].' % org_id)
     super(OrganizationAccessError, self).__init__(message)
-
-
-class UnknownError(exceptions.Error):
-  """An unknown error occurred."""
-
-  def __init__(self, error):
-    error_content = json.loads(error.content)['error']
-    message = '%s %s' % (error_content['code'], error_content['message'])
-    super(UnknownError, self).__init__(message)

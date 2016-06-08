@@ -19,18 +19,13 @@ import os
 from pprint import pprint
 
 from googlecloudsdk.calliope import walker
+from googlecloudsdk.command_lib.static_completion import lookup
 from googlecloudsdk.core import config
 from googlecloudsdk.core.util import files
 
 
-_COMMANDS_KEY = 'commands'
-_FLAGS_KEY = 'flags'
-_POSITIONALS_KEY = 'positionals'
-_FLAG_PREFIX = '--'
 _HYPHEN = '-'
 _UNDERSCORE = '_'
-_DYNAMIC = 'DYNAMIC'
-_CANNOT_BE_COMPLETED = 'CANNOT_BE_COMPLETED'
 _COMPLETER_ATTR = 'completer'
 _COMPLETION_RESOURCE_ATTR = 'completion_resource'
 
@@ -40,18 +35,15 @@ def _CompletionValueType(arg):
     return sorted(arg.choices)
   elif (getattr(arg, _COMPLETER_ATTR, None) or
         getattr(arg, _COMPLETION_RESOURCE_ATTR, None)):
-    return _DYNAMIC
+    return lookup.DYNAMIC
   elif arg.nargs == 0:
     return None
   else:
-    return _CANNOT_BE_COMPLETED
+    return lookup.CANNOT_BE_COMPLETED
 
 
 class CompletionTableGenerator(walker.Walker):
-  """Generates an external representation of the gcloud CLI tree.
-
-  This implements the resource generator for gcloud meta list-gcloud.
-  """
+  """Generates a static completion table by walking the gcloud CLI tree."""
 
   def __init__(self, cli):
     """Constructor.
@@ -75,7 +67,7 @@ class CompletionTableGenerator(walker.Walker):
     flags_dict = {}
     for flag in flags:
       for flag_name in flag.option_strings:
-        if not flag_name.startswith(_FLAG_PREFIX):
+        if not flag_name.startswith(lookup.FLAG_PREFIX):
           continue
 
         flag_name = flag_name.replace(_UNDERSCORE, _HYPHEN)
@@ -121,15 +113,16 @@ class CompletionTableGenerator(walker.Walker):
     name = node.name.replace(_UNDERSCORE, _HYPHEN)
     # Add to parent's children
     if parent:
-      siblings = parent.get(_COMMANDS_KEY, {})
+      siblings = parent.get(lookup.COMMANDS_KEY, {})
       siblings[name] = command
-      parent[_COMMANDS_KEY] = siblings
+      parent[lookup.COMMANDS_KEY] = siblings
 
     # Populate flags
-    command[_FLAGS_KEY] = self._VisitFlags(node.ai.flag_args, parent is None)
+    command[lookup.FLAGS_KEY] = self._VisitFlags(
+        node.ai.flag_args, parent is None)
 
     # Populate positionals
-    command[_POSITIONALS_KEY] = self._VisitPositionals(
+    command[lookup.POSITIONALS_KEY] = self._VisitPositionals(
         node.ai.positional_args, parent is None)
 
     return command

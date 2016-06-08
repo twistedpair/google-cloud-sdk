@@ -736,7 +736,7 @@ class Registry(object):
     return self.parsers_by_collection[collection].ParseCollectionPath(
         collection_path, kwargs, resolve)
 
-  def ParseURL(self, url, collection):
+  def ParseURL(self, url):
     """Parse a URL into a Resource.
 
     This method does not yet handle "api.google.com" in place of
@@ -758,8 +758,6 @@ class Registry(object):
 
     Args:
       url: str, The URL of the resource.
-      collection: str, The intended collection for the parsed resource, or None
-          if unconstrained.
 
     Returns:
       Resource, The resource indicated by the provided URL.
@@ -767,8 +765,6 @@ class Registry(object):
     Raises:
       InvalidResourceException: If the provided URL could not be turned into
           a cloud resource.
-      WrongResourceCollectionException: If the provided URL points into a
-          collection other than the one specified.
     """
     match = _URL_RE.match(url)
     if not match:
@@ -823,14 +819,10 @@ class Registry(object):
     if None not in cur_level:
       raise InvalidResourceException(url)
     parser = cur_level[None]
-    resource = parser.ParseCollectionPath(None, params, resolve=True)
+    return parser.ParseCollectionPath(None, params, resolve=True)
 
-    if collection and resource.Collection() != collection:
-      raise WrongResourceCollectionException(
-          expected=collection, got=resource.Collection(), path=url)
-    return resource
-
-  def Parse(self, line, params=None, collection=None, resolve=True):
+  def Parse(self, line, params=None, collection=None,
+            enforce_collection=True, resolve=True):
     """Parse a Cloud resource from a command line.
 
     Args:
@@ -841,6 +833,8 @@ class Registry(object):
         will be searched for what remains.
       collection: str, The resource's collection, or None if it should be
         inferred from the line.
+      enforce_collection: bool, fail unless parsed resource is of this
+        specified collection, this is applicable only if line is URL.
       resolve: bool, If True, call the resource's .Resolve() method before
           returning, ensuring that all of the resource parameters are defined.
           If False, don't call them, under the assumption that it will be called
@@ -853,19 +847,30 @@ class Registry(object):
       InvalidResourceException: If the line is invalid.
       UnknownCollectionException: If no collection is provided or can be
           inferred.
+      WrongResourceCollectionException: If the provided URL points into a
+          collection other than the one specified.
     """
     if line and (line.startswith('https://') or line.startswith('http://')):
-      return self.ParseURL(line, collection)
-    else:
-      if not collection:
-        match = _COLLECTIONPATH_RE.match(line)
-        if not match:
-          raise InvalidResourceException(line)
-        collection, unused_path = match.groups()
+      resource = self.ParseURL(line)
+      # TODO(user): consider not doing this here.
+      # Validation of the argument is a distict concern.
+      if (enforce_collection and collection and
+          resource.Collection() != collection):
+        raise WrongResourceCollectionException(
+            expected=collection,
+            got=resource.Collection(),
+            path=resource.SelfLink())
+      return resource
+
+    if not collection:
+      match = _COLLECTIONPATH_RE.match(line)
+      if not match:
+        raise InvalidResourceException(line)
+      collection, unused_path = match.groups()
       if not collection:
         raise UnknownCollectionException(line)
 
-      return self.ParseCollectionPath(collection, line, params or {}, resolve)
+    return self.ParseCollectionPath(collection, line, params or {}, resolve)
 
   def Create(self, collection, **params):
     """Create a Resource from known collection and params.

@@ -429,6 +429,46 @@ def ReadFile(file_path):
                                      .format(file_path, e.message))
 
 
+def UpdateKnownHostsFile(known_hosts_file, hostname, host_key,
+                         overwrite_keys=False):
+  """Update the known_hosts file entry for the given hostname.
+
+  If there is no entry for the give hostname, it will be added. If there is
+  an entry already and overwrite_keys is False, nothing will be changed. If
+  there is an entry and overwrite_keys is True, the key will be updated if it
+  has changed.
+
+  Args:
+    known_hosts_file: str, The full path of the known_hosts file to update.
+    hostname: str, The hostname for the known_hosts entry.
+    host_key: str, The host key for the given hostname.
+    overwrite_keys: bool, If true, will overwrite the entry corresponding to
+      hostname with the new host_key if it already exists. If false and an
+      entry already exists for hostname, will ignore the new host_key value.
+  """
+  known_hosts_contents = ReadFile(known_hosts_file)
+  key_list = known_hosts_contents.splitlines()
+  found_key_entry = None
+  new_key_entry = '{0} {1}'.format(hostname, host_key)
+
+  for key in key_list:
+    if key.startswith(hostname):
+      found_key_entry = key
+      break
+
+  if overwrite_keys and found_key_entry:
+    if found_key_entry != new_key_entry:
+      key_list.remove(found_key_entry)
+      found_key_entry = None
+
+  if not found_key_entry:
+    key_list.append(new_key_entry)
+
+  new_contents = '\n'.join(key_list) + '\n'
+  with files.OpenForWritingPrivate(known_hosts_file) as f:
+    f.write(new_contents)
+
+
 def _SdkHelperBin():
   """Returns the SDK helper executable bin directory."""
   return os.path.join(config.Paths().sdk_root, 'bin', 'sdk')
@@ -900,7 +940,9 @@ class BaseSSHCLICommand(BaseSSHCommand):
       log.out.Print(' '.join(cmd_args))
       return
 
-    if use_account_service:
+    if args.plain:
+      keys_newly_added = []
+    elif use_account_service:
       keys_newly_added = self.EnsureSSHKeyExistsForUser(user)
     else:
       # There are two kinds of metadata: project-wide metadata and per-instance

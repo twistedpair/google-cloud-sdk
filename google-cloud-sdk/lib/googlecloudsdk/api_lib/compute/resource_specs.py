@@ -838,23 +838,24 @@ _SPECS_V1 = {
             ('targetVpnGateway', path_simplifier.Name)],
         editables=None
     ),
+
+    'routers': _InternalSpec(
+        message_class_name='Router',
+        table_cols=[
+            ('NAME', 'name'),
+            ('REGION', 'region'),
+            ('NETWORK', 'network'),
+        ],
+        transformations=[
+            ('network', path_simplifier.Name),
+            ('region', path_simplifier.Name),
+        ],
+        editables=None,
+    ),
 }
 
 
 _SPECS_BETA = _SPECS_V1.copy()
-_SPECS_BETA['routers'] = _InternalSpec(
-    message_class_name='Router',
-    table_cols=[
-        ('NAME', 'name'),
-        ('REGION', 'region'),
-        ('NETWORK', 'network'),
-    ],
-    transformations=[
-        ('network', path_simplifier.Name),
-        ('region', path_simplifier.Name),
-    ],
-    editables=None,
-)
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()

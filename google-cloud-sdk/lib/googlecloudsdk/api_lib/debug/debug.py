@@ -139,7 +139,7 @@ def DebugViewUrl(breakpoint):
   Returns:
     The URL for the breakpoint.
   """
-  debug_view_url = 'https://console.developers.google.com/debug/fromgcloud?'
+  debug_view_url = 'https://console.cloud.google.com/debug/fromgcloud?'
   data = [
       ('project', breakpoint.project),
       ('dbgee', breakpoint.target_id),
@@ -210,12 +210,22 @@ class Debugger(DebugObject):
     self._project = project
 
   @errors.HandleHttpError
-  def ListDebuggees(self, include_inactive=False):
+  def ListDebuggees(self, include_inactive=False, include_stale=False):
     """Lists all debug targets registered with the debug service.
 
     Args:
       include_inactive: If true, also include debuggees that are not currently
         running.
+      include_stale: If false, filter out any debuggees that refer to
+        stale minor versions. A debugge represents a stale minor version if it
+        meets the following criteria:
+            1. It has a minorversion label.
+            2. All other debuggees with the same name (i.e., all debuggees with
+               the same module and version, in the case of app engine) have a
+               minorversion label.
+            3. The minorversion value for the debuggee is less than the
+               minorversion value for at least one other debuggee with the same
+               name.
     Returns:
       [Debuggee] A list of debuggees.
     """
@@ -223,7 +233,12 @@ class Debugger(DebugObject):
         project=self._project, includeInactive=include_inactive,
         clientVersion=self.CLIENT_VERSION)
     response = self._debug_client.debugger_debuggees.List(request)
-    return [Debuggee(debuggee) for debuggee in response.debuggees]
+    result = [Debuggee(debuggee) for debuggee in response.debuggees]
+
+    if not include_stale:
+      return _FilterStaleMinorVersions(result)
+
+    return result
 
   def DefaultDebuggee(self):
     """Find the default debuggee.
@@ -243,12 +258,6 @@ class Debugger(DebugObject):
 
     if not debuggees:
       raise errors.NoDebuggeeError()
-
-    # If there are multiple minor versions of a single module and version,
-    # return the highest-numbered minor version.
-    latest = _FindLatestMinorVersion(debuggees)
-    if latest:
-      return latest
 
     # More than one module or version. Can't determine the default target.
     raise errors.MultipleDebuggeesError(None, debuggees)
@@ -272,28 +281,33 @@ class Debugger(DebugObject):
           'Debug target not specified. Using default target: {0}\n'.format(
               debuggee.name))
       return debuggee
-    all_debuggees = self.ListDebuggees()
+
+    all_debuggees = self.ListDebuggees(include_inactive=True,
+                                       include_stale=True)
     if not all_debuggees:
       raise errors.NoDebuggeeError()
+    latest_debuggees = _FilterStaleMinorVersions(all_debuggees)
+
+    # Find all debuggees specified by ID, plus all debuggees which are the
+    # latest minor version when specified by name pattern. The sets should be
+    # disjoint, but ensure that there are no duplicates, since the list will
+    # tend to be very small and it is cheap to handle that case.
     match_re = re.compile(pattern)
-    debuggees = [d for d in all_debuggees
-                 if d.target_id == pattern or match_re.search(d.name)]
+    debuggees = list(set(
+        [d for d in all_debuggees if d.target_id == pattern] +
+        [d for d in latest_debuggees if match_re.search(d.name)]))
     if not debuggees:
       # Try matching on description.
-      debuggees = [d for d in all_debuggees
+      debuggees = [d for d in latest_debuggees
                    if d.description and match_re.search(d.description)]
-    if len(debuggees) == 1:
-      # Just one possible target
-      return debuggees[0]
+
     if not debuggees:
       raise errors.NoDebuggeeError(pattern, debuggees=all_debuggees)
-
-    # Multiple possibilities. Find the latest minor version, if they all
-    # point to the same module and version.
-    best = _FindLatestMinorVersion(debuggees)
-    if not best:
+    if len(debuggees) > 1:
       raise errors.MultipleDebuggeesError(pattern, debuggees)
-    return best
+
+    # Just one possible target
+    return debuggees[0]
 
   def RegisterDebuggee(self, description, uniquifier, agent_version=None):
     """Register a debuggee with the Cloud Debugger.
@@ -482,7 +496,7 @@ class Debuggee(DebugObject):
                 if _BreakpointMatchesIdOrRegexp(bp, ids, patterns)]
     else:
       # Return everything that is listed by ID, plus every breakpoint that
-      # is inactive (i.e. isFinalState is true) which matches any pattern.
+      # is not inactive (i.e. isFinalState is false) which matches any pattern.
       # Breakpoints that are inactive should not be matched against the
       # patterns.
       result = [bp for bp in response.breakpoints
@@ -831,6 +845,36 @@ def _BreakpointMatchesIdOrRegexp(breakpoint, ids, patterns):
     if p.match(location):
       return True
   return False
+
+
+def _FilterStaleMinorVersions(debuggees):
+  """Filter out any debugees referring to a stale minor version.
+
+  Args:
+    debuggees: A list of Debuggee objects.
+  Returns:
+    A filtered list containing only the debuggees denoting the most recent
+    minor version with the given name. If any debuggee with a given name does
+    not have a 'minorversion' label, the resulting list will contain all
+    debuggees with that name.
+  """
+  # First group by name
+  byname = {}
+  for debuggee in debuggees:
+    if debuggee.name in byname:
+      byname[debuggee.name].append(debuggee)
+    else:
+      byname[debuggee.name] = [debuggee]
+  # Now look at each list for a given name, choosing only the latest
+  # version.
+  result = []
+  for name_list in byname.values():
+    latest = _FindLatestMinorVersion(name_list)
+    if latest:
+      result.append(latest)
+    else:
+      result.extend(name_list)
+  return result
 
 
 def _FindLatestMinorVersion(debuggees):

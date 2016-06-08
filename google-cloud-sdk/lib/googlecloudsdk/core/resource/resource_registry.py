@@ -222,6 +222,23 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # cloud build
+
+    # TODO(user): use durations instead of finishTime with cl/123214184.
+    'cloudbuild.projects.builds': ResourceInfo(
+        cache_command='cloud build list',
+        bypass_cache=True,
+        list_format="""
+          table(
+            id,
+            createTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            startTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            finishTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            status
+          )
+        """,
+    ),
+
     # cloud resource manager
 
     'cloudresourcemanager.projects': ResourceInfo(
@@ -819,10 +836,9 @@ RESOURCE_REGISTRY = {
             location,
             condition,
             logLevel,
-            createTime.if(include_expired):sort=1,
             logMessageFormat,
-            id
-          )
+            id)
+            :(isFinalState:sort=101, createTime:sort=102)
         """,
     ),
 

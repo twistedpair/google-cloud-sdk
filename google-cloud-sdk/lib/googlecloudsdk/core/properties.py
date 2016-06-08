@@ -1312,7 +1312,7 @@ def PersistProperty(prop, value, scope=None):
     override = os.getenv(env_name)
     if override:
       warning_message = ('WARNING: Property [{0}] is overridden '
-                         'by environment setting [{1}={2}]')
+                         'by environment setting [{1}={2}]\n')
       # Writing to sys.stderr because of circular dependency
       # in googlecloudsdk.core.log on properties
       sys.stderr.write(warning_message.format(prop.name, env_name, override))

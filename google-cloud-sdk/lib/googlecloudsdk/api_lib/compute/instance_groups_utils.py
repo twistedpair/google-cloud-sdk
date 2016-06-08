@@ -216,52 +216,80 @@ class InstanceGroupListInstances(InstanceGroupListInstancesBase):
     return results, errors
 
 
-class InstanceGroupReferenceMixin(object):
-  """Mixin with method resolving instance group references."""
+def CreateInstanceGroupReferences(
+    scope_prompter, compute, resources, names, region, zone,
+    zonal_resource_type='instanceGroupManagers',
+    regional_resource_type='regionInstanceGroupManagers'):
+  """Creates references to instance group (zonal or regional).
 
-  def CreateInstanceGroupReferences(
-      self, names, region, zone,
-      zonal_resource_type='instanceGroupManagers',
-      regional_resource_type='regionInstanceGroupManagers'):
-    """Creates references to instance group (zonal or regional)."""
-    resolved_refs = {}
-    unresolved_names = []
-    for name in names:
-      try:
-        ref = self.resources.Parse(name,
-                                   params={'region': region, 'zone': zone})
-        resolved_refs[name] = ref
-      except resource_exceptions.UnknownCollectionException:
-        unresolved_names.append(name)
-        resolved_refs[name] = None
+  Args:
+    scope_prompter: scope prompter (for creating zonal/regional references),
+    compute: compute API object,
+    resources: GCE resources object,
+    names: resource names,
+    region: region to resolve unscoped references,
+    zone: zone to resolve unscoped references,,
+    zonal_resource_type: type for zonal resource,
+    regional_resource_type: type for regional resource,
 
-    if unresolved_names:
-      if region is not None:
-        refs = self.CreateRegionalReferences(
-            unresolved_names, region, resource_type=regional_resource_type)
-      elif zone is not None:
-        refs = self.CreateZonalReferences(
-            unresolved_names, zone, resource_type=zonal_resource_type)
-      else:
-        refs = self.PromptForMultiScopedReferences(
-            unresolved_names,
-            scope_names=['zone', 'region'],
-            scope_services=[self.compute.zones, self.compute.regions],
-            resource_types=[zonal_resource_type, regional_resource_type],
-            flag_names=['--zone', '--region'])
-      for (name, ref) in zip(unresolved_names, refs):
-        resolved_refs[name] = ref
+  Returns:
+    list of resource references
+  """
 
-    return [resolved_refs[name] for name in names]
+  resolved_refs = {}
+  unresolved_names = []
+  for name in names:
+    try:
+      ref = resources.Parse(name, params={'region': region, 'zone': zone})
+      resolved_refs[name] = ref
+    except resource_exceptions.UnknownCollectionException:
+      unresolved_names.append(name)
+      resolved_refs[name] = None
 
-  def CreateInstanceGroupReference(
-      self, name, region, zone,
-      zonal_resource_type='instanceGroupManagers',
-      regional_resource_type='regionInstanceGroupManagers'):
-    """Creates reference to instance group (zonal or regional)."""
-    return self.CreateInstanceGroupReferences([name], region, zone,
-                                              zonal_resource_type,
-                                              regional_resource_type)[0]
+  if unresolved_names:
+    if region is not None:
+      refs = scope_prompter.CreateRegionalReferences(
+          unresolved_names, region, resource_type=regional_resource_type)
+    elif zone is not None:
+      refs = scope_prompter.CreateZonalReferences(
+          unresolved_names, zone, resource_type=zonal_resource_type)
+    else:
+      refs = scope_prompter.PromptForMultiScopedReferences(
+          unresolved_names,
+          scope_names=['zone', 'region'],
+          scope_services=[compute.zones, compute.regions],
+          resource_types=[zonal_resource_type, regional_resource_type],
+          flag_names=['--zone', '--region'])
+    for (name, ref) in zip(unresolved_names, refs):
+      resolved_refs[name] = ref
+
+  return [resolved_refs[name] for name in names]
+
+
+def CreateInstanceGroupReference(
+    scope_prompter, compute, resources, name, region, zone,
+    zonal_resource_type='instanceGroupManagers',
+    regional_resource_type='regionInstanceGroupManagers'):
+  """Creates single reference to instance group (zonal or regional).
+
+  Args:
+    scope_prompter: scope prompter (for creating zonal/regional references),
+    compute: compute API object,
+    resources: GCE resources object,
+    name: resource name,
+    region: region to resolve unscoped references,
+    zone: zone to resolve unscoped references,,
+    zonal_resource_type: type for zonal resource,
+    regional_resource_type: type for regional resource,
+
+  Returns:
+    list of resource references
+  """
+
+  return CreateInstanceGroupReferences(scope_prompter, compute, resources,
+                                       [name], region, zone,
+                                       zonal_resource_type,
+                                       regional_resource_type)[0]
 
 
 class InstanceGroupGetNamedPorts(base_classes.BaseLister):

@@ -6,12 +6,31 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Cloud SDK
 
+* gcloud now uses Internet Explorer proxy configuration settings when on
+  Windows, or MacOSX SystemConfiguration proxy settings on Mac, if the gcloud
+  configurations `proxy/*` are not set.
+
+### Google Compute Engine
+
+* `gcloud compute ssh` no longer generates keys when invoked with --plain flag.
+* `gcloud compute routers` is now GA.
+
+### Google Genomics
+
+* `gcloud genomics pipelines run` command supports passing "inputs" and
+  "outputs" as repeated parameters.
+
+
+## 112.0.0 (2016/06/01)
+
+### Cloud SDK
+
 * Updated error messages for `gcloud projects` surface.
 * `gcloud docker` commands now take less time to execute when the Docker client
+  is not configured to use a credential helper.
 
 ### Google App Engine
 
-  is not configured to use a credential helper.
 * The `--docker-build` flag and related `app/docker_build` property, as well as
   `app/use_cloud_build` property have been deprecated and will be removed in a
   future release. By default, Docker images are built remotely using Google
@@ -23,7 +42,7 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Compute Engine
 
-* Added --licenses flag to 'gcloud compute images create'.
+* Added `--licenses` flag to `gcloud compute images create`.
 
 ### Google Container Engine
 

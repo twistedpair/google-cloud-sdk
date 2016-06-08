@@ -22,6 +22,7 @@ import urlparse
 import uuid
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -51,7 +52,7 @@ def Http(timeout='unset'):
   no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool()
 
   http_client = httplib2.Http(timeout=effective_timeout,
-                              proxy_info=_GetHttpProxyInfo(),
+                              proxy_info=http_proxy.GetHttpProxyInfo(),
                               disable_ssl_certificate_validation=no_validate)
 
   # Wrap first to dump any data added by other wrappers.
@@ -103,28 +104,6 @@ def MakeUserAgentString(cmd_path=None):
 
 def GetDefaultTimeout():
   return properties.VALUES.core.http_timeout.GetInt() or 300
-
-
-def _GetHttpProxyInfo():
-  """Get ProxyInfo object to be passed to HTTP functions."""
-  proxy_type_map = config.GetProxyTypeMap()
-  proxy_type = properties.VALUES.proxy.proxy_type.Get()
-  proxy_address = properties.VALUES.proxy.address.Get()
-  proxy_port = properties.VALUES.proxy.port.GetInt()
-  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
-  if proxy_prop_set > 0 and proxy_prop_set < 3:
-    raise properties.InvalidValueError(
-        'Please set all or none of the following properties: '
-        'proxy/type, proxy/address and proxy/port')
-  proxy_info = httplib2.proxy_info_from_environment
-  if proxy_prop_set > 0:
-    proxy_info = httplib2.ProxyInfo(
-        proxy_type_map[proxy_type],
-        proxy_address,
-        proxy_port,
-        proxy_user=properties.VALUES.proxy.username.Get(),
-        proxy_pass=properties.VALUES.proxy.password.Get())
-  return proxy_info
 
 
 def RequestArgsGetHeader(args, kwargs, header, default=None):

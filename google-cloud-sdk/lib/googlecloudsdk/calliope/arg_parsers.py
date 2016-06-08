@@ -48,6 +48,7 @@ Example usage:
 """
 
 import argparse
+import copy
 import datetime
 import re
 import sys
@@ -658,8 +659,8 @@ def FloatingListValuesCatcher(
   class FloatingListValuesCatcherAction(action):
     """This is to assist with refactoring argument lists.
 
-    Provides a error for users who type (or have a script) that specifies a list
-    with the elements in different arguments. eg.
+    Provides an error for users who type (or have a script) that specifies a
+    list with the elements in different arguments. eg.
      $ gcloud sql instances create foo --authorized-networks x y
      usage: gcloud sql instances create  INSTANCE [optional flags]
      ERROR: (gcloud.sql.instances.create) argument --authorized-networks: lists
@@ -742,6 +743,148 @@ def FloatingListValuesCatcher(
             parser, namespace, values[0], option_string=option_string)
 
   return FloatingListValuesCatcherAction
+
+
+class UpdateAction(argparse.Action):
+  r"""Create a single dict value from delimited or repeated flags.
+
+  This class is intended to be a more flexible version of
+  argparse._AppendAction.
+
+  For example, with the following flag definition:
+
+      parser.add_argument(
+        '--inputs',
+        type=arg_parsers.ArgDict(),
+        action=arg_parsers.FloatingListValuesCatcher(
+            arg_parsers._AppendAction),
+
+  a caller can specify on the command line flags such as:
+
+    --inputs k1=v1,k2=v2
+
+  and the result will be a list of one dict:
+
+    [{ 'k1': 'v1', 'k2': 'v2' }]
+
+  Specifying two separate command line flags such as:
+
+    --inputs k1=v1 \
+    --inputs k2=v2
+
+  will produce a list of dicts:
+
+    [{ 'k1': 'v1'}, 'k2': 'v2' }]
+
+  The UpdateAction class allows for both of the above user inputs to result
+  in the same: a single dictionary:
+
+    { 'k1': 'v1', 'k2': 'v2' }
+
+  This gives end-users a lot more flexibility in constructing their command
+  lines, especially when scripting calls.
+
+  Note that this class will raise an exception if a key value is specified
+  more than once. To allow for a key value to be specified multiple times,
+  use UpdateActionWithAppend.
+  """
+
+  def OnDuplicateKeyRaiseError(self, key, existing_value, new_value):
+    raise argparse.ArgumentError(self, _GenerateErrorMessage(
+        '"{0}" cannot be specified multiple times'
+        .format(key), user_input=', '.join([existing_value, new_value])))
+
+  def __init__(self,
+               option_strings,
+               dest,
+               nargs=None,
+               const=None,
+               default=None,
+               type=None,  # pylint:disable=redefined-builtin
+               choices=None,
+               required=False,
+               help=None,  # pylint:disable=redefined-builtin
+               metavar=None,
+               onduplicatekey_handler=OnDuplicateKeyRaiseError):
+    if nargs == 0:
+      raise ValueError('nargs for append actions must be > 0; if arg '
+                       'strings are not supplying the value to append, '
+                       'the append const action may be more appropriate')
+    if const is not None and nargs != argparse.OPTIONAL:
+      raise ValueError('nargs must be %r to supply const' % argparse.OPTIONAL)
+    super(UpdateAction, self).__init__(
+        option_strings=option_strings,
+        dest=dest,
+        nargs=nargs,
+        const=const,
+        default=default,
+        type=type,
+        choices=choices,
+        required=required,
+        help=help,
+        metavar=metavar)
+    self.onduplicatekey_handler = onduplicatekey_handler
+
+  def __call__(self, parser, namespace, values, option_string=None):
+
+    # Get the existing dictionary (if any)
+    items = copy.copy(argparse._ensure_value(namespace, self.dest, {}))
+
+    # Merge the new key/value pair(s) in
+    for k, v in values.iteritems():
+      if k in items:
+        items[k] = self.onduplicatekey_handler(self, k, items[k], v)
+      else:
+        items[k] = v
+
+    # Saved the merged dictionary
+    setattr(namespace, self.dest, items)
+
+
+class UpdateActionWithAppend(UpdateAction):
+  """Create a single dict value from delimited or repeated flags.
+
+  This class provides a variant of UpdateAction, which allows for users to
+  append, rather than reject, duplicate key values. For example, the user
+  can specify:
+
+    --inputs k1=v1a --inputs k1=v1b --inputs k2=v2
+
+  and the result will be:
+
+     { 'k1': ['v1a', 'v1b'], 'k2': 'v2' }
+  """
+
+  def OnDuplicateKeyAppend(self, unused_key, existing_value, new_value):
+    if isinstance(existing_value, list):
+      return existing_value + [new_value]
+    else:
+      return [existing_value, new_value]
+
+  def __init__(self,
+               option_strings,
+               dest,
+               nargs=None,
+               const=None,
+               default=None,
+               type=None,  # pylint:disable=redefined-builtin
+               choices=None,
+               required=False,
+               help=None,  # pylint:disable=redefined-builtin
+               metavar=None,
+               onduplicatekey_handler=OnDuplicateKeyAppend):
+    super(UpdateActionWithAppend, self).__init__(
+        option_strings=option_strings,
+        dest=dest,
+        nargs=nargs,
+        const=const,
+        default=default,
+        type=type,
+        choices=choices,
+        required=required,
+        help=help,
+        metavar=metavar,
+        onduplicatekey_handler=onduplicatekey_handler)
 
 
 class BufferedFileInput(object):
