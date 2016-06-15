@@ -17,7 +17,6 @@
 import re
 
 from googlecloudsdk.api_lib.app import metric_names
-from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
@@ -214,7 +213,8 @@ def DeleteVersions(api_client, versions):
         '\n\n'.join(printable_errors.values()))
 
 
-def PromoteVersion(all_services, new_version, clients, stop_previous_version):
+def PromoteVersion(all_services, new_version, api_client,
+                   stop_previous_version):
   """Promote the new version to receive all traffic.
 
   Additionally, stops the previous version if applicable.
@@ -223,8 +223,7 @@ def PromoteVersion(all_services, new_version, clients, stop_previous_version):
     all_services: {str, Service}, A mapping of service id to Service objects
       for all services in the app.
     new_version: Version, The version to promote.
-    clients: deploy._AppEngineClients, The API clients for Google App Engine
-      APIs.
+    api_client: appengine_api_client.AppengineApiClient to use to make requests.
     stop_previous_version: bool, True to stop the previous version which was
       receiving all traffic, if any.
   """
@@ -233,13 +232,13 @@ def PromoteVersion(all_services, new_version, clients, stop_previous_version):
     # Grab the list of versions before we promote, since we need to
     # figure out what the previous default version was
     old_default_version = _GetPreviousVersion(
-        all_services, new_version, clients.api)
+        all_services, new_version, api_client)
 
-  clients.api.SetDefaultVersion(new_version.service, new_version.id)
+  api_client.SetDefaultVersion(new_version.service, new_version.id)
   metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
 
   if old_default_version:
-    _StopPreviousVersionIfApplies(old_default_version, clients)
+    _StopPreviousVersionIfApplies(old_default_version, api_client)
 
 
 def _GetPreviousVersion(all_services, new_version, api_client):
@@ -269,7 +268,7 @@ def _GetPreviousVersion(all_services, new_version, api_client):
       return old_version
 
 
-def _StopPreviousVersionIfApplies(old_default_version, clients):
+def _StopPreviousVersionIfApplies(old_default_version, api_client):
   """Stop the previous default version if applicable.
 
   Cases where a version will not be stopped:
@@ -280,11 +279,10 @@ def _StopPreviousVersionIfApplies(old_default_version, clients):
 
   Args:
     old_default_version: Version, The old default version to stop.
-    clients: deploy._AppEngineClients, The API clients for Google App Engine
-      APIs.
+    api_client: appengine_api_client.AppengineApiClient to use to make requests.
   """
   version_object = old_default_version.version
-  status_enum = clients.api.messages.Version.ServingStatusValueValuesEnum
+  status_enum = api_client.messages.Version.ServingStatusValueValuesEnum
   if version_object.servingStatus != status_enum.SERVING:
     log.info(
         'Previous default version [{0}] not serving, so not stopping '
@@ -301,9 +299,10 @@ def _StopPreviousVersionIfApplies(old_default_version, clients):
     return
 
   try:
-    clients.gae.StopService(service=old_default_version.service,
-                            version=old_default_version.id)
-  except util.RPCError as err:
+    api_client.StopVersion(module_name=old_default_version.service,
+                           version_id=old_default_version.id)
+  except (calliope_exceptions.HttpException, operations.OperationError,
+          operations.OperationTimeoutError) as err:
     log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
                                                         str(err)))
     log.warn('Version [{0}] is still running and you must stop or delete it '

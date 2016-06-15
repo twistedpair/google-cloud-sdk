@@ -32,9 +32,11 @@ class Build(_messages.Message):
       [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
+    options: Special options for this build.
     projectId: ID of the project. @OutputOnly.
     results: Results of the build. @OutputOnly
     source: Describes where to find the source files to build.
+    sourceProvenance: A permanent fixed identifier for source. @OutputOnly
     startTime: Time at which execution of the build was started. @OutputOnly
     status: Status of the build. @OutputOnly
     statusDetail: Customer-readable message about the current status.
@@ -73,14 +75,16 @@ class Build(_messages.Message):
   id = _messages.StringField(3)
   images = _messages.StringField(4, repeated=True)
   logsBucket = _messages.StringField(5)
-  projectId = _messages.StringField(6)
-  results = _messages.MessageField('Results', 7)
-  source = _messages.MessageField('Source', 8)
-  startTime = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  statusDetail = _messages.StringField(11)
-  steps = _messages.MessageField('BuildStep', 12, repeated=True)
-  timeout = _messages.StringField(13)
+  options = _messages.MessageField('BuildOptions', 6)
+  projectId = _messages.StringField(7)
+  results = _messages.MessageField('Results', 8)
+  source = _messages.MessageField('Source', 9)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 10)
+  startTime = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusDetail = _messages.StringField(13)
+  steps = _messages.MessageField('BuildStep', 14, repeated=True)
+  timeout = _messages.StringField(15)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -91,6 +95,29 @@ class BuildOperationMetadata(_messages.Message):
   """
 
   build = _messages.MessageField('Build', 1)
+
+
+class BuildOptions(_messages.Message):
+  """Optional arguments to enable specific features of builds.
+
+  Enums:
+    SourceProvenanceHashValueListEntryValuesEnum:
+
+  Fields:
+    sourceProvenanceHash: Requested hash for SourceProvenance.
+  """
+
+  class SourceProvenanceHashValueListEntryValuesEnum(_messages.Enum):
+    """SourceProvenanceHashValueListEntryValuesEnum enum type.
+
+    Values:
+      NONE: <no description>
+      SHA256: <no description>
+    """
+    NONE = 0
+    SHA256 = 1
+
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 1, repeated=True)
 
 
 class BuildStep(_messages.Message):
@@ -205,6 +232,42 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   projectId = _messages.StringField(3, required=True)
+
+
+class FileHashes(_messages.Message):
+  """Container message for hashes of byte content of files, used in
+  SourceProvenance messages to verify integrity of source input to the build.
+
+  Fields:
+    fileHash: Collection of file hashes.
+  """
+
+  fileHash = _messages.MessageField('Hash', 1, repeated=True)
+
+
+class Hash(_messages.Message):
+  """Container message for hash values.
+
+  Enums:
+    TypeValueValuesEnum: The type of hash that was performed.
+
+  Fields:
+    type: The type of hash that was performed.
+    value: The hash value.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of hash that was performed.
+
+    Values:
+      NONE: No hash requested.
+      SHA256: Use a sha256 hash.
+    """
+    NONE = 0
+    SHA256 = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  value = _messages.BytesField(2)
 
 
 class ListBuildsResponse(_messages.Message):
@@ -358,6 +421,64 @@ class Source(_messages.Message):
   """
 
   storageSource = _messages.MessageField('StorageSource', 1)
+
+
+class SourceProvenance(_messages.Message):
+  """Provenance of the source. Ways to find the original source, or verify
+  that some source was used for this build.
+
+  Messages:
+    FileHashesValue: Hash(es) of the build source, which can be used to verify
+      that the original source integrity was maintained in the build. Note
+      that FileHashes will only be populated if BuildOptions has requested a
+      SourceProvenanceHash.  The keys to this map are file paths used as build
+      source and the values contain the hash values for those files.  If the
+      build source came in a single package such as a gzipped tarfile
+      (.tar.gz), the FileHash will be for the single path to that file.
+      @OutputOnly
+
+  Fields:
+    fileHashes: Hash(es) of the build source, which can be used to verify that
+      the original source integrity was maintained in the build. Note that
+      FileHashes will only be populated if BuildOptions has requested a
+      SourceProvenanceHash.  The keys to this map are file paths used as build
+      source and the values contain the hash values for those files.  If the
+      build source came in a single package such as a gzipped tarfile
+      (.tar.gz), the FileHash will be for the single path to that file.
+      @OutputOnly
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FileHashesValue(_messages.Message):
+    """Hash(es) of the build source, which can be used to verify that the
+    original source integrity was maintained in the build. Note that
+    FileHashes will only be populated if BuildOptions has requested a
+    SourceProvenanceHash.  The keys to this map are file paths used as build
+    source and the values contain the hash values for those files.  If the
+    build source came in a single package such as a gzipped tarfile (.tar.gz),
+    the FileHash will be for the single path to that file. @OutputOnly
+
+    Messages:
+      AdditionalProperty: An additional property for a FileHashesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type FileHashesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a FileHashesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FileHashes attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FileHashes', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  fileHashes = _messages.MessageField('FileHashesValue', 1)
 
 
 class StandardQueryParameters(_messages.Message):

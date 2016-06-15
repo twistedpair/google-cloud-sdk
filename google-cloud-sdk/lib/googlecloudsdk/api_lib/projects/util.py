@@ -17,9 +17,7 @@
 import functools
 
 from googlecloudsdk.api_lib.projects import errors
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import apis
-from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
@@ -28,22 +26,6 @@ class DeletedResource(object):
 
   def __init__(self, project_id):
     self.projectId = project_id  # pylint: disable=invalid-name, This is a resource attribute name.
-
-
-class ProjectCommand(base.Command):
-  """Common methods for a project command."""
-
-  def Collection(self):
-    return 'cloudresourcemanager.projects'
-
-  def GetProject(self, project_id):
-    return resources.Parse(project_id, collection=self.Collection())
-
-  def GetUriFunc(self):
-    def _GetUri(resource):
-      ref = self.GetProject(resource.projectId)
-      return ref.SelfLink()
-    return _GetUri
 
 
 def GetMessages():
@@ -72,33 +54,6 @@ def IsActive(project):
   return project.lifecycleState == lifecycle_enum.ACTIVE
 
 
-def GetLifecycleMap():
-  """Returns a mapping of reader friendly description of a project's state.
-
-  Returns:
-    Map from Project LifecycleStateValueValuesEnum values to strings.
-  """
-  lifecycle_enum = GetMessages().Project.LifecycleStateValueValuesEnum
-  return {
-      lifecycle_enum.LIFECYCLE_STATE_UNSPECIFIED: 'unknown',
-      lifecycle_enum.ACTIVE: 'active',
-      lifecycle_enum.DELETE_REQUESTED: 'pending delete',
-      lifecycle_enum.DELETE_IN_PROGRESS: 'delete in progress',
-  }
-
-
-def GetLifecycle(project):
-  """Returns a reader friendly string description of a project's active state.
-
-  Args:
-    project: A Project with a LifecycleStateValueValues enum.
-
-  Returns:
-    String description of lifecycle state.
-  """
-  return GetLifecycleMap()[project.lifecycleState]
-
-
 def GetError(error):
   """Returns a more specific Projects error from an HttpError.
 
@@ -116,7 +71,7 @@ def GetError(error):
   project_id = error.url.split('/')[-1].split('?')[0]
   if error.status_code == 403 or error.status_code == 404:
     return errors.ProjectAccessError(project_id)
-  return
+  return None
 
 
 def HandleKnownHttpErrors(func):

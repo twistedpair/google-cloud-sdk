@@ -2109,9 +2109,14 @@ class QuotaLimit(_messages.Message):
       are provisioning quota to selected consumers and blocking others.
       Similarly, a value of -1 will indicate an unlimited quota. No other
       negative values are allowed.
-    description: User-visible description for this quota limit.
-    displayName: The UI display name of the limit. If empty, client should use
-      'name' field instead.
+    description: Optional. User-visible, extended description for this quota
+      limit. Should be used only when more context is needed to understand
+      this limit than provided by the limit's display name (see:
+      `display_name`).
+    displayName: User-visible display name for this limit. Optional. If not
+      set, the UI will provide a default display name based on the quota
+      configuration. This field can be used to override the default display
+      name generated from the configuration.
     duration: Duration of this limit in textual notation. Example: "100s",
       "24h", "1d". For duration longer than a day, only multiple of days is
       supported. We support only "100s" and "1d" for now. Additional support

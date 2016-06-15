@@ -245,8 +245,8 @@ class LogEntry(_messages.Message):
 
   Messages:
     ProtoPayloadValue: The log entry payload, represented as a protocol buffer
-      that is expressed as a JSON object. You can only pass `protoPayload`
-      values that belong to a set of approved types.
+      that is expressed as a JSON object. Some Google Cloud Platform services
+      use this field for their log entry payloads.
     StructPayloadValue: The log entry payload, represented as a structure that
       is expressed as a JSON object.
 
@@ -263,8 +263,8 @@ class LogEntry(_messages.Message):
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer that
-      is expressed as a JSON object. You can only pass `protoPayload` values
-      that belong to a set of approved types.
+      is expressed as a JSON object. Some Google Cloud Platform services use
+      this field for their log entry payloads.
     structPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     textPayload: The log entry payload, represented as a Unicode string
@@ -275,8 +275,8 @@ class LogEntry(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProtoPayloadValue(_messages.Message):
     """The log entry payload, represented as a protocol buffer that is
-    expressed as a JSON object. You can only pass `protoPayload` values that
-    belong to a set of approved types.
+    expressed as a JSON object. Some Google Cloud Platform services use this
+    field for their log entry payloads.
 
     Messages:
       AdditionalProperty: An additional property for a ProtoPayloadValue

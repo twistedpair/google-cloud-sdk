@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20160525",
+ "revision": "20160607",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -710,6 +710,10 @@
     "name": {
      "type": "string",
      "description": "Name of the type."
+    },
+    "operation": {
+     "$ref": "Operation",
+     "description": "[Output Only] The Operation that most recently ran, or is currently running, on this type."
     },
     "selfLink": {
      "type": "string",

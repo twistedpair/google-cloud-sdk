@@ -12,7 +12,8 @@ package = 'compute'
 
 
 class AccessConfig(_messages.Message):
-  """An access configuration attached to an instance's network interface.
+  """An access configuration attached to an instance's network interface. Only
+  one access config per instance is supported.
 
   Enums:
     TypeValueValuesEnum: The type of configuration. The default and only
@@ -2393,7 +2394,7 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   """A ComputeImagesGetFromFamilyRequest object.
 
   Fields:
-    family: Name of the image resource to return.
+    family: Name of the image family to search for.
     project: Project ID for this request.
   """
 
@@ -5444,7 +5445,7 @@ class Disk(_messages.Message):
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
       format.
-    licenses: [Output Only] Any applicable publicly visible licenses.
+    licenses: Any applicable publicly visible licenses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -6557,7 +6558,7 @@ class Image(_messages.Message):
     family: The name of the image family to which this image belongs. You can
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
-      deprecated.
+      deprecated. The name of the image family must comply with RFC1035.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -6748,7 +6749,8 @@ class Instance(_messages.Message):
       character, which cannot be a dash.
     networkInterfaces: An array of configurations for this interface. This
       specifies how this interface is configured to interact with other
-      network services, such as connecting to the internet.
+      network services, such as connecting to the internet. Only one interface
+      is supported per instance.
     scheduling: Scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -6992,7 +6994,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """An Instance Template Manager resource.
+  """An Instance Group Manager resource.
 
   Fields:
     baseInstanceName: The base instance name to use for instances in this
@@ -7058,8 +7060,10 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       instance removes it from the managed instance group without deleting it.
     creating: [Output Only] The number of instances in the managed instance
       group that are scheduled to be created or are currently being created.
-      If the group fails to create one of these instances, it tries again
-      until it creates the instance successfully.
+      If the group fails to create any of these instances, it tries again
+      until it creates the instance successfully.  If you have disabled
+      creation retries, this field will not be populated; instead, the
+      creatingWithoutRetries field will be populated.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group
@@ -8121,16 +8125,17 @@ class ManagedInstance(_messages.Message):
       this instance, it will try again until it is successful.  -
       CREATING_WITHOUT_RETRIES The managed instance group is attempting to
       create this instance only once. If the group fails to create this
-      instance, it does not try again and the group's target_size value is
-      decreased.  - RECREATING The managed instance group is recreating this
-      instance.  - DELETING The managed instance group is permanently deleting
-      this instance.  - ABANDONING The managed instance group is abandoning
-      this instance. The instance will be removed from the instance group and
-      from any target pools that are associated with this group.  - RESTARTING
-      The managed instance group is restarting the instance.  - REFRESHING The
-      managed instance group is applying configuration changes to the instance
-      without stopping it. For example, the group can update the target pool
-      list for an instance without stopping that instance.
+      instance, it does not try again and the group's targetSize value is
+      decreased instead.  - RECREATING The managed instance group is
+      recreating this instance.  - DELETING The managed instance group is
+      permanently deleting this instance.  - ABANDONING The managed instance
+      group is abandoning this instance. The instance will be removed from the
+      instance group and from any target pools that are associated with this
+      group.  - RESTARTING The managed instance group is restarting the
+      instance.  - REFRESHING The managed instance group is applying
+      configuration changes to the instance without stopping it. For example,
+      the group can update the target pool list for an instance without
+      stopping that instance.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
 
@@ -8143,16 +8148,17 @@ class ManagedInstance(_messages.Message):
       instance, it will try again until it is successful.  -
       CREATING_WITHOUT_RETRIES The managed instance group is attempting to
       create this instance only once. If the group fails to create this
-      instance, it does not try again and the group's target_size value is
-      decreased.  - RECREATING The managed instance group is recreating this
-      instance.  - DELETING The managed instance group is permanently deleting
-      this instance.  - ABANDONING The managed instance group is abandoning
-      this instance. The instance will be removed from the instance group and
-      from any target pools that are associated with this group.  - RESTARTING
-      The managed instance group is restarting the instance.  - REFRESHING The
-      managed instance group is applying configuration changes to the instance
-      without stopping it. For example, the group can update the target pool
-      list for an instance without stopping that instance.
+      instance, it does not try again and the group's targetSize value is
+      decreased instead.  - RECREATING The managed instance group is
+      recreating this instance.  - DELETING The managed instance group is
+      permanently deleting this instance.  - ABANDONING The managed instance
+      group is abandoning this instance. The instance will be removed from the
+      instance group and from any target pools that are associated with this
+      group.  - RESTARTING The managed instance group is restarting the
+      instance.  - REFRESHING The managed instance group is applying
+      configuration changes to the instance without stopping it. For example,
+      the group can update the target pool list for an instance without
+      stopping that instance.
     id: [Output only] The unique identifier for this resource. This field is
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
@@ -8172,16 +8178,16 @@ class ManagedInstance(_messages.Message):
     will try again until it is successful.  - CREATING_WITHOUT_RETRIES The
     managed instance group is attempting to create this instance only once. If
     the group fails to create this instance, it does not try again and the
-    group's target_size value is decreased.  - RECREATING The managed instance
-    group is recreating this instance.  - DELETING The managed instance group
-    is permanently deleting this instance.  - ABANDONING The managed instance
-    group is abandoning this instance. The instance will be removed from the
-    instance group and from any target pools that are associated with this
-    group.  - RESTARTING The managed instance group is restarting the
-    instance.  - REFRESHING The managed instance group is applying
-    configuration changes to the instance without stopping it. For example,
-    the group can update the target pool list for an instance without stopping
-    that instance.
+    group's targetSize value is decreased instead.  - RECREATING The managed
+    instance group is recreating this instance.  - DELETING The managed
+    instance group is permanently deleting this instance.  - ABANDONING The
+    managed instance group is abandoning this instance. The instance will be
+    removed from the instance group and from any target pools that are
+    associated with this group.  - RESTARTING The managed instance group is
+    restarting the instance.  - REFRESHING The managed instance group is
+    applying configuration changes to the instance without stopping it. For
+    example, the group can update the target pool list for an instance without
+    stopping that instance.
 
     Values:
       ABANDONING: <no description>
@@ -8381,7 +8387,7 @@ class NetworkInterface(_messages.Message):
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
-      ONE_TO_ONE_NAT is the only access config supported. If there are no
+      only one access config, ONE_TO_ONE_NAT, is supported. If there are no
       accessConfigs specified, then this instance will have no external
       internet access.
     name: [Output Only] The name of the network interface, generated by the

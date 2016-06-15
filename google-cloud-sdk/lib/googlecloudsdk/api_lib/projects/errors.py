@@ -13,10 +13,15 @@
 # limitations under the License.
 
 """Errors for projects."""
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions
 
 
-class ProjectAccessError(exceptions.ToolException):
+class ProjectError(exceptions.Error):
+  """Generic error for all project errors to inherit from."""
+  pass
+
+
+class ProjectAccessError(ProjectError):
   """User does not have permission to access the project."""
 
   def __init__(self, project_id):
@@ -25,7 +30,7 @@ class ProjectAccessError(exceptions.ToolException):
     super(ProjectAccessError, self).__init__(message)
 
 
-class ProjectMoveError(exceptions.ToolException):
+class ProjectMoveError(ProjectError):
   """The specified project already has a parent and can't be moved."""
 
   def __init__(self, project, organization_id):

@@ -13,7 +13,10 @@
 # limitations under the License.
 
 """Flags and helpers for the container related commands."""
+
 import argparse
+from googlecloudsdk.calliope import actions
+from googlecloudsdk.core import properties
 
 
 # TODO(b/28318474): move flags common across commands here.
@@ -36,3 +39,38 @@ using the following command.
   parser.add_argument('--image-type', help=help_text)
 
 
+def AddClusterAutoscalingFlags(parser, exclusive_group=None):
+  """Adds autoscaling related flags to parser.
+
+  Autoscaling related flags are: --enable-autoscaling
+  --min-nodes --max-nodes flags.
+
+  Args:
+    parser: A given parser.
+    exclusive_group: An optional group of mutually exclusive flag options
+        to which an --enable-autoscaling flag is added.
+  """
+  # TODO(user): Add a help texts here.
+
+  group = parser.add_argument_group('Cluster autoscaling')
+  autoscaling_group = group if exclusive_group is None else exclusive_group
+  autoscaling_group.add_argument(
+      '--enable-autoscaling',
+      help=argparse.SUPPRESS,
+      action='store_true')
+  group.add_argument(
+      '--max-nodes',
+      help=argparse.SUPPRESS,
+      type=int)
+  group.add_argument(
+      '--min-nodes',
+      help=argparse.SUPPRESS,
+      type=int)
+
+
+def AddZoneFlag(parser):
+  """Adds the --zone flag to the parser."""
+  parser.add_argument(
+      '--zone', '-z',
+      help='The compute zone (e.g. us-central1-a) for the cluster',
+      action=actions.StoreProperty(properties.VALUES.compute.zone))

@@ -4,7 +4,7 @@
  "id": "manager:v1beta2",
  "name": "manager",
  "version": "v1beta2",
- "revision": "20160525",
+ "revision": "20160607",
  "title": "Google Cloud Deployment Manager API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",

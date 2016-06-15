@@ -911,11 +911,12 @@ class Subscription(_messages.Message):
       be delivered again during that time (on a best-effort basis).  For pull
       subscriptions, this value is used as the initial value for the ack
       deadline. To override this value for a given message, call
-      `ModifyAckDeadline` with the corresponding `ack_id` if using pull.  For
-      push delivery, this value is also used to set the request timeout for
-      the call to the push endpoint.  If the subscriber never acknowledges the
-      message, the Pub/Sub system will eventually redeliver the message.  If
-      this parameter is not set, the default value of 10 seconds is used.
+      `ModifyAckDeadline` with the corresponding `ack_id` if using pull. The
+      maximum custom deadline you can specify is 600 seconds (10 minutes).
+      For push delivery, this value is also used to set the request timeout
+      for the call to the push endpoint.  If the subscriber never acknowledges
+      the message, the Pub/Sub system will eventually redeliver the message.
+      If this parameter is not set, the default value of 10 seconds is used.
     name: The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers

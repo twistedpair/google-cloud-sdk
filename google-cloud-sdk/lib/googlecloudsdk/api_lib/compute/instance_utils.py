@@ -12,209 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instances and instance templates."""
-
-import argparse
 import re
 
 from googlecloudsdk.api_lib.compute import constants
-from googlecloudsdk.api_lib.compute import image_utils
-from googlecloudsdk.api_lib.compute import request_helper
+from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-
-
-MIGRATION_OPTIONS = ['MIGRATE', 'TERMINATE']
-
-LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
-
-
-def AddImageArgs(parser):
-  """Adds arguments related to images for instances and instance-templates."""
-
-  def AddImageHelp():
-    """Returns the detailed help for the `--image` flag."""
-    template = """
-          Specifies the boot image for the instances. For each
-          instance, a new boot disk will be created from the given
-          image. Each boot disk will have the same name as the
-          instance.
-
-          {alias_table}
-
-          When using this option, ``--boot-disk-device-name'' and
-          ``--boot-disk-size'' can be used to override the boot disk's
-          device name and size, respectively.
-
-          By default, ``{default_image}'' is assumed for this flag.
-          """
-    # -1 for leading newline
-    indent = template.find(template.lstrip()[0]) - 1
-    return template.format(
-        alias_table=image_utils.GetImageAliasTable(indent=indent),
-        default_image=constants.DEFAULT_IMAGE)
-
-  image_choices = ['IMAGE'] + sorted(constants.IMAGE_ALIASES.keys())
-  image_group = parser.add_mutually_exclusive_group()
-  image = image_group.add_argument(
-      '--image',
-      help='The image that the boot disk will be initialized with.',
-      metavar=' | '.join(image_choices))
-  image.detailed_help = AddImageHelp
-  image_utils.AddImageProjectFlag(parser)
-
-  image_group.add_argument(
-      '--image-family',
-      help=('The family of the image that the boot disk will be initialized '
-            'with. When a family is specified instead of an image, the latest '
-            'non-deprecated image associated with that family is used.')
-  )
-
-
-def AddCanIpForwardArgs(parser):
-  parser.add_argument(
-      '--can-ip-forward',
-      action='store_true',
-      help=('If provided, allows the instances to send and receive packets '
-            'with non-matching destination or source IP addresses.'))
-
-
-def AddLocalSsdArgs(parser):
-  """Adds local SSD argument for instances and instance-templates."""
-
-  local_ssd = parser.add_argument(
-      '--local-ssd',
-      type=arg_parsers.ArgDict(spec={
-          'device-name': str,
-          'interface': (lambda x: x.upper()),
-      }),
-      action=arg_parsers.FloatingListValuesCatcher(
-          argparse._AppendAction,  # pylint:disable=protected-access
-          switch_value={}),
-      help='(BETA) Specifies instances with attached local SSDs.',
-      metavar='PROPERTY=VALUE')
-  local_ssd.detailed_help = """
-      Attaches a local SSD to the instances.
-
-      This flag is currently in BETA and may change without notice.
-
-      *device-name*::: Optional. A name that indicates the disk name
-      the guest operating system will see.  If omitted, a device name
-      of the form ``local-ssd-N'' will be used.
-
-      *interface*::: Optional. The kind of disk interface exposed to the VM
-      for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
-      the default and is supported by more guest operating systems.  NVME
-      may provide higher performance.
-      """
-
-
-def AddDiskArgs(parser):
-  """Adds arguments related to disks for instances and instance-templates."""
-
-  boot_disk_device_name = parser.add_argument(
-      '--boot-disk-device-name',
-      help='The name the guest operating system will see the boot disk as.')
-  boot_disk_device_name.detailed_help = """\
-      The name the guest operating system will see for the boot disk as.  This
-      option can only be specified if a new boot disk is being created (as
-      opposed to mounting an existing persistent disk).
-      """
-  boot_disk_size = parser.add_argument(
-      '--boot-disk-size',
-      type=arg_parsers.BinarySize(lower_bound='10GB'),
-      help='The size of the boot disk.')
-  boot_disk_size.detailed_help = """\
-      The size of the boot disk. This option can only be specified if a new
-      boot disk is being created (as opposed to mounting an existing
-      persistent disk). The value must be a whole number followed by a size
-      unit of ``KB'' for kilobyte, ``MB'' for megabyte, ``GB'' for gigabyte,
-      or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
-      disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
-      multiple of 1 GB.
-      """
-
-  boot_disk_type = parser.add_argument(
-      '--boot-disk-type',
-      help='The type of the boot disk.')
-  boot_disk_type.detailed_help = """\
-      The type of the boot disk. This option can only be specified if a new boot
-      disk is being created (as opposed to mounting an existing persistent
-      disk). To get a list of available disk types, run
-      `$ gcloud compute disk-types list`.
-      """
-
-  parser.add_argument(
-      '--boot-disk-auto-delete',
-      action='store_true',
-      default=True,
-      help='Automatically delete boot disks when their instances are deleted.')
-
-  disk = parser.add_argument(
-      '--disk',
-      type=arg_parsers.ArgDict(spec={
-          'name': str,
-          'mode': str,
-          'boot': str,
-          'device-name': str,
-          'auto-delete': str,
-      }),
-      action=arg_parsers.FloatingListValuesCatcher(argparse._AppendAction),  # pylint:disable=protected-access
-      help='Attaches persistent disks to the instances.',
-      metavar='PROPERTY=VALUE')
-  disk.detailed_help = """
-      Attaches persistent disks to the instances. The disks
-      specified must already exist.
-
-      *name*::: The disk to attach to the instances. When creating
-      more than one instance and using this property, the only valid
-      mode for attaching the disk is read-only (see *mode* below).
-
-      *mode*::: Specifies the mode of the disk. Supported options
-      are ``ro'' for read-only and ``rw'' for read-write. If
-      omitted, ``rw'' is used as a default. It is an error for mode
-      to be ``rw'' when creating more than one instance because
-      read-write disks can only be attached to a single instance.
-
-      *boot*::: If ``yes'', indicates that this is a boot disk. The
-      virtual machines will use the first partition of the disk for
-      their root file systems. The default value for this is ``no''.
-
-      *device-name*::: An optional name that indicates the disk name
-      the guest operating system will see. If omitted, a device name
-      of the form ``persistent-disk-N'' will be used.
-
-      *auto-delete*::: If ``yes'',  this persistent disk will be
-      automatically deleted when the instance is deleted. However,
-      if the disk is later detached from the instance, this option
-      won't apply. The default value for this is ``no''.
-      """
-
-
-def AddCustomMachineTypeArgs(parser):
-  """Adds arguments related to custom machine types for instances."""
-  custom_cpu = parser.add_argument(
-      '--custom-cpu',
-      type=int,
-      help='Number of CPUs desired in the instance for a custom machine type.')
-  custom_cpu.detailed_help = """\
-      A whole number value indicating how many cores are desired in the custom
-      machine type. Both --custom-cpu and --custom-memory must be specified if
-      a custom machine type is desired, and the --machine-type flag must be
-      omitted.
-      """
-  custom_memory = parser.add_argument(
-      '--custom-memory',
-      type=arg_parsers.BinarySize(),
-      help='Amount of memory desired in the instance for a custom machine type '
-      '(set units, default GiB).')
-  custom_memory.detailed_help = """\
-      A whole number value indicating how much memory is desired in the custom
-      machine type. A size unit should be provided (eg. 3072MiB or 9GiB) - if
-      no units are specified, GiB is assumed. Both --custom-cpu and
-      --custom-memory must be specified if a custom machine type is desired,
-      and the --machine-type flag must be omitted.
-      """
+from googlecloudsdk.command_lib.compute.instances import flags
+from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 
 def GetCpuRamFromCustomName(name):
@@ -254,11 +59,13 @@ def GetNameForCustom(custom_cpu, custom_memory_mib):
   return 'custom-{0}-{1}'.format(custom_cpu, custom_memory_mib)
 
 
-def InterpretMachineType(args):
+def InterpretMachineType(machine_type, custom_cpu, custom_memory):
   """Interprets the machine type for the instance.
 
   Args:
-    args: command line arguments from the parser.
+    machine_type: name of existing machine type, eg. n1-standard
+    custom_cpu: number of CPU cores for custom machine type,
+    custom_memory: amout of RAM memory in bytes for custom machine type,
 
   Returns:
     A string representing the URL naming a machine-type.
@@ -271,40 +78,41 @@ def InterpretMachineType(args):
   """
   # Setting the machine type
   machine_type_name = constants.DEFAULT_MACHINE_TYPE
-  if args.machine_type:
-    machine_type_name = args.machine_type
+  if machine_type:
+    machine_type_name = machine_type
 
   # Setting the specs for the custom machine.
-  if ('custom_cpu' in args) or ('custom_memory' in args):
-    if args.custom_cpu or args.custom_memory:
-      if args.machine_type:
+  if custom_cpu or custom_memory:
+    if custom_cpu or custom_memory:
+      if machine_type:
         raise exceptions.InvalidArgumentException(
             '--machine-type', 'Cannot set both [--machine-type] and '
             '[--custom-cpu]/[--custom-memory] for the same instance.')
-      if not args.custom_cpu:
+      if not custom_cpu:
         raise exceptions.RequiredArgumentException(
             '--custom-cpu', 'Both [--custom-cpu] and [--custom-memory] must be '
             'set to create a custom machine type instance.')
-      if not args.custom_memory:
+      if not custom_memory:
         raise exceptions.RequiredArgumentException(
             '--custom-memory', 'Both [--custom-cpu] and [--custom-memory] must '
             'be set to create a custom machine type instance.')
-      custom_cpu = args.custom_cpu
-      # converting from B to MiB.
-      custom_memory = int(args.custom_memory / (2 ** 20))
-      custom_type_string = GetNameForCustom(custom_cpu, custom_memory)
+      custom_type_string = GetNameForCustom(
+          custom_cpu,
+          # converting from B to MiB.
+          int(custom_memory / (2 ** 20)))
 
       # Updating the machine type that is set for the URIs
       machine_type_name = custom_type_string
   return machine_type_name
 
 
-def CheckCustomCpuRamRatio(self, zone, machine_type_name):
+def CheckCustomCpuRamRatio(compute_client, project, zone, machine_type_name):
   """Checks that the CPU and memory ratio is a supported custom instance type.
 
   Args:
-    self: the CreateGA 'instances create' calling class
-    zone: the zone of the instance(s) being created
+    compute_client: GCE API client,
+    project: a project,
+    zone: the zone of the instance(s) being created,
     machine_type_name: The machine type of the instance being created.
 
   Returns:
@@ -314,21 +122,20 @@ def CheckCustomCpuRamRatio(self, zone, machine_type_name):
   Raises:
     utils.RaiseToolException if a custom machine type ratio is out of bounds.
   """
+  messages = compute_client.messages
+  compute = compute_client.apitools_client
   if 'custom' in machine_type_name:
-    mt_get_pb = self.messages.ComputeMachineTypesGetRequest(
+    mt_get_pb = messages.ComputeMachineTypesGetRequest(
         machineType=machine_type_name,
-        project=self.project,
+        project=project,
         zone=zone)
-    mt_get_reqs = [(self.compute.machineTypes, 'Get', mt_get_pb)]
+    mt_get_reqs = [(compute.machineTypes, 'Get', mt_get_pb)]
     errors = []
 
     # Makes a 'machine-types describe' request to check the bounds
-    _ = list(request_helper.MakeRequests(
+    _ = list(compute_client.MakeRequests(
         requests=mt_get_reqs,
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
+        errors_to_collect=errors))
 
     if errors:
       utils.RaiseToolException(
@@ -336,198 +143,265 @@ def CheckCustomCpuRamRatio(self, zone, machine_type_name):
           error_message='Could not fetch machine type:')
 
 
-def AddAddressArgs(parser, instances=True):
-  """Adds address arguments for instances and instance-templates."""
-  addresses = parser.add_mutually_exclusive_group()
-  addresses.add_argument(
-      '--no-address',
-      action='store_true',
-      help=('If provided, the instances will not be assigned external IP '
-            'addresses.'))
-  address = addresses.add_argument(
-      '--address',
-      help='Assigns the given external address to the instance that is '
-      'created.')
-  if instances:
-    address.detailed_help = """\
-        Assigns the given external address to the instance that is created.
-        The address may be an IP address or the name or URI of an address
-        resource. This option can only be used when creating a single instance.
-        """
-  else:
-    address.detailed_help = """\
-        Assigns the given external IP address to the instance that is created.
-        This option can only be used when creating a single instance.
-        """
+def CreateServiceAccountMessages(messages, scopes):
+  """Returns a list of ServiceAccount messages corresponding to scopes."""
+  if scopes is None:
+    scopes = constants.DEFAULT_SCOPES
 
-
-def AddMachineTypeArgs(parser, required=False):
-  machine_type = parser.add_argument(
-      '--machine-type',
-      completion_resource='compute.machineTypes',
-      help='Specifies the machine type used for the instances.',
-      required=required)
-  machine_type.detailed_help = """\
-      Specifies the machine type used for the instances. To get a
-      list of available machine types, run 'gcloud compute
-      machine-types list'. If unspecified, the default type is n1-standard-1.
-      """
-
-
-def AddPreemptibleVmArgs(parser):
-  preemptible = parser.add_argument(
-      '--preemptible',
-      action='store_true',
-      help='If provided, instances will be preemptible and time-limited.',
-      default=False)
-  preemptible.detailed_help = """\
-      If provided, instances will be preemptible and time-limited.
-      Instances may be preempted to free up resources for standard VM instances,
-      and will only be able to run for a limited amount of time. Preemptible
-      instances can not be restarted and will not migrate.
-      """
-
-
-def AddNetworkArgs(parser):
-  """Set arguments for choosing the network/subnetwork."""
-  netparser = parser.add_mutually_exclusive_group()
-
-  network = netparser.add_argument(
-      '--network',
-      default=constants.DEFAULT_NETWORK,
-      help='Specifies the network that the instances will be part of.')
-
-  network.detailed_help = """\
-      Specifies the network that the instances will be part of. This is mutually
-      exclusive with --subnet. If neither is specified, this defaults to the
-      "default" network.
-      """
-
-  subnet = netparser.add_argument(
-      '--subnet',
-      help='Specifies the subnet that the instances will be part of.')
-  subnet.detailed_help = """\
-      Specifies the subnet that the instances will be part of. This is mutally
-      exclusive with --network.
-      """
-
-
-def AddPrivateNetworkIpArgs(parser):
-  """Set arguments for choosing the network IP address."""
-  private_network_ip = parser.add_argument(
-      '--private-network-ip',
-      help='Assigns the given RFC1918 IP address to the instance.')
-  private_network_ip.detailed_help = """\
-      Specifies the RFC1918 IP to assign to the instance. The IP should be in
-      the subnet or legacy network IP range.
-      """
-
-
-def AddScopeArgs(parser):
-  """Adds scope arguments for instances and instance-templates."""
-  scopes_group = parser.add_mutually_exclusive_group()
-
-  def AddScopesHelp():
-    return """\
-        Specifies service accounts and scopes for the
-        instances. Service accounts generate access tokens that can be
-        accessed through the instance metadata server and used to
-        authenticate applications on the instance. The account can be
-        either an email address or an alias corresponding to a
-        service account. If account is omitted, the project's default
-        service account is used. The default service account can be
-        specified explicitly by using the alias ``default''. Example:
-
-          $ {{command}} example-instance --scopes compute-rw,me@project.gserviceaccount.com=storage-rw
-
-        If this flag is not provided, the following scopes are used:
-        {default_scopes}. To create instances with no scopes, use
-        ``--no-scopes'':
-
-          $ {{command}} example-instance --no-scopes
-
-        SCOPE can be either the full URI of the scope or an
-        alias. Available aliases are:
-
-        [options="header",format="csv",grid="none",frame="none"]
-        |========
-        Alias,URI
-        {aliases}
-        |========
-        """.format(
-            default_scopes=', '.join(constants.DEFAULT_SCOPES),
-            aliases='\n        '.join(
-                ','.join(value) for value in
-                sorted(constants.SCOPES.iteritems())))
-  scopes = scopes_group.add_argument(
-      '--scopes',
-      type=arg_parsers.ArgList(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
-      help='Specifies service accounts and scopes for the instances.',
-      metavar='[ACCOUNT=]SCOPE')
-  scopes.detailed_help = AddScopesHelp
-
-  scopes_group.add_argument(
-      '--no-scopes',
-      action='store_true',
-      help=('If provided, the default scopes ({scopes}) are not added to the '
-            'instances.'.format(scopes=', '.join(constants.DEFAULT_SCOPES))))
-
-
-def AddTagsArgs(parser):
-  tags = parser.add_argument(
-      '--tags',
-      type=arg_parsers.ArgList(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
-      help='A list of tags to apply to the instances.',
-      metavar='TAG')
-  tags.detailed_help = """\
-      Specifies a list of tags to apply to the instances for
-      identifying the instances to which network firewall rules will
-      apply. See gcloud_compute_firewall-rules_create(1) for more
-      details.
-      """
-
-
-def AddNoRestartOnFailureArgs(parser):
-  restart_on_failure = parser.add_argument(
-      '--restart-on-failure',
-      action='store_true',
-      default=True,
-      help='Restart instances if they are terminated by Compute Engine.')
-  restart_on_failure.detailed_help = """\
-      The instances will be restarted if they are terminated by Compute Engine.
-      This does not affect terminations performed by the user.
-      """
-
-
-def AddMaintenancePolicyArgs(parser):
-  maintenance_policy = parser.add_argument(
-      '--maintenance-policy',
-      choices=MIGRATION_OPTIONS,
-      type=lambda x: x.upper(),
-      help=('Specifies the behavior of the instances when their host '
-            'machines undergo maintenance.'))
-  maintenance_policy.detailed_help = """\
-      Specifies the behavior of the instances when their host machines
-      undergo maintenance. ``TERMINATE'' indicates that the instances
-      should be terminated. ``MIGRATE'' indicates that the instances
-      should be migrated to a new host. Choosing ``MIGRATE'' will
-      temporarily impact the performance of instances during a
-      migration event. If omitted, ``MIGRATE'' is assumed.
-      """
-
-
-def ValidateLocalSsdFlags(args):
-
-  for local_ssd in args.local_ssd or []:
-    interface = local_ssd.get('interface')
-    if interface and interface not in LOCAL_SSD_INTERFACES:
+  accounts_to_scopes = collections.defaultdict(list)
+  for scope in scopes:
+    parts = scope.split('=')
+    if len(parts) == 1:
+      account = 'default'
+      scope_uri = scope
+    elif len(parts) == 2:
+      account, scope_uri = parts
+    else:
       raise exceptions.ToolException(
-          'Unexpected local SSD interface: [{given}]. '
-          'Legal values are [{ok}].'
-          .format(given=interface,
-                  ok=', '.join(LOCAL_SSD_INTERFACES)))
+          '[{0}] is an illegal value for [--scopes]. Values must be of the '
+          'form [SCOPE] or [ACCOUNT=SCOPE].'.format(scope))
+
+    # Expands the scope if the user provided an alias like
+    # "compute-rw".
+    scope_uri = constants.SCOPES.get(scope_uri, scope_uri)
+
+    accounts_to_scopes[account].append(scope_uri)
+
+  res = []
+  for account, scopes in sorted(accounts_to_scopes.iteritems()):
+    res.append(messages.ServiceAccount(email=account,
+                                       scopes=sorted(scopes)))
+  return res
+
+
+def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
+  """Create on-host-maintenance message for VM."""
+  if maintenance_policy:
+    on_host_maintenance = messages.Scheduling.OnHostMaintenanceValueValuesEnum(
+        maintenance_policy)
+  else:
+    on_host_maintenance = None
+  return on_host_maintenance
+
+
+def CreateSchedulingMessage(
+    messages, maintenance_policy, preemptible, restart_on_failure):
+  """Create scheduling message for VM."""
+  # Note: We always specify automaticRestart=False for preemptible VMs. This
+  # makes sense, since no-restart-on-failure is defined as "store-true", and
+  # thus can't be given an explicit value. Hence it either has its default
+  # value (in which case we override it for convenience's sake to the only
+  # setting that makes sense for preemptible VMs), or the user actually
+  # specified no-restart-on-failure, the only usable setting.
+  on_host_maintenance = CreateOnHostMaintenanceMessage(messages,
+                                                       maintenance_policy)
+  if preemptible:
+    scheduling = messages.Scheduling(automaticRestart=False,
+                                     onHostMaintenance=on_host_maintenance,
+                                     preemptible=True)
+  else:
+    scheduling = messages.Scheduling(automaticRestart=restart_on_failure,
+                                     onHostMaintenance=on_host_maintenance)
+  return scheduling
+
+
+def CreateMachineTypeUris(
+    scope_prompter, compute_client, project,
+    machine_type, custom_cpu, custom_memory, instance_refs):
+  """Create machine type URIs for given args and instance references."""
+  # The element at index i is the machine type URI for instance
+  # i. We build this list here because we want to delay work that
+  # requires API calls as much as possible. This leads to a better
+  # user experience because the tool can fail fast upon a spelling
+  # mistake instead of delaying the user by making API calls whose
+  # purpose has already been rendered moot by the spelling mistake.
+  machine_type_uris = []
+
+  # Setting the machine type
+  machine_type_name = InterpretMachineType(
+      machine_type, custom_cpu, custom_memory)
+
+  for instance_ref in instance_refs:
+    # Check to see if the custom machine type ratio is supported
+    CheckCustomCpuRamRatio(compute_client,
+                           project,
+                           instance_ref.zone,
+                           machine_type_name)
+    machine_type_uris.append(scope_prompter.CreateZonalReference(
+        machine_type_name, instance_ref.zone,
+        resource_type='machineTypes').SelfLink())
+
+  return machine_type_uris
+
+
+def CreateNetworkInterfaceMessage(
+    scope_prompter, compute_client,
+    network, subnet, private_network_ip, no_address, address,
+    instance_refs):
+  """Returns a new NetworkInterface message."""
+  region = utils.ZoneNameToRegionName(instance_refs[0].zone)
+
+  messages = compute_client.messages
+  network_interface = None
+  if subnet is not None:
+    subnet_ref = scope_prompter.CreateRegionalReference(
+        subnet, region, resource_type='subnetworks')
+    network_interface = messages.NetworkInterface(
+        subnetwork=subnet_ref.SelfLink())
+  else:
+    network_ref = scope_prompter.CreateGlobalReference(
+        network, resource_type='networks')
+    network_interface = messages.NetworkInterface(
+        network=network_ref.SelfLink())
+
+  if private_network_ip is not None:
+    network_interface.networkIP = private_network_ip
+
+  if not no_address:
+    access_config = messages.AccessConfig(
+        name=constants.DEFAULT_ACCESS_CONFIG_NAME,
+        type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)
+
+    # If the user provided an external IP, populate the access
+    # config with it.
+    # TODO(b/25278937): plays poorly when creating multiple instances
+    if len(instance_refs) == 1:
+      address_resource = flags.ExpandAddressFlag(
+          scope_prompter, compute_client, address, region)
+      if address_resource:
+        access_config.natIP = address_resource
+
+    network_interface.accessConfigs = [access_config]
+
+  return network_interface
+
+
+def CreatePersistentAttachedDiskMessages(
+    scope_prompter, compute_client, csek_keys, disks, instance_ref):
+  """Returns a list of AttachedDisk messages and the boot disk's reference."""
+  disks_messages = []
+  boot_disk_ref = None
+
+  messages = compute_client.messages
+  compute = compute_client.apitools_client
+  for disk in disks:
+    name = disk['name']
+
+    # Resolves the mode.
+    mode_value = disk.get('mode', 'rw')
+    if mode_value == 'rw':
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE
+    else:
+      mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
+
+    boot = disk.get('boot') == 'yes'
+    auto_delete = disk.get('auto-delete') == 'yes'
+
+    disk_ref = scope_prompter.CreateZonalReference(
+        name, instance_ref.zone,
+        resource_type='disks')
+    if boot:
+      boot_disk_ref = disk_ref
+
+    # TODO(user) drop test after CSEK goes GA
+    if csek_keys:
+      disk_key_or_none = csek_utils.MaybeLookupKeyMessage(
+          csek_keys, disk_ref, compute)
+      kwargs = {'diskEncryptionKey': disk_key_or_none}
+    else:
+      kwargs = {}
+
+    attached_disk = messages.AttachedDisk(
+        autoDelete=auto_delete,
+        boot=boot,
+        deviceName=disk.get('device-name'),
+        mode=mode,
+        source=disk_ref.SelfLink(),
+        type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+        **kwargs)
+
+    # The boot disk must end up at index 0.
+    if boot:
+      disks_messages = [attached_disk] + disks_messages
+    else:
+      disks_messages.append(attached_disk)
+
+  return disks_messages, boot_disk_ref
+
+
+def CreateDefaultBootAttachedDiskMessage(
+    scope_prompter, compute_client, resources,
+    disk_type, disk_device_name, disk_auto_delete, disk_size_gb,
+    require_csek_key_create, image_uri, instance_ref,
+    csek_keys=None):
+  """Returns an AttachedDisk message for creating a new boot disk."""
+  messages = compute_client.messages
+  compute = compute_client.apitools_client
+
+  if disk_type:
+    disk_type_ref = scope_prompter.CreateZonalReference(
+        disk_type, instance_ref.zone,
+        resource_type='diskTypes')
+    disk_type_uri = disk_type_ref.SelfLink()
+  else:
+    disk_type_ref = None
+    disk_type_uri = None
+
+  if csek_keys:
+    # If we're going to encrypt the boot disk make sure that we select
+    # a name predictably, instead of letting the API deal with name
+    # conflicts automatically.
+    #
+    # Note that when csek keys are being used we *always* want force this
+    # even if we don't have any encryption key for default disk name.
+    #
+    # Consider the case where the user's key file has a key for disk `foo-1`
+    # and no other disk.  Assume she runs
+    #   gcloud compute instances create foo --csek-key-file f \
+    #       --no-require-csek-key-create
+    # and gcloud doesn't force the disk name to be `foo`.  The API might
+    # select name `foo-1` for the new disk, but has no way of knowing
+    # that the user has a key file mapping for that disk name.  That
+    # behavior violates the principle of least surprise.
+    #
+    # Instead it's better for gcloud to force a specific disk name in the
+    # instance create, and fail if that name isn't available.
+
+    effective_boot_disk_name = (
+        disk_device_name or instance_ref.Name())
+
+    disk_ref = scope_prompter.CreateZonalReference(
+        effective_boot_disk_name, instance_ref.zone,
+        resource_type='disks')
+    disk_key_or_none = csek_utils.MaybeToMessage(
+        csek_keys.LookupKey(disk_ref, require_csek_key_create),
+        compute)
+    [image_key_or_none] = csek_utils.MaybeLookupKeyMessagesByUri(
+        csek_keys, resources, [image_uri], compute)
+    kwargs_init_parms = {'sourceImageEncryptionKey': image_key_or_none}
+    kwargs_disk = {'diskEncryptionKey': disk_key_or_none}
+  else:
+    kwargs_disk = {}
+    kwargs_init_parms = {}
+    effective_boot_disk_name = disk_device_name
+
+  return messages.AttachedDisk(
+      autoDelete=disk_auto_delete,
+      boot=True,
+      deviceName=effective_boot_disk_name,
+      initializeParams=messages.AttachedDiskInitializeParams(
+          sourceImage=image_uri,
+          diskSizeGb=disk_size_gb,
+          diskType=disk_type_uri,
+          **kwargs_init_parms),
+      mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
+      type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+      **kwargs_disk)
+
+
+def UseExistingBootDisk(disks):
+  """Returns True if the user has specified an existing boot disk."""
+  return any(disk.get('boot') == 'yes' for disk in disks)
 
 
 def CreateLocalSsdMessage(command, device_name, interface, zone=None):

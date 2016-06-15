@@ -356,6 +356,7 @@ and the response returns `FAILED_PRECONDITION`.
       super(DataprocV1.ProjectsRegionsOperationsService, self).__init__(client)
       self._method_configs = {
           'Cancel': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel',
               http_method=u'POST',
               method_id=u'dataproc.projects.regions.operations.cancel',
               ordered_params=[u'name'],
@@ -368,6 +369,7 @@ and the response returns `FAILED_PRECONDITION`.
               supports_download=False,
           ),
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
               http_method=u'DELETE',
               method_id=u'dataproc.projects.regions.operations.delete',
               ordered_params=[u'name'],
@@ -380,6 +382,7 @@ and the response returns `FAILED_PRECONDITION`.
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'dataproc.projects.regions.operations.get',
               ordered_params=[u'name'],
@@ -392,6 +395,7 @@ and the response returns `FAILED_PRECONDITION`.
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations',
               http_method=u'GET',
               method_id=u'dataproc.projects.regions.operations.list',
               ordered_params=[u'name'],

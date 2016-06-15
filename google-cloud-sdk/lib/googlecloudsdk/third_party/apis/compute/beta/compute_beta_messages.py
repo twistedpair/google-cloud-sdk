@@ -12,7 +12,8 @@ package = 'compute'
 
 
 class AccessConfig(_messages.Message):
-  """An access configuration attached to an instance's network interface.
+  """An access configuration attached to an instance's network interface. Only
+  one access config per instance is supported.
 
   Enums:
     TypeValueValuesEnum: The type of configuration. The default and only
@@ -883,6 +884,7 @@ class BackendService(_messages.Message):
       only until the end of the browser session (or equivalent). The maximum
       allowed value for TTL is one day.
     backends: The list of backends that serve this BackendService.
+    connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -951,21 +953,22 @@ class BackendService(_messages.Message):
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enableCDN = _messages.BooleanField(5)
-  fingerprint = _messages.BytesField(6)
-  healthChecks = _messages.StringField(7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#backendService')
-  name = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(12)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 16)
-  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enableCDN = _messages.BooleanField(6)
+  fingerprint = _messages.BytesField(7)
+  healthChecks = _messages.StringField(8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#backendService')
+  name = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(13)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 17)
+  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -2501,6 +2504,137 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeHealthChecksDeleteRequest(_messages.Message):
+  """A ComputeHealthChecksDeleteRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to delete.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksGetRequest(_messages.Message):
+  """A ComputeHealthChecksGetRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to return.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksInsertRequest(_messages.Message):
+  """A ComputeHealthChecksInsertRequest object.
+
+  Fields:
+    healthCheck: A HealthCheck resource to be passed as the request body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.MessageField('HealthCheck', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksListRequest(_messages.Message):
+  """A ComputeHealthChecksListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  Compute Engine Beta API Only: When
+      filtering in the Beta API, you can also filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  The Beta API also supports filtering on multiple
+      expressions by providing each separate expression within parentheses.
+      For example, (scheduling.automaticRestart eq true) (zone eq us-
+      central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeHealthChecksPatchRequest(_messages.Message):
+  """A ComputeHealthChecksPatchRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to update.
+    healthCheckResource: A HealthCheck resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  healthCheckResource = _messages.MessageField('HealthCheck', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeHealthChecksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeHealthChecksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeHealthChecksUpdateRequest(_messages.Message):
+  """A ComputeHealthChecksUpdateRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to update.
+    healthCheckResource: A HealthCheck resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  healthCheckResource = _messages.MessageField('HealthCheck', 2)
+  project = _messages.StringField(3, required=True)
+
+
 class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
   """A ComputeHttpHealthChecksDeleteRequest object.
 
@@ -2796,7 +2930,7 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   """A ComputeImagesGetFromFamilyRequest object.
 
   Fields:
-    family: Name of the image resource to return.
+    family: Name of the image family to search for.
     project: Project ID for this request.
   """
 
@@ -4617,6 +4751,22 @@ class ComputeRoutersPatchRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     router: Name of the Router resource to update.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
+class ComputeRoutersPreviewRequest(_messages.Message):
+  """A ComputeRoutersPreviewRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query.
     routerResource: A Router resource to be passed as the request body.
   """
 
@@ -6588,6 +6738,17 @@ class ComputeZonesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ConnectionDraining(_messages.Message):
+  """Message containing connection draining configuration.
+
+  Fields:
+    drainingTimeoutSec: Time for which instance will be drained (not accept
+      new connections, but still work to finish started).
+  """
+
+  drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class CustomerEncryptionKey(_messages.Message):
   """Represents a customer-supplied encryption key
 
@@ -6722,7 +6883,7 @@ class Disk(_messages.Message):
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
       format.
-    licenses: [Output Only] Any applicable publicly visible licenses.
+    licenses: Any applicable publicly visible licenses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -7696,6 +7857,234 @@ class GlobalSetLabelsRequest(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
 
 
+class HTTP2HealthCheck(_messages.Message):
+  """A HTTP2HealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP/2 health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP/2 health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HTTPHealthCheck(_messages.Message):
+  """A HTTPHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 80.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HTTPSHealthCheck(_messages.Message):
+  """A HTTPSHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTPS health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTPS health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HealthCheck(_messages.Message):
+  """An HealthCheck resource. This resource defines a template for how
+  individual virtual machines should be checked for health, via one of the
+  supported protocols.
+
+  Enums:
+    TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
+      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
+      one of the protocol-specific health check field must be specified, which
+      must match type field.
+
+  Fields:
+    checkIntervalSec: How often (in seconds) to send a health check. The
+      default value is 5 seconds.
+    creationTimestamp: [Output Only] Creation timestamp in 3339 text format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    healthyThreshold: A so-far unhealthy instance will be marked healthy after
+      this many consecutive successes. The default value is 2.
+    http2HealthCheck: A HTTP2HealthCheck attribute.
+    httpHealthCheck: A HTTPHealthCheck attribute.
+    httpsHealthCheck: A HTTPSHealthCheck attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    sslHealthCheck: A SSLHealthCheck attribute.
+    tcpHealthCheck: A TCPHealthCheck attribute.
+    timeoutSec: How long (in seconds) to wait before claiming failure. The
+      default value is 5 seconds. It is invalid for timeoutSec to have greater
+      value than checkIntervalSec.
+    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
+      or HTTP2. If not specified, the default is TCP. Exactly one of the
+      protocol-specific health check field must be specified, which must match
+      type field.
+    unhealthyThreshold: A so-far healthy instance will be marked unhealthy
+      after this many consecutive failures. The default value is 2.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
+    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
+    specific health check field must be specified, which must match type
+    field.
+
+    Values:
+      HTTP: <no description>
+      HTTP2: <no description>
+      HTTPS: <no description>
+      INVALID: <no description>
+      SSL: <no description>
+      TCP: <no description>
+    """
+    HTTP = 0
+    HTTP2 = 1
+    HTTPS = 2
+    INVALID = 3
+    SSL = 4
+    TCP = 5
+
+  checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#healthCheck')
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 12)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
+  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+
+
+class HealthCheckList(_messages.Message):
+  """Contains a list of HealthCheck resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of HealthCheck resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('HealthCheck', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#healthCheckList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
 class HealthCheckReference(_messages.Message):
   """A full or valid partial URL to a health check. For example, the following
   are valid URLs:   - https://www.googleapis.com/compute/beta/projects
@@ -7942,7 +8331,7 @@ class Image(_messages.Message):
     family: The name of the image family to which this image belongs. You can
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
-      deprecated.
+      deprecated. The name of the image family must comply with RFC1035.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -8185,7 +8574,8 @@ class Instance(_messages.Message):
       character, which cannot be a dash.
     networkInterfaces: An array of configurations for this interface. This
       specifies how this interface is configured to interact with other
-      network services, such as connecting to the internet.
+      network services, such as connecting to the internet. Only one interface
+      is supported per instance.
     scheduling: Scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -8457,7 +8847,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """An Instance Template Manager resource.
+  """An Instance Group Manager resource.
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -8526,11 +8916,13 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       instance removes it from the managed instance group without deleting it.
     creating: [Output Only] The number of instances in the managed instance
       group that are scheduled to be created or are currently being created.
-      If the group fails to create one of these instances, it tries again
-      until it creates the instance successfully.
+      If the group fails to create any of these instances, it tries again
+      until it creates the instance successfully.  If you have disabled
+      creation retries, this field will not be populated; instead, the
+      creatingWithoutRetries field will be populated.
     creatingWithoutRetries: [Output Only] The number of instances that the
       managed instance group will attempt to create. The group attempts to
-      create each instance only once. If the group fails to create one of
+      create each instance only once. If the group fails to create any of
       these instances, it decreases the group's target_size value accordingly.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
@@ -8703,19 +9095,21 @@ class InstanceGroupManagersResizeAdvancedRequest(_messages.Message):
   """A InstanceGroupManagersResizeAdvancedRequest object.
 
   Fields:
-    noCreationRetries: If this flag is true, we will attempt to create all
-      instances resized up with this request only once. In case of an error
-      during creation, we will not create this instance, and we will decrease
-      the target_size. If the flag is false, we will keep trying to create
-      each instance until we succeed.  This flag matters only in the first
-      attempt of creation of an instance. If an instance creation with this
-      flag succeeds, the instance behaves the same way as all the other
-      instances created with the flag set to false. In particular, consecutive
-      instance creations (in case an instance dies and needs to be recreated)
-      will not fail after the first attempt.  This flag is applicable only to
-      the current resize request. It does not influence other resize requests
-      in any way.  You can see which instances is being creating in which mode
-      by calling the listManagedInstances API.
+    noCreationRetries: If this flag is true, the managed instance group
+      attempts to create all instances initiated by this resize request only
+      once. If there is an error during creation, the managed instance group
+      does not retry create this instance, and we will decrease the targetSize
+      of the request instead. If the flag is false, the group attemps to
+      recreate each instance continuously until it succeeds.  This flag
+      matters only in the first attempt of creation of an instance. After an
+      instance is successfully created while this flag is enabled, the
+      instance behaves the same way as all the other instances created with a
+      regular resize request. In particular, if a running instance dies
+      unexpectedly at a later time and needs to be recreated, this mode does
+      not affect the recreation behavior in that scenario.  This flag is
+      applicable only to the current resize request. It does not influence
+      other resize requests in any way.  You can see which instances is being
+      creating in which mode by calling the get or listManagedInstances API.
     targetSize: The number of running instances that the managed instance
       group should maintain at any given time. The group automatically adds or
       removes instances to maintain the number of instances specified by this
@@ -9107,6 +9501,11 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   """InstanceProperties message type.
 
+  Messages:
+    LabelsValue: Labels to apply to instances that are created from this
+      template. Each label key/value pair must comply with RFC1035. Label
+      values may be empty.
+
   Fields:
     canIpForward: Enables instances created based on this template to send
       packets with source IP addresses other than their own and receive
@@ -9119,6 +9518,9 @@ class InstanceProperties(_messages.Message):
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    labels: Labels to apply to instances that are created from this template.
+      Each label key/value pair must comply with RFC1035. Label values may be
+      empty.
     machineType: The machine type to use for instances that are created from
       this template.
     metadata: The metadata key/value pairs to assign to instances that are
@@ -9139,15 +9541,41 @@ class InstanceProperties(_messages.Message):
       within the list must comply with RFC1035.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to instances that are created from this template. Each
+    label key/value pair must comply with RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
   disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  machineType = _messages.StringField(4)
-  metadata = _messages.MessageField('Metadata', 5)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 6, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 7)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 8, repeated=True)
-  tags = _messages.MessageField('Tags', 9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineType = _messages.StringField(5)
+  metadata = _messages.MessageField('Metadata', 6)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 8)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 9, repeated=True)
+  tags = _messages.MessageField('Tags', 10)
 
 
 class InstanceReference(_messages.Message):
@@ -9693,16 +10121,17 @@ class ManagedInstance(_messages.Message):
       this instance, it will try again until it is successful.  -
       CREATING_WITHOUT_RETRIES The managed instance group is attempting to
       create this instance only once. If the group fails to create this
-      instance, it does not try again and the group's target_size value is
-      decreased.  - RECREATING The managed instance group is recreating this
-      instance.  - DELETING The managed instance group is permanently deleting
-      this instance.  - ABANDONING The managed instance group is abandoning
-      this instance. The instance will be removed from the instance group and
-      from any target pools that are associated with this group.  - RESTARTING
-      The managed instance group is restarting the instance.  - REFRESHING The
-      managed instance group is applying configuration changes to the instance
-      without stopping it. For example, the group can update the target pool
-      list for an instance without stopping that instance.
+      instance, it does not try again and the group's targetSize value is
+      decreased instead.  - RECREATING The managed instance group is
+      recreating this instance.  - DELETING The managed instance group is
+      permanently deleting this instance.  - ABANDONING The managed instance
+      group is abandoning this instance. The instance will be removed from the
+      instance group and from any target pools that are associated with this
+      group.  - RESTARTING The managed instance group is restarting the
+      instance.  - REFRESHING The managed instance group is applying
+      configuration changes to the instance without stopping it. For example,
+      the group can update the target pool list for an instance without
+      stopping that instance.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
 
@@ -9715,16 +10144,17 @@ class ManagedInstance(_messages.Message):
       instance, it will try again until it is successful.  -
       CREATING_WITHOUT_RETRIES The managed instance group is attempting to
       create this instance only once. If the group fails to create this
-      instance, it does not try again and the group's target_size value is
-      decreased.  - RECREATING The managed instance group is recreating this
-      instance.  - DELETING The managed instance group is permanently deleting
-      this instance.  - ABANDONING The managed instance group is abandoning
-      this instance. The instance will be removed from the instance group and
-      from any target pools that are associated with this group.  - RESTARTING
-      The managed instance group is restarting the instance.  - REFRESHING The
-      managed instance group is applying configuration changes to the instance
-      without stopping it. For example, the group can update the target pool
-      list for an instance without stopping that instance.
+      instance, it does not try again and the group's targetSize value is
+      decreased instead.  - RECREATING The managed instance group is
+      recreating this instance.  - DELETING The managed instance group is
+      permanently deleting this instance.  - ABANDONING The managed instance
+      group is abandoning this instance. The instance will be removed from the
+      instance group and from any target pools that are associated with this
+      group.  - RESTARTING The managed instance group is restarting the
+      instance.  - REFRESHING The managed instance group is applying
+      configuration changes to the instance without stopping it. For example,
+      the group can update the target pool list for an instance without
+      stopping that instance.
     id: [Output only] The unique identifier for this resource. This field is
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
@@ -9744,16 +10174,16 @@ class ManagedInstance(_messages.Message):
     will try again until it is successful.  - CREATING_WITHOUT_RETRIES The
     managed instance group is attempting to create this instance only once. If
     the group fails to create this instance, it does not try again and the
-    group's target_size value is decreased.  - RECREATING The managed instance
-    group is recreating this instance.  - DELETING The managed instance group
-    is permanently deleting this instance.  - ABANDONING The managed instance
-    group is abandoning this instance. The instance will be removed from the
-    instance group and from any target pools that are associated with this
-    group.  - RESTARTING The managed instance group is restarting the
-    instance.  - REFRESHING The managed instance group is applying
-    configuration changes to the instance without stopping it. For example,
-    the group can update the target pool list for an instance without stopping
-    that instance.
+    group's targetSize value is decreased instead.  - RECREATING The managed
+    instance group is recreating this instance.  - DELETING The managed
+    instance group is permanently deleting this instance.  - ABANDONING The
+    managed instance group is abandoning this instance. The instance will be
+    removed from the instance group and from any target pools that are
+    associated with this group.  - RESTARTING The managed instance group is
+    restarting the instance.  - REFRESHING The managed instance group is
+    applying configuration changes to the instance without stopping it. For
+    example, the group can update the target pool list for an instance without
+    stopping that instance.
 
     Values:
       ABANDONING: <no description>
@@ -9955,7 +10385,7 @@ class NetworkInterface(_messages.Message):
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
-      ONE_TO_ONE_NAT is the only access config supported. If there are no
+      only one access config, ONE_TO_ONE_NAT, is supported. If there are no
       accessConfigs specified, then this instance will have no external
       internet access.
     name: [Output Only] The name of the network interface, generated by the
@@ -11063,6 +11493,16 @@ class RouterStatusResponse(_messages.Message):
   result = _messages.MessageField('RouterStatus', 2)
 
 
+class RoutersPreviewResponse(_messages.Message):
+  """A RoutersPreviewResponse object.
+
+  Fields:
+    resource: Preview of given router.
+  """
+
+  resource = _messages.MessageField('Router', 1)
+
+
 class RoutersScopedList(_messages.Message):
   """A RoutersScopedList object.
 
@@ -11159,6 +11599,48 @@ class RoutersScopedList(_messages.Message):
 
   routers = _messages.MessageField('Router', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SSLHealthCheck(_messages.Message):
+  """A SSLHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    request: The application data to send once the SSL connection has been
+      established (default value is empty). If both request and response are
+      empty, the connection establishment alone will indicate health. The
+      request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      If left empty (the default value), any response will indicate health.
+      The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Scheduling(_messages.Message):
@@ -11731,6 +12213,48 @@ class SubnetworksScopedList(_messages.Message):
 
   subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class TCPHealthCheck(_messages.Message):
+  """A TCPHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    port: The TCP port number for the health check request. The default value
+      is 80.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    request: The application data to send once the TCP connection has been
+      established (default value is empty). If both request and response are
+      empty, the connection establishment alone will indicate health. The
+      request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      If left empty (the default value), any response will indicate health.
+      The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Tags(_messages.Message):

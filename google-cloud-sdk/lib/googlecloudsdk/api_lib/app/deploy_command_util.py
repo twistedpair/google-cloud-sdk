@@ -25,16 +25,12 @@ from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.images import config
-from googlecloudsdk.api_lib.app.images import docker_util
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.docker import constants
-from googlecloudsdk.core.docker import docker
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
 
@@ -132,105 +128,49 @@ def _GetImageName(project, service, version):
               display=display, domain=domain, service=service, version=version)
 
 
-def BuildAndPushDockerImages(
-    service_configs, version_id, cloudbuild_client, storage_client,
-    code_bucket_ref, cli, remote, source_contexts):
+def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
   """Builds and pushes a set of docker images.
 
   Args:
-    service_configs: A map of service name to parsed config.
+    project: str, The project being deployed to.
+    service: ServiceYamlInfo, The parsed service config.
     version_id: The version id to deploy these services under.
-    cloudbuild_client: An instance of the cloudbuild.CloudBuildV1 api client.
-    storage_client: An instance of the storage_v1.StorageV1 client.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
-    cli: calliope.cli.CLI, The CLI object representing this command line tool.
-    remote: Whether the user specified a remote build.
-    source_contexts: A list of json-serializable source contexts to place in
-      the application directory for each config.
 
   Returns:
-    A dictionary mapping services to the name of the pushed container image.
+    str, The name of the pushed container image.
   """
-  project = properties.VALUES.core.project.Get(required=True)
-  use_cloud_build = properties.VALUES.app.use_cloud_build.GetBool(required=True)
+  #  Nothing to do if this is not an image based deployment.
+  if not service.RequiresImage():
+    return None
 
-  # Prepare temporary dockerfile creators for all services that need them
-  # before doing the heavy lifting so we can fail fast if there are errors.
-  services = []
-  for (name, info) in service_configs.iteritems():
-    if info.RequiresImage():
-      context_creator = context_util.GetSourceContextFilesCreator(
-          os.path.dirname(info.file), source_contexts)
-      services.append(
-          (name, info, _GetDockerfileCreator(info), context_creator))
-  if not services:
-    # No images need to be built.
-    return {}
+  dockerfile_creator = _GetDockerfileCreator(service)
+  context_creator = context_util.GetSourceContextFilesCreator(
+      os.path.dirname(service.file), None)
 
-  log.status.Print('Verifying that Managed VMs are enabled and ready.')
+  log.status.Print(
+      'Building and pushing image for service [{service}]'
+      .format(service=service.module))
 
-  if use_cloud_build and remote:
-    return _BuildImagesWithCloudBuild(project, services, version_id,
-                                      code_bucket_ref, cloudbuild_client,
-                                      storage_client)
-
-  # Update docker client's credentials.
-  for registry_host in constants.ALL_SUPPORTED_REGISTRIES:
-    docker.UpdateDockerCredentials(registry_host)
-    metrics.CustomTimedEvent(metric_names.DOCKER_UPDATE_CREDENTIALS)
-
-  # Build docker images.
-  images = {}
-  with docker_util.DockerHost(
-      cli, version_id, remote, project) as docker_client:
-    # Build and push all images.
-    for service, info, ensure_dockerfile, ensure_context in services:
-      log.status.Print(
-          'Building and pushing image for service [{service}]'
-          .format(service=service))
-      cleanup_dockerfile = ensure_dockerfile()
-      cleanup_context = ensure_context()
-      try:
-        image_name = _GetImageName(project, service, version_id)
-        images[service] = BuildAndPushDockerImage(
-            info.file, docker_client, image_name)
-      finally:
-        cleanup_dockerfile()
-        cleanup_context()
-  metric_name = (metric_names.DOCKER_REMOTE_BUILD if remote
-                 else metric_names.DOCKER_BUILD)
-  metrics.CustomTimedEvent(metric_name)
-  return images
-
-
-def _BuildImagesWithCloudBuild(project, services, version_id, code_bucket_ref,
-                               cloudbuild_client, storage_client):
-  """Build multiple services with Cloud Build."""
-  images = {}
-  for service, info, ensure_dockerfile, ensure_context in services:
-    log.status.Print(
-        'Building and pushing image for service [{service}]'
-        .format(service=service))
-    cleanup_dockerfile = ensure_dockerfile()
-    cleanup_context = ensure_context()
-    try:
-      image = docker_image.Image(
-          dockerfile_dir=os.path.dirname(info.file),
-          repo=_GetImageName(project, service, version_id),
-          nocache=False,
-          tag=config.DOCKER_IMAGE_TAG)
-      cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
-                               image.tagged_repo, storage_client)
-      metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
-      cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
-                                    image.tagged_repo, cloudbuild_client)
-      metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-      images[service] = image.tagged_repo
-    finally:
-      cleanup_dockerfile()
-      cleanup_context()
-  return images
+  cleanup_dockerfile = dockerfile_creator()
+  cleanup_context = context_creator()
+  try:
+    image = docker_image.Image(
+        dockerfile_dir=os.path.dirname(service.file),
+        repo=_GetImageName(project, service.module, version_id),
+        nocache=False,
+        tag=config.DOCKER_IMAGE_TAG)
+    cloud_build.UploadSource(image.dockerfile_dir, code_bucket_ref,
+                             image.tagged_repo)
+    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
+    cloud_build.ExecuteCloudBuild(project, code_bucket_ref, image.tagged_repo,
+                                  image.tagged_repo)
+    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
+    return image.tagged_repo
+  finally:
+    cleanup_dockerfile()
+    cleanup_context()
 
 
 def DoPrepareManagedVms(gae_client):
@@ -246,32 +186,6 @@ def DoPrepareManagedVms(gae_client):
   except util.RPCError:
     log.warn('If this is your first deployment, please try again.')
     raise
-
-
-def BuildAndPushDockerImage(appyaml_path, docker_client, image_name):
-  """Builds Docker image and pushes it onto Google Cloud Storage.
-
-  Workflow:
-      Connects to Docker daemon.
-      Builds user image.
-      Pushes an image to GCR.
-
-  Args:
-    appyaml_path: str, Path to the app.yaml for the service.
-        Dockerfile must be located in the same directory.
-    docker_client: docker.Client instance.
-    image_name: str, The name to build the image as.
-
-  Returns:
-    The name of the pushed image.
-  """
-  dockerfile_dir = os.path.dirname(appyaml_path)
-
-  image = docker_image.Image(dockerfile_dir=dockerfile_dir, repo=image_name,
-                             tag=config.DOCKER_IMAGE_TAG, nocache=False)
-  image.Build(docker_client)
-  image.Push(docker_client)
-  return image.tagged_repo
 
 
 def UseSsl(handlers):

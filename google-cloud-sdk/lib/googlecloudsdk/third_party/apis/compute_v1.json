@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20160525",
+ "revision": "20160607",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -93,7 +93,7 @@
   "AccessConfig": {
    "id": "AccessConfig",
    "type": "object",
-   "description": "An access configuration attached to an instance's network interface.",
+   "description": "An access configuration attached to an instance's network interface. Only one access config per instance is supported.",
    "properties": {
     "kind": {
      "type": "string",
@@ -1007,7 +1007,7 @@
     },
     "licenses": {
      "type": "array",
-     "description": "[Output Only] Any applicable publicly visible licenses.",
+     "description": "Any applicable publicly visible licenses.",
      "items": {
       "type": "string"
      }
@@ -2060,7 +2060,7 @@
     },
     "family": {
      "type": "string",
-     "description": "The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated."
+     "description": "The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035."
     },
     "id": {
      "type": "string",
@@ -2254,7 +2254,7 @@
     },
     "networkInterfaces": {
      "type": "array",
-     "description": "An array of configurations for this interface. This specifies how this interface is configured to interact with other network services, such as connecting to the internet.",
+     "description": "An array of configurations for this interface. This specifies how this interface is configured to interact with other network services, such as connecting to the internet. Only one interface is supported per instance.",
      "items": {
       "$ref": "NetworkInterface"
      }
@@ -2475,7 +2475,7 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "An Instance Template Manager resource.",
+   "description": "An Instance Group Manager resource.",
    "properties": {
     "baseInstanceName": {
      "type": "string",
@@ -2577,7 +2577,7 @@
     },
     "creating": {
      "type": "integer",
-     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be created or are currently being created. If the group fails to create one of these instances, it tries again until it creates the instance successfully.",
+     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be created or are currently being created. If the group fails to create any of these instances, it tries again until it creates the instance successfully.\n\nIf you have disabled creation retries, this field will not be populated; instead, the creatingWithoutRetries field will be populated.",
      "format": "int32"
     },
     "deleting": {
@@ -3586,7 +3586,7 @@
    "properties": {
     "currentAction": {
      "type": "string",
-     "description": "[Output Only] The current action that the managed instance group has scheduled for the instance. Possible values: \n- NONE The instance is running, and the managed instance group does not have any scheduled actions for this instance. \n- CREATING The managed instance group is creating this instance. If the group fails to create this instance, it will try again until it is successful. \n- CREATING_WITHOUT_RETRIES The managed instance group is attempting to create this instance only once. If the group fails to create this instance, it does not try again and the group's target_size value is decreased. \n- RECREATING The managed instance group is recreating this instance. \n- DELETING The managed instance group is permanently deleting this instance. \n- ABANDONING The managed instance group is abandoning this instance. The instance will be removed from the instance group and from any target pools that are associated with this group. \n- RESTARTING The managed instance group is restarting the instance. \n- REFRESHING The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
+     "description": "[Output Only] The current action that the managed instance group has scheduled for the instance. Possible values: \n- NONE The instance is running, and the managed instance group does not have any scheduled actions for this instance. \n- CREATING The managed instance group is creating this instance. If the group fails to create this instance, it will try again until it is successful. \n- CREATING_WITHOUT_RETRIES The managed instance group is attempting to create this instance only once. If the group fails to create this instance, it does not try again and the group's targetSize value is decreased instead. \n- RECREATING The managed instance group is recreating this instance. \n- DELETING The managed instance group is permanently deleting this instance. \n- ABANDONING The managed instance group is abandoning this instance. The instance will be removed from the instance group and from any target pools that are associated with this group. \n- RESTARTING The managed instance group is restarting the instance. \n- REFRESHING The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
      "enum": [
       "ABANDONING",
       "CREATING",
@@ -3808,7 +3808,7 @@
    "properties": {
     "accessConfigs": {
      "type": "array",
-     "description": "An array of configurations for this interface. Currently, ONE_TO_ONE_NAT is the only access config supported. If there are no accessConfigs specified, then this instance will have no external internet access.",
+     "description": "An array of configurations for this interface. Currently, only one access config, ONE_TO_ONE_NAT, is supported. If there are no accessConfigs specified, then this instance will have no external internet access.",
      "items": {
       "$ref": "AccessConfig"
      }
@@ -9706,7 +9706,7 @@
      "parameters": {
       "family": {
        "type": "string",
-       "description": "Name of the image resource to return.",
+       "description": "Name of the image family to search for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"

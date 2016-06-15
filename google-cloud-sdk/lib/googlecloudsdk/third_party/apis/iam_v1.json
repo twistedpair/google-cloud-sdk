@@ -139,7 +139,7 @@
     },
     "ServiceAccount": {
       "id": "ServiceAccount",
-      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, specify the `project_id` and the `account_id`\nfor the account.  The `account_id` is unique within the project, and is used\nto generate the service account email address and a stable\n`unique_id`.\n\nAll other methods can identify the service account using the format\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, specify the `project_id` and the `account_id`\nfor the account.  The `account_id` is unique within the project, and is used\nto generate the service account email address and a stable\n`unique_id`.\n\nIf the account already exists, the account's resource name is returned\nin util::Status's ResourceInfo.resource_name in the format of\nprojects\/{project}\/serviceAccounts\/{email}. The caller can use the name in\nother methods to access the account.\n\nAll other methods can identify the service account using the format\n`projects\/{project}\/serviceAccounts\/{account}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
       "type": "object",
       "properties": {
         "name": {

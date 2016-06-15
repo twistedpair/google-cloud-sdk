@@ -208,7 +208,7 @@
           "$ref": "LogEntryMetadata"
         },
         "protoPayload": {
-          "description": "The log entry payload, represented as a protocol buffer that is\nexpressed as a JSON object. You can only pass `protoPayload`\nvalues that belong to a set of approved types.",
+          "description": "The log entry payload, represented as a protocol buffer that is\nexpressed as a JSON object. Some Google Cloud Platform services\nuse this field for their log entry payloads.",
           "type": "object",
           "additionalProperties": {
             "type": "any",

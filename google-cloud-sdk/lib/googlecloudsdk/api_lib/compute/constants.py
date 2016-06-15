@@ -36,45 +36,89 @@ DEFAULT_NETWORK = 'default'
 DEFAULT_IMAGE = 'debian-8'
 
 ImageAlias = collections.namedtuple(
-    'ImageAlias', ['project', 'name_prefix'])
+    'ImageAlias', ['project', 'name_prefix', 'family'])
 
 IMAGE_ALIASES = {
-    'centos-6': ImageAlias(project='centos-cloud', name_prefix='centos-6'),
-    'centos-7': ImageAlias(project='centos-cloud', name_prefix='centos-7'),
+    'centos-6': ImageAlias(
+        project='centos-cloud',
+        name_prefix='centos-6',
+        family='centos-6'),
+    'centos-7': ImageAlias(
+        project='centos-cloud',
+        name_prefix='centos-7',
+        family='centos-7'),
     'container-vm': ImageAlias(
-        project='google-containers', name_prefix='container-vm'),
-    'coreos': ImageAlias(project='coreos-cloud', name_prefix='coreos-stable'),
-    'debian-7':
-        ImageAlias(project='debian-cloud', name_prefix='debian-7-wheezy'),
+        project='google-containers',
+        name_prefix='container-vm',
+        family='container-vm'),
+    'coreos': ImageAlias(
+        project='coreos-cloud',
+        name_prefix='coreos-stable',
+        family='coreos-stable'),
+    'debian-7': ImageAlias(
+        project='debian-cloud',
+        name_prefix='debian-7-wheezy',
+        family='debian-7'),
     'debian-7-backports': ImageAlias(
-        project='debian-cloud', name_prefix='backports-debian-7-wheezy'),
-    'debian-8':
-        ImageAlias(project='debian-cloud', name_prefix='debian-8-jessie'),
+        project='debian-cloud',
+        name_prefix='backports-debian-7-wheezy',
+        family='debian-7-backports'),
+    'debian-8': ImageAlias(
+        project='debian-cloud',
+        name_prefix='debian-8-jessie',
+        family='debian-8'),
     'opensuse-13': ImageAlias(
-        project='opensuse-cloud', name_prefix='opensuse-13'),
-    'rhel-6': ImageAlias(project='rhel-cloud', name_prefix='rhel-6'),
-    'rhel-7': ImageAlias(project='rhel-cloud', name_prefix='rhel-7'),
-    'sles-11': ImageAlias(project='suse-cloud', name_prefix='sles-11'),
-    'sles-12': ImageAlias(project='suse-cloud', name_prefix='sles-12'),
+        project='opensuse-cloud',
+        name_prefix='opensuse-13',
+        family=None),
+    'rhel-6': ImageAlias(
+        project='rhel-cloud',
+        name_prefix='rhel-6',
+        family='rhel-6'),
+    'rhel-7': ImageAlias(
+        project='rhel-cloud',
+        name_prefix='rhel-7',
+        family='rhel-7'),
+    'sles-11': ImageAlias(
+        project='suse-cloud',
+        name_prefix='sles-11',
+        family=None),
+    'sles-12': ImageAlias(
+        project='suse-cloud',
+        name_prefix='sles-12',
+        family=None),
     'ubuntu-12-04': ImageAlias(
-        project='ubuntu-os-cloud', name_prefix='ubuntu-1204-precise'),
+        project='ubuntu-os-cloud',
+        name_prefix='ubuntu-1204-precise',
+        family='ubuntu-1204-lts'),
     'ubuntu-14-04': ImageAlias(
-        project='ubuntu-os-cloud', name_prefix='ubuntu-1404-trusty'),
+        project='ubuntu-os-cloud',
+        name_prefix='ubuntu-1404-trusty',
+        family='ubuntu-1404-lts'),
     'ubuntu-15-04': ImageAlias(
-        project='ubuntu-os-cloud', name_prefix='ubuntu-1504-vivid'),
+        project='ubuntu-os-cloud',
+        name_prefix='ubuntu-1504-vivid',
+        family=None),
     'ubuntu-15-10': ImageAlias(
-        project='ubuntu-os-cloud', name_prefix='ubuntu-1510-wily'),
+        project='ubuntu-os-cloud',
+        name_prefix='ubuntu-1510-wily',
+        family='ubuntu-1510'),
     'windows-2008-r2': ImageAlias(
-        project='windows-cloud', name_prefix='windows-server-2008-r2'),
+        project='windows-cloud',
+        name_prefix='windows-server-2008-r2',
+        family='windows-2008-r2'),
     'windows-2012-r2': ImageAlias(
-        project='windows-cloud', name_prefix='windows-server-2012-r2'),
+        project='windows-cloud',
+        name_prefix='windows-server-2012-r2',
+        family='windows-2012-r2'),
 }
 
 # These are like IMAGE_ALIASES, but don't show up in the alias list.
 HIDDEN_IMAGE_ALIASES = {
-    'gae-builder-vm':
-        ImageAlias(project='goog-vmruntime-images',
-                   name_prefix='gae-builder-vm'),
+    'gae-builder-vm': ImageAlias(
+        project='goog-vmruntime-images',
+        name_prefix='gae-builder-vm',
+        family=None),
 }
 
 WINDOWS_IMAGE_PROJECT = 'windows-cloud'

@@ -617,6 +617,7 @@ Implements
               supports_download=False,
           ),
           'GetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/datasets/{datasetsId}:getIamPolicy',
               http_method=u'POST',
               method_id=u'genomics.datasets.getIamPolicy',
               ordered_params=[u'resource'],
@@ -653,6 +654,7 @@ Implements
               supports_download=False,
           ),
           'SetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/datasets/{datasetsId}:setIamPolicy',
               http_method=u'POST',
               method_id=u'genomics.datasets.setIamPolicy',
               ordered_params=[u'resource'],
@@ -665,6 +667,7 @@ Implements
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
+              flat_path=u'v1/datasets/{datasetsId}:testIamPermissions',
               http_method=u'POST',
               method_id=u'genomics.datasets.testIamPermissions',
               ordered_params=[u'resource'],
@@ -874,6 +877,7 @@ This operation is only possible for a week after the deletion occurred.
       super(GenomicsV1.OperationsService, self).__init__(client)
       self._method_configs = {
           'Cancel': base_api.ApiMethodInfo(
+              flat_path=u'v1/operations/{operationsId}:cancel',
               http_method=u'POST',
               method_id=u'genomics.operations.cancel',
               ordered_params=[u'name'],
@@ -886,6 +890,7 @@ This operation is only possible for a week after the deletion occurred.
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'genomics.operations.get',
               ordered_params=[u'name'],
@@ -898,6 +903,7 @@ This operation is only possible for a week after the deletion occurred.
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/operations',
               http_method=u'GET',
               method_id=u'genomics.operations.list',
               ordered_params=[u'name'],

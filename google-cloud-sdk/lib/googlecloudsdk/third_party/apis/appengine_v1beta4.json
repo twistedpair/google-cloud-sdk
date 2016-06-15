@@ -1176,15 +1176,15 @@
           ]
         },
         "vmName": {
-          "description": "For VMEngines instances, the name of GCE VM where the instance lives.\n\n@OutputOnly",
+          "description": "For VMEngines instances, the name of the Compute Engine VM where the\ninstance lives.\n\n@OutputOnly",
           "type": "string"
         },
         "vmZoneName": {
-          "description": "For VMEngines instances, the zone where the GCE VM is located.\n\n@OutputOnly",
+          "description": "For VMEngines instances, the zone where the Compute Engine VM is located.\n\n@OutputOnly",
           "type": "string"
         },
         "vmId": {
-          "description": "For VMEngines instances, the GCE VM ID of the instance.\n\n@OutputOnly",
+          "description": "For VMEngines instances, the Compute Engine VM ID of the instance.\n\n@OutputOnly",
           "type": "string"
         },
         "startTimestamp": {
@@ -1218,7 +1218,7 @@
           "format": "int64"
         },
         "vmStatus": {
-          "description": "For VMEngines instances, the status of GCE VM where the instance lives.\n\n@OutputOnly",
+          "description": "For VMEngines instances, the status of the Compute Engine VM where the\ninstance lives.\n\n@OutputOnly",
           "type": "string"
         },
         "vmUnlocked": {
@@ -1649,7 +1649,7 @@
                   "path": "v1beta4/{+name}",
                   "flatPath": "v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates an existing version. Note: UNIMPLEMENTED.",
+                  "description": "Updates the specified Version resource.\nYou can specify the following fields depending on the App Engine\nenvironment and type of scaling that the version resource uses:\n\n* [`serving_status`](\/appengine\/docs\/admin-api\/reference\/rest\/v1beta4\/apps.services.versions#Version.FIELDS.serving_status):\n  For Version resources that use basic scaling, manual scaling, or run in\n  the App Engine flexible environment.\n* [`instance_class`](\/appengine\/docs\/admin-api\/reference\/rest\/v1beta4\/apps.services.versions#Version.FIELDS.instance_class):\n  For Version resources that run in the App Engine standard environment.\n* [`automatic_scaling.min_idle_instances`](\/appengine\/docs\/admin-api\/reference\/rest\/v1beta4\/apps.services.versions#Version.FIELDS.automatic_scaling):\n  For Version resources that use automatic scaling and run in the App\n  Engine standard environment.\n* [`automatic_scaling.max_idle_instances`](\/appengine\/docs\/admin-api\/reference\/rest\/v1beta4\/apps.services.versions#Version.FIELDS.automatic_scaling):\n  For Version resources that use automatic scaling and run in the App\n  Engine standard environment.",
                   "parameters": {
                     "name": {
                       "description": "Name of the resource to update. For example:\n\"apps\/myapp\/modules\/default\/versions\/1\".",

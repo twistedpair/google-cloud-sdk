@@ -413,6 +413,9 @@ class CreateClusterOptions(object):
                disable_addons=None,
                local_ssd_count=None,
                tags=None,
+               enable_autoscaling=None,
+               min_nodes=None,
+               max_nodes=None,
                image_type=None,
                max_nodes_per_pool=None):
     self.node_machine_type = node_machine_type
@@ -433,6 +436,9 @@ class CreateClusterOptions(object):
     self.disable_addons = disable_addons
     self.local_ssd_count = local_ssd_count
     self.tags = tags
+    self.enable_autoscaling = enable_autoscaling
+    self.min_nodes = min_nodes
+    self.max_nodes = max_nodes
     self.image_type = image_type
     self.max_nodes_per_pool = max_nodes_per_pool
 
@@ -450,6 +456,9 @@ class UpdateClusterOptions(object):
                node_pool=None,
                monitoring_service=None,
                disable_addons=None,
+               enable_autoscaling=None,
+               min_nodes=None,
+               max_nodes=None,
                image_type=None):
     self.version = version
     self.update_master = bool(update_master)
@@ -457,6 +466,9 @@ class UpdateClusterOptions(object):
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.disable_addons = disable_addons
+    self.enable_autoscaling = enable_autoscaling
+    self.min_nodes = min_nodes
+    self.max_nodes = max_nodes
     self.image_type = image_type
 
 
@@ -470,6 +482,9 @@ class CreateNodePoolOptions(object):
                num_nodes=None,
                local_ssd_count=None,
                tags=None,
+               enable_autoscaling=None,
+               max_nodes=None,
+               min_nodes=None,
                image_type=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -478,6 +493,9 @@ class CreateNodePoolOptions(object):
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.tags = tags
+    self.enable_autoscaling = enable_autoscaling
+    self.max_nodes = max_nodes
+    self.min_nodes = min_nodes
     self.image_type = image_type
 
 
@@ -539,10 +557,17 @@ class V1Adapter(APIAdapter):
     to_add = options.num_nodes
     for name in pool_names:
       nodes = per_pool if (to_add > per_pool) else to_add
+      autoscaling = None
+      if options.enable_autoscaling:
+        autoscaling = self.messages.NodePoolAutoscaling(
+            enabled=options.enable_autoscaling,
+            minNodeCount=options.min_nodes,
+            maxNodeCount=options.max_nodes)
       pools.append(self.messages.NodePool(
           name=name,
           initialNodeCount=nodes,
-          config=node_config))
+          config=node_config,
+          autoscaling=autoscaling))
       to_add -= nodes
 
     cluster = self.messages.Cluster(
@@ -598,7 +623,15 @@ class V1Adapter(APIAdapter):
           disable_ingress=options.disable_addons.get(INGRESS),
           disable_hpa=options.disable_addons.get(HPA))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+    elif options.enable_autoscaling:
+      autoscaling = self.messages.NodePoolAutoscaling(
+          enabled=options.enable_autoscaling,
+          minNodeCount=options.min_nodes,
+          maxNodeCount=options.max_nodes)
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolAutoscaling=autoscaling)
 
+    print update
     op = self.client.projects_zones_clusters.Update(
         self.messages.ContainerProjectsZonesClustersUpdateRequest(
             clusterId=cluster_ref.clusterId,
@@ -656,6 +689,12 @@ class V1Adapter(APIAdapter):
         name=node_pool_ref.nodePoolId,
         initialNodeCount=options.num_nodes,
         config=node_config)
+
+    if options.enable_autoscaling:
+      pool.autoscaling = self.messages.NodePoolAutoscaling(
+          enabled=options.enable_autoscaling,
+          minNodeCount=options.min_nodes,
+          maxNodeCount=options.max_nodes)
     create_node_pool_req = self.messages.CreateNodePoolRequest(nodePool=pool)
 
     req = self.messages.ContainerProjectsZonesClustersNodePoolsCreateRequest(

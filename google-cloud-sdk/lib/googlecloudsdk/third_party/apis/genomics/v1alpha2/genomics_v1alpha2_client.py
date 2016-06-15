@@ -46,6 +46,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
       super(GenomicsV1alpha2.OperationsService, self).__init__(client)
       self._method_configs = {
           'Cancel': base_api.ApiMethodInfo(
+              flat_path=u'v1alpha2/operations/{operationsId}:cancel',
               http_method=u'POST',
               method_id=u'genomics.operations.cancel',
               ordered_params=[u'name'],
@@ -58,6 +59,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1alpha2/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'genomics.operations.get',
               ordered_params=[u'name'],
@@ -70,6 +72,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1alpha2/operations',
               http_method=u'GET',
               method_id=u'genomics.operations.list',
               ordered_params=[u'name'],

@@ -47,6 +47,7 @@ class CloudbuildV1(base_api.BaseApiClient):
       super(CloudbuildV1.OperationsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'cloudbuild.operations.get',
               ordered_params=[u'name'],
@@ -59,6 +60,7 @@ class CloudbuildV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/operations',
               http_method=u'GET',
               method_id=u'cloudbuild.operations.list',
               ordered_params=[u'name'],

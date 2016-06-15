@@ -721,6 +721,14 @@
           "items": {
             "$ref": "OperationEvent"
           }
+        },
+        "runtimeMetadata": {
+          "description": "Runtime metadata on this Operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @ype with type URL."
+          }
         }
       }
     },
@@ -732,6 +740,43 @@
         "description": {
           "description": "Required description of event.",
           "type": "string"
+        }
+      }
+    },
+    "RuntimeMetadata": {
+      "id": "RuntimeMetadata",
+      "description": "Runtime metadata that will be populated in the\nruntimeMetadata\nfield of the Operation associated with a RunPipeline execution.",
+      "type": "object",
+      "properties": {
+        "gce": {
+          "description": "Execution information specific to Google Compute Engine.",
+          "$ref": "GCE"
+        }
+      }
+    },
+    "GCE": {
+      "id": "GCE",
+      "description": "Describes a GCE resource that is being managed by a running\npipeline.",
+      "type": "object",
+      "properties": {
+        "instanceName": {
+          "description": "The instance on which the operation is running.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "The availability zone in which the instance resides.",
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The machine type of the instance.",
+          "type": "string"
+        },
+        "diskNames": {
+          "description": "The names of the disks that were created for this pipeline.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

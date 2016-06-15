@@ -258,6 +258,8 @@ def _RoutesNextHopToCell(route):
     return path_simplifier.ScopedSuffix(route.get('nextHopGateway'))
   elif route.get('nextHopIp'):
     return route.get('nextHopIp')
+  elif route.get('nextHopVpnTunnel'):
+    return path_simplifier.ScopedSuffix(route.get('nextHopVpnTunnel'))
   else:
     return ''
 

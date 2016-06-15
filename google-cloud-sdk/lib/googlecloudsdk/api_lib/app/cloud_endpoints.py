@@ -45,32 +45,31 @@ def _GetErrorMessage(error):
   return content_obj.get('error', {}).get('message', '')
 
 
-def ProcessEndpointsServices(app_config_services, project):
+def ProcessEndpointsService(service, project):
   """Pushes service configs to the Endpoints handler.
 
   First, this method checks each service in the list of services to see
   whether it's to be handled by Cloud Endpoints. If so, it pushes the config.
 
   Args:
-    app_config_services: The list of service resources from an app config.
+    service: ServiceYamlInfo, The service being deployed.
     project: The name of the GCP project.
   """
-  for service in app_config_services:
-    if service and service.parsed and service.parsed.beta_settings:
-      bs = service.parsed.beta_settings
-      use_endpoints = bs.get('use_endpoints_api_management', '').lower()
-      swagger_file = bs.get('endpoints_swagger_spec_file')
-      if use_endpoints in ('true', '1', 'yes') and swagger_file:
-        if os.path.isabs(swagger_file):
-          swagger_abs_path = swagger_file
-        else:
-          swagger_abs_path = os.path.normpath(os.path.join(
-              os.path.dirname(service.file), swagger_file))
-        PushServiceConfig(
-            swagger_abs_path,
-            project,
-            apis.GetClientInstance('servicemanagement', 'v1'),
-            apis.GetMessagesModule('servicemanagement', 'v1'))
+  if service and service.parsed and service.parsed.beta_settings:
+    bs = service.parsed.beta_settings
+    use_endpoints = bs.get('use_endpoints_api_management', '').lower()
+    swagger_file = bs.get('endpoints_swagger_spec_file')
+    if use_endpoints in ('true', '1', 'yes') and swagger_file:
+      if os.path.isabs(swagger_file):
+        swagger_abs_path = swagger_file
+      else:
+        swagger_abs_path = os.path.normpath(os.path.join(
+            os.path.dirname(service.file), swagger_file))
+      PushServiceConfig(
+          swagger_abs_path,
+          project,
+          apis.GetClientInstance('servicemanagement', 'v1'),
+          apis.GetMessagesModule('servicemanagement', 'v1'))
 
 
 def PushServiceConfig(swagger_file, project, client, messages):

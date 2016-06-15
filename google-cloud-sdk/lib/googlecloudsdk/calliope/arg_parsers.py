@@ -107,6 +107,8 @@ _VALUE_PATTERN = r"""
     $                       # End of input marker.
 """
 
+_RANGE_PATTERN = r'^(?P<start>[0-9]+)(-(?P<end>[0-9]+))?$'
+
 _SECOND = 1
 _MINUTE = 60 * _SECOND
 _HOUR = 60 * _MINUTE
@@ -317,6 +319,39 @@ def BinarySize(lower_bound=None, upper_bound=None):
 
 
 _KV_PAIR_DELIMITER = '='
+
+
+class Range(object):
+  """Range of integer values."""
+
+  def __init__(self, start, end):
+    self.start = start
+    self.end = end
+
+  @staticmethod
+  def Parse(string_value):
+    """Creates Range object out of given string value."""
+    match = re.match(_RANGE_PATTERN, string_value)
+    if not match:
+      raise ArgumentTypeError('Expected a non-negative integer value or a '
+                              'range of such values instead of "{0}"'
+                              .format(string_value))
+    start = int(match.group('start'))
+    end = match.group('end')
+    if end is None:
+      end = start
+    else:
+      end = int(end)
+    if end < start:
+      raise ArgumentTypeError('Expected range start {0} smaller or equal to '
+                              'range end {1} in "{2}"'.format(
+                                  start, end, string_value))
+    return Range(start, end)
+
+  def __eq__(self, other):
+    if isinstance(other, Range):
+      return self.start == other.start and self.end == other.end
+    return False
 
 
 class HostPort(object):

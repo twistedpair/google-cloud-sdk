@@ -17,23 +17,37 @@ Example invocation:
   convert_yaml.py app.yaml > app.json
 """
 
+import argparse
 import json
-import os
 import sys
 
 import yaml
 
-from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1beta
+
+
+API_VERSION_SCHEMAS = {
+    'v1beta4': yaml_schema_v1beta,
+    'v1beta5': yaml_schema_v1beta,
+    'v1': yaml_schema_v1
+}
 
 
 def main():
-  if len(sys.argv) != 2:
-    sys.stderr.write(
-        'Usage: {0} <input_file.yaml>\n'.format(os.path.basename(sys.argv[0])))
-    sys.exit(1)
+  parser = argparse.ArgumentParser(description='Convert between legacy YAML '
+                                   'and public JSON representations of App '
+                                   'Engine versions')
+  parser.add_argument('input_file')
+  parser.add_argument('--api_version', dest='api_version', default='v1beta5',
+                      choices=sorted(API_VERSION_SCHEMAS.keys()))
 
-  with open(sys.argv[1]) as input_file:
+  args = parser.parse_args()
+
+  with open(args.input_file) as input_file:
     input_yaml = yaml.safe_load(input_file)
+
+  yaml_schema = API_VERSION_SCHEMAS[args.api_version]
 
   converted_yaml = yaml_schema.SCHEMA.ConvertValue(input_yaml)
   json.dump(converted_yaml, sys.stdout, indent=2, sort_keys=True)

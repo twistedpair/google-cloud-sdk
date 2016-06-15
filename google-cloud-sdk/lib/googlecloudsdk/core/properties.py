@@ -505,17 +505,10 @@ class _SectionApp(_Section):
         hidden=True)
     self.stop_previous_version = self._AddBool(
         'stop_previous_version',
-        default=True,
         help_text='If True, when deploying a new version of a service, the '
         'previously deployed version is stopped. If False, older versions must '
-        'be stopped manually.')
-    self.use_cloud_build = self._AddBool(
-        'use_cloud_build',
-        default=True,
-        help_text='If False, use a temporary VM rather than the Container '
-        'Builder API to perform docker builds. See '
-        'https://cloud.google.com/container-builder/docs/ for more '
-        'information.')
+        'be stopped manually.',
+        default=True)
     def CloudBuildTimeoutValidator(cloud_build_timeout):
       if cloud_build_timeout is None:
         return
@@ -530,9 +523,9 @@ class _SectionApp(_Section):
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
         validator=CloudBuildTimeoutValidator,
-        help_text='The timeout, in seconds, for gcloud managed VM deployment '
-        'builds when using the Container Builder API (that is, '
-        'app/use_cloud_build is True) to perform docker builds.')
+        help_text='The timeout, in seconds, to wait for Docker builds to '
+                  'complete during deployments. All Docker builds now use the '
+                  'Container Builder API.')
     self.container_builder_image = self._Add(
         'container_builder_image',
         default='gcr.io/cloud-builders/dockerizer',
@@ -564,6 +557,15 @@ class _SectionApp(_Section):
     self.suppress_change_warning = self._AddBool(
         'suppress_change_warning',
         hidden=True)
+    # This is the number of processes to use for uploading application files.
+    # The default is somewhat arbitrary, but gives good performance on the
+    # machines tested (there's a benefit to exceeding the number of cores
+    # available, since the task is bound by network/API latency among other
+    # factors).
+    self.num_file_upload_processes = self._Add(
+        'num_file_upload_processes',
+        default='32',
+        hidden=True)
 
     def GetRuntimeRoot():
       sdk_root = config.Paths().sdk_root
@@ -576,20 +578,6 @@ class _SectionApp(_Section):
         'runtime_root',
         callbacks=[GetRuntimeRoot],
         hidden=True)
-
-    def DockerBuildValidator(docker_build):
-      if docker_build is None:
-        return
-      if docker_build not in ['local', 'remote']:
-        raise InvalidValueError("docker_build should be either 'local' or "
-                                "'remote'.")
-    self.docker_build = self._Add(
-        'docker_build',
-        help_text='Set to `local` to run `docker build` using a local docker '
-        'installation, or `remote` to do the build on a Google Compute Engine '
-        'VM.',
-        validator=DockerBuildValidator,
-        choices=('local', 'remote'))
 
 
 class _SectionContainer(_Section):
@@ -677,12 +665,14 @@ class _SectionCore(_Section):
     self.user_output_enabled = self._AddBool(
         'user_output_enabled',
         help_text='If False, messages to the user and command output on both '
-        'standard output and standard error will be suppressed.')
+        'standard output and standard error will be suppressed.',
+        default=True)
     self.log_http = self._AddBool(
         'log_http',
         help_text='If True, log HTTP requests and responses to the logs.  '
         'You may need to adjust your `verbosity` setting if you want to see '
-        'in the terminal, otherwise it is available in the log files.')
+        'in the terminal, otherwise it is available in the log files.',
+        default=False)
     self.http_timeout = self._Add(
         'http_timeout',
         hidden=True)
@@ -703,6 +693,7 @@ class _SectionCore(_Section):
         hidden=True)
     self.trace_log = self._Add(
         'trace_log',
+        default=False,
         hidden=True)
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',

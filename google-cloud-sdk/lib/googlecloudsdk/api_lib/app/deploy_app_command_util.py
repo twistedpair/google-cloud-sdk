@@ -16,29 +16,44 @@
 """Utility methods used by the deploy_app command."""
 
 import json
+import multiprocessing
 import os
 import shutil
 
 from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
+
+
+class MultiError(core_exceptions.Error):
+
+  def __init__(self, operation_description, errors):
+    if len(errors) > 1:
+      msg = 'Multiple errors occurred {0}\n'.format(operation_description)
+    else:
+      msg = 'An error occurred {0}\n'.format(operation_description)
+    errors_string = '\n\n'.join(map(str, errors))
+    super(core_exceptions.Error, self).__init__(msg + errors_string)
+    self.errors = errors
 
 
 def _GetSha1(input_path):
   return file_utils.Checksum().AddFileContents(input_path).HexDigest()
 
 
-def _BuildDeploymentManifest(info, bucket_ref, source_contexts, tmp_dir):
+def _BuildDeploymentManifest(info, bucket_ref, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
     info: An instance of yaml_parsing.ServiceInfo.
     bucket_ref: The reference to the bucket files will be placed in.
-    source_contexts: A list of source contexts.
     tmp_dir: A temp directory for storing generated files (currently just source
         context files).
   Returns:
@@ -61,8 +76,8 @@ def _BuildDeploymentManifest(info, bucket_ref, source_contexts, tmp_dir):
 
   # Source context files. These are temporary files which indicate the current
   # state of the source repository (git, cloud repo, etc.)
-  context_files = context_util.CreateContextFiles(tmp_dir, source_contexts,
-                                                  source_dir=source_dir)
+  context_files = context_util.CreateContextFiles(
+      tmp_dir, None, source_dir=source_dir)
   for context_file in context_files:
     rel_path = os.path.basename(context_file)
     if rel_path in manifest:
@@ -79,8 +94,7 @@ def _BuildDeploymentManifest(info, bucket_ref, source_contexts, tmp_dir):
   return manifest
 
 
-def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client,
-                        tmp_dir):
+def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
   """Builds a map of files to upload, indexed by their hash.
 
   This skips already-uploaded files.
@@ -89,7 +103,6 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client,
     manifest: A dict containing the deployment manifest for a single service.
     source_dir: The relative source directory of the service.
     bucket_ref: The GCS bucket reference to upload files into.
-    storage_client: A storage_v1 client object.
     tmp_dir: The path to a temporary directory where generated files may be
       stored. If a file in the manifest is not found in the source directory,
       it will be retrieved from this directory instead.
@@ -98,6 +111,7 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client,
     A dict mapping hashes to file paths that should be uploaded.
   """
   files_to_upload = {}
+  storage_client = apis.GetClientInstance('storage', 'v1')
   existing_items = set(cloud_storage.ListBucket(bucket_ref, storage_client))
   for rel_path in manifest:
     full_path = os.path.join(source_dir, rel_path)
@@ -114,18 +128,64 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, storage_client,
   return files_to_upload
 
 
-def _UploadFiles(files_to_upload, bucket_ref, storage_client):
-  for sha1_hash, path in sorted(files_to_upload.iteritems()):
-    log.debug('Uploading [{f}] to [{gcs}]'.format(f=path, gcs=sha1_hash))
-    retryer = retry.Retryer(max_retrials=3)
+class FileUploadTask(object):
+
+  def __init__(self, sha1_hash, path, bucket_url):
+    self.sha1_hash = sha1_hash
+    self.path = path
+    self.bucket_url = bucket_url
+
+
+def _UploadFile(file_upload_task):
+  """Upload a single file to Google Cloud Storage.
+
+  Args:
+    file_upload_task: FileUploadTask describing the file to upload
+
+  Returns:
+    None if the file was uploaded successfully or a stringified Exception if one
+    was raised
+  """
+  storage_client = apis.GetClientInstance('storage', 'v1')
+  bucket_ref = cloud_storage.BucketReference(file_upload_task.bucket_url)
+  retryer = retry.Retryer(max_retrials=3)
+
+  path = file_upload_task.path
+  sha1_hash = file_upload_task.sha1_hash
+  log.debug('Uploading [{f}] to [{gcs}]'.format(f=path, gcs=sha1_hash))
+  try:
     retryer.RetryOnException(
         cloud_storage.CopyFileToGCS,
         args=(bucket_ref, path, sha1_hash, storage_client)
     )
+  except Exception as err:  # pylint: disable=broad-except
+    # pass all errors through as strings (not all exceptions can be serialized)
+    return str(err)
+  return None
 
 
-def CopyFilesToCodeBucketNoGsUtil(
-    services, bucket_ref, source_contexts, storage_client):
+def _UploadFiles(files_to_upload, bucket_ref):
+  tasks = []
+  for sha1_hash, path in sorted(files_to_upload.iteritems()):
+    tasks.append(FileUploadTask(sha1_hash, path, bucket_ref.ToBucketUrl()))
+
+  num_procs = properties.VALUES.app.num_file_upload_processes.GetInt()
+  if num_procs > 1:
+    pool = multiprocessing.Pool(num_procs)
+    results = pool.map(_UploadFile, tasks)
+    errors = filter(bool, results)
+    pool.close()
+    pool.join()
+    if errors:
+      raise MultiError('during file upload', errors)
+  else:
+    for task in tasks:
+      error = _UploadFile(task)
+      if error:
+        raise MultiError('during file upload', [error])
+
+
+def CopyFilesToCodeBucketNoGsUtil(service, bucket_ref):
   """Copies application files to the code bucket without calling gsutil.
 
   Consider the following original structure:
@@ -156,64 +216,45 @@ def CopyFilesToCodeBucketNoGsUtil(
     values already present in the bucket will not be uploaded again.
 
   Args:
-    services: Dictionary of user-specified services.
+    service: ServiceYamlInfo, The service being deployed.
     bucket_ref: The bucket reference to upload to.
-    source_contexts: A list of source_contexts to also upload.
-    storage_client: A storage_v1 client object.
 
   Returns:
-    A lookup from service name to a dictionary representing the manifest.
+    A dictionary representing the manifest.
   """
-  manifests = {}
 
   # Collect a list of files to upload, indexed by the SHA so uploads are
   # deduplicated.
-  for (service, info) in sorted(services):
-    with file_utils.TemporaryDirectory() as tmp_dir:
-      manifest = _BuildDeploymentManifest(
-          info, bucket_ref, source_contexts, tmp_dir)
-      manifests[service] = manifest
-
-      source_dir = os.path.dirname(info.file)
-      files_to_upload = _BuildFileUploadMap(
-          manifest, source_dir, bucket_ref, storage_client, tmp_dir)
-      _UploadFiles(files_to_upload, bucket_ref, storage_client)
+  with file_utils.TemporaryDirectory() as tmp_dir:
+    manifest = _BuildDeploymentManifest(service, bucket_ref, tmp_dir)
+    source_dir = os.path.dirname(service.file)
+    files_to_upload = _BuildFileUploadMap(
+        manifest, source_dir, bucket_ref, tmp_dir)
+    _UploadFiles(files_to_upload, bucket_ref)
   log.status.Print('File upload done.')
-  log.info('Manifests: [{0}]'.format(manifests))
-  return manifests
+  log.info('Manifest: [{0}]'.format(manifest))
+  return manifest
 
 
-def CopyFilesToCodeBucket(
-    services, bucket_ref, source_contexts, unused_storage_client):
+def CopyFilesToCodeBucket(service, bucket_ref):
   """Examines services and copies files to a Google Cloud Storage bucket.
 
   Args:
-    services: [(str, ServiceYamlInfo)] List of pairs of service name, and parsed
-      service information.
+    service: ServiceYamlInfo, The parsed service information.
     bucket_ref: str A reference to a GCS bucket where the files will be
       uploaded.
-    source_contexts: [dict] List of json-serializable source contexts
-      associated with the services.
-    unused_storage_client: Unused, there to satisfy the same interface as
-      CopyFilesToCodeBucketNoGsutil
+
   Returns:
-    A lookup from service name to a dictionary representing the manifest. See
-    _BuildStagingDirectory.
+    A dictionary representing the manifest. See _BuildStagingDirectory.
   """
-  manifests = {}
   with file_utils.TemporaryDirectory() as staging_directory:
-    for (service, info) in services:
-      source_directory = os.path.dirname(info.file)
-      excluded_files_regex = info.parsed.skip_files.regex
-
-      manifest = _BuildStagingDirectory(source_directory,
-                                        staging_directory,
-                                        bucket_ref,
-                                        excluded_files_regex,
-                                        source_contexts)
-      manifests[service] = manifest
-
-    if any(manifest for manifest in manifests.itervalues()):
+    source_directory = os.path.dirname(service.file)
+    excluded_files_regex = service.parsed.skip_files.regex
+    manifest = _BuildStagingDirectory(source_directory,
+                                      staging_directory,
+                                      bucket_ref,
+                                      excluded_files_regex)
+    if manifest:
       log.status.Print('Copying files to Google Cloud Storage...')
       log.status.Print('Synchronizing files to [{b}].'
                        .format(b=bucket_ref.bucket))
@@ -246,11 +287,11 @@ def CopyFilesToCodeBucket(
         log.SetUserOutputEnabled(None)
       log.status.Print('File upload done.')
 
-  return manifests
+  return manifest
 
 
 def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
-                           excluded_regexes, source_contexts):
+                           excluded_regexes):
   """Creates a staging directory to be uploaded to Google Cloud Storage.
 
   The staging directory will contain a symlink for each file in the original
@@ -289,8 +330,6 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     bucket_ref: A reference to the GCS bucket where the files will be uploaded.
     excluded_regexes: List of file patterns to skip while building the staging
       directory.
-    source_contexts: A list of source contexts indicating the source code's
-      origin.
   Returns:
     A dictionary which represents the file manifest.
   """
@@ -338,7 +377,7 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
       _CopyOrSymlink(local_path, target_path)
 
   context_files = context_util.CreateContextFiles(
-      staging_dir, source_contexts, overwrite=True, source_dir=source_dir)
+      staging_dir, None, overwrite=True, source_dir=source_dir)
   for context_file in context_files:
     manifest_path = os.path.basename(context_file)
     target_path = AddFileToManifest(manifest_path, context_file)

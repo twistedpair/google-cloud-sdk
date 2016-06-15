@@ -158,7 +158,7 @@
           }
         },
         "entries": {
-          "description": "Required. The log entries to write. The log entries must have values for\nall required fields.",
+          "description": "Required. The log entries to write. The log entries must have values for\nall required fields.\n\nTo improve throughput and to avoid exceeding the\n[quota limit](\/logging\/quota-policy) for calls to `entries.write`,\nuse this field to write multiple log entries at once rather than\ncalling this method for each log entry.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
@@ -202,7 +202,7 @@
           "$ref": "MonitoredResource"
         },
         "protoPayload": {
-          "description": "The log entry payload, represented as a protocol buffer.\nYou can only use `protoPayload` values that belong to a set of approved\ntypes.",
+          "description": "The log entry payload, represented as a protocol buffer.  Some\nGoogle Cloud Platform services use this field for their log\nentry payloads.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -272,7 +272,7 @@
           "$ref": "LogEntryOperation"
         },
         "internalId": {
-
+          "description": "Internal id of the owner of this log entry.",
           "$ref": "InternalEntityId"
         },
         "projectNumber": {
@@ -827,7 +827,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned metric identifier. Example:\n`\"severe_errors\"`.  Metric identifiers are limited to 1000\ncharacters and can include only the following characters: `A-Z`,\n`a-z`, `0-9`, and the special characters `_-.,+!*',()%\/\\`.  The\nforward-slash character (`\/`) denotes a hierarchy of name pieces,\nand it cannot be the first character of the name.",
+          "description": "Required. The client-assigned metric identifier. Example:\n`\"severe_errors\"`.  Metric identifiers are limited to 1000\ncharacters and can include only the following characters: `A-Z`,\n`a-z`, `0-9`, and the special characters `_-.,+!*',()%\/`.  The\nforward-slash character (`\/`) denotes a hierarchy of name pieces,\nand it cannot be the first character of the name.  The '%' character\nis used to URL encode unsafe and reserved characters and must be\nfollowed by two hexadecimal digits according to RFC 1738.",
           "type": "string"
         },
         "description": {
@@ -1129,7 +1129,7 @@
               "description": "Lists the logs in the project.\nOnly logs that have entries are listed.\n",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this project are listed.",
+                  "description": "Part of `parent`. The resource name of the entity whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this entity are listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1175,7 +1175,7 @@
               "description": "Lists the resource keys that have log entries in this project.\n",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project whose services are to be listed.",
+                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1268,13 +1268,13 @@
               "description": "Lists sinks.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. Required. The resource name of the project containing the sinks.\nExample: `\"projects\/my-logging-project\"`.",
+                  "description": "Part of `parent`. Required. The resource name containing the sinks.\nExample: `\"projects\/my-logging-project\"`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `projectName` must be the same as in the previous request.",
+                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `parent` must be the same as in the previous request.",
                   "location": "query",
                   "type": "string"
                 },
@@ -1340,7 +1340,7 @@
               "description": "Creates a sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project in which to create the sink.\nExample: `\"projects\/my-project-id\"`.\n\nThe new sink must be provided in the request.",
+                  "description": "Part of `parent`. The resource in which to create the sink.\nExample: `\"projects\/my-project-id\"`.\n\nThe new sink must be provided in the request.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1439,13 +1439,13 @@
               "description": "Lists logs-based metrics.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. Required. The resource name of the project containing the metrics.\nExample: `\"projects\/my-project-id\"`.",
+                  "description": "Part of `parent`. Required. The resource name containing the metrics.\nExample: `\"projects\/my-project-id\"`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `projectName` must be the same as in the previous request.",
+                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `parent` must be the same as in the previous request.",
                   "location": "query",
                   "type": "string"
                 },
@@ -1511,7 +1511,7 @@
               "description": "Creates a logs-based metric.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project in which to create the metric.\nExample: `\"projects\/my-project-id\"`.\n\nThe new metric must be provided in the request.",
+                  "description": "Part of `parent`. The resource name of the project in which to create the metric.\nExample: `\"projects\/my-project-id\"`.\n\nThe new metric must be provided in the request.",
                   "location": "path",
                   "required": true,
                   "type": "string"

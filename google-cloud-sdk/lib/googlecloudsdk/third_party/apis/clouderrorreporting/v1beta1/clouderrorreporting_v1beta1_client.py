@@ -48,6 +48,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
       super(ClouderrorreportingV1beta1.ProjectsEventsService, self).__init__(client)
       self._method_configs = {
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/events',
               http_method=u'GET',
               method_id=u'clouderrorreporting.projects.events.list',
               ordered_params=[u'projectName'],
@@ -86,6 +87,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
       super(ClouderrorreportingV1beta1.ProjectsGroupStatsService, self).__init__(client)
       self._method_configs = {
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/groupStats',
               http_method=u'GET',
               method_id=u'clouderrorreporting.projects.groupStats.list',
               ordered_params=[u'projectName'],
@@ -124,6 +126,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
       super(ClouderrorreportingV1beta1.ProjectsGroupsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
               http_method=u'GET',
               method_id=u'clouderrorreporting.projects.groups.get',
               ordered_params=[u'groupName'],
@@ -136,6 +139,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
               http_method=u'PUT',
               method_id=u'clouderrorreporting.projects.groups.update',
               ordered_params=[u'name'],
@@ -188,6 +192,7 @@ Fails if the group does not exist.
       super(ClouderrorreportingV1beta1.ProjectsService, self).__init__(client)
       self._method_configs = {
           'DeleteEvents': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/events',
               http_method=u'DELETE',
               method_id=u'clouderrorreporting.projects.deleteEvents',
               ordered_params=[u'projectName'],

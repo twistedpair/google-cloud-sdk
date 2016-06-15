@@ -362,8 +362,9 @@ class CLILoader(object):
     Args:
       module_dir_path: str, The path to the location of the module.
       name: str, The name that this group will appear as in the CLI.
-      release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
-        this command group is in.  This will apply to all commands under it.
+      release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
+        preview) that this command group is in.  This will apply to all commands
+        under it.
       allow_non_existing_modules: True to allow this module directory to not
         exist, False to raise an exception if this module does not exist.
       exception_if_present: Exception, An exception to throw if the module
@@ -381,8 +382,8 @@ class CLILoader(object):
       group is found under.  The module_path is the relative path of the root
       of the command group from the module_dir. name is the user facing name
       this group will appear under wherever this command group is mounted.  The
-      release_track is the release track (ga, beta, alpha) that this command
-      group is in.
+      release_track is the release track (ga, beta, alpha, preview) that this
+      command group is in.
     """
     module_root, module = os.path.split(module_dir_path)
     if not pkg_resources.IsImportable(module, module_root):

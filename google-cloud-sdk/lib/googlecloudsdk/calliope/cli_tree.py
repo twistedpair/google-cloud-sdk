@@ -100,7 +100,8 @@ class Command(object):
   """Command and group info.
 
   Attributes:
-    release: str, The command release name {'internal', 'alpha', 'beta', 'ga'}.
+    release: str, The command release name {'internal', 'alpha', 'beta', 'ga',
+      'preview'}.
     name: str, The normalized name ('_' => '-').
     hidden: bool, True if the command is hidden.
     capsule: str, The first line of the command docstring.

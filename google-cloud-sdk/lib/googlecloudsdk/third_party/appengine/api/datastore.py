@@ -380,10 +380,19 @@ def __InitConnection():
   # is not a reliable way to check if the state has been initialized.
   if os.getenv(_ENV_KEY) and hasattr(_thread_local, 'connection_stack'):
     return
-  # pylint: disable=protected-access
+
+  # pylint: disable=invalid-name,protected-access
+  def CreateConnection(adapter=None,
+                       _id_resolver=None,
+                       _api_version=datastore_rpc._DATASTORE_V3):
+    if _id_resolver:
+      adapter = DatastoreAdapter(_id_resolver=_id_resolver)
+    return datastore_rpc.Connection(adapter=adapter, _api_version=_api_version)
+
   _thread_local.connection_stack = [
-      datastore_rpc._CreateDefaultConnection(datastore_rpc.Connection,
-                                             adapter=_adapter)]
+      datastore_rpc._CreateDefaultConnection(CreateConnection,
+                                             adapter=_adapter)
+  ]
 
   # Record that we initialized the connection.
   os.environ[_ENV_KEY] = '1'
@@ -775,8 +784,8 @@ class Entity(dict):
     if namespace is None:
       namespace = _namespace
     elif _namespace is not None:
-        raise datastore_errors.BadArgumentError(
-            "Must not set both _namespace and namespace parameters.")
+      raise datastore_errors.BadArgumentError(
+          "Must not set both _namespace and namespace parameters.")
 
     datastore_types.ValidateString(kind, 'kind',
                                    datastore_errors.BadArgumentError)
@@ -1338,8 +1347,8 @@ class Query(dict):
     if namespace is None:
       namespace = _namespace
     elif _namespace is not None:
-        raise datastore_errors.BadArgumentError(
-            "Must not set both _namespace and namespace parameters.")
+      raise datastore_errors.BadArgumentError(
+          "Must not set both _namespace and namespace parameters.")
 
     if kind is not None:
       datastore_types.ValidateString(kind, 'kind',
@@ -2867,7 +2876,7 @@ class Iterator(datastore_query.ResultsIterator):
     result = []
     for r in self:
       if len(result) >= count:
-        break;
+        break
       result.append(r)
     return result
 

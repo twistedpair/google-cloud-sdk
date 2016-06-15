@@ -48,6 +48,7 @@ class CloudfunctionsV1beta1(base_api.BaseApiClient):
       super(CloudfunctionsV1beta1.OperationsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'cloudfunctions.operations.get',
               ordered_params=[u'name'],
@@ -88,6 +89,7 @@ service.
       super(CloudfunctionsV1beta1.ProjectsRegionsFunctionsService, self).__init__(client)
       self._method_configs = {
           'Call': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}:call',
               http_method=u'POST',
               method_id=u'cloudfunctions.projects.regions.functions.call',
               ordered_params=[u'name'],
@@ -100,6 +102,7 @@ service.
               supports_download=False,
           ),
           'Create': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
               http_method=u'POST',
               method_id=u'cloudfunctions.projects.regions.functions.create',
               ordered_params=[u'location'],
@@ -112,6 +115,7 @@ service.
               supports_download=False,
           ),
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
               http_method=u'DELETE',
               method_id=u'cloudfunctions.projects.regions.functions.delete',
               ordered_params=[u'name'],
@@ -124,6 +128,7 @@ service.
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
               http_method=u'GET',
               method_id=u'cloudfunctions.projects.regions.functions.get',
               ordered_params=[u'name'],
@@ -136,6 +141,7 @@ service.
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
               http_method=u'GET',
               method_id=u'cloudfunctions.projects.regions.functions.list',
               ordered_params=[u'location'],
@@ -148,6 +154,7 @@ service.
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
               http_method=u'PUT',
               method_id=u'cloudfunctions.projects.regions.functions.update',
               ordered_params=[u'name'],

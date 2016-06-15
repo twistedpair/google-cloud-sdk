@@ -20,6 +20,7 @@ will be accepted, and a consistent python object will be returned for use in
 code.
 """
 
+import functools
 import re
 import types
 import urllib
@@ -28,10 +29,10 @@ from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apitools.base.py import base_api
-from googlecloudsdk.third_party.apitools.base.py import util
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
+import uritemplate
 
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
 
@@ -214,9 +215,13 @@ class _ResourceParser(object):
     for param, field in zip(self.method_config.ordered_params, fields):
       setattr(request, param, field)
 
+    api, resource_collection = self.collection.split('.', 1)
+    param_defaults = functools.partial(
+        self.registry.GetParamDefault, api, resource_collection)
     resource = Resource(
-        self.collection, request, self.method_config.ordered_params, kwargs,
-        collection_path, self)
+        self.collection, self.method_config.relative_path, request,
+        self.method_config.ordered_params, kwargs,
+        collection_path, self.client.url, param_defaults)
 
     if resolve:
       resource.Resolve()
@@ -307,8 +312,9 @@ class _ResourceParser(object):
 class Resource(object):
   """Information about a Cloud resource."""
 
-  def __init__(self, collection, request, ordered_params, resolvers,
-               collection_path, parser):
+  def __init__(self, collection, relative_path, request,
+               ordered_params, resolvers,
+               collection_path, endpoint_url, param_defaults):
     """Create a Resource object that may be partially resolved.
 
     To allow resolving of unknown params to happen after parse-time, the
@@ -317,6 +323,7 @@ class Resource(object):
 
     Args:
       collection: str, The collection name for this resource.
+      relative_path: str, relative path uri template.
       request: protorpc.messages.Message (not imported) subclass, An instance
           of a request that can be used to fetch the actual entity in the
           collection.
@@ -325,16 +332,20 @@ class Resource(object):
           be used to fill in values that were not specified in the command line.
       collection_path: str, The original command-line argument used to create
           this Resource.
-      parser: _ResourceParser, The parser used to create this Resource.
+      endpoint_url: str, service endpoint url for this resource.
+      param_defaults: func(param) -> default value for given parameter
+          in ordered_params.
     """
     self.__collection = collection
+    self._relative_path = relative_path
     self.__request = request
     self.__name = None
     self.__self_link = None
     self.__ordered_params = ordered_params
     self.__resolvers = resolvers
     self.__collection_path = collection_path
-    self.__parser = parser
+    self._endpoint_url = endpoint_url
+    self._param_defaults = param_defaults
     for param in ordered_params:
       setattr(self, param, getattr(request, param))
 
@@ -355,6 +366,8 @@ class Resource(object):
     return self.__self_link
 
   def Request(self):
+    for param in self.__ordered_params:
+      setattr(self.__request, param, getattr(self, param))
     return self.__request
 
   def Resolve(self):
@@ -378,27 +391,18 @@ class Resource(object):
       if getattr(self, param, None):
         continue
 
-      def ResolveParam(value):
-        # This is intended to close over param
-        # pylint:disable=cell-var-from-loop
-        setattr(self, param, value)
-        setattr(self.__request, param, value)
-        # pylint:enable=cell-var-from-loop
-
-        # First try the resolvers given to this resource explicitly.
+      # First try the resolvers given to this resource explicitly.
       resolver = self.__resolvers.get(param)
       if resolver:
         if callable(resolver):
-          ResolveParam(resolver())
+          setattr(self, param, resolver())
         else:
-          ResolveParam(resolver)
+          setattr(self, param, resolver)
         continue
 
       # Then try the registered defaults.
-      api, collection = self.__collection.split('.', 1)
       try:
-        value = self.__parser.registry.GetParamDefault(api, collection, param)
-        ResolveParam(value)
+        setattr(self, param, self._param_defaults(param))
       except properties.RequiredPropertyError:
         # If property lookup fails, that's ok.  Just don't resolve anything.
         pass
@@ -407,8 +411,8 @@ class Resource(object):
         [(k, getattr(self, k) or '*') for k in self.__ordered_params])
 
     self.__self_link = '%s%s' % (
-        self.__parser.client.url,
-        util.ExpandRelativePath(self.__parser.method_config, effective_params))
+        self._endpoint_url,
+        uritemplate.expand(self._relative_path, effective_params))
 
     if (self.Collection().startswith('compute.') or
         self.Collection().startswith('clouduseraccounts.') or
@@ -429,6 +433,11 @@ class Resource(object):
     # path = '/'.join([getattr(self, param) for param in self.__ordered_params])
     # return '{collection}::{path}'.format(
     #     collection=self.__collection, path=path)
+
+  def __eq__(self, other):
+    if isinstance(other, Resource):
+      return self.SelfLink() == other.SelfLink()
+    return False
 
 
 def _CopyNestedDictSpine(maybe_dictionary):

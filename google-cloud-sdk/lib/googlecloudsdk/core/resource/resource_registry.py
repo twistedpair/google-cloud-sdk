@@ -576,7 +576,11 @@ RESOURCE_REGISTRY = {
             name,
             network.basename(),
             destRange,
-            firstof(nextHopInstance, nextHopGateway, nextHopIp).scope()
+            firstof(
+                nextHopInstance,
+                nextHopGateway,
+                nextHopIp,
+                nextHopVpnTunnel).scope()
               :label=NEXT_HOP,
             priority
           )
@@ -739,6 +743,23 @@ RESOURCE_REGISTRY = {
     ),
 
     # container
+    'container.images': ResourceInfo(
+        list_format="""
+          table(
+            name
+          )
+        """,
+    ),
+
+    'container.tags': ResourceInfo(
+        list_format="""
+          table(
+            digest.slice(7:19).join(''),
+            tags.list(),
+            timestamp.date()
+          )
+        """,
+    ),
 
     'container.projects.zones.clusters': ResourceInfo(
         list_format="""

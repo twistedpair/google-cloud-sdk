@@ -48,6 +48,7 @@ class PubsubV1(base_api.BaseApiClient):
       super(PubsubV1.ProjectsSubscriptionsService, self).__init__(client)
       self._method_configs = {
           'Acknowledge': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:acknowledge',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.acknowledge',
               ordered_params=[u'subscription'],
@@ -60,6 +61,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Create': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
               http_method=u'PUT',
               method_id=u'pubsub.projects.subscriptions.create',
               ordered_params=[u'name'],
@@ -72,6 +74,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
               http_method=u'DELETE',
               method_id=u'pubsub.projects.subscriptions.delete',
               ordered_params=[u'subscription'],
@@ -84,6 +87,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
               http_method=u'GET',
               method_id=u'pubsub.projects.subscriptions.get',
               ordered_params=[u'subscription'],
@@ -96,6 +100,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'GetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:getIamPolicy',
               http_method=u'GET',
               method_id=u'pubsub.projects.subscriptions.getIamPolicy',
               ordered_params=[u'resource'],
@@ -108,6 +113,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions',
               http_method=u'GET',
               method_id=u'pubsub.projects.subscriptions.list',
               ordered_params=[u'project'],
@@ -120,6 +126,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'ModifyAckDeadline': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyAckDeadline',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.modifyAckDeadline',
               ordered_params=[u'subscription'],
@@ -132,6 +139,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'ModifyPushConfig': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyPushConfig',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.modifyPushConfig',
               ordered_params=[u'subscription'],
@@ -144,6 +152,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Pull': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:pull',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.pull',
               ordered_params=[u'subscription'],
@@ -156,6 +165,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'SetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:setIamPolicy',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.setIamPolicy',
               ordered_params=[u'resource'],
@@ -168,6 +178,7 @@ class PubsubV1(base_api.BaseApiClient):
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:testIamPermissions',
               http_method=u'POST',
               method_id=u'pubsub.projects.subscriptions.testIamPermissions',
               ordered_params=[u'resource'],
@@ -365,6 +376,7 @@ existing policy.
       super(PubsubV1.ProjectsTopicsSubscriptionsService, self).__init__(client)
       self._method_configs = {
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}/subscriptions',
               http_method=u'GET',
               method_id=u'pubsub.projects.topics.subscriptions.list',
               ordered_params=[u'topic'],
@@ -403,6 +415,7 @@ existing policy.
       super(PubsubV1.ProjectsTopicsService, self).__init__(client)
       self._method_configs = {
           'Create': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
               http_method=u'PUT',
               method_id=u'pubsub.projects.topics.create',
               ordered_params=[u'name'],
@@ -415,6 +428,7 @@ existing policy.
               supports_download=False,
           ),
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
               http_method=u'DELETE',
               method_id=u'pubsub.projects.topics.delete',
               ordered_params=[u'topic'],
@@ -427,6 +441,7 @@ existing policy.
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
               http_method=u'GET',
               method_id=u'pubsub.projects.topics.get',
               ordered_params=[u'topic'],
@@ -439,6 +454,7 @@ existing policy.
               supports_download=False,
           ),
           'GetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:getIamPolicy',
               http_method=u'GET',
               method_id=u'pubsub.projects.topics.getIamPolicy',
               ordered_params=[u'resource'],
@@ -451,6 +467,7 @@ existing policy.
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics',
               http_method=u'GET',
               method_id=u'pubsub.projects.topics.list',
               ordered_params=[u'project'],
@@ -463,6 +480,7 @@ existing policy.
               supports_download=False,
           ),
           'Publish': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:publish',
               http_method=u'POST',
               method_id=u'pubsub.projects.topics.publish',
               ordered_params=[u'topic'],
@@ -475,6 +493,7 @@ existing policy.
               supports_download=False,
           ),
           'SetIamPolicy': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:setIamPolicy',
               http_method=u'POST',
               method_id=u'pubsub.projects.topics.setIamPolicy',
               ordered_params=[u'resource'],
@@ -487,6 +506,7 @@ existing policy.
               supports_download=False,
           ),
           'TestIamPermissions': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:testIamPermissions',
               http_method=u'POST',
               method_id=u'pubsub.projects.topics.testIamPermissions',
               ordered_params=[u'resource'],

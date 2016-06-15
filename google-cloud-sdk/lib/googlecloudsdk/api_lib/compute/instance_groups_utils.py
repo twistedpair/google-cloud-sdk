@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -292,7 +293,8 @@ def CreateInstanceGroupReference(
                                        regional_resource_type)[0]
 
 
-class InstanceGroupGetNamedPorts(base_classes.BaseLister):
+class InstanceGroupGetNamedPortsBase(
+    base.ListCommand, base_classes.BaseCommand):
   """Get named ports in Google Compute Engine instance groups."""
 
   @staticmethod
@@ -331,33 +333,6 @@ class InstanceGroupGetNamedPorts(base_classes.BaseLister):
   def method(self):
     return 'GetNamedPorts'
 
-  def Run(self, args):
-    responses, errors = self.GetResources(args)
-    if errors:
-      utils.RaiseToolException(errors)
-    return lister.ProcessResults(
-        resources=list(_UnwrapResponse(responses, 'namedPorts')),
-        field_selector=None,
-        limit=args.limit)
-
-  def GetResources(self, args):
-    """Retrieves response with named ports."""
-    group_ref = self.CreateZonalReference(args.name, args.zone)
-    request = self.service.GetRequestType('Get')(
-        instanceGroup=group_ref.Name(),
-        zone=group_ref.zone,
-        project=self.project)
-
-    errors = []
-    results = list(request_helper.MakeRequests(
-        requests=[(self.service, 'Get', request)],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
-
-    return results, errors
-
   @staticmethod
   def GetUriCacheUpdateOp():
     """This command class does not update the URI cache."""
@@ -387,6 +362,25 @@ class InstanceGroupGetNamedPorts(base_classes.BaseLister):
           group named 'example-instance-group' in the ``us-central1-a'' zone.
           """,
   }
+
+
+def OutputNamedPortsForGroup(group_ref, compute_client):
+  """Gets the request to fetch instance group."""
+  compute = compute_client.apitools_client
+  if group_ref.Collection() == 'compute.instanceGroups':
+    service = compute.instanceGroups
+    request = service.GetRequestType('Get')(
+        instanceGroup=group_ref.Name(),
+        zone=group_ref.zone,
+        project=group_ref.project)
+  else:
+    service = compute.regionInstanceGroups
+    request = service.GetRequestType('Get')(
+        instanceGroup=group_ref.Name(),
+        region=group_ref.region,
+        project=group_ref.project)
+  results = compute_client.MakeRequests(requests=[(service, 'Get', request)])
+  return list(_UnwrapResponse(results, 'namedPorts'))
 
 
 class FingerprintFetchException(core_exceptions.Error):

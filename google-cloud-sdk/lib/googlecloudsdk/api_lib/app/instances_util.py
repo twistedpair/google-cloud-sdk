@@ -43,7 +43,7 @@ class Instance(object):
     self.service = service
     self.version = version
     self.id = id_
-    self.instance = instance
+    self.instance = instance  # The Client API instance object
 
   @classmethod
   def FromInstanceResource(cls, instance):
@@ -133,7 +133,7 @@ class Instance(object):
                (other.service, other.version, other.id))
 
 
-def FilterInstances(instances, service=None, version=None, instance_path=None):
+def FilterInstances(instances, service=None, version=None, instance=None):
   """Filter a list of App Engine instances.
 
   Args:
@@ -142,22 +142,16 @@ def FilterInstances(instances, service=None, version=None, instance_path=None):
       services
     version: str, the name of the version to filter by or None to match all
       versions
-    instance_path: str, the name of the instance to filter by or None to match
-      all versions. Can be a resource path, in which case it is parsed and the
-      components used to filter.
+    instance: str, the instance id to filter by or None to match all versions.
 
   Returns:
     list of instances matching the given filters
-
-  Raises:
-    InvalidInstanceSpecificationError: if an inconsistent instance specification
-      was given (ex. service='service1' and instance='service2/v1/abcd').
   """
   matching_instances = []
   for provided_instance in instances:
     if ((not service or provided_instance.service == service) and
         (not version or provided_instance.version == version) and
-        (not instance_path or provided_instance.id == instance_path)):
+        (not instance or provided_instance.id == instance)):
       matching_instances.append(provided_instance)
   return matching_instances
 
@@ -175,9 +169,8 @@ def GetMatchingInstance(instances, service=None, version=None, instance=None):
     instances: list of AppEngineInstance, all instances to select from
     service: str, a service to filter by or None to include all services
     version: str, a version to filter by or None to include all versions
-    instance: str, an instance ID or instance resource path
-      (<project>/<service>/<version>/<instance>) to filter by. If not given,
-      the instance will be selected interactively.
+    instance: str, an instance ID to filter by. If not given, the instance will
+      be selected interactively.
 
   Returns:
     AppEngineInstance, an instance from the given list.

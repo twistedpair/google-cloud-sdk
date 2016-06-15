@@ -628,15 +628,16 @@ class Instance(_messages.Message):
     qps: QPS for this instance (averaged over the last minute).  @OutputOnly
     requests: Number of requests (since the clone was started).  @OutputOnly
     startTimestamp: Time when instance was started.  @OutputOnly
-    vmId: For VMEngines instances, the GCE VM ID of the instance.  @OutputOnly
-    vmName: For VMEngines instances, the name of GCE VM where the instance
-      lives.  @OutputOnly
-    vmStatus: For VMEngines instances, the status of GCE VM where the instance
-      lives.  @OutputOnly
+    vmId: For VMEngines instances, the Compute Engine VM ID of the instance.
+      @OutputOnly
+    vmName: For VMEngines instances, the name of the Compute Engine VM where
+      the instance lives.  @OutputOnly
+    vmStatus: For VMEngines instances, the status of the Compute Engine VM
+      where the instance lives.  @OutputOnly
     vmUnlocked: For VMEngines instances, whether the instance has been
       unlocked.  @OutputOnly
-    vmZoneName: For VMEngines instances, the zone where the GCE VM is located.
-      @OutputOnly
+    vmZoneName: For VMEngines instances, the zone where the Compute Engine VM
+      is located.  @OutputOnly
   """
 
   class AvailabilityValueValuesEnum(_messages.Enum):

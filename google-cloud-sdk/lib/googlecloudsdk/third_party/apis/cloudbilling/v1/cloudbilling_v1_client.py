@@ -47,6 +47,7 @@ class CloudbillingV1(base_api.BaseApiClient):
       super(CloudbillingV1.BillingAccountsProjectsService, self).__init__(client)
       self._method_configs = {
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1/billingAccounts/{billingAccountsId}/projects',
               http_method=u'GET',
               method_id=u'cloudbilling.billingAccounts.projects.list',
               ordered_params=[u'name'],
@@ -87,6 +88,7 @@ account](https://support.google.com/cloud/answer/4430947).
       super(CloudbillingV1.BillingAccountsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1/billingAccounts/{billingAccountsId}',
               http_method=u'GET',
               method_id=u'cloudbilling.billingAccounts.get',
               ordered_params=[u'name'],
@@ -153,6 +155,7 @@ account](https://support.google.com/cloud/answer/4430947).
       super(CloudbillingV1.ProjectsService, self).__init__(client)
       self._method_configs = {
           'GetBillingInfo': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/billingInfo',
               http_method=u'GET',
               method_id=u'cloudbilling.projects.getBillingInfo',
               ordered_params=[u'name'],
@@ -165,6 +168,7 @@ account](https://support.google.com/cloud/answer/4430947).
               supports_download=False,
           ),
           'UpdateBillingInfo': base_api.ApiMethodInfo(
+              flat_path=u'v1/projects/{projectsId}/billingInfo',
               http_method=u'PUT',
               method_id=u'cloudbilling.projects.updateBillingInfo',
               ordered_params=[u'name'],

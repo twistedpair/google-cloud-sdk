@@ -1074,13 +1074,16 @@ class Type(_messages.Message):
     insertTime: [Output Only] Timestamp when the type was created, in RFC3339
       text format.
     name: Name of the type.
+    operation: [Output Only] The Operation that most recently ran, or is
+      currently running, on this type.
     selfLink: [Output Only] Self link for the type.
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(2)
   name = _messages.StringField(3)
-  selfLink = _messages.StringField(4)
+  operation = _messages.MessageField('Operation', 4)
+  selfLink = _messages.StringField(5)
 
 
 class TypesListResponse(_messages.Message):

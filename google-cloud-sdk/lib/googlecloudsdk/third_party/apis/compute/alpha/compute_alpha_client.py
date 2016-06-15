@@ -58,10 +58,10 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.networks = self.NetworksService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
+    self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
-    self.regionalBackendServices = self.RegionalBackendServicesService(self)
     self.regions = self.RegionsService(self)
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
@@ -3125,7 +3125,9 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def ResizeAdvanced(self, request, global_params=None):
-      """Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. This method is an extended version of Resize and it supports more advanced options.
+      """Resizes the managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method.
+
+If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
@@ -4843,6 +4845,219 @@ If an empty request body is given, clears the deprecation status instead.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class RegionBackendServicesService(base_api.BaseApiService):
+    """Service class for the regionBackendServices resource."""
+
+    _NAME = u'regionBackendServices'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionBackendServicesService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.regionBackendServices.delete',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field='',
+              request_type_name=u'ComputeRegionBackendServicesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionBackendServices.get',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field='',
+              request_type_name=u'ComputeRegionBackendServicesGetRequest',
+              response_type_name=u'BackendService',
+              supports_download=False,
+          ),
+          'GetHealth': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionBackendServices.getHealth',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
+              request_field=u'resourceGroupReference',
+              request_type_name=u'ComputeRegionBackendServicesGetHealthRequest',
+              response_type_name=u'BackendServiceGroupHealth',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionBackendServices.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices',
+              request_field=u'backendService',
+              request_type_name=u'ComputeRegionBackendServicesInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionBackendServices.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/backendServices',
+              request_field='',
+              request_type_name=u'ComputeRegionBackendServicesListRequest',
+              response_type_name=u'BackendServiceList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.regionBackendServices.patch',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field=u'backendServiceResource',
+              request_type_name=u'ComputeRegionBackendServicesPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionBackendServices.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionBackendServicesTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.regionBackendServices.update',
+              ordered_params=[u'project', u'region', u'backendService'],
+              path_params=[u'backendService', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+              request_field=u'backendServiceResource',
+              request_type_name=u'ComputeRegionBackendServicesUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def GetHealth(self, request, global_params=None):
+      """Gets the most recent health check results for this regional BackendService.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceGroupHealth) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of regional BackendService resources available to the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionBackendServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionBackendServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class RegionInstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the regionInstanceGroupManagers resource."""
 
@@ -5404,219 +5619,6 @@ If an empty request body is given, clears the deprecation status instead.
         (OperationList) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-  class RegionalBackendServicesService(base_api.BaseApiService):
-    """Service class for the regionalBackendServices resource."""
-
-    _NAME = u'regionalBackendServices'
-
-    def __init__(self, client):
-      super(ComputeAlpha.RegionalBackendServicesService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'compute.regionalBackendServices.delete',
-              ordered_params=[u'project', u'region', u'backendService'],
-              path_params=[u'backendService', u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-              request_field='',
-              request_type_name=u'ComputeRegionalBackendServicesDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.regionalBackendServices.get',
-              ordered_params=[u'project', u'region', u'backendService'],
-              path_params=[u'backendService', u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-              request_field='',
-              request_type_name=u'ComputeRegionalBackendServicesGetRequest',
-              response_type_name=u'BackendService',
-              supports_download=False,
-          ),
-          'GetHealth': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.regionalBackendServices.getHealth',
-              ordered_params=[u'project', u'region', u'backendService'],
-              path_params=[u'backendService', u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
-              request_field=u'resourceGroupReference',
-              request_type_name=u'ComputeRegionalBackendServicesGetHealthRequest',
-              response_type_name=u'BackendServiceGroupHealth',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.regionalBackendServices.insert',
-              ordered_params=[u'project', u'region'],
-              path_params=[u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices',
-              request_field=u'backendService',
-              request_type_name=u'ComputeRegionalBackendServicesInsertRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'compute.regionalBackendServices.list',
-              ordered_params=[u'project', u'region'],
-              path_params=[u'project', u'region'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-              relative_path=u'projects/{project}/regions/{region}/backendServices',
-              request_field='',
-              request_type_name=u'ComputeRegionalBackendServicesListRequest',
-              response_type_name=u'BackendServiceList',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'compute.regionalBackendServices.patch',
-              ordered_params=[u'project', u'region', u'backendService'],
-              path_params=[u'backendService', u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-              request_field=u'backendServiceResource',
-              request_type_name=u'ComputeRegionalBackendServicesPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'compute.regionalBackendServices.testIamPermissions',
-              ordered_params=[u'project', u'region', u'resource'],
-              path_params=[u'project', u'region', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
-              request_field=u'testPermissionsRequest',
-              request_type_name=u'ComputeRegionalBackendServicesTestIamPermissionsRequest',
-              response_type_name=u'TestPermissionsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'compute.regionalBackendServices.update',
-              ordered_params=[u'project', u'region', u'backendService'],
-              path_params=[u'backendService', u'project', u'region'],
-              query_params=[],
-              relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
-              request_field=u'backendServiceResource',
-              request_type_name=u'ComputeRegionalBackendServicesUpdateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      """Deletes the specified regional BackendService resource.
-
-      Args:
-        request: (ComputeRegionalBackendServicesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Get(self, request, global_params=None):
-      """Returns the specified regional BackendService resource.
-
-      Args:
-        request: (ComputeRegionalBackendServicesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (BackendService) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def GetHealth(self, request, global_params=None):
-      """Gets the most recent health check results for this regional BackendService.
-
-      Args:
-        request: (ComputeRegionalBackendServicesGetHealthRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (BackendServiceGroupHealth) The response message.
-      """
-      config = self.GetMethodConfig('GetHealth')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Insert(self, request, global_params=None):
-      """Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
-
-      Args:
-        request: (ComputeRegionalBackendServicesInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def List(self, request, global_params=None):
-      """Retrieves the list of regional BackendService resources available to the specified project in the given region.
-
-      Args:
-        request: (ComputeRegionalBackendServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (BackendServiceList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Patch(self, request, global_params=None):
-      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
-
-      Args:
-        request: (ComputeRegionalBackendServicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (ComputeRegionalBackendServicesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    def Update(self, request, global_params=None):
-      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
-
-      Args:
-        request: (ComputeRegionalBackendServicesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
 

@@ -49,6 +49,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
       super(AppengineV1beta4.AppsModulesVersionsInstancesService, self).__init__(client)
       self._method_configs = {
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}/instances',
               http_method=u'GET',
               method_id=u'appengine.apps.modules.versions.instances.list',
               ordered_params=[u'name'],
@@ -87,6 +88,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
       super(AppengineV1beta4.AppsModulesVersionsService, self).__init__(client)
       self._method_configs = {
           'Create': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions',
               http_method=u'POST',
               method_id=u'appengine.apps.modules.versions.create',
               ordered_params=[u'name'],
@@ -99,6 +101,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}',
               http_method=u'DELETE',
               method_id=u'appengine.apps.modules.versions.delete',
               ordered_params=[u'name'],
@@ -111,6 +114,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}',
               http_method=u'GET',
               method_id=u'appengine.apps.modules.versions.get',
               ordered_params=[u'name'],
@@ -123,6 +127,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions',
               http_method=u'GET',
               method_id=u'appengine.apps.modules.versions.list',
               ordered_params=[u'name'],
@@ -135,6 +140,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Patch': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}/versions/{versionsId}',
               http_method=u'PATCH',
               method_id=u'appengine.apps.modules.versions.patch',
               ordered_params=[u'name'],
@@ -204,7 +210,21 @@ class AppengineV1beta4(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     def Patch(self, request, global_params=None):
-      """Updates an existing version. Note: UNIMPLEMENTED.
+      """Updates the specified Version resource.
+You can specify the following fields depending on the App Engine
+environment and type of scaling that the version resource uses:
+
+* [`serving_status`](/appengine/docs/admin-api/reference/rest/v1beta4/apps.services.versions#Version.FIELDS.serving_status):
+  For Version resources that use basic scaling, manual scaling, or run in
+  the App Engine flexible environment.
+* [`instance_class`](/appengine/docs/admin-api/reference/rest/v1beta4/apps.services.versions#Version.FIELDS.instance_class):
+  For Version resources that run in the App Engine standard environment.
+* [`automatic_scaling.min_idle_instances`](/appengine/docs/admin-api/reference/rest/v1beta4/apps.services.versions#Version.FIELDS.automatic_scaling):
+  For Version resources that use automatic scaling and run in the App
+  Engine standard environment.
+* [`automatic_scaling.max_idle_instances`](/appengine/docs/admin-api/reference/rest/v1beta4/apps.services.versions#Version.FIELDS.automatic_scaling):
+  For Version resources that use automatic scaling and run in the App
+  Engine standard environment.
 
       Args:
         request: (AppengineAppsModulesVersionsPatchRequest) input message
@@ -225,6 +245,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
       super(AppengineV1beta4.AppsModulesService, self).__init__(client)
       self._method_configs = {
           'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}',
               http_method=u'DELETE',
               method_id=u'appengine.apps.modules.delete',
               ordered_params=[u'name'],
@@ -237,6 +258,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}',
               http_method=u'GET',
               method_id=u'appengine.apps.modules.get',
               ordered_params=[u'name'],
@@ -249,6 +271,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules',
               http_method=u'GET',
               method_id=u'appengine.apps.modules.list',
               ordered_params=[u'name'],
@@ -261,6 +284,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'Patch': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/modules/{modulesId}',
               http_method=u'PATCH',
               method_id=u'appengine.apps.modules.patch',
               ordered_params=[u'name'],
@@ -338,6 +362,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
       super(AppengineV1beta4.AppsOperationsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/operations/{operationsId}',
               http_method=u'GET',
               method_id=u'appengine.apps.operations.get',
               ordered_params=[u'name'],
@@ -350,6 +375,7 @@ class AppengineV1beta4(base_api.BaseApiClient):
               supports_download=False,
           ),
           'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}/operations',
               http_method=u'GET',
               method_id=u'appengine.apps.operations.list',
               ordered_params=[u'name'],
@@ -407,6 +433,7 @@ to use different resource name schemes, such as `users/*/operations`.
       super(AppengineV1beta4.AppsService, self).__init__(client)
       self._method_configs = {
           'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta4/apps/{appsId}',
               http_method=u'GET',
               method_id=u'appengine.apps.get',
               ordered_params=[u'name'],

@@ -129,13 +129,32 @@ class CsekKeyBase(object):
     self._key_material = key_material
 
   @staticmethod
-  def MakeKey(key_material, key_type):
+  def MakeKey(key_material, key_type, allow_rsa_encrypted=False):
+    """Make a CSEK key.
+
+    Args:
+      key_material: str, the key material for this key
+      key_type: str, the type of this key
+      allow_rsa_encrypted: bool, whether the key is allowed to be RSA-wrapped
+
+    Returns:
+      CsekRawKey or CsekRsaEncryptedKey derived from the given key material and
+      type.
+
+    Raises:
+      BadKeyTypeException: if the key is not a valid key type
+    """
 
     if key_type == 'raw':
       return CsekRawKey(key_material)
 
     if key_type == 'rsa-encrypted':
-      return CsekRsaEncryptedKey(key_material)
+      if allow_rsa_encrypted:
+        return CsekRsaEncryptedKey(key_material)
+      raise BadKeyTypeException(
+          key_type,
+          'this feature is only allowed in the alpha and beta versions of this '
+          'command.')
 
     raise BadKeyTypeException(key_type)
 
@@ -177,10 +196,13 @@ class CsekRsaEncryptedKey(CsekKeyBase):
 class BadKeyTypeException(InvalidKeyFileException):
   """A key type is bad and why."""
 
-  def __init__(self, key_type):
+  def __init__(self, key_type, explanation=''):
     self.key_type = key_type
-    super(BadKeyTypeException, self).__init__(
-        'Invalid key type [{0}].'.format(self.key_type))
+    msg = 'Invalid key type [{0}]'.format(self.key_type)
+    if explanation:
+      msg += ': ' + explanation
+    msg += '.'
+    super(BadKeyTypeException, self).__init__(msg)
 
 
 class MissingCsekKeyException(exceptions.ToolException):
@@ -215,8 +237,9 @@ def AddCsekKeyArgs(parser, flags_about_creation=True):
         'key file when --csek-key-file is given. This behavior is enabled by '
         'default to prevent incorrect gcloud invocations from accidentally '
         'creating resources with no user managed key. Disabling the check '
-        'allows creation of some resources without Customer-Supplied '
-        'Encryption Keys. See {0} for more details').format(CSEK_HELP_URL)
+        'allows creation of some resources without a matching '
+        'Customer-Supplied Encryption Key in the supplied --csek-key-file. '
+        'See {0} for more details').format(CSEK_HELP_URL)
 
 
 class UriPattern(object):
@@ -243,14 +266,15 @@ class CsekKeyStore(object):
   # CsekKeyBase
 
   @staticmethod
-  def FromFile(fname):
+  def FromFile(fname, allow_rsa_encrypted):
     """FromFile loads a CsekKeyStore from a file.
 
     Args:
       fname: str, the name of a file intended to contain a well-formed key file
+      allow_rsa_encrypted: bool, whether to allow keys of type 'rsa-encrypted'
 
     Returns:
-      A MaterKeyStore, if found
+      A CsekKeyStore, if found
 
     Raises:
       exceptions.BadFileException: there's a problem reading fname
@@ -261,14 +285,15 @@ class CsekKeyStore(object):
     with open(fname) as infile:
       content = infile.read()
 
-    return CsekKeyStore(content)
+    return CsekKeyStore(content, allow_rsa_encrypted)
 
   @staticmethod
-  def FromArgs(args):
+  def FromArgs(args, allow_rsa_encrypted=False):
     """FromFile attempts to load a CsekKeyStore from a command's args.
 
     Args:
       args: CLI args with a csek_key_file field set
+      allow_rsa_encrypted: bool, whether to allow keys of type 'rsa-encrypted'
 
     Returns:
       A CsekKeyStore, if a valid key file name is provided as csek_key_file
@@ -279,19 +304,18 @@ class CsekKeyStore(object):
       exceptions.InvalidKeyFileException: the key file failed to parse
         or was otherwise invalid
     """
-    assert hasattr(args, 'csek_key_file')
-
     if args.csek_key_file is None:
       return None
 
-    return CsekKeyStore.FromFile(args.csek_key_file)
+    return CsekKeyStore.FromFile(args.csek_key_file, allow_rsa_encrypted)
 
   @staticmethod
-  def _ParseAndValidate(s):
+  def _ParseAndValidate(s, allow_rsa_encrypted=False):
     """_ParseAndValidate(s) inteprets s as a csek key file.
 
     Args:
       s: str, an input to parse
+      allow_rsa_encrypted: bool, whether to allow RSA-wrapped keys
 
     Returns:
       a valid state object
@@ -326,7 +350,8 @@ class CsekKeyStore(object):
 
         try:
           state[pattern] = CsekKeyBase.MakeKey(
-              key_material=key_record['key'], key_type=key_record['key-type'])
+              key_material=key_record['key'], key_type=key_record['key-type'],
+              allow_rsa_encrypted=allow_rsa_encrypted)
         except InvalidKeyExceptionNoContext as e:
           raise InvalidKeyException(key=e.key, key_id=pattern, issue=e.issue)
 
@@ -375,8 +400,9 @@ class CsekKeyStore(object):
 
     return search_state[1]
 
-  def __init__(self, json_string):
-    self.state = CsekKeyStore._ParseAndValidate(json_string)
+  def __init__(self, json_string, allow_rsa_encrypted=False):
+    self.state = CsekKeyStore._ParseAndValidate(json_string,
+                                                allow_rsa_encrypted)
 
 
 # Functions below make it easy for clients to operate on values that possibly

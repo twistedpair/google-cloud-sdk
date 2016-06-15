@@ -206,7 +206,9 @@ class AppengineClient(object):
     rpcserver = self._GetRpcServer(timeout_max_errors=5)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
 
-  def SetManagedByGoogle(self, service, version, instance=None, wait=True):
+  # TODO(b/29059251): vm_name and instance id are different, this API client
+  # needs the VM name. The Zeus API will use instance id instead.
+  def SetManagedByGoogle(self, service, version, vm_name=None, wait=True):
     """Sets a service version (and optionally an instance) to Google managed.
 
     This will reboot the machine and restore the instance with a fresh runtime.
@@ -214,12 +216,12 @@ class AppengineClient(object):
     Args:
       service: str, The service to update.
       version: str, The version of the service to update.
-      instance: str, The instance id of a single instance to update.
+      vm_name: str, The vm name of the instance to update.
       wait: bool, True to wait until it takes effect.
     """
-    self._SetManagedBy(service, version, instance, '/api/vms/lock', wait)
+    self._SetManagedBy(service, version, vm_name, '/api/vms/lock', wait)
 
-  def SetManagedBySelf(self, service, version, instance=None, wait=True):
+  def SetManagedBySelf(self, service, version, vm_name=None, wait=True):
     """Sets a service version (optionally a single instance) as self managed.
 
     This is the 'break the glass' mode that lets you ssh into the machine and
@@ -228,18 +230,18 @@ class AppengineClient(object):
     Args:
       service: str, The service to update.
       version: str, The version of the service to update.
-      instance: str, The instance id of a single instance to update.
+      vm_name: str, The vm name of the instance to update.
       wait: bool, True to wait until it takes effect.
     """
-    self._SetManagedBy(service, version, instance, '/api/vms/debug', wait)
+    self._SetManagedBy(service, version, vm_name, '/api/vms/debug', wait)
 
-  def _SetManagedBy(self, service, version, instance, url, wait):
+  def _SetManagedBy(self, service, version, vm_name, url, wait):
     """Switches a service version between management modes.
 
     Args:
       service: str, The service to update.
       version: str, The version of the service to update.
-      instance: str, The instance id of a single instance to update.
+      vm_name: str, The vm name of the instance to update.
       url: str, The URL of the API to call to make the update.
       wait: bool, True to wait until it takes effect.
 
@@ -250,8 +252,8 @@ class AppengineClient(object):
     kwargs = {'app_id': self.project,
               'version_match': version,
               'module': service}
-    if instance:
-      kwargs['instance'] = instance
+    if vm_name:
+      kwargs['instance'] = vm_name
 
     rpcserver.Send(url, **kwargs)
 

@@ -15,7 +15,6 @@
 """This module holds exceptions raised by commands."""
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.docker import constants
 
 
 class NoAppIdentifiedError(exceptions.Error):
@@ -51,17 +50,6 @@ class NoRepoInfoWithImageUrlError(DeployError):
 
   def __str__(self):
     return 'The --repo-info-file option is not compatible with --image_url.'
-
-
-class UnsupportedRegistryError(DeployError):
-  """Indicates an attempt to use an unsuported registry."""
-
-  def __init__(self, image_url):
-    self.image_url = image_url
-
-  def __str__(self):
-    return ('{0} is not in a supported registry.  Supported registries are '
-            '{1}'.format(self.image_url, constants.ALL_SUPPORTED_REGISTRIES))
 
 
 class DefaultBucketAccessError(DeployError):

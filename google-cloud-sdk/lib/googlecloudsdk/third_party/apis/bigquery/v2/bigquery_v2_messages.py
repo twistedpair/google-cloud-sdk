@@ -396,7 +396,7 @@ class BigtableColumn(_messages.Message):
     type: [Optional] The type to convert the value in cells of this column.
       The values are expected to be encoded using HBase Bytes.toBytes function
       when using the BINARY encoding value. Following BigQuery types are
-      allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Defaut
+      allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Default
       type is BYTES. 'type' can also be set at the column family level.
       However, the setting at this level takes precedence if 'type' is set at
       both levels.
@@ -432,9 +432,9 @@ class BigtableColumnFamily(_messages.Message):
     type: [Optional] The type to convert the value in cells of this column
       family. The values are expected to be encoded using HBase Bytes.toBytes
       function when using the BINARY encoding value. Following BigQuery types
-      are allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Defaut
-      type is BYTES. This can be overridden for a specific column by listing
-      that column in 'columns' and specifying a type for it.
+      are allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN
+      Default type is BYTES. This can be overridden for a specific column by
+      listing that column in 'columns' and specifying a type for it.
   """
 
   columns = _messages.MessageField('BigtableColumn', 1, repeated=True)

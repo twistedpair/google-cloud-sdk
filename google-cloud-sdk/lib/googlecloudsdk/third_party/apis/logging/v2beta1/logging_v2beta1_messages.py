@@ -323,8 +323,8 @@ class LogEntry(_messages.Message):
     LabelsValue: Optional. A set of user-defined (key, value) data that
       provides additional information about the log entry.
     ProtoPayloadValue: The log entry payload, represented as a protocol
-      buffer. You can only use `protoPayload` values that belong to a set of
-      approved types.
+      buffer.  Some Google Cloud Platform services use this field for their
+      log entry payloads.
 
   Fields:
     httpRequest: Optional. Information about the HTTP request associated with
@@ -333,7 +333,7 @@ class LogEntry(_messages.Message):
       field, the logging service considers other log entries in the same log
       with the same ID as duplicates which can be removed.  If omitted,
       Stackdriver Logging will generate a unique ID for this log entry.
-    internalId: A InternalEntityId attribute.
+    internalId: Internal id of the owner of this log entry.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -350,9 +350,9 @@ class LogEntry(_messages.Message):
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     projectNumber: A string attribute.
-    protoPayload: The log entry payload, represented as a protocol buffer. You
-      can only use `protoPayload` values that belong to a set of approved
-      types.
+    protoPayload: The log entry payload, represented as a protocol buffer.
+      Some Google Cloud Platform services use this field for their log entry
+      payloads.
     resource: Required. The monitored resource associated with this log entry.
       Example: a log entry that reports a database error would be associated
       with the monitored resource designating the particular database that
@@ -446,8 +446,8 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProtoPayloadValue(_messages.Message):
-    """The log entry payload, represented as a protocol buffer. You can only
-    use `protoPayload` values that belong to a set of approved types.
+    """The log entry payload, represented as a protocol buffer.  Some Google
+    Cloud Platform services use this field for their log entry payloads.
 
     Messages:
       AdditionalProperty: An additional property for a ProtoPayloadValue
@@ -586,9 +586,11 @@ class LogMetric(_messages.Message):
     name: Required. The client-assigned metric identifier. Example:
       `"severe_errors"`.  Metric identifiers are limited to 1000 characters
       and can include only the following characters: `A-Z`, `a-z`, `0-9`, and
-      the special characters `_-.,+!*',()%/\`.  The forward-slash character
+      the special characters `_-.,+!*',()%/`.  The forward-slash character
       (`/`) denotes a hierarchy of name pieces, and it cannot be the first
-      character of the name.
+      character of the name.  The '%' character is used to URL encode unsafe
+      and reserved characters and must be followed by two hexadecimal digits
+      according to RFC 1738.
     version: The API version that created or updated this metric.
   """
 
@@ -701,9 +703,9 @@ class LoggingProjectsLogsListRequest(_messages.Message):
       `ListLogs` operation.  If `pageToken` is supplied, then the other fields
       of this request are ignored, and instead the previous `ListLogs`
       operation is continued.
-    projectsId: Part of `projectName`. The resource name of the project whose
-      logs are requested. If both `resource_type` and `resourceIndexPrefix`
-      are empty, then all logs with entries in this project are listed.
+    projectsId: Part of `parent`. The resource name of the entity whose logs
+      are requested. If both `resource_type` and `resourceIndexPrefix` are
+      empty, then all logs with entries in this entity are listed.
     resourceIndexPrefix: The purpose of this field is to restrict the listed
       logs to those with entries of a certain kind. If `resource_type` is the
       name of a resource type, then this field may contain values for the log
@@ -730,9 +732,9 @@ class LoggingProjectsMetricsCreateRequest(_messages.Message):
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
-    projectsId: Part of `projectName`. The resource name of the project in
-      which to create the metric. Example: `"projects/my-project-id"`.  The
-      new metric must be provided in the request.
+    projectsId: Part of `parent`. The resource name of the project in which to
+      create the metric. Example: `"projects/my-project-id"`.  The new metric
+      must be provided in the request.
   """
 
   logMetric = _messages.MessageField('LogMetric', 1)
@@ -776,9 +778,9 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
     pageToken: Optional. If the `pageToken` parameter is supplied, then the
       next page of results is retrieved.  The `pageToken` parameter must be
       set to the value of the `nextPageToken` from the previous response. The
-      value of `projectName` must be the same as in the previous request.
-    projectsId: Part of `projectName`. Required. The resource name of the
-      project containing the metrics. Example: `"projects/my-project-id"`.
+      value of `parent` must be the same as in the previous request.
+    projectsId: Part of `parent`. Required. The resource name containing the
+      metrics. Example: `"projects/my-project-id"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -812,8 +814,8 @@ class LoggingProjectsResourceKeysListRequest(_messages.Message):
       operation.
     pageToken: An opaque token, returned as `nextPageToken` by a prior
       `ListResourceKeys` operation.
-    projectsId: Part of `projectName`. The resource name of the project whose
-      services are to be listed.
+    projectsId: Part of `parent`. The resource name of the entity whose
+      reource keys are to be listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -869,9 +871,9 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `projectName`. The resource name of the project in
-      which to create the sink. Example: `"projects/my-project-id"`.  The new
-      sink must be provided in the request.
+    projectsId: Part of `parent`. The resource in which to create the sink.
+      Example: `"projects/my-project-id"`.  The new sink must be provided in
+      the request.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -915,9 +917,9 @@ class LoggingProjectsSinksListRequest(_messages.Message):
     pageToken: Optional. If the `pageToken` parameter is supplied, then the
       next page of results is retrieved.  The `pageToken` parameter must be
       set to the value of the `nextPageToken` from the previous response. The
-      value of `projectName` must be the same as in the previous request.
-    projectsId: Part of `projectName`. Required. The resource name of the
-      project containing the sinks. Example: `"projects/my-logging-project"`.
+      value of `parent` must be the same as in the previous request.
+    projectsId: Part of `parent`. Required. The resource name containing the
+      sinks. Example: `"projects/my-logging-project"`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1398,7 +1400,10 @@ class WriteLogEntriesRequest(_messages.Message):
 
   Fields:
     entries: Required. The log entries to write. The log entries must have
-      values for all required fields.
+      values for all required fields.  To improve throughput and to avoid
+      exceeding the [quota limit](/logging/quota-policy) for calls to
+      `entries.write`, use this field to write multiple log entries at once
+      rather than calling this method for each log entry.
     labels: Optional. User-defined `key:value` items that are added to the
       `labels` field of each log entry in `entries`, except when a log entry
       specifies its own `key:value` item with the same key. Example: `{

@@ -29,6 +29,7 @@ import urlparse
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
+from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
@@ -37,6 +38,30 @@ _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
 _DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
 _CREDENTIAL_STORE_KEY = 'credsStore'
+
+
+def _GetDockerHomePath():
+  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+    # %HOME% has precedence over %USERPROFILE% for os.path.expanduser('~')
+    # The Docker config resides under %USERPROFILE% on Windows
+    return os.path.expandvars('%USERPROFILE%')
+  else:
+    return platforms.GetHomePath()
+
+
+class DockerError(exceptions.Error):
+  """Base class for docker errors."""
+
+
+class UnsupportedRegistryError(DockerError):
+  """Indicates an attempt to use an unsupported registry."""
+
+  def __init__(self, image_url):
+    self.image_url = image_url
+
+  def __str__(self):
+    return ('{0} is not in a supported registry.  Supported registries are '
+            '{1}'.format(self.image_url, constants.ALL_SUPPORTED_REGISTRIES))
 
 
 # Other tools like the python docker library (used by gcloud app)
@@ -61,8 +86,8 @@ def GetDockerConfig(force_new=False):
   # This is a problem when a user has logged into another registry on 1.7.0
   # and then uses 'gcloud docker'.
   # This must remain compatible with: https://github.com/docker/docker-py
-  new_path = os.path.join(platforms.GetHomePath(), '.docker', 'config.json')
-  old_path = os.path.join(platforms.GetHomePath(), '.dockercfg')
+  new_path = os.path.join(_GetDockerHomePath(), '.docker', 'config.json')
+  old_path = os.path.join(_GetDockerHomePath(), '.dockercfg')
   if os.path.exists(new_path) or force_new:
     return new_path, True
   return old_path, False

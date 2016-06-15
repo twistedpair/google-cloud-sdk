@@ -51,6 +51,7 @@ _HANDLER_FIELDS = {
 _REQUEST_UTILIZATION_SCALING_FIELDS = (
     'targetRequestCountPerSec',
     'targetConcurrentRequests',
+    'targetRequestCountPerSecond',
 )
 
 _DISK_UTILIZATION_SCALING_FIELDS = (
@@ -58,6 +59,10 @@ _DISK_UTILIZATION_SCALING_FIELDS = (
     'targetWriteOpsPerSec',
     'targetReadBytesPerSec',
     'targetReadOpsPerSec',
+    'targetWriteBytesPerSecond',
+    'targetWriteOpsPerSecond',
+    'targetReadBytesPerSecond',
+    'targetReadOpsPerSecond',
 )
 
 _NETWORK_UTILIZATION_SCALING_FIELDS = (
@@ -65,6 +70,10 @@ _NETWORK_UTILIZATION_SCALING_FIELDS = (
     'targetSentPacketsPerSec',
     'targetReceivedBytesPerSec',
     'targetReceivedPacketsPerSec',
+    'targetSentBytesPerSecond',
+    'targetSentPacketsPerSecond',
+    'targetReceivedBytesPerSecond',
+    'targetReceivedPacketsPerSecond',
 )
 
 

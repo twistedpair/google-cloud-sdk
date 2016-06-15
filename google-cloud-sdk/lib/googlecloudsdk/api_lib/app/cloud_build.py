@@ -58,7 +58,7 @@ class _GzipFileIgnoreSeek(gzip.GzipFile):
     return self.offset
 
 
-def UploadSource(source_dir, bucket, obj, storage_client):
+def UploadSource(source_dir, bucket, obj):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
@@ -67,7 +67,6 @@ def UploadSource(source_dir, bucket, obj, storage_client):
     source_dir: the directory to be archived.
     bucket: the GCS bucket where the tarball will be stored.
     obj: the GCS object where the tarball will be stored, in the above bucket.
-    storage_client: An instance of the storage_v1.StorageV1 client.
 
   Raises:
     UploadFailedError: when the source fails to upload to GCS.
@@ -97,6 +96,7 @@ def UploadSource(source_dir, bucket, obj, storage_client):
     with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
       docker.utils.tar(source_dir, exclude, fileobj=gz)
     f.close()
+    storage_client = core_apis.GetClientInstance('storage', 'v1')
     cloud_storage.CopyFileToGCS(bucket, f.name, obj, storage_client)
   finally:
     try:
@@ -105,8 +105,7 @@ def UploadSource(source_dir, bucket, obj, storage_client):
       log.warn('Could not remove temporary directory [{0}]'.format(temp_dir))
 
 
-def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
-                      cloudbuild_client):
+def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   """Execute a call to CloudBuild service and wait for it to finish.
 
   Args:
@@ -115,7 +114,6 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
     object_name: GCS object name containing source to build.
     output_image: GCR location for the output docker image;
                   eg, gcr.io/test-gae/hardcoded-output-tag.
-    cloudbuild_client: client to the Cloud Build service.
 
   Raises:
     BuildFailedError: when the build fails.
@@ -130,6 +128,7 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image,
   else:
     timeout_str = None
 
+  cloudbuild_client = core_apis.GetClientInstance('cloudbuild', 'v1')
   cloudbuild_messages = core_apis.GetMessagesModule('cloudbuild', 'v1')
 
   build_op = cloudbuild_client.projects_builds.Create(

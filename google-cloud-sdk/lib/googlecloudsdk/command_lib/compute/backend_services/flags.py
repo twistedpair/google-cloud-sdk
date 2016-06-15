@@ -15,44 +15,20 @@
 """Flags and helpers for the compute backend-services commands."""
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def AddBackendServiceName(parser,
-                          is_plural=False, is_regional=False, is_global=True):
-  """Add args to specify regional, global (or both) backend service.
+GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    resource_name='backend service',
+    completion_resource_id='compute.backendServices',
+    global_collection='compute.backendServices')
 
-  Some commands accept both regional and global resources.
 
-  Args:
-    parser: argparse parser.
-    is_plural: bool, whether to accept multiple values.
-    is_regional: bool, include region flag.
-    is_global: bool, if also regional add global flag, otherwise do nothing.
-  """
-  parser.add_argument(
-      'name' + ('s' if is_plural else ''),
-      metavar='NAME',
-      nargs='+' if is_plural else None,
-      completion_resource='compute.backendServices',
-      help='The name{0} of the backend service{0}.'
-      .format('s' if is_plural else ''))
-
-  if is_regional:
-    # Only add --global flag if we are supporting regional resource.
-    if is_global:
-      scope = parser.add_mutually_exclusive_group()
-      scope.add_argument(
-          '--global',
-          action='store_true',
-          help='If provided, it is assumed the backend service is global.')
-    else:
-      scope = parser
-
-    flags.AddRegionFlag(
-        scope,
-        resource_type='backend service',
-        operation_type='operate on')
+GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    resource_name='backend service',
+    completion_resource_id='compute.backendServices',
+    plural=True,
+    global_collection='compute.backendServices')
 
 
 def AddLoadBalancingScheme(parser):
@@ -88,12 +64,11 @@ def AddConnectionDrainingTimeout(parser):
       """
 
 
-def AddEnableCdn(parser):
-  enable_cdn = parser.add_argument(
-      '--enable-cdn',
-      action='store_true',
-      default=None,  # Tri-valued, None => don't include enableCDN property.
-      help='Enable Cloud CDN.')
+def AddEnableCdn(parser, default):
+  enable_cdn = parser.add_argument('--enable-cdn',
+                                   action='store_true',
+                                   default=default,
+                                   help='Enable Cloud CDN.')
   enable_cdn.detailed_help = """\
       Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
       responses from a backend service at the edge of the network, close to

@@ -50,8 +50,9 @@ class ReleaseTrack(object):
   """An enum representing the release track of a command or command group.
 
   The release track controls where a command appears.  The default of GA means
-  it will show up under gcloud.  If you enable a command or group for the alpha
-  or beta tracks, those commands will be duplicated under those groups as well.
+  it will show up under gcloud.  If you enable a command or group for the alpha,
+  beta, or preview tracks, those commands will be duplicated under those groups
+  as well.
   """
 
   class _TRACK(object):
@@ -79,7 +80,12 @@ class ReleaseTrack(object):
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in ALPHA and may change without notice.')
-  _ALL = [GA, BETA, ALPHA]
+  PREVIEW = _TRACK(
+      'PREVIEW', 'preview',
+      '{0}(PREVIEW){0} '.format(MARKDOWN_BOLD),
+      'This command is currently in DEVELOPER PREVIEW and may change without '
+      'notice.')
+  _ALL = [GA, BETA, ALPHA, PREVIEW]
 
   @staticmethod
   def AllValues():

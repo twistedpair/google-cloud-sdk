@@ -332,7 +332,7 @@ class Displayer(object):
       resources_were_displayed = self._printer.ResourcesWerePrinted()
     elif hasattr(self._command, 'Display'):
       # This will eventually be rare.
-      log.info('Explict Display.')
+      log.info('Explicit Display.')
       self._command.Display(self._args, self._resources)
 
     # Resource display is done.

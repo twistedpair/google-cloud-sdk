@@ -123,7 +123,11 @@ class _OnGCECache(object):
     try:
       numeric_project_id = gce_read.ReadNoProxy(
           gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib2.HTTPError, urllib2.URLError, socket.timeout):
+    except (urllib2.HTTPError, urllib2.URLError,
+            socket.timeout, socket.error, socket.herror, socket.gaierror):
+      # Depending on how a firewall/ NAT behaves, we can have different
+      # exceptions at different levels in the networking stack when trying to
+      # access an address that we can't reach. Capture all these exceptions.
       return False
     else:
       return numeric_project_id.isdigit()

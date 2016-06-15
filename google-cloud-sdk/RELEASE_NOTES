@@ -2,7 +2,72 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
-## 112.0.0 (2016/06/01)
+
+## 114.0.0 (2016/06/15)
+
+### Breaking Changes
+
+*   (Google Compute Engine) Deprecated the use of image aliases. Please use
+    image families instead. See https://cloud.google.com/compute/docs/images for
+    more details.
+
+*   (Google App Engine) Removed the deprecated and unused `--force` flag for
+    `gcloud app deploy`.
+
+*   (Google Cloud Debugger) Removed `gcloud alpha debug` command group; debug
+    commands are now accessible solely using `gcloud beta debug`.
+
+
+### Google Compute Engine
+
+*   The Customer-Supplied Encryption Keys (CSEK) feature for Google Compute
+    Engine disks is now available in the GA release track. See
+    https://cloud.google.com/compute/docs/disks/customer-supplied-encryption for
+    more details.
+
+*   Added autocompletion for the URL map name in
+    `gcloud compute url-maps invalidate-cdn-cache`.
+
+*   Added `gcloud alpha compute networks switch-mode` command.
+
+*   Added `gcloud alpha compute networks subnets expand-ip-range` command.
+
+*   Added `--remote-traffic-selector` flag, which allows specifying a list of
+    CIDR blocks to be used during IKE\IPsec traffic selectors negotiation, to
+    `gcloud beta compute vpn-tunnels create`
+
+*   Fixed `gcloud compute routes list` command to display vpn-tunnel as
+    `NEXT_HOP`.
+
+### Google App Engine
+
+*   Parallelized source file uploads in `gcloud preview app deploy` for
+    increased speed. To revert to the old behavior in event of a problem, please
+    run `gcloud config set app/num_file_upload_processes 1`
+    and report an issue here:
+    https://code.google.com/p/google-cloud-sdk/issues/list
+
+*   Google App Engine components updated to 1.9.38.
+    Please visit the following release notes for details:
+    *   Python - https://cloud.google.com/appengine/docs/python/release-notes
+    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+*   Added support for Managed VMs instances in
+    `gcloud preview app instances enable-debug` and
+    `gcloud preview app instances disable-debug`.
+
+### Docker
+
+*   Fixed a bug where Windows users experienced docker authentication issues
+    when the `%HOME%` variable was set and differed from `%USERPROFILE%`
+
+### Emulators
+
+*   Fixed behavior of pub/sub emulator subscription topic names when their
+    respective topics are deleted. They should now be set to `_deleted-topic_`.
+
+
+## 113.0.0 (2016/06/08)
 
 ### Cloud SDK
 

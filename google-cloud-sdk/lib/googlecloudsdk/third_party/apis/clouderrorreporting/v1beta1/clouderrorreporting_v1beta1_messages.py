@@ -93,9 +93,9 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       Default is `ALIGNMENT_EQUAL_AT_END`.
     alignmentTime: [Optional] Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
-    groupId: [Optional] List all `ErrorGroupStats` with these IDs. If not
-      specified, all error group stats with a non-zero error count for the
-      given selection criteria are returned.
+    groupId: [Optional] List all <code>ErrorGroupStats</code> with these IDs.
+      If not specified, all error group stats with a non-zero error count for
+      the given selection criteria are returned.
     order: [Optional] The sort order in which the results are returned.
       Default is `COUNT_DESC`.
     pageSize: [Optional] The maximum number of results to return per response.
@@ -104,9 +104,9 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       To view additional results, pass this token along with the identical
       query parameters as the first request.
     projectName: [Required] The resource name of the Google Cloud Platform
-      project. Written as `projects/` plus the [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
-      /my-project-123`.
+      project. Written as <code>projects/</code> plus the <a
+      href="https://support.google.com/cloud/answer/6158840">Google Cloud
+      Platform project ID</a>.  Example: <code>projects/my-project-123</code>.
     serviceFilter_service: [Optional] The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
@@ -183,8 +183,13 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
   """A ClouderrorreportingProjectsGroupsGetRequest object.
 
   Fields:
-    groupName: [Required] Group resource name. Example: `projects/my-
-      project-123/groups/my-group`
+    groupName: [Required] The group resource name. Written as
+      <code>projects/<var>projectID</var>/groups/<var>group_name</var></code>.
+      Call <a href="/error-
+      reporting/reference/rest/v1beta1/projects.groupStats/list">
+      <code>groupStats.list</code></a> to return a list of groups belonging to
+      this project.  Example: <code>projects/my-project-123/groups/my-
+      group</code>
   """
 
   groupName = _messages.StringField(1, required=True)
@@ -246,8 +251,8 @@ class ErrorGroup(_messages.Message):
     groupId: Group IDs are unique for a given project. If the same kind of
       error occurs in different service contexts, it will receive the same
       group ID.
-    name: Group resource name. Example: `projects/my-project-123/groups/my-
-      groupid`
+    name: The group resource name. Example: <code>projects/my-
+      project-123/groups/my-groupid</code>
     trackingIssues: Associated tracking issues.
   """
 

@@ -994,7 +994,7 @@
           ]
         },
         "description": {
-          "description": "User-visible description for this quota limit.",
+          "description": "Optional. User-visible, extended description for this quota limit.\nShould be used only when more context is needed to understand this limit\nthan provided by the limit's display name (see: `display_name`).",
           "type": "string"
         },
         "defaultLimit": {
@@ -1017,7 +1017,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The UI display name of the limit. If empty, client should use 'name' field\ninstead.",
+          "description": "User-visible display name for this limit.\nOptional. If not set, the UI will provide a default display name based on\nthe quota configuration. This field can be used to override the default\ndisplay name generated from the configuration.",
           "type": "string"
         }
       }

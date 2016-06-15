@@ -707,8 +707,12 @@ class ServiceAccount(_messages.Message):
   """A service account in the Identity and Access Management API.  To create a
   service account, specify the `project_id` and the `account_id` for the
   account.  The `account_id` is unique within the project, and is used to
-  generate the service account email address and a stable `unique_id`.  All
-  other methods can identify the service account using the format
+  generate the service account email address and a stable `unique_id`.  If the
+  account already exists, the account's resource name is returned in
+  util::Status's ResourceInfo.resource_name in the format of
+  projects/{project}/serviceAccounts/{email}. The caller can use the name in
+  other methods to access the account.  All other methods can identify the
+  service account using the format
   `projects/{project}/serviceAccounts/{account}`. Using `-` as a wildcard for
   the project will infer the project from the account. The `account` value can
   be the `email` address or the `unique_id` of the service account.

@@ -44,6 +44,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.globalAddresses = self.GlobalAddressesService(self)
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalOperations = self.GlobalOperationsService(self)
+    self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
     self.images = self.ImagesService(self)
@@ -1778,6 +1779,194 @@ class ComputeBeta(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+  class HealthChecksService(base_api.BaseApiService):
+    """Service class for the healthChecks resource."""
+
+    _NAME = u'healthChecks'
+
+    def __init__(self, client):
+      super(ComputeBeta.HealthChecksService, self).__init__(client)
+      self._method_configs = {
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.healthChecks.delete',
+              ordered_params=[u'project', u'healthCheck'],
+              path_params=[u'healthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+              request_field='',
+              request_type_name=u'ComputeHealthChecksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.healthChecks.get',
+              ordered_params=[u'project', u'healthCheck'],
+              path_params=[u'healthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+              request_field='',
+              request_type_name=u'ComputeHealthChecksGetRequest',
+              response_type_name=u'HealthCheck',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.healthChecks.insert',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks',
+              request_field=u'healthCheck',
+              request_type_name=u'ComputeHealthChecksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.healthChecks.list',
+              ordered_params=[u'project'],
+              path_params=[u'project'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/global/healthChecks',
+              request_field='',
+              request_type_name=u'ComputeHealthChecksListRequest',
+              response_type_name=u'HealthCheckList',
+              supports_download=False,
+          ),
+          'Patch': base_api.ApiMethodInfo(
+              http_method=u'PATCH',
+              method_id=u'compute.healthChecks.patch',
+              ordered_params=[u'project', u'healthCheck'],
+              path_params=[u'healthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+              request_field=u'healthCheckResource',
+              request_type_name=u'ComputeHealthChecksPatchRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.healthChecks.testIamPermissions',
+              ordered_params=[u'project', u'resource'],
+              path_params=[u'project', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeHealthChecksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          'Update': base_api.ApiMethodInfo(
+              http_method=u'PUT',
+              method_id=u'compute.healthChecks.update',
+              ordered_params=[u'project', u'healthCheck'],
+              path_params=[u'healthCheck', u'project'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/healthChecks/{healthCheck}',
+              request_field=u'healthCheckResource',
+              request_type_name=u'ComputeHealthChecksUpdateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified HealthCheck resource.
+
+      Args:
+        request: (ComputeHealthChecksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns the specified HealthCheck resource. Get a list of available health checks by making a list() request.
+
+      Args:
+        request: (ComputeHealthChecksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthCheck) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a HealthCheck resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeHealthChecksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of HealthCheck resources available to the specified project.
+
+      Args:
+        request: (ComputeHealthChecksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthCheckList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Patch(self, request, global_params=None):
+      """Updates a HealthCheck resource in the specified project using the data included in the request. This method supports patch semantics.
+
+      Args:
+        request: (ComputeHealthChecksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Update(self, request, global_params=None):
+      """Updates a HealthCheck resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeHealthChecksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
   class HttpHealthChecksService(base_api.BaseApiService):
     """Service class for the httpHealthChecks resource."""
 
@@ -2693,7 +2882,9 @@ If an empty request body is given, clears the deprecation status instead.
           config, request, global_params=global_params)
 
     def ResizeAdvanced(self, request, global_params=None):
-      """Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. This method is an extended version of Resize and it supports more advanced options.
+      """Resizes the managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method.
+
+If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
@@ -4341,6 +4532,18 @@ If an empty request body is given, clears the deprecation status instead.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'Preview': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.routers.preview',
+              ordered_params=[u'project', u'region', u'router'],
+              path_params=[u'project', u'region', u'router'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/routers/{router}/preview',
+              request_field=u'routerResource',
+              request_type_name=u'ComputeRoutersPreviewRequest',
+              response_type_name=u'RoutersPreviewResponse',
+              supports_download=False,
+          ),
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'compute.routers.testIamPermissions',
@@ -4458,6 +4661,19 @@ If an empty request body is given, clears the deprecation status instead.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Preview(self, request, global_params=None):
+      """Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
+
+      Args:
+        request: (ComputeRoutersPreviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersPreviewResponse) The response message.
+      """
+      config = self.GetMethodConfig('Preview')
       return self._RunMethod(
           config, request, global_params=global_params)
 

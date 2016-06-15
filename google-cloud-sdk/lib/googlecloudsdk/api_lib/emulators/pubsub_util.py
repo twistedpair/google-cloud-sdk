@@ -70,10 +70,11 @@ def BuildStartArgs(args, current_os):
   """
   pubsub_dir = GetPubSubRoot()
   if current_os is platforms.OperatingSystem.WINDOWS:
-    pubsub_executable = os.path.join(pubsub_dir, r'bin\cloud-pubsub-fake.bat')
+    pubsub_executable = os.path.join(
+        pubsub_dir, r'bin\cloud-pubsub-emulator.bat')
     return execution_utils.ArgsForCMDTool(pubsub_executable, *args)
 
-  pubsub_executable = os.path.join(pubsub_dir, 'bin/cloud-pubsub-fake')
+  pubsub_executable = os.path.join(pubsub_dir, 'bin/cloud-pubsub-emulator')
   return execution_utils.ArgsForExecutableTool(pubsub_executable, *args)
 
 

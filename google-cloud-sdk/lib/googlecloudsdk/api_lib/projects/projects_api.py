@@ -19,8 +19,18 @@ from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 def List(client=None, messages=None, limit=None):
-  if not client:
-    client = util.GetClient()
+  """Make API calls to List active projects.
+
+  Args:
+    client: Projects client to use or None to use the default
+    messages: Projects messages class to use or None to use the default
+    limit: The number of projects to limit the resutls to. This limit is passed
+           to the server and the server does the limiting.
+
+  Returns:
+    Generator that yields projects
+  """
+  client = client or util.GetClient()
   messages = messages or util.GetMessages()
   return list_pager.YieldFromList(
       client.projects,

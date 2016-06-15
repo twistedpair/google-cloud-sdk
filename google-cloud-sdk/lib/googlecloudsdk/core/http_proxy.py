@@ -55,6 +55,34 @@ def GetDefaultProxyInfo(method='http'):
   return pi
 
 
+def GetProxyProperties():
+  """Get proxy information from cloud sdk properties in dictionary form."""
+  proxy_type_map = config.GetProxyTypeMap()
+  proxy_type = properties.VALUES.proxy.proxy_type.Get()
+  proxy_address = properties.VALUES.proxy.address.Get()
+  proxy_port = properties.VALUES.proxy.port.GetInt()
+
+  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
+  if proxy_prop_set > 0 and proxy_prop_set != 3:
+    raise properties.InvalidValueError(
+        'Please set all or none of the following properties: '
+        'proxy/type, proxy/address and proxy/port')
+
+  if not proxy_prop_set:
+    return {}
+
+  proxy_user = properties.VALUES.proxy.username.Get()
+  proxy_pass = properties.VALUES.proxy.password.Get()
+
+  return {
+      'proxy_type': proxy_type_map[proxy_type],
+      'proxy_address': proxy_address,
+      'proxy_port': proxy_port,
+      'proxy_user': proxy_user,
+      'proxy_pass': proxy_pass,
+  }
+
+
 def GetHttpProxyInfo():
   """Get ProxyInfo object or callable to be passed to httplib2.Http.
 
@@ -70,22 +98,14 @@ def GetHttpProxyInfo():
     object given the protocol (http, https)
   """
 
-  proxy_type_map = config.GetProxyTypeMap()
-  proxy_type = properties.VALUES.proxy.proxy_type.Get()
-  proxy_address = properties.VALUES.proxy.address.Get()
-  proxy_port = properties.VALUES.proxy.port.GetInt()
-  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
-  if proxy_prop_set > 0 and proxy_prop_set != 3:
-    raise properties.InvalidValueError(
-        'Please set all or none of the following properties: '
-        'proxy/type, proxy/address and proxy/port')
+  proxy_settings = GetProxyProperties()
 
-  if proxy_prop_set > 0:
+  if proxy_settings:
     return httplib2.ProxyInfo(
-        proxy_type_map[proxy_type],
-        proxy_address,
-        proxy_port,
-        proxy_user=properties.VALUES.proxy.username.Get(),
-        proxy_pass=properties.VALUES.proxy.password.Get())
+        proxy_settings['proxy_type'],
+        proxy_settings['proxy_address'],
+        proxy_settings['proxy_port'],
+        proxy_user=proxy_settings['proxy_user'],
+        proxy_pass=proxy_settings['proxy_pass'])
 
   return GetDefaultProxyInfo

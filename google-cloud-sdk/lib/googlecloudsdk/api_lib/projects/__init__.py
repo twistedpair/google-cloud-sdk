@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A helper library for this command group."""
+"""Projects API lib helper files."""

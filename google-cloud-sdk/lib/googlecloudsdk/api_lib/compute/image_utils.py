@@ -106,6 +106,7 @@ class ImageExpander(object):
     """
 
     image_ref = None
+    warn_alias = True
 
     if args.image:
       image_ref = self.resources.Parse(
@@ -120,6 +121,8 @@ class ImageExpander(object):
       if not image_ref.image.startswith(FAMILY_PREFIX):
         image_ref.image = FAMILY_PREFIX + image_ref.image
     else:
+      # TODO(b/29177598): Stop using an alias for the default image
+      warn_alias = False
       image_ref = self.resources.Parse(
           constants.DEFAULT_IMAGE,
           collection='compute.images',
@@ -153,6 +156,9 @@ class ImageExpander(object):
     # At this point, the image is an alias and now we have to find the
     # latest one among the public image project and the user's
     # project.
+
+    if warn_alias:
+      WarnAlias(alias)
 
     errors = []
     images = self.GetMatchingImages(image_ref.Name(), alias, errors)
@@ -220,35 +226,19 @@ def AddImageProjectFlag(parser):
       '--image-project',
       help='The project against which all image references will be resolved.')
   image_project.detailed_help = """\
-      The project against which all image references will be
+      The project against which all image and image family references will be
       resolved. See ``--image'' for more details.
       """
 
 
-def GetImageAliasTable(indent=0):
-  """Returns help text that explains the image aliases."""
-  # Note: The leading spaces are very important in this string. The
-  # final help text is dedented, so if the leading spaces are off, the
-  # help will not be generated properly.
-  table = ('\n' + indent * ' ').join(
-      ','.join([alias, project, image_name])
-      for alias, (project, image_name) in
-      sorted(constants.IMAGE_ALIASES.iteritems()))
-  return ('\n' + indent * ' ').join([
-      'The value for this option can be the name of an image or an',
-      'alias from the table below.\n',
-      '[options="header",format="csv",grid="none",frame="none"]',
-      '|========',
-      'Alias,Project,Image Name',
-      '{0}',
-      '|========\n',
-      'When the value is an alias, this tool will query the public',
-      'image project that contains the image type to find the',
-      'latest image matching the alias. The user\'s project is also',
-      'queried for an image with the same name as the alias. If a',
-      'conflict exists, the user will be prompted to resolve the',
-      'conflict.\n',
-      'To specify an image in another project for which there is no',
-      'alias, use `--image-project`. When `--image-project` is',
-      'present, no API calls are made to resolve the image. This',
-      'property is useful for scripts.']).format(table)
+def WarnAlias(alias):
+  """WarnAlias outputs a warning telling users to not use the given alias."""
+  msg = ('Image aliases are deprecated and will be removed in a future '
+         'version. ')
+  if alias.family is not None:
+    msg += ('Please use --image-family={family} and --image-project={project} '
+            'instead.').format(family=alias.family, project=alias.project)
+  else:
+    msg += 'Please use --image-family and --image-project instead.'
+
+  log.warn(msg)

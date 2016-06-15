@@ -596,6 +596,22 @@ class ExternalId(_messages.Message):
   sourceName = _messages.StringField(2)
 
 
+class GCE(_messages.Message):
+  """Describes a GCE resource that is being managed by a running pipeline.
+
+  Fields:
+    diskNames: The names of the disks that were created for this pipeline.
+    instanceName: The instance on which the operation is running.
+    machineType: The machine type of the instance.
+    zone: The availability zone in which the instance resides.
+  """
+
+  diskNames = _messages.StringField(1, repeated=True)
+  instanceName = _messages.StringField(2)
+  machineType = _messages.StringField(3)
+  zone = _messages.StringField(4)
+
+
 class GenomicsAnnotationsDeleteRequest(_messages.Message):
   """A GenomicsAnnotationsDeleteRequest object.
 
@@ -1504,6 +1520,7 @@ class OperationMetadata(_messages.Message):
       this will be in current version of the API. If the operation was started
       with v1beta2 API and a GetOperation is performed on v1 API, a v1 request
       will be returned.
+    RuntimeMetadataValue: Runtime metadata on this Operation.
 
   Fields:
     createTime: The time at which the job was submitted to the Genomics
@@ -1517,6 +1534,7 @@ class OperationMetadata(_messages.Message):
       will be in current version of the API. If the operation was started with
       v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
       be returned.
+    runtimeMetadata: Runtime metadata on this Operation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1547,11 +1565,38 @@ class OperationMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RuntimeMetadataValue(_messages.Message):
+    """Runtime metadata on this Operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RuntimeMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @ype with
+        type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a RuntimeMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
   events = _messages.MessageField('OperationEvent', 3, repeated=True)
   projectId = _messages.StringField(4)
   request = _messages.MessageField('RequestValue', 5)
+  runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 6)
 
 
 class Policy(_messages.Message):
@@ -2023,6 +2068,17 @@ class ReferenceSet(_messages.Message):
   referenceIds = _messages.StringField(6, repeated=True)
   sourceAccessions = _messages.StringField(7, repeated=True)
   sourceUri = _messages.StringField(8)
+
+
+class RuntimeMetadata(_messages.Message):
+  """Runtime metadata that will be populated in the runtimeMetadata field of
+  the Operation associated with a RunPipeline execution.
+
+  Fields:
+    gce: Execution information specific to Google Compute Engine.
+  """
+
+  gce = _messages.MessageField('GCE', 1)
 
 
 class SearchAnnotationSetsRequest(_messages.Message):

@@ -74,13 +74,12 @@ def HasApiParamDefaultValue(api_resources, resource_type, param):
   collection = GetApiCollection(resource_type)
   api = _GetApiNameFromCollection(collection)
   try:
-    api_resources.GetParamDefault(
+    return api_resources.GetParamDefault(
         api=api,
         collection=resource_type,
-        param=param)
+        param=param) is not None
   except properties.RequiredPropertyError:
     return False
-  return True
 
 
 def NormalizeGoogleStorageUri(uri):

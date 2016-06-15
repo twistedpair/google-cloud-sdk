@@ -643,14 +643,18 @@ class ArgumentInterceptor(object):
     # have the same dest and mutually exclusive group as the original flag.
     inverted_name = '--no-' + name[2:]
     # Explicit default=None yields the 'Use to disable.' text.
+    show_inverted = False
     if prop or (default in (True, None) and help_str != argparse.SUPPRESS):
       if prop:
+        if prop.default:
+          show_inverted = True
         inverted_help = (' Overrides the default *{0}* property value'
                          ' for this command invocation. Use *{1}* to'
                          ' disable.'.format(prop.name, inverted_name))
       elif default:
         inverted_help = ' Enabled by default, use *{0}* to disable.'.format(
             inverted_name)
+        show_inverted = True
       else:
         inverted_help = ' Use *{0}* to disable.'.format(inverted_name)
       # calliope.markdown.MarkdownGenerator._Details() checks and appends
@@ -668,7 +672,10 @@ class ArgumentInterceptor(object):
       kwargs['dest'] = dest
     kwargs['help'] = argparse.SUPPRESS
 
-    return self.parser.add_argument(inverted_name, **kwargs)
+    inverted_argument = self.parser.add_argument(inverted_name, **kwargs)
+    if show_inverted:
+      setattr(inverted_argument, 'show_inverted', show_inverted)
+    return inverted_argument
 
   def _ShouldInvertBooleanFlag(self, name, action):
     """Checks if flag name with action is a Boolean flag to invert.
@@ -717,9 +724,10 @@ class ArgumentInterceptor(object):
 
     if not list_command_path:
       list_command_path = completion_resource
-      # alpha and beta commands need to specify list_command_path
+      # alpha, beta, and preview commands need to specify list_command_path
       if (list_command_path.startswith('alpha') or
-          list_command_path.startswith('beta')):
+          list_command_path.startswith('beta') or
+          list_command_path.startswith('preview')):
         # if list_command_path not specified don't add the completer
         completion_resource = None
       else:
@@ -760,8 +768,9 @@ class CommandCommon(object):
         group with respect to the CLI itself.  This path should be used for
         things like error reporting when a specific element in the tree needs
         to be referenced.
-      release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
-        this command group is in.  This will apply to all commands under it.
+      release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
+        preview) that this command group is in.  This will apply to all commands
+        under it.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
       parser_group: argparse.Parser, The parser that this command or group will
         live in.

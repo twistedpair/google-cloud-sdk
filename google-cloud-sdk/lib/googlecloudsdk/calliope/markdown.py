@@ -298,10 +298,22 @@ class MarkdownGenerator(object):
           else:
             self._out(' [{msg}]'.format(msg=msg))
         else:
-          group = usage_text.FilterOutSuppressed(group)
-          group.sort(key=lambda f: f.option_strings)
-          msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
-                           for arg in group)
+          # Check if the inverted boolean name should be displayed.
+          inverted = None
+          if len(group) == 2:
+            for arg in group:
+              if getattr(arg, 'show_inverted', False):
+                inverted = arg
+                break
+          if inverted:
+            # The inverted arg replaces the boolean group which only contains
+            # the arg and inverted arg.
+            msg = usage_text.FlagDisplayString(inverted, markdown=True)
+          else:
+            group = usage_text.FilterOutSuppressed(group)
+            group.sort(key=lambda f: f.option_strings)
+            msg = ' | '.join(usage_text.FlagDisplayString(arg, markdown=True)
+                             for arg in group)
           if not msg:
             continue
           self._out(' [{msg}]'.format(msg=msg))
