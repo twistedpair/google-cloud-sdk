@@ -790,8 +790,30 @@ class MemcacheGetResponse_Item(ProtocolBuffer.ProtocolMessage):
 
 class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
 
+  # GetStatusCode values
+  HIT          =    1 
+  MISS         =    2 
+  TRUNCATED    =    3 
+  DEADLINE_EXCEEDED =    4 
+  UNREACHABLE  =    5 
+  OTHER_ERROR  =    6 
+
+  _GetStatusCode_NAMES = {
+    1: "HIT",
+    2: "MISS",
+    3: "TRUNCATED",
+    4: "DEADLINE_EXCEEDED",
+    5: "UNREACHABLE",
+    6: "OTHER_ERROR",
+  }
+
+  def GetStatusCode_Name(cls, x): return cls._GetStatusCode_NAMES.get(x, "")
+  GetStatusCode_Name = classmethod(GetStatusCode_Name)
+
+
   def __init__(self, contents=None):
     self.item_ = []
+    self.get_status_ = []
     if contents is not None: self.MergeFromString(contents)
 
   def item_size(self): return len(self.item_)
@@ -810,15 +832,34 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
 
   def clear_item(self):
     self.item_ = []
+  def get_status_size(self): return len(self.get_status_)
+  def get_status_list(self): return self.get_status_
+
+  def get_status(self, i):
+    return self.get_status_[i]
+
+  def set_get_status(self, i, x):
+    self.get_status_[i] = x
+
+  def add_get_status(self, x):
+    self.get_status_.append(x)
+
+  def clear_get_status(self):
+    self.get_status_ = []
+
 
   def MergeFrom(self, x):
     assert x is not self
     for i in xrange(x.item_size()): self.add_item().CopyFrom(x.item(i))
+    for i in xrange(x.get_status_size()): self.add_get_status(x.get_status(i))
 
   def Equals(self, x):
     if x is self: return 1
     if len(self.item_) != len(x.item_): return 0
     for e1, e2 in zip(self.item_, x.item_):
+      if e1 != e2: return 0
+    if len(self.get_status_) != len(x.get_status_): return 0
+    for e1, e2 in zip(self.get_status_, x.get_status_):
       if e1 != e2: return 0
     return 1
 
@@ -832,34 +873,48 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
     n = 0
     n += 2 * len(self.item_)
     for i in xrange(len(self.item_)): n += self.item_[i].ByteSize()
+    n += 1 * len(self.get_status_)
+    for i in xrange(len(self.get_status_)): n += self.lengthVarInt64(self.get_status_[i])
     return n
 
   def ByteSizePartial(self):
     n = 0
     n += 2 * len(self.item_)
     for i in xrange(len(self.item_)): n += self.item_[i].ByteSizePartial()
+    n += 1 * len(self.get_status_)
+    for i in xrange(len(self.get_status_)): n += self.lengthVarInt64(self.get_status_[i])
     return n
 
   def Clear(self):
     self.clear_item()
+    self.clear_get_status()
 
   def OutputUnchecked(self, out):
     for i in xrange(len(self.item_)):
       out.putVarInt32(11)
       self.item_[i].OutputUnchecked(out)
       out.putVarInt32(12)
+    for i in xrange(len(self.get_status_)):
+      out.putVarInt32(56)
+      out.putVarInt32(self.get_status_[i])
 
   def OutputPartial(self, out):
     for i in xrange(len(self.item_)):
       out.putVarInt32(11)
       self.item_[i].OutputPartial(out)
       out.putVarInt32(12)
+    for i in xrange(len(self.get_status_)):
+      out.putVarInt32(56)
+      out.putVarInt32(self.get_status_[i])
 
   def TryMerge(self, d):
     while d.avail() > 0:
       tt = d.getVarInt32()
       if tt == 11:
         self.add_item().TryMerge(d)
+        continue
+      if tt == 56:
+        self.add_get_status(d.getVarInt32())
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -877,6 +932,12 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
       res+=e.__str__(prefix + "  ", printElemNumber)
       res+=prefix+"}\n"
       cnt+=1
+    cnt=0
+    for e in self.get_status_:
+      elm=""
+      if printElemNumber: elm="(%d)" % cnt
+      res+=prefix+("get_status%s: %s\n" % (elm, self.DebugFormatInt32(e)))
+      cnt+=1
     return res
 
 
@@ -889,6 +950,7 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
   kItemflags = 4
   kItemcas_id = 5
   kItemexpires_in_seconds = 6
+  kget_status = 7
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -898,7 +960,8 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
     4: "flags",
     5: "cas_id",
     6: "expires_in_seconds",
-  }, 6)
+    7: "get_status",
+  }, 7)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -908,7 +971,8 @@ class MemcacheGetResponse(ProtocolBuffer.ProtocolMessage):
     4: ProtocolBuffer.Encoder.FLOAT,
     5: ProtocolBuffer.Encoder.DOUBLE,
     6: ProtocolBuffer.Encoder.NUMERIC,
-  }, 6, ProtocolBuffer.Encoder.MAX_TYPE)
+    7: ProtocolBuffer.Encoder.NUMERIC,
+  }, 7, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -1430,12 +1494,18 @@ class MemcacheSetResponse(ProtocolBuffer.ProtocolMessage):
   NOT_STORED   =    2 
   ERROR        =    3 
   EXISTS       =    4 
+  DEADLINE_EXCEEDED =    5 
+  UNREACHABLE  =    6 
+  OTHER_ERROR  =    7 
 
   _SetStatusCode_NAMES = {
     1: "STORED",
     2: "NOT_STORED",
     3: "ERROR",
     4: "EXISTS",
+    5: "DEADLINE_EXCEEDED",
+    6: "UNREACHABLE",
+    7: "OTHER_ERROR",
   }
 
   def SetStatusCode_Name(cls, x): return cls._SetStatusCode_NAMES.get(x, "")
@@ -1866,10 +1936,16 @@ class MemcacheDeleteResponse(ProtocolBuffer.ProtocolMessage):
   # DeleteStatusCode values
   DELETED      =    1 
   NOT_FOUND    =    2 
+  DEADLINE_EXCEEDED =    3 
+  UNREACHABLE  =    4 
+  OTHER_ERROR  =    5 
 
   _DeleteStatusCode_NAMES = {
     1: "DELETED",
     2: "NOT_FOUND",
+    3: "DEADLINE_EXCEEDED",
+    4: "UNREACHABLE",
+    5: "OTHER_ERROR",
   }
 
   def DeleteStatusCode_Name(cls, x): return cls._DeleteStatusCode_NAMES.get(x, "")
@@ -2321,11 +2397,17 @@ class MemcacheIncrementResponse(ProtocolBuffer.ProtocolMessage):
   OK           =    1 
   NOT_CHANGED  =    2 
   ERROR        =    3 
+  DEADLINE_EXCEEDED =    4 
+  UNREACHABLE  =    5 
+  OTHER_ERROR  =    6 
 
   _IncrementStatusCode_NAMES = {
     1: "OK",
     2: "NOT_CHANGED",
     3: "ERROR",
+    4: "DEADLINE_EXCEEDED",
+    5: "UNREACHABLE",
+    6: "OTHER_ERROR",
   }
 
   def IncrementStatusCode_Name(cls, x): return cls._IncrementStatusCode_NAMES.get(x, "")

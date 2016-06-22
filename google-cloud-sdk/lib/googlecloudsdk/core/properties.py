@@ -23,6 +23,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
+from googlecloudsdk.core.util import http_proxy_types
 
 
 # Try to parse the command line flags at import time to see if someone provided
@@ -840,7 +841,7 @@ class _SectionProxy(_Section):
         help_text='If your proxy requires authentication, the password to use '
         'when connecting.')
 
-    valid_proxy_types = sorted(config.GetProxyTypeMap().keys())
+    valid_proxy_types = sorted(http_proxy_types.GetProxyTypeMap().keys())
     def ProxyTypeValidator(proxy_type):
       if proxy_type is not None and proxy_type not in valid_proxy_types:
         raise InvalidValueError(

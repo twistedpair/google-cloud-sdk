@@ -266,7 +266,7 @@ class ServiceYamlInfo(_YamlInfo):
     return self.is_vm
 
   def _UpdateManagedVMConfig(self):
-    """Overwrites vm_settings for Managed VMs services.
+    """Overwrites vm_settings for App Engine Flexible services.
 
     Sets has_docker_image to be always True. Required for transition period
     until all images in production are pushed via gcloud (and therefore all
@@ -275,11 +275,12 @@ class ServiceYamlInfo(_YamlInfo):
     Also sets module_yaml_path which is needed for some runtimes.
 
     Raises:
-      AppConfigError: if the function was called for the service which is not a
-        Managed VM service.
+      AppConfigError: if the function was called for the service which is not an
+        App Engine Flexible service.
     """
     if not self.is_vm:
-      raise AppConfigError('This is not a Managed VM module. vm != True')
+      raise AppConfigError('This is not an App Engine Flexible service. '
+                           'The `vm` field is not set to `true`.')
     if not self.parsed.vm_settings:
       self.parsed.vm_settings = appinfo.VmSettings()
     self.parsed.vm_settings['has_docker_image'] = True

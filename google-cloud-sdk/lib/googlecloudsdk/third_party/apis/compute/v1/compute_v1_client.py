@@ -5299,6 +5299,18 @@ For more information, see Deleting snaphots.
               response_type_name=u'Operation',
               supports_download=False,
           ),
+          'InvalidateCache': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.urlMaps.invalidateCache',
+              ordered_params=[u'project', u'urlMap'],
+              path_params=[u'project', u'urlMap'],
+              query_params=[],
+              relative_path=u'projects/{project}/global/urlMaps/{urlMap}/invalidateCache',
+              request_field=u'cacheInvalidationRule',
+              request_type_name=u'ComputeUrlMapsInvalidateCacheRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'compute.urlMaps.list',
@@ -5388,6 +5400,19 @@ For more information, see Deleting snaphots.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def InvalidateCache(self, request, global_params=None):
+      """Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
+
+      Args:
+        request: (ComputeUrlMapsInvalidateCacheRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InvalidateCache')
       return self._RunMethod(
           config, request, global_params=global_params)
 

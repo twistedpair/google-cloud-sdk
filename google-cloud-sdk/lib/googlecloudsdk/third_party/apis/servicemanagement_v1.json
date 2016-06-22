@@ -1495,7 +1495,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The monitored resource type. For example, the type\n`\"cloudsql_database\"` represents databases in Google Cloud SQL.",
+          "description": "Required. The monitored resource type. For example, the type\n`\"cloudsql_database\"` represents databases in Google Cloud SQL.\nThe maximum length of this value is 256 characters.",
           "type": "string"
         },
         "displayName": {
@@ -2140,10 +2140,6 @@
         "key": {
           "description": "The key used to identify this limit when applying overrides.\nThe consumer_overrides and producer_overrides maps are keyed\nby strings of the form \"QuotaGroupName\/QuotaLimitName\".",
           "type": "string"
-        },
-        "consumerOverrideAllowed": {
-          "description": "Whether a consumer override is allowed.",
-          "type": "boolean"
         },
         "maxConsumerOverrideAllowed": {
           "description": "The maximum override value that a consumer may specify.",
@@ -3043,7 +3039,7 @@
               "path": "v1/services/{serviceName}/configs:submit",
               "flatPath": "v1/services/{serviceName}/configs:submit",
               "httpMethod": "POST",
-              "description": "Creates a new service config (version) for a managed service based on\nuser-supplied configuration sources files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service config. It does NOT apply the service config to any\nbackend services.\n",
+              "description": "Creates a new service config (version) for a managed service based on\nuser-supplied configuration sources files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service config. It does NOT apply the service config to any\nbackend services.\n\nOperation<response: SubmitConfigSourceResponse>\n",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3059,7 +3055,7 @@
                 "$ref": "SubmitConfigSourceRequest"
               },
               "response": {
-                "$ref": "Service"
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",

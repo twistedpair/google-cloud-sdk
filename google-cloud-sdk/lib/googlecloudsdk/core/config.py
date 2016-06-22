@@ -271,6 +271,7 @@ $env:CLOUDSDK_PYTHON_ARGS = $cloudsdk_python_args
 # </cloud-sdk-ps1-preamble>
 """
 
+
 class InstallationConfig(object):
   """Loads configuration constants from the core config file.
 
@@ -675,12 +676,3 @@ class Paths(object):
       str, The path to the GCE cache.
     """
     return os.path.join(self.global_config_dir, 'gce')
-
-
-def GetProxyTypeMap():
-  # pylint:disable=g-import-not-at-top, We only want to import this if needed.
-  from httplib2 import socks
-  return {'socks4': socks.PROXY_TYPE_SOCKS4,
-          'socks5': socks.PROXY_TYPE_SOCKS5,
-          'http': socks.PROXY_TYPE_HTTP,
-          'http_no_tunnel': socks.PROXY_TYPE_HTTP_NO_TUNNEL}

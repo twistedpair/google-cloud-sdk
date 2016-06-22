@@ -55,14 +55,6 @@ IMAGE_ALIASES = {
         project='coreos-cloud',
         name_prefix='coreos-stable',
         family='coreos-stable'),
-    'debian-7': ImageAlias(
-        project='debian-cloud',
-        name_prefix='debian-7-wheezy',
-        family='debian-7'),
-    'debian-7-backports': ImageAlias(
-        project='debian-cloud',
-        name_prefix='backports-debian-7-wheezy',
-        family='debian-7-backports'),
     'debian-8': ImageAlias(
         project='debian-cloud',
         name_prefix='debian-8-jessie',

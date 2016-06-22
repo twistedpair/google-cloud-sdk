@@ -55,7 +55,8 @@ class EndCondition(_messages.Message):
 
 
 class ListConfigsResponse(_messages.Message):
-  """A ListConfigsResponse object.
+  """`ListConfigs()` returns the following response. The order of returned
+  objects is arbitrary; that is, it is not ordered in any particular way.
 
   Fields:
     configs: A list of the configurations in the project. The order of
@@ -73,7 +74,7 @@ class ListConfigsResponse(_messages.Message):
 
 
 class ListVariablesResponse(_messages.Message):
-  """A ListVariablesResponse object.
+  """Response for the `ListVariables()` method.
 
   Fields:
     nextPageToken: This token allows you to get the next page of results for

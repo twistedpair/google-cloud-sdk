@@ -309,7 +309,7 @@ class CLILoader(object):
           cmd_or_grp_info = self.__GetCommandOrGroupInfo(
               module_dir_path=module_dir_path,
               name=cmd_or_grp_name,
-              release_track=(parent_group.ReleaseTrack(for_help=False)
+              release_track=(parent_group.ReleaseTrack()
                              if parent_group else None),
               allow_non_existing_modules=self.__allow_non_existing_modules,
               exception_if_present=exception_if_present)

@@ -264,6 +264,20 @@ class AppengineApiClient(object):
 
     return services
 
+  def GetVersionResource(self, service, version):
+    """Describe the given version of the given service.
+
+    Args:
+      service: str, the ID of the service for the version to describe
+      version: str, the ID of the version to describe
+
+    Returns:
+      Version resource object from the API
+    """
+    request = self.messages.AppengineAppsModulesVersionsGetRequest(
+        name=self._FormatVersion(self.project, service, version))
+    return requests.MakeRequest(self.client.apps_modules_versions.Get, request)
+
   def ListVersions(self, services):
     """Lists all versions for the specified services.
 

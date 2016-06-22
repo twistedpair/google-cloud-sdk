@@ -289,17 +289,20 @@ class Debugger(DebugObject):
     latest_debuggees = _FilterStaleMinorVersions(all_debuggees)
 
     # Find all debuggees specified by ID, plus all debuggees which are the
-    # latest minor version when specified by name pattern. The sets should be
+    # latest minor version when specified by name. The sets should be
     # disjoint, but ensure that there are no duplicates, since the list will
     # tend to be very small and it is cheap to handle that case.
-    match_re = re.compile(pattern)
-    debuggees = list(set(
+    debuggees = set(
         [d for d in all_debuggees if d.target_id == pattern] +
-        [d for d in latest_debuggees if match_re.search(d.name)]))
+        [d for d in latest_debuggees if pattern == d.name])
     if not debuggees:
-      # Try matching on description.
-      debuggees = [d for d in latest_debuggees
-                   if d.description and match_re.search(d.description)]
+      # Try matching as an RE on name or description. Name and description
+      # share common substrings, so filter out duplicates.
+      match_re = re.compile(pattern)
+      debuggees = set(
+          [d for d in latest_debuggees if match_re.search(d.name)] +
+          [d for d in latest_debuggees
+           if d.description and match_re.search(d.description)])
 
     if not debuggees:
       raise errors.NoDebuggeeError(pattern, debuggees=all_debuggees)
@@ -307,7 +310,7 @@ class Debugger(DebugObject):
       raise errors.MultipleDebuggeesError(pattern, debuggees)
 
     # Just one possible target
-    return debuggees[0]
+    return list(debuggees)[0]
 
   def RegisterDebuggee(self, description, uniquifier, agent_version=None):
     """Register a debuggee with the Cloud Debugger.
@@ -626,23 +629,53 @@ class Debuggee(DebugObject):
       return self._debug_client.debugger_debuggees_breakpoints.Get(request)
 
   @errors.HandleHttpError
+  def WaitForBreakpointSet(self, breakpoint_id, original_location, timeout=None,
+                           retry_ms=500):
+    """Waits for a breakpoint to be set by at least one agent.
+
+      Breakpoint set can be detected in two ways: it can be completed, or the
+      location may change if the breakpoint could not be set at the specified
+      location. A breakpoint may also be set without any change being reported
+      to the server, in which case this function will wait until the timeout
+      is reached.
+    Args:
+      breakpoint_id: A breakpoint ID.
+      original_location: string, the user-specified breakpoint location. If a
+        response has a different location, the function will return immediately.
+      timeout: The number of seconds to wait for completion.
+      retry_ms: Milliseconds to wait betweeen retries.
+    Returns:
+      The Breakpoint message, or None if the breakpoint did not get set before
+      the timeout.
+    """
+    def MovedOrFinal(r):
+      return (
+          r.breakpoint.isFinalState or
+          (original_location and
+           original_location != _FormatLocation(r.breakpoint.location)))
+    return self.WaitForBreakpoint(
+        breakpoint_id=breakpoint_id, timeout=timeout, retry_ms=retry_ms,
+        completion_test=MovedOrFinal)
+
+  @errors.HandleHttpError
   def WaitForBreakpoint(self, breakpoint_id, timeout=None, retry_ms=500,
-                        should_retry_if=None):
+                        completion_test=None):
     """Waits for a breakpoint to be completed.
 
     Args:
       breakpoint_id: A breakpoint ID.
       timeout: The number of seconds to wait for completion.
       retry_ms: Milliseconds to wait betweeen retries.
-      should_retry_if: A function that accepts a Breakpoint message and returns
-        True if the breakpoint wait is not finished. If not specified, defaults
-        to a function which just checks the isFinalState flag.
+      completion_test: A function that accepts a Breakpoint message and
+        returns True if the breakpoint wait is not finished. If not specified,
+        defaults to a function which just checks the isFinalState flag.
     Returns:
       The Breakpoint message, or None if the breakpoint did not complete before
       the timeout,
     """
-    if not should_retry_if:
-      should_retry_if = lambda r, _: not r.breakpoint.isFinalState
+    if not completion_test:
+      completion_test = lambda r: r.breakpoint.isFinalState
+    retry_if = lambda r, _: not completion_test(r)
     retryer = retry.Retryer(
         max_wait_ms=1000*timeout if timeout is not None else None,
         wait_ceiling_ms=1000)
@@ -652,12 +685,13 @@ class Debuggee(DebugObject):
                    clientVersion=self.CLIENT_VERSION))
     try:
       result = retryer.RetryOnResult(self._CallGet, [request],
-                                     should_retry_if=should_retry_if,
+                                     should_retry_if=retry_if,
                                      sleep_ms=retry_ms)
     except retry.RetryException:
       # Timeout before the beakpoint was finalized.
       return None
-    if not result.breakpoint.isFinalState:
+    if not completion_test(result):
+      # Termination condition was not met
       return None
     return self.AddTargetInfo(result.breakpoint)
 
@@ -708,8 +742,7 @@ class Debuggee(DebugObject):
 
     # Reformat a few fields for readability
     if message.location:
-      result['location'] = '{0}:{1}'.format(message.location.path,
-                                            message.location.line)
+      result['location'] = _FormatLocation(message.location)
     if message.logMessageFormat:
       result['logMessageFormat'] = MergeLogExpressions(message.logMessageFormat,
                                                        message.expressions)
@@ -781,17 +814,17 @@ class _BreakpointWaiter(object):
     self._wait_all = wait_all
     self._timeout = timeout
 
-  def _ShouldRetry(self, response, _):
+  def _IsComplete(self, response):
     if response.breakpoint.isFinalState:
-      return False
+      return True
     with self._result_lock:
-      return not self._done
+      return self._done
 
   def _WaitForOne(self, debuggee, breakpoint_id):
     try:
       breakpoint = debuggee.WaitForBreakpoint(
           breakpoint_id, timeout=self._timeout,
-          should_retry_if=self._ShouldRetry)
+          completion_test=self._IsComplete)
       if not breakpoint:
         # Breakpoint never completed (i.e. timeout)
         with self._result_lock:
@@ -824,6 +857,12 @@ class _BreakpointWaiter(object):
     return self._results
 
 
+def _FormatLocation(location):
+  if not location:
+    return None
+  return '{0}:{1}'.format(location.path, location.line)
+
+
 def _BreakpointMatchesIdOrRegexp(breakpoint, ids, patterns):
   """Check if a breakpoint matches any of the given IDs or regexps.
 
@@ -839,8 +878,7 @@ def _BreakpointMatchesIdOrRegexp(breakpoint, ids, patterns):
     return True
   if not breakpoint.location:
     return False
-  location = '{0}:{1}'.format(breakpoint.location.path,
-                              breakpoint.location.line)
+  location = _FormatLocation(breakpoint.location)
   for p in patterns:
     if p.match(location):
       return True

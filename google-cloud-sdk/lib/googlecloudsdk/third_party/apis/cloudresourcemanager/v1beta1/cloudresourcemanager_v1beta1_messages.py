@@ -53,29 +53,30 @@ class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
+    organizationsId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being requested. `resource` is usually specified as a path,
+      such as `projects/*project*/zones/*zone*/disks/*disk*`.  The format for
+      the path specified in this value is resource specific and is specified
+      in the `getIamPolicy` documentation.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
+  organizationsId = _messages.StringField(2, required=True)
 
 
 class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
   """A CloudresourcemanagerOrganizationsGetRequest object.
 
   Fields:
-    name: The resource name of the Organization to fetch. Its format is
-      "organizations/[organization_id]". For example, "organizations/1234".
-      Warning: Support for this field is not yet implemented.
-    organizationId: The id of the Organization resource to fetch.
+    organizationId: The id of the Organization resource to fetch. This field
+      is deprecated and will be removed in v1. Use name instead.
+    organizationsId: Part of `name`. The resource name of the Organization to
+      fetch. Its format is "organizations/[organization_id]". For example,
+      "organizations/1234".
   """
 
-  name = _messages.StringField(1)
-  organizationId = _messages.StringField(2, required=True)
+  organizationId = _messages.StringField(1)
+  organizationsId = _messages.StringField(2, required=True)
 
 
 class CloudresourcemanagerOrganizationsListRequest(_messages.Message):
@@ -107,16 +108,16 @@ class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
   """A CloudresourcemanagerOrganizationsSetIamPolicyRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
+    organizationsId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being specified. `resource` is usually specified as a path,
+      such as `projects/*project*/zones/*zone*/disks/*disk*`.  The format for
+      the path specified in this value is resource specific and is specified
+      in the `setIamPolicy` documentation.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
 
-  resource = _messages.StringField(1, required=True)
+  organizationsId = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
@@ -124,17 +125,32 @@ class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Messa
   """A CloudresourcemanagerOrganizationsTestIamPermissionsRequest object.
 
   Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation.
+    organizationsId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path, such as `projects/*project*/zones/*zone*/disks/*disk*`.  The
+      format for the path specified in this value is resource specific and is
+      specified in the `testIamPermissions` documentation.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
+  organizationsId = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class CloudresourcemanagerOrganizationsUpdateRequest(_messages.Message):
+  """A CloudresourcemanagerOrganizationsUpdateRequest object.
+
+  Fields:
+    organization: A Organization resource to be passed as the request body.
+    organizationsId: Part of `name`. Output Only. The resource name of the
+      organization. This is the organization's relative path in the API. Its
+      format is "organizations/[organization_id]". For example,
+      "organizations/1234".
+  """
+
+  organization = _messages.MessageField('Organization', 1)
+  organizationsId = _messages.StringField(2, required=True)
 
 
 class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
@@ -351,10 +367,10 @@ class Organization(_messages.Message):
     name: Output Only. The resource name of the organization. This is the
       organization's relative path in the API. Its format is
       "organizations/[organization_id]". For example, "organizations/1234".
-      Warning: Support for this field is not yet implemented.
     organizationId: An immutable id for the Organization that is assigned on
       creation. This should be omitted when creating a new Organization. This
-      field is read-only.
+      field is read-only. This field is deprecated and will be removed in v1.
+      Use name instead.
     owner: The owner of this Organization. The owner should be specified on
       creation. Once set, it cannot be changed. This field is required.
   """
@@ -463,7 +479,7 @@ class Project(_messages.Message):
       characters being disallowed.  Example: <code>"environment" :
       "dev"</code>  Read-write.
     lifecycleState: The Project lifecycle state.  Read-only.
-    name: The user-assigned name of the Project. It must be 4 to 30
+    name: The user-assigned display name of the Project. It must be 4 to 30
       characters. Allowed characters are: lowercase and uppercase letters,
       numbers, hyphen, single-quote, double-quote, space, and exclamation
       point.  Example: <code>My Project</code>  Read-write.
@@ -547,7 +563,7 @@ class ResourceId(_messages.Message):
     id: Required field for the type-specific id. This should correspond to the
       id used in the type-specific API's.
     type: Required field representing the resource type this id is for. At
-      present, the only valid type is "organization".
+      present, the valid types are "project" and "organization".
   """
 
   id = _messages.StringField(1)

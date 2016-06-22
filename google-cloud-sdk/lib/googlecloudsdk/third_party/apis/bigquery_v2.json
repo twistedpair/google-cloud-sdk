@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20160607",
+ "revision": "20160615",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -26,11 +26,9 @@
    "description": "Data format for the response.",
    "default": "json",
    "enum": [
-    "csv",
     "json"
    ],
    "enumDescriptions": [
-    "Responses with Content-Type of text/csv",
     "Responses with Content-Type of application/json"
    ],
    "location": "query"

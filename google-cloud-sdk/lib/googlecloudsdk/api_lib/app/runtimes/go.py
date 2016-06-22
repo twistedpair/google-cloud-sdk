@@ -96,7 +96,7 @@ class GoConfigurator(ext_runtime.Configurator):
           f.write(DOCKERFILE)
         cleaner.Add(dockerfile)
 
-      # Generate .dockerignore TODO(user): eventually this file will just be
+      # Generate .dockerignore TODO(mmuller): eventually this file will just be
       # copied verbatim.
       dockerignore = os.path.join(self.root, '.dockerignore')
       if not os.path.exists(dockerignore):

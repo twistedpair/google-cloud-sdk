@@ -18,13 +18,13 @@ import json
 import sys
 import tempfile
 
-from googlecloudsdk.api_lib.genomics.exceptions import GenomicsError
-from googlecloudsdk.api_lib.genomics.exceptions import GenomicsInputFileError
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.genomics import exceptions as genomics_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.util import files
 from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
 from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
@@ -43,13 +43,13 @@ def ValidateLimitFlag(limit, flag_name='limit'):
     limit: the limit flag value to sanitize.
     flag_name: the name of the limit flag - defaults to limit
   Raises:
-    GenomicsError: if the provided limit flag value is negative
+    genomics_exceptions.GenomicsError: The provided limit flag value is negative
   """
   if limit is None:
     return
 
   if limit < 0:
-    raise GenomicsError(
+    raise genomics_exceptions.GenomicsError(
         '--{0} must be a non-negative integer; received: {1}'
         .format(flag_name, limit))
 
@@ -135,7 +135,7 @@ def ReraiseHttpExceptionPager(pager, rewrite_fn=None):
     if rewrite_fn:
       msg = rewrite_fn(msg)
     unused_type, unused_value, traceback = sys.exc_info()
-    raise exceptions.HttpException, msg, traceback
+    raise calliope_exceptions.HttpException, msg, traceback
 
 
 def ReraiseHttpException(foo):
@@ -145,7 +145,7 @@ def ReraiseHttpException(foo):
     except apitools_exceptions.HttpError as error:
       msg = GetErrorMessage(error)
       unused_type, unused_value, traceback = sys.exc_info()
-      raise exceptions.HttpException, msg, traceback
+      raise calliope_exceptions.HttpException, msg, traceback
   return Func
 
 
@@ -188,13 +188,13 @@ def GetFileAsMessage(path, message, client):
   Returns:
     Object of type message, if successful.
   Raises:
-    GenomicsInputFileError
+    files.Error, genomics_exceptions.GenomicsInputFileError
   """
   if path.startswith(GCS_PREFIX):
     # Download remote file to a local temp file
     tf = tempfile.NamedTemporaryFile(delete=False)
     tf.close()
-    print tf.name
+
     bucket, obj = _SplitBucketAndObject(path)
     storage_messages = core_apis.GetMessagesModule('storage', 'v1')
     get_request = storage_messages.StorageObjectsGetRequest(
@@ -204,21 +204,15 @@ def GetFileAsMessage(path, message, client):
       client.objects.Get(get_request, download=download)
       del download  # Explicitly close the stream so the results are there
     except apitools_exceptions.HttpError as e:
-      raise GenomicsInputFileError(
+      raise genomics_exceptions.GenomicsInputFileError(
           'Unable to read remote file [{0}] due to [{1}]'.format(path, str(e)))
     path = tf.name
 
   # Read the file.
-  in_text = ''
-  try:
-    with open(path) as in_file:
-      in_text = in_file.read()
-  except EnvironmentError:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise GenomicsInputFileError('Unable to read file [{0}]'.format(path))
+  in_text = files.GetFileContents(path)
   if not in_text:
-    raise GenomicsInputFileError('Empty file [{0}]'.format(path))
+    raise genomics_exceptions.GenomicsInputFileError(
+        'Empty file [{0}]'.format(path))
 
   # Parse it, first trying YAML then JSON.
   try:
@@ -229,7 +223,7 @@ def GetFileAsMessage(path, message, client):
     except (ValueError, DecodeError) as e:
       # ValueError is raised when JSON is badly formatted
       # DecodeError is raised when a tag is badly formatted (not Base64)
-      raise GenomicsInputFileError(
+      raise genomics_exceptions.GenomicsInputFileError(
           'Pipeline file [{0}] is not properly formatted YAML or JSON '
           'due to [{1}]'.format(path, str(e)))
   return result
@@ -250,7 +244,7 @@ def _SplitBucketAndObject(gcs_path):
   """Split a GCS path into bucket & object tokens, or raise BadFileException."""
   tokens = gcs_path[len(GCS_PREFIX):].strip('/').split('/', 1)
   if len(tokens) != 2:
-    raise exceptions.BadFileException(
+    raise calliope_exceptions.BadFileException(
         '[{0}] is not a valid Google Cloud Storage path'.format(gcs_path))
   return tokens
 

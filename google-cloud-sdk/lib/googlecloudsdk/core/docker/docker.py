@@ -40,13 +40,22 @@ _DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
 _CREDENTIAL_STORE_KEY = 'credsStore'
 
 
-def _GetDockerHomePath():
+def _GetUserHomeDir():
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
     # %HOME% has precedence over %USERPROFILE% for os.path.expanduser('~')
     # The Docker config resides under %USERPROFILE% on Windows
     return os.path.expandvars('%USERPROFILE%')
   else:
     return platforms.GetHomePath()
+
+
+def _GetNewConfigDirectory():
+  # Return the value of $DOCKER_CONFIG, if it exists, otherwise ~/.docker
+  # see https://github.com/docker/docker/blob/master/cliconfig/config.go
+  if os.environ.get('DOCKER_CONFIG') is not None:
+    return os.environ.get('DOCKER_CONFIG')
+  else:
+    return os.path.join(_GetUserHomeDir(), '.docker')
 
 
 class DockerError(exceptions.Error):
@@ -86,10 +95,14 @@ def GetDockerConfig(force_new=False):
   # This is a problem when a user has logged into another registry on 1.7.0
   # and then uses 'gcloud docker'.
   # This must remain compatible with: https://github.com/docker/docker-py
-  new_path = os.path.join(_GetDockerHomePath(), '.docker', 'config.json')
-  old_path = os.path.join(_GetDockerHomePath(), '.dockercfg')
+  new_path = os.path.join(_GetNewConfigDirectory(), 'config.json')
   if os.path.exists(new_path) or force_new:
     return new_path, True
+
+  # Only one location will be probed to locate the new config.
+  # This is consistent with the Docker client's behavior:
+  # https://github.com/docker/docker/blob/master/cliconfig/config.go#L83
+  old_path = os.path.join(_GetUserHomeDir(), '.dockercfg')
   return old_path, False
 
 

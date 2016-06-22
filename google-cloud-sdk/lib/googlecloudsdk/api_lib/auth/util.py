@@ -20,6 +20,7 @@ from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from oauth2client import client
 from oauth2client import clientsecrets
@@ -94,7 +95,7 @@ def DoInstalledAppBrowserFlow(client_id_file, scopes, launch_browser):
     raise
 
 
-# TODO(user) make this information accessible through oauth2client
+# TODO(b/29157057) make this information accessible through oauth2client
 # instead of duplicating internal code from clientsecrets
 def GetClientSecretsType(client_id_file):
   """Get the type of the client secrets file (web or installed)."""
@@ -119,7 +120,7 @@ def GetClientSecretsType(client_id_file):
   return tuple(obj)[0]
 
 
-# TODO(user) refactor so that access to private functions in
+# TODO(b/29157057) refactor so that access to private functions in
 # oauth2client is not necessary
 def RevokeCredsInWellKnownFile(brief):
   """Revoke the credentials in ADC's well-known file."""
@@ -161,3 +162,12 @@ def RevokeCredsInWellKnownFile(brief):
 def AdcEnvVariableIsSet():
   adc_filename = os.environ.get(client.GOOGLE_APPLICATION_CREDENTIALS, None)
   return adc_filename is not None
+
+
+# TODO(b/29157057) refactor so that access to private functions in
+# oauth2client is not necessary
+def CreateWellKnownFileDir():
+  """Create the directory for ADC's well-known file."""
+  # pylint:disable=protected-access, refactor as per TODO above
+  credentials_filename = client._get_well_known_file()
+  files.MakeDir(os.path.dirname(credentials_filename))

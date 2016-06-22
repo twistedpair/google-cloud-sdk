@@ -21,6 +21,18 @@ class Empty(_messages.Message):
 
 
 
+class GetLogsUsageResponse(_messages.Message):
+  """A GetLogsUsageResponse object.
+
+  Fields:
+    usage: A collection of ranges that describes logs usage and allowed quota
+      over requested time period. Ranges are aligned to the full hour, and are
+      guaranteed to be contiguous.
+  """
+
+  usage = _messages.MessageField('Usage', 1, repeated=True)
+
+
 class HttpRequest(_messages.Message):
   """A common proto for logging HTTP requests.
 
@@ -333,7 +345,7 @@ class LogEntry(_messages.Message):
       field, the logging service considers other log entries in the same log
       with the same ID as duplicates which can be removed.  If omitted,
       Stackdriver Logging will generate a unique ID for this log entry.
-    internalId: Internal id of the owner of this log entry.
+    internalId: A InternalEntityId attribute.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -349,7 +361,6 @@ class LogEntry(_messages.Message):
       URL-encoded.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
-    projectNumber: A string attribute.
     protoPayload: The log entry payload, represented as a protocol buffer.
       Some Google Cloud Platform services use this field for their log entry
       payloads.
@@ -478,13 +489,12 @@ class LogEntry(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   logName = _messages.StringField(6)
   operation = _messages.MessageField('LogEntryOperation', 7)
-  projectNumber = _messages.IntegerField(8)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 9)
-  resource = _messages.MessageField('MonitoredResource', 10)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
-  textPayload = _messages.StringField(12)
-  timestamp = _messages.StringField(13)
-  writerEmailAddress = _messages.StringField(14)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
+  resource = _messages.MessageField('MonitoredResource', 9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  textPayload = _messages.StringField(11)
+  timestamp = _messages.StringField(12)
+  writerEmailAddress = _messages.StringField(13)
 
 
 class LogEntryOperation(_messages.Message):
@@ -584,12 +594,12 @@ class LogMetric(_messages.Message):
     filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
       Example: `"logName:syslog AND severity>=ERROR"`.
     name: Required. The client-assigned metric identifier. Example:
-      `"severe_errors"`.  Metric identifiers are limited to 1000 characters
-      and can include only the following characters: `A-Z`, `a-z`, `0-9`, and
-      the special characters `_-.,+!*',()%/`.  The forward-slash character
-      (`/`) denotes a hierarchy of name pieces, and it cannot be the first
-      character of the name.  The '%' character is used to URL encode unsafe
-      and reserved characters and must be followed by two hexadecimal digits
+      `"severe_errors"`.  Metric identifiers are limited to 100 characters and
+      can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
+      special characters `_-.,+!*',()%/`.  The forward-slash character (`/`)
+      denotes a hierarchy of name pieces, and it cannot be the first character
+      of the name.  The '%' character is used to URL encode unsafe and
+      reserved characters and must be followed by two hexadecimal digits
       according to RFC 1738.
     version: The API version that created or updated this metric.
   """
@@ -635,7 +645,8 @@ class LogSink(_messages.Message):
     name: Required. The client-assigned sink identifier. Example: `"my-severe-
       errors-to-pubsub"`. Sink identifiers are limited to 1000 characters and
       can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
-      special characters `_-.`.
+      special characters `_-.`. The maximum length of this value is 100
+      characters.
     outputVersionFormat: The log entry version to use for this sink's exported
       log entries. This version does not have to correspond to the version of
       the log entry when it was written to Stackdriver Logging.
@@ -662,6 +673,44 @@ class LogSink(_messages.Message):
   formatChange = _messages.StringField(4)
   name = _messages.StringField(5)
   outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
+
+
+class LoggingGetLogsUsageRequest(_messages.Message):
+  """A LoggingGetLogsUsageRequest object.
+
+  Enums:
+    ResourceTierValueValuesEnum: Required. The Stackdriver tier to retrieve
+      logs usage for.
+
+  Fields:
+    endTime: Optional. Exclusive. Retrieve logs usage before this timestamp.
+      The request time period cannot be less than an hour, as that's the
+      minimum data granularity we provide. If not provided, current time will
+      be used as end_time.
+    resourceName: Required. Resource to retrieve logs usage for. Examples are
+      "projects/my-project-id", "organizations/google",
+      "billingaccounts/ABC1234"
+    resourceTier: Required. The Stackdriver tier to retrieve logs usage for.
+    startTime: Required. Inclusive. Retrieve logs usage at or after this
+      timestamp.
+  """
+
+  class ResourceTierValueValuesEnum(_messages.Enum):
+    """Required. The Stackdriver tier to retrieve logs usage for.
+
+    Values:
+      TIER_UNSPECIFIED: <no description>
+      FREE: <no description>
+      PREMIUM: <no description>
+    """
+    TIER_UNSPECIFIED = 0
+    FREE = 1
+    PREMIUM = 2
+
+  endTime = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+  resourceTier = _messages.EnumField('ResourceTierValueValuesEnum', 3)
+  startTime = _messages.StringField(4)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -954,7 +1003,7 @@ class MonitoredResource(_messages.Message):
   particular Compute Engine VM instance could be represented by the following
   object, because the MonitoredResourceDescriptor for `"gce_instance"` has
   labels `"instance_id"` and `"zone"`:      { "type": "gce_instance",
-  "labels": { "instance_id": "my-instance",                   "zone": "us-
+  "labels": { "instance_id": "12345678901234",                   "zone": "us-
   central1-a" }}
 
   Messages:
@@ -1027,7 +1076,8 @@ class MonitoredResourceDescriptor(_messages.Message):
       type.  APIs that do not use project information can use the resource
       name format `"monitoredResourceDescriptors/{type}"`.
     type: Required. The monitored resource type. For example, the type
-      `"cloudsql_database"` represents databases in Google Cloud SQL.
+      `"cloudsql_database"` represents databases in Google Cloud SQL. The
+      maximum length of this value is 256 characters.
   """
 
   description = _messages.StringField(1)
@@ -1387,6 +1437,23 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Usage(_messages.Message):
+  """A Usage object.
+
+  Fields:
+    byteCount: The volume of ingested logs, in bytes.
+    byteQuota: The allowed free quota, also in bytes. Note that the quota for
+      Free Tier is monthly, while for Premium Tier, it's calculated hourly.
+    endTime: Exclusive. End time of the usage interval.
+    startTime: Inclusive. Start time of the usage interval.
+  """
+
+  byteCount = _messages.IntegerField(1)
+  byteQuota = _messages.IntegerField(2)
+  endTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class WriteLogEntriesRequest(_messages.Message):

@@ -124,7 +124,7 @@
   "schemas": {
     "ListConfigsResponse": {
       "id": "ListConfigsResponse",
-
+      "description": "`ListConfigs()` returns the following response. The order of returned\nobjects is arbitrary; that is, it is not ordered in any particular way.",
       "type": "object",
       "properties": {
         "configs": {
@@ -164,7 +164,7 @@
     },
     "ListVariablesResponse": {
       "id": "ListVariablesResponse",
-
+      "description": "Response for the `ListVariables()` method.",
       "type": "object",
       "properties": {
         "variables": {

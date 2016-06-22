@@ -125,6 +125,9 @@
         },
         "https://www.googleapis.com/auth/logging.write": {
           "description": "Submit log data for your projects"
+        },
+        "https://www.googleapis.com/auth/monitoring": {
+          "description": "View and write monitoring data for all of your Google and third-party Cloud and API projects"
         }
       }
     }
@@ -172,7 +175,7 @@
     },
     "MonitoredResource": {
       "id": "MonitoredResource",
-      "description": "An object representing a resource that can be used for monitoring, logging,\nbilling, or other purposes. Examples include virtual machine instances,\ndatabases, and storage devices such as disks. The `type` field identifies a\nMonitoredResourceDescriptor object that describes the resource's\nschema. Information in the `labels` field identifies the actual resource and\nits attributes according to the schema. For example, a particular Compute\nEngine VM instance could be represented by the following object, because the\nMonitoredResourceDescriptor for `\"gce_instance\"` has labels\n`\"instance_id\"` and `\"zone\"`:\n\n    { \"type\": \"gce_instance\",\n      \"labels\": { \"instance_id\": \"my-instance\",\n                  \"zone\": \"us-central1-a\" }}",
+      "description": "An object representing a resource that can be used for monitoring, logging,\nbilling, or other purposes. Examples include virtual machine instances,\ndatabases, and storage devices such as disks. The `type` field identifies a\nMonitoredResourceDescriptor object that describes the resource's\nschema. Information in the `labels` field identifies the actual resource and\nits attributes according to the schema. For example, a particular Compute\nEngine VM instance could be represented by the following object, because the\nMonitoredResourceDescriptor for `\"gce_instance\"` has labels\n`\"instance_id\"` and `\"zone\"`:\n\n    { \"type\": \"gce_instance\",\n      \"labels\": { \"instance_id\": \"12345678901234\",\n                  \"zone\": \"us-central1-a\" }}",
       "type": "object",
       "properties": {
         "type": {
@@ -272,13 +275,8 @@
           "$ref": "LogEntryOperation"
         },
         "internalId": {
-          "description": "Internal id of the owner of this log entry.",
-          "$ref": "InternalEntityId"
-        },
-        "projectNumber": {
 
-          "type": "string",
-          "format": "int64"
+          "$ref": "InternalEntityId"
         },
         "writerEmailAddress": {
 
@@ -595,7 +593,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The monitored resource type. For example, the type\n`\"cloudsql_database\"` represents databases in Google Cloud SQL.",
+          "description": "Required. The monitored resource type. For example, the type\n`\"cloudsql_database\"` represents databases in Google Cloud SQL.\nThe maximum length of this value is 256 characters.",
           "type": "string"
         },
         "displayName": {
@@ -720,6 +718,47 @@
         }
       }
     },
+    "GetLogsUsageResponse": {
+      "id": "GetLogsUsageResponse",
+
+      "type": "object",
+      "properties": {
+        "usage": {
+          "description": "A collection of ranges that describes logs usage and allowed quota\nover requested time period.\nRanges are aligned to the full hour, and are guaranteed to be contiguous.",
+          "type": "array",
+          "items": {
+            "$ref": "Usage"
+          }
+        }
+      }
+    },
+    "Usage": {
+      "id": "Usage",
+
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Inclusive. Start time of the usage interval.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Exclusive. End time of the usage interval.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "byteCount": {
+          "description": "The volume of ingested logs, in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "byteQuota": {
+          "description": "The allowed free quota, also in bytes. Note that the quota for Free Tier\nis monthly, while for Premium Tier, it's calculated hourly.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ListSinksResponse": {
       "id": "ListSinksResponse",
       "description": "Result returned from `ListSinks`.",
@@ -744,7 +783,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned sink identifier. Example:\n`\"my-severe-errors-to-pubsub\"`.\nSink identifiers are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.`.",
+          "description": "Required. The client-assigned sink identifier. Example:\n`\"my-severe-errors-to-pubsub\"`.\nSink identifiers are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.`.\nThe maximum length of this value is 100 characters.",
           "type": "string"
         },
         "destination": {
@@ -827,7 +866,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned metric identifier. Example:\n`\"severe_errors\"`.  Metric identifiers are limited to 1000\ncharacters and can include only the following characters: `A-Z`,\n`a-z`, `0-9`, and the special characters `_-.,+!*',()%\/`.  The\nforward-slash character (`\/`) denotes a hierarchy of name pieces,\nand it cannot be the first character of the name.  The '%' character\nis used to URL encode unsafe and reserved characters and must be\nfollowed by two hexadecimal digits according to RFC 1738.",
+          "description": "Required. The client-assigned metric identifier. Example:\n`\"severe_errors\"`.  Metric identifiers are limited to 100\ncharacters and can include only the following characters: `A-Z`,\n`a-z`, `0-9`, and the special characters `_-.,+!*',()%\/`.  The\nforward-slash character (`\/`) denotes a hierarchy of name pieces,\nand it cannot be the first character of the name.  The '%' character\nis used to URL encode unsafe and reserved characters and must be\nfollowed by two hexadecimal digits according to RFC 1738.",
           "type": "string"
         },
         "description": {
@@ -1708,6 +1747,55 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
+          ]
+        }
+      }
+    },
+    "v2beta1": {
+      "methods": {
+        "getLogs_usage": {
+          "id": "logging.getLogs_usage",
+          "path": "v2beta1/logs_usage",
+          "flatPath": "v2beta1/logs_usage",
+          "httpMethod": "GET",
+          "description": "Gets logs usage.",
+          "parameters": {
+            "resourceName": {
+              "description": "Required. Resource to retrieve logs usage for.\nExamples are \"projects\/my-project-id\", \"organizations\/google\",\n\"billingaccounts\/ABC1234\"",
+              "location": "query",
+              "type": "string"
+            },
+            "resourceTier": {
+              "description": "Required. The Stackdriver tier to retrieve logs usage for.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "TIER_UNSPECIFIED",
+                "FREE",
+                "PREMIUM"
+              ]
+            },
+            "startTime": {
+              "description": "Required. Inclusive. Retrieve logs usage at or after this timestamp.",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
+            },
+            "endTime": {
+              "description": "Optional. Exclusive. Retrieve logs usage before this timestamp.\nThe request time period cannot be less than an hour, as that's the minimum\ndata granularity we provide.\nIf not provided, current time will be used as end_time.",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "GetLogsUsageResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/logging.read",
+            "https://www.googleapis.com/auth/monitoring"
           ]
         }
       }

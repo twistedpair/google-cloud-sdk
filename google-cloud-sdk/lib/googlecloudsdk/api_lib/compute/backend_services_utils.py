@@ -50,9 +50,7 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
     if self.global_request:
       return self.compute.backendServices
     else:
-      # return self.compute.regionalBackendServices
-      raise exceptions.ToolException(
-          'Regional backends services are not supported')
+      return self.compute.regionBackendServices
 
   @property
   def resource_type(self):
@@ -66,7 +64,7 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
 
   def CreateRequests(self, args):
     # Assume global by default.
-    self.global_request = not getattr(args, 'region', None)
+    self.global_request = getattr(args, 'region', None) is None
 
     if self.global_request:
       return self.CreateGlobalRequests(args)

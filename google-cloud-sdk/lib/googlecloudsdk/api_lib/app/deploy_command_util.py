@@ -174,7 +174,7 @@ def BuildAndPushDockerImage(project, service, version_id, code_bucket_ref):
 
 
 def DoPrepareManagedVms(gae_client):
-  """Call an API to prepare the for managed VMs."""
+  """Call an API to prepare the for App Engine Flexible."""
   try:
     message = 'If this is your first deployment, this may take a while'
     with console_io.DelayedProgressTracker(message,

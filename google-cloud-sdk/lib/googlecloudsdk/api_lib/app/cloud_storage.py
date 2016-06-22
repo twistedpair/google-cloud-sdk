@@ -35,6 +35,7 @@ from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.third_party.apitools.base.py import list_pager
 from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
@@ -143,16 +144,17 @@ def ListBucket(bucket_ref, client):
     A set of names of items.
   """
   request = STORAGE_MESSAGES.StorageObjectsListRequest(bucket=bucket_ref.bucket)
+  items = set()
   try:
-    response = client.objects.List(request)
+    # batch_size=None gives us the API default
+    for item in list_pager.YieldFromList(client.objects, request,
+                                         batch_size=None):
+      items.add(item.name)
   except api_exceptions.HttpError as e:
     # TODO(user): Refactor the exception handling before treating this as a
     # shared library.
     raise UploadError('Error uploading files: {e}'.format(e=e))
 
-  items = set()
-  for item in response.items:
-    items.add(item.name)
   return items
 
 
@@ -242,12 +244,13 @@ def Rsync(source_dir, dest_dir, exclude_pattern=None):
 class LogTailer(object):
   """Helper class to tail a GCS logfile, printing content as available."""
 
-  def __init__(self, bucket, obj):
+  def __init__(self, bucket, obj, out=log.status, url_pattern=GCS_URL_PATTERN):
     self.http = http.Http()
-    self.url = GCS_URL_PATTERN.format(bucket=bucket, obj=obj)
+    self.url = url_pattern.format(bucket=bucket, obj=obj)
     log.debug('GCS logfile url is ' + self.url)
     # position in the file being read
     self.cursor = 0
+    self.out = out
 
   def Poll(self, is_last=False):
     """Poll the GCS object and print any new bytes to the console.
@@ -274,9 +277,11 @@ class LogTailer(object):
         self._PrintLastLine()
       return
 
-    if res.status == 206:  # Partial Content
+    if res.status == 206 or res.status == 200:  # Partial Content
       # New content available. Print it!
-      log.debug('Reading GCS logfile: 206 (read {0} bytes)'.format(len(body)))
+      log.debug('Reading GCS logfile: {code} (read {count} bytes)'.format(
+          code=res.status,
+          count=len(body)))
       if self.cursor == 0:
         self._PrintFirstLine()
       self.cursor += len(body)
@@ -306,7 +311,7 @@ class LogTailer(object):
 
   def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""
-    log.status.Print(text)
+    self.out.Print(text)
 
   def _PrintFirstLine(self):
     width, _ = console_attr_os.GetTermSize()

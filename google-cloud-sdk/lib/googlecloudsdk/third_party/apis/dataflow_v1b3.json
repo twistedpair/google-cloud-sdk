@@ -891,15 +891,15 @@
             "$ref": "Status"
           }
         },
-        "workItemMetricUpdates": {
-          "description": "Worker output metrics (counters) for this WorkItem.",
+        "counterUpdates": {
+          "description": "Worker output counters for this WorkItem.",
           "type": "array",
           "items": {
-            "$ref": "WorkItemMetricUpdate"
+            "$ref": "CounterUpdate"
           }
         },
         "metricUpdates": {
-          "description": "DEPRECATED in favor of worker_metric_update.",
+          "description": "DEPRECATED in favor of counter_updates.",
           "type": "array",
           "items": {
             "$ref": "MetricUpdate"
@@ -958,22 +958,26 @@
         }
       }
     },
-    "WorkItemMetricUpdate": {
-      "id": "WorkItemMetricUpdate",
-      "description": "An update to a metric sent from a worker.\nUnlike MetricUpdate, this format does not support:\n  messages: use WorkerMessage API\n  CloudMetrics: use MetricUpdate until this includes structured names",
+    "CounterUpdate": {
+      "id": "CounterUpdate",
+      "description": "An update to a Counter sent from a worker.",
       "type": "object",
       "properties": {
         "nameAndKind": {
-          "description": "Metric name and aggregation type.",
+          "description": "Counter name and aggregation type.",
           "$ref": "NameAndKind"
         },
         "shortId": {
-          "description": "The service-generated short identifier for this metric.\nThe short_id -> (name, metadata) mapping is constant for the lifetime of\na job.",
+          "description": "The service-generated short identifier for this counter.\nThe short_id -> (name, metadata) mapping is constant for the lifetime of\na job.",
           "type": "string",
           "format": "int64"
         },
+        "structuredNameAndMetadata": {
+          "description": "Counter structured name and metadata.",
+          "$ref": "CounterStructuredNameAndMetadata"
+        },
         "cumulative": {
-          "description": "True if this metric is reported as the total cumulative aggregate\nvalue accumulated since the worker started working on this WorkItem.\nBy default this is false, indicating that this metric is reported\nas a delta that is not associated with any WorkItem.",
+          "description": "True if this counter is reported as the total cumulative aggregate\nvalue accumulated since the worker started working on this WorkItem.\nBy default this is false, indicating that this counter is reported\nas a delta.",
           "type": "boolean"
         },
         "integer": {
@@ -1010,22 +1014,177 @@
           "$ref": "StringList"
         },
         "internal": {
-          "description": "Value for internally-defined metrics use by the Dataflow service.",
+          "description": "Value for internally-defined counters used by the Dataflow service.",
           "type": "any"
         }
       }
     },
     "NameAndKind": {
       "id": "NameAndKind",
-      "description": "Basic metadata about a metric.",
+      "description": "Basic metadata about a counter.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the metric.",
+          "description": "Name of the counter.",
           "type": "string"
         },
         "kind": {
-          "description": "Metric aggregation kind.  The possible metric aggregation kinds are\n\"Sum\", \"Max\", \"Min\", \"Mean\", \"Set\", \"And\", and \"Or\".\nThe specified aggregation kind is case-insensitive.\n\nIf omitted, this is not an aggregated value but instead\na single metric sample value.",
+          "description": "Counter aggregation kind.",
+          "enumDescriptions": [
+            "Counter aggregation kind was not set.",
+            "Aggregated value is the sum of all contributed values.",
+            "Aggregated value is the max of all contributed values.",
+            "Aggregated value is the min of all contributed values.",
+            "Aggregated value is the mean of all contributed values.",
+            "Aggregated value represents the logical 'or' of all contributed values.",
+            "Aggregated value represents the logical 'and' of all contributed values.",
+            "Aggregated value is a set of unique contributed values."
+          ],
+          "type": "string",
+          "enum": [
+            "INVALID",
+            "SUM",
+            "MAX",
+            "MIN",
+            "MEAN",
+            "OR",
+            "AND",
+            "SET"
+          ]
+        }
+      }
+    },
+    "CounterStructuredNameAndMetadata": {
+      "id": "CounterStructuredNameAndMetadata",
+      "description": "A single message which encapsulates structured name and metadata for a given\ncounter.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Structured name of the counter.",
+          "$ref": "CounterStructuredName"
+        },
+        "metadata": {
+          "description": "Metadata associated with a counter",
+          "$ref": "CounterMetadata"
+        }
+      }
+    },
+    "CounterStructuredName": {
+      "id": "CounterStructuredName",
+      "description": "Identifies a counter within a per-job namespace. Counters whose structured\nnames are the same get merged into a single value for the job.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Counter name. Not necessarily globally-unique, but unique within the\ncontext of the other fields.\nRequired.",
+          "type": "string"
+        },
+        "standardOrigin": {
+          "description": "One of the standard Origins defined above.",
+          "enumDescriptions": [
+            "Counter was created by the Dataflow system.",
+            "Counter was created by the user."
+          ],
+          "type": "string",
+          "enum": [
+            "DATAFLOW",
+            "USER"
+          ]
+        },
+        "otherOrigin": {
+          "description": "A string containing the origin of the counter.",
+          "type": "string"
+        },
+        "originalStepName": {
+          "description": "System generated name of the original step in the user's graph, before\noptimization.",
+          "type": "string"
+        },
+        "componentStepName": {
+          "description": "Name of the optimized step being executed by the workers.",
+          "type": "string"
+        },
+        "executionStepName": {
+          "description": "Name of the stage. An execution step contains multiple component steps.",
+          "type": "string"
+        },
+        "workerId": {
+          "description": "ID of a particular worker.",
+          "type": "string"
+        },
+        "portion": {
+          "description": "Portion of this counter, either key or value.",
+          "enumDescriptions": [
+            "Counter portion has not been set.",
+            "Counter reports a key.",
+            "Counter reports a value."
+          ],
+          "type": "string",
+          "enum": [
+            "ALL",
+            "KEY",
+            "VALUE"
+          ]
+        }
+      }
+    },
+    "CounterMetadata": {
+      "id": "CounterMetadata",
+      "description": "CounterMetadata includes all static non-name non-value counter attributes.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Counter aggregation kind.",
+          "enumDescriptions": [
+            "Counter aggregation kind was not set.",
+            "Aggregated value is the sum of all contributed values.",
+            "Aggregated value is the max of all contributed values.",
+            "Aggregated value is the min of all contributed values.",
+            "Aggregated value is the mean of all contributed values.",
+            "Aggregated value represents the logical 'or' of all contributed values.",
+            "Aggregated value represents the logical 'and' of all contributed values.",
+            "Aggregated value is a set of unique contributed values."
+          ],
+          "type": "string",
+          "enum": [
+            "INVALID",
+            "SUM",
+            "MAX",
+            "MIN",
+            "MEAN",
+            "OR",
+            "AND",
+            "SET"
+          ]
+        },
+        "description": {
+          "description": "Human-readable description of the counter semantics.",
+          "type": "string"
+        },
+        "standardUnits": {
+          "description": "System defined Units, see above enum.",
+          "enumDescriptions": [
+            "Counter returns a value in bytes.",
+            "Counter returns a value in bytes per second.",
+            "Counter returns a value in milliseconds.",
+            "Counter returns a value in microseconds.",
+            "Counter returns a value in nanoseconds.",
+            "Counter returns a timestamp in milliseconds.",
+            "Counter returns a timestamp in microseconds.",
+            "Counter returns a timestamp in nanoseconds."
+          ],
+          "type": "string",
+          "enum": [
+            "BYTES",
+            "BYTES_PER_SEC",
+            "MILLISECONDS",
+            "MICROSECONDS",
+            "NANOSECONDS",
+            "TIMESTAMP_MSEC",
+            "TIMESTAMP_USEC",
+            "TIMESTAMP_NSEC"
+          ]
+        },
+        "otherUnits": {
+          "description": "A string referring to the unit type.",
           "type": "string"
         }
       }

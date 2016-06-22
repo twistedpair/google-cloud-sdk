@@ -25,9 +25,29 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
 
   def __init__(self, *args, **kwargs):
     super(ListPrinter, self).__init__(*args, by_columns=True, **kwargs)
+    self._process_record_orig = self._process_record
+    self._process_record = self._ProcessRecord
     # Print the title if specified.
     if 'title' in self.attributes:
       self._out.write(self.attributes['title'] + '\n')
+
+  def _ProcessRecord(self, record):
+    """Applies the original process_record on dict and list records.
+
+    Args:
+      record: A JSON-serializable object.
+
+    Returns:
+      The processed record.
+    """
+    if isinstance(record, (dict, list)):
+      record = self._process_record_orig(record)
+    if isinstance(record, dict):
+      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
+                if v is not None]
+    elif not isinstance(record, list):
+      record = [unicode(record or '')]
+    return [i for i in record if i is not None]
 
   def _AddRecord(self, record, delimit=False):
     """Immediately prints the given record as a list item.
@@ -36,13 +56,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
-    if isinstance(record, dict):
-      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
-                if v is not None]
-    elif not isinstance(record, list):
-      record = [record]
-    record = [i for i in record if i is not None]
-    self._out.write(' - ' + '\n   '.join(record) + '\n')
+    self._out.write(u' - ' + u'\n   '.join(record) + u'\n')
 
   # TODO(b/27967563): remove 3Q2016
   def Finish(self):

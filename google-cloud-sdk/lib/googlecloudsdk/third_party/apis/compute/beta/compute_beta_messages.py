@@ -802,17 +802,19 @@ class Backend(_messages.Message):
   Enums:
     BalancingModeValueValuesEnum: Specifies the balancing mode for this
       backend. For global HTTP(S) load balancing, the default is UTILIZATION.
-      Valid values are UTILIZATION and RATE.
+      Valid values are UTILIZATION and RATE.  This cannot be used for internal
+      load balancing.
 
   Fields:
     balancingMode: Specifies the balancing mode for this backend. For global
       HTTP(S) load balancing, the default is UTILIZATION. Valid values are
-      UTILIZATION and RATE.
+      UTILIZATION and RATE.  This cannot be used for internal load balancing.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (either UTILIZATION or RATE). Default value is 1, which means
       the group will serve up to 100% of its configured CPU or RPS (depending
       on balancingMode). A setting of 0 means the group is completely drained,
-      offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].
+      offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].  This
+      cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     group: The fully-qualified URL of a zonal Instance Group resource. This
@@ -821,32 +823,37 @@ class Backend(_messages.Message):
       zone as the instance group itself. No two backends in a backend service
       are allowed to use same Instance Group resource.  Note that you must
       specify an Instance Group resource using the fully-qualified URL, rather
-      than a partial URL.
+      than a partial URL.  When the BackendService has load balancing scheme
+      INTERNAL, the instance group must be in a zone within the same region as
+      the BackendService.
     maxConnections: The max number of simultaneous connections for the group.
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
-      be set.
+      be set.  This cannot be used for internal load balancing.
     maxConnectionsPerInstance: The max number of simultaneous connections that
       a single backend instance can handle. This is used to calculate the
       capacity of the group. Can be used in either CONNECTION or UTILIZATION
       balancing modes. For CONNECTION mode, either maxConnections or
-      maxConnectionsPerInstance must be set.
+      maxConnectionsPerInstance must be set.  This cannot be used for internal
+      load balancing.
     maxRate: The max requests per second (RPS) of the group. Can be used with
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
-      For RATE mode, either maxRate or maxRatePerInstance must be set.
+      For RATE mode, either maxRate or maxRatePerInstance must be set.  This
+      cannot be used for internal load balancing.
     maxRatePerInstance: The max requests per second (RPS) that a single
       backend instance can handle.This is used to calculate the capacity of
       the group. Can be used in either balancing mode. For RATE mode, either
-      maxRate or maxRatePerInstance must be set.
+      maxRate or maxRatePerInstance must be set.  This cannot be used for
+      internal load balancing.
     maxUtilization: Used when balancingMode is UTILIZATION. This ratio defines
       the CPU utilization target for the group. The default is 0.8. Valid
-      range is [0.0, 1.0].
+      range is [0.0, 1.0].  This cannot be used for internal load balancing.
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
     """Specifies the balancing mode for this backend. For global HTTP(S) load
     balancing, the default is UTILIZATION. Valid values are UTILIZATION and
-    RATE.
+    RATE.  This cannot be used for internal load balancing.
 
     Values:
       CONNECTION: <no description>
@@ -875,28 +882,37 @@ class BackendService(_messages.Message):
   Enums:
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
-      and SSL.
-    SessionAffinityValueValuesEnum: Type of session affinity to use.
+      and SSL. The default is HTTP.  For internal load balancing, the possible
+      values are TCP and UDP, and the default is TCP.
+    SessionAffinityValueValuesEnum: Type of session affinity to use. The
+      default is NONE.  When the load balancing scheme is EXTERNAL, can be
+      NONE, CLIENT_IP, or GENERATED_COOKIE.  When the load balancing scheme is
+      INTERNAL, can be NONE, CLIENT_IP, CLIENT_IP_PROTO, or
+      CLIENT_IP_PORT_PROTO.  When the protocol is UDP, this field is not used.
 
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds if session_affinity
       is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
       only until the end of the browser session (or equivalent). The maximum
-      allowed value for TTL is one day.
+      allowed value for TTL is one day.  When the load balancing scheme is
+      INTERNAL, this field is not used.
     backends: The list of backends that serve this BackendService.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    enableCDN: If true, enable Cloud CDN for this BackendService.
+    enableCDN: If true, enable Cloud CDN for this BackendService.  When the
+      load balancing scheme is INTERNAL, this field is not used.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
       fingerprint must be provided in order to update the BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required.
+      health check can be specified, and a health check is required.  For
+      internal load balancing, a URL to a HealthCheck resource must be
+      specified instead.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -909,22 +925,33 @@ class BackendService(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80.
+      backend. The default value is 80.  This cannot be used for internal load
+      balancing.
     portName: Name of backend port. The same name should appear in the
-      instance groups referenced by this service. Required.
+      instance groups referenced by this service. Required when the load
+      balancing scheme is EXTERNAL.  When the load balancing scheme is
+      INTERNAL, this field is not used.
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP and SSL. The
+      default is HTTP.  For internal load balancing, the possible values are
+      TCP and UDP, and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sessionAffinity: Type of session affinity to use.
+    sessionAffinity: Type of session affinity to use. The default is NONE.
+      When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
+      GENERATED_COOKIE.  When the load balancing scheme is INTERNAL, can be
+      NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
+      protocol is UDP, this field is not used.
     timeoutSec: How many seconds to wait for the backend before considering it
       a failed request. Default is 30 seconds.
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
     """The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP and SSL.
+    Possible values are HTTP, HTTPS, HTTP2, TCP and SSL. The default is HTTP.
+    For internal load balancing, the possible values are TCP and UDP, and the
+    default is TCP.
 
     Values:
       HTTP: <no description>
@@ -938,7 +965,11 @@ class BackendService(_messages.Message):
     TCP = 3
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    """Type of session affinity to use.
+    """Type of session affinity to use. The default is NONE.  When the load
+    balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or GENERATED_COOKIE.
+    When the load balancing scheme is INTERNAL, can be NONE, CLIENT_IP,
+    CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the protocol is UDP, this
+    field is not used.
 
     Values:
       CLIENT_IP: <no description>
@@ -7550,16 +7581,24 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
+      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  When the load
+      balancing scheme is INTERNAL</code, only TCP and UDP are valid.
 
   Fields:
-    IPAddress: Value of the reserved IP address that this forwarding rule is
-      serving on behalf of. For global forwarding rules, the address must be a
-      global IP; for regional forwarding rules, the address must live in the
-      same region as the forwarding rule. If left empty (default value), an
-      ephemeral IP from the same scope (global or regional) will be assigned.
+    IPAddress: The IP address that this forwarding rule is serving on behalf
+      of.  For global forwarding rules, the address must be a global IP; for
+      regional forwarding rules, the address must live in the same region as
+      the forwarding rule. By default, this field is empty and an ephemeral IP
+      from the same scope (global or regional) will be assigned.  When the
+      load balancing scheme is INTERNAL, this can only be an RFC 1918 IP
+      address belonging to the network/subnetwork configured for the
+      forwarding rule. A reserved address cannot be used. If the field is
+      empty, the IP address will be automatically allocated from the internal
+      IP range of the subnetwork or network configured for this forwarding
+      rule.
     IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH, SCTP or ICMP.
+      TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
+      INTERNAL</code, only TCP and UDP are valid.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -7578,7 +7617,8 @@ class ForwardingRule(_messages.Message):
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
-      have disjoint port ranges.
+      have disjoint port ranges.  This field is not used for internal load
+      balancing.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -7588,12 +7628,13 @@ class ForwardingRule(_messages.Message):
       global TargetHttpProxy or TargetHttpsProxy resource. The forwarded
       traffic must be of a type appropriate to the target object. For example,
       TargetHttpProxy requires HTTP traffic, and TargetHttpsProxy requires
-      HTTPS traffic.
+      HTTPS traffic.  This field is not used for internal load balancing.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     """The IP protocol to which this rule applies. Valid options are TCP, UDP,
-    ESP, AH, SCTP or ICMP.
+    ESP, AH, SCTP or ICMP.  When the load balancing scheme is INTERNAL</code,
+    only TCP and UDP are valid.
 
     Values:
       AH: <no description>

@@ -508,13 +508,19 @@ class GceClusterConfig(_messages.Message):
       instances.
 
   Fields:
+    internalIpOnly: If true, all instances in the cluser will only have
+      internal IP addresses. By default, clusters are not restricted to
+      internal IP addresses, and will have ephemeral external IP addresses
+      assigned to each instance. This restriction can only be enabled for
+      subnetwork enabled networks, and all off-cluster dependencies must be
+      configured to be accessible without external IP addresses.
     metadata: The Google Compute Engine metadata entries to add to all
       instances.
     networkUri: The Google Compute Engine network to be used for machine
       communications. Cannot be specified with subnetwork_uri. If neither
       network_uri nor subnetwork_uri is specified, the "default" network of
       the project is used, if it exists. Cannot be a "Custom Subnet Network"
-      (see https://cloud.google.com/compute/docs/subnetworks for more
+      (see [Using Subnetworks](/compute/docs/subnetworks) for more
       information). Example: `https://www.googleapis.com/compute/v1/projects/[
       project_id]/regions/global/default`.
     serviceAccountScopes: The URIs of service account scopes to be included in
@@ -562,12 +568,13 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  metadata = _messages.MessageField('MetadataValue', 1)
-  networkUri = _messages.StringField(2)
-  serviceAccountScopes = _messages.StringField(3, repeated=True)
-  subnetworkUri = _messages.StringField(4)
-  tags = _messages.StringField(5, repeated=True)
-  zoneUri = _messages.StringField(6)
+  internalIpOnly = _messages.BooleanField(1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  networkUri = _messages.StringField(3)
+  serviceAccountScopes = _messages.StringField(4, repeated=True)
+  subnetworkUri = _messages.StringField(5)
+  tags = _messages.StringField(6, repeated=True)
+  zoneUri = _messages.StringField(7)
 
 
 class HadoopJob(_messages.Message):

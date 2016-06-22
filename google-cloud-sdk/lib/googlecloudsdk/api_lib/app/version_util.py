@@ -23,6 +23,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
 
@@ -234,8 +235,7 @@ def PromoteVersion(all_services, new_version, api_client,
     old_default_version = _GetPreviousVersion(
         all_services, new_version, api_client)
 
-  api_client.SetDefaultVersion(new_version.service, new_version.id)
-  metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
+  _SetDefaultVersion(new_version, api_client)
 
   if old_default_version:
     _StopPreviousVersionIfApplies(old_default_version, api_client)
@@ -266,6 +266,35 @@ def _GetPreviousVersion(all_services, new_version, api_client):
     if (old_version.IsReceivingAllTraffic() and
         old_version.id != new_version.id):
       return old_version
+
+
+def _SetDefaultVersion(new_version, api_client):
+  """Sets the given version as the default.
+
+  Args:
+    new_version: Version, The version to promote.
+    api_client: appengine_api_client.AppengineApiClient to use to make requests.
+  """
+  # TODO(b/29116891): It sometimes takes a while for a new service to show up.
+  # Retry it if we get a service not found error.
+  def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
+    return exc_type == calliope_exceptions.HttpException
+
+  try:
+    retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2)
+    retryer.RetryOnException(
+        api_client.SetDefaultVersion, [new_version.service, new_version.id],
+        should_retry_if=ShouldRetry, sleep_ms=1000)
+  except retry.MaxRetrialsException as e:
+    (unused_result, exc_info) = e.last_result
+    if exc_info:
+      # This is the 3 tuple of the last exception the function threw.
+      raise exc_info[0], exc_info[1], exc_info[2]
+    else:
+      # This shouldn't happen, but if we don't have the exception info for some
+      # reason, just convert the MaxRetrialsException.
+      raise calliope_exceptions.ToolException.FromCurrent()
+  metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
 
 
 def _StopPreviousVersionIfApplies(old_default_version, api_client):

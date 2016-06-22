@@ -20,6 +20,7 @@ import json
 import textwrap
 
 import enum
+from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
@@ -35,8 +36,10 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources as resource_exceptions
+from googlecloudsdk.core import resolvers
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.third_party.apitools.base.protorpclite import messages
@@ -46,6 +49,60 @@ from googlecloudsdk.third_party.py27 import py27_copy as copy
 import yaml
 
 
+class ComputeApiHolder(object):
+  """Convenience class to hold lazy initialized client and resources."""
+
+  def __init__(self, api_version):
+    self._api_version = api_version
+    self._client = None
+    self._resources = None
+
+  @property
+  def client(self):
+    """Specifies the compute client."""
+    if self._client is None:
+      self._client = client_adapter.ClientAdapter(self._api_version)
+    return self._client
+
+  @property
+  def resources(self):
+    """Specifies the resources parser for compute resources."""
+    if self._resources is None:
+      _SetResourceParamDefaults()
+      self._resources = resources.REGISTRY.CloneAndSwitchAPIs(
+          self.client.apitools_client)
+    return self._resources
+
+
+class ComputeUserAccountsApiHolder(object):
+  """Convenience class to hold lazy initialized client and resources."""
+
+  def __init__(self, api_version):
+    self._api_version = api_version
+    self._client = None
+    self._resources = None
+
+  @property
+  def client(self):
+    """Specifies the compute client."""
+    if self._client is None:
+      self._client = core_apis.GetClientInstance(
+          'clouduseraccounts', self._api_version)
+    return self._client
+
+  @property
+  def resources(self):
+    """Specifies the resources parser for compute resources."""
+    if self._resources is None:
+      resources.SetParamDefault(
+          api='clouduseraccounts',
+          collection=None,
+          param='project',
+          resolver=resolvers.FromProperty(properties.VALUES.core.project))
+      self._resources = resources.REGISTRY.CloneAndSwitchAPIs(self.client)
+    return self._resources
+
+
 class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   """Base class for all compute subcommands."""
 
@@ -53,6 +110,10 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
+    self._project = properties.VALUES.core.project.Get(required=True)
+    self._compute_holder = ComputeApiHolder(self.context['api_version'])
+    self._user_accounts_holder = ComputeUserAccountsApiHolder(
+        self.context['api_version'])
 
   @property
   def _resource_spec(self):
@@ -85,7 +146,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def project(self):
     """Specifies the user's project."""
-    return self.context['project']
+    return self._project
 
   @property
   def batch_url(self):
@@ -95,7 +156,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def compute_client(self):
     """Specifies the compute client."""
-    return self.context['client']
+    return self._compute_holder.client
 
   @property
   def compute(self):
@@ -105,15 +166,15 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def resources(self):
     """Specifies the resources parser for compute resources."""
-    return self.context['resources']
+    return self._compute_holder.resources
 
   @property
   def clouduseraccounts(self):
-    return self.context['clouduseraccounts']
+    return self._user_accounts_holder.client
 
   @property
   def clouduseraccounts_resources(self):
-    return self.context['clouduseraccounts-resources']
+    return self._user_accounts_holder.resources
 
   @property
   def messages(self):
@@ -181,7 +242,7 @@ class BaseLister(base.ListCommand, BaseCommand):
         self.self_links.add(ref.SelfLink())
         self.resource_refs.append(ref)
         continue
-      except resource_exceptions.UserError:
+      except resources.UserError:
         pass
 
       self.names.add(name)
@@ -653,14 +714,14 @@ class BaseDescriber(BaseCommand):
         errors=errors,
         custom_get_requests=None)
 
-    resources = lister.ProcessResults(objects, field_selector=None)
-    resources = list(self.ComputeDynamicProperties(args, resources))
+    resource_list = lister.ProcessResults(objects, field_selector=None)
+    resource_list = list(self.ComputeDynamicProperties(args, resource_list))
 
     if errors:
       utils.RaiseToolException(
           errors,
           error_message='Could not fetch resource:')
-    return resources[0]
+    return resource_list[0]
 
 
 class GlobalDescriber(BaseDescriber):
@@ -763,13 +824,21 @@ class MultiScopeDescriber(BaseDescriber):
   def service(self):
     return self._service
 
-  def CreateReference(self, args):
+  def CreateReference(self, args, default=None):
     has_region = hasattr(args, 'region') and args.region
     has_zone = hasattr(args, 'zone') and args.zone
     has_global = hasattr(args, 'global') and getattr(args, 'global')
 
     only_zone_prompt = hasattr(args, 'zone') and not hasattr(args, 'region')
     only_region_prompt = hasattr(args, 'region') and not hasattr(args, 'zone')
+
+    if not (has_region or has_zone or has_global):
+      if default == ScopeType.global_scope:
+        has_global = True
+      elif default == ScopeType.regional_scope:
+        has_region = True
+      elif default == ScopeType.zonal_scope:
+        has_zone = True
 
     ref = None
     try:
@@ -779,7 +848,7 @@ class MultiScopeDescriber(BaseDescriber):
       if has_zone:
         params['zone'] = args.zone
       ref = self.resources.Parse(args.name, params=params)
-    except resource_exceptions.UnknownCollectionException:
+    except resources.UnknownCollectionException:
       ref = None
 
     if ref is None:
@@ -954,25 +1023,25 @@ class BaseAsyncMutator(BaseCommand):
     errors = []
     # We want to run through the generator that MakeRequests returns in order to
     # actually make the requests, since these requests mutate resources.
-    resources = list(request_helper.MakeRequests(
+    resource_list = list(request_helper.MakeRequests(
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
         errors=errors,
         custom_get_requests=self.custom_get_requests))
 
-    resources = lister.ProcessResults(
-        resources=resources,
+    resource_list = lister.ProcessResults(
+        resources=resource_list,
         field_selector=property_selector.PropertySelector(
             properties=None,
             transformations=self.transformations))
 
-    resources = self.ComputeDynamicProperties(args, resources)
+    resource_list = self.ComputeDynamicProperties(args, resource_list)
 
     if errors:
       utils.RaiseToolException(errors)
 
-    return resources
+    return resource_list
 
 
 class NoOutputAsyncMutator(BaseAsyncMutator):
@@ -1243,19 +1312,19 @@ class ReadWriteCommand(BaseCommand):
         yield resource
       return
 
-    resources = request_helper.MakeRequests(
+    resource_list = request_helper.MakeRequests(
         requests=[self.GetSetRequest(args, new_object, objects[0])],
         http=self.http,
         batch_url=self.batch_url,
         errors=errors,
         custom_get_requests=None)
 
-    resources = lister.ProcessResults(
-        resources=resources,
+    resource_list = lister.ProcessResults(
+        resources=resource_list,
         field_selector=property_selector.PropertySelector(
             properties=None,
             transformations=self.transformations))
-    for resource in resources:
+    for resource in resource_list:
       yield resource
 
     if errors:
@@ -1595,7 +1664,7 @@ class BaseEdit(BaseCommand):
       return [self.original_object]
 
     errors = []
-    resources = list(request_helper.MakeRequests(
+    resource_list = list(request_helper.MakeRequests(
         requests=[self.GetSetRequest(args, new_object, self.original_object)],
         http=self.http,
         batch_url=self.batch_url,
@@ -1606,7 +1675,7 @@ class BaseEdit(BaseCommand):
           errors,
           error_message='Could not update resource:')
 
-    return resources
+    return resource_list
 
   def Run(self, args):
     self.ref = self.CreateReference(args)
@@ -1663,7 +1732,7 @@ class BaseEdit(BaseCommand):
       except edit.NoSaveException:
         raise calliope_exceptions.ToolException('Edit aborted by user.')
       try:
-        resources = self.ProcessEditedResource(file_contents, args)
+        resource_list = self.ProcessEditedResource(file_contents, args)
         break
       except (ValueError, yaml.error.YAMLError,
               messages.ValidationError,
@@ -1685,10 +1754,28 @@ class BaseEdit(BaseCommand):
             prompt_string='Would you like to edit the resource again?'):
           raise calliope_exceptions.ToolException('Edit aborted by user.')
 
-    resources = lister.ProcessResults(
-        resources=resources,
+    resource_list = lister.ProcessResults(
+        resources=resource_list,
         field_selector=property_selector.PropertySelector(
             properties=None,
             transformations=self.transformations))
-    for resource in resources:
+    for resource in resource_list:
       yield resource
+
+
+def _SetResourceParamDefaults():
+  """Sets resource parsing default parameters to point to properties."""
+  core_values = properties.VALUES.core
+  compute_values = properties.VALUES.compute
+  for api, param, prop in (
+      ('compute', 'project', core_values.project),
+      ('resourceviews', 'projectName', core_values.project),
+      ('compute', 'zone', compute_values.zone),
+      ('resourceviews', 'zone', compute_values.zone),
+      ('compute', 'region', compute_values.region),
+      ('resourceviews', 'region', compute_values.region)):
+    resources.SetParamDefault(
+        api=api,
+        collection=None,
+        param=param,
+        resolver=resolvers.FromProperty(prop))

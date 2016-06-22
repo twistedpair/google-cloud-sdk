@@ -798,13 +798,6 @@ class CommandCommon(object):
       # Propagate down the hidden attribute.
       if parent_group.IsHidden():
         self._common_type._is_hidden = True
-      # TODO(user): This is going to go away once we remove the explicit
-      # Alpha and Beta decorators for commands.  Once the commands show up
-      # under the correct track, the help will use the regular release track
-      # for annotations (b/19406151).
-      legacy_release_track = parent_group._common_type._legacy_release_track
-      if legacy_release_track and not self._common_type._legacy_release_track:
-        self._common_type._legacy_release_track = legacy_release_track
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
     self._ExtractHelpStrings(self._common_type.__doc__)
@@ -813,9 +806,9 @@ class CommandCommon(object):
         parser_group=parser_group,
         allow_positional_args=allow_positional_args)
 
-  def ReleaseTrack(self, for_help=False):
+  def ReleaseTrack(self):
     """Gets the release track of this command or group."""
-    return self._common_type.ReleaseTrack(for_help=for_help)
+    return self._common_type.ReleaseTrack()
 
   def IsHidden(self):
     """Gets the hidden status of this command or group."""
@@ -855,12 +848,12 @@ class CommandCommon(object):
         self.index_help = self.index_help[:-1]
 
     # Add an annotation to the help strings to mark the release stage.
-    tag = self.ReleaseTrack(for_help=True).help_tag
+    tag = self.ReleaseTrack().help_tag
     if tag:
       self.short_help = tag + self.short_help
       self.long_help = tag + self.long_help
       # TODO(user):b/21208128: Drop these 4 lines.
-      prefix = self.ReleaseTrack(for_help=True).prefix
+      prefix = self.ReleaseTrack().prefix
       if len(self._path) < 2 or self._path[1] != prefix:
         self.index_help = tag + self.index_help
 
@@ -1144,7 +1137,7 @@ class CommandGroup(CommandCommon):
       CommandGroup and Command.
     """
     return [(self._module_dir, self._module_path + [name], name,
-             self.ReleaseTrack(for_help=False))
+             self.ReleaseTrack())
             for name in names]
 
   def AddSubGroup(self, group_info):
@@ -1192,7 +1185,7 @@ class CommandGroup(CommandCommon):
           continue
         (module_dir, module_path, name, unused_track) = info
         dst[name] = (module_dir, module_path, name,
-                     other_group.ReleaseTrack(for_help=False))
+                     other_group.ReleaseTrack())
 
   def SubParser(self):
     """Gets or creates the argparse sub parser for this group.
@@ -1290,7 +1283,7 @@ class CommandGroup(CommandCommon):
         (item.cli_name,
          usage_text.HelpInfo(help_text=item.short_help,
                              is_hidden=item.IsHidden(),
-                             release_track=item.ReleaseTrack(for_help=True)))
+                             release_track=item.ReleaseTrack()))
         for item in self.groups.values())
 
   def RunGroupFilter(self, context, args):

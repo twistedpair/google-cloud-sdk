@@ -770,7 +770,6 @@ class EffectiveQuotaLimit(_messages.Message):
 
   Fields:
     baseLimit: The service's configuration for this quota limit.
-    consumerOverrideAllowed: Whether a consumer override is allowed.
     effectiveLimit: The effective limit value, based on the stored producer
       and consumer overrides and the service defaults.
     key: The key used to identify this limit when applying overrides. The
@@ -781,10 +780,9 @@ class EffectiveQuotaLimit(_messages.Message):
   """
 
   baseLimit = _messages.MessageField('QuotaLimit', 1)
-  consumerOverrideAllowed = _messages.BooleanField(2)
-  effectiveLimit = _messages.IntegerField(3)
-  key = _messages.StringField(4)
-  maxConsumerOverrideAllowed = _messages.IntegerField(5)
+  effectiveLimit = _messages.IntegerField(2)
+  key = _messages.StringField(3)
+  maxConsumerOverrideAllowed = _messages.IntegerField(4)
 
 
 class EnableServiceRequest(_messages.Message):
@@ -1501,7 +1499,8 @@ class MonitoredResourceDescriptor(_messages.Message):
       type.  APIs that do not use project information can use the resource
       name format `"monitoredResourceDescriptors/{type}"`.
     type: Required. The monitored resource type. For example, the type
-      `"cloudsql_database"` represents databases in Google Cloud SQL.
+      `"cloudsql_database"` represents databases in Google Cloud SQL. The
+      maximum length of this value is 256 characters.
   """
 
   description = _messages.StringField(1)

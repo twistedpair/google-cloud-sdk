@@ -164,9 +164,9 @@ def GenerateConfigs(path, params=None, config_filename=None):
     # Check that current config is for MVM
     if not config.IsVm():
       raise ConflictingConfigError(
-          'gen-config is only supported for App Engine Managed VMs.  Please '
-          'use "vm: true" in your app.yaml if you would like to use Managed '
-          'VMs to run your application.')
+          'gen-config is only supported for App Engine Flexible.  Please '
+          'use "vm: true" in your app.yaml if you would like to use App Engine '
+          'Flexible to run your application.')
     # Check for conflicting --runtime and runtime in app.yaml
     if (config.GetEffectiveRuntime() != 'custom' and params.runtime is not None
         and params.runtime != config.GetEffectiveRuntime()):

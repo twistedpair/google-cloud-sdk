@@ -14,8 +14,12 @@
 
 """Flags and helpers for the compute related commands."""
 
+import functools
+import operator
 import enum
 
+from googlecloudsdk.api_lib.compute.regions import service as regions_service
+from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import exceptions
@@ -161,6 +165,32 @@ class ScopeEnum(enum.Enum):
     self.flag_name = flag_name
 
 
+class ResourceStub(object):
+  """Interface used by scope listing to report scope names."""
+
+  def __init__(self, name, deprecated=None):
+    self.name = name
+    self.deprecated = deprecated
+
+
+def GetDefaultScopeLister(compute_client, project):
+  """Constructs default zone/region lister."""
+  # TODO(user): Zones can be extracted from regions.
+  scope_func = {
+      ScopeEnum.ZONE:
+          functools.partial(zones_service.List, compute_client, project),
+      ScopeEnum.REGION:
+          functools.partial(regions_service.List, compute_client, project),
+      ScopeEnum.GLOBAL: lambda: [ResourceStub(name='')]
+  }
+  def Lister(scopes, _):
+    results = {}
+    for scope in scopes:
+      results[scope] = scope_func[scope]()
+    return results
+  return Lister
+
+
 class ResourceArgScope(object):
   """Facilitates mapping of scope, flag and collection."""
 
@@ -223,7 +253,7 @@ class ResourceArgument(object):
       _BACKEND_SERVICE_ARG = flags.ResourceArgument(
           resource_name='backend service',
           completion_resource_id='compute.backendService',
-          regional_collection='compute.regionalBackendServices',
+          regional_collection='compute.regionBackendServices',
           global_collection='compute.backendServices')
       _INSTANCE_GROUP_ARG = flags.ResourceArgument(
           resource_name='instance group',
@@ -337,14 +367,16 @@ class ResourceArgument(object):
           scope,
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
-          operation_type='operate on')
+          operation_type='operate on',
+          explanation='')
 
     if ScopeEnum.REGION in self.scopes:
       AddRegionFlag(
           scope,
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
-          operation_type='operate on')
+          operation_type='operate on',
+          explanation='')
 
     if ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
       scope.add_argument(
@@ -476,11 +508,15 @@ class ResourceArgument(object):
     if not scope_lister:
       raise UnderSpecifiedResourceError(underspecified_names,
                                         [s.flag_name for s in self.scopes])
-    scope_value_choices = dict(
-        (s, scope_lister(s.scope_enum, underspecified_names))
-        for s in self.scopes)
-    return _PromptWithScopeChoices(self.resource_name, underspecified_names,
-                                   scope_value_choices)
+    scope_value_choices = scope_lister(
+        # Sort to make it deterministic.
+        sorted([s.scope_enum for s in self.scopes],
+               key=operator.attrgetter('name')),
+        underspecified_names)
+
+    resource_scope_enum, scope_value = _PromptWithScopeChoices(
+        self.resource_name, underspecified_names, scope_value_choices)
+    return self.scopes[resource_scope_enum], scope_value
 
 
 def _PromptDidYouMeanScope(resource_name, underspecified_names, scope,
@@ -505,7 +541,7 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
   choice_names = []
   choice_mapping = []
   for scope in sorted(scope_value_choices.keys(),
-                      key=lambda x: x.scope_enum.flag_name):
+                      key=operator.attrgetter('flag_name')):
     for choice_resource in sorted(scope_value_choices[scope]):
       deprecated = getattr(choice_resource, 'deprecated', None)
       if deprecated is not None:
@@ -516,10 +552,9 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
 
       if len(scope_value_choices) > 1:
         if choice_name:
-          choice_name = '{0}: {1}'.format(scope.scope_enum.flag_name,
-                                          choice_name)
+          choice_name = '{0}: {1}'.format(scope.flag_name, choice_name)
         else:
-          choice_name = scope.scope_enum.flag_name
+          choice_name = scope.flag_name
 
       choice_mapping.append((scope, choice_resource.name))
       choice_names.append(choice_name)
@@ -532,7 +567,7 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
       options=choice_names,
       message='{0}choose a {1}:'.format(
           title,
-          ' or '.join(sorted([s.scope_enum.flag_name
+          ' or '.join(sorted([s.flag_name
                               for s in scope_value_choices.keys()]))))
   if idx is None:
     return None, None

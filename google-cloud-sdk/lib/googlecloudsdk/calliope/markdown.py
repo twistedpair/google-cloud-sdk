@@ -170,7 +170,7 @@ class MarkdownGenerator(object):
     self._command_path = command.GetPath()
     self._command_name = ' '.join(self._command_path)
     self._file_name = '_'.join(self._command_path)
-    self._track = command.ReleaseTrack(for_help=True).prefix
+    self._track = command.ReleaseTrack().prefix
     command_index = (2 if self._track and len(self._command_path) >= 3 and
                      self._command_path[1] == self._track else 1)
     self._is_topic = (len(self._command_path) >= (command_index + 1) and
@@ -412,13 +412,13 @@ class MarkdownGenerator(object):
   def _PrintNotesSection(self):
     """Prints the NOTES section if needed."""
     if (self._command.IsHidden() or
-        self._command.ReleaseTrack(for_help=True).help_note):
+        self._command.ReleaseTrack().help_note):
       self._Section('NOTES')
       if self._command.IsHidden():
         self._out('This command is an internal implementation detail and may'
                   ' change or disappear without notice.\n\n')
-      if self._command.ReleaseTrack(for_help=True).help_note:
-        self._out(self._command.ReleaseTrack(for_help=True).help_note + '\n\n')
+      if self._command.ReleaseTrack().help_note:
+        self._out(self._command.ReleaseTrack().help_note + '\n\n')
 
   def _Details(self, arg):
     """Returns the detailed help message for the given arg."""

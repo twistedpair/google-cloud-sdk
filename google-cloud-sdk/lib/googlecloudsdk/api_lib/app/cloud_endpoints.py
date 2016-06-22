@@ -137,7 +137,8 @@ def PushServiceConfig(swagger_file, project, client, messages):
 
   # Create an endpoints directory under the location of the swagger config
   # which will contain the service.json file needed by ESP.
-  # This file+directory will be carried to the Managed VM via the app container.
+  # This file+directory will be carried to the App Engine Flexible VM via the
+  # app container.
   # TODO(user): Remove this when ESP is able to pull this configuration
   # directly from Inception.
   endpoints_dir = os.path.join(swagger_path, 'endpoints')
@@ -147,42 +148,28 @@ def PushServiceConfig(swagger_file, project, client, messages):
     out.write(apitools_base.encoding.MessageToJson(response.serviceConfig))
 
   # Second, upload Google Service Configuration to Service Management API
+  service_name = response.serviceConfig.name
   managed_service = messages.ManagedService(
       serviceConfig=response.serviceConfig,
-      serviceName=response.serviceConfig.name)
+      serviceName=service_name)
   # Set the serviceConfig producerProjectId
   managed_service.serviceConfig.producerProjectId = project
 
   request = messages.ServicemanagementServicesUpdateRequest(
-      serviceName=managed_service.serviceName,
+      serviceName=service_name,
       managedService=managed_service,
   )
+
   try:
-    update_op = client.services.Update(request)
+    update_operation = client.services.Update(request)
   except apitools_base.exceptions.HttpError as error:
     raise SwaggerUploadException(_GetErrorMessage(error))
 
   # Wait on the operation to complete
   try:
-    services_util.WaitForOperation(update_op.name, client)
+    services_util.ProcessOperationResult(update_operation, async=False)
   except calliope_exceptions.ToolException:
     raise SwaggerUploadException('Failed to upload service configuration.')
 
-  # Next, enable the service for the producer project
-  usage_settings = messages.UsageSettings(
-      consumerEnableStatus=
-      messages.UsageSettings.ConsumerEnableStatusValueValuesEnum.ENABLED
-  )
-  project_settings = messages.ProjectSettings(usageSettings=usage_settings)
-  request = messages.ServicemanagementServicesProjectSettingsPatchRequest(
-      serviceName=managed_service.serviceName,
-      consumerProjectId=project,
-      projectSettings=project_settings,
-      updateMask='usage_settings.consumer_enable_status'
-  )
-  try:
-    client.services_projectSettings.Patch(request)
-    # TODO(b/27295262): wait here until the asynchronous operation in the
-    # response has finished.
-  except apitools_base.exceptions.HttpError as error:
-    raise SwaggerUploadException(_GetErrorMessage(error))
+  # Enable the service for the producer project if it is not already enabled
+  enable_api.EnableServiceIfDisabled(project, service_name, async=False)

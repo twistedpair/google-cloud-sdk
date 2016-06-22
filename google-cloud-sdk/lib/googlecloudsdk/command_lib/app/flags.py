@@ -19,6 +19,8 @@ from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.third_party.appengine.api import appinfo
+from googlecloudsdk.third_party.appengine.api import validation
 
 SERVER_FLAG = base.Argument(
     '--server',
@@ -71,3 +73,19 @@ def GetCodeBucket(api_client, project, bucket):
       raise exceptions.DefaultBucketAccessError(project)
 
   return cloud_storage.BucketReference(bucket_with_gs)
+
+
+def ValidateVersion(version):
+  """Check that version is in the correct format. If not, raise an error.
+
+  Args:
+    version: The version id to validate (must not be None).
+
+  Raises:
+    InvalidVersionIdError: If the version id is invalid.
+  """
+  validator = validation.Regex(appinfo.MODULE_VERSION_ID_RE_STRING)
+  try:
+    validator.Validate(version, 'version')
+  except validation.ValidationError:
+    raise exceptions.InvalidVersionIdError(version)

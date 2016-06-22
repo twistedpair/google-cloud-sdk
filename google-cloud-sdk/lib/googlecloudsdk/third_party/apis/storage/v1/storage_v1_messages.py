@@ -241,8 +241,7 @@ class BucketAccessControl(_messages.Message):
     kind: The kind of item this is. For bucket access control entries, this is
       always storage#bucketAccessControl.
     projectTeam: The project team associated with the entity, if any.
-    role: The access permission for the entity. Can be READER, WRITER, or
-      OWNER.
+    role: The access permission for the entity.
     selfLink: The link to this access-control entry.
   """
 
@@ -251,7 +250,7 @@ class BucketAccessControl(_messages.Message):
 
     Fields:
       projectNumber: The project number.
-      team: The team. Can be owners, editors, or viewers.
+      team: The team.
     """
 
     projectNumber = _messages.StringField(1)
@@ -646,7 +645,7 @@ class ObjectAccessControl(_messages.Message):
       always storage#objectAccessControl.
     object: The name of the object.
     projectTeam: The project team associated with the entity, if any.
-    role: The access permission for the entity. Can be READER or OWNER.
+    role: The access permission for the entity.
     selfLink: The link to this access-control entry.
   """
 
@@ -655,7 +654,7 @@ class ObjectAccessControl(_messages.Message):
 
     Fields:
       projectNumber: The project number.
-      team: The team. Can be owners, editors, or viewers.
+      team: The team.
     """
 
     projectNumber = _messages.StringField(1)

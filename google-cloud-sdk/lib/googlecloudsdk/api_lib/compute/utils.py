@@ -21,12 +21,10 @@ import re
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resolvers
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_printer
 
 
 class InstanceNotReadyError(calliope_exceptions.ToolException):
@@ -110,8 +108,8 @@ def CamelCaseToOutputFriendly(string):
 def ConstructList(title, items):
   """Returns a string displaying the items and a title."""
   buf = cStringIO.StringIO()
-  printer = console_io.ListPrinter(title)
-  printer.Print(sorted(set(items)), output_stream=buf)
+  fmt = 'list[title="{title}"]'.format(title=title)
+  resource_printer.Print(sorted(set(items)), fmt, out=buf)
   return buf.getvalue()
 
 
@@ -186,50 +184,6 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
         'poor I/O performance. For more information, see: '
         'https://developers.google.com/compute/docs/disks#pdperformance.',
         warning_threshold_gb)
-
-
-def SetResourceParamDefaults():
-  """Sets resource parsing default parameters to point to properties."""
-  core_values = properties.VALUES.core
-  compute_values = properties.VALUES.compute
-  for api, param, prop in (
-      ('compute', 'project', core_values.project),
-      ('clouduseraccounts', 'project', core_values.project),
-      ('resourceviews', 'projectName', core_values.project),
-      ('compute', 'zone', compute_values.zone),
-      ('resourceviews', 'zone', compute_values.zone),
-      ('compute', 'region', compute_values.region),
-      ('resourceviews', 'region', compute_values.region)):
-    resources.SetParamDefault(
-        api=api,
-        collection=None,
-        param=param,
-        resolver=resolvers.FromProperty(prop))
-
-
-def UpdateContextEndpointEntries(context, compute_client):
-  """Updates context to set API endpoints."""
-
-  context['project'] = properties.VALUES.core.project.Get(required=True)
-
-  # TODO(user): reconsider using context for compute level constructs.
-  context['client'] = compute_client
-  context['resources'] = resources.REGISTRY.CloneAndSwitchAPIs(
-      compute_client.apitools_client)
-
-  # TODO(b/28798161): Do not initialize this for all compute commands.
-  # Construct cloud user accounts client.
-  try:
-    # TODO(user): User a separate API override from compute.
-    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts',
-                                                    compute_client.api_version)
-  except core_apis.UnknownVersionError:
-    # Throw an error here once clouseuseraccounts has a v1 API version.
-    clouduseraccounts = core_apis.GetClientInstance('clouduseraccounts', 'beta')
-
-  context['clouduseraccounts'] = clouduseraccounts
-  context['clouduseraccounts-resources'] = (
-      resources.REGISTRY.CloneAndSwitchAPIs(clouduseraccounts))
 
 
 def IsValidIPV4(ip):

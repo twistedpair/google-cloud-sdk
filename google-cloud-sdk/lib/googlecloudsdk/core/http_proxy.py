@@ -16,8 +16,8 @@
 
 
 import urllib
-from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import http_proxy_types
 import httplib2
 
 
@@ -57,7 +57,7 @@ def GetDefaultProxyInfo(method='http'):
 
 def GetProxyProperties():
   """Get proxy information from cloud sdk properties in dictionary form."""
-  proxy_type_map = config.GetProxyTypeMap()
+  proxy_type_map = http_proxy_types.GetProxyTypeMap()
   proxy_type = properties.VALUES.proxy.proxy_type.Get()
   proxy_address = properties.VALUES.proxy.address.Get()
   proxy_port = properties.VALUES.proxy.port.GetInt()

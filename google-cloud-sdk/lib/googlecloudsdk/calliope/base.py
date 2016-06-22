@@ -280,9 +280,6 @@ class _Common(object):
   _cli_generator = None
   _is_hidden = False
   _release_track = None
-  # TODO(user): Remove this once commands are only allowed to show up under
-  # the correct track (b/19406151)
-  _legacy_release_track = None
   _valid_release_tracks = None
 
   def __init__(self):
@@ -412,11 +409,7 @@ class _Common(object):
     return cls._is_hidden
 
   @classmethod
-  def ReleaseTrack(cls, for_help=False):
-    # TODO(user): Remove for_help once commands are only allowed to show up
-    # under the correct track (b/19406151).
-    if for_help and cls._legacy_release_track:
-      return cls._legacy_release_track
+  def ReleaseTrack(cls):
     return cls._release_track
 
   @classmethod
@@ -718,38 +711,6 @@ def Hidden(cmd_class):
   """
   # pylint: disable=protected-access
   cmd_class._is_hidden = True
-  return cmd_class
-
-
-# TODO(user): Remove this once commands are only allowed to show up under
-# the correct track (b/19406151).
-def Alpha(cmd_class):
-  """Decorator for annotating a command or group as ALPHA.
-
-  Args:
-    cmd_class: base._Common, A calliope command or group.
-
-  Returns:
-    A modified version of the provided class.
-  """
-  # pylint: disable=protected-access
-  cmd_class._legacy_release_track = ReleaseTrack.ALPHA
-  return cmd_class
-
-
-# TODO(user): Remove this once commands are only allowed to show up under
-# the correct track (b/19406151)
-def Beta(cmd_class):
-  """Decorator for annotating a command or group as BETA.
-
-  Args:
-    cmd_class: base._Common, A calliope command or group.
-
-  Returns:
-    A modified version of the provided class.
-  """
-  # pylint: disable=protected-access
-  cmd_class._legacy_release_track = ReleaseTrack.BETA
   return cmd_class
 
 

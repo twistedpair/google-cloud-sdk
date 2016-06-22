@@ -2,6 +2,62 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 115.0.0 (2016/06/22)
+
+### Breaking Changes
+
+*   (Google Compute Engine) The `debian-7` and `debian-7-backports` image
+    aliases have been removed, as Debian 7 has reached end-of-life
+
+*   (Google Compute Engine) The `--port-range` flag in the `gcloud compute
+    forwarding-rules create` command has been deprecated; please use the
+    `--ports` flag instead. At this time only consecutive ports can be
+    specified.
+
+*   (Google Compute Engine) `gcloud alpha compute rolling-updates` commands
+    have been deprecated and removed.
+
+*   (Google Container Engine) The `--wait` flag for the `gcloud container
+    clusters` command group is now deprecated; please use the `--async` flag
+    instead.
+
+### Cloud SDK
+
+*   Users will now be prompted to set Cloud SDK proxy properties if network
+    issues are detected while running `gcloud init`.
+
+### Google Compute Engine
+
+*   `gcloud compute backend-services {create,update} --enable-cdn` flag has been
+    promoted from beta to GA.
+*   `gcloud compute url-maps invalidate-cdn-cache` has been promoted from beta
+    to GA.
+*   The `--remote-traffic-selector` flag in `gcloud compute vpn-tunnels create`,
+    which allows specifying a list of CIDR blocks to be used during IKE\IPsec
+    traffic selectors negotiation, is now available in the GA release track.
+
+
+### Google App Engine
+
+*   Add `gcloud preview app versions describe` command.
+
+
+### Deployment Manager
+
+*   (beta only) deployment-manager now supports rollbacks with the
+    `--manifest-id` flag: `gcloud beta deployment-manager deployments update
+    deployment-name --manifest-id=MANIFEST-ID`
+
+### Docker
+
+*   `gcloud docker` now respects the `$DOCKER_CONFIG` environment variable
+
+### Emulators
+
+*   The Cloud Datastore emulator now has an `env-unset` command which prints the
+    commands to unset any environment variables set by running the commands in
+    the output of the `env-init` command.
+
 
 ## 114.0.0 (2016/06/15)
 

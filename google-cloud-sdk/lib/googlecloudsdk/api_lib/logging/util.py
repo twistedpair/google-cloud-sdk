@@ -148,20 +148,23 @@ def ConvertToJsonObject(json_string):
     raise exceptions.ToolException('Invalid JSON value: %s' % e.message)
 
 
-def CreateLogResourceName(project, log_id):
+def CreateLogResourceName(parent, log_id):
   """Creates the full log resource name.
 
   Args:
-    project: The project id, e.g. my-project.
-    log_id: The log id, e.g. my-log.
+    parent: The project or organization id as a resource name, e.g.
+      'projects/my-project' or 'organizations/123'.
+    log_id: The log id, e.g. 'my-log'. This may already be a resource name, in
+      which case parent is ignored and log_id is returned directly, e.g.
+      CreateLogResourceName('projects/ignored', 'projects/bar/logs/my-log')
+      returns 'projects/bar/logs/my-log'
 
   Returns:
     Log resource, e.g. projects/my-project/logs/my-log.
   """
-  # Also handle the case where we already have the correct format.
-  if 'projects/' in log_id and 'logs/' in log_id:
+  if '/logs/' in log_id:
     return log_id
-  return 'projects/%s/logs/%s' % (project, log_id.replace('/', '%2F'))
+  return '%s/logs/%s' % (parent, log_id.replace('/', '%2F'))
 
 
 def ExtractLogId(log_resource):

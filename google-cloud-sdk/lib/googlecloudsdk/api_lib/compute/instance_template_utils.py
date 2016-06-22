@@ -17,6 +17,7 @@ from googlecloudsdk.api_lib.compute import constants
 EPHEMERAL_ADDRESS = object()
 
 
+# TODO(user): Add unit tests for utilities
 def CreateNetworkInterfaceMessage(
     scope_prompter, messages, network, region, subnet, address):
   """Creates and returns a new NetworkInterface message.

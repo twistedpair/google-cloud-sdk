@@ -178,6 +178,20 @@ def PrintEnvExport(env):
         value=value))
 
 
+def PrintEnvUnset(env):
+  """Print OS specific unset commands for the given environment variables.
+
+  Args:
+    env: {str: str}, Dictionary of environment values, the value is ignored.
+  """
+  current_os = platforms.OperatingSystem.Current()
+  export_command = 'unset {var}'
+  if current_os is platforms.OperatingSystem.WINDOWS:
+    export_command = 'set {var}='
+  for var in env.iterkeys():
+    log.Print(export_command.format(var=var))
+
+
 def GetDataDir(prefix):
   """If present, returns the configured data dir, else returns the default.
 

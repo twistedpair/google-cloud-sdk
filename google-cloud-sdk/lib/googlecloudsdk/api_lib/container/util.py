@@ -25,7 +25,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
@@ -64,8 +64,7 @@ def GetError(error):
 
 def ConstructList(title, items):
   buf = cStringIO.StringIO()
-  printer = console_io.ListPrinter(title)
-  printer.Print(items, output_stream=buf)
+  resource_printer.Print(items, 'list[title="{0}"]'.format(title), out=buf)
   return buf.getvalue()
 
 

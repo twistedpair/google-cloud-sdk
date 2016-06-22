@@ -16,8 +16,17 @@
 import json
 
 from googlecloudsdk.api_lib.compute import time_utils
+from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
+
+
+def GetApiClientInstance():
+  return core_apis.GetClientInstance('replicapoolupdater', 'v1beta1')
+
+
+def GetApiMessages():
+  return core_apis.GetMessagesModule('replicapoolupdater', 'v1beta1')
 
 
 def WaitForOperation(client, operation_ref, message):

@@ -228,6 +228,7 @@ RESOURCE_REGISTRY = {
     'cloudbuild.projects.builds': ResourceInfo(
         cache_command='cloud build list',
         bypass_cache=True,
+        async_collection='cloudbuild.projects.builds',
         list_format="""
           table(
             id,
@@ -309,6 +310,28 @@ RESOURCE_REGISTRY = {
     ),
 
     'compute.backendServices': ResourceInfo(
+        cache_command='compute backend-services list',
+        list_format="""
+          table(
+            name,
+            backends[].group.list():label=BACKENDS,
+            protocol
+          )
+        """,
+    ),
+
+    'compute.backendServices.alpha': ResourceInfo(
+        cache_command='compute backend-services list',
+        list_format="""
+          table(
+            name,
+            backends[].group.list():label=BACKENDS,
+            protocol
+          )
+        """,
+    ),
+
+    'compute.regionBackendServices': ResourceInfo(
         cache_command='compute backend-services list',
         list_format="""
           table(
@@ -1152,6 +1175,27 @@ RESOURCE_REGISTRY = {
             topicId:label=TOPIC,
             type,
             ackDeadlineSeconds:label=ACK_DEADLINE
+          )
+        """,
+    ),
+
+    'replicapoolupdater.rollingUpdates': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            instanceGroupManager.basename():label=GROUP_NAME,
+            instanceTemplate.basename():label=TEMPLATE_NAME,
+            status,
+            statusMessage
+          )
+        """,
+    ),
+
+    'replicapoolupdater.rollingUpdates.instanceUpdates': ResourceInfo(
+        list_format="""
+          table(
+            instance.basename():label=INSTANCE_NAME,
+            status
           )
         """,
     ),

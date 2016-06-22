@@ -147,6 +147,181 @@ class ConcatPosition(_messages.Message):
   position = _messages.MessageField('Position', 2)
 
 
+class CounterMetadata(_messages.Message):
+  """CounterMetadata includes all static non-name non-value counter
+  attributes.
+
+  Enums:
+    KindValueValuesEnum: Counter aggregation kind.
+    StandardUnitsValueValuesEnum: System defined Units, see above enum.
+
+  Fields:
+    description: Human-readable description of the counter semantics.
+    kind: Counter aggregation kind.
+    otherUnits: A string referring to the unit type.
+    standardUnits: System defined Units, see above enum.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    """Counter aggregation kind.
+
+    Values:
+      INVALID: Counter aggregation kind was not set.
+      SUM: Aggregated value is the sum of all contributed values.
+      MAX: Aggregated value is the max of all contributed values.
+      MIN: Aggregated value is the min of all contributed values.
+      MEAN: Aggregated value is the mean of all contributed values.
+      OR: Aggregated value represents the logical 'or' of all contributed
+        values.
+      AND: Aggregated value represents the logical 'and' of all contributed
+        values.
+      SET: Aggregated value is a set of unique contributed values.
+    """
+    INVALID = 0
+    SUM = 1
+    MAX = 2
+    MIN = 3
+    MEAN = 4
+    OR = 5
+    AND = 6
+    SET = 7
+
+  class StandardUnitsValueValuesEnum(_messages.Enum):
+    """System defined Units, see above enum.
+
+    Values:
+      BYTES: Counter returns a value in bytes.
+      BYTES_PER_SEC: Counter returns a value in bytes per second.
+      MILLISECONDS: Counter returns a value in milliseconds.
+      MICROSECONDS: Counter returns a value in microseconds.
+      NANOSECONDS: Counter returns a value in nanoseconds.
+      TIMESTAMP_MSEC: Counter returns a timestamp in milliseconds.
+      TIMESTAMP_USEC: Counter returns a timestamp in microseconds.
+      TIMESTAMP_NSEC: Counter returns a timestamp in nanoseconds.
+    """
+    BYTES = 0
+    BYTES_PER_SEC = 1
+    MILLISECONDS = 2
+    MICROSECONDS = 3
+    NANOSECONDS = 4
+    TIMESTAMP_MSEC = 5
+    TIMESTAMP_USEC = 6
+    TIMESTAMP_NSEC = 7
+
+  description = _messages.StringField(1)
+  kind = _messages.EnumField('KindValueValuesEnum', 2)
+  otherUnits = _messages.StringField(3)
+  standardUnits = _messages.EnumField('StandardUnitsValueValuesEnum', 4)
+
+
+class CounterStructuredName(_messages.Message):
+  """Identifies a counter within a per-job namespace. Counters whose
+  structured names are the same get merged into a single value for the job.
+
+  Enums:
+    PortionValueValuesEnum: Portion of this counter, either key or value.
+    StandardOriginValueValuesEnum: One of the standard Origins defined above.
+
+  Fields:
+    componentStepName: Name of the optimized step being executed by the
+      workers.
+    executionStepName: Name of the stage. An execution step contains multiple
+      component steps.
+    name: Counter name. Not necessarily globally-unique, but unique within the
+      context of the other fields. Required.
+    originalStepName: System generated name of the original step in the user's
+      graph, before optimization.
+    otherOrigin: A string containing the origin of the counter.
+    portion: Portion of this counter, either key or value.
+    standardOrigin: One of the standard Origins defined above.
+    workerId: ID of a particular worker.
+  """
+
+  class PortionValueValuesEnum(_messages.Enum):
+    """Portion of this counter, either key or value.
+
+    Values:
+      ALL: Counter portion has not been set.
+      KEY: Counter reports a key.
+      VALUE: Counter reports a value.
+    """
+    ALL = 0
+    KEY = 1
+    VALUE = 2
+
+  class StandardOriginValueValuesEnum(_messages.Enum):
+    """One of the standard Origins defined above.
+
+    Values:
+      DATAFLOW: Counter was created by the Dataflow system.
+      USER: Counter was created by the user.
+    """
+    DATAFLOW = 0
+    USER = 1
+
+  componentStepName = _messages.StringField(1)
+  executionStepName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  originalStepName = _messages.StringField(4)
+  otherOrigin = _messages.StringField(5)
+  portion = _messages.EnumField('PortionValueValuesEnum', 6)
+  standardOrigin = _messages.EnumField('StandardOriginValueValuesEnum', 7)
+  workerId = _messages.StringField(8)
+
+
+class CounterStructuredNameAndMetadata(_messages.Message):
+  """A single message which encapsulates structured name and metadata for a
+  given counter.
+
+  Fields:
+    metadata: Metadata associated with a counter
+    name: Structured name of the counter.
+  """
+
+  metadata = _messages.MessageField('CounterMetadata', 1)
+  name = _messages.MessageField('CounterStructuredName', 2)
+
+
+class CounterUpdate(_messages.Message):
+  """An update to a Counter sent from a worker.
+
+  Fields:
+    boolean: Boolean value for And, Or.
+    cumulative: True if this counter is reported as the total cumulative
+      aggregate value accumulated since the worker started working on this
+      WorkItem. By default this is false, indicating that this counter is
+      reported as a delta.
+    floatingPoint: Floating point value for Sum, Max, Min.
+    floatingPointList: List of floating point numbers, for Set.
+    floatingPointMean: Floating point mean aggregation value for Mean.
+    integer: Integer value for Sum, Max, Min.
+    integerList: List of integers, for Set.
+    integerMean: Integer mean aggregation value for Mean.
+    internal: Value for internally-defined counters used by the Dataflow
+      service.
+    nameAndKind: Counter name and aggregation type.
+    shortId: The service-generated short identifier for this counter. The
+      short_id -> (name, metadata) mapping is constant for the lifetime of a
+      job.
+    stringList: List of strings, for Set.
+    structuredNameAndMetadata: Counter structured name and metadata.
+  """
+
+  boolean = _messages.BooleanField(1)
+  cumulative = _messages.BooleanField(2)
+  floatingPoint = _messages.FloatField(3)
+  floatingPointList = _messages.MessageField('FloatingPointList', 4)
+  floatingPointMean = _messages.MessageField('FloatingPointMean', 5)
+  integer = _messages.MessageField('SplitInt64', 6)
+  integerList = _messages.MessageField('IntegerList', 7)
+  integerMean = _messages.MessageField('IntegerMean', 8)
+  internal = _messages.MessageField('extra_types.JsonValue', 9)
+  nameAndKind = _messages.MessageField('NameAndKind', 10)
+  shortId = _messages.IntegerField(11)
+  stringList = _messages.MessageField('StringList', 12)
+  structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 13)
+
+
 class CustomSourceLocation(_messages.Message):
   """Identifies the location of a custom souce.
 
@@ -1383,17 +1558,41 @@ class MultiOutputInfo(_messages.Message):
 
 
 class NameAndKind(_messages.Message):
-  """Basic metadata about a metric.
+  """Basic metadata about a counter.
+
+  Enums:
+    KindValueValuesEnum: Counter aggregation kind.
 
   Fields:
-    kind: Metric aggregation kind.  The possible metric aggregation kinds are
-      "Sum", "Max", "Min", "Mean", "Set", "And", and "Or". The specified
-      aggregation kind is case-insensitive.  If omitted, this is not an
-      aggregated value but instead a single metric sample value.
-    name: Name of the metric.
+    kind: Counter aggregation kind.
+    name: Name of the counter.
   """
 
-  kind = _messages.StringField(1)
+  class KindValueValuesEnum(_messages.Enum):
+    """Counter aggregation kind.
+
+    Values:
+      INVALID: Counter aggregation kind was not set.
+      SUM: Aggregated value is the sum of all contributed values.
+      MAX: Aggregated value is the max of all contributed values.
+      MIN: Aggregated value is the min of all contributed values.
+      MEAN: Aggregated value is the mean of all contributed values.
+      OR: Aggregated value represents the logical 'or' of all contributed
+        values.
+      AND: Aggregated value represents the logical 'and' of all contributed
+        values.
+      SET: Aggregated value is a set of unique contributed values.
+    """
+    INVALID = 0
+    SUM = 1
+    MAX = 2
+    MIN = 3
+    MEAN = 4
+    OR = 5
+    AND = 6
+    SET = 7
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
   name = _messages.StringField(2)
 
 
@@ -2751,46 +2950,6 @@ class WorkItem(_messages.Message):
   streamingSetupTask = _messages.MessageField('StreamingSetupTask', 15)
 
 
-class WorkItemMetricUpdate(_messages.Message):
-  """An update to a metric sent from a worker. Unlike MetricUpdate, this
-  format does not support:   messages: use WorkerMessage API   CloudMetrics:
-  use MetricUpdate until this includes structured names
-
-  Fields:
-    boolean: Boolean value for And, Or.
-    cumulative: True if this metric is reported as the total cumulative
-      aggregate value accumulated since the worker started working on this
-      WorkItem. By default this is false, indicating that this metric is
-      reported as a delta that is not associated with any WorkItem.
-    floatingPoint: Floating point value for Sum, Max, Min.
-    floatingPointList: List of floating point numbers, for Set.
-    floatingPointMean: Floating point mean aggregation value for Mean.
-    integer: Integer value for Sum, Max, Min.
-    integerList: List of integers, for Set.
-    integerMean: Integer mean aggregation value for Mean.
-    internal: Value for internally-defined metrics use by the Dataflow
-      service.
-    nameAndKind: Metric name and aggregation type.
-    shortId: The service-generated short identifier for this metric. The
-      short_id -> (name, metadata) mapping is constant for the lifetime of a
-      job.
-    stringList: List of strings, for Set.
-  """
-
-  boolean = _messages.BooleanField(1)
-  cumulative = _messages.BooleanField(2)
-  floatingPoint = _messages.FloatField(3)
-  floatingPointList = _messages.MessageField('FloatingPointList', 4)
-  floatingPointMean = _messages.MessageField('FloatingPointMean', 5)
-  integer = _messages.MessageField('SplitInt64', 6)
-  integerList = _messages.MessageField('IntegerList', 7)
-  integerMean = _messages.MessageField('IntegerMean', 8)
-  internal = _messages.MessageField('extra_types.JsonValue', 9)
-  nameAndKind = _messages.MessageField('NameAndKind', 10)
-  shortId = _messages.IntegerField(11)
-  stringList = _messages.MessageField('StringList', 12)
-
-
 class WorkItemServiceState(_messages.Message):
   """The Dataflow service's idea of the current state of a WorkItem being
   processed by a worker.
@@ -2860,11 +3019,12 @@ class WorkItemStatus(_messages.Message):
   Fields:
     completed: True if the WorkItem was completed (successfully or
       unsuccessfully).
+    counterUpdates: Worker output counters for this WorkItem.
     dynamicSourceSplit: See documentation of stop_position.
     errors: Specifies errors which occurred during processing.  If errors are
       provided, and completed = true, then the WorkItem is considered to have
       failed.
-    metricUpdates: DEPRECATED in favor of worker_metric_update.
+    metricUpdates: DEPRECATED in favor of counter_updates.
     progress: DEPRECATED in favor of reported_progress.
     reportIndex: The report index.  When a WorkItem is leased, the lease will
       contain an initial report index.  When a WorkItem's status is reported
@@ -2907,22 +3067,21 @@ class WorkItemStatus(_messages.Message):
       and in a potential subsequent dynamic_source_split into {P', R'}, P' and
       R' must be together equivalent to P, etc.
     workItemId: Identifies the WorkItem.
-    workItemMetricUpdates: Worker output metrics (counters) for this WorkItem.
   """
 
   completed = _messages.BooleanField(1)
-  dynamicSourceSplit = _messages.MessageField('DynamicSourceSplit', 2)
-  errors = _messages.MessageField('Status', 3, repeated=True)
-  metricUpdates = _messages.MessageField('MetricUpdate', 4, repeated=True)
-  progress = _messages.MessageField('ApproximateProgress', 5)
-  reportIndex = _messages.IntegerField(6)
-  reportedProgress = _messages.MessageField('ApproximateReportedProgress', 7)
-  requestedLeaseDuration = _messages.StringField(8)
-  sourceFork = _messages.MessageField('SourceFork', 9)
-  sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 10)
-  stopPosition = _messages.MessageField('Position', 11)
-  workItemId = _messages.StringField(12)
-  workItemMetricUpdates = _messages.MessageField('WorkItemMetricUpdate', 13, repeated=True)
+  counterUpdates = _messages.MessageField('CounterUpdate', 2, repeated=True)
+  dynamicSourceSplit = _messages.MessageField('DynamicSourceSplit', 3)
+  errors = _messages.MessageField('Status', 4, repeated=True)
+  metricUpdates = _messages.MessageField('MetricUpdate', 5, repeated=True)
+  progress = _messages.MessageField('ApproximateProgress', 6)
+  reportIndex = _messages.IntegerField(7)
+  reportedProgress = _messages.MessageField('ApproximateReportedProgress', 8)
+  requestedLeaseDuration = _messages.StringField(9)
+  sourceFork = _messages.MessageField('SourceFork', 10)
+  sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 11)
+  stopPosition = _messages.MessageField('Position', 12)
+  workItemId = _messages.StringField(13)
 
 
 class WorkerHealthReport(_messages.Message):

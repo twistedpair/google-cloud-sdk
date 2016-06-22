@@ -137,12 +137,12 @@ def FileIterator(base, skip_files, separator=os.path.sep):
 
       if os.path.isfile(fullname):
         if skip_files.match(name):
-          log.info('Ignoring file [%s]: File matches ignore regex.', name)
+          log.warn('Ignoring file [%s]: File matches ignore regex.', name)
         else:
           yield name
       elif os.path.isdir(fullname):
         if skip_files.match(name):
-          log.info('Ignoring directory [%s]: Directory matches ignore regex.',
+          log.warn('Ignoring directory [%s]: Directory matches ignore regex.',
                    name)
         else:
           dirs.append(name)

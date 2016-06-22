@@ -31,6 +31,21 @@ GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
+GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    resource_name='backend service',
+    completion_resource_id='compute.backendServices',
+    regional_collection='compute.regionBackendServices',
+    global_collection='compute.backendServices')
+
+
+GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
+    resource_name='backend service',
+    completion_resource_id='compute.backendServices',
+    plural=True,
+    regional_collection='compute.regionBackendServices',
+    global_collection='compute.backendServices')
+
+
 def AddLoadBalancingScheme(parser):
   parser.add_argument(
       '--load-balancing-scheme',
@@ -38,14 +53,6 @@ def AddLoadBalancingScheme(parser):
       type=lambda x: x.upper(),
       default='EXTERNAL',
       help='Specifies if this is internal or external load balancer.')
-
-
-def AddFailoverRatio(parser):
-  parser.add_argument(
-      '--failover-ratio',
-      type=float,
-      help=('The failover ratio value for the backend service. '
-            'This must be a float in the range of [0, 1].'))
 
 
 def AddConnectionDrainingTimeout(parser):

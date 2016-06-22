@@ -180,7 +180,7 @@ the service.
               relative_path=u'v1/services/{serviceName}/configs:submit',
               request_field=u'submitConfigSourceRequest',
               request_type_name=u'ServicemanagementServicesConfigsSubmitRequest',
-              response_type_name=u'Service',
+              response_type_name=u'Operation',
               supports_download=False,
           ),
           }
@@ -238,11 +238,13 @@ Specification). This method stores the source configurations as well as the
 generated service config. It does NOT apply the service config to any
 backend services.
 
+Operation<response: SubmitConfigSourceResponse>
+
       Args:
         request: (ServicemanagementServicesConfigsSubmitRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Service) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Submit')
       return self._RunMethod(

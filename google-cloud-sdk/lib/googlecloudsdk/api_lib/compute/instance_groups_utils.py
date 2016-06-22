@@ -20,12 +20,16 @@ from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources as resource_exceptions
+
+
+def IsZonalGroup(group_ref):
+  """Checks if group reference is zonal."""
+  return group_ref.Collection() == 'compute.instanceGroups'
 
 
 def ValidateInstanceInZone(instances, zone):
@@ -204,7 +208,7 @@ class InstanceGroupListInstances(InstanceGroupListInstancesBase):
             self.messages.InstanceGroupsListInstancesRequest()),
         zone=group_ref.zone,
         filter=filter_expr,
-        project=self.context['project'])
+        project=group_ref.project)
 
     errors = []
     results = list(request_helper.MakeRequests(
@@ -387,158 +391,112 @@ class FingerprintFetchException(core_exceptions.Error):
   """Exception thrown when there is a problem with getting fingerprint."""
 
 
-class InstanceGroupSetNamedPorts(base_classes.NoOutputAsyncMutator):
-  """Sets named ports for instance groups."""
+def _GetGroupFingerprint(compute_client, group_ref):
+  """Gets fingerprint of given instance group."""
+  compute = compute_client.apitools_client
+  if IsZonalGroup(group_ref):
+    service = compute.instanceGroups
+  else:
+    service = compute.regionInstanceGroups
 
-  @staticmethod
-  def AddArgs(parser, multizonal):
-    parser.add_argument(
-        'group',
-        help='The name of the instance group.')
+  errors = []
+  resources = compute_client.MakeRequests(
+      requests=[(service, 'Get', group_ref.Request())],
+      errors_to_collect=errors)
 
-    parser.add_argument(
-        '--named-ports',
-        required=True,
-        type=arg_parsers.ArgList(),
-        action=arg_parsers.FloatingListValuesCatcher(),
-        metavar='NAME:PORT',
-        help="""\
-            The comma-separated list of key:value pairs representing
-            the service name and the port that it is running on.
+  if errors:
+    utils.RaiseException(
+        errors,
+        FingerprintFetchException,
+        error_message='Could not set named ports for resource:')
+  return resources[0].fingerprint
 
-            To clear the list of named ports pass empty list as flag value.
-            For example:
 
-              $ {command} example-instance-group --named-ports ""
-            """)
+def GetSetNamedPortsRequestForGroup(compute_client, group_ref, ports):
+  """Returns a request to get named ports and service to send request.
 
-    if multizonal:
-      scope_parser = parser.add_mutually_exclusive_group()
-      flags.AddRegionFlag(
-          scope_parser,
-          resource_type='instance group',
-          operation_type='set named ports for',
-          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      flags.AddZoneFlag(
-          scope_parser,
-          resource_type='instance group',
-          operation_type='set named ports for',
-          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
-    else:
-      flags.AddZoneFlag(
-          parser,
-          resource_type='instance group',
-          operation_type='set named ports for')
+  Args:
+    compute_client: GCE API client,
+    group_ref: reference to instance group (zonal or regional),
+    ports: list of named ports to set
 
-  @property
-  def service(self):
-    return self.compute.instanceGroups
-
-  @property
-  def method(self):
-    return 'SetNamedPorts'
-
-  @property
-  def resource_type(self):
-    return 'instanceGroups'
-
-  def CreateRequests(self, args):
-    group_ref = self.GetGroupReference(args)
-    ports = []
-    for named_port in args.named_ports:
-      if named_port.count(':') != 1:
-        raise exceptions.InvalidArgumentException(
-            named_port, 'Named ports should follow NAME:PORT format.')
-      host, port = named_port.split(':')
-      if not port.isdigit():
-        raise exceptions.InvalidArgumentException(
-            named_port, 'Named ports should follow NAME:PORT format.')
-      ports.append(self.messages.NamedPort(name=host, port=int(port)))
-
-    # Instance group fingerprint will be used for optimistic locking. Each
-    # modification of instance group changes the fingerprint. This request will
-    # fail if instance group fingerprint does not match fingerprint sent in
-    # request.
-    fingerprint = self.GetGroupFingerprint(group=group_ref)
-    request = self.CreateRequestForGroup(group_ref, ports, fingerprint)
-    service = self.GetServiceForGroup(group_ref)
-
-    return [(service, self.method, request)]
-
-  def GetGroupReference(self, args):
-    return self.CreateZonalReference(args.group, args.zone)
-
-  def GetServiceForGroup(self, group_ref):
-    _ = group_ref
-    return self.compute.instanceGroups
-
-  def CreateRequestForGroup(self, group_ref, ports, fingerprint):
-    request_body = self.messages.InstanceGroupsSetNamedPortsRequest(
+  Returns:
+    request, message to send in order to set named ports on instance group,
+    service, service where request should be sent
+      - regionInstanceGroups for regional groups
+      - instanceGroups for zonal groups
+  """
+  compute = compute_client.apitools_client
+  messages = compute_client.messages
+  # Instance group fingerprint will be used for optimistic locking. Each
+  # modification of instance group changes the fingerprint. This request will
+  # fail if instance group fingerprint does not match fingerprint sent in
+  # request.
+  fingerprint = _GetGroupFingerprint(compute_client, group_ref)
+  if IsZonalGroup(group_ref):
+    request_body = messages.InstanceGroupsSetNamedPortsRequest(
         fingerprint=fingerprint,
         namedPorts=ports)
-
-    request = self.messages.ComputeInstanceGroupsSetNamedPortsRequest(
+    return messages.ComputeInstanceGroupsSetNamedPortsRequest(
         instanceGroup=group_ref.Name(),
         instanceGroupsSetNamedPortsRequest=request_body,
         zone=group_ref.zone,
-        project=self.project)
+        project=group_ref.project), compute.instanceGroups
+  else:
+    request_body = messages.RegionInstanceGroupsSetNamedPortsRequest(
+        fingerprint=fingerprint,
+        namedPorts=ports)
+    return messages.ComputeRegionInstanceGroupsSetNamedPortsRequest(
+        instanceGroup=group_ref.Name(),
+        regionInstanceGroupsSetNamedPortsRequest=request_body,
+        region=group_ref.region,
+        project=group_ref.project), compute.regionInstanceGroups
 
-    return request
 
-  def GetGroupFingerprint(self, group):
-    """Gets fingerprint of given instance group."""
-    get_request = self.messages.ComputeInstanceGroupsGetRequest(
-        instanceGroup=group.Name(),
-        zone=group.zone,
-        project=self.project)
+def ValidateAndParseNamedPortsArgs(messages, named_ports):
+  """Validates named ports flags."""
+  ports = []
+  for named_port in named_ports:
+    if named_port.count(':') != 1:
+      raise exceptions.InvalidArgumentException(
+          named_port, 'Named ports should follow NAME:PORT format.')
+    host, port = named_port.split(':')
+    if not port.isdigit():
+      raise exceptions.InvalidArgumentException(
+          named_port, 'Named ports should follow NAME:PORT format.')
+    ports.append(messages.NamedPort(name=host, port=int(port)))
+  return ports
 
-    errors = []
-    resources = list(request_helper.MakeRequests(
-        requests=[(
-            self.compute.instanceGroups,
-            'Get',
-            get_request)],
-        http=self.http,
-        batch_url=self.batch_url,
-        errors=errors,
-        custom_get_requests=None))
 
-    if errors:
-      utils.RaiseException(
-          errors,
-          FingerprintFetchException,
-          error_message='Could not set named ports for resource:')
-    return resources[0].fingerprint
+SET_NAMED_PORTS_HELP = {
+    'brief': 'Sets the list of named ports for an instance group',
+    'DESCRIPTION': """\
+        Named ports are key:value pairs metadata representing
+        the service name and the port that it's running on. Named ports
+        can be assigned to an instance group, which
+        indicates that the service is available on all instances in the
+        group. This information is used by the HTTP Load Balancing
+        service.
 
-  detailed_help = {
-      'brief': 'Sets the list of named ports for an instance group',
-      'DESCRIPTION': """\
-          Named ports are key:value pairs metadata representing
-          the service name and the port that it's running on. Named ports
-          can be assigned to an instance group, which
-          indicates that the service is available on all instances in the
-          group. This information is used by the HTTP Load Balancing
-          service.
+        *{command}* sets the list of named ports for all instances
+        in an instance group.
+        """,
+    'EXAMPLES': """\
+        For example, to apply the named ports to an entire instance group:
 
-          *{command}* sets the list of named ports for all instances
-          in an instance group.
-          """,
-      'EXAMPLES': """\
-          For example, to apply the named ports to an entire instance group:
+          $ {command} example-instance-group --named-ports example-service:1111 --zone us-central1-a
 
-            $ {command} example-instance-group --named-ports example-service:1111 --zone us-central1-a
+        The above example will assign a name 'example-service' for port 1111
+        to the instance group called 'example-instance-group' in the
+        ``us-central1-a'' zone. The command removes any named ports that are
+        already set for this instance group.
 
-          The above example will assign a name 'example-service' for port 1111
-          to the instance group called 'example-instance-group' in the
-          ``us-central1-a'' zone. The command removes any named ports that are
-          already set for this instance group.
+        To clear named ports from instance group provide empty named ports
+        list as parameter:
 
-          To clear named ports from instance group provide empty named ports
-          list as parameter:
-
-            $ {command} example-instance-group --named-ports "" --zone us-central1-a
-          """,
-  }
+          $ {command} example-instance-group --named-ports "" --zone us-central1-a
+        """,
+}
 
 
 class InstancesReferenceMixin(object):
@@ -554,7 +512,7 @@ class InstancesReferenceMixin(object):
       request = service.GetRequestType('ListManagedInstances')(
           instanceGroupManager=group_ref.Name(),
           region=group_ref.region,
-          project=self.context['project'])
+          project=group_ref.project)
       results = list(request_helper.MakeRequests(
           requests=[(service, 'ListManagedInstances', request)],
           http=self.http,

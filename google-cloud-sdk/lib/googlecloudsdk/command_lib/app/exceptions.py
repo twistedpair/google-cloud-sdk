@@ -62,3 +62,16 @@ class DefaultBucketAccessError(DeployError):
     return (
         'Could not retrieve the default Google Cloud Storage bucket for [{a}]. '
         'Please try again or use the [bucket] argument.').format(a=self.project)
+
+
+class InvalidVersionIdError(exceptions.Error):
+  """Indicates an invalid version ID."""
+
+  def __init__(self, version):
+    self.version = version
+
+  def __str__(self):
+    return (
+        'Invalid version id [{version}].  May only contain lowercase letters, '
+        'digits, and hyphens. Must begin and end with a letter or digit. Must '
+        'not exceed 63 characters.').format(version=self.version)

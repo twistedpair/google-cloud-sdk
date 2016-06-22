@@ -348,10 +348,27 @@ class Range(object):
                                   start, end, string_value))
     return Range(start, end)
 
+  def Combine(self, other):
+    """Combines two overlapping or adjacent ranges, raises otherwise."""
+    if self.end + 1 < other.start or self.start > other.end + 1:
+      raise Error('Cannot combine non-overlapping or non-adjacent ranges '
+                  '{0} and {1}'.format(self, other))
+    return Range(min(self.start, other.start), max(self.end, other.end))
+
   def __eq__(self, other):
     if isinstance(other, Range):
       return self.start == other.start and self.end == other.end
     return False
+
+  def __lt__(self, other):
+    if self.start == other.start:
+      return self.end < other.end
+    return self.start < other.start
+
+  def __str__(self):
+    if self.start == self.end:
+      return str(self.start)
+    return '{0}-{1}'.format(self.start, self.end)
 
 
 class HostPort(object):

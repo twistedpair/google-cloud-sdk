@@ -16,7 +16,7 @@
 
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_printer
 
 
 DEPLOY_MESSAGE_TEMPLATE = """\
@@ -52,10 +52,7 @@ def DisplayProposedDeployment(project, app_config, version, promote):
   deployed_urls = {}
 
   if app_config.Services():
-    printer = console_io.ListPrinter(
-        'You are about to deploy the following services:')
     deploy_messages = []
-
     for service, info in app_config.Services().iteritems():
       use_ssl = deploy_command_util.UseSsl(info.parsed.handlers)
       deploy_message = DEPLOY_MESSAGE_TEMPLATE.format(
@@ -73,13 +70,13 @@ def DisplayProposedDeployment(project, app_config, version, promote):
         deploy_message += PROMOTE_MESSAGE_TEMPLATE.format(
             default_url=default_url)
       deploy_messages.append(deploy_message)
-    printer.Print(deploy_messages, output_stream=log.status)
+    fmt = 'list[title="You are about to deploy the following services:"]'
+    resource_printer.Print(deploy_messages, fmt, out=log.status)
 
   if app_config.Configs():
-    printer = console_io.ListPrinter(
-        'You are about to deploy the following configurations:')
-    printer.Print(
+    fmt = 'list[title="You are about to deploy the following configurations:"]'
+    resource_printer.Print(
         ['{0}/{1}  (from [{2}])'.format(project, c.config, c.file)
-         for c in app_config.Configs().values()], output_stream=log.status)
+         for c in app_config.Configs().values()], fmt, out=log.status)
 
   return deployed_urls

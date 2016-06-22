@@ -54,36 +54,6 @@ class OperationCancelledError(Error):
     super(OperationCancelledError, self).__init__('Operation cancelled.')
 
 
-class ListPrinter(object):
-  """Provides the ability to print a list of items as a formatted list.
-
-  Using this class helps you adhere to the gcloud style guide.
-  """
-
-  def __init__(self, title):
-    """Create a titled list printer that can print rows to stdout.
-
-    Args:
-      title: A string for the title of the list.
-    """
-    self.__title = title
-
-  def Print(self, rows, output_stream=None):
-    """Print this list with the provided rows to stdout.
-
-    Args:
-      rows: A list of objects representing the rows of this list. Before being
-          printed, they will be converted to strings.
-      output_stream: file-like object, The stream to wire the rows to.  Defaults
-        to log.out if not given.
-    """
-    if not output_stream:
-      output_stream = log.out
-    output_stream.write(self.__title + '\n')
-    for row in rows:
-      output_stream.write(' - ' + str(row) + '\n')
-
-
 TEXTWRAP = textwrap.TextWrapper(replace_whitespace=False,
                                 drop_whitespace=False,
                                 break_on_hyphens=False)

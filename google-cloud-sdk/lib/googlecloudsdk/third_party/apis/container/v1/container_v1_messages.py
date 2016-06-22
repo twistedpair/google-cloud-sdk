@@ -274,6 +274,12 @@ class ClusterUpdate(_messages.Message):
       run in the cluster.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
+    desiredLocations: The desired list of Google Compute Engine
+      [locations](/compute/docs/zones#available) in which the cluster's nodes
+      should be located. Changing the locations a cluster is in will result in
+      nodes being either created or removed from the cluster, depending on
+      whether locations are being added or removed.  This list must always
+      include the cluster's primary zone.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -300,12 +306,13 @@ class ClusterUpdate(_messages.Message):
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredImageType = _messages.StringField(2)
-  desiredMasterMachineType = _messages.StringField(3)
-  desiredMasterVersion = _messages.StringField(4)
-  desiredMonitoringService = _messages.StringField(5)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 6)
-  desiredNodePoolId = _messages.StringField(7)
-  desiredNodeVersion = _messages.StringField(8)
+  desiredLocations = _messages.StringField(3, repeated=True)
+  desiredMasterMachineType = _messages.StringField(4)
+  desiredMasterVersion = _messages.StringField(5)
+  desiredMonitoringService = _messages.StringField(6)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 7)
+  desiredNodePoolId = _messages.StringField(8)
+  desiredNodeVersion = _messages.StringField(9)
 
 
 class ContainerMasterProjectsZonesAuthenticateRequest(_messages.Message):

@@ -800,3 +800,24 @@ class _WindowsLocking(object):
   def Unlock(self, fd):
     import msvcrt  # pylint: disable=g-import-not-at-top
     msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+
+
+def GetFileContents(path):
+  """Returns the contents of the specified file.
+
+  Args:
+    path: str, The path of the file to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    The contents of the file.
+  """
+  try:
+    with open(path) as in_file:
+      return in_file.read()
+  except EnvironmentError:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to read file [{0}]'.format(path))

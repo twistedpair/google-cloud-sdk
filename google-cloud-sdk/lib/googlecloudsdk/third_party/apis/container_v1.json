@@ -611,6 +611,13 @@
           "description": "Autoscaler configuration for the node pool specified in\ndesired_node_pool_id. If there is only one pool in the\ncluster and desired_node_pool_id is not provided then\nthe change applies to that single node pool.",
           "$ref": "NodePoolAutoscaling"
         },
+        "desiredLocations": {
+          "description": "The desired list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "desiredMasterVersion": {
           "description": "\nWhitelisted and internal users can change the master to any version.\n\nThe Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
           "type": "string"

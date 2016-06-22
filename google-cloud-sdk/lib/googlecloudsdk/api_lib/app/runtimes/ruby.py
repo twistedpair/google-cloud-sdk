@@ -480,7 +480,7 @@ def _ChooseEntrypoint(default_entrypoint, appinfo):
     if appinfo:
       # We've got an entrypoint and the user had an app.yaml that didn't
       # specify it.
-      # TODO(user): Offer to edit the user's app.yaml
+      # TODO(mmuller): Offer to edit the user's app.yaml
       msg = ('\nTo avoid being asked for an entrypoint in the future, please '
              'add it to your app.yaml. e.g.\n  entrypoint: {0}'.
              format(entrypoint))

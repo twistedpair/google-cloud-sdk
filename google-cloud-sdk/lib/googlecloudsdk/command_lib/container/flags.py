@@ -16,6 +16,8 @@
 
 import argparse
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -74,3 +76,55 @@ def AddZoneFlag(parser):
       '--zone', '-z',
       help='The compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
+
+
+def GetAsyncValueFromAsyncAndWaitFlags(async, wait):
+  """Derives --async value from --async and --wait flags for gcloud container.
+
+  Args:
+    async: The --async flag value
+    wait: The --wait flag value.
+
+  Returns:
+    boolean representing derived async value
+  """
+  async_was_set = async is not None
+  wait_was_set = wait is not None
+
+  if wait_was_set:
+    log.warning('\nThe --wait flag is deprecated and will be removed in a '
+                'future release. Use --async or --no-async instead.\n')
+
+  if not async_was_set and not wait_was_set:
+    return False  # Waiting is the 'default' value for cloud sdk
+  elif async_was_set and not wait_was_set:
+    return async
+  elif not async_was_set and wait_was_set:
+    return not wait
+  else:  # async_was_set and wait_was_set
+    if (async and wait) or (not async and not wait):
+      raise exceptions.InvalidArgumentException('--async',
+                                                'You cannot set both the '
+                                                '--async and --wait flags.')
+    elif async and not wait:
+      return True
+    else:  # not async or wait
+      return False
+
+
+def AddClustersWaitAndAsyncFlags(parser):
+  """Adds the --wait and --async flags to the given parser."""
+  parser.add_argument(
+      '--wait',
+      action='store_true',
+      default=None,
+      # The default value is wait=True but the logic is done in
+      # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
+      help='Poll the operation for completion after issuing a create request.')
+  parser.add_argument(
+      '--async',
+      action='store_true',
+      default=None,
+      # The default value is async=False but the logic is done in
+      # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
+      help='Don\'t wait for the operation to complete.')

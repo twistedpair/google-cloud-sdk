@@ -11,7 +11,7 @@ class LoggingV2beta1(base_api.BaseApiClient):
   BASE_URL = u'https://logging.googleapis.com/'
 
   _PACKAGE = u'logging'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write', u'https://www.googleapis.com/auth/monitoring']
   _VERSION = u'v2beta1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -42,6 +42,7 @@ class LoggingV2beta1(base_api.BaseApiClient):
     self.projects_resourceKeys = self.ProjectsResourceKeysService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
+    self.v2beta1 = self.V2beta1Service(self)
 
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
@@ -602,3 +603,41 @@ Only logs that have entries are listed.
 
       self._upload_configs = {
           }
+
+  class V2beta1Service(base_api.BaseApiService):
+    """Service class for the v2beta1 resource."""
+
+    _NAME = u'v2beta1'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.V2beta1Service, self).__init__(client)
+      self._method_configs = {
+          'GetLogsUsage': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'logging.getLogs_usage',
+              ordered_params=[],
+              path_params=[],
+              query_params=[u'endTime', u'resourceName', u'resourceTier', u'startTime'],
+              relative_path=u'v2beta1/logs_usage',
+              request_field='',
+              request_type_name=u'LoggingGetLogsUsageRequest',
+              response_type_name=u'GetLogsUsageResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def GetLogsUsage(self, request, global_params=None):
+      """Gets logs usage.
+
+      Args:
+        request: (LoggingGetLogsUsageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetLogsUsageResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetLogsUsage')
+      return self._RunMethod(
+          config, request, global_params=global_params)

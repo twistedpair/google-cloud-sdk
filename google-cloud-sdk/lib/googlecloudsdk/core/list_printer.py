@@ -229,13 +229,6 @@ COLLECTION_COLUMNS = {
         ('BILLING_ENABLED', _Select('billingEnabled')),
     ),
 
-    # CLOUD RESOURCE MANAGER
-    'cloudresourcemanager.organizations': (
-        ('ORGNIAZATION_ID', _Select('organizationId')),
-        ('DISPLAY_NAME', _Select('displayName')),
-        ('DIRECTORY_CUSTOMER_ID', _Select('owner.directoryCustomerId')),
-    ),
-
     # COMPUTE
     'compute.instances': (
         ('NAME', _Select('name')),

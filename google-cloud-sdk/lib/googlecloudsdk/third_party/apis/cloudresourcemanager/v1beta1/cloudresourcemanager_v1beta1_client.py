@@ -48,10 +48,10 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           'Get': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'cloudresourcemanager.organizations.get',
-              ordered_params=[u'organizationId'],
-              path_params=[u'organizationId'],
-              query_params=[u'name'],
-              relative_path=u'v1beta1/organizations/{organizationId}',
+              ordered_params=[u'organizationsId'],
+              path_params=[u'organizationsId'],
+              query_params=[u'organizationId'],
+              relative_path=u'v1beta1/organizations/{organizationsId}',
               request_field='',
               request_type_name=u'CloudresourcemanagerOrganizationsGetRequest',
               response_type_name=u'Organization',
@@ -60,10 +60,10 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           'GetIamPolicy': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'cloudresourcemanager.organizations.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
+              ordered_params=[u'organizationsId'],
+              path_params=[u'organizationsId'],
               query_params=[],
-              relative_path=u'v1beta1/organizations/{resource}:getIamPolicy',
+              relative_path=u'v1beta1/organizations/{organizationsId}:getIamPolicy',
               request_field=u'getIamPolicyRequest',
               request_type_name=u'CloudresourcemanagerOrganizationsGetIamPolicyRequest',
               response_type_name=u'Policy',
@@ -84,10 +84,10 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           'SetIamPolicy': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'cloudresourcemanager.organizations.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
+              ordered_params=[u'organizationsId'],
+              path_params=[u'organizationsId'],
               query_params=[],
-              relative_path=u'v1beta1/organizations/{resource}:setIamPolicy',
+              relative_path=u'v1beta1/organizations/{organizationsId}:setIamPolicy',
               request_field=u'setIamPolicyRequest',
               request_type_name=u'CloudresourcemanagerOrganizationsSetIamPolicyRequest',
               response_type_name=u'Policy',
@@ -96,10 +96,10 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           'TestIamPermissions': base_api.ApiMethodInfo(
               http_method=u'POST',
               method_id=u'cloudresourcemanager.organizations.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
+              ordered_params=[u'organizationsId'],
+              path_params=[u'organizationsId'],
               query_params=[],
-              relative_path=u'v1beta1/organizations/{resource}:testIamPermissions',
+              relative_path=u'v1beta1/organizations/{organizationsId}:testIamPermissions',
               request_field=u'testIamPermissionsRequest',
               request_type_name=u'CloudresourcemanagerOrganizationsTestIamPermissionsRequest',
               response_type_name=u'TestIamPermissionsResponse',
@@ -108,12 +108,12 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           'Update': base_api.ApiMethodInfo(
               http_method=u'PUT',
               method_id=u'cloudresourcemanager.organizations.update',
-              ordered_params=[u'organizationId'],
-              path_params=[u'organizationId'],
+              ordered_params=[u'organizationsId'],
+              path_params=[u'organizationsId'],
               query_params=[],
-              relative_path=u'v1beta1/organizations/{organizationId}',
-              request_field='<request>',
-              request_type_name=u'Organization',
+              relative_path=u'v1beta1/organizations/{organizationsId}',
+              request_field=u'organization',
+              request_type_name=u'CloudresourcemanagerOrganizationsUpdateRequest',
               response_type_name=u'Organization',
               supports_download=False,
           ),
@@ -123,8 +123,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Fetches an Organization resource identified by the specified.
-`organization_id`.
+      """Fetches an Organization resource identified by the specified resource name.
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetRequest) input message
@@ -138,7 +137,10 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
 
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for an Organization resource. May be empty.
-if no such policy or resource exists.
+if no such policy or resource exists. The `resource` field should be the
+organization's resource name, e.g. "organizations/123". For backward
+compatibility, the resource provided may also be the organization_id.
+This will not be supported in v1.
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetIamPolicyRequest) input message
@@ -167,7 +169,9 @@ order. New Organizations do not necessarily appear at the end of the list.
 
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on an Organization resource. Replaces any.
-existing policy.
+existing policy. The `resource` field should be the organization's resource
+name, e.g. "organizations/123". For backward compatibility, the resource
+provided may also be the organization_id. This will not be supported in v1.
 
       Args:
         request: (CloudresourcemanagerOrganizationsSetIamPolicyRequest) input message
@@ -181,6 +185,9 @@ existing policy.
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified Organization.
+The `resource` field should be the organization's resource name,
+e.g. "organizations/123". For backward compatibility, the resource provided
+may also be the organization_id. This will not be supported in v1.
 
       Args:
         request: (CloudresourcemanagerOrganizationsTestIamPermissionsRequest) input message
@@ -193,11 +200,10 @@ existing policy.
           config, request, global_params=global_params)
 
     def Update(self, request, global_params=None):
-      """Updates an Organization resource identified by the specified.
-`organization_id`.
+      """Updates an Organization resource identified by the specified resource name.
 
       Args:
-        request: (Organization) input message
+        request: (CloudresourcemanagerOrganizationsUpdateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Organization) The response message.
@@ -465,10 +471,9 @@ The following constraints apply when using `setIamPolicy()`:
 + Project does not support `allUsers` and `allAuthenticatedUsers` as
 `members` in a `Binding` of a `Policy`.
 
-+ The owner role can be granted only to `user`, `group`, and
-`serviceAccount`.
++ The owner role can be granted only to `user` and `serviceAccount`.
 
-+ Service accounts and groups can be made owners of a project directly
++ Service accounts can be made owners of a project directly
 without any restrictions. However, to be added as an owner, a user must be
 invited via Cloud Platform console and must accept the invitation.
 

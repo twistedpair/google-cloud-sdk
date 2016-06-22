@@ -151,9 +151,6 @@ def ProcessOperationResult(result, async=False):
   Args:
     result: The message to process (expected to be of type Operation)'
     async: If False, the method will block until the operation completes.
-
-  Returns:
-    The message string confirming that the Operation finished successfully.
   """
   op = GetProcessedOperationResult(result, async)
   cmd = OP_DESCRIBE_CMD.format(op.get('name'))
@@ -161,12 +158,12 @@ def ProcessOperationResult(result, async=False):
     cmd = OP_WAIT_CMD.format(op.get('name'))
     log.status.Print('Asynchronous operation is in progress... '
                      'Use the following command to wait for its '
-                     'completion: \n {0}'.format(cmd))
+                     'completion:\n {0}'.format(cmd))
   else:
     cmd = OP_DESCRIBE_CMD.format(op.get('name'))
     log.status.Print('Operation finished successfully. '
                      'The following command can describe '
-                     'the Operation details: \n  {0}'.format(cmd))
+                     'the Operation details:\n {0}'.format(cmd))
 
 
 def GetProcessedOperationResult(result, async=False):
@@ -234,6 +231,9 @@ def WaitForOperation(op_name, client):
   Args:
     op_name: The name of the operation on which to wait.
     client: The client object that contains the GetOperation request object.
+
+  Raises:
+    ToolException: if the operation fails or does not complete in time.
 
   Returns:
     The Operation object, if successful. Raises an exception on failure.

@@ -71,6 +71,13 @@ MAP = {
             default_version=True
         ),
     },
+    'bigtableadmin': {
+        'v2': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.bigtableadmin.v2.bigtableadmin_v2_client.BigtableadminV2',
+            messages_modulepath='googlecloudsdk.third_party.apis.bigtableadmin.v2.bigtableadmin_v2_messages',
+            default_version=True
+        ),
+    },
     'bigtableclusteradmin': {
         'v1': APIDef(
             client_classpath='googlecloudsdk.third_party.apis.bigtableclusteradmin.v1.bigtableclusteradmin_v1_client.BigtableclusteradminV1',

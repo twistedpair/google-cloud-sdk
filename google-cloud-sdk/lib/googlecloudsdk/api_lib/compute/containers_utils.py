@@ -15,9 +15,12 @@
 import json
 import re
 import shlex
+
 from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core.util import times
 
 USER_INIT_TEMPLATE = """#cloud-config
 runcmd:
@@ -33,6 +36,11 @@ USER_DATA_KEY = 'user-data'
 CONTAINER_MANIFEST_KEY = 'google-container-manifest'
 
 ALLOWED_PROTOCOLS = ['TCP', 'UDP']
+
+# Pin this version of gcloud to GCI image major release version
+GCI_MAJOR_RELEASE = 'gci-stable-51'
+
+GCI_PROJECT = 'google-containers'
 
 
 def _GetUserInit(allow_privileged):
@@ -124,11 +132,34 @@ def CreateMetadataMessage(
       existing_metadata=user_metadata)
 
 
-def ExpandGciImageFlag():
+class NoGciImageException(core_exceptions.Error):
+  """Raised when GCI image could not be found."""
+
+  def __init__(self):
+    super(NoGciImageException, self).__init__(
+        'Could not find GCI (Google Cloud Image) for release family \'{0}\''
+        .format(GCI_MAJOR_RELEASE))
+
+
+def ExpandGciImageFlag(compute_client):
   """Select a GCI image to run Docker."""
-  # TODO(user, b/29154416): get latest image in GCI major release
-  # Pin this version of gcloud to GCI image version
-  return 'projects/google-containers/global/images/gci-stable-50-7978-71-0'
+  compute = compute_client.apitools_client
+  images = compute_client.MakeRequests([(
+      compute.images,
+      'List',
+      compute_client.messages.ComputeImagesListRequest(project=GCI_PROJECT)
+  )])
+  return _SelectNewestGciImage(images)
+
+
+def _SelectNewestGciImage(images):
+  """Selects newest GCI image from the list."""
+  gci_images = sorted([image for image in images
+                       if image.name.startswith(GCI_MAJOR_RELEASE)],
+                      key=lambda x: times.ParseDateTime(x.creationTimestamp))
+  if not gci_images:
+    raise NoGciImageException()
+  return gci_images[-1].selfLink
 
 
 def _ValidateAndParsePortMapping(port_mappings):

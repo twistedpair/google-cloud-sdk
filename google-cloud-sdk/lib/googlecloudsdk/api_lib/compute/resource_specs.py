@@ -951,6 +951,26 @@ _SPECS_ALPHA['backendServices'] = _InternalSpec(
         'protocol',
         'timeoutSec',
     ],)
+_SPECS_ALPHA['regionBackendServices'] = _InternalSpec(
+    message_class_name='BackendService',
+    table_cols=[
+        ('NAME', 'name'),
+        ('BACKENDS', _BackendsToCell),
+        ('PROTOCOL', 'protocol'),
+    ],
+    transformations=[
+        ('backends[].group', path_simplifier.ScopedSuffix),
+    ],
+    editables=[
+        'backends',
+        'description',
+        'enableCDN',
+        'healthChecks',
+        'port',
+        'portName',
+        'protocol',
+        'timeoutSec',
+    ],)
 _SPECS_ALPHA['urlMaps'] = _InternalSpec(
     message_class_name='UrlMap',
     table_cols=[

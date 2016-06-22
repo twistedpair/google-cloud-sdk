@@ -20,7 +20,7 @@ changes here.  See ./ext_runtimes/runtime_defs/nodejs instead.
 import textwrap
 
 
-# TODO(user): move these into the node_app directory.
+# TODO(mmuller): move these into the node_app directory.
 NODEJS_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
     vm: true

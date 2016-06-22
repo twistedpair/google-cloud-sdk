@@ -1568,11 +1568,9 @@ class StandardQueryParameters(_messages.Message):
     """Data format for the response.
 
     Values:
-      csv: Responses with Content-Type of text/csv
       json: Responses with Content-Type of application/json
     """
-    csv = 0
-    json = 1
+    json = 0
 
   alt = _messages.EnumField('AltValueValuesEnum', 1, default=u'json')
   fields = _messages.StringField(2)
