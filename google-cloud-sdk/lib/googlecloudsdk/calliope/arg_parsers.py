@@ -159,7 +159,7 @@ def GetMultiCompleter(individual_completer):
 
 
 def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
-                 strict_case=True):
+                 strict_case=True, suggested_binary_size_scales=None):
   """A helper that returns a function that can parse values with units.
 
   Casing for all units matters.
@@ -172,15 +172,20 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
     lower_bound: str, An inclusive lower bound.
     upper_bound: str, An inclusive upper bound.
     strict_case: bool, whether to be strict on case-checking
+    suggested_binary_size_scales: list, A list of strings with units that will
+                                    be recommended to user.
 
   Returns:
     A function that can parse values.
   """
 
-  def UnitsByMagnitude():
+  def UnitsByMagnitude(suggested_binary_size_scales=None):
     """Returns a list of the units in scales sorted by magnitude."""
-    return [key for key, _
-            in sorted(scales.iteritems(), key=lambda value: value[1])]
+    scale_items = sorted(scales.iteritems(), key=lambda value: value[1])
+    if suggested_binary_size_scales is None:
+      return [key for key, _ in scale_items]
+    return [key for key, _ in scale_items
+            if key in suggested_binary_size_scales]
 
   def Parse(value):
     """Parses value that can contain a unit."""
@@ -189,7 +194,7 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
       raise ArgumentTypeError(_GenerateErrorMessage(
           'given value must be of the form INTEGER[UNIT] where units '
           'can be one of {0}'
-          .format(', '.join(UnitsByMagnitude())),
+          .format(', '.join(UnitsByMagnitude(suggested_binary_size_scales))),
           user_input=value))
 
     amount = int(match.group('amount'))
@@ -279,7 +284,8 @@ def Duration(lower_bound=None, upper_bound=None):
                       lower_bound=lower_bound, upper_bound=upper_bound)
 
 
-def BinarySize(lower_bound=None, upper_bound=None):
+def BinarySize(lower_bound=None, upper_bound=None,
+               suggested_binary_size_scales=None):
   """Returns a function that can parse binary sizes.
 
   Binary sizes are defined as base-2 values representing number of
@@ -301,6 +307,8 @@ def BinarySize(lower_bound=None, upper_bound=None):
   Args:
     lower_bound: str, An inclusive lower bound for values.
     upper_bound: str, An inclusive upper bound for values.
+    suggested_binary_size_scales: list, A list of strings with units that will
+                                    be recommended to user.
 
   Raises:
     ArgumentTypeError: If either the lower_bound or upper_bound
@@ -313,9 +321,11 @@ def BinarySize(lower_bound=None, upper_bound=None):
     A function that accepts a single binary size as input to be
       parsed.
   """
-  return _ValueParser(_BINARY_SIZE_SCALES, default_unit='GB',
-                      lower_bound=lower_bound, upper_bound=upper_bound,
-                      strict_case=False)
+  return _ValueParser(
+      _BINARY_SIZE_SCALES, default_unit='GB',
+      lower_bound=lower_bound, upper_bound=upper_bound,
+      strict_case=False,
+      suggested_binary_size_scales=suggested_binary_size_scales)
 
 
 _KV_PAIR_DELIMITER = '='

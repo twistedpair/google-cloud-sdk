@@ -20,7 +20,6 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
-from googlecloudsdk.core import list_printer
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
@@ -507,18 +506,6 @@ class V1Adapter(APIAdapter):
 
   def Version(self, cluster):
     return cluster.currentMasterVersion
-
-  def PrintClusters(self, clusters):
-    list_printer.PrintResourceList('container.projects.zones.clusters',
-                                   clusters)
-
-  def PrintOperations(self, operations):
-    list_printer.PrintResourceList('container.projects.zones.operations',
-                                   operations)
-
-  def PrintNodePools(self, node_pools):
-    list_printer.PrintResourceList(
-        'container.projects.zones.clusters.nodePools', node_pools)
 
   def CreateCluster(self, cluster_ref, options):
     node_config = self.messages.NodeConfig()

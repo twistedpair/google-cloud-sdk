@@ -36,24 +36,6 @@ import yaml
 GCS_PREFIX = 'gs://'
 
 
-def ValidateLimitFlag(limit, flag_name='limit'):
-  """Validates a limit flag value.
-
-  Args:
-    limit: the limit flag value to sanitize.
-    flag_name: the name of the limit flag - defaults to limit
-  Raises:
-    genomics_exceptions.GenomicsError: The provided limit flag value is negative
-  """
-  if limit is None:
-    return
-
-  if limit < 0:
-    raise genomics_exceptions.GenomicsError(
-        '--{0} must be a non-negative integer; received: {1}'
-        .format(flag_name, limit))
-
-
 def InfoValuesToAPI(values):
   """Converts a list of strings to the API JsonValue equivalent.
 

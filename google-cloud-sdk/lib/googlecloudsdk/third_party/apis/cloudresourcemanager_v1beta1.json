@@ -380,12 +380,12 @@
           "$ref": "OrganizationOwner"
         },
         "creationTime": {
-          "description": "Timestamp when the Organization was created. Assigned by the server.\n@OutputOnly",
+          "description": "Timestamp when the Organization was created. Assigned by the server.",
           "type": "string",
           "format": "google-datetime"
         },
         "lifecycleState": {
-          "description": "The organization's current lifecycle state. Assigned by the server.\n@OutputOnly",
+          "description": "The organization's current lifecycle state. Assigned by the server.",
           "enumDescriptions": [
             "Unspecified state.  This is only useful for distinguishing unset values.",
             "The normal and active state.",

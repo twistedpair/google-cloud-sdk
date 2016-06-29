@@ -229,8 +229,8 @@ def CreateContextFiles(output_dir, source_contexts, overwrite=False,
   Currently, two files will be produced, source-context.json and
   source-contexts.json. The old-style source-context.json file is deprecated,
   but will need to be produced until all components are updated to use the new
-  file. This process may take a while because there are managed VMs which may be
-  slow to update the debug agent to one that supports the new format.
+  file. This process may take a while because there are Flexible VMs which may
+  be slow to update the debug agent to one that supports the new format.
 
   The new format supports communicating multiple source contexts with labels to
   enable the UI to chose the best contexts for a given situation.
@@ -423,6 +423,7 @@ def _GetJsonFileCreator(name, json_object):
   """
   if os.path.exists(name):
     logging.warn('%s already exists. It will not be updated.', name)
+    return lambda: (lambda: None)
   def Cleanup():
     os.remove(name)
   def Generate():

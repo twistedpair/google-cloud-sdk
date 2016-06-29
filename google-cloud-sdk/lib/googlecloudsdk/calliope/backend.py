@@ -1362,10 +1362,7 @@ class Command(CommandCommon):
     if self._parent_group:
       self._parent_group.RunGroupFilter(tool_context, args)
 
-    command_instance = self._common_type(
-        cli=cli,
-        context=tool_context,
-        format_string=args.format or 'yaml')
+    command_instance = self._common_type(cli=cli, context=tool_context)
 
     log.debug('Running %s with %s.', self.dotted_name, args)
     resources = command_instance.Run(args)

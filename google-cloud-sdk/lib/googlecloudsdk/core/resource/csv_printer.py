@@ -111,14 +111,14 @@ class ValuePrinter(CsvPrinter):
   value(s) to be printed.
 
   Printer attributes:
-    no-quote: Prints NEWLINE terminated TAB delimited values with no quoting.
+    quote: "..." quote values that contain <TAB>, <NEWLINE> or ".
   """
 
   def __init__(self, *args, **kwargs):
     super(ValuePrinter, self).__init__(*args, **kwargs)
     self._heading_printed = True
     self._separator = '\t'
-    self._quote = None if self.attributes.get('no-quote', 0) else '"'
+    self._quote = '"' if self.attributes.get('quote', 0) else None
 
   # TODO(b/27967563): remove 3Q2016
   def Finish(self):

@@ -283,8 +283,8 @@ class LogEntry(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1319,8 +1319,8 @@ class Status(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):

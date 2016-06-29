@@ -535,22 +535,6 @@ class _SectionApp(_Section):
         'use_gsutil',
         default=False,
         hidden=True)
-    self.hosted_build_image = self._Add(
-        'hosted_build_image',
-        default='gae-builder-vm',
-        hidden=True)
-    self.hosted_build_zone = self._Add(
-        'hosted_build_zone',
-        default='us-central1-f',
-        hidden=True)
-    self.hosted_build_machine_type = self._Add(
-        'hosted_build_machine_type',
-        default='n1-standard-1',
-        hidden=True)
-    self.hosted_build_boot_disk_size = self._Add(
-        'hosted_build_boot_disk_size',
-        default='200GB',
-        hidden=True)
     self.use_appengine_api = self._AddBool(
         'use_appengine_api',
         default=True,
@@ -881,6 +865,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.appengine = self._Add('appengine')
     self.bigquery = self._Add('bigquery')
     self.bigtable = self._Add('bigtable')
+    self.bigtableadmin = self._Add('bigtableadmin')
     self.compute = self._Add('compute')
     self.cloudbuild = self._Add('cloudbuild')
     self.clouduseraccounts = self._Add('clouduseraccounts')

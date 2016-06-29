@@ -19,17 +19,24 @@ import re
 
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_ex
 
 # Maximum number of results that can be passed in pageSize to list operations.
 MAX_LIST_RESULTS = 10000
 
 # Regular expression to match full paths for Cloud Pub/Sub resource identifiers.
+# TODO(user): These are going away, since we are moving to
+# collection paths in CL/125390647.
 PROJECT_PATH_RE = re.compile(r'^projects/(?P<Project>[^/]+)$')
 SUBSCRIPTIONS_PATH_RE = re.compile(
     r'^projects/(?P<Project>[^/]+)/subscriptions/(?P<Resource>[^/]+)$')
 TOPICS_PATH_RE = re.compile(
     r'^projects/(?P<Project>[^/]+)/topics/(?P<Resource>[^/]+)$')
+
+# Collection for commands that need Topics parsing.
+TOPICS_COLLECTION = 'pubsub.projects.topics'
+TOPICS_PUBLISH_COLLECTION = 'pubsub.topics.publish'
 
 
 class ResourceIdentifier(object):
@@ -249,3 +256,27 @@ def MapHttpError(f):
     except api_ex.HttpError as e:
       raise sdk_ex.HttpException(json.loads(e.content)['error']['message'])
   return Func
+
+
+def TopicDisplayDict(topic, error_msg=''):
+  """Creates a serializable from a Cloud Pub/Sub Topic operation for display.
+
+  Args:
+    topic: (Cloud Pub/Sub Topic) Topic to be serialized.
+    error_msg: (string) An error message to be added to the serialized
+               result, if any.
+  Returns:
+    A serialized object representing a Cloud Pub/Sub Topic
+    operation (create, delete).
+  """
+  success = True
+  if error_msg:
+    success = False
+
+  topic_display_dict = resource_projector.MakeSerializable(topic)
+  topic_display_dict['topicId'] = topic.name
+  topic_display_dict['success'] = success
+  topic_display_dict['reason'] = error_msg
+  del topic_display_dict['name']
+
+  return topic_display_dict

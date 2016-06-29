@@ -52,8 +52,13 @@ import yaml
 class ComputeApiHolder(object):
   """Convenience class to hold lazy initialized client and resources."""
 
-  def __init__(self, api_version):
-    self._api_version = api_version
+  def __init__(self, release_track):
+    if release_track == base.ReleaseTrack.ALPHA:
+      self._api_version = 'alpha'
+    elif release_track == base.ReleaseTrack.BETA:
+      self._api_version = 'beta'
+    else:
+      self._api_version = 'v1'
     self._client = None
     self._resources = None
 
@@ -77,8 +82,11 @@ class ComputeApiHolder(object):
 class ComputeUserAccountsApiHolder(object):
   """Convenience class to hold lazy initialized client and resources."""
 
-  def __init__(self, api_version):
-    self._api_version = api_version
+  def __init__(self, release_track):
+    if release_track == base.ReleaseTrack.ALPHA:
+      self._api_version = 'alpha'
+    else:
+      self._api_version = 'beta'
     self._client = None
     self._resources = None
 
@@ -111,9 +119,9 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
 
     self.__resource_spec = None
     self._project = properties.VALUES.core.project.Get(required=True)
-    self._compute_holder = ComputeApiHolder(self.context['api_version'])
+    self._compute_holder = ComputeApiHolder(self.ReleaseTrack())
     self._user_accounts_holder = ComputeUserAccountsApiHolder(
-        self.context['api_version'])
+        self.ReleaseTrack())
 
   @property
   def _resource_spec(self):

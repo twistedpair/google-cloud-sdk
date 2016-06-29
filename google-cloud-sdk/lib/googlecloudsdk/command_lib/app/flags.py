@@ -51,6 +51,8 @@ IGNORE_CERTS_FLAG = base.Argument(
     default=False,
     help=argparse.SUPPRESS)
 
+LOG_SEVERITIES = ['debug', 'info', 'warning', 'error', 'critical']
+
 
 def GetCodeBucket(api_client, project, bucket):
   """Gets a bucket reference for a Cloud Build.

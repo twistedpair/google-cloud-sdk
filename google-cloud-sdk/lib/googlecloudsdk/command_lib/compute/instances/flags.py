@@ -551,7 +551,7 @@ def AddDockerArgs(parser):
       '--docker-image',
       help=('Docker image URL to run on VM.'))
   docker_image.detailed_help = """\
-  URL of Docker image, which will be run on VM. For example:
+  The URL to a Docker image to run on this instance. For example:
       gcr.io/google-containers/busybox
   """
 
@@ -562,9 +562,9 @@ def AddDockerArgs(parser):
   Container deployment specification, conforming to Kubernetes podspec format:
       http://kubernetes.io/docs/user-guide/deployments/
 
-  When specified --run-command, --run-as-privileged, and --port-mappings cannot
-  be used, instead this configuration need to be provided in deployment
-  specification.
+  When specified, --run-command, --run-as-privileged, and --port-mappings cannot
+  be used. Instead, if needed, those options must be provided with the container
+  manifest.
   """
 
   run_command = parser.add_argument(

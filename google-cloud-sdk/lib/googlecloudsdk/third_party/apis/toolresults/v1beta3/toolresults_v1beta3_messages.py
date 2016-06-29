@@ -18,8 +18,10 @@ class Any(_messages.Message):
   a message in C++.  Foo foo = ...; Any any; any.PackFrom(foo); ... if
   (any.UnpackTo(&foo)) { ... }  Example 2: Pack and unpack a message in Java.
   Foo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) { foo =
-  any.unpack(Foo.class); }  The pack methods provided by protobuf library will
-  by default use 'type.googleapis.com/full.type.name' as the type URL and the
+  any.unpack(Foo.class); }  Example 3: Pack and unpack a message in Python.
+  foo = Foo(...) any = Any() any.Pack(foo) ... if any.Is(Foo.DESCRIPTOR):
+  any.Unpack(foo) ...  The pack methods provided by protobuf library will by
+  default use 'type.googleapis.com/full.type.name' as the type URL and the
   unpack methods only use the fully qualified type name after the last '/' in
   the type URL, for example "foo.bar.com/x/y.z" will yield type name "y.z".
   JSON ==== The JSON representation of an `Any` value uses the regular
@@ -254,15 +256,10 @@ class InconclusiveDetail(_messages.Message):
       under test which failed.  For example, a mobile test requires
       provisioning a device where the test executes, and that provisioning can
       fail.
-    nativeCrash: A native process crashed on the device, producing a
-      tombstone. It is unclear whether the crash was related to the app under
-      test.  For example, OpenGL crashed, but it is unclear if the app is
-      responsible.
   """
 
   abortedByUser = _messages.BooleanField(1)
   infrastructureFailure = _messages.BooleanField(2)
-  nativeCrash = _messages.BooleanField(3)
 
 
 class ListExecutionsResponse(_messages.Message):

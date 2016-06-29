@@ -426,7 +426,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -1664,7 +1664,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "Define system parameters.\n\nThe parameters defined here will override the default parameters\nimplemented by the system. If this field is missing from the service\nconfig, default system parameters will be used. Default system parameters\nand names is implementation-dependent.\n\nExample: define api key and alt name for all methods\n\nSystemParameters\n  rules:\n    - selector: \"*\"\n      parameters:\n        - name: api_key\n          url_query_parameter: api_key\n        - name: alt\n          http_header: Response-Content-Type\n\nExample: define 2 api key names for a specific method.\n\nSystemParameters\n  rules:\n    - selector: \"\/ListShelves\"\n      parameters:\n        - name: api_key\n          http_header: Api-Key1\n        - name: api_key\n          http_header: Api-Key2",
+          "description": "Define system parameters.\n\nThe parameters defined here will override the default parameters\nimplemented by the system. If this field is missing from the service\nconfig, default system parameters will be used. Default system parameters\nand names is implementation-dependent.\n\nExample: define api key and alt name for all methods\n\nsystem_parameters\n  rules:\n    - selector: \"*\"\n      parameters:\n        - name: api_key\n          url_query_parameter: api_key\n        - name: alt\n          http_header: Response-Content-Type\n\nExample: define 2 api key names for a specific method.\n\nsystem_parameters\n  rules:\n    - selector: \"\/ListShelves\"\n      parameters:\n        - name: api_key\n          http_header: Api-Key1\n        - name: api_key\n          http_header: Api-Key2",
           "type": "array",
           "items": {
             "$ref": "SystemParameterRule"
@@ -1839,7 +1839,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         },
         "done": {
@@ -1855,7 +1855,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -1881,7 +1881,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "any",
-              "description": "Properties of the object. Contains field @ype with type URL."
+              "description": "Properties of the object. Contains field @type with type URL."
             }
           }
         }
@@ -2222,7 +2222,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -2413,7 +2413,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         },
         "responseFieldMasks": {

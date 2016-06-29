@@ -306,7 +306,7 @@ class ComponentInstaller(object):
 Account [{account}] does not have permission to install this component.  Please
 ensure that this account should have access or run:
 
-  $ gcloud config set account ``ACCOUNT''
+  $ gcloud config set account `ACCOUNT`
 
 to choose another account.""".format(
     account=properties.VALUES.core.account.Get()), e)

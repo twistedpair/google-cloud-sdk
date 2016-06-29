@@ -303,8 +303,8 @@ class CompositeOperationMetadata(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -503,8 +503,8 @@ class ConvertConfigRequest(_messages.Message):
       AdditionalProperty: An additional property for a ConfigSpecValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1650,8 +1650,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a MetadataValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1681,8 +1681,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a ResponseValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1744,8 +1744,8 @@ class Option(_messages.Message):
       AdditionalProperty: An additional property for a ValueValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -3090,8 +3090,8 @@ class Status(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -3216,11 +3216,11 @@ class SystemParameters(_messages.Message):
       override the default parameters implemented by the system. If this field
       is missing from the service config, default system parameters will be
       used. Default system parameters and names is implementation-dependent.
-      Example: define api key and alt name for all methods  SystemParameters
+      Example: define api key and alt name for all methods  system_parameters
       rules:     - selector: "*"       parameters:         - name: api_key
       url_query_parameter: api_key         - name: alt           http_header:
       Response-Content-Type  Example: define 2 api key names for a specific
-      method.  SystemParameters   rules:     - selector: "/ListShelves"
+      method.  system_parameters   rules:     - selector: "/ListShelves"
       parameters:         - name: api_key           http_header: Api-Key1
       - name: api_key           http_header: Api-Key2
   """

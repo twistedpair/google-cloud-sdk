@@ -103,9 +103,6 @@ class JobSubmitter(base.Command):
 
     return job
 
-  def Display(self, args, result):
-    self.format(result)
-
   def _GetStagedFile(self, file_str):
     """Validate file URI and register it for uploading if it is local."""
     drive, _ = os.path.splitdrive(file_str)

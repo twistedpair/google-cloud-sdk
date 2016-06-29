@@ -137,7 +137,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         },
         "done": {
@@ -153,7 +153,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -179,7 +179,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "any",
-              "description": "Properties of the object. Contains field @ype with type URL."
+              "description": "Properties of the object. Contains field @type with type URL."
             }
           }
         }
@@ -702,6 +702,11 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "startTime": {
+          "description": "The time at which the job began to run.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "endTime": {
           "description": "The time at which the job stopped running.",
           "type": "string",
@@ -712,7 +717,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         },
         "events": {
@@ -722,12 +727,16 @@
             "$ref": "OperationEvent"
           }
         },
+        "clientId": {
+          "description": "Optionally provided by the caller when submitting the request that creates\nthe operation.",
+          "type": "string"
+        },
         "runtimeMetadata": {
           "description": "Runtime metadata on this Operation.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -737,6 +746,16 @@
       "description": "An event that occurred during an Operation.",
       "type": "object",
       "properties": {
+        "startTime": {
+          "description": "Optional time of when event started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional time of when event finished. An event can have a start time and no\nfinish time. If an event has a finish time, there must be a start time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "description": {
           "description": "Required description of event.",
           "type": "string"
@@ -748,15 +767,15 @@
       "description": "Runtime metadata that will be populated in the\nruntimeMetadata\nfield of the Operation associated with a RunPipeline execution.",
       "type": "object",
       "properties": {
-        "gce": {
+        "computeEngine": {
           "description": "Execution information specific to Google Compute Engine.",
-          "$ref": "GCE"
+          "$ref": "ComputeEngine"
         }
       }
     },
-    "GCE": {
-      "id": "GCE",
-      "description": "Describes a GCE resource that is being managed by a running\npipeline.",
+    "ComputeEngine": {
+      "id": "ComputeEngine",
+      "description": "Describes a Compute Engine resource that is being managed by a running\npipeline.",
       "type": "object",
       "properties": {
         "instanceName": {

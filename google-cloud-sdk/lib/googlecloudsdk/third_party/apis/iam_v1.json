@@ -147,15 +147,15 @@
           "type": "string"
         },
         "projectId": {
-          "description": "@OutputOnly The id of the project that owns the service account.",
+          "description": " The id of the project that owns the service account.",
           "type": "string"
         },
         "uniqueId": {
-          "description": "@OutputOnly The unique and stable id of the service account.",
+          "description": " The unique and stable id of the service account.",
           "type": "string"
         },
         "email": {
-          "description": "@OutputOnly The email address of the service account.",
+          "description": " The email address of the service account.",
           "type": "string"
         },
         "displayName": {
@@ -172,7 +172,7 @@
           "type": "string"
         },
         "oauth2ClientId": {
-          "description": "@OutputOnly. The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
+          "description": ". The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
           "type": "string"
         }
       }

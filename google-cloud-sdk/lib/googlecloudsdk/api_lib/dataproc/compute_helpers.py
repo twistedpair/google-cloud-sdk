@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib.compute import base_classes as compute_base
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils as compute_utils
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core.credentials import http
@@ -60,7 +61,7 @@ class ConfigurationHelper(scope_prompter.ScopePrompter):
   @classmethod
   def FromContext(cls, context):
     """Updates required global state and constructs ConfigurationHelper."""
-    holder = compute_base.ComputeApiHolder(api_version='v1')
+    holder = compute_base.ComputeApiHolder(base.ReleaseTrack.GA)
     batch_url = holder.client.batch_url
     compute = holder.client.apitools_client
     resources = holder.resources

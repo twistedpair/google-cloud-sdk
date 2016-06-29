@@ -186,13 +186,36 @@ RESOURCE_REGISTRY = {
 
     # bigtable
 
-    'bigtable.clusters.list': ResourceInfo(
+    'bigtable.clusters.list.alpha': ResourceInfo(
         list_format="""
           table[box](
             displayName:label=NAME,
             clusterId:label=ID,
             zoneId:label=ZONE,
             serveNodes:label=NODES
+          )
+        """,
+    ),
+
+    'bigtable.clusters.list': ResourceInfo(
+        list_format="""
+          table(
+            name.segment(3):sort=1:label=INSTANCE,
+            name.basename():sort=2:label=NAME,
+            location.basename():label=ZONE,
+            serveNodes:label=NODES,
+            defaultStorageType:label=STORAGE,
+            state
+          )
+        """,
+    ),
+
+    'bigtable.instances.list': ResourceInfo(
+        list_format="""
+          table(
+            name.basename():sort=1,
+            displayName,
+            state
           )
         """,
     ),
@@ -326,7 +349,9 @@ RESOURCE_REGISTRY = {
           table(
             name,
             backends[].group.list():label=BACKENDS,
-            protocol
+            protocol,
+            loadBalancingScheme,
+            healthChecks.map().basename().list()
           )
         """,
     ),
@@ -337,7 +362,9 @@ RESOURCE_REGISTRY = {
           table(
             name,
             backends[].group.list():label=BACKENDS,
-            protocol
+            protocol,
+            loadBalancingScheme,
+            healthChecks.map().basename().list()
           )
         """,
     ),
@@ -791,7 +818,7 @@ RESOURCE_REGISTRY = {
             zone,
             currentMasterVersion:label=MASTER_VERSION,
             endpoint:label=MASTER_IP,
-            nodeConfig.machineType,
+            nodePools[0].config.machineType,
             currentNodeVersion:label=NODE_VERSION,
             currentNodeCount:label=NUM_NODES,
             status
@@ -833,6 +860,17 @@ RESOURCE_REGISTRY = {
             job_type:label=TYPE,
             creation_time.yesno(no="-"),
             status
+          )
+        """,
+    ),
+
+    'dataflow.logs': ResourceInfo(
+        list_format="""
+          table[no-heading,pad=1](
+            messageImportance.enum(dataflow.JobMessage),
+            time.date(tz=LOCAL):label=TIME,
+            id,
+            messageText:label=TEXT
           )
         """,
     ),
@@ -894,6 +932,7 @@ RESOURCE_REGISTRY = {
             format("logLevel: {0}", logLevel),
             format("logMessageFormat: {0}", logMessageFormat),
             format("condition: {0}", condition),
+            format("logViewUrl: {0}", logViewUrl),
             format("status: {0}", full_status())
           )
         """,
@@ -939,12 +978,12 @@ RESOURCE_REGISTRY = {
     'deploymentmanager.deployments': ResourceInfo(
         list_format="""
           table(
-            deployment:format=yaml,
-            resources:format='table(
-              name,
-              type,
-              update.state.yesno(no="COMPLETED"),
-              update.error.errors.group(code, message))'
+            name,
+            operation.operationType:label=LAST_OPERATION_TYPE,
+            operation.status,
+            description,
+            manifest.basename(),
+            operation.error.errors.group(code, message)
           )
         """,
     ),
@@ -1049,6 +1088,16 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'genomics.callSets': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            name,
+            variantSetIds.list()
+          )
+        """,
+    ),
+
     'genomics.datasets': ResourceInfo(
         list_format="""
           table(
@@ -1058,13 +1107,37 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'genomics.readGroupSets': ResourceInfo(list_format="""
+    'genomics.readGroupSets': ResourceInfo(
+        list_format="""
           table(
             id,
             name,
             referenceSetId
           )
-        """,),
+        """,
+    ),
+
+    'genomics.references': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            name,
+            length,
+            sourceUri,
+            sourceAccessions.list():label=ACCESSIONS
+          )
+        """,
+    ),
+
+    'genomics.referenceSets': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            assemblyId,
+            sourceAccessions.list()
+          )
+        """,
+    ),
 
     'genomics.variants': ResourceInfo(
         list_format="""
@@ -1075,6 +1148,16 @@ RESOURCE_REGISTRY = {
             end,
             referenceBases,
             alternateBases
+          )
+        """,
+    ),
+
+    'genomics.variantsets': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            name,
+            description
           )
         """,
     ),
@@ -1155,6 +1238,24 @@ RESOURCE_REGISTRY = {
     ),
 
     # pubsub
+
+    'pubsub.projects.topics': ResourceInfo(
+        list_format="""
+          table[box](
+            topicId:label=TOPIC,
+            success:label=SUCCESS,
+            reason:label=REASON
+          )
+        """,
+    ),
+
+    'pubsub.topics.publish': ResourceInfo(
+        list_format="""
+          table[box](
+            messageIds:label=MESSAGE_ID,
+          )
+        """,
+    ),
 
     'pubsub.pull': ResourceInfo(
         list_format="""
@@ -1271,10 +1372,19 @@ RESOURCE_REGISTRY = {
 
     # source
 
-    'source.jobs.list': ResourceInfo(
+    'source.captures': ResourceInfo(
         list_format="""
           table(
-            name.YesNo(no="default"):label=REPO_NAME,
+            project_id,
+            id:label=CAPTURE_ID
+          )
+        """,
+    ),
+
+    'source.jobs': ResourceInfo(
+        list_format="""
+          table(
+            name.yesno(no="default"):label=REPO_NAME,
             projectId,
             vcs,
             state,
@@ -1345,6 +1455,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'sql.operations': ResourceInfo(
+        async_collection='default',
         list_format="""
           table(
             operation,
@@ -1358,6 +1469,7 @@ RESOURCE_REGISTRY = {
     ),
 
     'sql.operations.v1beta4': ResourceInfo(
+        async_collection='default',
         list_format="""
           table(
             name,
@@ -1365,7 +1477,7 @@ RESOURCE_REGISTRY = {
             startTime.iso():label=START,
             endTime.iso():label=END,
             error[0].code.yesno(no="-"):label=ERROR,
-            state:label=STATUS
+            status:label=STATUS
           )
         """,
     ),
@@ -1472,6 +1584,12 @@ RESOURCE_REGISTRY = {
     ),
 
     # generic
+
+    'default': ResourceInfo(
+        list_format="""
+          default
+        """,
+    ),
 
     'uri': ResourceInfo(
         list_format="""

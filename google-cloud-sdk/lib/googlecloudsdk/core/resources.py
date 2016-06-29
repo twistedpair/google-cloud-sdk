@@ -45,6 +45,9 @@ _URL_RE = re.compile(r'(https?://[^/]+/[^/]+/[^/]+/)(.+)')
 _METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE))
 _HTTP_RE = re.compile(r'^https?://')
+_GCS_URL_RE = re.compile('^gs://([^/]*)(?:/(.*))?$')
+_GCS_URL = 'https://www.googleapis.com/storage/v1/'
+_GCS_ALT_URL = 'https://storage.googleapis.com/'
 
 
 class Error(Exception):
@@ -416,9 +419,9 @@ class Resource(object):
 
     if (self.Collection().startswith('compute.') or
         self.Collection().startswith('clouduseraccounts.') or
-        self.Collection().startswith('resourceviews.')):
+        self.Collection().startswith('storage.')):
       # TODO(user): Unquote URLs for compute, clouduseraccounts, and
-      # resourceviews pending b/15425944.
+      # storage pending b/15425944.
       self.__self_link = urllib.unquote(self.__self_link)
 
     if self.__ordered_params:
@@ -830,6 +833,22 @@ class Registry(object):
     parser = cur_level[None]
     return parser.ParseCollectionPath(None, params, resolve=True)
 
+  def ParseStorageURL(self, url):
+    """Parse gs://bucket/object_path into storage.v1 api resource."""
+    match = _GCS_URL_RE.match(url)
+    if not match:
+      raise InvalidResourceException('Invalid storage url: [{0}]'.format(url))
+    if match.group(2):
+      return self.ParseCollectionPath(
+          collection='storage.objects',
+          collection_path=None,
+          kwargs={'bucket': match.group(1), 'object': match.group(2)})
+
+    return self.ParseCollectionPath(
+        collection='storage.buckets',
+        collection_path=None,
+        kwargs={'bucket': match.group(1)})
+
   def Parse(self, line, params=None, collection=None,
             enforce_collection=True, resolve=True):
     """Parse a Cloud resource from a command line.
@@ -859,17 +878,44 @@ class Registry(object):
       WrongResourceCollectionException: If the provided URL points into a
           collection other than the one specified.
     """
-    if line and (line.startswith('https://') or line.startswith('http://')):
-      resource = self.ParseURL(line)
-      # TODO(user): consider not doing this here.
-      # Validation of the argument is a distict concern.
-      if (enforce_collection and collection and
-          resource.Collection() != collection):
-        raise WrongResourceCollectionException(
-            expected=collection,
-            got=resource.Collection(),
-            path=resource.SelfLink())
-      return resource
+    if line:
+      if line.startswith('https://') or line.startswith('http://'):
+        try:
+          resource = self.ParseURL(line)
+        except InvalidResourceException:
+          # TODO(b/29573201): Make sure ParseURL handles this logic by default.
+          bucket = None
+          if line.startswith(_GCS_URL):
+            bucket_prefix, bucket, object_prefix, objectpath = (
+                line[len(_GCS_URL):].split('/', 3))
+            if (bucket_prefix, object_prefix) != ('b', 'o'):
+              raise
+          elif line.startswith(_GCS_ALT_URL):
+            line = line[len(_GCS_ALT_URL):]
+            if '/' in line:
+              bucket, objectpath = line.split('/', 1)
+            else:
+              return self.ParseCollectionPath(
+                  collection='storage.buckets',
+                  collection_path=None,
+                  kwargs={'bucket': line})
+          if bucket is not None:
+            return self.ParseCollectionPath(
+                collection='storage.objects',
+                collection_path=None,
+                kwargs={'bucket': bucket, 'object': objectpath})
+          raise
+        # TODO(user): consider not doing this here.
+        # Validation of the argument is a distict concern.
+        if (enforce_collection and collection and
+            resource.Collection() != collection):
+          raise WrongResourceCollectionException(
+              expected=collection,
+              got=resource.Collection(),
+              path=resource.SelfLink())
+        return resource
+      elif line.startswith('gs://'):
+        return self.ParseStorageURL(line)
 
     if not collection:
       match = _COLLECTIONPATH_RE.match(line)
@@ -878,6 +924,19 @@ class Registry(object):
       collection, unused_path = match.groups()
       if not collection:
         raise UnknownCollectionException(line)
+    # Special handle storage collection paths.
+    if collection == 'storage.objects':
+      p = dict(params or {})
+      if 'bucket' not in p or 'object' not in p:
+        if '/' not in line:
+          raise InvalidResourceException(
+              'Expected bucket/object in "{0}"'.format(line))
+        p['bucket'], p['object'] = line.split('/', 1)
+
+      return self.ParseCollectionPath(
+          collection='storage.objects',
+          collection_path=None,
+          kwargs=p)
 
     return self.ParseCollectionPath(collection, line, params or {}, resolve)
 
@@ -983,4 +1042,3 @@ def _StripUrl(url):
   if not _HTTP_RE.match(url):
     raise InvalidEndpointException(url)
   return url[url.index(':') + 1:].strip('/')
-

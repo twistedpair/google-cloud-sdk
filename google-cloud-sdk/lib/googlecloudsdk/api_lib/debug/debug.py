@@ -145,14 +145,82 @@ def DebugViewUrl(breakpoint):
       ('dbgee', breakpoint.target_id),
       ('bp', breakpoint.id)
   ]
-  location = breakpoint.location
-  if location:
-    file_path = location.path
-    if file_path:
-      data.append(('fp', file_path))
-    line = location.line
-    if line:
-      data.append(('fl', line))
+  return debug_view_url + urllib.urlencode(data)
+
+
+def LogQueryV1String(breakpoint, separator=' '):
+  """Returns an advanced log query string for use with gcloud logging read.
+
+  Args:
+    breakpoint: A breakpoint object with added information on project, service,
+      and debug target.
+    separator: A string to append between conditions
+  Returns:
+    A log query suitable for use with gcloud logging read.
+  """
+  query = (
+      'metadata.serviceName="appengine.googleapis.com"{sep}'
+      'metadata.labels."appengine.googleapis.com/module_id"="{service}"{sep}'
+      'metadata.labels."appengine.googleapis.com/version_id"="{version}"{sep}'
+      'log="appengine.googleapis.com/request_log"{sep}'
+      'metadata.severity={logLevel}').format(
+          service=breakpoint.service, version=breakpoint.version,
+          logLevel=breakpoint.logLevel or 'INFO', sep=separator)
+  if breakpoint.logMessageFormat:
+    # Search for all of the non-expression components of the message.
+    # The re.sub converts the format to a series of quoted strings.
+    query += '{sep}"{text}"'.format(
+        text=re.sub(r'\$([0-9]+)', r'" "',
+                    SplitLogExpressions(breakpoint.logMessageFormat)[0]),
+        sep=separator)
+  return query
+
+
+def LogQueryV2String(breakpoint, separator=' '):
+  """Returns an advanced log query string for use with gcloud logging read.
+
+  Args:
+    breakpoint: A breakpoint object with added information on project, service,
+      and debug target.
+    separator: A string to append between conditions
+  Returns:
+    A log query suitable for use with gcloud logging read.
+  """
+  query = (
+      'resource.type=gae_app{sep}'
+      'logName:request_log{sep}'
+      'resource.labels.module_id="{service}"{sep}'
+      'resource.labels.version_id="{version}"{sep}'
+      'severity={logLevel}').format(
+          service=breakpoint.service, version=breakpoint.version,
+          logLevel=breakpoint.logLevel or 'INFO', sep=separator)
+  if breakpoint.logMessageFormat:
+    # Search for all of the non-expression components of the message.
+    # The re.sub converts the format to a series of quoted strings.
+    query += '{sep}"{text}"'.format(
+        text=re.sub(r'\$([0-9]+)', r'" "',
+                    SplitLogExpressions(breakpoint.logMessageFormat)[0]),
+        sep=separator)
+  return query
+
+
+def LogViewUrl(breakpoint):
+  """Returns a URL to view the output for a logpoint.
+
+  Given a breakpoint in an appengine service, this transform will return a URL
+  which will open the log viewer to the request log for the service.
+
+  Args:
+    breakpoint: A breakpoint object with added information on project, service,
+      debug target, and logQuery.
+  Returns:
+    The URL for the appropriate logs.
+  """
+  debug_view_url = 'https://console.cloud.google.com/logs?'
+  data = [
+      ('project', breakpoint.project),
+      ('advancedFilter', LogQueryV1String(breakpoint, separator='\n') + '\n')
+  ]
   return debug_view_url + urllib.urlencode(data)
 
 
@@ -371,7 +439,7 @@ class Debuggee(DebugObject):
         if self.description else '')
 
   @property
-  def module(self):
+  def service(self):
     return self.labels.get('module', None)
 
   @property
@@ -384,10 +452,10 @@ class Debuggee(DebugObject):
 
   @property
   def name(self):
-    module = self.module
+    service = self.service
     version = self.version
-    if module or version:
-      return (module or DEFAULT_MODULE) + '-' + (version or DEFAULT_VERSION)
+    if service or version:
+      return (service or DEFAULT_MODULE) + '-' + (version or DEFAULT_VERSION)
     return self.description
 
   def _BreakpointDescription(self, restrict_to_type):
@@ -726,10 +794,9 @@ class Debuggee(DebugObject):
     result = _MessageDict(message, hidden_fields={
         'project': self.project,
         'target_uniquifier': self.target_uniquifier,
-        'target_id': self.target_id})
-    if not message.status or not message.status.isError:
-      result['consoleViewUrl'] = DebugViewUrl(result)
-
+        'target_id': self.target_id,
+        'service': self.service,
+        'version': self.version})
     # Restore some default values if they were stripped
     if (message.action ==
         self._debug_messages.Breakpoint.ActionValueValuesEnum.LOG and
@@ -747,6 +814,18 @@ class Debuggee(DebugObject):
       result['logMessageFormat'] = MergeLogExpressions(message.logMessageFormat,
                                                        message.expressions)
       result.HideExistingField('expressions')
+
+    if not message.status or not message.status.isError:
+      if message.action == self.LOGPOINT_TYPE:
+        # We can only generate view URLs for GAE, since there's not a standard
+        # way to view them in GCE. Use the presence of minorversion as an
+        # indicator that it's GAE.
+        if self.minorversion:
+          result['logQuery'] = LogQueryV2String(result)
+          result['logViewUrl'] = LogViewUrl(result)
+      else:
+        result['consoleViewUrl'] = DebugViewUrl(result)
+
     return result
 
   def _LocationFromString(self, location):

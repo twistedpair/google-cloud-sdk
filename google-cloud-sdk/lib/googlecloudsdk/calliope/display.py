@@ -61,13 +61,14 @@ class Displayer(object):
   # A command with these flags might return incomplete resource lists.
   _CORRUPT_FLAGS = ('async', 'filter', 'limit')
 
-  def __init__(self, command, args, resources):
+  def __init__(self, command, args, resources=None):
     """Constructor.
 
     Args:
       command: The Command object.
       args: The argparse.Namespace given to the command.Run().
-      resources: The resources to display, returned by command.Run().
+      resources: The resources to display, returned by command.Run(). May be
+        omitted if only GetFormat() will be called.
     """
     self._args = args
     self._command = command
@@ -198,7 +199,7 @@ class Displayer(object):
       return ''
     return self._command.Format(self._args)
 
-  def _GetFormat(self):
+  def GetFormat(self):
     """Determines the display format.
 
     Returns:
@@ -260,7 +261,7 @@ class Displayer(object):
     self._printer_is_initialized = True
 
     # Determine the format.
-    self._format = self._GetFormat()
+    self._format = self.GetFormat()
 
     # Initialize the default symbols.
     self._defaults = self._GetResourceInfoDefaults()

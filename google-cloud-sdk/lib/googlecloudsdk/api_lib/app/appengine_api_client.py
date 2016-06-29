@@ -75,13 +75,13 @@ class AppengineApiClient(object):
     """
     version_resource = self._CreateVersionResource(service_config, manifest,
                                                    version_id, image)
-    create_request = self.messages.AppengineAppsModulesVersionsCreateRequest(
+    create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
         name=self._FormatService(app_id=self.project,
                                  service_name=service_name),
         version=version_resource)
 
     operation = requests.MakeRequest(
-        self.client.apps_modules_versions.Create, create_request)
+        self.client.apps_services_versions.Create, create_request)
 
     log.debug('Received operation: [{operation}]'.format(
         operation=operation.name))
@@ -119,15 +119,15 @@ class AppengineApiClient(object):
     traffic_split = encoding.PyValueToMessage(self.messages.TrafficSplit,
                                               {'allocations': allocations,
                                                'shardBy': shard_by})
-    update_service_request = self.messages.AppengineAppsModulesPatchRequest(
+    update_service_request = self.messages.AppengineAppsServicesPatchRequest(
         name=self._FormatService(app_id=self.project,
                                  service_name=service_name),
-        module=self.messages.Module(split=traffic_split),
+        service=self.messages.Service(split=traffic_split),
         migrateTraffic=migrate,
         mask='split')
 
     operation = requests.MakeRequest(
-        self.client.apps_modules.Patch,
+        self.client.apps_services.Patch,
         update_service_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
@@ -141,12 +141,12 @@ class AppengineApiClient(object):
     Returns:
       The completed Operation.
     """
-    delete_request = self.messages.AppengineAppsModulesVersionsDeleteRequest(
+    delete_request = self.messages.AppengineAppsServicesVersionsDeleteRequest(
         name=self._FormatVersion(app_id=self.project,
                                  service_name=service_name,
                                  version_id=version_id))
     operation = requests.MakeRequest(
-        self.client.apps_modules_versions.Delete,
+        self.client.apps_services_versions.Delete,
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
@@ -161,14 +161,14 @@ class AppengineApiClient(object):
     Returns:
       The completed Operation.
     """
-    patch_request = self.messages.AppengineAppsModulesVersionsPatchRequest(
+    patch_request = self.messages.AppengineAppsServicesVersionsPatchRequest(
         name=self._FormatVersion(app_id=self.project,
                                  service_name=service_name,
                                  version_id=version_id),
         version=self.messages.Version(servingStatus=serving_status),
         mask='servingStatus')
     operation = requests.MakeRequest(
-        self.client.apps_modules_versions.Patch,
+        self.client.apps_services_versions.Patch,
         patch_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
@@ -183,11 +183,13 @@ class AppengineApiClient(object):
     """
     instances = []
     for version in versions:
-      list_req = self.messages.AppengineAppsModulesVersionsInstancesListRequest(
-          name=self._FormatVersion(self.project, version.service, version.id))
+      list_req = (
+          self.messages.AppengineAppsServicesVersionsInstancesListRequest(
+              name=self._FormatVersion(self.project, version.service,
+                                       version.id)))
       instances += map(instances_util.Instance.FromInstanceResource,
                        requests.MakeRequest(
-                           self.client.apps_modules_versions_instances.List,
+                           self.client.apps_services_versions_instances.List,
                            list_req).instances)
     return instances
 
@@ -213,33 +215,33 @@ class AppengineApiClient(object):
 
     return self.ListInstances(versions)
 
-  def StopVersion(self, module_name, version_id):
+  def StopVersion(self, service_name, version_id):
     """Stops the specified version.
 
     Args:
-      module_name: str, The module name
+      service_name: str, The service name
       version_id: str, The version to stop.
 
     Returns:
       The completed Operation.
     """
     return self.SetServingStatus(
-        module_name,
+        service_name,
         version_id,
         self.messages.Version.ServingStatusValueValuesEnum.STOPPED)
 
-  def StartVersion(self, module_name, version_id):
+  def StartVersion(self, service_name, version_id):
     """Starts the specified version.
 
     Args:
-      module_name: str, The module name
+      service_name: str, The service name
       version_id: str, The version to start.
 
     Returns:
       The completed Operation.
     """
     return self.SetServingStatus(
-        module_name,
+        service_name,
         version_id,
         self.messages.Version.ServingStatusValueValuesEnum.SERVING)
 
@@ -249,12 +251,12 @@ class AppengineApiClient(object):
     Returns:
       A list of service_util.Service objects.
     """
-    request = self.messages.AppengineAppsModulesListRequest(
+    request = self.messages.AppengineAppsServicesListRequest(
         name=self._FormatApp(self.project))
-    response = requests.MakeRequest(self.client.apps_modules.List, request)
+    response = requests.MakeRequest(self.client.apps_services.List, request)
 
     services = []
-    for s in response.modules:
+    for s in response.services:
       traffic_split = {}
       if s.split:
         for split in s.split.allocations.additionalProperties:
@@ -274,9 +276,9 @@ class AppengineApiClient(object):
     Returns:
       Version resource object from the API
     """
-    request = self.messages.AppengineAppsModulesVersionsGetRequest(
+    request = self.messages.AppengineAppsServicesVersionsGetRequest(
         name=self._FormatVersion(self.project, service, version))
-    return requests.MakeRequest(self.client.apps_modules_versions.Get, request)
+    return requests.MakeRequest(self.client.apps_services_versions.Get, request)
 
   def ListVersions(self, services):
     """Lists all versions for the specified services.
@@ -289,10 +291,10 @@ class AppengineApiClient(object):
     versions = []
     for service in services:
       # Get the versions.
-      request = self.messages.AppengineAppsModulesVersionsListRequest(
+      request = self.messages.AppengineAppsServicesVersionsListRequest(
           name=self._FormatService(self.project, service.id))
       response = requests.MakeRequest(
-          self.client.apps_modules_versions.List, request)
+          self.client.apps_services_versions.List, request)
 
       for v in response.versions:
         versions.append(version_util.Version.FromVersionResource(v, service))
@@ -308,23 +310,21 @@ class AppengineApiClient(object):
     Returns:
       The completed Operation.
     """
-    delete_request = self.messages.AppengineAppsModulesDeleteRequest(
+    delete_request = self.messages.AppengineAppsServicesDeleteRequest(
         name=self._FormatService(app_id=self.project,
                                  service_name=service_name))
     operation = requests.MakeRequest(
-        self.client.apps_modules.Delete,
+        self.client.apps_services.Delete,
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
   def _CreateVersionResource(self, service_config, manifest, version_id, image):
     """Constructs a Version resource for deployment."""
     appinfo = service_config.parsed
-    # TODO(user): Two Steps
-    # 1. Once Zeus supports service, flip this to write module into service
-    # 2. Once we want to stop supporting module, take this code out
-    if appinfo.service:
-      appinfo.module = appinfo.service
-      appinfo.service = None
+    # TODO(b/29453752): Remove when we want to stop supporting module
+    if appinfo.module:
+      appinfo.service = appinfo.module
+      appinfo.module = None
 
     parsed_yaml = service_config.parsed.ToYAML()
     config_dict = yaml.safe_load(parsed_yaml)
@@ -356,11 +356,11 @@ class AppengineApiClient(object):
     return 'apps/{app_id}'.format(app_id=app_id)
 
   def _FormatService(self, app_id, service_name):
-    return 'apps/{app_id}/modules/{service_name}'.format(
+    return 'apps/{app_id}/services/{service_name}'.format(
         app_id=app_id, service_name=service_name)
 
   def _FormatVersion(self, app_id, service_name, version_id):
-    return 'apps/{app_id}/modules/{service_name}/versions/{version_id}'.format(
+    return 'apps/{app_id}/services/{service_name}/versions/{version_id}'.format(
         app_id=app_id, service_name=service_name, version_id=version_id)
 
 
@@ -378,4 +378,4 @@ def GetApiClient():
     ValueError: If default_version does not correspond to a supported version of
       the API.
   """
-  return AppengineApiClient(core_apis.GetClientInstance('appengine', 'v1beta4'))
+  return AppengineApiClient(core_apis.GetClientInstance('appengine', 'v1beta5'))

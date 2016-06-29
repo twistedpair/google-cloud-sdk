@@ -2,6 +2,56 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 116.0.0 (2016/06/29)
+
+### Breaking Changes
+
+*   `gcloud alpha dataflow list-messages` datetime values are now displayed in
+    ISO 8601 format: 2015-01-15T12:31:07 ('T' separating the date and time
+    components).
+
+### Google App Engine
+
+*   The `gcloud app` surface is now available in the GA and beta release tracks.
+    Please use `gcloud app` instead of `gcloud preview app` (some features only
+    available in the beta release track).
+
+*   Add `gcloud app open-console` command, which opens the App Engine dashboard
+    in a web browser.
+
+### Google Cloud Datastore emulator
+
+*   The Cloud Datastore emulator can accept an IPv6 address for the
+    `--host-port` argument.
+
+*   Cloud Datastore emulator no longer fails when trying to load an index.yaml
+    file.
+
+### Google Container Builder
+
+*   The `gcloud alpha container builds` command group creates and manages
+    builds using the Google Container Builder service. See
+    https://cloud.google.com/container-builder/docs/ for API documentation.
+
+### Google Cloud Dataproc
+
+*   Added `--preemptible-worker-boot-disk-size` flag, which allows configuration    of preemptible worker boot disk, to `gcloud beta dataproc clusters create`.
+
+### Google BigQuery
+
+*   New query option in BQ client to specify a limit on bytes billed for the
+    query.
+
+### Google Cloud Bigtable
+
+*   Added `gcloud beta bigtable instances` group to manage Bigtable instances.
+
+*   Added `gcloud beta bigtable clusters` group to manage Bigtable clusters
+    within instances.
+
+*   Known issue: `gcloud beta bigtable instances create` is an asynchronous
+    operation by default and will not block with or without the `--async` flag.
+
 ## 115.0.0 (2016/06/22)
 
 ### Breaking Changes
@@ -394,7 +444,7 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 * Added `gcloud alpha debug` command surface to allow control of the
   Cloud Debugger from the command line.
 
-### Bigquery
+### Google BigQuery
 
 * BQ support for partitioned tables.
 

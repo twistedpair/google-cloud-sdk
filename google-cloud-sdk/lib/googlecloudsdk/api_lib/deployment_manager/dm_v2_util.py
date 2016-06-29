@@ -18,6 +18,7 @@ import json
 import time
 
 from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.exceptions import HttpException
 from googlecloudsdk.core import log
@@ -25,6 +26,15 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 import yaml
+
+
+SIMPLE_LIST_FLAG = base.Argument(
+    '--simple-list',
+    dest='format',
+    action='store_const',
+    const='value(name)',
+    help='Changes the --format flag to print the resource IDs. Otherwise '
+    'either the --format value or the default format is used.')
 
 
 def PrettyPrint(resource, print_format='json'):

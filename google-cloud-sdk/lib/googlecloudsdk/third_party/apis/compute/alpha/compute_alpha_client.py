@@ -59,6 +59,8 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
+    self.regionDiskTypes = self.RegionDiskTypesService(self)
+    self.regionDisks = self.RegionDisksService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
@@ -5055,6 +5057,282 @@ If you increase the size of the instance group, the group creates new instances 
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionDiskTypesService(base_api.BaseApiService):
+    """Service class for the regionDiskTypes resource."""
+
+    _NAME = u'regionDiskTypes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionDiskTypesService, self).__init__(client)
+      self._method_configs = {
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionDiskTypes.get',
+              ordered_params=[u'project', u'region', u'diskType'],
+              path_params=[u'diskType', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/diskTypes/{diskType}',
+              request_field='',
+              request_type_name=u'ComputeRegionDiskTypesGetRequest',
+              response_type_name=u'DiskType',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionDiskTypes.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/diskTypes',
+              request_field='',
+              request_type_name=u'ComputeRegionDiskTypesListRequest',
+              response_type_name=u'RegionDiskTypeList',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Returns the specified regional disk type. Get a list of available disk types by making a list() request.
+
+      Args:
+        request: (ComputeRegionDiskTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiskType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves a list of regional disk types available to the specified project.
+
+      Args:
+        request: (ComputeRegionDiskTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionDiskTypeList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class RegionDisksService(base_api.BaseApiService):
+    """Service class for the regionDisks resource."""
+
+    _NAME = u'regionDisks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionDisksService, self).__init__(client)
+      self._method_configs = {
+          'CreateSnapshot': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionDisks.createSnapshot',
+              ordered_params=[u'project', u'region', u'disk'],
+              path_params=[u'disk', u'project', u'region'],
+              query_params=[u'guestFlush'],
+              relative_path=u'projects/{project}/regions/{region}/disks/{disk}/createSnapshot',
+              request_field=u'snapshot',
+              request_type_name=u'ComputeRegionDisksCreateSnapshotRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              http_method=u'DELETE',
+              method_id=u'compute.regionDisks.delete',
+              ordered_params=[u'project', u'region', u'disk'],
+              path_params=[u'disk', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/disks/{disk}',
+              request_field='',
+              request_type_name=u'ComputeRegionDisksDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionDisks.get',
+              ordered_params=[u'project', u'region', u'disk'],
+              path_params=[u'disk', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/disks/{disk}',
+              request_field='',
+              request_type_name=u'ComputeRegionDisksGetRequest',
+              response_type_name=u'Disk',
+              supports_download=False,
+          ),
+          'Insert': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionDisks.insert',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'sourceImage'],
+              relative_path=u'projects/{project}/regions/{region}/disks',
+              request_field=u'disk',
+              request_type_name=u'ComputeRegionDisksInsertRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'compute.regionDisks.list',
+              ordered_params=[u'project', u'region'],
+              path_params=[u'project', u'region'],
+              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+              relative_path=u'projects/{project}/regions/{region}/disks',
+              request_field='',
+              request_type_name=u'ComputeRegionDisksListRequest',
+              response_type_name=u'RegionDiskList',
+              supports_download=False,
+          ),
+          'Resize': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionDisks.resize',
+              ordered_params=[u'project', u'region', u'disk'],
+              path_params=[u'disk', u'project', u'region'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/disks/{disk}/resize',
+              request_field=u'regionDisksResizeRequest',
+              request_type_name=u'ComputeRegionDisksResizeRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetLabels': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionDisks.setLabels',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/disks/{resource}/setLabels',
+              request_field=u'regionSetLabelsRequest',
+              request_type_name=u'ComputeRegionDisksSetLabelsRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'compute.regionDisks.testIamPermissions',
+              ordered_params=[u'project', u'region', u'resource'],
+              path_params=[u'project', u'region', u'resource'],
+              query_params=[],
+              relative_path=u'projects/{project}/regions/{region}/disks/{resource}/testIamPermissions',
+              request_field=u'testPermissionsRequest',
+              request_type_name=u'ComputeRegionDisksTestIamPermissionsRequest',
+              response_type_name=u'TestPermissionsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def CreateSnapshot(self, request, global_params=None):
+      """Creates a snapshot of this regional disk.
+
+      Args:
+        request: (ComputeRegionDisksCreateSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateSnapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+
+      Args:
+        request: (ComputeRegionDisksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Returns a specified regional persistent disk.
+
+      Args:
+        request: (ComputeRegionDisksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Disk) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Insert(self, request, global_params=None):
+      """Creates a persistent regional disk in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeRegionDisksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of persistent disks contained within the specified region.
+
+      Args:
+        request: (ComputeRegionDisksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionDiskList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Resize(self, request, global_params=None):
+      """Resizes the specified regional persistent disk.
+
+      Args:
+        request: (ComputeRegionDisksResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on the target regional disk.
+
+      Args:
+        request: (ComputeRegionDisksSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionDisksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

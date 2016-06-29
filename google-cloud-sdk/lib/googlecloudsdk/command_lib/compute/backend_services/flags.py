@@ -14,6 +14,8 @@
 
 """Flags and helpers for the compute backend-services commands."""
 
+import argparse
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -52,7 +54,7 @@ def AddLoadBalancingScheme(parser):
       choices=['INTERNAL', 'EXTERNAL'],
       type=lambda x: x.upper(),
       default='EXTERNAL',
-      help='Specifies if this is internal or external load balancer.')
+      help=argparse.SUPPRESS)
 
 
 def AddConnectionDrainingTimeout(parser):

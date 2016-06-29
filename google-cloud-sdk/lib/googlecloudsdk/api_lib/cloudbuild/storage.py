@@ -16,8 +16,11 @@
 
 """
 
+import os.path
+
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 class Client(object):
@@ -77,3 +80,28 @@ class Client(object):
             destinationBucket=dst.bucket,
             destinationObject=dst.object,
         ))
+
+  def Upload(self, local_file, dst, mime_type=None):
+    """Upload a local file into GCS.
+
+    Args:
+      local_file: str, The local file to be uploaded.
+      dst: Resource, The storage object resource to be copied to.
+      mime_type: str, The MIME type of this file.
+
+    Returns:
+      Object, the storage object that was copied to.
+    """
+    return self.client.objects.Insert(
+        self.messages.StorageObjectsInsertRequest(
+            bucket=dst.bucket,
+            name=dst.object,
+            object=self.messages.Object(
+                size=os.path.getsize(local_file),
+            ),
+        ),
+        upload=transfer.Upload.FromFile(
+            local_file,
+            mime_type=mime_type,
+        ),
+    )

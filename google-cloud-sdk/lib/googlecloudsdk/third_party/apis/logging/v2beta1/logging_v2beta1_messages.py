@@ -22,7 +22,7 @@ class Empty(_messages.Message):
 
 
 class GetLogsUsageResponse(_messages.Message):
-  """A GetLogsUsageResponse object.
+  """The response from `GetLogsUsage`.
 
   Fields:
     usage: A collection of ranges that describes logs usage and allowed quota
@@ -156,13 +156,12 @@ class ListLogEntriesRequest(_messages.Message):
     partialSuccess: Optional. If true, read access to all projects is not
       required and results will be returned for the subset of projects for
       which read access is permitted (empty subset is permitted).
-    projectIds: Required. One or more project IDs or project numbers from
+    projectIds: Deprecated. One or more project IDs or project numbers from
       which to retrieve log entries.  Examples of a project ID: `"my-project-
       1A"`, `"1234567890"`.
     resourceNames: One or more cloud resources from which to retrieve log
-      entries. These will be combined with the project resources from
-      project_ids above. Examples are "projects/my-project-id",
-      "organizations/google", "billingaccounts/ABC1234"
+      entries. These will be combined with the resources from project_ids
+      above. e.g. "projects/my-project-1A"
   """
 
   filter = _messages.StringField(1)
@@ -465,8 +464,8 @@ class LogEntry(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -510,7 +509,7 @@ class LogEntryOperation(_messages.Message):
       operation.
     producer: Required. An arbitrary producer identifier. The combination of
       `id` and `producer` must be globally unique.  Examples for `producer`:
-      `"MyDivision.MyBigCompany.com"`, "github.com/MyProject/MyApplication"`.
+      `"MyDivision.MyBigCompany.com"`, `"github.com/MyProject/MyApplication"`.
   """
 
   first = _messages.BooleanField(1)
@@ -1417,8 +1416,8 @@ class Status(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1440,7 +1439,7 @@ class Status(_messages.Message):
 
 
 class Usage(_messages.Message):
-  """A Usage object.
+  """Describes logs usage over a period of time.
 
   Fields:
     byteCount: The volume of ingested logs, in bytes.

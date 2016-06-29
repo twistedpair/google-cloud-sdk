@@ -46,10 +46,9 @@ class AndroidDeviceCatalog(_messages.Message):
   """The currently supported Android devices.
 
   Fields:
-    models: The set of supported Android device models. @OutputOnly
+    models: The set of supported Android device models.
     runtimeConfiguration: The set of supported runtime configurations.
-      @OutputOnly
-    versions: The set of supported Android OS versions. @OutputOnly
+    versions: The set of supported Android OS versions.
   """
 
   models = _messages.MessageField('AndroidModel', 1, repeated=True)
@@ -119,37 +118,33 @@ class AndroidModel(_messages.Message):
 
   Enums:
     FormValueValuesEnum: Whether this device is virtual or physical.
-      @OutputOnly
 
   Fields:
     brand: The company that this device is branded with. Example: "Google",
-      "Samsung" @OutputOnly
+      "Samsung"
     codename: The name of the industrial design. This corresponds to
-      android.os.Build.DEVICE @OutputOnly
-    form: Whether this device is virtual or physical. @OutputOnly
+      android.os.Build.DEVICE
+    form: Whether this device is virtual or physical.
     id: The unique opaque id for this model. Use this for invoking the
-      TestExecutionService. @OutputOnly
-    manufacturer: The manufacturer of this device. @OutputOnly
+      TestExecutionService.
+    manufacturer: The manufacturer of this device.
     name: The human-readable marketing name for this device model. Examples:
-      "Nexus 5", "Galaxy S5" @OutputOnly
+      "Nexus 5", "Galaxy S5"
     screenDensity: Screen density in DPI. This corresponds to
-      ro.sf.lcd_density @OutputOnly
+      ro.sf.lcd_density
     screenX: Screen size in the horizontal (X) dimension measured in pixels.
-      @OutputOnly
     screenY: Screen size in the vertical (Y) dimension measured in pixels.
-      @OutputOnly
     supportedAbis: The list of supported ABIs for this device. This
       corresponds to either android.os.Build.SUPPORTED_ABIS (for API level 21
       and above) or android.os.Build.CPU_ABI/CPU_ABI2. The most preferred ABI
-      is the first element in the list. @OutputOnly
+      is the first element in the list.
     supportedVersionIds: The set of Android versions this device supports.
-      @OutputOnly
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated"
   """
 
   class FormValueValuesEnum(_messages.Enum):
-    """Whether this device is virtual or physical. @OutputOnly
+    """Whether this device is virtual or physical.
 
     Values:
       DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
@@ -202,8 +197,8 @@ class AndroidRuntimeConfiguration(_messages.Message):
   """Configuration that can be selected at the time a test is run.
 
   Fields:
-    locales: The set of available locales. @OutputOnly
-    orientations: The set of available orientations. @OutputOnly
+    locales: The set of available locales.
+    orientations: The set of available orientations.
   """
 
   locales = _messages.MessageField('Locale', 1, repeated=True)
@@ -215,18 +210,16 @@ class AndroidVersion(_messages.Message):
 
   Fields:
     apiLevel: The API level for this Android version. Examples: 18, 19
-      @OutputOnly
     codeName: The code name for this Android version. Examples: "JellyBean",
-      "KitKat" @OutputOnly
-    distribution: Market share for this version. @OutputOnly
+      "KitKat"
+    distribution: Market share for this version.
     id: An opaque id for this Android version. Use this id to invoke the
-      TestExecutionService. @OutputOnly
+      TestExecutionService.
     releaseDate: The date this Android version became available in the market.
-      @OutputOnly
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated"
     versionString: A string representing this version of the Android OS.
-      Examples: "4.3", "4.4" @OutputOnly
+      Examples: "4.3", "4.4"
   """
 
   apiLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -439,8 +432,8 @@ class Distribution(_messages.Message):
 
   Fields:
     marketShare: The estimated fraction (0-1) of the total market with this
-      configuration. @OutputOnly
-    measurementTime: The time this distribution was measured. @OutputOnly
+      configuration.
+    measurementTime: The time this distribution was measured.
   """
 
   marketShare = _messages.FloatField(1)
@@ -558,11 +551,10 @@ class Locale(_messages.Message):
   """A location/region designation for language.
 
   Fields:
-    id: The id for this locale. Example: "en_US" @OutputOnly
+    id: The id for this locale. Example: "en_US"
     name: A human-friendly name for this language/locale. Example: "English"
-      @OutputOnly
     region: A human-friendy string representing the region for this locale.
-      Example: "United States" Not present for every locale. @OutputOnly
+      Example: "United States" Not present for every locale.
     tags: Tags for this dimension. Examples: "default"
   """
 
@@ -592,9 +584,8 @@ class Orientation(_messages.Message):
   """Screen orientation of the device.
 
   Fields:
-    id: The id for this orientation. Example: "portrait" @OutputOnly
+    id: The id for this orientation. Example: "portrait"
     name: A human-friendly name for this orientation. Example: "portrait"
-      @OutputOnly
     tags: Tags for this dimension. Examples: "default"
   """
 
@@ -609,7 +600,7 @@ class ResultStorage(_messages.Message):
   Fields:
     googleCloudStorage: Required.
     toolResultsExecution: The tool results execution that results are written
-      to. @OutputOnly
+      to.
     toolResultsHistory: The tool results history that contains the tool
       results execution that results are written to.  Optional, if not
       provided the service will choose an appropriate value.
@@ -692,11 +683,11 @@ class TestDetails(_messages.Message):
 
   Fields:
     errorMessage: If the TestState is ERROR, then this string will contain
-      human-readable details about the error. @OutputOnly
+      human-readable details about the error.
     progressMessages: Human-readable, detailed descriptions of the test's
       progress. For example: "Provisioning a device", "Starting Test".  During
       the course of execution new data may be appended to the end of
-      progress_messages. @OutputOnly
+      progress_messages.
   """
 
   errorMessage = _messages.StringField(1)
@@ -719,25 +710,23 @@ class TestExecution(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Indicates the current progress of the test execution
-      (e.g., FINISHED). @OutputOnly
+      (e.g., FINISHED).
 
   Fields:
-    environment: How the host machine(s) are configured. @OutputOnly
-    id: Unique id set by the backend. @OutputOnly
-    matrixId: Id of the containing TestMatrix. @OutputOnly
-    projectId: The cloud project that owns the test execution. @OutputOnly
+    environment: How the host machine(s) are configured.
+    id: Unique id set by the backend.
+    matrixId: Id of the containing TestMatrix.
+    projectId: The cloud project that owns the test execution.
     state: Indicates the current progress of the test execution (e.g.,
-      FINISHED). @OutputOnly
-    testDetails: Additional details about the running test. @OutputOnly
-    testSpecification: How to run the test. @OutputOnly
-    timestamp: The time this test execution was initially created. @OutputOnly
+      FINISHED).
+    testDetails: Additional details about the running test.
+    testSpecification: How to run the test.
+    timestamp: The time this test execution was initially created.
     toolResultsStep: Where the results for this execution are written.
-      @OutputOnly
   """
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test execution (e.g., FINISHED).
-    @OutputOnly
 
     Values:
       TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.
@@ -797,25 +786,23 @@ class TestMatrix(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Indicates the current progress of the test matrix
-      (e.g., FINISHED) @OutputOnly
+      (e.g., FINISHED)
 
   Fields:
     clientInfo: Information about the client which invoked the test. Optional
     environmentMatrix: How the host machine(s) are configured. Required
-    projectId: The cloud project that owns the test matrix. @OutputOnly
+    projectId: The cloud project that owns the test matrix.
     resultStorage: Where the results for the matrix are written. Required
     state: Indicates the current progress of the test matrix (e.g., FINISHED)
-      @OutputOnly
     testExecutions: The list of test executions that the service creates for
-      this matrix. @OutputOnly
-    testMatrixId: Unique id set by the service. @OutputOnly
+      this matrix.
+    testMatrixId: Unique id set by the service.
     testSpecification: How to run the test. Required
-    timestamp: The time this test matrix was initially created. @OutputOnly
+    timestamp: The time this test matrix was initially created.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)
-    @OutputOnly
 
     Values:
       TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.
@@ -1070,10 +1057,9 @@ class ToolResultsExecution(_messages.Message):
   TestMatrix.
 
   Fields:
-    executionId: A tool results execution ID. @OutputOnly
-    historyId: A tool results history ID. @OutputOnly
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
     projectId: The cloud project that owns the tool results execution.
-      @OutputOnly
   """
 
   executionId = _messages.StringField(1)
@@ -1098,10 +1084,10 @@ class ToolResultsStep(_messages.Message):
   TestExecution.
 
   Fields:
-    executionId: A tool results execution ID. @OutputOnly
-    historyId: A tool results history ID. @OutputOnly
-    projectId: The cloud project that owns the tool results step. @OutputOnly
-    stepId: A tool results step ID. @OutputOnly
+    executionId: A tool results execution ID.
+    historyId: A tool results history ID.
+    projectId: The cloud project that owns the tool results step.
+    stepId: A tool results step ID.
   """
 
   executionId = _messages.StringField(1)

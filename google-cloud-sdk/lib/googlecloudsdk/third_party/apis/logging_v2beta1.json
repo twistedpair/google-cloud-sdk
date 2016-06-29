@@ -209,7 +209,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "any",
-            "description": "Properties of the object. Contains field @ype with type URL."
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         },
         "textPayload": {
@@ -357,7 +357,7 @@
           "type": "string"
         },
         "producer": {
-          "description": "Required. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, \"github.com\/MyProject\/MyApplication\"`.\n",
+          "description": "Required. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, `\"github.com\/MyProject\/MyApplication\"`.\n",
           "type": "string"
         },
         "first": {
@@ -409,14 +409,14 @@
       "type": "object",
       "properties": {
         "projectIds": {
-          "description": "Required. One or more project IDs or project numbers from which to retrieve\nlog entries.  Examples of a project ID: `\"my-project-1A\"`, `\"1234567890\"`.",
+          "description": "Deprecated. One or more project IDs or project numbers from which to\nretrieve log entries.  Examples of a project ID: `\"my-project-1A\"`,\n`\"1234567890\"`.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "resourceNames": {
-          "description": "One or more cloud resources from which to retrieve log entries. These will\nbe combined with the project resources from project_ids above.\nExamples are \"projects\/my-project-id\", \"organizations\/google\",\n\"billingaccounts\/ABC1234\"",
+          "description": "One or more cloud resources from which to retrieve log entries. These will\nbe combined with the resources from project_ids above.\ne.g. \"projects\/my-project-1A\"",
           "type": "array",
           "items": {
             "type": "string"
@@ -500,7 +500,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "any",
-              "description": "Properties of the object. Contains field @ype with type URL."
+              "description": "Properties of the object. Contains field @type with type URL."
             }
           }
         }
@@ -720,7 +720,7 @@
     },
     "GetLogsUsageResponse": {
       "id": "GetLogsUsageResponse",
-
+      "description": "The response from `GetLogsUsage`.",
       "type": "object",
       "properties": {
         "usage": {
@@ -734,7 +734,7 @@
     },
     "Usage": {
       "id": "Usage",
-
+      "description": "Describes logs usage over a period of time.",
       "type": "object",
       "properties": {
         "startTime": {

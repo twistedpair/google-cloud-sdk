@@ -64,6 +64,16 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
           'You cannot specify [--target-pool] for a global '
           'forwarding rule.')
 
+    if getattr(args, 'backend_service', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--backend-service] for a global '
+          'forwarding rule.')
+
+    if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
+      raise exceptions.ToolException(
+          'You cannot specify internal [--load-balancing-scheme] for a global '
+          'forwarding rule.')
+
     if args.target_http_proxy:
       return self.CreateGlobalReference(
           args.target_http_proxy, resource_type='targetHttpProxies')
@@ -96,6 +106,17 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
           'You cannot specify [--target-instance-zone] unless you are '
           'specifying [--target-instance].')
 
+    if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
+      if getattr(args, 'port_range', None):
+        raise exceptions.ToolException(
+            'You cannot specify [--port-range] for a forwarding rule '
+            'whose [--load-balancing-scheme] is internal, '
+            'please use [--ports] flag instead.')
+    elif getattr(args, 'subnet', None) or getattr(args, 'network', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--subnet] or [--network] for non-internal '
+          '[--load-balancing-scheme] forwarding rule.')
+
     if forwarding_rule_ref:
       region_arg = forwarding_rule_ref.region
     else:
@@ -116,6 +137,11 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
       target_ref = self.CreateRegionalReference(
           args.target_vpn_gateway, region_arg,
           resource_type='targetVpnGateways')
+      target_region = target_ref.region
+    elif getattr(args, 'backend_service', None):
+      target_ref = self.CreateRegionalReference(
+          args.backend_service, region_arg,
+          resource_type='regionBackendServices')
       target_region = target_ref.region
 
     return target_ref, target_region

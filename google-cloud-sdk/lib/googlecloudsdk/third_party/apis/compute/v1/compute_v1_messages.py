@@ -991,16 +991,15 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1074,16 +1073,15 @@ class ComputeAddressesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1117,16 +1115,15 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1200,16 +1197,15 @@ class ComputeAutoscalersListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1330,16 +1326,15 @@ class ComputeBackendServicesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1401,16 +1396,15 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1456,16 +1450,15 @@ class ComputeDiskTypesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1499,16 +1492,15 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1600,16 +1592,15 @@ class ComputeDisksListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1696,16 +1687,15 @@ class ComputeFirewallsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1765,16 +1755,15 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1849,16 +1838,15 @@ class ComputeForwardingRulesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -1946,16 +1934,15 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2024,16 +2011,15 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2081,16 +2067,15 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2150,16 +2135,15 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2228,16 +2212,15 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2336,16 +2319,15 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2470,16 +2452,15 @@ class ComputeImagesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2529,16 +2510,15 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2646,16 +2626,15 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2780,16 +2759,15 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -2863,16 +2841,15 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     instanceGroup: The name of the instance group from which you want to
       generate a list of included instances.
     instanceGroupsListInstancesRequest: A InstanceGroupsListInstancesRequest
@@ -2912,16 +2889,15 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3029,16 +3005,15 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3089,16 +3064,15 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3238,16 +3212,15 @@ class ComputeInstancesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3436,16 +3409,15 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3491,16 +3463,15 @@ class ComputeMachineTypesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3570,16 +3541,15 @@ class ComputeNetworksListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3704,16 +3674,15 @@ class ComputeRegionOperationsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3759,16 +3728,15 @@ class ComputeRegionsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3800,16 +3768,15 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -3897,16 +3864,15 @@ class ComputeRoutersListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4008,16 +3974,15 @@ class ComputeRoutesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4073,16 +4038,15 @@ class ComputeSnapshotsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4151,16 +4115,15 @@ class ComputeSslCertificatesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4192,16 +4155,15 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4275,16 +4237,15 @@ class ComputeSubnetworksListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4355,16 +4316,15 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4448,16 +4408,15 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4522,16 +4481,15 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4606,16 +4564,15 @@ class ComputeTargetInstancesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4683,16 +4640,15 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4784,16 +4740,15 @@ class ComputeTargetPoolsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4880,16 +4835,15 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4964,16 +4918,15 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5058,16 +5011,15 @@ class ComputeUrlMapsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5142,16 +5094,15 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5225,16 +5176,15 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5300,16 +5250,15 @@ class ComputeZoneOperationsListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5355,16 +5304,15 @@ class ComputeZonesListRequest(_messages.Message):
       value is interpreted as a regular expression using RE2 syntax. The
       literal value must match the entire field.  For example, to filter for
       instances that do not have a name of example-instance, you would use
-      filter=name ne example-instance.  Compute Engine Beta API Only: When
-      filtering in the Beta API, you can also filter on nested fields. For
+      filter=name ne example-instance.  You can filter on nested fields. For
       example, you could filter on instances that have set the
       scheduling.automaticRestart field to true. Use filtering on nested
       fields to take advantage of labels to organize and search for results
-      based on label values.  The Beta API also supports filtering on multiple
-      expressions by providing each separate expression within parentheses.
-      For example, (scheduling.automaticRestart eq true) (zone eq us-
-      central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -6033,21 +5981,22 @@ class Firewall(_messages.Message):
       /my-network  - projects/myproject/global/networks/my-network  -
       global/networks/default
     selfLink: [Output Only] Server-defined URL for the resource.
-    sourceRanges: The IP address blocks that this rule applies to, expressed
-      in CIDR format. One or both of sourceRanges and sourceTags may be set.
-      If both properties are set, an inbound connection is allowed if the
-      range matches the sourceRanges OR the tag of the source matches the
-      sourceTags property. The connection does not need to match both
-      properties.
-    sourceTags: A list of instance tags which this rule applies to. One or
-      both of sourceRanges and sourceTags may be set.  If both properties are
-      set, an inbound connection is allowed if the range matches the
-      sourceRanges OR the tag of the source matches the sourceTags property.
-      The connection does not need to match both properties.  Source tags
-      cannot be used to allow access to an instance's external IP address.
-      Because tags are associated with an instance, not an IP address, source
-      tags can only be used to control traffic traveling from an instance
-      inside the same network as the firewall.
+    sourceRanges: If source ranges are specified, the firewall will apply only
+      to traffic that has source IP address in these ranges. These ranges must
+      be expressed in CIDR format. One or both of sourceRanges and sourceTags
+      may be set. If both properties are set, the firewall will apply to
+      traffic that has source IP address within sourceRanges OR the source IP
+      that belongs to a tag listed in the sourceTags property. The connection
+      does not need to match both properties for the firewall to apply.
+    sourceTags: If source tags are specified, the firewall will apply only to
+      traffic with source IP that belongs to a tag listed in source tags.
+      Source tags cannot be used to control traffic to an instance's external
+      IP address. Because tags are associated with an instance, not an IP
+      address. One or both of sourceRanges and sourceTags may be set. If both
+      properties are set, the firewall will apply to traffic that has source
+      IP address within sourceRanges OR the source IP that belongs to a tag
+      listed in the sourceTags property. The connection does not need to match
+      both properties for the firewall to apply.
     targetTags: A list of instance tags indicating sets of instances located
       in the network that may make network connections as specified in
       allowed[]. If no targetTags are specified, the firewall rule applies to
@@ -7412,19 +7361,20 @@ class InstanceGroupsListInstances(_messages.Message):
   """A InstanceGroupsListInstances object.
 
   Fields:
-    id: [Output Only] A unique identifier for this list of instance groups.
-      The server generates this identifier.
+    id: [Output Only] A unique identifier for this list of instances in the
+      specified instance group. The server generates this identifier.
     items: [Output Only] A list of instances and any named ports that are
       assigned to those instances.
     kind: [Output Only] The resource type, which is always
-      compute#instanceGroupsListInstances for lists of instance groups.
+      compute#instanceGroupsListInstances for the list of instances in the
+      specified instance group.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this list of instance groups. The
-      server generates this URL.
+    selfLink: [Output Only] The URL for this list of instances in the
+      specified instance groups. The server generates this URL.
   """
 
   id = _messages.StringField(1)

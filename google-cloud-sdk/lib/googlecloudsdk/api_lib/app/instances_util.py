@@ -35,7 +35,7 @@ class Instance(object):
   # TODO(b/27900246): Once API supports "Get" verb, convert to use resource
   # parser.
   _INSTANCE_NAME_PATTERN = ('apps/(?P<project>.*)/'
-                            'modules/(?P<service>.*)/'
+                            'services/(?P<service>.*)/'
                             'versions/(?P<version>.*)/'
                             'instances/(?P<instance>.*)')
 

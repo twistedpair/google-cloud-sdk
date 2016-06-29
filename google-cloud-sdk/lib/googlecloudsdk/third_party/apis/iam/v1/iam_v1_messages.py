@@ -722,7 +722,7 @@ class ServiceAccount(_messages.Message):
       account.
     displayName: Optional. A user-specified description of the service
       account.  Must be fewer than 100 UTF-8 bytes.
-    email: @OutputOnly The email address of the service account.
+    email:  The email address of the service account.
     etag: Used to perform a consistent read-modify-write.
     name: The resource name of the service account in the following format:
       `projects/{project}/serviceAccounts/{account}`.  Requests using `-` as a
@@ -730,12 +730,11 @@ class ServiceAccount(_messages.Message):
       the `account` value can be the `email` address or the `unique_id` of the
       service account.  In responses the resource name will always be in the
       format `projects/{project}/serviceAccounts/{email}`.
-    oauth2ClientId: @OutputOnly. The OAuth2 client id for the service account.
-      This is used in conjunction with the OAuth2 clientconfig API to make
-      three legged OAuth2 (3LO) flows to access the data of Google users.
-    projectId: @OutputOnly The id of the project that owns the service
-      account.
-    uniqueId: @OutputOnly The unique and stable id of the service account.
+    oauth2ClientId: . The OAuth2 client id for the service account. This is
+      used in conjunction with the OAuth2 clientconfig API to make three
+      legged OAuth2 (3LO) flows to access the data of Google users.
+    projectId:  The id of the project that owns the service account.
+    uniqueId:  The unique and stable id of the service account.
   """
 
   description = _messages.StringField(1)

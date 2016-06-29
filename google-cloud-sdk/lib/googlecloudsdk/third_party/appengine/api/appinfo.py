@@ -430,7 +430,7 @@ _SUPPORTED_LIBRARIES = [
         'markupsafe',
         'http://pypi.python.org/pypi/MarkupSafe',
         'A XML/HTML/XHTML markup safe string for Python.',
-        ['0.15'],
+        ['0.15', '0.23'],
         latest_version='0.15',
         ),
     _VersionedLibrary(

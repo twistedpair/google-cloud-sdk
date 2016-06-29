@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute forwarding-rules commands."""
 
+import argparse
 import textwrap
 
 from googlecloudsdk.calliope import actions
@@ -93,6 +94,25 @@ def AddUpdateArgs(parser, include_alpha_targets):
     target.add_argument(
         '--target-ssl-proxy',
         help='The target SSL proxy that will receive the traffic.')
+
+    parser.add_argument(
+        '--load-balancing-scheme',
+        choices=['INTERNAL', 'EXTERNAL'],
+        type=lambda x: x.upper(),
+        default='EXTERNAL',
+        help=argparse.SUPPRESS)
+
+    target.add_argument(
+        '--backend-service',
+        help=argparse.SUPPRESS)
+
+    parser.add_argument(
+        '--subnet',
+        help=argparse.SUPPRESS)
+
+    parser.add_argument(
+        '--network',
+        help=argparse.SUPPRESS)
 
   target.add_argument(
       '--target-vpn-gateway',

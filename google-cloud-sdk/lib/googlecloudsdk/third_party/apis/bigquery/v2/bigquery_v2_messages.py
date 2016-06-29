@@ -1092,6 +1092,10 @@ class JobConfigurationQuery(_messages.Message):
       Queries that have resource usage beyond this tier will fail (without
       incurring a charge). If unspecified, this will be set to your project
       default.
+    maximumBytesBilled: [Optional] Limits the bytes billed for this job.
+      Queries that will have bytes billed beyond this limit will fail (without
+      incurring a charge). If unspecified, this will be set to your project
+      default.
     preserveNulls: [Deprecated] This property is deprecated.
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
@@ -1160,14 +1164,15 @@ class JobConfigurationQuery(_messages.Message):
   destinationTable = _messages.MessageField('TableReference', 4)
   flattenResults = _messages.BooleanField(5, default=True)
   maximumBillingTier = _messages.IntegerField(6, variant=_messages.Variant.INT32, default=1)
-  preserveNulls = _messages.BooleanField(7)
-  priority = _messages.StringField(8)
-  query = _messages.StringField(9)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 10)
-  useLegacySql = _messages.BooleanField(11)
-  useQueryCache = _messages.BooleanField(12, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 13, repeated=True)
-  writeDisposition = _messages.StringField(14)
+  maximumBytesBilled = _messages.IntegerField(7)
+  preserveNulls = _messages.BooleanField(8)
+  priority = _messages.StringField(9)
+  query = _messages.StringField(10)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 11)
+  useLegacySql = _messages.BooleanField(12)
+  useQueryCache = _messages.BooleanField(13, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 14, repeated=True)
+  writeDisposition = _messages.StringField(15)
 
 
 class JobConfigurationTableCopy(_messages.Message):

@@ -23,7 +23,6 @@ from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
 from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
-from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
 
 
@@ -482,17 +481,15 @@ class Command(_Common):
         common initialization among commands.
     http_func: function that returns an http object that can be used during
         service requests.
-    __format_string: str, The default resource printer format string.
     _uri_cache_enabled: bool, The URI cache enabled state.
   """
 
   __metaclass__ = abc.ABCMeta
 
-  def __init__(self, cli, context, format_string):
+  def __init__(self, cli, context):
     super(Command, self).__init__()
     self.cli = cli
     self.context = context
-    self.__format_string = format_string
     self._uri_cache_enabled = False
 
   def ExecuteCommand(self, args):
@@ -546,8 +543,7 @@ class Command(_Common):
     info = resource_registry.Get(collection)
     if not getattr(args, 'async', False):
       return info
-    async_collection = info.async_collection
-    if not async_collection:
+    if not info.async_collection:
       raise resource_exceptions.ResourceRegistryAttributeError(
           'Collection [{collection}] does not have an async_collection '
           'attribute.'.format(collection=collection))
@@ -596,17 +592,6 @@ class Command(_Common):
   def GetUriCacheUpdateOp():
     """Returns the URI cache update OP."""
     return None
-
-  # TODO(user): Drop format, __format_string after all use resource_printer.
-  # pylint: disable=invalid-name
-  def format(self, obj):
-    """Prints out the given object using the format decided by the format flag.
-
-    Args:
-      obj: Object, The object to print.
-    """
-    if obj:
-      resource_printer.Print(obj, self.__format_string, out=log.out)
 
 
 class SilentCommand(Command):

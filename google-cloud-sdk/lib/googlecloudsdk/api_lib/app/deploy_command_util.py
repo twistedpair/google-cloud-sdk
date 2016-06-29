@@ -306,8 +306,8 @@ def EnsureAppYamlForAppDirectory(directory):
     return yaml_path
   console_io.PromptContinue(
       'Deployment to Google App Engine requires an app.yaml file. '
-      'This command will run `gcloud preview app gen-config` to generate '
-      'an app.yaml file for you in the current directory (if the current '
+      'This command will run `gcloud beta app gen-config` to generate an '
+      'app.yaml file for you in the current directory (if the current '
       'directory does not contain an App Engine service, please answer '
       '"no").', cancel_on_no=True)
   # This indicates we don't have an app.yaml, we do not want to generate

@@ -58,9 +58,9 @@ MAP = {
         ),
     },
     'appengine': {
-        'v1beta4': APIDef(
-            client_classpath='googlecloudsdk.third_party.apis.appengine.v1beta4.appengine_v1beta4_client.AppengineV1beta4',
-            messages_modulepath='googlecloudsdk.third_party.apis.appengine.v1beta4.appengine_v1beta4_messages',
+        'v1beta5': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.appengine.v1beta5.appengine_v1beta5_client.AppengineV1beta5',
+            messages_modulepath='googlecloudsdk.third_party.apis.appengine.v1beta5.appengine_v1beta5_messages',
             default_version=True
         ),
     },

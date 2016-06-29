@@ -39,8 +39,8 @@ class VersionsDeleteError(exceptions.Error):
 class Version(object):
   """Value class representing a version resource.
 
-  This wrapper around appengine_v1beta4_messages.Version is necessary because
-  Versions don't have traffic split, project, or last_deployed_time as a
+  This wrapper around appengine_<API-version>_messages.Version is necessary
+  because Versions don't have traffic split, project, or last_deployed_time as a
   datetime object.
   """
 
@@ -53,7 +53,7 @@ class Version(object):
 
   # This is the name in the Version resource from the API
   _VERSION_NAME_PATTERN = ('apps/(?P<project>.*)/'
-                           'modules/(?P<service>.*)/'
+                           'services/(?P<service>.*)/'
                            'versions/(?P<version>.*)')
 
   def __init__(self, project, service, version_id, traffic_split=None,
@@ -77,7 +77,7 @@ class Version(object):
 
   @classmethod
   def FromVersionResource(cls, version, service):
-    """Convert a appengine_v1beta4_messages.Version into a wrapped Version."""
+    """Convert appengine_<API-version>_messages.Version into wrapped Version."""
     project, service_id, _ = re.match(cls._VERSION_NAME_PATTERN,
                                       version.name).groups()
     traffic_split = service and service.split.get(version.id, 0.0)
@@ -328,7 +328,7 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
     return
 
   try:
-    api_client.StopVersion(module_name=old_default_version.service,
+    api_client.StopVersion(service_name=old_default_version.service,
                            version_id=old_default_version.id)
   except (calliope_exceptions.HttpException, operations.OperationError,
           operations.OperationTimeoutError) as err:

@@ -17,7 +17,9 @@
 import httplib
 import socket
 import ssl
+import urlparse
 
+from googlecloudsdk.core import config
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -26,12 +28,26 @@ from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import http_proxy_types
 import httplib2
 
-# TODO(b/29217446): Investigate other URLs to check.
-_DEFAULT_URLS_TO_CHECK = [
-    'http://www.google.com',
-    'https://www.google.com',
-    'https://accounts.google.com',
-    'https://cloudresourcemanager.googleapis.com/v1beta1/projects']
+
+def _DefaultUrls():
+  """Returns a list of hosts whose reachability is essential for the Cloud SDK.
+
+  Returns:
+    list(str): The urls to check reachability for.
+  """
+  urls = ['http://www.google.com', 'https://www.google.com',
+          'https://accounts.google.com',
+          'https://cloudresourcemanager.googleapis.com/v1beta1/projects',
+          'https://www.googleapis.com/auth/cloud-platform']
+
+  download_urls = (properties.VALUES.component_manager.snapshot_url.Get() or
+                   config.INSTALLATION_CONFIG.snapshot_url)
+  if download_urls:
+    for url in download_urls.split(','):
+      url_scheme = urlparse.urlparse(url).scheme
+      if url_scheme in ('http', 'https'):
+        urls.append(url)
+  return urls
 
 
 class Failure(object):
@@ -52,13 +68,13 @@ def DiagnoseNetworkConnection(urls=None):
 
   Args:
     urls: iterable(str), The list of urls to check connection to. Defaults to
-      _DEFAULT_URLS_TO_CHECK (above).
+      DEFAULT_URLS (above).
 
   Returns:
     bool: Whether the network connection check ultimately passed.
   """
   if not urls:
-    urls = _DEFAULT_URLS_TO_CHECK
+    urls = _DefaultUrls()
 
   if _CheckNetworkConnection(urls, http.Http(auth=False), first_run=True):
     return True
@@ -115,27 +131,23 @@ def CheckReachability(urls, http_client=None):
 
   Returns:
     list(Failure): Reasons for why any urls were unreachable. The list will be
-    empty if all urls are reachable.
+    empty if all urls are reachable, or no urls are passed in.
   """
+  if not urls:
+    return []
+
   if not http_client:
     http_client = http.Http(auth=False)
 
   failures = []
   for url in urls:
     try:
-      response, _ = http_client.request(url, method='GET')
+      _, _ = http_client.request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
     except (httplib.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error) as err:
       message = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
       failures.append(Failure(message=message, exception=err))
-    else:
-      # Accepting "UNAUTHORIZED" response since check done with unauthenticated
-      # http client by default.
-      if response.status not in (httplib.OK, httplib.UNAUTHORIZED):
-        message = 'Cannot reach {0} ([{1}] {2})'.format(url, response.status,
-                                                        response.reason)
-        failures.append(Failure(message=message, response=response))
   return failures
 
 

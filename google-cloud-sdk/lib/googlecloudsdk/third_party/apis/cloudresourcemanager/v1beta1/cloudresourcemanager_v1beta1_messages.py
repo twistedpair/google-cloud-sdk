@@ -355,15 +355,15 @@ class Organization(_messages.Message):
 
   Enums:
     LifecycleStateValueValuesEnum: The organization's current lifecycle state.
-      Assigned by the server. @OutputOnly
+      Assigned by the server.
 
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
-      server. @OutputOnly
+      server.
     displayName: A friendly string to be used to refer to the Organization in
       the UI. This field is required.
     lifecycleState: The organization's current lifecycle state. Assigned by
-      the server. @OutputOnly
+      the server.
     name: Output Only. The resource name of the organization. This is the
       organization's relative path in the API. Its format is
       "organizations/[organization_id]". For example, "organizations/1234".
@@ -377,7 +377,6 @@ class Organization(_messages.Message):
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
     """The organization's current lifecycle state. Assigned by the server.
-    @OutputOnly
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only useful for

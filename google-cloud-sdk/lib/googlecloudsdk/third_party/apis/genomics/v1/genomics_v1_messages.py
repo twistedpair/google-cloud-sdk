@@ -422,6 +422,23 @@ class CodingSequence(_messages.Message):
   start = _messages.IntegerField(2)
 
 
+class ComputeEngine(_messages.Message):
+  """Describes a Compute Engine resource that is being managed by a running
+  pipeline.
+
+  Fields:
+    diskNames: The names of the disks that were created for this pipeline.
+    instanceName: The instance on which the operation is running.
+    machineType: The machine type of the instance.
+    zone: The availability zone in which the instance resides.
+  """
+
+  diskNames = _messages.StringField(1, repeated=True)
+  instanceName = _messages.StringField(2)
+  machineType = _messages.StringField(3)
+  zone = _messages.StringField(4)
+
+
 class CoverageBucket(_messages.Message):
   """A bucket over which read coverage has been precomputed. A bucket
   corresponds to a specific range of the reference sequence.
@@ -592,22 +609,6 @@ class ExternalId(_messages.Message):
 
   id = _messages.StringField(1)
   sourceName = _messages.StringField(2)
-
-
-class GCE(_messages.Message):
-  """Describes a GCE resource that is being managed by a running pipeline.
-
-  Fields:
-    diskNames: The names of the disks that were created for this pipeline.
-    instanceName: The instance on which the operation is running.
-    machineType: The machine type of the instance.
-    zone: The availability zone in which the instance resides.
-  """
-
-  diskNames = _messages.StringField(1, repeated=True)
-  instanceName = _messages.StringField(2)
-  machineType = _messages.StringField(3)
-  zone = _messages.StringField(4)
 
 
 class GenomicsAnnotationsDeleteRequest(_messages.Message):
@@ -1449,8 +1450,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a MetadataValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1476,8 +1477,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a ResponseValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1505,9 +1506,15 @@ class OperationEvent(_messages.Message):
 
   Fields:
     description: Required description of event.
+    endTime: Optional time of when event finished. An event can have a start
+      time and no finish time. If an event has a finish time, there must be a
+      start time.
+    startTime: Optional time of when event started.
   """
 
   description = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class OperationMetadata(_messages.Message):
@@ -1521,6 +1528,8 @@ class OperationMetadata(_messages.Message):
     RuntimeMetadataValue: Runtime metadata on this Operation.
 
   Fields:
+    clientId: Optionally provided by the caller when submitting the request
+      that creates the operation.
     createTime: The time at which the job was submitted to the Genomics
       service.
     endTime: The time at which the job stopped running.
@@ -1533,6 +1542,7 @@ class OperationMetadata(_messages.Message):
       v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
       be returned.
     runtimeMetadata: Runtime metadata on this Operation.
+    startTime: The time at which the job began to run.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1546,8 +1556,8 @@ class OperationMetadata(_messages.Message):
       AdditionalProperty: An additional property for a RequestValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1572,8 +1582,8 @@ class OperationMetadata(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -1589,12 +1599,14 @@ class OperationMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  events = _messages.MessageField('OperationEvent', 3, repeated=True)
-  projectId = _messages.StringField(4)
-  request = _messages.MessageField('RequestValue', 5)
-  runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 6)
+  clientId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  events = _messages.MessageField('OperationEvent', 4, repeated=True)
+  projectId = _messages.StringField(5)
+  request = _messages.MessageField('RequestValue', 6)
+  runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 7)
+  startTime = _messages.StringField(8)
 
 
 class Policy(_messages.Message):
@@ -2073,10 +2085,10 @@ class RuntimeMetadata(_messages.Message):
   the Operation associated with a RunPipeline execution.
 
   Fields:
-    gce: Execution information specific to Google Compute Engine.
+    computeEngine: Execution information specific to Google Compute Engine.
   """
 
-  gce = _messages.MessageField('GCE', 1)
+  computeEngine = _messages.MessageField('ComputeEngine', 1)
 
 
 class SearchAnnotationSetsRequest(_messages.Message):
@@ -2615,8 +2627,8 @@ class Status(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):

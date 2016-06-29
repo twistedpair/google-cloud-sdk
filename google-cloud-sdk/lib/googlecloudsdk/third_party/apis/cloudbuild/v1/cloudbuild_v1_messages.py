@@ -18,12 +18,12 @@ class Build(_messages.Message):
   image when it is pushed to Google Container Registry.
 
   Enums:
-    StatusValueValuesEnum: Status of the build. @OutputOnly
+    StatusValueValuesEnum: Status of the build.
 
   Fields:
-    createTime: Time at which the build was created. @OutputOnly
-    finishTime: Time at which execution of the build was finished. @OutputOnly
-    id: Unique identifier of the build. @OutputOnly
+    createTime: Time at which the build was created.
+    finishTime: Time at which execution of the build was finished.
+    id: Unique identifier of the build.
     images: List of images expected to be built and pushed to Google Container
       Registry. If an image is listed here and the image is not produced by
       one of the build steps, the build will fail. Any images present when the
@@ -33,14 +33,13 @@ class Build(_messages.Message):
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
     options: Special options for this build.
-    projectId: ID of the project. @OutputOnly.
-    results: Results of the build. @OutputOnly
+    projectId: ID of the project. .
+    results: Results of the build.
     source: Describes where to find the source files to build.
-    sourceProvenance: A permanent fixed identifier for source. @OutputOnly
-    startTime: Time at which execution of the build was started. @OutputOnly
-    status: Status of the build. @OutputOnly
+    sourceProvenance: A permanent fixed identifier for source.
+    startTime: Time at which execution of the build was started.
+    status: Status of the build.
     statusDetail: Customer-readable message about the current status.
-      @OutputOnly
     steps: Describes the operations to be performed on the workspace.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
@@ -49,7 +48,7 @@ class Build(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the build. @OutputOnly
+    """Status of the build.
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
@@ -101,11 +100,26 @@ class BuildOptions(_messages.Message):
   """Optional arguments to enable specific features of builds.
 
   Enums:
+    RequestedVerifyOptionValueValuesEnum: Options for a verifiable build with
+      details uploaded to the Analysis API.
     SourceProvenanceHashValueListEntryValuesEnum:
 
   Fields:
+    requestedVerifyOption: Options for a verifiable build with details
+      uploaded to the Analysis API.
     sourceProvenanceHash: Requested hash for SourceProvenance.
   """
+
+  class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
+    """Options for a verifiable build with details uploaded to the Analysis
+    API.
+
+    Values:
+      NOT_VERIFIED: Not a verifiable build. (default)
+      VERIFIED: Verified build.
+    """
+    NOT_VERIFIED = 0
+    VERIFIED = 1
 
   class SourceProvenanceHashValueListEntryValuesEnum(_messages.Enum):
     """SourceProvenanceHashValueListEntryValuesEnum enum type.
@@ -117,7 +131,8 @@ class BuildOptions(_messages.Message):
     NONE = 0
     SHA256 = 1
 
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 1, repeated=True)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 1)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 2, repeated=True)
 
 
 class BuildStep(_messages.Message):
@@ -346,8 +361,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a MetadataValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -377,8 +392,8 @@ class Operation(_messages.Message):
       AdditionalProperty: An additional property for a ResponseValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
@@ -435,7 +450,6 @@ class SourceProvenance(_messages.Message):
       source and the values contain the hash values for those files.  If the
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
-      @OutputOnly
 
   Fields:
     fileHashes: Hash(es) of the build source, which can be used to verify that
@@ -445,7 +459,6 @@ class SourceProvenance(_messages.Message):
       source and the values contain the hash values for those files.  If the
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
-      @OutputOnly
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -456,7 +469,7 @@ class SourceProvenance(_messages.Message):
     SourceProvenanceHash.  The keys to this map are file paths used as build
     source and the values contain the hash values for those files.  If the
     build source came in a single package such as a gzipped tarfile (.tar.gz),
-    the FileHash will be for the single path to that file. @OutputOnly
+    the FileHash will be for the single path to that file.
 
     Messages:
       AdditionalProperty: An additional property for a FileHashesValue object.
@@ -604,8 +617,8 @@ class Status(_messages.Message):
         object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @ype with
-        type URL.
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):

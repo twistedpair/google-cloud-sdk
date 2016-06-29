@@ -32,6 +32,10 @@ PROMOTE_MESSAGE_TEMPLATE = """\
      [{default_url}])
 """
 
+RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
+                        'for your application.  To use this Dockerfile, '
+                        'the runtime field in [{0}] must be set to custom.')
+
 
 def DisplayProposedDeployment(project, app_config, version, promote):
   """Prints the details of the proposed deployment.

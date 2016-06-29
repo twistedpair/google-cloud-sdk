@@ -19,9 +19,20 @@ import re
 import time
 
 from googlecloudsdk.calliope import exceptions as sdk_ex
+from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apitools.base.py import exceptions as api_ex
+
+
+def GetAdminClient():
+  """Shortcut to get the latest Bigtable Admin client."""
+  return apis.GetClientInstance('bigtableadmin', 'v2')
+
+
+def GetAdminMessages():
+  """Shortcut to get the latest Bigtable Admin messages."""
+  return apis.GetMessagesModule('bigtableadmin', 'v2')
 
 
 def AddClusterIdArgs(parser):
@@ -60,6 +71,11 @@ def ProjectUrl():
 
 def ZoneUrl(args):
   return '/'.join([ProjectUrl(), 'zones', args.zone])
+
+
+def LocationUrl(location):
+  # TODO(user): deprecate when a location resource is available in the API
+  return '/'.join([ProjectUrl(), 'locations', location])
 
 
 def ClusterUrl(args):
@@ -107,3 +123,33 @@ def WaitForOp(context, op_id, text):
       pt.Tick()
       time.sleep(0.5)
 
+
+@MapHttpError
+def WaitForOpV2(operation, spinner_text):
+  """Wait for a longrunning.Operation to complete, using the V2 API.
+
+  Currently broken pending fix of b/29563942.
+
+  Args:
+    operation: a longrunning.Operation message.
+    spinner_text: message text to display on the console.
+
+  Returns:
+    true if completed successfully, false if timed out
+  """
+  tick_freq = 1  # poll every second
+  tick_limit = 600  # timeout after ten minutes
+  cli = GetAdminClient()
+  msg = GetAdminMessages().BigtableadminOperationsGetRequest(
+      operationsId=operation.name[11:])
+  with console_io.ProgressTracker(spinner_text, autotick=False) as pt:
+    while tick_limit > 0:
+      resp = cli.operations.Get(msg)
+      if resp.error:
+        raise sdk_ex.HttpException(resp.error.message)
+      if resp.done:
+        break
+      pt.Tick()
+      tick_limit -= tick_freq
+      time.sleep(tick_freq)
+  return resp.done
