@@ -138,9 +138,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for an Organization resource. May be empty.
 if no such policy or resource exists. The `resource` field should be the
-organization's resource name, e.g. "organizations/123". For backward
-compatibility, the resource provided may also be the organization_id.
-This will not be supported in v1.
+organization's resource name, e.g. "organizations/123".
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetIamPolicyRequest) input message
@@ -170,8 +168,7 @@ order. New Organizations do not necessarily appear at the end of the list.
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on an Organization resource. Replaces any.
 existing policy. The `resource` field should be the organization's resource
-name, e.g. "organizations/123". For backward compatibility, the resource
-provided may also be the organization_id. This will not be supported in v1.
+name, e.g. "organizations/123".
 
       Args:
         request: (CloudresourcemanagerOrganizationsSetIamPolicyRequest) input message
@@ -186,8 +183,7 @@ provided may also be the organization_id. This will not be supported in v1.
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified Organization.
 The `resource` field should be the organization's resource name,
-e.g. "organizations/123". For backward compatibility, the resource provided
-may also be the organization_id. This will not be supported in v1.
+e.g. "organizations/123".
 
       Args:
         request: (CloudresourcemanagerOrganizationsTestIamPermissionsRequest) input message
@@ -225,10 +221,10 @@ may also be the organization_id. This will not be supported in v1.
               method_id=u'cloudresourcemanager.projects.create',
               ordered_params=[],
               path_params=[],
-              query_params=[],
+              query_params=[u'useLegacyStack'],
               relative_path=u'v1beta1/projects',
-              request_field='<request>',
-              request_type_name=u'Project',
+              request_field=u'project',
+              request_type_name=u'CloudresourcemanagerProjectsCreateRequest',
               response_type_name=u'Project',
               supports_download=False,
           ),
@@ -356,7 +352,7 @@ Several APIs are activated automatically for the Project, including
 Google Cloud Storage.
 
       Args:
-        request: (Project) input message
+        request: (CloudresourcemanagerProjectsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Project) The response message.

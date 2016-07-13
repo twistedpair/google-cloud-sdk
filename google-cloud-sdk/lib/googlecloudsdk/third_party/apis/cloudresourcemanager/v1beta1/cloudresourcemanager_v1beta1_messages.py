@@ -54,10 +54,8 @@ class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being requested. `resource` is usually specified as a path,
-      such as `projects/*project*/zones/*zone*/disks/*disk*`.  The format for
-      the path specified in this value is resource specific and is specified
-      in the `getIamPolicy` documentation.
+      policy is being requested. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -71,8 +69,7 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
     organizationId: The id of the Organization resource to fetch. This field
       is deprecated and will be removed in v1. Use name instead.
     organizationsId: Part of `name`. The resource name of the Organization to
-      fetch. Its format is "organizations/[organization_id]". For example,
-      "organizations/1234".
+      fetch, e.g. "organizations/1234".
   """
 
   organizationId = _messages.StringField(1)
@@ -109,10 +106,8 @@ class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
-      policy is being specified. `resource` is usually specified as a path,
-      such as `projects/*project*/zones/*zone*/disks/*disk*`.  The format for
-      the path specified in this value is resource specific and is specified
-      in the `setIamPolicy` documentation.
+      policy is being specified. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -127,9 +122,8 @@ class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Messa
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
       policy detail is being requested. `resource` is usually specified as a
-      path, such as `projects/*project*/zones/*zone*/disks/*disk*`.  The
-      format for the path specified in this value is resource specific and is
-      specified in the `testIamPermissions` documentation.
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -151,6 +145,19 @@ class CloudresourcemanagerOrganizationsUpdateRequest(_messages.Message):
 
   organization = _messages.MessageField('Organization', 1)
   organizationsId = _messages.StringField(2, required=True)
+
+
+class CloudresourcemanagerProjectsCreateRequest(_messages.Message):
+  """A CloudresourcemanagerProjectsCreateRequest object.
+
+  Fields:
+    project: A Project resource to be passed as the request body.
+    useLegacyStack: A safety hatch to opt out of the new reliable project
+      creation process.
+  """
+
+  project = _messages.MessageField('Project', 1)
+  useLegacyStack = _messages.BooleanField(2)
 
 
 class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
@@ -183,10 +190,8 @@ class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -236,10 +241,8 @@ class CloudresourcemanagerProjectsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -253,10 +256,8 @@ class CloudresourcemanagerProjectsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation.
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -355,15 +356,16 @@ class Organization(_messages.Message):
 
   Enums:
     LifecycleStateValueValuesEnum: The organization's current lifecycle state.
-      Assigned by the server.
+      Assigned by the server. @OutputOnly
 
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
-      server.
+      server. @OutputOnly
     displayName: A friendly string to be used to refer to the Organization in
-      the UI. This field is required.
+      the UI. Assigned by the server, set to the firm name of the Google For
+      Work customer that owns this organization. @OutputOnly
     lifecycleState: The organization's current lifecycle state. Assigned by
-      the server.
+      the server. @OutputOnly
     name: Output Only. The resource name of the organization. This is the
       organization's relative path in the API. Its format is
       "organizations/[organization_id]". For example, "organizations/1234".
@@ -377,6 +379,7 @@ class Organization(_messages.Message):
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
     """The organization's current lifecycle state. Assigned by the server.
+    @OutputOnly
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only useful for
@@ -655,7 +658,8 @@ class TestIamPermissionsRequest(_messages.Message):
   Fields:
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see IAM Overview.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
 
   permissions = _messages.StringField(1, repeated=True)

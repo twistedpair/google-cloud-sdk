@@ -858,10 +858,16 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
-
-
-_SPECS_ALPHA = _SPECS_BETA.copy()
-_SPECS_ALPHA['targetSslProxies'] = _InternalSpec(
+_SPECS_BETA['healthChecks'] = _InternalSpec(
+    message_class_name='HealthCheck',
+    table_cols=[
+        ('NAME', 'name'),
+        ('PROTOCOL', 'type'),
+    ],
+    transformations=[],
+    editables=None,
+)
+_SPECS_BETA['targetSslProxies'] = _InternalSpec(
     message_class_name='TargetSslProxy',
     table_cols=[
         ('NAME', 'name'),
@@ -875,6 +881,8 @@ _SPECS_ALPHA['targetSslProxies'] = _InternalSpec(
     ],
     editables=None,
     )
+
+_SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
     message_class_name='BackendBucket',
     table_cols=[
@@ -886,15 +894,6 @@ _SPECS_ALPHA['backendBuckets'] = _InternalSpec(
         'bucketName'
         'description',
     ])
-_SPECS_ALPHA['healthChecks'] = _InternalSpec(
-    message_class_name='HealthCheck',
-    table_cols=[
-        ('NAME', 'name'),
-        ('PROTOCOL', 'type'),
-    ],
-    transformations=[],
-    editables=None,
-)
 _SPECS_ALPHA['instanceGroups'] = _InternalSpec(
     message_class_name='InstanceGroup',
     table_cols=[

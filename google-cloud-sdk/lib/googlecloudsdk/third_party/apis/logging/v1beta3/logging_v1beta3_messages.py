@@ -107,16 +107,22 @@ class ListLogEntriesResponse(_messages.Message):
     lastObservedEntryTimestamp: The timestamp of the last log entry that was
       examined before returning this response. This can be used to observe
       progress between successive queries, in particular when only a page
-      token is returned.
+      token is returned. Deprecated: use searched_through_timestamp.
     nextPageToken: If there are more results, then `nextPageToken` is returned
       in the response.  To get the next batch of entries, use the value of
       `nextPageToken` as `pageToken` in the next call of `ListLogEntries`. If
       `nextPageToken` is empty, then there are no more results.
+    searchedThroughTimestamp: The furthest point in time through which the
+      search has progressed. All future entries returned using next_page_token
+      are guaranteed to have a timestamp at or past this point in time in the
+      direction of the search. This can be used to observe progress between
+      successive queries, in particular when only a page token is returned.
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   lastObservedEntryTimestamp = _messages.StringField(2)
   nextPageToken = _messages.BytesField(3)
+  searchedThroughTimestamp = _messages.StringField(4)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -385,10 +391,7 @@ class LogEntryMetadata(_messages.Message):
     timestamp: The time the event described by the log entry occurred.
       Timestamps must be later than January 1, 1970.  If omitted, Stackdriver
       Logging will use the time the log entry is received.
-    userId: The fully-qualified email address of the authenticated user that
-      performed or requested the action represented by the log entry. If the
-      log entry does not apply to an action taken by an authenticated user,
-      then the field should be empty.
+    userId: This field is not used and its value is discarded.
     zone: The zone of the Google Cloud Platform service that created the log
       entry. For example, `"us-central1-a"`.
   """

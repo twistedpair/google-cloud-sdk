@@ -596,8 +596,8 @@ def EncodeForOutput(string, encoding=None, escape=True):
   source of unknown encoding.
 
   Args:
-    string: A string that may contain an encoding incompatible with the
-      standard output encoding.
+    string: A string or object that has str() and unicode() methods that may
+      contain an encoding incompatible with the standard output encoding.
     encoding: The output encoding name. Defaults to
       GetConsoleAttr().GetEncoding().
     escape: Replace unencodable characters with a \uXXXX or \xXX equivalent if
@@ -608,6 +608,11 @@ def EncodeForOutput(string, encoding=None, escape=True):
   Returns:
     The string encoded to avoid output codec exceptions.
   """
+  if not isinstance(string, basestring):
+    try:
+      string = unicode(string)
+    except UnicodeError:
+      string = str(string)
   if not encoding:
     encoding = GetConsoleAttr().GetEncoding()
   try:

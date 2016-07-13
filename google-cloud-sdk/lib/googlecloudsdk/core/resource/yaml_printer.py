@@ -23,6 +23,10 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
 
   [YAML](http://www.yaml.org), YAML ain't markup language.
 
+  Printer attributes:
+    null=string: Display string instead of `null` for null/None values.
+    no-undefined: Does not display resource data items with null values.
+
   For example:
 
     printer = YamlPrinter(log.out)
@@ -47,13 +51,19 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     # pylint:disable=g-import-not-at-top, Delay import for performance.
     import yaml
     self._yaml = yaml
+    null = self.attributes.get('null')
 
     def _FloatPresenter(unused_dumper, data):
-      return yaml.nodes.ScalarNode('tag:yaml.org,2002:float',
-                                   resource_transform.TransformFloat(data))
+      return yaml.nodes.ScalarNode(
+          'tag:yaml.org,2002:float', resource_transform.TransformFloat(data))
 
     def _LiteralLinesPresenter(dumper, data):
       return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+    def _NullPresenter(dumper, unused_data):
+      if null in ('null', None):
+        return dumper.represent_scalar('tag:yaml.org,2002:null', 'null')
+      return dumper.represent_scalar('tag:yaml.org,2002:str', null)
 
     def _UndefinedPresenter(dumper, data):
       r = repr(data)
@@ -71,6 +81,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
                                Dumper=yaml.dumper.SafeDumper)
     self._yaml.add_representer(None,
                                _UndefinedPresenter,
+                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.add_representer(type(None),
+                               _NullPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralLines(unicode):

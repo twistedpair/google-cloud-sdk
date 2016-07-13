@@ -851,10 +851,14 @@ class UpdateAction(argparse.Action):
   use UpdateActionWithAppend.
   """
 
-  def OnDuplicateKeyRaiseError(self, key, existing_value, new_value):
+  def OnDuplicateKeyRaiseError(self, key, existing_value=None, new_value=None):
+    if existing_value is None:
+      user_input = None
+    else:
+      user_input = ', '.join([existing_value, new_value])
     raise argparse.ArgumentError(self, _GenerateErrorMessage(
-        '"{0}" cannot be specified multiple times'
-        .format(key), user_input=', '.join([existing_value, new_value])))
+        '"{0}" cannot be specified multiple times'.format(key),
+        user_input=user_input))
 
   def __init__(self,
                option_strings,
@@ -889,15 +893,23 @@ class UpdateAction(argparse.Action):
 
   def __call__(self, parser, namespace, values, option_string=None):
 
-    # Get the existing dictionary (if any)
-    items = copy.copy(argparse._ensure_value(namespace, self.dest, {}))
-
-    # Merge the new key/value pair(s) in
-    for k, v in values.iteritems():
-      if k in items:
-        items[k] = self.onduplicatekey_handler(self, k, items[k], v)
-      else:
+    if isinstance(values, dict):
+      # Get the existing arg value (if any)
+      items = copy.copy(argparse._ensure_value(namespace, self.dest, {}))
+      # Merge the new key/value pair(s) in
+      for k, v in values.iteritems():
+        if k in items:
+          v = self.onduplicatekey_handler(self, k, items[k], v)
         items[k] = v
+    else:
+      # Get the existing arg value (if any)
+      items = copy.copy(argparse._ensure_value(namespace, self.dest, []))
+      # Merge the new key/value pair(s) in
+      for k in values:
+        if k in items:
+          self.onduplicatekey_handler(self, k)
+        else:
+          items.append(k)
 
     # Saved the merged dictionary
     setattr(namespace, self.dest, items)
@@ -917,8 +929,10 @@ class UpdateActionWithAppend(UpdateAction):
      { 'k1': ['v1a', 'v1b'], 'k2': 'v2' }
   """
 
-  def OnDuplicateKeyAppend(self, unused_key, existing_value, new_value):
-    if isinstance(existing_value, list):
+  def OnDuplicateKeyAppend(self, key, existing_value=None, new_value=None):
+    if existing_value is None:
+      return key
+    elif isinstance(existing_value, list):
       return existing_value + [new_value]
     else:
       return [existing_value, new_value]

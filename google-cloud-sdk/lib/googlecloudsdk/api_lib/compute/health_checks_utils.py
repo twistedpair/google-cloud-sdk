@@ -142,6 +142,7 @@ def AddHttpRelatedCreationArgs(parser):
   """Adds parser arguments for creation related to HTTP."""
 
   _AddPortRelatedCreationArgs(parser)
+  _AddProxyHeaderRelatedCreateArgs(parser)
 
   host = parser.add_argument(
       '--host',
@@ -167,6 +168,7 @@ def AddHttpRelatedUpdateArgs(parser):
   """Adds parser arguments for update subcommands related to HTTP."""
 
   _AddPortRelatedUpdateArgs(parser)
+  _AddProxyHeaderRelatedUpdateArgs(parser)
 
   host = parser.add_argument(
       '--host',
@@ -192,6 +194,7 @@ def AddTcpRelatedCreationArgs(parser):
   """Adds parser arguments for creation related to TCP."""
 
   _AddPortRelatedCreationArgs(parser)
+  _AddProxyHeaderRelatedCreateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=False, parser=parser)
 
 
@@ -199,6 +202,7 @@ def AddTcpRelatedUpdateArgs(parser):
   """Adds parser arguments for update subcommands related to TCP."""
 
   _AddPortRelatedUpdateArgs(parser)
+  _AddProxyHeaderRelatedUpdateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=True, parser=parser)
 
 
@@ -278,6 +282,36 @@ def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
       '--response',
       help='The bytes to match against the beginning of the response data.')
   response.detailed_help = response_detailed_help
+
+
+def _AddProxyHeaderRelatedCreateArgs(parser):
+  """Adds parser arguments for creation related to ProxyHeader."""
+
+  proxy_header_type = parser.add_argument(
+      '--proxy-header',
+      choices=['NONE', 'PROXY_V1'],
+      help='The type of proxy protocol header to be sent to the backend.'
+      'The default value is NONE.',
+      default='NONE')
+  proxy_header_type.detailed_help = """\
+      The type of proxy protocol header to be sent to the backend. By default
+      the value is NONE. If the value is set to PROXY_V1, the healthchecker adds
+      the header "PROXY UNKNOWN\\r\\n". If NONE, no proxy header is added.
+      """
+
+
+def _AddProxyHeaderRelatedUpdateArgs(parser):
+  """Adds parser arguments for update related to ProxyHeader."""
+
+  proxy_header_type = parser.add_argument(
+      '--proxy-header',
+      choices=['NONE', 'PROXY_V1'],
+      help='The type of proxy protocol header to be sent to the backend.')
+  proxy_header_type.detailed_help = """\
+      The type of proxy protocol header to be sent to the backend.
+      If the value is set to PROXY_V1, the healthchecker adds the header
+      "PROXY UNKNOWN\\r\\n". If NONE, no proxy header is added.
+      """
 
 
 def CheckProtocolAgnosticArgs(args):

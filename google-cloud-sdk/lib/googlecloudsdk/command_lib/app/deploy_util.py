@@ -109,7 +109,7 @@ Docker builds now use Container Builder by default. To run a Docker build on
 your own host, you can run:
   docker build -t gcr.io/<project>/<service.version> .
   gcloud docker push gcr.io/<project>/<service.version>
-  gcloud preview app deploy --image-url=gcr.io/<project>/<service.version>
+  gcloud app deploy --image-url=gcr.io/<project>/<service.version>
   """)
 
   # Parse existing app.yamls or try to generate a new one if the directory is

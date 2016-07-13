@@ -38,8 +38,9 @@ class LoggingV2beta1(base_api.BaseApiClient):
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_metrics = self.ProjectsMetricsService(self)
-    self.projects_resourceKeys_values = self.ProjectsResourceKeysValuesService(self)
     self.projects_resourceKeys = self.ProjectsResourceKeysService(self)
+    self.projects_resourceTypes_values = self.ProjectsResourceTypesValuesService(self)
+    self.projects_resourceTypes = self.ProjectsResourceTypesService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
     self.v2beta1 = self.V2beta1Service(self)
@@ -377,44 +378,6 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
-  class ProjectsResourceKeysValuesService(base_api.BaseApiService):
-    """Service class for the projects_resourceKeys_values resource."""
-
-    _NAME = u'projects_resourceKeys_values'
-
-    def __init__(self, client):
-      super(LoggingV2beta1.ProjectsResourceKeysValuesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.resourceKeys.values.list',
-              ordered_params=[u'projectsId', u'resourceKeysId'],
-              path_params=[u'projectsId', u'resourceKeysId'],
-              query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values',
-              request_field='',
-              request_type_name=u'LoggingProjectsResourceKeysValuesListRequest',
-              response_type_name=u'ListResourceValuesResponse',
-              supports_download=False,
-          ),
-          }
-
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      """Lists the current index values for a log resource type.
-
-      Args:
-        request: (LoggingProjectsResourceKeysValuesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListResourceValuesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
   class ProjectsResourceKeysService(base_api.BaseApiService):
     """Service class for the projects_resourceKeys resource."""
 
@@ -452,6 +415,57 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+  class ProjectsResourceTypesValuesService(base_api.BaseApiService):
+    """Service class for the projects_resourceTypes_values resource."""
+
+    _NAME = u'projects_resourceTypes_values'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.ProjectsResourceTypesValuesService, self).__init__(client)
+      self._method_configs = {
+          'List': base_api.ApiMethodInfo(
+              http_method=u'GET',
+              method_id=u'logging.projects.resourceTypes.values.list',
+              ordered_params=[u'projectsId', u'resourceTypesId'],
+              path_params=[u'projectsId', u'resourceTypesId'],
+              query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
+              relative_path=u'v2beta1/projects/{projectsId}/resourceTypes/{resourceTypesId}/values',
+              request_field='',
+              request_type_name=u'LoggingProjectsResourceTypesValuesListRequest',
+              response_type_name=u'ListResourceValuesResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the current index values for a log resource type.
+
+      Args:
+        request: (LoggingProjectsResourceTypesValuesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class ProjectsResourceTypesService(base_api.BaseApiService):
+    """Service class for the projects_resourceTypes resource."""
+
+    _NAME = u'projects_resourceTypes'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.ProjectsResourceTypesService, self).__init__(client)
+      self._method_configs = {
+          }
+
+      self._upload_configs = {
+          }
 
   class ProjectsSinksService(base_api.BaseApiService):
     """Service class for the projects_sinks resource."""

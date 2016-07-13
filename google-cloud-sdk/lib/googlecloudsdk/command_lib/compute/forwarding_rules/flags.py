@@ -58,7 +58,7 @@ def AddCommonFlags(parser):
       """
 
 
-def AddUpdateArgs(parser, include_alpha_targets):
+def AddUpdateArgs(parser, include_alpha_targets, include_beta_targets):
   """Adds common flags for mutating forwarding rule targets."""
 
   target = parser.add_mutually_exclusive_group(required=True)
@@ -90,11 +90,12 @@ def AddUpdateArgs(parser, include_alpha_targets):
       '--target-https-proxy',
       help='The target HTTPS proxy that will receive the traffic.')
 
-  if include_alpha_targets:
+  if include_beta_targets:
     target.add_argument(
         '--target-ssl-proxy',
         help='The target SSL proxy that will receive the traffic.')
 
+  if include_alpha_targets:
     parser.add_argument(
         '--load-balancing-scheme',
         choices=['INTERNAL', 'EXTERNAL'],

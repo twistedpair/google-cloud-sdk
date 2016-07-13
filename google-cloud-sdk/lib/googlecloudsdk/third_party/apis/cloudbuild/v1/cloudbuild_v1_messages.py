@@ -18,12 +18,12 @@ class Build(_messages.Message):
   image when it is pushed to Google Container Registry.
 
   Enums:
-    StatusValueValuesEnum: Status of the build.
+    StatusValueValuesEnum: Status of the build. @OutputOnly
 
   Fields:
-    createTime: Time at which the build was created.
-    finishTime: Time at which execution of the build was finished.
-    id: Unique identifier of the build.
+    createTime: Time at which the build was created. @OutputOnly
+    finishTime: Time at which execution of the build was finished. @OutputOnly
+    id: Unique identifier of the build. @OutputOnly
     images: List of images expected to be built and pushed to Google Container
       Registry. If an image is listed here and the image is not produced by
       one of the build steps, the build will fail. Any images present when the
@@ -33,13 +33,14 @@ class Build(_messages.Message):
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
     options: Special options for this build.
-    projectId: ID of the project. .
-    results: Results of the build.
+    projectId: ID of the project. @OutputOnly.
+    results: Results of the build. @OutputOnly
     source: Describes where to find the source files to build.
-    sourceProvenance: A permanent fixed identifier for source.
-    startTime: Time at which execution of the build was started.
-    status: Status of the build.
+    sourceProvenance: A permanent fixed identifier for source. @OutputOnly
+    startTime: Time at which execution of the build was started. @OutputOnly
+    status: Status of the build. @OutputOnly
     statusDetail: Customer-readable message about the current status.
+      @OutputOnly
     steps: Describes the operations to be performed on the workspace.
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
@@ -48,26 +49,28 @@ class Build(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the build.
+    """Status of the build. @OutputOnly
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
-      QUEUED: Build is queued, work has not yet begun.
+      QUEUING: Build has been received and is being queued.
+      QUEUED: Build is queued; work has not yet begun.
       WORKING: Build is being executed.
       SUCCESS: Build finished successfully.
       FAILURE: Build failed to complete successfully.
       INTERNAL_ERROR: Build failed due to an internal cause.
       TIMEOUT: Build took longer than was allowed.
-      CANCELLED: Build was canceled by a user.
+      CANCELLED: Build was canceled by a user. next_id = 9
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
+    QUEUING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
 
   createTime = _messages.StringField(1)
   finishTime = _messages.StringField(2)
@@ -450,6 +453,7 @@ class SourceProvenance(_messages.Message):
       source and the values contain the hash values for those files.  If the
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
+      @OutputOnly
 
   Fields:
     fileHashes: Hash(es) of the build source, which can be used to verify that
@@ -459,6 +463,7 @@ class SourceProvenance(_messages.Message):
       source and the values contain the hash values for those files.  If the
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
+      @OutputOnly
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -469,7 +474,7 @@ class SourceProvenance(_messages.Message):
     SourceProvenanceHash.  The keys to this map are file paths used as build
     source and the values contain the hash values for those files.  If the
     build source came in a single package such as a gzipped tarfile (.tar.gz),
-    the FileHash will be for the single path to that file.
+    the FileHash will be for the single path to that file. @OutputOnly
 
     Messages:
       AdditionalProperty: An additional property for a FileHashesValue object.

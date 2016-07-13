@@ -491,7 +491,7 @@ _SUPPORTED_LIBRARIES = [
         'pycrypto',
         'https://www.dlitz.net/software/pycrypto/',
         'A library of cryptography functions such as random number generation.',
-        ['2.3', '2.6'],
+        ['2.3', '2.6', '2.6.1'],
         latest_version='2.6',
         ),
     _VersionedLibrary(

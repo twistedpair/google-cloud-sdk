@@ -42,17 +42,20 @@ class ApiKey(_messages.Message):
     androidKeyDetails: Key details that are specific to android keys.
     browserKeyDetails: Key details that are specific to browser keys.
     createTime: A timestamp identifying the time this API key was originally
-      created.
+      created. @OutputOnly
     createdBy: Email address of the user who originally created this API key.
+      @OutputOnly
     currentKey: An encrypted and signed value held by this API key.
+      @OutputOnly
     displayName: Human-readable display name of this API key. Modifiable by
       user.
     iosKeyDetails: Key details that are specific to iOS keys.
     keyId: Unique identifier for this ApiKey assigned by the server.
+      @OutputOnly
     previousKey: The value of `current_key` before this API key was
-      regenerated.
+      regenerated. @OutputOnly
     previousKeyExpireTime: The expiration time for the validity of a
-      `previous_key` value after an API key regeneration.
+      `previous_key` value after an API key regeneration. @OutputOnly
     serverKeyDetails: Key details that are specific to server keys.
   """
 
@@ -212,16 +215,16 @@ class DeletedApiKey(_messages.Message):
   """Information about a deleted API key.
 
   Enums:
-    SourceValueValuesEnum: What caused the key to be deleted
+    SourceValueValuesEnum: What caused the key to be deleted @OutputOnly
 
   Fields:
-    apiKey: The API key that was deleted
-    deletionTime: The time at which the key was deleted
-    source: What caused the key to be deleted
+    apiKey: The API key that was deleted @OutputOnly
+    deletionTime: The time at which the key was deleted @OutputOnly
+    source: What caused the key to be deleted @OutputOnly
   """
 
   class SourceValueValuesEnum(_messages.Enum):
-    """What caused the key to be deleted
+    """What caused the key to be deleted @OutputOnly
 
     Values:
       DELETION: This API Key was deleted via a DeleteApiKey API call.

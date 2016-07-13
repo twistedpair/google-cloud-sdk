@@ -1122,7 +1122,7 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
 Note that currently there may be some differences between exported BAM
 files and the original BAM file at the time of import. See
-[ImportReadGroupSets](google.genomics.v1.ReadServiceV1.ImportReadGroupSets)
+ImportReadGroupSets
 for caveats.
 
       Args:

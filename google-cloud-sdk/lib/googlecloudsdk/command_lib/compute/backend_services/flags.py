@@ -60,16 +60,18 @@ def AddLoadBalancingScheme(parser):
 def AddConnectionDrainingTimeout(parser):
   connection_draining_timeout = parser.add_argument(
       '--connection-draining-timeout',
-      type=int,
+      type=arg_parsers.Duration(upper_bound='1h'),
       default=None,  # None => use default 'backend' value.
-      help='Connection draining timeout in seconds.')
+      help='Connection draining timeout.')
   connection_draining_timeout.detailed_help = """\
-      Connection draining timeout, in seconds, to be used during removal of
-      VMs from instance groups. This guarantees that for the specified time
-      all existing connections to a VM will remain untouched, but no new
-      connections will be accepted. Set timeout to zero to disable connection
-      draining. Enable feature by specifying timeout up to one hour.
-      Connection draining is disabled by default.
+      Connection draining timeout to be used during removal of VMs from
+      instance groups. This guarantees that for the specified time all existing
+      connections to a VM will remain untouched, but no new connections will be
+      accepted. Set timeout to zero to disable connection draining. Enable
+      feature by specifying a timeout of up to one hour.
+      If the flag is omitted API default value will be used.
+      Valid units for this flag are `s` for seconds, `m` for minutes, and
+      `h` for hours.
       """
 
 

@@ -117,9 +117,6 @@
         },
         "https://www.googleapis.com/auth/cloud_debugger": {
           "description": "Manage cloud debugger"
-        },
-        "https://www.googleapis.com/auth/cloud_debugletcontroller": {
-          "description": "Manage active breakpoints in cloud debugger"
         }
       }
     }
@@ -764,7 +761,7 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud_debugletcontroller"
+                "https://www.googleapis.com/auth/cloud_debugger"
               ]
             }
           }
@@ -804,7 +801,7 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud_debugletcontroller"
+                    "https://www.googleapis.com/auth/cloud_debugger"
                   ]
                 },
                 "update": {
@@ -839,7 +836,7 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud_debugletcontroller"
+                    "https://www.googleapis.com/auth/cloud_debugger"
                   ]
                 }
               }

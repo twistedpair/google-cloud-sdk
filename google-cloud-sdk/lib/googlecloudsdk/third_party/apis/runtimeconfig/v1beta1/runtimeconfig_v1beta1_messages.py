@@ -717,7 +717,7 @@ class Waiter(_messages.Message):
   arbitrary code after the condition has been met and the waiter returns
   successfully.  Once created, a Waiter resource is immutable.  To learn more
   about using waiters, read the [Creating a Waiter](/deployment-manager
-  /runtime-config/creating-a-water) documentation.
+  /runtime-configurator/creating-a-waiter) documentation.
 
   Fields:
     createTime: [Output Only] The instant at which this Waiter resource was

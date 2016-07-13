@@ -113,6 +113,16 @@ class ApiEndpointHandler(_messages.Message):
   scriptPath = _messages.StringField(1)
 
 
+class AppengineAppsCreateRequest(_messages.Message):
+  """A AppengineAppsCreateRequest object.
+
+  Fields:
+    application: A Application resource to be passed as the request body.
+  """
+
+  application = _messages.MessageField('Application', 1)
+
+
 class AppengineAppsGetRequest(_messages.Message):
   """A AppengineAppsGetRequest object.
 
@@ -129,6 +139,32 @@ class AppengineAppsGetRequest(_messages.Message):
 
   ensureResourcesExist = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
+
+
+class AppengineAppsLocationsGetRequest(_messages.Message):
+  """A AppengineAppsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsLocationsListRequest(_messages.Message):
+  """A AppengineAppsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class AppengineAppsOperationsGetRequest(_messages.Message):
@@ -263,6 +299,42 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class AppengineAppsServicesVersionsInstancesDebugRequest(_messages.Message):
+  """A AppengineAppsServicesVersionsInstancesDebugRequest object.
+
+  Fields:
+    debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
+      request body.
+    name: Name of the resource requested. For example:
+      "apps/myapp/services/default/versions/v1/instances/instance-1".
+  """
+
+  debugInstanceRequest = _messages.MessageField('DebugInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AppengineAppsServicesVersionsInstancesDeleteRequest(_messages.Message):
+  """A AppengineAppsServicesVersionsInstancesDeleteRequest object.
+
+  Fields:
+    name: Name of the resource requested. For example:
+      "apps/myapp/services/default/versions/v1/instances/instance-1".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsServicesVersionsInstancesGetRequest(_messages.Message):
+  """A AppengineAppsServicesVersionsInstancesGetRequest object.
+
+  Fields:
+    name: Name of the resource requested. For example:
+      "apps/myapp/services/default/versions/v1/instances/instance-1".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AppengineAppsServicesVersionsInstancesListRequest(_messages.Message):
   """A AppengineAppsServicesVersionsInstancesListRequest object.
 
@@ -335,22 +407,26 @@ class Application(_messages.Message):
     codeBucket: A Google Cloud Storage bucket which can be used for storing
       files associated with an application. This bucket is associated with the
       application and can be used by the gcloud deployment commands.
+      @OutputOnly
     defaultBucket: A Google Cloud Storage bucket which can be used by the
-      application to store content.
+      application to store content.  @OutputOnly
     defaultCookieExpiration: Determines the cookie expiration policy for the
-      application.
+      application.  @OutputOnly
     defaultHostname: The hostname used to reach the application, as resolved
-      by App Engine.
+      by App Engine.  @OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the app that do
       not explicitly target a service or version. The rules are order-
-      dependent.
-    id: The relative name/path of the application. Example: "myapp".
+      dependent.  @OutputOnly
+    id: The identifier of the Application resource. This identifier is
+      equivalent to the project ID of the Google Cloud Platform project where
+      you want to deploy your application. Example: "myapp".
     location: The location from which the application will be run. Application
       instances will run out of data centers in the chosen location and all of
       the application's End User Content will be stored at rest. The default
       is "us-central". Choices are:  "us-central" - Central US  "europe-west"
       - Western Europe  "us-east1" - Eastern US
-    name: The full path to the application in the API. Example: "apps/myapp".
+    name: The full path to the Application resource in the API. Example:
+      "apps/myapp".  @OutputOnly
   """
 
   authDomain = _messages.StringField(1)
@@ -455,6 +531,10 @@ class CpuUtilization(_messages.Message):
 
   aggregationWindowLength = _messages.StringField(1)
   targetUtilization = _messages.FloatField(2)
+
+
+class DebugInstanceRequest(_messages.Message):
+  """Request message for `Instances.DebugInstance`."""
 
 
 class Deployment(_messages.Message):
@@ -609,34 +689,38 @@ class Instance(_messages.Message):
   scale an application.
 
   Enums:
-    AvailabilityValueValuesEnum: Availability of instance.
+    AvailabilityValueValuesEnum: Availability of instance.  @OutputOnly
 
   Fields:
     appEngineRelease: The App Engine release the instance is running on.
-    availability: Availability of instance.
+      @OutputOnly
+    availability: Availability of instance.  @OutputOnly
     averageLatency: Latency in milliseconds (averaged over the last minute).
-    errors: Number of errors since the instance was started.
+      @OutputOnly
+    errors: Number of errors since the instance was started.  @OutputOnly
     id: The relative name/path of the instance within the version. Example:
-      "instance-1"
-    memoryUsage: Memory usage (in bytes).
+      "instance-1"  @OutputOnly
+    memoryUsage: Memory usage (in bytes).  @OutputOnly
     name: The full path to the Instance resource in the API. Example:
       "apps/myapp/services/default/versions/v1/instances/instance-1"
-    qps: QPS for this instance (averaged over the last minute).
-    requests: Number of requests (since the clone was started).
-    startTimestamp: Time when instance was started.
+      @OutputOnly
+    qps: QPS for this instance (averaged over the last minute).  @OutputOnly
+    requests: Number of requests (since the clone was started).  @OutputOnly
+    startTimestamp: Time when instance was started.  @OutputOnly
     vmId: For VMEngines instances, the Compute Engine VM ID of the instance.
+      @OutputOnly
     vmName: For VMEngines instances, the name of the Compute Engine VM where
-      the instance lives.
+      the instance lives.  @OutputOnly
     vmStatus: For VMEngines instances, the status of the Compute Engine VM
-      where the instance lives.
+      where the instance lives.  @OutputOnly
     vmUnlocked: For VMEngines instances, whether the instance has been
-      unlocked.
+      unlocked.  @OutputOnly
     vmZoneName: For VMEngines instances, the zone where the Compute Engine VM
-      is located.
+      is located.  @OutputOnly
   """
 
   class AvailabilityValueValuesEnum(_messages.Enum):
-    """Availability of instance.
+    """Availability of instance.  @OutputOnly
 
     Values:
       UNSPECIFIED: <no description>
@@ -688,6 +772,19 @@ class ListInstancesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLocationsResponse(_messages.Message):
+  """The response message for LocationService.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   """The response message for Operations.ListOperations.
 
@@ -723,6 +820,81 @@ class ListVersionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   versions = _messages.MessageField('Version', 2, repeated=True)
+
+
+class Location(_messages.Message):
+  """A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. Example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    """Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  name = _messages.StringField(3)
 
 
 class LocationMetadata(_messages.Message):
@@ -887,15 +1059,15 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     endTime: Timestamp that this operation was completed. (Not present if the
-      operation is still in progress.)
-    insertTime: Timestamp that this operation was received.
+      operation is still in progress.)  @OutputOnly
+    insertTime: Timestamp that this operation was received.  @OutputOnly
     method: API method name that initiated the operation. Example:
-      "google.appengine.v1beta4.Version.CreateVersion".
+      "google.appengine.v1beta4.Version.CreateVersion".  @OutputOnly
     operationType: The type of the operation (deprecated, use method field
-      instead). Example: "create_version".
+      instead). Example: "create_version".  @OutputOnly
     target: Resource that this operation is acting on. Example:
-      "apps/myapp/modules/default".
-    user: The user who requested this operation.
+      "apps/myapp/modules/default".  @OutputOnly
+    user: The user who requested this operation.  @OutputOnly
   """
 
   endTime = _messages.StringField(1)
@@ -910,14 +1082,13 @@ class OperationMetadataV1(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
-    endTime: Timestamp that this operation was completed. (Not present if the
-      operation is still in progress.)
-    insertTime: Timestamp that this operation was received.
-    method: API method name that initiated the operation. Example:
-      "google.appengine.v1.Version.CreateVersion".
-    target: Resource that this operation is acting on. Example:
-      "apps/myapp/services/default".
-    user: The user who requested this operation.
+    endTime: Time that this operation completed.  @OutputOnly
+    insertTime: Time that this operation was created.  @OutputOnly
+    method: API method that initiated this operation. Example:
+      `google.appengine.v1.Versions.CreateVersion`.  @OutputOnly
+    target: Name of the resource that this operation is acting on. Example:
+      `apps/myapp/services/default`.  @OutputOnly
+    user: User who requested this operation.  @OutputOnly
   """
 
   endTime = _messages.StringField(1)
@@ -932,13 +1103,13 @@ class OperationMetadataV1Beta5(_messages.Message):
 
   Fields:
     endTime: Timestamp that this operation was completed. (Not present if the
-      operation is still in progress.)
-    insertTime: Timestamp that this operation was received.
+      operation is still in progress.)  @OutputOnly
+    insertTime: Timestamp that this operation was received.  @OutputOnly
     method: API method name that initiated the operation. Example:
-      "google.appengine.v1beta5.Version.CreateVersion".
+      "google.appengine.v1beta5.Version.CreateVersion".  @OutputOnly
     target: Resource that this operation is acting on. Example:
-      "apps/myapp/services/default".
-    user: The user who requested this operation.
+      "apps/myapp/services/default".  @OutputOnly
+    user: The user who requested this operation.  @OutputOnly
   """
 
   endTime = _messages.StringField(1)
@@ -995,9 +1166,9 @@ class Service(_messages.Message):
 
   Fields:
     id: The relative name/path of the service within the application. Example:
-      "default"
+      "default"  @OutputOnly
     name: The full path to the Service resource in the API. Example:
-      "apps/myapp/services/default"
+      "apps/myapp/services/default"  @OutputOnly
     split: A mapping that defines fractional HTTP traffic diversion to
       different versions within the service.
   """
@@ -1497,17 +1668,19 @@ class Version(_messages.Message):
     betaSettings: Beta settings supplied to the application via metadata.
     creationTime: Creation time of this version. This will be between the
       start and end times of the operation that creates this version.
+      @OutputOnly
     defaultExpiration: The length of time a static file served by a static
       file handler ought to be cached by web proxies and browsers, if the
       handler does not specify its own expiration. Only returned in `GET`
       requests if `view=FULL` is set. May only be set on create requests; once
       created, is immutable.
     deployer: The email address of the user who created this version.
+      @OutputOnly
     deployment: Code and application artifacts that make up this version. Only
       returned in `GET` requests if `view=FULL` is set. May only be set on
       create requests; once created, is immutable.
     diskUsageBytes: Total size of version files hosted on App Engine disk in
-      bytes.
+      bytes.  @OutputOnly
     env: The App Engine execution environment to use for this version.
       Default: "1"
     envVariables: Environment variables made available to the application.
@@ -1542,7 +1715,7 @@ class Version(_messages.Message):
       you to perform complex initialization and rely on the state of its
       memory over time.
     name: The full path to the Version resource in the API.  Example:
-      "apps/myapp/services/default/versions/v1".
+      "apps/myapp/services/default/versions/v1".  @OutputOnly
     network: Used to specify extra network settings (for VM runtimes only).
     nobuildFilesRegex: Go only. Files that match this pattern will not be
       built into the app. May only be set on create requests.

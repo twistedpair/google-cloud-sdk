@@ -218,7 +218,7 @@
           "type": "string"
         },
         "initialClusterVersion": {
-          "description": "[Output only] The software version of the master endpoint and kubelets used\nin the cluster when it was first created. The version can be upgraded over\ntime.\n",
+          "description": "[Output only] The software version of the master endpoint and kubelets used\nin the cluster when it was first created. The version can be upgraded over\ntime.",
           "type": "string"
         },
         "currentMasterVersion": {
@@ -324,7 +324,7 @@
           }
         },
         "localSsdCount": {
-          "description": "The number of local SSD disks that to be attached to the node.\n\nThe limit for this value is dependant upon the maximum number of\ndisks available on a machine per zone. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#local_ssd_limits\nfor more information.\n",
+          "description": "The number of local SSD disks that to be attached to the node.\n\nThe limit for this value is dependant upon the maximum number of\ndisks available on a machine per zone. See:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#local_ssd_limits\nfor more information.",
           "type": "integer",
           "format": "int32"
         },

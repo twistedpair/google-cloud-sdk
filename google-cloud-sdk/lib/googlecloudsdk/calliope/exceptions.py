@@ -26,6 +26,7 @@ import sys
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 
 
@@ -181,13 +182,13 @@ _MARKER = '^ invalid character'
 
 
 # pylint: disable=g-doc-bad-indent
-def _FormatNonAsciiMarkerString(args_string):
+def _FormatNonAsciiMarkerString(args):
   u"""Format a string that will mark the first non-ASCII character it contains.
 
 
   Example:
 
-  >>> args = 'command.py --foo=\xce\x94'
+  >>> args = ['command.py', '--foo=\xce\x94']
   >>> _FormatNonAsciiMarkerString(args) == (
   ...     'command.py --foo=\u0394\n'
   ...     '                 ^ invalid character'
@@ -195,7 +196,7 @@ def _FormatNonAsciiMarkerString(args_string):
   True
 
   Args:
-    args_string: str representing the command executed
+    args: The arg list for the command executed
 
   Returns:
     unicode, a properly formatted string with two lines, the second of which
@@ -204,27 +205,33 @@ def _FormatNonAsciiMarkerString(args_string):
   Raises:
     ValueError: if the given string is all ASCII characters
   """
-  # idx is the first index of the first non-ASCII character in args_string
-  idx = None
-  for idx, char in enumerate(args_string):
+  # nonascii will be True if at least one arg contained a non-ASCII character
+  nonascii = False
+  # pos is the position of the first non-ASCII character in ' '.join(args)
+  pos = 0
+  for arg in args:
     try:
-      char.decode('ascii')
-      # idx gets set by enumerate; unset it to indicate that the last character
-      # was successfully decoded as ASCII
-      idx = None
+      # idx is the index of the first non-ASCII character in arg
+      for idx, char in enumerate(arg):
+        char.decode('ascii')
     except UnicodeError:
       # idx will remain set, indicating the first non-ASCII character
+      pos += idx
+      nonascii = True
       break
-  if idx is None:
-    raise ValueError('Given string is composed entirely of ASCII characters.')
+    # this arg was all ASCII; add 1 for the ' ' between args
+    pos += len(arg) + 1
+  if not nonascii:
+    raise ValueError('The command line is composed entirely of ASCII '
+                     'characters.')
 
   # Make a string that, when printed in parallel, will point to the non-ASCII
   # character
-  marker_string = ' ' * idx + _MARKER
+  marker_string = ' ' * pos + _MARKER
 
   # Make sure that this will still print out nicely on an odd-sized screen
   align = len(marker_string)
-  args_string = args_string.decode('utf-8', 'replace')
+  args_string = u' '.join([console_attr.EncodeForOutput(arg) for arg in args])
   width, _ = console_attr_os.GetTermSize()
   fill = '...'
   if width < len(_MARKER) + len(fill):
@@ -251,7 +258,7 @@ def _FormatNonAsciiMarkerString(args_string):
   formatted_args_string = _TruncateToLineWidth(args_string.ljust(align), align,
                                                width, fill=fill).rstrip()
   formatted_marker_string = _TruncateToLineWidth(marker_string, align, width)
-  return '\n'.join((formatted_args_string, formatted_marker_string))
+  return u'\n'.join((formatted_args_string, formatted_marker_string))
 
 
 class InvalidCharacterInArgException(ToolException):
@@ -259,16 +266,17 @@ class InvalidCharacterInArgException(ToolException):
 
   def __init__(self, args, invalid_arg):
     self.invalid_arg = invalid_arg
-    args = [os.path.basename(args[0])] + args[1:]
+    cmd = os.path.basename(args[0])
+    if cmd.endswith('.py'):
+      cmd = cmd[:-3]
+    args = [cmd] + args[1:]
 
     super(InvalidCharacterInArgException, self).__init__(
         u'Failed to read command line argument [{0}] because it does '
-        u'not appear to be valid 7-bit ASCII. (Argument is composed of '
-        u'bytes [{1}].)\n\n'
-        u'{2}'.format(
-            self.invalid_arg.decode('utf-8', 'replace'),
-            str(repr(invalid_arg))[1:-1],  # get rid of surrounding quotes
-            _FormatNonAsciiMarkerString(' '.join(args))))
+        u'not appear to be valid 7-bit ASCII.\n\n'
+        u'{1}'.format(
+            console_attr.EncodeForOutput(self.invalid_arg),
+            _FormatNonAsciiMarkerString(args)))
 
 
 class HttpException(ToolException):

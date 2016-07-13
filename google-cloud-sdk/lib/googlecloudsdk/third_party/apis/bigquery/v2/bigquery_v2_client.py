@@ -89,7 +89,7 @@ class BigqueryV2(base_api.BaseApiClient):
               method_id=u'bigquery.datasets.list',
               ordered_params=[u'projectId'],
               path_params=[u'projectId'],
-              query_params=[u'all', u'maxResults', u'pageToken'],
+              query_params=[u'all', u'filter', u'maxResults', u'pageToken'],
               relative_path=u'projects/{projectId}/datasets',
               request_field='',
               request_type_name=u'BigqueryDatasetsListRequest',

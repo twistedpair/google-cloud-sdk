@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20160617",
+ "revision": "20160705",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -101,7 +101,7 @@
   "CollectionOverride": {
    "id": "CollectionOverride",
    "type": "object",
-   "description": "CollectionOverride allows resource handling overrides for specific resources within a ConfigurableService",
+   "description": "CollectionOverride allows resource handling overrides for specific resources within a BaseType",
    "properties": {
     "collection": {
      "type": "string",
@@ -127,7 +127,7 @@
   "ConfigurableService": {
    "id": "ConfigurableService",
    "type": "object",
-   "description": "ConfigurableService that describes a service-backed Type.",
+   "description": "BaseType that describes a service-backed Type.",
    "properties": {
     "collectionOverrides": {
      "type": "array",
@@ -776,7 +776,7 @@
    "properties": {
     "configurableService": {
      "$ref": "ConfigurableService",
-     "description": "ConfigurableService that backs this Type."
+     "description": "Base Type (configurable service) that backs this Type."
     },
     "description": {
      "type": "string",
@@ -791,6 +791,13 @@
      "type": "string",
      "description": "[Output Only] Timestamp when the type was created, in RFC3339 text format."
     },
+    "labels": {
+     "type": "array",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "items": {
+      "$ref": "TypeLabelEntry"
+     }
+    },
     "name": {
      "type": "string",
      "description": "Name of the type."
@@ -802,6 +809,18 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Self link for the type."
+    }
+   }
+  },
+  "TypeLabelEntry": {
+   "id": "TypeLabelEntry",
+   "type": "object",
+   "properties": {
+    "key": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
     }
    }
   },

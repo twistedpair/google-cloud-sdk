@@ -286,7 +286,7 @@
     },
     "HttpRequest": {
       "id": "HttpRequest",
-      "description": "A common proto for logging HTTP requests.\n",
+      "description": "A common proto for logging HTTP requests.",
       "type": "object",
       "properties": {
         "requestMethod": {
@@ -353,11 +353,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. An arbitrary operation identifier. Log entries with the\nsame identifier are assumed to be part of the same operation.\n",
+          "description": "Required. An arbitrary operation identifier. Log entries with the\nsame identifier are assumed to be part of the same operation.",
           "type": "string"
         },
         "producer": {
-          "description": "Required. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, `\"github.com\/MyProject\/MyApplication\"`.\n",
+          "description": "Required. An arbitrary producer identifier. The combination of\n`id` and `producer` must be globally unique.  Examples for `producer`:\n`\"MyDivision.MyBigCompany.com\"`, `\"github.com\/MyProject\/MyApplication\"`.",
           "type": "string"
         },
         "first": {
@@ -462,7 +462,12 @@
           }
         },
         "lastObservedEntryTimestamp": {
-          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned.",
+          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned. Deprecated: use\nsearched_through_timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "searchedThroughTimestamp": {
+          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using next_page_token are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis can be used to observe progress between successive queries, in\nparticular when only a page token is returned.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -532,7 +537,7 @@
           "format": "int32"
         },
         "maxResponseInterval": {
-          "description": "Optional. The maximum time between successive streamed responses.\nA response will be sent every max_response_interval even if page_size\nentries have not yet been accumulated provided that either some entries\nhave been accumulated OR the last_observed_entry_timestamp \/ resume_token\nhas changed. (i.e. a response containg 0 entries is allowed)\nIf unspecified, the default will be 1 second.",
+          "description": "Optional. The maximum time between successive streamed responses.\nA response will be sent every max_response_interval even if page_size\nentries have not yet been accumulated provided that either some entries\nhave been accumulated OR the searched_through_timestamp \/ resume_token\nhas changed. (i.e. a response containg 0 entries is allowed)\nIf unspecified, the default will be 1 second.",
           "type": "string",
           "format": "google-duration"
         },
@@ -555,7 +560,12 @@
           }
         },
         "lastObservedEntryTimestamp": {
-          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a resume token is returned.",
+          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a resume token is returned.\nDeprecated: use searched_through_timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "searchedThroughTimestamp": {
+          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using resume_token are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis can be used to observe progress between successive queries, in\nparticular when only a page token is returned.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -665,7 +675,7 @@
       "description": "Result returned from `ListResourceKeysRequest`.",
       "type": "object",
       "properties": {
-        "logResourceKeys": {
+        "resourceKeys": {
           "description": "A list of log resource keys.",
           "type": "array",
           "items": {
@@ -680,7 +690,7 @@
     },
     "ResourceKeys": {
       "id": "ResourceKeys",
-      "description": "_Output only._ Describes resource keys for log entries.",
+      "description": "Output only. Describes resource keys for log entries.",
       "type": "object",
       "properties": {
         "type": {
@@ -814,7 +824,7 @@
           "format": "google-datetime"
         },
         "errors": {
-          "description": "_Output only._ All active errors found for this sink.",
+          "description": "Output only. All active errors found for this sink.",
           "type": "array",
           "items": {
             "$ref": "LogError"
@@ -893,7 +903,7 @@
     },
     "RequestLog": {
       "id": "RequestLog",
-      "description": "Complete log information about a single HTTP request to an App Engine\napplication.\n",
+      "description": "Complete log information about a single HTTP request to an App Engine\napplication.",
       "type": "object",
       "properties": {
         "appId": {
@@ -967,7 +977,7 @@
           "type": "string"
         },
         "nickname": {
-          "description": "The logged-in user who made the request.\n\nMost likely, this is the part of the user's email before the `@` sign.  The\nfield value is the same for different requests from the same user, but\ndifferent users can have similar names.  This information is also\navailable to the application via the App Engine Users API.\n\nThis field will be populated starting with App Engine 1.9.21.\n",
+          "description": "The logged-in user who made the request.\n\nMost likely, this is the part of the user's email before the `@` sign.  The\nfield value is the same for different requests from the same user, but\ndifferent users can have similar names.  This information is also\navailable to the application via the App Engine Users API.\n\nThis field will be populated starting with App Engine 1.9.21.",
           "type": "string"
         },
         "urlMapEntry": {
@@ -1133,7 +1143,7 @@
               "path": "v2beta1/projects/{projectsId}/logs/{logsId}",
               "flatPath": "v2beta1/projects/{projectsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.\n",
+              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `logName`. Required. The resource name of the log to delete.  Example:\n`\"projects\/my-project\/logs\/syslog\"`.",
@@ -1165,7 +1175,7 @@
               "path": "v2beta1/projects/{projectsId}/logs",
               "flatPath": "v2beta1/projects/{projectsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.\n",
+              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. The resource name of the entity whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this entity are listed.",
@@ -1200,7 +1210,13 @@
               ],
               "response": {
                 "$ref": "ListLogsResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
             }
           }
         },
@@ -1211,7 +1227,7 @@
               "path": "v2beta1/projects/{projectsId}/resourceKeys",
               "flatPath": "v2beta1/projects/{projectsId}/resourceKeys",
               "httpMethod": "GET",
-              "description": "Lists the resource keys that have log entries in this project.\n",
+              "description": "Lists the resource keys that have log entries in this project.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
@@ -1236,28 +1252,35 @@
               ],
               "response": {
                 "$ref": "ListResourceKeysResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
             }
           }
-          ,
+        },
+        "resourceTypes": {
           "resources": {
             "values": {
               "methods": {
                 "list": {
-                  "id": "logging.projects.resourceKeys.values.list",
-                  "path": "v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values",
-                  "flatPath": "v2beta1/projects/{projectsId}/resourceKeys/{resourceKeysId}/values",
+                  "id": "logging.projects.resourceTypes.values.list",
+                  "path": "v2beta1/projects/{projectsId}/resourceTypes/{resourceTypesId}/values",
+                  "flatPath": "v2beta1/projects/{projectsId}/resourceTypes/{resourceTypesId}/values",
                   "httpMethod": "GET",
-                  "description": "Lists the current index values for a log resource type.\n",
+                  "description": "Lists the current index values for a log resource type.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `resourceTypeName`. The resource name of a resource type whose indexes are requested.\nExample:\n`\"projects\/my-project-id\/resourceTypes\/gae_app\"`.",
+                      "description": "Part of `parent`. The resource name of a resource type whose indexes are requested.\nExample:\n`\"projects\/my-project-id\/resourceTypes\/gae_app\"`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
-                    "resourceKeysId": {
-                      "description": "Part of `resourceTypeName`. See documentation of `projectsId`.",
+                    "resourceTypesId": {
+                      "description": "Part of `parent`. See documentation of `projectsId`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1287,11 +1310,17 @@
                   },
                   "parameterOrder": [
                     "projectsId",
-                    "resourceKeysId"
+                    "resourceTypesId"
                   ],
                   "response": {
                     "$ref": "ListResourceValuesResponse"
-                  }
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ]
                 }
               }
             }
@@ -1651,7 +1680,7 @@
           "path": "v2beta1/entries:write",
           "flatPath": "v2beta1/entries:write",
           "httpMethod": "POST",
-          "description": "Writes log entries to Stackdriver Logging.  All log entries are\nwritten by this method.\n",
+          "description": "Writes log entries to Stackdriver Logging.  All log entries are\nwritten by this method.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1673,7 +1702,7 @@
           "path": "v2beta1/entries:list",
           "flatPath": "v2beta1/entries:list",
           "httpMethod": "POST",
-          "description": "Lists log entries.  Use this method to retrieve log entries from Cloud\nLogging.  For ways to export log entries, see\n[Exporting Logs](\/logging\/docs\/export).\n",
+          "description": "Lists log entries.  Use this method to retrieve log entries from Cloud\nLogging.  For ways to export log entries, see\n[Exporting Logs](\/logging\/docs\/export).",
           "parameters": {
           },
           "parameterOrder": [
@@ -1696,7 +1725,7 @@
           "path": "v2beta1/entries:read",
           "flatPath": "v2beta1/entries:read",
           "httpMethod": "POST",
-          "description": "Streaming read of log entries.  Similar to `List`, this method is intended\nfor a large volume of log entries.\n",
+          "description": "Streaming read of log entries.  Similar to `List`, this method is intended\nfor a large volume of log entries.",
           "parameters": {
           },
           "parameterOrder": [

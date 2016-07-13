@@ -147,15 +147,15 @@
           "type": "string"
         },
         "projectId": {
-          "description": " The id of the project that owns the service account.",
+          "description": "@OutputOnly The id of the project that owns the service account.",
           "type": "string"
         },
         "uniqueId": {
-          "description": " The unique and stable id of the service account.",
+          "description": "@OutputOnly The unique and stable id of the service account.",
           "type": "string"
         },
         "email": {
-          "description": " The email address of the service account.",
+          "description": "@OutputOnly The email address of the service account.",
           "type": "string"
         },
         "displayName": {
@@ -172,7 +172,7 @@
           "type": "string"
         },
         "oauth2ClientId": {
-          "description": ". The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
+          "description": "@OutputOnly. The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
           "type": "string"
         }
       }
@@ -236,6 +236,22 @@
             "TYPE_GOOGLE_CREDENTIALS_FILE"
           ]
         },
+        "keyAlgorithm": {
+
+          "enumDescriptions": [
+            "",
+            "1k RSA Key.",
+            "2k RSA Key.",
+            "4k RSA Key."
+          ],
+          "type": "string",
+          "enum": [
+            "KEY_ALG_UNSPECIFIED",
+            "KEY_ALG_RSA_1024",
+            "KEY_ALG_RSA_2048",
+            "KEY_ALG_RSA_4096"
+          ]
+        },
         "privateKeyData": {
           "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses.",
           "type": "string",
@@ -275,6 +291,22 @@
             "TYPE_UNSPECIFIED",
             "TYPE_PKCS12_FILE",
             "TYPE_GOOGLE_CREDENTIALS_FILE"
+          ]
+        },
+        "keyAlgorithm": {
+          "description": "Which type of key and algorithm to use for the key.\nThe default is currently a 4K RSA key.  However this may change in the\nfuture.",
+          "enumDescriptions": [
+            "",
+            "1k RSA Key.",
+            "2k RSA Key.",
+            "4k RSA Key."
+          ],
+          "type": "string",
+          "enum": [
+            "KEY_ALG_UNSPECIFIED",
+            "KEY_ALG_RSA_1024",
+            "KEY_ALG_RSA_2048",
+            "KEY_ALG_RSA_4096"
           ]
         }
       }
@@ -385,7 +417,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -616,7 +648,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\nIAM Overview.",
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -959,7 +991,7 @@
               "description": "Returns the IAM access control policy for specified IAM resource.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `getIamPolicy` documentation.",
+                  "description": "REQUIRED: The resource for which the policy is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -984,7 +1016,7 @@
               "description": "Sets the IAM access control policy for the specified IAM resource.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `setIamPolicy` documentation.",
+                  "description": "REQUIRED: The resource for which the policy is being specified.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",
@@ -1012,7 +1044,7 @@
               "description": "Tests the specified permissions against the IAM access control policy\nfor the specified IAM resource.",
               "parameters": {
                 "resource": {
-                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path, such as\n`projects\/*project*\/zones\/*zone*\/disks\/*disk*`.\n\nThe format for the path specified in this value is resource specific and\nis specified in the `testIamPermissions` documentation.",
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\n`resource` is usually specified as a path. For example, a Project\nresource is specified as `projects\/{project}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]*\/serviceAccounts\/[^\/]*$",

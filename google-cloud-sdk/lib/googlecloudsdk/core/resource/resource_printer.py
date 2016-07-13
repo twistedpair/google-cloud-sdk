@@ -29,7 +29,7 @@ Each printer has three main attributes, all accessible as strings in the
 
 Example:
 
-  gcloud compute instances list \
+  gcloud compute instances list \\
       --format='table[box](name, networkInterfaces[0].networkIP)'
 """
 
@@ -176,9 +176,13 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
   try:
     printer_class = _FORMATTERS[printer_name]
   except KeyError:
-    raise UnknownFormatError(
-        'Format must be one of {0}; received [{1}]'.format(
-            ', '.join(SupportedFormats()), printer_name))
+    raise UnknownFormatError("""\
+Format must be one of {0}; received [{1}].
+
+For information on output formats:
+  $ gcloud topic formats
+""".format(', '.join(SupportedFormats()), printer_name))
+  # TODO(user): move to top-level gcloud exception handler
   printer = printer_class(out=out,
                           name=printer_name,
                           printer=Printer,

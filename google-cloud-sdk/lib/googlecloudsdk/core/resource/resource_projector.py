@@ -152,7 +152,18 @@ class Projector(object):
       if hasattr(value, '__call__'):
         # Omit callable attributes.
         continue
-      r[attr] = self._Project(value, projection, flag)
+      f = flag
+      if attr in projection.tree:
+        child_projection = projection.tree[attr]
+        f |= child_projection.attribute.flag
+        if f < self._projection.INNER:
+          # This branch of the tree is dead.
+          continue
+        # This branch of the tree is still alive. self._Project() returns
+        # None if there are no actual PROJECT hits below.
+        r[attr] = self._Project(value, child_projection, f)
+      else:
+        r[attr] = self._ProjectAttribute(value, self._projection.GetEmpty(), f)
     return r
 
   def _ProjectDict(self, obj, projection, flag):
@@ -342,7 +353,7 @@ class Projector(object):
         obj = obj.name
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):
         # class object or collections.namedtuple() (via the _fields test).
-        obj = self._ProjectClass(obj, self._projection.GetEmpty(), flag)
+        obj = self._ProjectClass(obj, projection, flag)
       if (projection and projection.attribute and
           projection.attribute.transform and
           self._TransformIsEnabled(projection.attribute.transform)):

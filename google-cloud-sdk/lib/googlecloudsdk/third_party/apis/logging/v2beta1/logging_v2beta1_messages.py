@@ -186,13 +186,18 @@ class ListLogEntriesResponse(_messages.Message):
     lastObservedEntryTimestamp: The timestamp of the last log entry that was
       examined before returning this response. This can be used to observe
       progress between successive queries, in particular when only a page
-      token is returned.
+      token is returned. Deprecated: use searched_through_timestamp.
     nextPageToken: If there are more results than were returned, then
       `nextPageToken` is included in the response.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
     projectIdErrors: If partial_success is true, contains the project ids that
       had errors and the associated errors.
+    searchedThroughTimestamp: The furthest point in time through which the
+      search has progressed. All future entries returned using next_page_token
+      are guaranteed to have a timestamp at or past this point in time in the
+      direction of the search. This can be used to observe progress between
+      successive queries, in particular when only a page token is returned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -225,6 +230,7 @@ class ListLogEntriesResponse(_messages.Message):
   lastObservedEntryTimestamp = _messages.StringField(2)
   nextPageToken = _messages.StringField(3)
   projectIdErrors = _messages.MessageField('ProjectIdErrorsValue', 4)
+  searchedThroughTimestamp = _messages.StringField(5)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -276,16 +282,16 @@ class ListResourceKeysResponse(_messages.Message):
   """Result returned from `ListResourceKeysRequest`.
 
   Fields:
-    logResourceKeys: A list of log resource keys.
     nextPageToken: If there are more results, then `nextPageToken` is returned
       in the response.  To get the next batch of resource types, use the value
       of `nextPageToken` as `pageToken` in the next call of
       `ListResourceKeys`. If `nextPageToken` is empty, then there are no more
       results.
+    resourceKeys: A list of log resource keys.
   """
 
-  logResourceKeys = _messages.MessageField('ResourceKeys', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  nextPageToken = _messages.StringField(1)
+  resourceKeys = _messages.MessageField('ResourceKeys', 2, repeated=True)
 
 
 class ListResourceValuesResponse(_messages.Message):
@@ -632,7 +638,7 @@ class LogSink(_messages.Message):
       Sinks](/logging/docs/api/tasks/exporting-logs). Examples:
       `"storage.googleapis.com/a-bucket"`,
       `"bigquery.googleapis.com/projects/a-project-id/datasets/a-dataset"`.
-    errors: _Output only._ All active errors found for this sink.
+    errors: Output only. All active errors found for this sink.
     filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
       Only log entries matching that filter are exported. The filter must be
       consistent with the log entry format specified by the
@@ -871,8 +877,8 @@ class LoggingProjectsResourceKeysListRequest(_messages.Message):
   projectsId = _messages.StringField(3, required=True)
 
 
-class LoggingProjectsResourceKeysValuesListRequest(_messages.Message):
-  """A LoggingProjectsResourceKeysValuesListRequest object.
+class LoggingProjectsResourceTypesValuesListRequest(_messages.Message):
+  """A LoggingProjectsResourceTypesValuesListRequest object.
 
   Fields:
     depth: A non-negative integer that limits the number of levels of the
@@ -899,11 +905,10 @@ class LoggingProjectsResourceKeysValuesListRequest(_messages.Message):
       one operation.
     pageToken: An opaque token, returned as `nextPageToken` by a prior
       `ListResourceValues` operation.
-    projectsId: Part of `resourceTypeName`. The resource name of a resource
-      type whose indexes are requested. Example: `"projects/my-project-
+    projectsId: Part of `parent`. The resource name of a resource type whose
+      indexes are requested. Example: `"projects/my-project-
       id/resourceTypes/gae_app"`.
-    resourceKeysId: Part of `resourceTypeName`. See documentation of
-      `projectsId`.
+    resourceTypesId: Part of `parent`. See documentation of `projectsId`.
   """
 
   depth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -911,7 +916,7 @@ class LoggingProjectsResourceKeysValuesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   projectsId = _messages.StringField(5, required=True)
-  resourceKeysId = _messages.StringField(6, required=True)
+  resourceTypesId = _messages.StringField(6, required=True)
 
 
 class LoggingProjectsSinksCreateRequest(_messages.Message):
@@ -1104,9 +1109,9 @@ class ReadLogEntriesRequest(_messages.Message):
       streamed responses. A response will be sent every max_response_interval
       even if page_size entries have not yet been accumulated provided that
       either some entries have been accumulated OR the
-      last_observed_entry_timestamp / resume_token has changed. (i.e. a
-      response containg 0 entries is allowed) If unspecified, the default will
-      be 1 second.
+      searched_through_timestamp / resume_token has changed. (i.e. a response
+      containg 0 entries is allowed) If unspecified, the default will be 1
+      second.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
       The first option returns entries in order of increasing values of
@@ -1136,15 +1141,21 @@ class ReadLogEntriesResponse(_messages.Message):
     lastObservedEntryTimestamp: The timestamp of the last log entry that was
       examined before returning this response. This can be used to observe
       progress between successive queries, in particular when only a resume
-      token is returned.
+      token is returned. Deprecated: use searched_through_timestamp.
     resumeToken: A token to use to resume from this position of the stream.
       Note that even if there are no entries, it might still be possible to
       continue from this point at some later time.
+    searchedThroughTimestamp: The furthest point in time through which the
+      search has progressed. All future entries returned using resume_token
+      are guaranteed to have a timestamp at or past this point in time in the
+      direction of the search. This can be used to observe progress between
+      successive queries, in particular when only a page token is returned.
   """
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   lastObservedEntryTimestamp = _messages.StringField(2)
   resumeToken = _messages.StringField(3)
+  searchedThroughTimestamp = _messages.StringField(4)
 
 
 class RequestLog(_messages.Message):
@@ -1242,7 +1253,7 @@ class RequestLog(_messages.Message):
 
 
 class ResourceKeys(_messages.Message):
-  """_Output only._ Describes resource keys for log entries.
+  """Output only. Describes resource keys for log entries.
 
   Fields:
     displayName: Displayable name for this type that can be presented in a UI.

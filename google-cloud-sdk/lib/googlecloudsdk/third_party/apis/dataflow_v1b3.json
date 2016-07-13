@@ -253,6 +253,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "labels": {
+          "description": "User-defined labels for this job.\n\nThe labels map can contain no more than 64 entries.  Entries of the labels\nmap are UTF8 strings that comply with the following restrictions:\n\n* Keys must conform to regexp:  \\p{Ll}\\p{Lo}{0,62}\n* Values must conform to regexp:  [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n* Both keys and values are additionally constrained to be <= 128 bytes in\nsize.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -438,7 +445,7 @@
           "type": "string"
         },
         "workerHarnessContainerImage": {
-          "description": "Docker container image that executes Dataflow worker harness, residing in\nGoogle Container Registry. Required.\n",
+          "description": "Docker container image that executes Dataflow worker harness, residing in\nGoogle Container Registry. Required.",
           "type": "string"
         },
         "numThreadsPerWorker": {

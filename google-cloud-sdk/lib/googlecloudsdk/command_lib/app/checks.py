@@ -16,34 +16,11 @@
 import sys
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import platforms
-
-
-# TODO(b/24169312): remove
-CHANGE_WARNING = """\
-The `gcloud preview app` surface is rapidly improving. Look out for
-changing flags and new commands before the transition out of the `preview`
-component. These changes will be documented in the Cloud SDK release notes
-<https://goo.gl/X8apDJ> and via deprecation notices for changing commands.
-
-If you would like to avoid changing behavior, please pin to a fixed version of
-the Google Cloud SDK as described under the "Alternative Methods" section of the
-Cloud SDK web site: <https://cloud.google.com/sdk/#alternative>.
-"""
 
 
 class UnsupportedPythonVersionError(exceptions.Error):
   pass
-
-
-def WarnAboutChangingBehavior():
-  # TODO(b/24169312): remove
-  if not properties.VALUES.app.suppress_change_warning.GetBool():
-    log.warn(CHANGE_WARNING)
-    properties.PersistProperty(properties.VALUES.app.suppress_change_warning,
-                               'true')
 
 
 def RaiseIfNotPython27():

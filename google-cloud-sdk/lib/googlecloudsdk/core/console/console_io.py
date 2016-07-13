@@ -359,56 +359,6 @@ def LazyFormat(s, **kwargs):
   return re.sub(r'{({\w+})}', r'\1', s)
 
 
-def PrintExtendedList(items, col_fetchers):
-  """Print a properly formated extended list for some set of resources.
-
-  If items is a generator, this function may elect to only request those rows
-  that it is ready to display.
-
-  Args:
-    items: [resource] or a generator producing resources, The objects
-        representing cloud resources.
-    col_fetchers: [(string, func(resource))], A list of tuples, one for each
-        column, in the order that they should appear. The string is the title
-        of that column which will be printed in a header. The func is a function
-        that will fetch a row-value for that column, given the resource
-        corresponding to the row.
-  """
-
-  total_items = 0
-
-  rows = [[title for (title, unused_func) in col_fetchers]]
-  for item in items:
-    total_items += 1
-    row = []
-    for (unused_title, func) in col_fetchers:
-      value = func(item)
-      if value is None:
-        row.append('-')
-      else:
-        row.append(value)
-    rows.append(row)
-
-  attr = console_attr.GetConsoleAttr()
-  max_col_widths = [0] * len(col_fetchers)
-  for row in rows:
-    for col in range(len(row)):
-      max_col_widths[col] = max(max_col_widths[col],
-                                attr.DisplayWidth(unicode(row[col]))+2)
-
-  for row in rows:
-    for col in range(len(row)):
-      width = max_col_widths[col]
-      item = unicode(row[col])
-      item_width = attr.DisplayWidth(item)
-      if item_width < width and col != len(row) - 1:
-        item += u' ' * (width - item_width)
-      log.out.write(item)
-    log.out.write('\n')
-  if not total_items:
-    log.status.write('Listed 0 items.\n')
-
-
 class ProgressTracker(object):
   """A context manager for telling the user about long-running progress."""
 

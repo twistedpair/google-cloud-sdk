@@ -539,9 +539,6 @@ class _SectionApp(_Section):
         'use_appengine_api',
         default=True,
         hidden=True)
-    self.suppress_change_warning = self._AddBool(
-        'suppress_change_warning',
-        hidden=True)
     # This is the number of processes to use for uploading application files.
     # The default is somewhat arbitrary, but gives good performance on the
     # machines tested (there's a benefit to exceeding the number of cores

@@ -60,6 +60,11 @@ class BigqueryDatasetsListRequest(_messages.Message):
 
   Fields:
     all: Whether to list all datasets, including hidden ones
+    filter: An expression for filtering the results of the request by label.
+      The syntax is "labels.[:]". Multiple filters can be ANDed together by
+      connecting with a space. Example: "labels.department:receiving
+      labels.active". See https://cloud.google.com/bigquery/docs/labeling-
+      datasets#filtering_datasets_using_labels for details.
     maxResults: The maximum number of results to return
     pageToken: Page token, returned by a previous call, to request the next
       page of results
@@ -67,9 +72,10 @@ class BigqueryDatasetsListRequest(_messages.Message):
   """
 
   all = _messages.BooleanField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
+  filter = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
 
 
 class BigqueryDatasetsPatchRequest(_messages.Message):
@@ -514,6 +520,14 @@ class Dataset(_messages.Message):
 
   Messages:
     AccessValueListEntry: A AccessValueListEntry object.
+    LabelsValue: [Experimental] The labels associated with this dataset. You
+      can use these to organize and group your datasets. You can set this
+      property when inserting or updating a dataset. Label keys and values can
+      be no longer than 63 characters, can only contain letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter
+      and must be unique within a dataset. Both keys and values are
+      additionally constrained to be <= 128 bytes in size.
 
   Fields:
     access: [Optional] An array of objects that define dataset access for one
@@ -546,6 +560,14 @@ class Dataset(_messages.Message):
       given in the datasetId field. When creating a new dataset, leave this
       field blank, and instead specify the datasetId field.
     kind: [Output-only] The resource type.
+    labels: [Experimental] The labels associated with this dataset. You can
+      use these to organize and group your datasets. You can set this property
+      when inserting or updating a dataset. Label keys and values can be no
+      longer than 63 characters, can only contain letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter and must be
+      unique within a dataset. Both keys and values are additionally
+      constrained to be <= 128 bytes in size.
     lastModifiedTime: [Output-only] The date when this dataset or any of its
       tables was last modified, in milliseconds since the epoch.
     location: [Experimental] The geographic location where the dataset should
@@ -587,6 +609,37 @@ class Dataset(_messages.Message):
     userByEmail = _messages.StringField(5)
     view = _messages.MessageField('TableReference', 6)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """[Experimental] The labels associated with this dataset. You can use
+    these to organize and group your datasets. You can set this property when
+    inserting or updating a dataset. Label keys and values can be no longer
+    than 63 characters, can only contain letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and must be unique
+    within a dataset. Both keys and values are additionally constrained to be
+    <= 128 bytes in size.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   access = _messages.MessageField('AccessValueListEntry', 1, repeated=True)
   creationTime = _messages.IntegerField(2)
   datasetReference = _messages.MessageField('DatasetReference', 3)
@@ -596,9 +649,10 @@ class Dataset(_messages.Message):
   friendlyName = _messages.StringField(7)
   id = _messages.StringField(8)
   kind = _messages.StringField(9, default=u'bigquery#dataset')
-  lastModifiedTime = _messages.IntegerField(10)
-  location = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastModifiedTime = _messages.IntegerField(11)
+  location = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
 
 
 class DatasetList(_messages.Message):
@@ -623,6 +677,10 @@ class DatasetList(_messages.Message):
   class DatasetsValueListEntry(_messages.Message):
     """A DatasetsValueListEntry object.
 
+    Messages:
+      LabelsValue: [Experimental] The labels associated with this dataset. You
+        can use these to organize and group your datasets.
+
     Fields:
       datasetReference: The dataset reference. Use this property to access
         specific parts of the dataset's ID, such as project ID or dataset ID.
@@ -630,12 +688,40 @@ class DatasetList(_messages.Message):
       id: The fully-qualified, unique, opaque ID of the dataset.
       kind: The resource type. This property always returns the value
         "bigquery#dataset".
+      labels: [Experimental] The labels associated with this dataset. You can
+        use these to organize and group your datasets.
     """
+
+    @encoding.MapUnrecognizedFields('additionalProperties')
+    class LabelsValue(_messages.Message):
+      """[Experimental] The labels associated with this dataset. You can use
+      these to organize and group your datasets.
+
+      Messages:
+        AdditionalProperty: An additional property for a LabelsValue object.
+
+      Fields:
+        additionalProperties: Additional properties of type LabelsValue
+      """
+
+      class AdditionalProperty(_messages.Message):
+        """An additional property for a LabelsValue object.
+
+        Fields:
+          key: Name of the additional property.
+          value: A string attribute.
+        """
+
+        key = _messages.StringField(1)
+        value = _messages.StringField(2)
+
+      additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
     datasetReference = _messages.MessageField('DatasetReference', 1)
     friendlyName = _messages.StringField(2)
     id = _messages.StringField(3)
     kind = _messages.StringField(4, default=u'bigquery#dataset')
+    labels = _messages.MessageField('LabelsValue', 5)
 
   datasets = _messages.MessageField('DatasetsValueListEntry', 1, repeated=True)
   etag = _messages.StringField(2)

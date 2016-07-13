@@ -35,6 +35,7 @@ class CloudfunctionsV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_regions_functions = self.ProjectsRegionsFunctionsService(self)
     self.projects_regions = self.ProjectsRegionsService(self)
     self.projects = self.ProjectsService(self)
@@ -77,6 +78,45 @@ service.
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(CloudfunctionsV1beta1.ProjectsLocationsService, self).__init__(client)
+      self._method_configs = {
+          'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta1/projects/{projectsId}/locations',
+              http_method=u'GET',
+              method_id=u'cloudfunctions.projects.locations.list',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[u'filter', u'pageSize', u'pageToken'],
+              relative_path=u'v1beta1/{+name}/locations',
+              request_field='',
+              request_type_name=u'CloudfunctionsProjectsLocationsListRequest',
+              response_type_name=u'ListLocationsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists information about the supported locations for this service.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 

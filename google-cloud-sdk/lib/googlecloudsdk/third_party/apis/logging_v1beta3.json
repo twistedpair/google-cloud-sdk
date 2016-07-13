@@ -307,7 +307,7 @@
           "type": "string"
         },
         "userId": {
-          "description": "The fully-qualified email address of the authenticated user that performed\nor requested the action represented by the log entry. If the log entry does\nnot apply to an action taken by an authenticated user, then the field\nshould be empty.",
+          "description": "This field is not used and its value is discarded.",
           "type": "string"
         },
         "labels": {
@@ -321,7 +321,7 @@
     },
     "HttpRequest": {
       "id": "HttpRequest",
-      "description": "A common proto for logging HTTP requests.\n",
+      "description": "A common proto for logging HTTP requests.",
       "type": "object",
       "properties": {
         "requestMethod": {
@@ -388,11 +388,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "An opaque identifier. A producer of log entries should ensure that `id` is\nonly reused for entries related to one operation.\n",
+          "description": "An opaque identifier. A producer of log entries should ensure that `id` is\nonly reused for entries related to one operation.",
           "type": "string"
         },
         "producer": {
-          "description": "Ensures the operation can be uniquely identified. The combination of `id`\nand `producer` should be made globally unique by filling `producer` with a\nvalue that disambiguates the service that created `id`.\n",
+          "description": "Ensures the operation can be uniquely identified. The combination of `id`\nand `producer` should be made globally unique by filling `producer` with a\nvalue that disambiguates the service that created `id`.",
           "type": "string"
         },
         "first": {
@@ -430,7 +430,12 @@
           "format": "byte"
         },
         "lastObservedEntryTimestamp": {
-          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned.",
+          "description": "The timestamp of the last log entry that was examined before returning this\nresponse. This can be used to observe progress between successive queries,\nin particular when only a page token is returned. Deprecated: use\nsearched_through_timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "searchedThroughTimestamp": {
+          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using next_page_token are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis can be used to observe progress between successive queries, in\nparticular when only a page token is returned.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -669,7 +674,7 @@
     },
     "RequestLog": {
       "id": "RequestLog",
-      "description": "Complete log information about a single HTTP request to an App Engine\napplication.\n",
+      "description": "Complete log information about a single HTTP request to an App Engine\napplication.",
       "type": "object",
       "properties": {
         "appId": {
@@ -743,7 +748,7 @@
           "type": "string"
         },
         "nickname": {
-          "description": "The logged-in user who made the request.\n\nMost likely, this is the part of the user's email before the `@` sign.  The\nfield value is the same for different requests from the same user, but\ndifferent users can have similar names.  This information is also\navailable to the application via the App Engine Users API.\n\nThis field will be populated starting with App Engine 1.9.21.\n",
+          "description": "The logged-in user who made the request.\n\nMost likely, this is the part of the user's email before the `@` sign.  The\nfield value is the same for different requests from the same user, but\ndifferent users can have similar names.  This information is also\navailable to the application via the App Engine Users API.\n\nThis field will be populated starting with App Engine 1.9.21.",
           "type": "string"
         },
         "urlMapEntry": {
@@ -909,7 +914,7 @@
               "path": "v1beta3/projects/{projectsId}/logs",
               "flatPath": "v1beta3/projects/{projectsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.\n",
+              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `projectName`. The resource name of the project whose logs are requested.\nIf both `serviceName` and `serviceIndexPrefix` are empty, then\nall logs with entries in this project are listed.",
@@ -957,7 +962,7 @@
               "path": "v1beta3/projects/{projectsId}/logs/{logsId}",
               "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.\n",
+              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `logName`. The resource name of the log to be deleted.",
@@ -994,7 +999,7 @@
                   "path": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}/entries:write",
                   "httpMethod": "POST",
-                  "description": "Writes log entries to Stackdriver Logging. Each entry consists of a\n`LogEntry` object.  You must fill in the required fields of the\nobject.  You can supply a map, `commonLabels`, that holds default\n(key, value) data for the `entries[].metadata.labels` map in each\nentry, saving you the trouble of creating identical copies for\neach entry.\n\n",
+                  "description": "Writes log entries to Stackdriver Logging. Each entry consists of a\n`LogEntry` object.  You must fill in the required fields of the\nobject.  You can supply a map, `commonLabels`, that holds default\n(key, value) data for the `entries[].metadata.labels` map in each\nentry, saving you the trouble of creating identical copies for\neach entry.\n",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `logName`. The resource name of the log that will receive the log entries.",
@@ -1231,10 +1236,10 @@
               "path": "v1beta3/projects/{projectsId}/logEntries",
               "flatPath": "v1beta3/projects/{projectsId}/logEntries",
               "httpMethod": "GET",
-              "description": "Lists log entries in the specified project.\n",
+              "description": "Lists log entries in the specified project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.\n",
+                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1284,10 +1289,10 @@
               "path": "v1beta3/projects/{projectsId}/entries:list",
               "flatPath": "v1beta3/projects/{projectsId}/entries:list",
               "httpMethod": "POST",
-              "description": "Lists log entries in the specified project.\n",
+              "description": "Lists log entries in the specified project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.\n",
+                  "description": "Part of `projectName`. The resource name of the project from which to retrieve log entries.  The\nlog service or log containing the entries is specified in the `filter`\nparameter.  Example: `projects\/my_project_id`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1318,7 +1323,7 @@
               "path": "v1beta3/projects/{projectsId}/logServices",
               "flatPath": "v1beta3/projects/{projectsId}/logServices",
               "httpMethod": "GET",
-              "description": "Lists the log services that have log entries in this project.\n",
+              "description": "Lists the log services that have log entries in this project.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `projectName`. The resource name of the project whose services are to be listed.",
@@ -1361,7 +1366,7 @@
                   "path": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/indexes",
                   "flatPath": "v1beta3/projects/{projectsId}/logServices/{logServicesId}/indexes",
                   "httpMethod": "GET",
-                  "description": "Lists the current index values for a log service.\n",
+                  "description": "Lists the current index values for a log service.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `serviceName`. The resource name of a log service whose service indexes are requested.\nExample:\n`\"projects\/my-project-id\/logServices\/appengine.googleapis.com\"`.",

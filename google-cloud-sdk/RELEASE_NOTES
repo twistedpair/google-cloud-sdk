@@ -2,6 +2,35 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 117.0.0 (2016/07/13)
+
+### Google Compute Engine
+
+*   Regional Managed Instance Groups commands are now in beta.
+
+*   `target-ssl-proxies` commands are now in beta.
+
+*   Connection-based load balancing commands are now in beta.
+
+*   Added `--connection-draining-timeout` flag to
+    `gcloud beta compute backend-services` `create` and `update` commands.
+
+*  `health-checks` command group is now in beta.
+
+
+### Google Container Engine
+
+*   Local SSDs are now supported for GKE clusters via the `--local-ssd-count`
+    flag (in beta).
+
+*   Added `--additional-zones` flag to `gcloud beta container clusters update`.
+
+### Google Container Builder
+
+*   The `gcloud alpha container builds create` command now supports using
+    JSON or YAML config files to configure builds, using the `--config` flag.
+
+
 ## 116.0.0 (2016/06/29)
 
 ### Breaking Changes
@@ -35,7 +64,8 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Cloud Dataproc
 
-*   Added `--preemptible-worker-boot-disk-size` flag, which allows configuration    of preemptible worker boot disk, to `gcloud beta dataproc clusters create`.
+*   Added `--preemptible-worker-boot-disk-size` flag, which allows configuration
+    of preemptible worker boot disk, to `gcloud beta dataproc clusters create`.
 
 ### Google BigQuery
 

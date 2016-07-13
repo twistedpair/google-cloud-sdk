@@ -34,11 +34,77 @@ class AppengineV1beta5(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
     self.apps_services_versions_instances = self.AppsServicesVersionsInstancesService(self)
     self.apps_services_versions = self.AppsServicesVersionsService(self)
     self.apps_services = self.AppsServicesService(self)
     self.apps = self.AppsService(self)
+
+  class AppsLocationsService(base_api.BaseApiService):
+    """Service class for the apps_locations resource."""
+
+    _NAME = u'apps_locations'
+
+    def __init__(self, client):
+      super(AppengineV1beta5.AppsLocationsService, self).__init__(client)
+      self._method_configs = {
+          'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta5/apps/{appsId}/locations/{locationsId}',
+              http_method=u'GET',
+              method_id=u'appengine.apps.locations.get',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[],
+              relative_path=u'v1beta5/{+name}',
+              request_field='',
+              request_type_name=u'AppengineAppsLocationsGetRequest',
+              response_type_name=u'Location',
+              supports_download=False,
+          ),
+          'List': base_api.ApiMethodInfo(
+              flat_path=u'v1beta5/apps/{appsId}/locations',
+              http_method=u'GET',
+              method_id=u'appengine.apps.locations.list',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[u'filter', u'pageSize', u'pageToken'],
+              relative_path=u'v1beta5/{+name}/locations',
+              request_field='',
+              request_type_name=u'AppengineAppsLocationsListRequest',
+              response_type_name=u'ListLocationsResponse',
+              supports_download=False,
+          ),
+          }
+
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Get information about a location.
+
+      Args:
+        request: (AppengineAppsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def List(self, request, global_params=None):
+      """Lists information about the supported locations for this service.
+
+      Args:
+        request: (AppengineAppsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
   class AppsOperationsService(base_api.BaseApiService):
     """Service class for the apps_operations resource."""
@@ -119,6 +185,45 @@ to use different resource name schemes, such as `users/*/operations`.
     def __init__(self, client):
       super(AppengineV1beta5.AppsServicesVersionsInstancesService, self).__init__(client)
       self._method_configs = {
+          'Debug': base_api.ApiMethodInfo(
+              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug',
+              http_method=u'POST',
+              method_id=u'appengine.apps.services.versions.instances.debug',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[],
+              relative_path=u'v1beta5/{+name}:debug',
+              request_field=u'debugInstanceRequest',
+              request_type_name=u'AppengineAppsServicesVersionsInstancesDebugRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Delete': base_api.ApiMethodInfo(
+              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+              http_method=u'DELETE',
+              method_id=u'appengine.apps.services.versions.instances.delete',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[],
+              relative_path=u'v1beta5/{+name}',
+              request_field='',
+              request_type_name=u'AppengineAppsServicesVersionsInstancesDeleteRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'Get': base_api.ApiMethodInfo(
+              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+              http_method=u'GET',
+              method_id=u'appengine.apps.services.versions.instances.get',
+              ordered_params=[u'name'],
+              path_params=[u'name'],
+              query_params=[],
+              relative_path=u'v1beta5/{+name}',
+              request_field='',
+              request_type_name=u'AppengineAppsServicesVersionsInstancesGetRequest',
+              response_type_name=u'Instance',
+              supports_download=False,
+          ),
           'List': base_api.ApiMethodInfo(
               flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances',
               http_method=u'GET',
@@ -136,6 +241,50 @@ to use different resource name schemes, such as `users/*/operations`.
 
       self._upload_configs = {
           }
+
+    def Debug(self, request, global_params=None):
+      """Enable debugging of this VM instance. This call allows you to SSH to the.
+VM. While the VM is in debug mode, it continues to serve live traffic.
+After you're done debugging an instance, delete the instance; the system
+creates a new instance when needed.
+
+You can't debug a non-VM instance.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesDebugRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Debug')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Delete(self, request, global_params=None):
+      """Stops a running instance.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def Get(self, request, global_params=None):
+      """Gets instance information.
+
+      Args:
+        request: (AppengineAppsServicesVersionsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def List(self, request, global_params=None):
       """Lists the instances of a version.
@@ -432,6 +581,18 @@ environment and type of scaling that the version resource uses:
     def __init__(self, client):
       super(AppengineV1beta5.AppsService, self).__init__(client)
       self._method_configs = {
+          'Create': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'appengine.apps.create',
+              ordered_params=[],
+              path_params=[],
+              query_params=[],
+              relative_path=u'v1beta5/apps',
+              request_field=u'application',
+              request_type_name=u'AppengineAppsCreateRequest',
+              response_type_name=u'Operation',
+              supports_download=False,
+          ),
           'Get': base_api.ApiMethodInfo(
               flat_path=u'v1beta5/apps/{appsId}',
               http_method=u'GET',
@@ -449,6 +610,22 @@ environment and type of scaling that the version resource uses:
 
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      """Creates an App Engine application for a Google Cloud Platform project.
+This requires a project that excludes an App Engine application. For
+details about creating a project without an application, see the
+[Google Cloud Resource Manager create project topic](https://cloud.google.com/resource-manager/docs/creating-project).
+
+      Args:
+        request: (AppengineAppsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     def Get(self, request, global_params=None):
       """Gets information about an application.

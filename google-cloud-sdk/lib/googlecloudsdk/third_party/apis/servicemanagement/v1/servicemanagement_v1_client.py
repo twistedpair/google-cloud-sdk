@@ -521,6 +521,18 @@ Operation<response: ProjectSettings>
               response_type_name=u'Service',
               supports_download=False,
           ),
+          'GetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.getIamPolicy',
+              ordered_params=[u'servicesId'],
+              path_params=[u'servicesId'],
+              query_params=[],
+              relative_path=u'v1/services/{servicesId}:getIamPolicy',
+              request_field=u'getIamPolicyRequest',
+              request_type_name=u'ServicemanagementServicesGetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
           'List': base_api.ApiMethodInfo(
               http_method=u'GET',
               method_id=u'servicemanagement.services.list',
@@ -555,6 +567,30 @@ Operation<response: ProjectSettings>
               request_field=u'service',
               request_type_name=u'ServicemanagementServicesPatchConfigRequest',
               response_type_name=u'Operation',
+              supports_download=False,
+          ),
+          'SetIamPolicy': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.setIamPolicy',
+              ordered_params=[u'servicesId'],
+              path_params=[u'servicesId'],
+              query_params=[],
+              relative_path=u'v1/services/{servicesId}:setIamPolicy',
+              request_field=u'setIamPolicyRequest',
+              request_type_name=u'ServicemanagementServicesSetIamPolicyRequest',
+              response_type_name=u'Policy',
+              supports_download=False,
+          ),
+          'TestIamPermissions': base_api.ApiMethodInfo(
+              http_method=u'POST',
+              method_id=u'servicemanagement.services.testIamPermissions',
+              ordered_params=[u'servicesId'],
+              path_params=[u'servicesId'],
+              query_params=[],
+              relative_path=u'v1/services/{servicesId}:testIamPermissions',
+              request_field=u'testIamPermissionsRequest',
+              request_type_name=u'ServicemanagementServicesTestIamPermissionsRequest',
+              response_type_name=u'TestIamPermissionsResponse',
               supports_download=False,
           ),
           'Update': base_api.ApiMethodInfo(
@@ -719,6 +755,21 @@ not specified, the latest service config will be returned.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (ServicemanagementServicesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
     def List(self, request, global_params=None):
       """Lists all managed services. If the `consumer_project_id` is specified,.
 the project's settings for the specified service are also returned.
@@ -762,6 +813,33 @@ Operation<response: google.api.Service>
         (Operation) The response message.
       """
       config = self.GetMethodConfig('PatchConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+      Args:
+        request: (ServicemanagementServicesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ServicemanagementServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 

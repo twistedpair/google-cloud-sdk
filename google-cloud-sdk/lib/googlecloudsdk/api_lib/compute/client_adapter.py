@@ -67,7 +67,6 @@ class ClientAdapter(object):
         custom_get_requests=None))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
-          errors,
-          error_message='Could not fetch backend service:')
+          errors, error_message='Could not fetch resource:')
     return objects
 

@@ -15,7 +15,6 @@
 
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis
 
 
 def GetHealthChecks(args, resource_parser):
@@ -75,18 +74,18 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
     return self.ListFormat(args)
 
 
-def ValidateBalancingModeArgs(add_or_update_backend_args,
+def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
                               current_balancing_mode=None):
   """Check whether the setup of the backend LB related fields is valid.
 
   Args:
+    messages: API messages class, determined by release track.
     add_or_update_backend_args: argparse Namespace. The arguments
       provided to add-backend or update-backend commands.
     current_balancing_mode: BalancingModeValueValuesEnum. The balancing mode
       of the existing backend, in case of update-backend command. Must be
       None otherwise.
   """
-  messages = apis.GetMessagesModule('compute', 'alpha')
   balancing_mode = current_balancing_mode
   if add_or_update_backend_args.balancing_mode:
     balancing_mode = messages.Backend.BalancingModeValueValuesEnum(

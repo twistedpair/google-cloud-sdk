@@ -41,7 +41,8 @@ using the following command.
   parser.add_argument('--image-type', help=help_text)
 
 
-def AddClusterAutoscalingFlags(parser, exclusive_group=None):
+# TODO(b/28940220): unsupress help text in 7/6/2016 cloud-sdk build.
+def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=True):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
@@ -51,21 +52,38 @@ def AddClusterAutoscalingFlags(parser, exclusive_group=None):
     parser: A given parser.
     exclusive_group: An optional group of mutually exclusive flag options
         to which an --enable-autoscaling flag is added.
+    suppressed: If true, supress help text for added options.
   """
+
+  hide_or = lambda x: argparse.SUPPRESS if suppressed else x
+
   group = parser.add_argument_group('Cluster autoscaling')
   autoscaling_group = group if exclusive_group is None else exclusive_group
   autoscaling_group.add_argument(
       '--enable-autoscaling',
-      help='Enables autoscaling for the node pool.',
+      # TODO(b/28940220): unhide in 7/6 cloud-sdk build.
+      help=hide_or('Enables autoscaling for the node pool.'),
       action='store_true')
   group.add_argument(
       '--max-nodes',
-      help='Maximum number of nodes in the node pool.',
+      help=hide_or('Maximum number of nodes in the node pool.'),
       type=int)
   group.add_argument(
       '--min-nodes',
-      help='Minimum number of nodes in the node pool.',
+      help=hide_or('Minimum number of nodes in the node pool.'),
       type=int)
+
+
+def AddLocalSSDFlag(parser, suppressed):
+  """Adds a --local-ssd-count flag to the given parser."""
+  help_text = argparse.SUPPRESS if suppressed else """\
+The number of local SSD to provision on each node.
+"""
+  parser.add_argument(
+      '--local-ssd-count',
+      help=help_text,
+      type=int,
+      default=0)
 
 
 def AddZoneFlag(parser):

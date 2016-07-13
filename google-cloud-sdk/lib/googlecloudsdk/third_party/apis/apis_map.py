@@ -178,6 +178,11 @@ MAP = {
         ),
     },
     'deploymentmanager': {
+        'alpha': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.deploymentmanager.alpha.deploymentmanager_alpha_client.DeploymentmanagerAlpha',
+            messages_modulepath='googlecloudsdk.third_party.apis.deploymentmanager.alpha.deploymentmanager_alpha_messages',
+            default_version=False
+        ),
         'v2': APIDef(
             client_classpath='googlecloudsdk.third_party.apis.deploymentmanager.v2.deploymentmanager_v2_client.DeploymentmanagerV2',
             messages_modulepath='googlecloudsdk.third_party.apis.deploymentmanager.v2.deploymentmanager_v2_messages',

@@ -69,7 +69,8 @@ class EndpointDnsIntegration(_messages.Message):
 
   Fields:
     enableExternal: True if a cloud.goog DNS entry should be created to expose
-      this endpoint externally.
+      this endpoint externally. NOTE: This feature will be enabled by August
+      1.
     externalDnsName: [Output Only] Externally visible fully qualified domain
       name for the endpoint.
     internalDnsName: [Output Only] Fully qualified domain name for the

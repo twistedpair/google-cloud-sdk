@@ -317,11 +317,11 @@
       "type": "object",
       "properties": {
         "testMatrixId": {
-          "description": "Unique id set by the service.",
+          "description": "Unique id set by the service.\n@OutputOnly",
           "type": "string"
         },
         "projectId": {
-          "description": "The cloud project that owns the test matrix.",
+          "description": "The cloud project that owns the test matrix.\n@OutputOnly",
           "type": "string"
         },
         "clientInfo": {
@@ -337,7 +337,7 @@
           "$ref": "EnvironmentMatrix"
         },
         "testExecutions": {
-          "description": "The list of test executions that the service creates for this matrix.",
+          "description": "The list of test executions that the service creates for this matrix.\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "TestExecution"
@@ -348,7 +348,7 @@
           "$ref": "ResultStorage"
         },
         "state": {
-          "description": "Indicates the current progress of the test matrix (e.g., FINISHED)",
+          "description": "Indicates the current progress of the test matrix (e.g., FINISHED)\n@OutputOnly",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
             "The execution or matrix is being validated.",
@@ -378,9 +378,37 @@
           ]
         },
         "timestamp": {
-          "description": "The time this test matrix was initially created.",
+          "description": "The time this test matrix was initially created.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
+        },
+        "invalidMatrixDetails": {
+          "description": "Describes why the matrix is considered invalid.\nOnly useful for matrices in the INVALID state.\n@OutputOnly",
+          "enumDescriptions": [
+            "Do not use. For proto versioning only.",
+            "The matrix is INVALID, but there are no further details available.",
+            "The input app APK could not be parsed.",
+            "The input test APK could not be parsed.",
+            "The AndroidManifest.xml could not be found.",
+            "The APK manifest does not declare a package name.",
+            "The test package and app package are the same.",
+            "The test apk does not declare an instrumentation.",
+            "A main launcher activity could not be found.",
+            "The app declares one or more permissions that are not allowed."
+          ],
+          "type": "string",
+          "enum": [
+            "INVALID_MATRIX_DETAILS_UNSPECIFIED",
+            "DETAILS_UNAVAILABLE",
+            "MALFORMED_APK",
+            "MALFORMED_TEST_APK",
+            "NO_MANIFEST",
+            "NO_PACKAGE_NAME",
+            "TEST_SAME_AS_APP",
+            "NO_INSTRUMENTATION",
+            "NO_LAUNCHER_ACTIVITY",
+            "FORBIDDEN_PERMISSIONS"
+          ]
         }
       }
     },
@@ -445,6 +473,13 @@
         "account": {
           "description": "The device will be logged in on this account for the duration of the test.\nOptional",
           "$ref": "Account"
+        },
+        "environmentVariables": {
+          "description": "Environment variables to set for the test.",
+          "type": "array",
+          "items": {
+            "$ref": "EnvironmentVariable"
+          }
         }
       }
     },
@@ -501,6 +536,21 @@
       "description": "Enables automatic Google account login.\nIf set, the service will automatically generate a Google test account and add\nit to the device, before executing the test. Note that test accounts might be\nreused.\nMany applications show their full set of functionalities when an account is\npresent on the device. Logging into the device with these generated accounts\nallows testing more functionalities.",
       "type": "object",
       "properties": {
+      }
+    },
+    "EnvironmentVariable": {
+      "id": "EnvironmentVariable",
+      "description": "A key-value pair passed as an environment variable to the test",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key for the environment variable",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value for the environment variable",
+          "type": "string"
+        }
       }
     },
     "AndroidInstrumentationTest": {
@@ -618,27 +668,27 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Unique id set by the backend.",
+          "description": "Unique id set by the backend.\n@OutputOnly",
           "type": "string"
         },
         "matrixId": {
-          "description": "Id of the containing TestMatrix.",
+          "description": "Id of the containing TestMatrix.\n@OutputOnly",
           "type": "string"
         },
         "projectId": {
-          "description": "The cloud project that owns the test execution.",
+          "description": "The cloud project that owns the test execution.\n@OutputOnly",
           "type": "string"
         },
         "testSpecification": {
-          "description": "How to run the test.",
+          "description": "How to run the test.\n@OutputOnly",
           "$ref": "TestSpecification"
         },
         "environment": {
-          "description": "How the host machine(s) are configured.",
+          "description": "How the host machine(s) are configured.\n@OutputOnly",
           "$ref": "Environment"
         },
         "state": {
-          "description": "Indicates the current progress of the test execution (e.g., FINISHED).",
+          "description": "Indicates the current progress of the test execution (e.g., FINISHED).\n@OutputOnly",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
             "The execution or matrix is being validated.",
@@ -668,16 +718,16 @@
           ]
         },
         "toolResultsStep": {
-          "description": "Where the results for this execution are written.",
+          "description": "Where the results for this execution are written.\n@OutputOnly",
           "$ref": "ToolResultsStep"
         },
         "timestamp": {
-          "description": "The time this test execution was initially created.",
+          "description": "The time this test execution was initially created.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
         "testDetails": {
-          "description": "Additional details about the running test.",
+          "description": "Additional details about the running test.\n@OutputOnly",
           "$ref": "TestDetails"
         }
       }
@@ -699,19 +749,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The cloud project that owns the tool results step.",
+          "description": "The cloud project that owns the tool results step.\n@OutputOnly",
           "type": "string"
         },
         "historyId": {
-          "description": "A tool results history ID.",
+          "description": "A tool results history ID.\n@OutputOnly",
           "type": "string"
         },
         "executionId": {
-          "description": "A tool results execution ID.",
+          "description": "A tool results execution ID.\n@OutputOnly",
           "type": "string"
         },
         "stepId": {
-          "description": "A tool results step ID.",
+          "description": "A tool results step ID.\n@OutputOnly",
           "type": "string"
         }
       }
@@ -722,14 +772,14 @@
       "type": "object",
       "properties": {
         "progressMessages": {
-          "description": "Human-readable, detailed descriptions of the test's progress.\nFor example: \"Provisioning a device\", \"Starting Test\".\n\nDuring the course of execution new data may be appended\nto the end of progress_messages.",
+          "description": "Human-readable, detailed descriptions of the test's progress.\nFor example: \"Provisioning a device\", \"Starting Test\".\n\nDuring the course of execution new data may be appended\nto the end of progress_messages.\n@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "errorMessage": {
-          "description": "If the TestState is ERROR, then this string will contain human-readable\ndetails about the error.",
+          "description": "If the TestState is ERROR, then this string will contain human-readable\ndetails about the error.\n@OutputOnly",
           "type": "string"
         }
       }
@@ -748,7 +798,7 @@
           "$ref": "ToolResultsHistory"
         },
         "toolResultsExecution": {
-          "description": "The tool results execution that results are written to.",
+          "description": "The tool results execution that results are written to.\n@OutputOnly",
           "$ref": "ToolResultsExecution"
         }
       }
@@ -785,15 +835,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The cloud project that owns the tool results execution.",
+          "description": "The cloud project that owns the tool results execution.\n@OutputOnly",
           "type": "string"
         },
         "historyId": {
-          "description": "A tool results history ID.",
+          "description": "A tool results history ID.\n@OutputOnly",
           "type": "string"
         },
         "executionId": {
-          "description": "A tool results execution ID.",
+          "description": "A tool results execution ID.\n@OutputOnly",
           "type": "string"
         }
       }
@@ -852,21 +902,21 @@
       "type": "object",
       "properties": {
         "models": {
-          "description": "The set of supported Android device models.",
+          "description": "The set of supported Android device models.\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "AndroidModel"
           }
         },
         "versions": {
-          "description": "The set of supported Android OS versions.",
+          "description": "The set of supported Android OS versions.\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "AndroidVersion"
           }
         },
         "runtimeConfiguration": {
-          "description": "The set of supported runtime configurations.",
+          "description": "The set of supported runtime configurations.\n@OutputOnly",
           "$ref": "AndroidRuntimeConfiguration"
         }
       }
@@ -877,27 +927,27 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "The unique opaque id for this model.\nUse this for invoking the TestExecutionService.",
+          "description": "The unique opaque id for this model.\nUse this for invoking the TestExecutionService.\n@OutputOnly",
           "type": "string"
         },
         "name": {
-          "description": "The human-readable marketing name for this device model.\nExamples: \"Nexus 5\", \"Galaxy S5\"",
+          "description": "The human-readable marketing name for this device model.\nExamples: \"Nexus 5\", \"Galaxy S5\"\n@OutputOnly",
           "type": "string"
         },
         "manufacturer": {
-          "description": "The manufacturer of this device.",
+          "description": "The manufacturer of this device.\n@OutputOnly",
           "type": "string"
         },
         "brand": {
-          "description": "The company that this device is branded with.\nExample: \"Google\", \"Samsung\"",
+          "description": "The company that this device is branded with.\nExample: \"Google\", \"Samsung\"\n@OutputOnly",
           "type": "string"
         },
         "codename": {
-          "description": "The name of the industrial design.\nThis corresponds to android.os.Build.DEVICE",
+          "description": "The name of the industrial design.\nThis corresponds to android.os.Build.DEVICE\n@OutputOnly",
           "type": "string"
         },
         "form": {
-          "description": "Whether this device is virtual or physical.",
+          "description": "Whether this device is virtual or physical.\n@OutputOnly",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
             "A software stack that simulates the device",
@@ -911,29 +961,29 @@
           ]
         },
         "screenX": {
-          "description": "Screen size in the horizontal (X) dimension measured in pixels.",
+          "description": "Screen size in the horizontal (X) dimension measured in pixels.\n@OutputOnly",
           "type": "integer",
           "format": "int32"
         },
         "screenY": {
-          "description": "Screen size in the vertical (Y) dimension measured in pixels.",
+          "description": "Screen size in the vertical (Y) dimension measured in pixels.\n@OutputOnly",
           "type": "integer",
           "format": "int32"
         },
         "screenDensity": {
-          "description": "Screen density in DPI.\nThis corresponds to ro.sf.lcd_density",
+          "description": "Screen density in DPI.\nThis corresponds to ro.sf.lcd_density\n@OutputOnly",
           "type": "integer",
           "format": "int32"
         },
         "supportedVersionIds": {
-          "description": "The set of Android versions this device supports.",
+          "description": "The set of Android versions this device supports.\n@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "supportedAbis": {
-          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\nThe most preferred ABI is the first element in the list.",
+          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\nThe most preferred ABI is the first element in the list.\n@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"
@@ -954,28 +1004,28 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "An opaque id for this Android version.\nUse this id to invoke the TestExecutionService.",
+          "description": "An opaque id for this Android version.\nUse this id to invoke the TestExecutionService.\n@OutputOnly",
           "type": "string"
         },
         "versionString": {
-          "description": "A string representing this version of the Android OS.\nExamples: \"4.3\", \"4.4\"",
+          "description": "A string representing this version of the Android OS.\nExamples: \"4.3\", \"4.4\"\n@OutputOnly",
           "type": "string"
         },
         "apiLevel": {
-          "description": "The API level for this Android version.\nExamples: 18, 19",
+          "description": "The API level for this Android version.\nExamples: 18, 19\n@OutputOnly",
           "type": "integer",
           "format": "int32"
         },
         "codeName": {
-          "description": "The code name for this Android version.\nExamples: \"JellyBean\", \"KitKat\"",
+          "description": "The code name for this Android version.\nExamples: \"JellyBean\", \"KitKat\"\n@OutputOnly",
           "type": "string"
         },
         "releaseDate": {
-          "description": "The date this Android version became available in the market.",
+          "description": "The date this Android version became available in the market.\n@OutputOnly",
           "$ref": "Date"
         },
         "distribution": {
-          "description": "Market share for this version.",
+          "description": "Market share for this version.\n@OutputOnly",
           "$ref": "Distribution"
         },
         "tags": {
@@ -1015,12 +1065,12 @@
       "type": "object",
       "properties": {
         "measurementTime": {
-          "description": "The time this distribution was measured.",
+          "description": "The time this distribution was measured.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
         "marketShare": {
-          "description": "The estimated fraction (0-1) of the total market with this configuration.",
+          "description": "The estimated fraction (0-1) of the total market with this configuration.\n@OutputOnly",
           "type": "number",
           "format": "double"
         }
@@ -1032,14 +1082,14 @@
       "type": "object",
       "properties": {
         "locales": {
-          "description": "The set of available locales.",
+          "description": "The set of available locales.\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "Locale"
           }
         },
         "orientations": {
-          "description": "The set of available orientations.",
+          "description": "The set of available orientations.\n@OutputOnly",
           "type": "array",
           "items": {
             "$ref": "Orientation"
@@ -1053,15 +1103,15 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "The id for this locale.\nExample: \"en_US\"",
+          "description": "The id for this locale.\nExample: \"en_US\"\n@OutputOnly",
           "type": "string"
         },
         "name": {
-          "description": "A human-friendly name for this language\/locale.\nExample: \"English\"",
+          "description": "A human-friendly name for this language\/locale.\nExample: \"English\"\n@OutputOnly",
           "type": "string"
         },
         "region": {
-          "description": "A human-friendy string representing the region for this locale.\nExample: \"United States\"\nNot present for every locale.",
+          "description": "A human-friendy string representing the region for this locale.\nExample: \"United States\"\nNot present for every locale.\n@OutputOnly",
           "type": "string"
         },
         "tags": {
@@ -1079,11 +1129,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "The id for this orientation.\nExample: \"portrait\"",
+          "description": "The id for this orientation.\nExample: \"portrait\"\n@OutputOnly",
           "type": "string"
         },
         "name": {
-          "description": "A human-friendly name for this orientation.\nExample: \"portrait\"",
+          "description": "A human-friendly name for this orientation.\nExample: \"portrait\"\n@OutputOnly",
           "type": "string"
         },
         "tags": {

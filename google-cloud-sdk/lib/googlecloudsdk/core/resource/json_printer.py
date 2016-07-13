@@ -25,6 +25,9 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
 
   [JSON](http://www.json.org), JavaScript Object Notation.
 
+  Printer attributes:
+    no-undefined: Does not display resource data items with null values.
+
   Attributes:
     _buffer: Buffer stream for record item indentation.
     _delimiter: Delimiter string before the next record.

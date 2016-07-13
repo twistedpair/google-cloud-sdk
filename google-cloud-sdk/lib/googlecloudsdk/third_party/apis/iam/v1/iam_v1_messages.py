@@ -150,13 +150,34 @@ class CreateServiceAccountKeyRequest(_messages.Message):
   """The service account key create request.
 
   Enums:
+    KeyAlgorithmValueValuesEnum: Which type of key and algorithm to use for
+      the key. The default is currently a 4K RSA key.  However this may change
+      in the future.
     PrivateKeyTypeValueValuesEnum: The output format of the private key.
       `GOOGLE_CREDENTIALS_FILE` is the default output format.
 
   Fields:
+    keyAlgorithm: Which type of key and algorithm to use for the key. The
+      default is currently a 4K RSA key.  However this may change in the
+      future.
     privateKeyType: The output format of the private key.
       `GOOGLE_CREDENTIALS_FILE` is the default output format.
   """
+
+  class KeyAlgorithmValueValuesEnum(_messages.Enum):
+    """Which type of key and algorithm to use for the key. The default is
+    currently a 4K RSA key.  However this may change in the future.
+
+    Values:
+      KEY_ALG_UNSPECIFIED: <no description>
+      KEY_ALG_RSA_1024: 1k RSA Key.
+      KEY_ALG_RSA_2048: 2k RSA Key.
+      KEY_ALG_RSA_4096: 4k RSA Key.
+    """
+    KEY_ALG_UNSPECIFIED = 0
+    KEY_ALG_RSA_1024 = 1
+    KEY_ALG_RSA_2048 = 2
+    KEY_ALG_RSA_4096 = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     """The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the
@@ -174,7 +195,8 @@ class CreateServiceAccountKeyRequest(_messages.Message):
     TYPE_PKCS12_FILE = 1
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 1)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 2)
 
 
 class CreateServiceAccountRequest(_messages.Message):
@@ -279,10 +301,8 @@ class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -431,10 +451,8 @@ class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -482,10 +500,8 @@ class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation.
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -722,7 +738,7 @@ class ServiceAccount(_messages.Message):
       account.
     displayName: Optional. A user-specified description of the service
       account.  Must be fewer than 100 UTF-8 bytes.
-    email:  The email address of the service account.
+    email: @OutputOnly The email address of the service account.
     etag: Used to perform a consistent read-modify-write.
     name: The resource name of the service account in the following format:
       `projects/{project}/serviceAccounts/{account}`.  Requests using `-` as a
@@ -730,11 +746,12 @@ class ServiceAccount(_messages.Message):
       the `account` value can be the `email` address or the `unique_id` of the
       service account.  In responses the resource name will always be in the
       format `projects/{project}/serviceAccounts/{email}`.
-    oauth2ClientId: . The OAuth2 client id for the service account. This is
-      used in conjunction with the OAuth2 clientconfig API to make three
-      legged OAuth2 (3LO) flows to access the data of Google users.
-    projectId:  The id of the project that owns the service account.
-    uniqueId:  The unique and stable id of the service account.
+    oauth2ClientId: @OutputOnly. The OAuth2 client id for the service account.
+      This is used in conjunction with the OAuth2 clientconfig API to make
+      three legged OAuth2 (3LO) flows to access the data of Google users.
+    projectId: @OutputOnly The id of the project that owns the service
+      account.
+    uniqueId: @OutputOnly The unique and stable id of the service account.
   """
 
   description = _messages.StringField(1)
@@ -759,6 +776,7 @@ class ServiceAccountKey(_messages.Message):
   published at the OAuth2 Service Account API.
 
   Enums:
+    KeyAlgorithmValueValuesEnum:
     PrivateKeyTypeValueValuesEnum: The output format for the private key. Only
       provided in `CreateServiceAccountKey` responses, not in
       `GetServiceAccountKey` or `ListServiceAccountKey` responses.  Google
@@ -766,6 +784,7 @@ class ServiceAccountKey(_messages.Message):
       managed private keys.
 
   Fields:
+    keyAlgorithm: A KeyAlgorithmValueValuesEnum attribute.
     name: The resource name of the service account key in the following format
       `projects/{project}/serviceAccounts/{account}/keys/{key}`.
     privateKeyData: The private key data. Only provided in
@@ -779,6 +798,20 @@ class ServiceAccountKey(_messages.Message):
     validAfterTime: The key can be used after this timestamp.
     validBeforeTime: The key can be used before this timestamp.
   """
+
+  class KeyAlgorithmValueValuesEnum(_messages.Enum):
+    """KeyAlgorithmValueValuesEnum enum type.
+
+    Values:
+      KEY_ALG_UNSPECIFIED: <no description>
+      KEY_ALG_RSA_1024: 1k RSA Key.
+      KEY_ALG_RSA_2048: 2k RSA Key.
+      KEY_ALG_RSA_4096: 4k RSA Key.
+    """
+    KEY_ALG_UNSPECIFIED = 0
+    KEY_ALG_RSA_1024 = 1
+    KEY_ALG_RSA_2048 = 2
+    KEY_ALG_RSA_4096 = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     """The output format for the private key. Only provided in
@@ -798,12 +831,13 @@ class ServiceAccountKey(_messages.Message):
     TYPE_PKCS12_FILE = 1
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
-  name = _messages.StringField(1)
-  privateKeyData = _messages.BytesField(2)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 3)
-  publicKeyData = _messages.BytesField(4)
-  validAfterTime = _messages.StringField(5)
-  validBeforeTime = _messages.StringField(6)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  privateKeyData = _messages.BytesField(3)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 4)
+  publicKeyData = _messages.BytesField(5)
+  validAfterTime = _messages.StringField(6)
+  validBeforeTime = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -936,7 +970,8 @@ class TestIamPermissionsRequest(_messages.Message):
   Fields:
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see IAM Overview.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
 
   permissions = _messages.StringField(1, repeated=True)

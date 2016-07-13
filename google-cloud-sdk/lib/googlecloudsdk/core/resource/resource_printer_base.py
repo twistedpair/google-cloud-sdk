@@ -136,7 +136,6 @@ class ResourcePrinter(object):
       projector = resource_projector.Compile()
     self._process_record = process_record or projector.Evaluate
     projector.SetByColumns(by_columns)
-    projector.SetRetainNoneValues(retain_none_values)
     projection = projector.Projection()
     if projection:
       self.attributes = projection.Attributes() or {}
@@ -144,6 +143,9 @@ class ResourcePrinter(object):
     else:
       self.attributes = {}
       self.column_attributes = None
+    if 'no-undefined' in self.attributes:
+      retain_none_values = False
+    projector.SetRetainNoneValues(retain_none_values)
 
     if 'private' in self.attributes:
       try:

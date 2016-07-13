@@ -371,6 +371,50 @@
         }
       }
     },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for LocationService.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations.\nExample: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata describing an Operation",
@@ -480,7 +524,7 @@
                   "path": "v1beta1/{+location}/functions",
                   "flatPath": "v1beta1/projects/{projectsId}/regions/{regionsId}/functions",
                   "httpMethod": "POST",
-                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, it will return ALREADY_EXISTS error.\n",
+                  "description": "Creates a new function. If a function with the given name already exists in\nthe specified project, it will return ALREADY_EXISTS error.",
                   "parameters": {
                     "location": {
                       "description": "The project and region in which the function should be created, specified\nin the format: projects\/*\/regions\/*",
@@ -511,7 +555,7 @@
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}",
                   "httpMethod": "PUT",
-                  "description": "Updates existing function.\n",
+                  "description": "Updates existing function.",
                   "parameters": {
                     "name": {
                       "description": "The name of the function to be updated.",
@@ -542,7 +586,7 @@
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a function with the given name from the specified project. If the\ngiven function is used by some trigger, the trigger will be updated to\nremove this function.\n",
+                  "description": "Deletes a function with the given name from the specified project. If the\ngiven function is used by some trigger, the trigger will be updated to\nremove this function.",
                   "parameters": {
                     "name": {
                       "description": "The name of the function which should be deleted.",
@@ -597,6 +641,51 @@
                   ]
                 }
               }
+            }
+          }
+        },
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "cloudfunctions.projects.locations.list",
+              "path": "v1beta1/{+name}/locations",
+              "flatPath": "v1beta1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "description": "Lists information about the supported locations for this service.",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]*$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
         }

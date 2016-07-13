@@ -421,10 +421,8 @@ class PubsubProjectsSubscriptionsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -499,10 +497,8 @@ class PubsubProjectsSubscriptionsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -516,10 +512,8 @@ class PubsubProjectsSubscriptionsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation.
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -543,10 +537,8 @@ class PubsubProjectsTopicsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `getIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
   """
 
   resource = _messages.StringField(1, required=True)
@@ -596,10 +588,8 @@ class PubsubProjectsTopicsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `setIamPolicy` documentation.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -630,10 +620,8 @@ class PubsubProjectsTopicsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. `resource` is usually specified as a path, such as
-      `projects/*project*/zones/*zone*/disks/*disk*`.  The format for the path
-      specified in this value is resource specific and is specified in the
-      `testIamPermissions` documentation.
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -943,7 +931,8 @@ class TestIamPermissionsRequest(_messages.Message):
   Fields:
     permissions: The set of permissions to check for the `resource`.
       Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see IAM Overview.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
 
   permissions = _messages.StringField(1, repeated=True)

@@ -505,7 +505,9 @@ class Object(_messages.Message):
   Fields:
     acl: Access controls on the object.
     bucket: The name of the bucket containing this object.
-    cacheControl: Cache-Control directive for the object data.
+    cacheControl: Cache-Control directive for the object data. If omitted, and
+      the object is accessible to all anonymous users, the default will be
+      public, max-age=3600.
     componentCount: Number of underlying components that make up this object.
       Components are accumulated by compose operations.
     contentDisposition: Content-Disposition of the object data.

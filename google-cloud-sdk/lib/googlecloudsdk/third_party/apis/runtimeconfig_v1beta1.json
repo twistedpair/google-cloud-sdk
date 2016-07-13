@@ -247,7 +247,7 @@
     },
     "Waiter": {
       "id": "Waiter",
-      "description": "A Waiter resource waits for some end condition within a RuntimeConfig resource\nto be met before it returns. For example, assume you have a distributed\nsystem where each node writes to a Variable resource indidicating the node's\nreadiness as part of the startup process.\n\nYou then configure a Waiter resource with the success condition set to wait\nuntil some number of nodes have checked in. Afterwards, your application\nruns some arbitrary code after the condition has been met and the waiter\nreturns successfully.\n\nOnce created, a Waiter resource is immutable.\n\nTo learn more about using waiters, read the\n[Creating a Waiter](\/deployment-manager\/runtime-config\/creating-a-water)\ndocumentation.",
+      "description": "A Waiter resource waits for some end condition within a RuntimeConfig resource\nto be met before it returns. For example, assume you have a distributed\nsystem where each node writes to a Variable resource indidicating the node's\nreadiness as part of the startup process.\n\nYou then configure a Waiter resource with the success condition set to wait\nuntil some number of nodes have checked in. Afterwards, your application\nruns some arbitrary code after the condition has been met and the waiter\nreturns successfully.\n\nOnce created, a Waiter resource is immutable.\n\nTo learn more about using waiters, read the\n[Creating a Waiter](\/deployment-manager\/runtime-configurator\/creating-a-waiter)\ndocumentation.",
       "type": "object",
       "properties": {
         "name": {
@@ -277,7 +277,7 @@
           "type": "boolean"
         },
         "error": {
-          "description": "[Output Only] If the waiter ended due to a failure or timeout, this value\nwill be set.\n",
+          "description": "[Output Only] If the waiter ended due to a failure or timeout, this value\nwill be set.",
           "$ref": "Status"
         }
       }
@@ -679,7 +679,7 @@
                   "path": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "httpMethod": "POST",
-                  "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting Data](\/deployment-manager\/runtime-configurator\/seta-and-get-variables)\ndocumentation.",
+                  "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting Data](\/deployment-manager\/runtime-configurator\/set-and-get-variables)\ndocumentation.",
                   "parameters": {
                     "projectsId": {
                       "description": "Part of `parent`. The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",

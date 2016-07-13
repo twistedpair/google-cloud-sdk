@@ -31,6 +31,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import pkg_resources
 
@@ -555,6 +556,76 @@ class CLI(object):
   def _TopElement(self):
     return self.__top_element
 
+  def _ConvertNonAsciiArgsToUnicode(self, args):
+    """Converts non-ascii args to unicode.
+
+    The args most likely came from sys.argv, and Python 2.7 passes them in as
+    bytestrings instead of unicode.
+
+    Args:
+      args: [str], The list of args to convert.
+
+    Raises:
+      InvalidCharacterInArgException if a non-ascii arg cannot be converted to
+      unicode.
+
+    Returns:
+      A new list of args with non-ascii args converted to unicode.
+    """
+    console_encoding = console_attr.GetConsoleAttr().GetEncoding()
+    filesystem_encoding = sys.getfilesystemencoding()
+    argv = []
+    for arg in args:
+
+      try:
+        arg.encode('ascii')
+        # Already ascii.
+        argv.append(arg)
+        continue
+      except UnicodeError:
+        pass
+
+      try:
+        # Convert bytestring to unicode using the console encoding.
+        argv.append(unicode(arg, console_encoding))
+        continue
+      except TypeError:
+        # Already unicode.
+        argv.append(arg)
+        continue
+      except UnicodeError:
+        pass
+
+      try:
+        # Convert bytestring to unicode using the filesystem encoding.
+        # A pathname could have been passed in rather than typed, and
+        # might not match the user terminal encoding, but still be a valid
+        # path. For example: $ foo $(grep -l bar *)
+        argv.append(unicode(arg, filesystem_encoding))
+        continue
+      except UnicodeError:
+        pass
+
+      # Can't convert to unicode -- bail out.
+      raise exceptions.InvalidCharacterInArgException([self.name] + args, arg)
+
+    return argv
+
+  def _EnforceAsciiArgs(self, argv):
+    """Fail if any arg in argv is not ascii.
+
+    Args:
+      argv: [str], The list of args to check.
+
+    Raises:
+      InvalidCharacterInArgException if there is a non-ascii arg.
+    """
+    for arg in argv:
+      try:
+        arg.decode('ascii')
+      except UnicodeError:
+        raise exceptions.InvalidCharacterInArgException([self.name] + argv, arg)
+
   @property
   def name(self):
     return self.__name
@@ -584,8 +655,18 @@ class CLI(object):
     Raises:
       ValueError: for ill-typed arguments.
     """
-    if type(args) is str:
+    if isinstance(args, basestring):
       raise ValueError('Execute expects an iterable of strings, not a string.')
+
+    # The argparse module does not handle unicode args when run in Python 2
+    # because it uses str(x) even when type(x) is unicode. This sets itself up
+    # for failure because it converts unicode strings back to byte strings which
+    # will trigger ASCII codec exceptions. It works in Python 3 because str() is
+    # equivalent to unicode() in Python 3. The next Pythonically magic and dirty
+    # statement coaxes the Python 3 behavior out of argparse running in
+    # Python 2. Doing it here ensures that the workaround is in place for
+    # calliope argparse use cases.
+    argparse.str = unicode
 
     if call_arg_complete:
       self._ArgComplete()
@@ -611,16 +692,13 @@ class CLI(object):
     named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(args)
     properties.VALUES.PushInvocationValues()
 
+    argv = self._ConvertNonAsciiArgsToUnicode(args)
     flag_names = None
     try:
-      for s in args:
-        try:
-          s.decode('ascii')
-        except UnicodeDecodeError:
-          raise exceptions.InvalidCharacterInArgException(
-              [sys.argv[0]] + args, s)
+      args = self.__parser.parse_args(argv)
+      if not args.calliope_command.IsUnicodeSupported():
+        self._EnforceAsciiArgs(argv)
 
-      args = self.__parser.parse_args(args)
       flag_names = self.__parser.GetFlagCollection()
       # -h|--help|--document are dispatched by parse_args and never get here.
 
@@ -638,7 +716,7 @@ class CLI(object):
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
 
-      result = args.cmd_func(cli=self, args=args)
+      result = args.calliope_command.Run(cli=self, args=args)
 
       for hook in self.__post_run_hooks:
         hook.Run(command_path_string)

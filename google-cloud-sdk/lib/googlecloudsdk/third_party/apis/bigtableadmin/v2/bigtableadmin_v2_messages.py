@@ -61,9 +61,13 @@ class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: A string attribute.
+    clusterId: The ID to be used when referring to the new cluster within its
+      instance, e.g. just the `mycluster` section of the full name
+      `projects/myproject/instances/myinstance/clusters/mycluster`
     instancesId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`.
+    projectsId: Part of `parent`. The unique name of the instance in which to
+      create the new cluster. Values are of the form
+      `projects/<project>/instances/<instance>/clusters/a-z*`
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -78,7 +82,9 @@ class BigtableadminProjectsInstancesClustersDeleteRequest(_messages.Message):
   Fields:
     clustersId: Part of `name`. See documentation of `projectsId`.
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. The unique name of the cluster to be deleted.
+      Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`
   """
 
   clustersId = _messages.StringField(1, required=True)
@@ -92,7 +98,9 @@ class BigtableadminProjectsInstancesClustersGetRequest(_messages.Message):
   Fields:
     clustersId: Part of `name`. See documentation of `projectsId`.
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. The unique name of the requested cluster.
+      Values are of the form
+      `projects/<project>/instances/<instance>/clusters/<cluster>`
   """
 
   clustersId = _messages.StringField(1, required=True)
@@ -105,10 +113,12 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
 
   Fields:
     instancesId: Part of `parent`. See documentation of `projectsId`.
-    pageToken: A string attribute.
-    projectsId: Part of `parent`. Values are of the form projects/<project
-      id>/instances/<instance id> Use <instance id> = '-' to list Clusters for
-      all Instances in a project, for example "projects/myproject/instances/-"
+    pageToken: The value of `next_page_token` returned by a previous call.
+    projectsId: Part of `parent`. The unique name of the instance for which a
+      list of clusters is requested. Values are of the form
+      `projects/<project>/instances/<instance>` Use `<instance> = '-'` to list
+      Clusters for all Instances in a project, for example
+      `projects/myproject/instances/-`
   """
 
   instancesId = _messages.StringField(1, required=True)
@@ -123,7 +133,9 @@ class BigtableadminProjectsInstancesClustersUpdateRequest(_messages.Message):
     cluster: A Cluster resource to be passed as the request body.
     clustersId: Part of `name`. See documentation of `projectsId`.
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. (`OutputOnly`) The unique name of the cluster.
+      Values are of the form
+      `projects/<project>/instances/<instance>/clusters/a-z*`
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -138,7 +150,8 @@ class BigtableadminProjectsInstancesCreateRequest(_messages.Message):
   Fields:
     createInstanceRequest: A CreateInstanceRequest resource to be passed as
       the request body.
-    projectsId: Part of `parent`.
+    projectsId: Part of `parent`. The unique name of the project in which to
+      create the new instance. Values are of the form `projects/<project>`
   """
 
   createInstanceRequest = _messages.MessageField('CreateInstanceRequest', 1)
@@ -150,7 +163,8 @@ class BigtableadminProjectsInstancesDeleteRequest(_messages.Message):
 
   Fields:
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. The unique name of the instance to be deleted.
+      Values are of the form `projects/<project>/instances/<instance>`
   """
 
   instancesId = _messages.StringField(1, required=True)
@@ -162,7 +176,8 @@ class BigtableadminProjectsInstancesGetRequest(_messages.Message):
 
   Fields:
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. The unique name of the requested instance.
+      Values are of the form `projects/<project>/instances/<instance>`
   """
 
   instancesId = _messages.StringField(1, required=True)
@@ -173,8 +188,10 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
   """A BigtableadminProjectsInstancesListRequest object.
 
   Fields:
-    pageToken: A string attribute.
-    projectsId: Part of `parent`.
+    pageToken: The value of `next_page_token` returned by a previous call.
+    projectsId: Part of `parent`. The unique name of the project for which a
+      list of instances is requested. Values are of the form
+      `projects/<project>`
   """
 
   pageToken = _messages.StringField(1)
@@ -190,7 +207,7 @@ class BigtableadminProjectsInstancesTablesCreateRequest(_messages.Message):
     instancesId: Part of `parent`. See documentation of `projectsId`.
     projectsId: Part of `parent`. The unique name of the instance in which to
       create the table. Values are of the form
-      projects/<project>/instances/<instance>
+      `projects/<project>/instances/<instance>`
   """
 
   createTableRequest = _messages.MessageField('CreateTableRequest', 1)
@@ -205,7 +222,7 @@ class BigtableadminProjectsInstancesTablesDeleteRequest(_messages.Message):
     instancesId: Part of `name`. See documentation of `projectsId`.
     projectsId: Part of `name`. The unique name of the table to be deleted.
       Values are of the form
-      projects/<project>/instances/<instance>/tables/<table>
+      `projects/<project>/instances/<instance>/tables/<table>`
     tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -223,7 +240,7 @@ class BigtableadminProjectsInstancesTablesDropRowRangeRequest(_messages.Message)
     instancesId: Part of `name`. See documentation of `projectsId`.
     projectsId: Part of `name`. The unique name of the table on which to drop
       a range of rows. Values are of the form
-      projects/<project>/instances/<instance>/tables/<table>
+      `projects/<project>/instances/<instance>/tables/<table>`
     tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -243,7 +260,7 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
   Fields:
     instancesId: Part of `name`. See documentation of `projectsId`.
     projectsId: Part of `name`. The unique name of the requested table. Values
-      are of the form projects/<project>/instances/<instance>/tables/<table>
+      are of the form `projects/<project>/instances/<instance>/tables/<table>`
     tablesId: Part of `name`. See documentation of `projectsId`.
     view: The view to be applied to the returned table's fields. Defaults to
       SCHEMA_ONLY if unspecified.
@@ -257,14 +274,12 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
       VIEW_UNSPECIFIED: <no description>
       NAME_ONLY: <no description>
       SCHEMA_VIEW: <no description>
-      REPLICATION_VIEW: <no description>
       FULL: <no description>
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
-    REPLICATION_VIEW = 3
-    FULL = 4
+    FULL = 3
 
   instancesId = _messages.StringField(1, required=True)
   projectsId = _messages.StringField(2, required=True)
@@ -282,10 +297,10 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
 
   Fields:
     instancesId: Part of `parent`. See documentation of `projectsId`.
-    pageToken: Not yet supported.
+    pageToken: The value of `next_page_token` returned by a previous call.
     projectsId: Part of `parent`. The unique name of the instance for which
       tables should be listed. Values are of the form
-      projects/<project>/instances/<instance>
+      `projects/<project>/instances/<instance>`
     view: The view to be applied to the returned tables' fields. Defaults to
       NAME_ONLY if unspecified (no others are currently supported).
   """
@@ -298,14 +313,12 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       VIEW_UNSPECIFIED: <no description>
       NAME_ONLY: <no description>
       SCHEMA_VIEW: <no description>
-      REPLICATION_VIEW: <no description>
       FULL: <no description>
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
-    REPLICATION_VIEW = 3
-    FULL = 4
+    FULL = 3
 
   instancesId = _messages.StringField(1, required=True)
   pageToken = _messages.StringField(2)
@@ -322,7 +335,7 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
       passed as the request body.
     projectsId: Part of `name`. The unique name of the table whose families
       should be modified. Values are of the form
-      projects/<project>/instances/<instance>/tables/<table>
+      `projects/<project>/instances/<instance>/tables/<table>`
     tablesId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -338,7 +351,9 @@ class BigtableadminProjectsInstancesUpdateRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     instancesId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`.
+    projectsId: Part of `name`. (`OutputOnly`) The unique name of the
+      instance. Values are of the form
+      `projects/<project>/instances/a-z+[a-z0-9]`
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -347,43 +362,59 @@ class BigtableadminProjectsInstancesUpdateRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  """A Cluster object.
+  """A resizable group of nodes in a particular cloud location, capable of
+  serving all Tables in the parent Instance.
 
   Enums:
-    DefaultStorageTypeValueValuesEnum: @CreationOnly
-    StateValueValuesEnum:
+    DefaultStorageTypeValueValuesEnum: (`CreationOnly`) The type of storage
+      used by this cluster to serve its parent instance's tables, unless
+      explicitly overridden.
+    StateValueValuesEnum: (`OutputOnly`) The current state of the cluster.
 
   Fields:
-    defaultStorageType: @CreationOnly
-    location: @CreationOnly Currently only zones are supported, e.g.
-      projects/*/locations/us-central1-b
-    name: A string attribute.
-    serveNodes: A integer attribute.
-    state: A StateValueValuesEnum attribute.
+    defaultStorageType: (`CreationOnly`) The type of storage used by this
+      cluster to serve its parent instance's tables, unless explicitly
+      overridden.
+    location: (`CreationOnly`) The location where this cluster's nodes and
+      storage reside. For best performance, clients should be located as close
+      as possible to this cluster. Currently only zones are supported, e.g.
+      `projects/*/locations/us-central1-b`
+    name: (`OutputOnly`) The unique name of the cluster. Values are of the
+      form `projects/<project>/instances/<instance>/clusters/a-z*`
+    serveNodes: The number of nodes allocated to this cluster. More nodes
+      enable higher throughput and more consistent performance.
+    state: (`OutputOnly`) The current state of the cluster.
   """
 
   class DefaultStorageTypeValueValuesEnum(_messages.Enum):
-    """@CreationOnly
+    """(`CreationOnly`) The type of storage used by this cluster to serve its
+    parent instance's tables, unless explicitly overridden.
 
     Values:
-      STORAGE_TYPE_UNSPECIFIED: <no description>
-      SSD: <no description>
-      HDD: <no description>
+      STORAGE_TYPE_UNSPECIFIED: The user did not specify a storage type.
+      SSD: Flash (SSD) storage should be used.
+      HDD: Magnetic drive (HDD) storage should be used.
     """
     STORAGE_TYPE_UNSPECIFIED = 0
     SSD = 1
     HDD = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    """StateValueValuesEnum enum type.
+    """(`OutputOnly`) The current state of the cluster.
 
     Values:
-      STATE_NOT_KNOWN: <no description>
-      READY: <no description>
+      STATE_NOT_KNOWN: The state of the cluster could not be determined.
+      READY: The cluster has been successfully created and is ready to serve
+        requests.
       CREATING: The cluster is currently being created, and may be destroyed
-        if the creation process encounters an error.
-      RESIZING: <no description>
-      DISABLED: The cluster has no backing nodes.  The data (tables) still
+        if the creation process encounters an error. A cluster may not be able
+        to serve requests while being created.
+      RESIZING: The cluster is currently being resized, and may revert to its
+        previous node count if the process encounters an error. A cluster is
+        still capable of serving requests while being resized, but may exhibit
+        performance as if its number of allocated nodes is between the
+        starting and requested states.
+      DISABLED: The cluster has no backing nodes. The data (tables) still
         exist, but no operations can be performed on the cluster.
     """
     STATE_NOT_KNOWN = 0
@@ -397,44 +428,6 @@ class Cluster(_messages.Message):
   name = _messages.StringField(3)
   serveNodes = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-
-
-class ClusterState(_messages.Message):
-  """The state of a table's data in a particular cluster.
-
-  Enums:
-    ReplicationStateValueValuesEnum: The state of replication for the table in
-      this cluster.
-
-  Fields:
-    replicationState: The state of replication for the table in this cluster.
-  """
-
-  class ReplicationStateValueValuesEnum(_messages.Enum):
-    """The state of replication for the table in this cluster.
-
-    Values:
-      STATE_NOT_KNOWN: The replication state of the table is unknown in this
-        cluster.
-      INITIALIZING: The cluster was recently created, and the table must
-        finish copying over pre-existing data from other clusters before it
-        can begin receiving live replication updates and serving Data API
-        requests.
-      PLANNED_MAINTENANCE: The table is temporarily unable to serve Data API
-        requests from this cluster due to planned internal maintenance.
-      UNPLANNED_MAINTENANCE: The table is temporarily unable to serve Data API
-        requests from this cluster due to unplanned or emergency maintenance.
-      READY: The table can serve Data API requests from this cluster.
-        Depending on replication delay, reads may not immediately reflect the
-        state of the table in other clusters.
-    """
-    STATE_NOT_KNOWN = 0
-    INITIALIZING = 1
-    PLANNED_MAINTENANCE = 2
-    UNPLANNED_MAINTENANCE = 3
-    READY = 4
-
-  replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 1)
 
 
 class ColumnFamily(_messages.Message):
@@ -470,18 +463,34 @@ class CreateInstanceRequest(_messages.Message):
   """Request message for BigtableInstanceAdmin.CreateInstance.
 
   Messages:
-    ClustersValue: A ClustersValue object.
+    ClustersValue: The clusters to be created within the instance, mapped by
+      desired cluster ID (e.g. just the `mycluster` part of the full name
+      `projects/myproject/instances/myinstance/clusters/mycluster`). Fields
+      marked `OutputOnly` must be left blank. Currently exactly one cluster
+      must be specified.
 
   Fields:
-    clusters: A ClustersValue attribute.
-    instance: A Instance attribute.
-    instanceId: A string attribute.
-    parent: A string attribute.
+    clusters: The clusters to be created within the instance, mapped by
+      desired cluster ID (e.g. just the `mycluster` part of the full name
+      `projects/myproject/instances/myinstance/clusters/mycluster`). Fields
+      marked `OutputOnly` must be left blank. Currently exactly one cluster
+      must be specified.
+    instance: The instance to create. Fields marked `OutputOnly` must be left
+      blank.
+    instanceId: The ID to be used when referring to the new instance within
+      its project, e.g. just the `myinstance` section of the full name
+      `projects/myproject/instances/myinstance`
+    parent: The unique name of the project in which to create the new
+      instance. Values are of the form `projects/<project>`
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClustersValue(_messages.Message):
-    """A ClustersValue object.
+    """The clusters to be created within the instance, mapped by desired
+    cluster ID (e.g. just the `mycluster` part of the full name
+    `projects/myproject/instances/myinstance/clusters/mycluster`). Fields
+    marked `OutputOnly` must be left blank. Currently exactly one cluster must
+    be specified.
 
     Messages:
       AdditionalProperty: An additional property for a ClustersValue object.
@@ -515,19 +524,20 @@ class CreateTableRequest(_messages.Message):
 
   Fields:
     initialSplits: The optional list of row keys that will be used to
-      initially split the table into several tablets (Tablets are similar to
-      HBase regions). Given two split keys, "s1" and "s2", three tablets will
-      be created, spanning the key ranges: [, s1), [s1, s2), [s2, ).  Example:
-      * Row keys := ["a", "apple", "custom", "customer_1", "customer_2",
-      "other", "zz"]  * initial_split_keys := ["apple", "customer_1",
-      "customer_2", "other"]  * Key assignment:    - Tablet 1 [, apple)
-      => {"a"}.    - Tablet 2 [apple, customer_1)      => {"apple", "custom"}.
-      - Tablet 3 [customer_1, customer_2) => {"customer_1"}.    - Tablet 4
-      [customer_2, other)      => {"customer_2"}.    - Tablet 5 [other, )
-      => {"other", "zz"}.
+      initially split the table into several tablets (tablets are similar to
+      HBase regions). Given two split keys, `s1` and `s2`, three tablets will
+      be created, spanning the key ranges: `[, s1), [s1, s2), [s2, )`.
+      Example:  * Row keys := `["a", "apple", "custom", "customer_1",
+      "customer_2",`                `"other", "zz"]` * initial_split_keys :=
+      `["apple", "customer_1", "customer_2", "other"]` * Key assignment:     -
+      Tablet 1 `[, apple)                => {"a"}.`     - Tablet 2 `[apple,
+      customer_1)      => {"apple", "custom"}.`     - Tablet 3 `[customer_1,
+      customer_2) => {"customer_1"}.`     - Tablet 4 `[customer_2, other)
+      => {"customer_2"}.`     - Tablet 5 `[other, )                =>
+      {"other", "zz"}.`
     table: The Table to create.
     tableId: The name by which the new table should be referred to within the
-      parent instance, e.g. "foobar" rather than "<parent>/tables/foobar".
+      parent instance, e.g. `foobar` rather than `<parent>/tables/foobar`.
   """
 
   initialSplits = _messages.MessageField('Split', 1, repeated=True)
@@ -579,23 +589,28 @@ class GcRule(_messages.Message):
 
 
 class Instance(_messages.Message):
-  """A Instance object.
+  """A collection of Bigtable Tables and the resources that serve them. All
+  tables in an instance are served from a single Cluster.
 
   Enums:
-    StateValueValuesEnum:
+    StateValueValuesEnum: (`OutputOnly`) The current state of the instance.
 
   Fields:
-    displayName: A string attribute.
-    name: A string attribute.
-    state: A StateValueValuesEnum attribute.
+    displayName: The descriptive name for this instance as it appears in UIs.
+      Can be changed at any time, but should be kept globally unique to avoid
+      confusion.
+    name: (`OutputOnly`) The unique name of the instance. Values are of the
+      form `projects/<project>/instances/a-z+[a-z0-9]`
+    state: (`OutputOnly`) The current state of the instance.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """StateValueValuesEnum enum type.
+    """(`OutputOnly`) The current state of the instance.
 
     Values:
-      STATE_NOT_KNOWN: <no description>
-      READY: <no description>
+      STATE_NOT_KNOWN: The state of the instance could not be determined.
+      READY: The instance has been successfully created and can serve requests
+        to its tables.
       CREATING: The instance is currently being created, and may be destroyed
         if the creation process encounters an error.
     """
@@ -623,12 +638,14 @@ class ListClustersResponse(_messages.Message):
   """Response message for BigtableInstanceAdmin.ListClusters.
 
   Fields:
-    clusters: A Cluster attribute.
+    clusters: The list of requested clusters.
     failedLocations: Locations from which Cluster information could not be
       retrieved, due to an outage or some other transient condition. Clusters
-      from these locations may be missing from 'clusters', or may only have
+      from these locations may be missing from `clusters`, or may only have
       partial information returned.
-    nextPageToken: A string attribute.
+    nextPageToken: Set if not all clusters could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
@@ -643,10 +660,12 @@ class ListInstancesResponse(_messages.Message):
     failedLocations: Locations from which Instance information could not be
       retrieved, due to an outage or some other transient condition. Instances
       whose Clusters are all in one of the failed locations may be missing
-      from 'instances', and Instances with at least one Cluster in a failed
+      from `instances`, and Instances with at least one Cluster in a failed
       location may only have partial information returned.
-    instances: A Instance attribute.
-    nextPageToken: A string attribute.
+    instances: The list of requested instances.
+    nextPageToken: Set if not all instances could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
   """
 
   failedLocations = _messages.StringField(1, repeated=True)
@@ -672,7 +691,9 @@ class ListTablesResponse(_messages.Message):
   google.bigtable.admin.v2.BigtableTableAdmin.ListTables
 
   Fields:
-    nextPageToken: A string attribute.
+    nextPageToken: Set if not all tables could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
     tables: The tables present in the requested cluster.
   """
 
@@ -979,82 +1000,47 @@ class Table(_messages.Message):
   table is served using the resources of its parent cluster.
 
   Enums:
-    GranularityValueValuesEnum: The granularity (e.g. MILLIS, MICROS) at which
-      timestamps are stored in this table. Timestamps not matching the
-      granularity will be rejected. If unspecified at creation time, the value
-      will be set to MILLIS. Views: SCHEMA_VIEW, FULL @CreationOnly
+    GranularityValueValuesEnum: (`CreationOnly`) The granularity (e.g.
+      `MILLIS`, `MICROS`) at which timestamps are stored in this table.
+      Timestamps not matching the granularity will be rejected. If unspecified
+      at creation time, the value will be set to `MILLIS`. Views:
+      `SCHEMA_VIEW`, `FULL`
 
   Messages:
-    ClusterStatesValue: Map from cluster ID to per-cluster table state. If it
-      could not be determined whether or not the table has data in a
-      particular cluster (for example, if its zone is unavailable), then there
-      will be an entry for the cluster with UNKNOWN `replication_status`.
-      Views: REPLICATION_VIEW, FULL
-    ColumnFamiliesValue: The column families configured for this table, mapped
-      by column family ID. Views: SCHEMA_VIEW, FULL @CreationOnly
+    ColumnFamiliesValue: (`CreationOnly`) The column families configured for
+      this table, mapped by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
   Fields:
-    clusterStates: Map from cluster ID to per-cluster table state. If it could
-      not be determined whether or not the table has data in a particular
-      cluster (for example, if its zone is unavailable), then there will be an
-      entry for the cluster with UNKNOWN `replication_status`. Views:
-      REPLICATION_VIEW, FULL
-    columnFamilies: The column families configured for this table, mapped by
-      column family ID. Views: SCHEMA_VIEW, FULL @CreationOnly
-    granularity: The granularity (e.g. MILLIS, MICROS) at which timestamps are
-      stored in this table. Timestamps not matching the granularity will be
-      rejected. If unspecified at creation time, the value will be set to
-      MILLIS. Views: SCHEMA_VIEW, FULL @CreationOnly
-    name: The unique name of the table. Values are of the form
-      projects/<project>/instances/<instance>/tables/_a-zA-Z0-9* Views:
-      NAME_ONLY, SCHEMA_VIEW, REPLICATION_VIEW, FULL
+    columnFamilies: (`CreationOnly`) The column families configured for this
+      table, mapped by column family ID. Views: `SCHEMA_VIEW`, `FULL`
+    granularity: (`CreationOnly`) The granularity (e.g. `MILLIS`, `MICROS`) at
+      which timestamps are stored in this table. Timestamps not matching the
+      granularity will be rejected. If unspecified at creation time, the value
+      will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`
+    name: (`OutputOnly`) The unique name of the table. Values are of the form
+      `projects/<project>/instances/<instance>/tables/_a-zA-Z0-9*` Views:
+      `NAME_ONLY`, `SCHEMA_VIEW`, `FULL`
   """
 
   class GranularityValueValuesEnum(_messages.Enum):
-    """The granularity (e.g. MILLIS, MICROS) at which timestamps are stored in
-    this table. Timestamps not matching the granularity will be rejected. If
-    unspecified at creation time, the value will be set to MILLIS. Views:
-    SCHEMA_VIEW, FULL @CreationOnly
+    """(`CreationOnly`) The granularity (e.g. `MILLIS`, `MICROS`) at which
+    timestamps are stored in this table. Timestamps not matching the
+    granularity will be rejected. If unspecified at creation time, the value
+    will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`
 
     Values:
-      TIMESTAMP_GRANULARITY_UNSPECIFIED: <no description>
-      MILLIS: <no description>
+      TIMESTAMP_GRANULARITY_UNSPECIFIED: The user did not specify a
+        granularity. Should not be returned. When specified during table
+        creation, MILLIS will be used.
+      MILLIS: The table keeps data versioned at a granularity of 1ms.
     """
     TIMESTAMP_GRANULARITY_UNSPECIFIED = 0
     MILLIS = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ClusterStatesValue(_messages.Message):
-    """Map from cluster ID to per-cluster table state. If it could not be
-    determined whether or not the table has data in a particular cluster (for
-    example, if its zone is unavailable), then there will be an entry for the
-    cluster with UNKNOWN `replication_status`. Views: REPLICATION_VIEW, FULL
-
-    Messages:
-      AdditionalProperty: An additional property for a ClusterStatesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ClusterStatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ClusterStatesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterState attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterState', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class ColumnFamiliesValue(_messages.Message):
-    """The column families configured for this table, mapped by column family
-    ID. Views: SCHEMA_VIEW, FULL @CreationOnly
+    """(`CreationOnly`) The column families configured for this table, mapped
+    by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
     Messages:
       AdditionalProperty: An additional property for a ColumnFamiliesValue
@@ -1077,10 +1063,9 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterStates = _messages.MessageField('ClusterStatesValue', 1)
-  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 2)
-  granularity = _messages.EnumField('GranularityValueValuesEnum', 3)
-  name = _messages.StringField(4)
+  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 1)
+  granularity = _messages.EnumField('GranularityValueValuesEnum', 2)
+  name = _messages.StringField(3)
 
 
 class Union(_messages.Message):

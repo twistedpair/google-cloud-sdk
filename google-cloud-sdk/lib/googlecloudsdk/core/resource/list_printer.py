@@ -21,12 +21,16 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
   """Prints the list representations of a JSON-serializable list.
 
   An ordered list of items.
+
+  Printer attributes:
+    compact: Display all items in a record on one line.
   """
 
   def __init__(self, *args, **kwargs):
     super(ListPrinter, self).__init__(*args, by_columns=True, **kwargs)
     self._process_record_orig = self._process_record
     self._process_record = self._ProcessRecord
+    self._separator = u' ' if 'compact' in self.attributes else u'\n   '
     # Print the title if specified.
     if 'title' in self.attributes:
       self._out.write(self.attributes['title'] + '\n')
@@ -56,7 +60,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
-    self._out.write(u' - ' + u'\n   '.join(record) + u'\n')
+    self._out.write(u' - ' + self._separator.join(record) + u'\n')
 
   # TODO(b/27967563): remove 3Q2016
   def Finish(self):

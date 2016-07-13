@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""dateutil and datetime with portable timezone support.
+"""dateutil and datetime with portable timezone and ISO 8601 durations.
 
 This module supports round-trip conversions between strings, datetime objects
 and timestamps:
@@ -28,6 +28,14 @@ the closest Windows TimeZone registry equivalent.
 LocalizeDateTime(datetime, tzinfo) returns a datetime object relative to the
 timezone tzinfo.
 
+ISO 8601 duration/period conversions are also supported:
+
+         => ParseDuration =>           => GetDateTimePlusDuration =>
+  string                      Duration                               datetime
+         <= FormatDuration <=
+
+  timedelta => GetDurationFromTimeDelta => Duration
+
 The datetime and/or dateutil modules should have covered all of this.
 """
 
@@ -37,6 +45,7 @@ import re
 from dateutil import parser
 from dateutil import tz
 
+from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
 
 try:
@@ -47,6 +56,69 @@ except ImportError:
 
 LOCAL = tz.tzlocal()  # The local timezone.
 UTC = tz.tzutc()  # The UTC timezone.
+
+
+def FormatDuration(duration, parts=3, precision=3):
+  """Returns an ISO 8601 string representation of the duration.
+
+  The Duration format is: "[-]P[nY][nM][nD][T[nH][nM][n[.m]S]]". At least one
+  part will always be displayed. The 0 duration is "P0". Negative durations
+  are prefixed by "-". "T" disambiguates months "P2M" to the left of "T" and
+  minutes "PT5MM" to the right.
+
+  Args:
+    duration: An iso_duration.Duration object.
+    parts: Format at most this many duration parts starting with largest
+      non-zero part.
+    precision: Format the last duration part with precision digits after the
+      decimal point. Trailing "0" and "." are always stripped.
+
+  Returns:
+    An ISO 8601 string representation of the duration.
+  """
+  return duration.Format(parts=parts, precision=precision)
+
+
+def ParseDuration(string):
+  """Parses a duration string and returns a Duration object.
+
+  Args:
+    string: The ISO 8601 duration/period string to parse.
+
+  Raises:
+    ValueError: Invalid duration syntax.
+
+  Returns:
+    An iso_duration.Duration object for the given ISO 8601 duration/period
+    string.
+  """
+  return iso_duration.Duration().Parse(string)
+
+
+def GetDurationFromTimeDelta(delta, calendar=False):
+  """Returns a Duration object converted from a datetime.timedelta object.
+
+  Args:
+    delta: The datetime.timedelta object to convert.
+    calendar: Use duration units larger than hours if True.
+
+  Returns:
+    The iso_duration.Duration object converted from a datetime.timedelta object.
+  """
+  return iso_duration.Duration(delta=delta, calendar=calendar)
+
+
+def GetDateTimePlusDuration(dt, duration):
+  """Returns a new datetime object representing dt + duration.
+
+  Args:
+    dt: The datetime object to add the duration to.
+    duration: The iso_duration.Duration object.
+
+  Returns:
+    A new datetime object representing dt + duration.
+  """
+  return duration.GetRelativeDateTime(dt)
 
 
 def GetTimeZone(name):
@@ -127,9 +199,14 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
     val = dt.strftime(std_fmt)
 
     if spec == 'f':
-      # Limit the fractional part to n digits.
+      # Round the fractional part to n digits.
       if n and n < len(val):
-        val = val[:n]
+        round_format = '{{0:0{n}.0f}}'.format(n=n)
+        rounded = round_format.format(float(val) / 10 ** (len(val) - n))
+        if len(rounded) == n:
+          val = rounded
+        else:
+          val = val[:n]
     elif spec == 'z':
       # Convert the time zone offset to RFC 3339 format.
       if alternate:
@@ -191,8 +268,13 @@ def ParseDateTime(string, tzinfo=None):
   """Parses a date/time string and returns a datetime.datetime object.
 
   Args:
-    string: The date/time string to be parsed.
+    string: The date/time string to parse. This can be a parser.parse()
+      date/time or an ISO 8601 duration after Now(tzinfo) or before if prefixed
+      by '-'.
     tzinfo: A default timezone tzinfo object to use if string has no timezone.
+
+  Raises:
+    ValueError: Invalid date/time/duration syntax.
 
   Returns:
     A datetime.datetime object for the given date/time string.
@@ -200,11 +282,20 @@ def ParseDateTime(string, tzinfo=None):
   # Use tzgetter to determine if string contains an explicit timezone name or
   # offset.
   tzgetter = _TzInfoOrOffsetGetter()
-  dt = parser.parse(string, tzinfos=tzgetter.Get)
-  if tzinfo and not tzgetter.timezone_was_specified:
-    # The string had no timezone name or offset => localize dt to tzinfo.
-    dt = parser.parse(string, tzinfos=None)
-    dt = dt.replace(tzinfo=tzinfo)
+  try:
+    # Check if it's a datetime string.
+    dt = parser.parse(string, tzinfos=tzgetter.Get)
+    if tzinfo and not tzgetter.timezone_was_specified:
+      # The string had no timezone name or offset => localize dt to tzinfo.
+      dt = parser.parse(string, tzinfos=None)
+      dt = dt.replace(tzinfo=tzinfo)
+  except ValueError as e:
+    try:
+      # Check if its an iso_duration string.
+      dt = ParseDuration(string).RelativeDatetime(Now(tzinfo=tzinfo))
+    except ValueError:
+      # Raise the datetime parse error.
+      raise e
   return dt
 
 
@@ -234,11 +325,7 @@ def GetTimeStampFromDateTime(dt):
   """
   tzinfo = UTC if dt.tzinfo else None
   delta = dt - datetime.datetime.fromtimestamp(0, tzinfo)
-  if not hasattr(delta, 'total_seconds'):
-    # Python <= 2.6.
-    return (delta.microseconds + 0.0 +
-            (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
-  return delta.total_seconds()
+  return iso_duration.GetTotalSecondsFromTimeDelta(delta)
 
 
 def LocalizeDateTime(dt, tzinfo=None):

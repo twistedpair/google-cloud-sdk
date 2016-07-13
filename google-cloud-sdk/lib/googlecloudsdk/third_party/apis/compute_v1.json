@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20160621",
+ "revision": "20160705",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1468,17 +1468,17 @@
    "properties": {
     "allowed": {
      "type": "array",
-     "description": "The list of rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection.",
+     "description": "The list of ALLOW rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection.",
      "items": {
       "type": "object",
       "properties": {
        "IPProtocol": {
         "type": "string",
-        "description": "The IP protocol that is allowed for this rule. The protocol type is required when creating a firewall rule. This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol number."
+        "description": "The IP protocol to which this rule applies. The protocol type is required when creating a firewall rule. This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol number."
        },
        "ports": {
         "type": "array",
-        "description": "An optional list of ports which are allowed. This field is only applicable for UDP or TCP protocol. Each entry must be either an integer or a range. If not specified, connections through any port are allowed\n\nExample inputs include: [\"22\"], [\"80\",\"443\"], and [\"12345-12349\"].",
+        "description": "An optional list of ports to which this rule applies. This field is only applicable for UDP or TCP protocol. Each entry must be either an integer or a range. If not specified, this rule applies to connections through any port.\n\nExample inputs include: [\"22\"], [\"80\",\"443\"], and [\"12345-12349\"].",
         "items": {
          "type": "string"
         }
@@ -4715,10 +4715,12 @@
    "description": "Router resource.",
    "properties": {
     "bgp": {
-     "$ref": "RouterBgp"
+     "$ref": "RouterBgp",
+     "description": "BGP information specific to this router."
     },
     "bgpPeers": {
      "type": "array",
+     "description": "BGP information that needs to be configured into the routing stack to establish the BGP peering. It must specify peer ASN and either interface name, IP, or peer IP. Please refer to RFC4273.",
      "items": {
       "$ref": "RouterBgpPeer"
      }
@@ -4738,6 +4740,7 @@
     },
     "interfaces": {
      "type": "array",
+     "description": "Router interfaces. Each interface requires either one linked resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g. ipRange).",
      "items": {
       "$ref": "RouterInterface"
      }
@@ -4822,7 +4825,6 @@
   "RouterBgpPeer": {
    "id": "RouterBgpPeer",
    "type": "object",
-   "description": "BGP information that needs to be configured into the routing stack to establish the BGP peering. It must specify peer ASN and either interface name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273",
    "properties": {
     "advertisedRoutePriority": {
      "type": "integer",
@@ -4856,7 +4858,6 @@
   "RouterInterface": {
    "id": "RouterInterface",
    "type": "object",
-   "description": "Router interfaces. Each interface requires either one linked resource (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).",
    "properties": {
     "ipRange": {
      "type": "string",

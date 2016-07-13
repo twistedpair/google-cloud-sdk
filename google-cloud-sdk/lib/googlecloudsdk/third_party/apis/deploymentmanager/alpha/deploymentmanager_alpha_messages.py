@@ -25,7 +25,7 @@ class BasicAuth(_messages.Message):
 
 class CollectionOverride(_messages.Message):
   """CollectionOverride allows resource handling overrides for specific
-  resources within a ConfigurableService
+  resources within a BaseType
 
   Fields:
     collection: The collection that identifies this resource within its
@@ -48,7 +48,7 @@ class ConfigFile(_messages.Message):
 
 
 class ConfigurableService(_messages.Message):
-  """ConfigurableService that describes a service-backed Type.
+  """BaseType that describes a service-backed Type.
 
   Fields:
     collectionOverrides: Allows resource handling overrides for specific
@@ -1239,13 +1239,20 @@ class Type(_messages.Message):
   """A resource type supported by Deployment Manager.
 
   Fields:
-    configurableService: ConfigurableService that backs this Type.
+    configurableService: Base Type (configurable service) that backs this
+      Type.
     description: An optional textual description of the resource; provided by
       the client when the resource is created.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     insertTime: [Output Only] Timestamp when the type was created, in RFC3339
       text format.
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
     name: Name of the type.
     operation: [Output Only] The Operation that most recently ran, or is
       currently running, on this type.
@@ -1256,9 +1263,22 @@ class Type(_messages.Message):
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  operation = _messages.MessageField('Operation', 6)
-  selfLink = _messages.StringField(7)
+  labels = _messages.MessageField('TypeLabelEntry', 5, repeated=True)
+  name = _messages.StringField(6)
+  operation = _messages.MessageField('Operation', 7)
+  selfLink = _messages.StringField(8)
+
+
+class TypeLabelEntry(_messages.Message):
+  """A TypeLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class TypesListResponse(_messages.Message):

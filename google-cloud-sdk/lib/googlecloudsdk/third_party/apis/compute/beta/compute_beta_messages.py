@@ -4443,6 +4443,559 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   usageExportLocation = _messages.MessageField('UsageExportLocation', 2)
 
 
+class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
+  """A ComputeRegionAutoscalersDeleteRequest object.
+
+  Fields:
+    autoscaler: Name of the autoscaler to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  autoscaler = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionAutoscalersGetRequest(_messages.Message):
+  """A ComputeRegionAutoscalersGetRequest object.
+
+  Fields:
+    autoscaler: Name of the autoscaler to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  autoscaler = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionAutoscalersInsertRequest(_messages.Message):
+  """A ComputeRegionAutoscalersInsertRequest object.
+
+  Fields:
+    autoscaler: A Autoscaler resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  autoscaler = _messages.MessageField('Autoscaler', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionAutoscalersListRequest(_messages.Message):
+  """A ComputeRegionAutoscalersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionAutoscalersPatchRequest(_messages.Message):
+  """A ComputeRegionAutoscalersPatchRequest object.
+
+  Fields:
+    autoscaler: Name of the autoscaler to update.
+    autoscalerResource: A Autoscaler resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  autoscaler = _messages.StringField(1, required=True)
+  autoscalerResource = _messages.MessageField('Autoscaler', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionAutoscalersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionAutoscalersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionAutoscalersUpdateRequest(_messages.Message):
+  """A ComputeRegionAutoscalersUpdateRequest object.
+
+  Fields:
+    autoscaler: Name of the autoscaler to update.
+    autoscalerResource: A Autoscaler resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  autoscaler = _messages.StringField(1)
+  autoscalerResource = _messages.MessageField('Autoscaler', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersAbandonInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersAbandonInstancesRequest: A
+      RegionInstanceGroupManagersAbandonInstancesRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersAbandonInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersAbandonInstancesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersDeleteInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersDeleteInstancesRequest: A
+      RegionInstanceGroupManagersDeleteInstancesRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersDeleteInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersDeleteInstancesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersDeleteRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersDeleteRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceGroupManagersGetRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersGetRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersInsertRequest object.
+
+  Fields:
+    instanceGroupManager: A InstanceGroupManager resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.MessageField('InstanceGroupManager', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersRecreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersRecreateRequest: A
+      RegionInstanceGroupManagersRecreateRequest resource to be passed as the
+      request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersRecreateRequest = _messages.MessageField('RegionInstanceGroupManagersRecreateRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersResizeRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    size: Number of instances that should exist in this instance group
+      manager.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  size = _messages.IntegerField(4, required=True, variant=_messages.Variant.INT32)
+
+
+class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSetAutoHealingRequest: A
+      RegionInstanceGroupManagersSetAutoHealingRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSetAutoHealingRequest = _messages.MessageField('RegionInstanceGroupManagersSetAutoHealingRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSetTemplateRequest: A
+      RegionInstanceGroupManagersSetTemplateRequest resource to be passed as
+      the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSetTemplateRequest = _messages.MessageField('RegionInstanceGroupManagersSetTemplateRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersSetTargetPoolsRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSetTargetPoolsRequest: A
+      RegionInstanceGroupManagersSetTargetPoolsRequest resource to be passed
+      as the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('RegionInstanceGroupManagersSetTargetPoolsRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupManagersTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionInstanceGroupsGetRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupsGetRequest object.
+
+  Fields:
+    instanceGroup: Name of the instance group resource to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  instanceGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupsListInstancesRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    instanceGroup: Name of the regional instance group for which we want to
+      list the instances.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupsListInstancesRequest: A
+      RegionInstanceGroupsListInstancesRequest resource to be passed as the
+      request body.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroup = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  regionInstanceGroupsListInstancesRequest = _messages.MessageField('RegionInstanceGroupsListInstancesRequest', 8)
+
+
+class ComputeRegionInstanceGroupsListRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupsListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupsSetNamedPortsRequest object.
+
+  Fields:
+    instanceGroup: The name of the regional instance group where the named
+      ports are updated.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupsSetNamedPortsRequest: A
+      RegionInstanceGroupsSetNamedPortsRequest resource to be passed as the
+      request body.
+  """
+
+  instanceGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupsSetNamedPortsRequest = _messages.MessageField('RegionInstanceGroupsSetNamedPortsRequest', 4)
+
+
+class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionInstanceGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionOperationsDeleteRequest(_messages.Message):
   """A ComputeRegionOperationsDeleteRequest object.
 
@@ -7421,8 +7974,9 @@ class Firewall(_messages.Message):
     AllowedValueListEntry: A AllowedValueListEntry object.
 
   Fields:
-    allowed: The list of rules specified by this firewall. Each rule specifies
-      a protocol and port-range tuple that describes a permitted connection.
+    allowed: The list of ALLOW rules specified by this firewall. Each rule
+      specifies a protocol and port-range tuple that describes a permitted
+      connection.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -7473,15 +8027,15 @@ class Firewall(_messages.Message):
     """A AllowedValueListEntry object.
 
     Fields:
-      IPProtocol: The IP protocol that is allowed for this rule. The protocol
+      IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
         esp, ah, sctp), or the IP protocol number.
-      ports: An optional list of ports which are allowed. This field is only
-        applicable for UDP or TCP protocol. Each entry must be either an
-        integer or a range. If not specified, connections through any port are
-        allowed  Example inputs include: ["22"], ["80","443"], and
-        ["12345-12349"].
+      ports: An optional list of ports to which this rule applies. This field
+        is only applicable for UDP or TCP protocol. Each entry must be either
+        an integer or a range. If not specified, this rule applies to
+        connections through any port.  Example inputs include: ["22"],
+        ["80","443"], and ["12345-12349"].
     """
 
     IPProtocol = _messages.StringField(1)
@@ -11049,6 +11603,221 @@ class Region(_messages.Message):
   zones = _messages.StringField(10, repeated=True)
 
 
+class RegionAutoscalerList(_messages.Message):
+  """Contains a list of autoscalers.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of autoscalers.
+    kind: Type of resource.
+    nextPageToken: [Output Only] A token used to continue a truncated list
+      request.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Autoscaler', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionAutoscalerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RegionInstanceGroupList(_messages.Message):
+  """Contains a list of InstanceGroup resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of InstanceGroup resources.
+    kind: The resource type.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] The URL for this resource type. The server
+      generates this URL.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InstanceGroup', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RegionInstanceGroupManagerList(_messages.Message):
+  """Contains a list of managed instance groups.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of managed instance groups.
+    kind: [Output Only] The resource type, which is always
+      compute#instanceGroupManagerList for a list of managed instance groups
+      that exist in th regional scope.
+    nextPageToken: [Output only] A token used to continue a truncated list
+      request.
+    selfLink: [Output only] The URL for this resource type. The server
+      generates this URL.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupManagerList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
+  """A RegionInstanceGroupManagersAbandonInstancesRequest object.
+
+  Fields:
+    instances: The names of one or more instances to abandon.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
+  """A RegionInstanceGroupManagersDeleteInstancesRequest object.
+
+  Fields:
+    instances: The names of one or more instances to delete.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
+  """A RegionInstanceGroupManagersListInstancesResponse object.
+
+  Fields:
+    managedInstances: List of managed instances.
+  """
+
+  managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
+
+
+class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
+  """A RegionInstanceGroupManagersRecreateRequest object.
+
+  Fields:
+    instances: The URL for one or more instances to recreate.
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersSetAutoHealingRequest(_messages.Message):
+  """A RegionInstanceGroupManagersSetAutoHealingRequest object.
+
+  Fields:
+    autoHealingPolicies: A InstanceGroupManagerAutoHealingPolicy attribute.
+  """
+
+  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
+
+
+class RegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
+  """A RegionInstanceGroupManagersSetTargetPoolsRequest object.
+
+  Fields:
+    fingerprint: Fingerprint of the target pools information, which is a hash
+      of the contents. This field is used for optimistic locking when you
+      update the target pool entries. This field is optional.
+    targetPools: The URL of all TargetPool resources to which instances in the
+      instanceGroup field are added. The target pools automatically apply to
+      all of the instances in the managed instance group.
+  """
+
+  fingerprint = _messages.BytesField(1)
+  targetPools = _messages.StringField(2, repeated=True)
+
+
+class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
+  """A RegionInstanceGroupManagersSetTemplateRequest object.
+
+  Fields:
+    instanceTemplate: URL of the InstanceTemplate resource from which all new
+      instances will be created.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+
+
+class RegionInstanceGroupsListInstances(_messages.Message):
+  """A RegionInstanceGroupsListInstances object.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource. Defined by the
+      server.
+    items: A list of instances and any named ports that are assigned to those
+      instances.
+    kind: The resource type.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InstanceWithNamedPorts', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionInstanceGroupsListInstances')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class RegionInstanceGroupsListInstancesRequest(_messages.Message):
+  """A RegionInstanceGroupsListInstancesRequest object.
+
+  Enums:
+    InstanceStateValueValuesEnum: Instances in which state should be returned.
+      Valid options are: 'ALL', 'RUNNING'. By default, it lists all instances.
+
+  Fields:
+    instanceState: Instances in which state should be returned. Valid options
+      are: 'ALL', 'RUNNING'. By default, it lists all instances.
+    portName: Name of port user is interested in. It is optional. If it is
+      set, only information about this ports will be returned. If it is not
+      set, all the named ports will be returned. Always lists all instances.
+  """
+
+  class InstanceStateValueValuesEnum(_messages.Enum):
+    """Instances in which state should be returned. Valid options are: 'ALL',
+    'RUNNING'. By default, it lists all instances.
+
+    Values:
+      ALL: <no description>
+      RUNNING: <no description>
+    """
+    ALL = 0
+    RUNNING = 1
+
+  instanceState = _messages.EnumField('InstanceStateValueValuesEnum', 1)
+  portName = _messages.StringField(2)
+
+
+class RegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
+  """A RegionInstanceGroupsSetNamedPortsRequest object.
+
+  Fields:
+    fingerprint: The fingerprint of the named ports information for this
+      instance group. Use this optional property to prevent conflicts when
+      multiple users change the named ports settings concurrently. Obtain the
+      fingerprint with the instanceGroups.get method. Then, include the
+      fingerprint in your request to ensure that you do not overwrite changes
+      that were applied from another concurrent request.
+    namedPorts: The list of named ports to set for this instance group.
+  """
+
+  fingerprint = _messages.BytesField(1)
+  namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
+
+
 class RegionList(_messages.Message):
   """Contains a list of region resources.
 
@@ -11271,15 +12040,19 @@ class Router(_messages.Message):
   """Router resource.
 
   Fields:
-    bgp: A RouterBgp attribute.
-    bgpPeers: A RouterBgpPeer attribute.
+    bgp: BGP information specific to this router.
+    bgpPeers: BGP information that needs to be configured into the routing
+      stack to establish the BGP peering. It must specify peer ASN and either
+      interface name, IP, or peer IP. Please refer to RFC4273.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interfaces: A RouterInterface attribute.
+    interfaces: Router interfaces. Each interface requires either one linked
+      resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g.
+      ipRange).
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -11370,9 +12143,7 @@ class RouterBgp(_messages.Message):
 
 
 class RouterBgpPeer(_messages.Message):
-  """BGP information that needs to be configured into the routing stack to
-  establish the BGP peering. It must specify peer ASN and either interface
-  name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273
+  """A RouterBgpPeer object.
 
   Fields:
     advertisedRoutePriority: The priority of routes advertised to this BGP
@@ -11396,8 +12167,7 @@ class RouterBgpPeer(_messages.Message):
 
 
 class RouterInterface(_messages.Message):
-  """Router interfaces. Each interface requires either one linked resource
-  (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
+  """A RouterInterface object.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in

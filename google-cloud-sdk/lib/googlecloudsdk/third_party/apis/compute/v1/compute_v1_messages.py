@@ -5955,8 +5955,9 @@ class Firewall(_messages.Message):
     AllowedValueListEntry: A AllowedValueListEntry object.
 
   Fields:
-    allowed: The list of rules specified by this firewall. Each rule specifies
-      a protocol and port-range tuple that describes a permitted connection.
+    allowed: The list of ALLOW rules specified by this firewall. Each rule
+      specifies a protocol and port-range tuple that describes a permitted
+      connection.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -6007,15 +6008,15 @@ class Firewall(_messages.Message):
     """A AllowedValueListEntry object.
 
     Fields:
-      IPProtocol: The IP protocol that is allowed for this rule. The protocol
+      IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
         esp, ah, sctp), or the IP protocol number.
-      ports: An optional list of ports which are allowed. This field is only
-        applicable for UDP or TCP protocol. Each entry must be either an
-        integer or a range. If not specified, connections through any port are
-        allowed  Example inputs include: ["22"], ["80","443"], and
-        ["12345-12349"].
+      ports: An optional list of ports to which this rule applies. This field
+        is only applicable for UDP or TCP protocol. Each entry must be either
+        an integer or a range. If not specified, this rule applies to
+        connections through any port.  Example inputs include: ["22"],
+        ["80","443"], and ["12345-12349"].
     """
 
     IPProtocol = _messages.StringField(1)
@@ -9262,15 +9263,19 @@ class Router(_messages.Message):
   """Router resource.
 
   Fields:
-    bgp: A RouterBgp attribute.
-    bgpPeers: A RouterBgpPeer attribute.
+    bgp: BGP information specific to this router.
+    bgpPeers: BGP information that needs to be configured into the routing
+      stack to establish the BGP peering. It must specify peer ASN and either
+      interface name, IP, or peer IP. Please refer to RFC4273.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interfaces: A RouterInterface attribute.
+    interfaces: Router interfaces. Each interface requires either one linked
+      resource (e.g. linkedVpnTunnel) or IP address and IP address range (e.g.
+      ipRange).
     kind: [Output Only] Type of resource. Always compute#router for routers.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -9361,9 +9366,7 @@ class RouterBgp(_messages.Message):
 
 
 class RouterBgpPeer(_messages.Message):
-  """BGP information that needs to be configured into the routing stack to
-  establish the BGP peering. It must specify peer ASN and either interface
-  name, IP, or peer IP. Reference: https://tools.ietf.org/html/rfc4273
+  """A RouterBgpPeer object.
 
   Fields:
     advertisedRoutePriority: The priority of routes advertised to this BGP
@@ -9387,8 +9390,7 @@ class RouterBgpPeer(_messages.Message):
 
 
 class RouterInterface(_messages.Message):
-  """Router interfaces. Each interface requires either one linked resource
-  (e.g. linked_vpn_tunnel) or IP address + range (specified in ip_range).
+  """A RouterInterface object.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in

@@ -39,7 +39,8 @@ def AddInstanceGroup(parser, operation_type,
         scope_parser,
         resource_type='instance group',
         operation_type='{0} the backend service'.format(operation_type),
-        flag_prefix='instance-group')
+        flag_prefix='instance-group',
+        explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
   if with_deprecated_zone:
     scope_parser = scope_parser.add_mutually_exclusive_group()
     flags.AddZoneFlag(
@@ -51,7 +52,9 @@ def AddInstanceGroup(parser, operation_type,
       scope_parser,
       resource_type='instance group',
       operation_type='{0} the backend service'.format(operation_type),
-      flag_prefix='instance-group')
+      flag_prefix='instance-group',
+      explanation=(flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT
+                   if multizonal else flags.ZONE_PROPERTY_EXPLANATION))
 
 
 def WarnOnDeprecatedFlags(args):
@@ -86,7 +89,7 @@ def AddBalancingMode(parser, with_connection=False):
   if with_connection:
     balancing_mode.detailed_help += """\
 
-      (ALPHA) ``RATE'' and the max rate arguments are availbale only
+      (BETA) ``RATE'' and the max rate arguments are availbale only
       in backend services with HTTP based protocols.
 
       For backend services with TCP/SSL protocol either ``UTILIZATION'' or

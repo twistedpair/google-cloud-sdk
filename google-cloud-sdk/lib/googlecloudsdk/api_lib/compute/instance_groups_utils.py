@@ -499,30 +499,26 @@ SET_NAMED_PORTS_HELP = {
 }
 
 
-class InstancesReferenceMixin(object):
+def CreateInstanceReferences(
+    scope_prompter, compute_client, group_ref, instance_names):
   """Creates reference to instances in instance group (zonal or regional)."""
-
-  def CreateInstanceReferences(self, group_ref, instance_names, errors):
-    if group_ref.Collection() == 'compute.instanceGroupManagers':
-      instances_refs = self.CreateZonalReferences(
-          instance_names, group_ref.zone, resource_type='instances')
-      return [instance_ref.SelfLink() for instance_ref in instances_refs]
-    else:
-      service = self.compute.regionInstanceGroupManagers
-      request = service.GetRequestType('ListManagedInstances')(
-          instanceGroupManager=group_ref.Name(),
-          region=group_ref.region,
-          project=group_ref.project)
-      results = list(request_helper.MakeRequests(
-          requests=[(service, 'ListManagedInstances', request)],
-          http=self.http,
-          batch_url=self.batch_url,
-          errors=errors,
-          custom_get_requests=None))[0].managedInstances
-      # here we assume that instances are uniquely named within RMIG
-      return [instance_ref.instance for instance_ref in results
-              if path_simplifier.Name(instance_ref.instance) in instance_names
-              or instance_ref.instance in instance_names]
+  compute = compute_client.apitools_client
+  if group_ref.Collection() == 'compute.instanceGroupManagers':
+    instances_refs = scope_prompter.CreateZonalReferences(
+        instance_names, group_ref.zone, resource_type='instances')
+    return [instance_ref.SelfLink() for instance_ref in instances_refs]
+  else:
+    service = compute.regionInstanceGroupManagers
+    request = service.GetRequestType('ListManagedInstances')(
+        instanceGroupManager=group_ref.Name(),
+        region=group_ref.region,
+        project=group_ref.project)
+    results = compute_client.MakeRequests(requests=[
+        (service, 'ListManagedInstances', request)])[0].managedInstances
+    # here we assume that instances are uniquely named within RMIG
+    return [instance_ref.instance for instance_ref in results
+            if path_simplifier.Name(instance_ref.instance) in instance_names
+            or instance_ref.instance in instance_names]
 
 
 class InstanceGroupFilteringMode(enum.Enum):

@@ -76,7 +76,7 @@ RESOURCE_REGISTRY = {
 
     # appengine
 
-    'app.instances': ResourceInfo(
+    'appengine.instances': ResourceInfo(
         list_format="""
           table(
             service:sort=1,
@@ -88,7 +88,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'app.module_versions': ResourceInfo(
+    'appengine.module_versions': ResourceInfo(
         list_format="""
           table(
             module,
@@ -98,7 +98,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'app.services': ResourceInfo(
+    'appengine.services': ResourceInfo(
         list_format="""
           table(
             id:label=SERVICE:sort=1,
@@ -107,7 +107,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'app.versions': ResourceInfo(
+    'appengine.versions': ResourceInfo(
         list_format="""
           table(
             service,
@@ -1257,7 +1257,49 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.pull': ResourceInfo(
+    'pubsub.projects.subscriptions': ResourceInfo(
+        list_format="""
+          table[box](
+            subscriptionId:label=SUBSCRIPTION,
+            topic:label=TOPIC,
+            type,
+            pushEndpoint:label=PUSH_ENDPOINT,
+            ackDeadlineSeconds:label=ACK_DEADLINE,
+            success:label=SUCCESS,
+            reason:label=REASON
+          )
+        """,
+    ),
+
+    'pubsub.subscriptions.ack': ResourceInfo(
+        list_format="""
+          table[box](
+            subscriptionId:label=SUBSCRIPTION,
+            ackIds:label=ACK_IDS
+          )
+        """,
+    ),
+
+    'pubsub.subscriptions.mod_ack': ResourceInfo(
+        list_format="""
+          table[box](
+            subscriptionId:label=SUBSCRIPTION,
+            ackId:label=ACK_ID,
+            ackDeadlineSeconds:label=ACK_DEADLINE
+          )
+        """,
+    ),
+
+    'pubsub.subscriptions.mod_config': ResourceInfo(
+        list_format="""
+          table[box](
+            subscriptionId:label=SUBSCRIPTION,
+            pushEndpoint:label=PUSH_ENDPOINT
+          )
+        """,
+    ),
+
+    'pubsub.subscriptions.pull': ResourceInfo(
         list_format="""
           table[box](
             message.data.decode(base64),
@@ -1268,7 +1310,7 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
-    'pubsub.subscriptions': ResourceInfo(
+    'pubsub.subscriptions.list': ResourceInfo(
         list_format="""
           table[box](
             projectId:label=PROJECT,
@@ -1340,6 +1382,15 @@ RESOURCE_REGISTRY = {
           table(
             serviceName:label=NAME,
             serviceConfig.title
+          )
+        """,
+    ),
+
+    'servicemanagement-v1.serviceConfigs': ResourceInfo(
+        list_format="""
+          table(
+            id,
+            name
           )
         """,
     ),

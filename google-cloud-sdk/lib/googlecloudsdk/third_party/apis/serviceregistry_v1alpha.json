@@ -5,7 +5,7 @@
  "name": "serviceregistry",
  "canonicalName": "Service Registry",
  "version": "v1alpha",
- "revision": "20160621",
+ "revision": "20160705",
  "title": "Google Cloud Service Registry API",
  "description": "Manages service endpoints in Service Registry and provides integration with DNS for service discovery and name resolution.",
  "ownerDomain": "google.com",
@@ -160,7 +160,7 @@
    "properties": {
     "enableExternal": {
      "type": "boolean",
-     "description": "True if a cloud.goog DNS entry should be created to expose this endpoint externally."
+     "description": "True if a cloud.goog DNS entry should be created to expose this endpoint externally. NOTE: This feature will be enabled by August 1."
     },
     "externalDnsName": {
      "type": "string",

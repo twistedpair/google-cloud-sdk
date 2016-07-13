@@ -314,7 +314,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "[Optional] The properties to set on daemon config files.\n\nProperty keys are specified in `prefix:property` format, such as\n`core:fs.defaultFS`. The following are supported prefixes\nand their mappings:\n\n* core:   `core-site.xml`\n* hdfs:   `hdfs-site.xml`\n* mapred: `mapred-site.xml`\n* yarn:   `yarn-site.xml`\n* hive:   `hive-site.xml`\n* pig:    `pig.properties`\n* spark:  `spark-defaults.conf`\n",
+          "description": "[Optional] The properties to set on daemon config files.\n\nProperty keys are specified in `prefix:property` format, such as\n`core:fs.defaultFS`. The following are supported prefixes\nand their mappings:\n\n* core:   `core-site.xml`\n* hdfs:   `hdfs-site.xml`\n* mapred: `mapred-site.xml`\n* yarn:   `yarn-site.xml`\n* hive:   `hive-site.xml`\n* pig:    `pig.properties`\n* spark:  `spark-defaults.conf`",
           "type": "object",
           "additionalProperties": {
             "type": "string"

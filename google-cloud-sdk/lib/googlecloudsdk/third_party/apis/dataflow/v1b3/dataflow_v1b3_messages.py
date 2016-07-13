@@ -953,6 +953,12 @@ class Job(_messages.Message):
     TypeValueValuesEnum: The type of dataflow job.
 
   Messages:
+    LabelsValue: User-defined labels for this job.  The labels map can contain
+      no more than 64 entries.  Entries of the labels map are UTF8 strings
+      that comply with the following restrictions:  * Keys must conform to
+      regexp:  \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
+      constrained to be <= 128 bytes in size.
     TransformNameMappingValue: Map of transform name prefixes of the job to be
       replaced to the corresponding name prefixes of the new job.
 
@@ -979,6 +985,12 @@ class Job(_messages.Message):
       run the job.
     id: The unique ID of this job.  This field is set by the Dataflow service
       when the Job is created, and is immutable for the life of the Job.
+    labels: User-defined labels for this job.  The labels map can contain no
+      more than 64 entries.  Entries of the labels map are UTF8 strings that
+      comply with the following restrictions:  * Keys must conform to regexp:
+      \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
+      constrained to be <= 128 bytes in size.
     name: The user-specified Dataflow job name.  Only one Job with a given
       name may exist in a project at any given time.  If a caller attempts to
       create a Job with the same name as an already-existing Job, the attempt
@@ -1130,6 +1142,35 @@ class Job(_messages.Message):
     JOB_TYPE_STREAMING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User-defined labels for this job.  The labels map can contain no more
+    than 64 entries.  Entries of the labels map are UTF8 strings that comply
+    with the following restrictions:  * Keys must conform to regexp:
+    \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
+    constrained to be <= 128 bytes in size.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class TransformNameMappingValue(_messages.Message):
     """Map of transform name prefixes of the job to be replaced to the
     corresponding name prefixes of the new job.
@@ -1163,15 +1204,16 @@ class Job(_messages.Message):
   environment = _messages.MessageField('Environment', 5)
   executionInfo = _messages.MessageField('JobExecutionInfo', 6)
   id = _messages.StringField(7)
-  name = _messages.StringField(8)
-  projectId = _messages.StringField(9)
-  replaceJobId = _messages.StringField(10)
-  replacedByJobId = _messages.StringField(11)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 12)
-  steps = _messages.MessageField('Step', 13, repeated=True)
-  tempFiles = _messages.StringField(14, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  projectId = _messages.StringField(10)
+  replaceJobId = _messages.StringField(11)
+  replacedByJobId = _messages.StringField(12)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 13)
+  steps = _messages.MessageField('Step', 14, repeated=True)
+  tempFiles = _messages.StringField(15, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class JobExecutionInfo(_messages.Message):

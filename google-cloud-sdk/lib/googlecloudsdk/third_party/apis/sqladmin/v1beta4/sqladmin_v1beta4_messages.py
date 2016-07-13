@@ -251,7 +251,10 @@ class DatabaseInstance(_messages.Message):
       available: The availability status of the failover replica. A false
         status indicates that the failover replica is out of sync. The master
         can only failover to the falover replica when the status is true.
-      name: The name of the failover replica.
+      name: The name of the failover replica. If specified at instance
+        creation, a failover replica is created for the instance. The name
+        doesn't include the project ID. This property is applicable only to
+        Second Generation instances.
     """
 
     available = _messages.BooleanField(1)

@@ -32,6 +32,7 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import remote_completion
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import pkg_resources
 
@@ -138,8 +139,8 @@ class ArgumentParser(argparse.ArgumentParser):
 
     # If there is a single arg, put it on the same line.  If there are multiple
     # add each on it's own line for better clarity.
-    separator = '\n  ' if len(messages) > 1 else ' '
-    deepest_parser.error('unrecognized arguments:{0}{1}'.format(
+    separator = u'\n  ' if len(messages) > 1 else u' '
+    deepest_parser.error(u'unrecognized arguments:{0}{1}'.format(
         separator, separator.join(messages)))
 
   def _check_value(self, action, value):
@@ -197,14 +198,14 @@ class ArgumentParser(argparse.ArgumentParser):
       self._calliope_command.LoadAllSubElements()
 
     # Command is not valid, see what we can suggest as a fix...
-    message = "Invalid choice: '{0}'.".format(value)
+    message = u"Invalid choice: '{0}'.".format(value)
 
     # Determine if the requested command is available in another release track.
     existing_alternatives = self._ExistingAlternativeReleaseTracks(value)
     if existing_alternatives:
-      message += ('\nThis command is available in one or more alternate '
-                  'release tracks.  Try:\n  ')
-      message += '\n  '.join(existing_alternatives)
+      message += (u'\nThis command is available in one or more alternate '
+                  u'release tracks.  Try:\n  ')
+      message += u'\n  '.join(existing_alternatives)
     # See if the spelling was close to something else that exists here.
     else:
       choices = sorted(action.choices)
@@ -268,7 +269,8 @@ class ArgumentParser(argparse.ArgumentParser):
       # pylint:disable=protected-access
       self.print_usage(argparse._sys.stderr)
 
-    log.error('({prog}) {message}'.format(prog=self.prog, message=message))
+    message = console_attr.EncodeForOutput(message)
+    log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
     self.exit(2)
 
   def _parse_optional(self, arg_string):
@@ -697,6 +699,9 @@ class ArgumentInterceptor(object):
     if '--no-' + name[2:] in self.parser._option_string_actions:
       # Don't override explicit --no-* inverted flag.
       return False, None
+    if isinstance(self.parser, argparse._MutuallyExclusiveGroup):
+      # Flags in mutually exclusive groups are not inverted.
+      return False, None
     if action in ('store_true', 'store_false'):
       return True, None
     prop = getattr(action, 'boolean_property', None)
@@ -798,6 +803,9 @@ class CommandCommon(object):
       # Propagate down the hidden attribute.
       if parent_group.IsHidden():
         self._common_type._is_hidden = True
+      # Propagate down the unicode supported attribute.
+      if parent_group.IsUnicodeSupported():
+        self._common_type._is_unicode_supported = True
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
     self._ExtractHelpStrings(self._common_type.__doc__)
@@ -813,6 +821,10 @@ class CommandCommon(object):
   def IsHidden(self):
     """Gets the hidden status of this command or group."""
     return self._common_type.IsHidden()
+
+  def IsUnicodeSupported(self):
+    """Gets the unicode supported status of this command or group."""
+    return self._common_type.IsUnicodeSupported()
 
   def IsRoot(self):
     """Returns True if this is the root element in the CLI tree."""
@@ -1339,7 +1351,7 @@ class Command(CommandCommon):
         parser_group=parser_group,
         parent_group=parent_group)
 
-    self._parser.set_defaults(cmd_func=self.Run, command_path=self._path)
+    self._parser.set_defaults(calliope_command=self, command_path=self._path)
 
   def Run(self, cli, args):
     """Run this command with the given arguments.

@@ -11,7 +11,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
   BASE_URL = u'https://clouddebugger.googleapis.com/'
 
   _PACKAGE = u'clouddebugger'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud_debugger', u'https://www.googleapis.com/auth/cloud_debugletcontroller']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud_debugger']
   _VERSION = u'v2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

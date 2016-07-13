@@ -126,7 +126,7 @@
       "type": "object",
       "properties": {
         "keyId": {
-          "description": "Unique identifier for this ApiKey assigned by the server.",
+          "description": "Unique identifier for this ApiKey assigned by the server.\n@OutputOnly",
           "type": "string"
         },
         "displayName": {
@@ -134,24 +134,24 @@
           "type": "string"
         },
         "currentKey": {
-          "description": "An encrypted and signed value held by this API key.",
+          "description": "An encrypted and signed value held by this API key.\n@OutputOnly",
           "type": "string"
         },
         "createTime": {
-          "description": "A timestamp identifying the time this API key was originally created.",
+          "description": "A timestamp identifying the time this API key was originally created.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
         "createdBy": {
-          "description": "Email address of the user who originally created this API key.",
+          "description": "Email address of the user who originally created this API key.\n@OutputOnly",
           "type": "string"
         },
         "previousKey": {
-          "description": "The value of `current_key` before this API key was regenerated.",
+          "description": "The value of `current_key` before this API key was regenerated.\n@OutputOnly",
           "type": "string"
         },
         "previousKeyExpireTime": {
-          "description": "The expiration time for the validity of a `previous_key` value after an\nAPI key regeneration.",
+          "description": "The expiration time for the validity of a `previous_key` value after an\nAPI key regeneration.\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
@@ -306,16 +306,16 @@
       "type": "object",
       "properties": {
         "apiKey": {
-          "description": "The API key that was deleted",
+          "description": "The API key that was deleted\n@OutputOnly",
           "$ref": "ApiKey"
         },
         "deletionTime": {
-          "description": "The time at which the key was deleted",
+          "description": "The time at which the key was deleted\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
         },
         "source": {
-          "description": "What caused the key to be deleted",
+          "description": "What caused the key to be deleted\n@OutputOnly",
           "enumDescriptions": [
             "This API Key was deleted via a DeleteApiKey API call.",
             "This API Key was deleted by a RegenerateApiKey API call."

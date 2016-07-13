@@ -30,7 +30,7 @@ import uritemplate
 # scraping 'git remote show origin'.
 _ORIGIN_URL_RE = re.compile(r'remote origin\n.*Fetch URL: (?P<url>.+)\n', re.M)
 # This is the minimum version of git required to use credential helpers.
-_HELPER_MIN = (1, 7, 9)
+_HELPER_MIN = (2, 0, 1)
 
 _TRAILING_SPACES = re.compile(r'(^|^.*[^\\ ]|^.*\\ ) *$')
 
@@ -483,28 +483,12 @@ class Git(object):
     abs_repository_path = os.path.abspath(destination_path)
     if os.path.exists(abs_repository_path):
       CheckGitVersion()  # Do this here, before we start running git commands
-      # First check if it's already the repository we're looking for.
-      with files.ChDir(abs_repository_path) as _:
-        try:
-          output = subprocess.check_output(['git', 'remote', 'show', 'origin'])
-        except subprocess.CalledProcessError:
-          raise CannotFetchRepositoryException(
-              'Repository in [{path}] is misconfigured.'.format(
-                  path=abs_repository_path))
-        output_match = _ORIGIN_URL_RE.search(output)
-        if not output_match or output_match.group('url') != self._uri:
-          raise CannotInitRepositoryException(
-              ('Repository [{url}] cannot be cloned to [{path}]: there'
-               ' is something already there.').format(
-                   url=self._uri, path=abs_repository_path))
-        else:
-          # Repository exists and is correctly configured: abort.
-          log.err.Print(
-              ('Repository in [{path}] already exists and maps to [{uri}].'
-               .format(path=abs_repository_path, uri=self._uri)))
-          return None
-
-    # Nothing is there, make a brand new repository.
+      if os.listdir(abs_repository_path):
+        # Raise exception if dir is not empty and not a git repository
+        raise CannotInitRepositoryException(
+            'Directory path specified exists and is not empty')
+    # Make a brand new repository if directory does not exist or
+    # clone if directory exists and is empty
     try:
       if (self._uri.startswith('https://code.google.com') or
           self._uri.startswith('https://source.developers.google.com')):
@@ -513,14 +497,15 @@ class Git(object):
         try:
           CheckGitVersion(_HELPER_MIN)
         except GitVersionException:
+          helper_min = '.'.join(str(i) for i in _HELPER_MIN)
           log.warn(textwrap.dedent("""\
-              You are cloning a Google-hosted repository with a version of git
-              older than 1.7.9. If you upgrade to 1.7.9 or later, gcloud can
+              You are cloning a Google-hosted repository with a {0} version of git
+              which is older than 2.0.1. If you upgrade to 2.0.1 or later, gcloud can
               handle authentication to this repository. Otherwise, to
               authenticate, use your Google account and the password found by
               running the following command.
                $ gcloud auth print-refresh-token
-              """))
+              """.format(helper_min)))
           cmd = ['git', 'clone', self._uri, abs_repository_path]
         else:
           cmd = ['git', 'clone', self._uri, abs_repository_path,

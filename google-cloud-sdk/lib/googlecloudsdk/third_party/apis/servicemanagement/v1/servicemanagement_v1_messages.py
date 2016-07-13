@@ -88,6 +88,23 @@ class AreaUnderCurveParams(_messages.Message):
   snapshotMetric = _messages.StringField(3)
 
 
+class AuditConfig(_messages.Message):
+  """Enables "data access" audit logging for a service and specifies a list of
+  members that are log-exempted.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services.
+  """
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  service = _messages.StringField(2)
+
+
 class AuthProvider(_messages.Message):
   """Configuration for an anthentication provider, including support for [JSON
   Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-web-
@@ -266,6 +283,35 @@ class BillingStatusRule(_messages.Message):
   selector = _messages.StringField(2)
 
 
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example, `alice@gmail.com`
+      or `joe@example.com`.  * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`. Required
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
+class CloudAuditOptions(_messages.Message):
+  """Write a Cloud Audit log"""
+
+
 class CompositeOperationMetadata(_messages.Message):
   """Metadata for composite operations.
 
@@ -353,6 +399,81 @@ class CompositeOperationMetadata(_messages.Message):
   originalRequest = _messages.MessageField('OriginalRequestValue', 2)
   persisted = _messages.BooleanField(3)
   responseFieldMasks = _messages.MessageField('ResponseFieldMasksValue', 4)
+
+
+class Condition(_messages.Message):
+  """A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority
+      ATTRIBUTION: selector Always the original principal, but making clear
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+
+  class OpValueValuesEnum(_messages.Enum):
+    """An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: Set-inclusion check.
+      NOT_IN: Set-exclusion check.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    """Trusted attributes supplied by any service that owns resources and uses
+    the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
 
 
 class ConfigFile(_messages.Message):
@@ -539,6 +660,18 @@ class ConvertConfigResponse(_messages.Message):
   serviceConfig = _messages.MessageField('Service', 2)
 
 
+class CounterOptions(_messages.Message):
+  """Options for counters
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
 class CustomError(_messages.Message):
   """Customize service error responses.  For example, list any service
   specific protobuf types that can appear in error detail lists of error
@@ -602,6 +735,10 @@ class CustomerSettings(_messages.Message):
   customerId = _messages.StringField(1)
   quotaSettings = _messages.MessageField('QuotaSettings', 2)
   serviceName = _messages.StringField(3)
+
+
+class DataAccessOptions(_messages.Message):
+  """Write a Data Access (Gin) log"""
 
 
 class Diagnostic(_messages.Message):
@@ -951,6 +1088,10 @@ class File(_messages.Message):
   path = _messages.StringField(2)
 
 
+class GetIamPolicyRequest(_messages.Message):
+  """Request message for `GetIamPolicy` method."""
+
+
 class Http(_messages.Message):
   """Defines the HTTP configuration for a service. It contains a list of
   HttpRule, each specifying the mapping of an RPC method to one or more HTTP
@@ -1145,6 +1286,33 @@ class ListServicesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   services = _messages.MessageField('ManagedService', 2, repeated=True)
+
+
+class LogConfig(_messages.Message):
+  """Specifies what kind of log the caller must write Increment a streamz
+  counter with the specified metric and field names.  Metric names should
+  start with a '/', generally be lowercase-only, and end in "_count". Field
+  names should not contain an initial slash. The actual exported metric names
+  will have "/iam/policy" prepended.  Field names correspond to IAM request
+  parameters and field values are their respective values.  At present the
+  only supported field names are    - "iam_principal", corresponding to
+  IAMContext.principal;    - "" (empty string), resulting in one aggretated
+  counter with no field.  Examples:   counter { metric: "/debug_access_count"
+  field: "iam_principal" }   ==> increment counter
+  /iam/policy/backend_debug_access_count
+  {iam_principal=[value of IAMContext.principal]}  At this time we do not
+  support: * multiple field names (though this may be supported in the future)
+  * decrementing the counter * incrementing it by anything other than 1
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class LogDescriptor(_messages.Message):
@@ -1789,6 +1957,57 @@ class Page(_messages.Message):
   subpages = _messages.MessageField('Page', 3, repeated=True)
 
 
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com",           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  For a description of IAM and its features, see the [IAM
+  developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
+    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
+      must not be specified for the same `role`. `bindings` with no members
+      will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
+      Logging will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class ProjectProperties(_messages.Message):
   """A descriptor for defining project properties for a service. One service
   may have many consumer projects, and the service may want to behave
@@ -1977,35 +2196,33 @@ class Quota(_messages.Message):
   quota group. When a group   contains multiple limits, requests to a method
   consuming tokens   from that group must satisfy all the limits in that
   group.  Example:      quota:       groups:       - name: ReadGroup
-  limits:         - description: Daily Limit           name: ProjectQpd
+  description: Read requests         limits:         - name: ProjectQpd
   default_limit: 10000           duration: 1d           limit_by:
-  CLIENT_PROJECT          - description: Per-second Limit           name:
-  UserQps           default_limit: 20000           duration: 100s
-  limit_by: USER        - name: WriteGroup         limits:         -
-  description: Daily Limit           name: ProjectQpd           default_limit:
-  1000           max_limit: 1000           duration: 1d           limit_by:
-  CLIENT_PROJECT          - description: Per-second Limit           name:
-  UserQps           default_limit: 2000           max_limit: 4000
-  duration: 100s           limit_by: USER        rules:       - selector: "*"
-  groups:         - group: ReadGroup       - selector:
-  google.calendar.Calendar.Update         groups:         - group: WriteGroup
-  cost: 2       - selector: google.calendar.Calendar.Delete         groups:
-  - group: WriteGroup  Here, the configuration defines two quota groups:
-  ReadGroup and WriteGroup, each defining its own daily and per-second limits.
-  Note that One Platform enforces per-second limits averaged over a duration
-  of 100 seconds. The rules map ReadGroup for all methods, except for the
-  Update and Delete methods. These two methods consume from WriteGroup, with
-  Update method consuming at twice the rate as Delete method.  Multiple quota
-  groups can be specified for a method. The quota limits in all of those
-  groups will be enforced. Example:      quota:       groups:       - name:
-  WriteGroup         limits:         - description: Daily Limit
-  name: ProjectQpd           default_limit: 1000           max_limit: 1000
-  duration: 1d           limit_by: CLIENT_PROJECT          - description: Per-
-  second Limit           name: UserQps           default_limit: 2000
-  max_limit: 4000           duration: 100s           limit_by: USER        -
-  name: StorageGroup         limits:         - description: Storage Quota
-  name: StorageQuota           default_limit: 1000           duration: 0
-  limit_by: USER        rules:       - selector:
+  CLIENT_PROJECT          - name: UserQps           default_limit: 20000
+  duration: 100s           limit_by: USER        - name: WriteGroup
+  description: Write requests         limits:         - name: ProjectQpd
+  default_limit: 1000           max_limit: 1000           duration: 1d
+  limit_by: CLIENT_PROJECT          - name: UserQps           default_limit:
+  2000           max_limit: 4000           duration: 100s           limit_by:
+  USER        rules:       - selector: "*"         groups:         - group:
+  ReadGroup       - selector: google.calendar.Calendar.Update         groups:
+  - group: WriteGroup           cost: 2       - selector:
+  google.calendar.Calendar.Delete         groups:         - group: WriteGroup
+  Here, the configuration defines two quota groups: ReadGroup and WriteGroup,
+  each defining its own daily and per-second limits. Note that One Platform
+  enforces per-second limits averaged over a duration of 100 seconds. The
+  rules map ReadGroup for all methods, except for the Update and Delete
+  methods. These two methods consume from WriteGroup, with Update method
+  consuming at twice the rate as Delete method.  Multiple quota groups can be
+  specified for a method. The quota limits in all of those groups will be
+  enforced. Example:      quota:       groups:       - name: WriteGroup
+  description: Write requests         limits:         - name: ProjectQpd
+  default_limit: 1000           max_limit: 1000           duration: 1d
+  limit_by: CLIENT_PROJECT          - name: UserQps           default_limit:
+  2000           max_limit: 4000           duration: 100s           limit_by:
+  USER        - name: StorageGroup         description: Storage requests
+  limits:         - name: StorageQuota           default_limit: 1000
+  duration: 0           limit_by: USER        rules:       - selector:
   google.calendar.Calendar.Create         groups:         - group:
   StorageGroup         - group: WriteGroup       - selector:
   google.calendar.Calendar.Delete         groups:         - group:
@@ -2401,6 +2618,59 @@ class QuotaUsage(_messages.Message):
   usage = _messages.IntegerField(4)
 
 
+class Rule(_messages.Message):
+  """A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries is the same as for members in a Binding (see
+      google/iam/v1/policy.proto).
+    permissions: A permission is a string of form '<service>.<resource
+      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
+      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
+      all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
 class Service(_messages.Message):
   """`Service` is the root object of the configuration schema. It describes
   basic information like the name of the service and the exposed API
@@ -2765,6 +3035,21 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
   serviceName = _messages.StringField(2, required=True)
 
 
+class ServicemanagementServicesGetIamPolicyRequest(_messages.Message):
+  """A ServicemanagementServicesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    servicesId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being requested. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  servicesId = _messages.StringField(2, required=True)
+
+
 class ServicemanagementServicesGetRequest(_messages.Message):
   """A ServicemanagementServicesGetRequest object.
 
@@ -2919,6 +3204,37 @@ class ServicemanagementServicesProjectSettingsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class ServicemanagementServicesSetIamPolicyRequest(_messages.Message):
+  """A ServicemanagementServicesSetIamPolicyRequest object.
+
+  Fields:
+    servicesId: Part of `resource`. REQUIRED: The resource for which the
+      policy is being specified. `resource` is usually specified as a path.
+      For example, a Project resource is specified as `projects/{project}`.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  servicesId = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ServicemanagementServicesTestIamPermissionsRequest(_messages.Message):
+  """A ServicemanagementServicesTestIamPermissionsRequest object.
+
+  Fields:
+    servicesId: Part of `resource`. REQUIRED: The resource for which the
+      policy detail is being requested. `resource` is usually specified as a
+      path. For example, a Project resource is specified as
+      `projects/{project}`.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  servicesId = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ServicemanagementServicesUpdateConfigRequest(_messages.Message):
   """A ServicemanagementServicesUpdateConfigRequest object.
 
@@ -2954,6 +3270,19 @@ class ServicemanagementServicesUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SetIamPolicyRequest(_messages.Message):
+  """Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+
+
 class SourceContext(_messages.Message):
   """`SourceContext` represents information about the source of a protobuf
   element, like the file in which it is defined.
@@ -2961,7 +3290,7 @@ class SourceContext(_messages.Message):
   Fields:
     fileName: The path-qualified name of the .proto file that contained the
       associated protobuf element.  For example:
-      `"google/protobuf/source.proto"`.
+      `"google/protobuf/source_context.proto"`.
   """
 
   fileName = _messages.StringField(1)
@@ -3228,6 +3557,30 @@ class SystemParameters(_messages.Message):
   rules = _messages.MessageField('SystemParameterRule', 1, repeated=True)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  """Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class Type(_messages.Message):
   """A protocol buffer message type.
 
@@ -3430,14 +3783,16 @@ class Visibility(_messages.Message):
   for the restricted methods EnhancedSearch and Delegate.
 
   Fields:
-    enforceRuntimeVisibility: Controls whether visibility rules are enforced
-      at runtime for requests to all APIs and methods.  If true, requests
-      without method visibility will receive a NOT_FOUND error, and any non-
-      visible fields will be scrubbed from the response messages. In service
-      config version 0, the default is false. In later config versions, it's
-      true.  Note, the `enforce_runtime_visibility` specified in a visibility
-      rule overrides this setting for the APIs or methods asscoiated with the
-      rule.
+    enforceRuntimeVisibility: This fields is deprecated and settings this will
+      not have any affect. If you have restriction set on an element,
+      visibility is always enforced at runtime.  Controls whether visibility
+      rules are enforced at runtime for requests to all APIs and methods.  If
+      true, requests without method visibility will receive a NOT_FOUND error,
+      and any non-visible fields will be scrubbed from the response messages.
+      In service config version 0, the default is false. In later config
+      versions, it's true.  Note, the `enforce_runtime_visibility` specified
+      in a visibility rule overrides this setting for the APIs or methods
+      asscoiated with the rule.
     rules: A list of visibility rules providing visibility configuration for
       individual API elements.
   """
@@ -3451,12 +3806,14 @@ class VisibilityRule(_messages.Message):
   element.
 
   Fields:
-    enforceRuntimeVisibility: Controls whether visibility is enforced at
-      runtime for requests to an API method. This setting has meaning only
-      when the selector applies to a method or an API.  If true, requests
-      without method visibility will receive a NOT_FOUND error, and any non-
-      visible fields will be scrubbed from the response messages. The default
-      is determined by the value of
+    enforceRuntimeVisibility: This fields is deprecated and settings this will
+      not have any affect. If you have restriction set on an element,
+      visibility is always enforced at runtime.  Controls whether visibility
+      is enforced at runtime for requests to an API method. This setting has
+      meaning only when the selector applies to a method or an API.  If true,
+      requests without method visibility will receive a NOT_FOUND error, and
+      any non-visible fields will be scrubbed from the response messages. The
+      default is determined by the value of
       google.api.Visibility.enforce_runtime_visibility.
     restriction: Lists the visibility labels for this rule. Any of the listed
       labels grants visibility to the element.  If a rule has multiple labels,
@@ -3493,6 +3850,9 @@ class VisibilitySettings(_messages.Message):
   visibilityLabels = _messages.StringField(1, repeated=True)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in',
+    package=u'servicemanagement')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv',
     package=u'servicemanagement')

@@ -75,8 +75,8 @@ class ArgAdder(object):
                                nargs='+' if multiple else None)
     return self
 
-  def AddInstanceDescription(self):
+  def AddInstanceDescription(self, required=False):
     self.parser.add_argument('--description',
                              help='Friendly name of the instance.',
-                             required=False)
+                             required=required)
     return self

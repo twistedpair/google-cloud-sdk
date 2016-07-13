@@ -278,6 +278,7 @@ class _Common(object):
   __metaclass__ = abc.ABCMeta
   _cli_generator = None
   _is_hidden = False
+  _is_unicode_supported = False
   _release_track = None
   _valid_release_tracks = None
 
@@ -406,6 +407,10 @@ class _Common(object):
   @classmethod
   def IsHidden(cls):
     return cls._is_hidden
+
+  @classmethod
+  def IsUnicodeSupported(cls):
+    return cls._is_unicode_supported
 
   @classmethod
   def ReleaseTrack(cls):
@@ -696,6 +701,24 @@ def Hidden(cmd_class):
   """
   # pylint: disable=protected-access
   cmd_class._is_hidden = True
+  return cmd_class
+
+
+def UnicodeIsSupported(cmd_class):
+  """Decorator for calliope commands and groups that support unicode.
+
+  Decorate a subclass of base.Command or base.Group with this function, and the
+  decorated command or group will not raise the argparse unicode command line
+  argument exception.
+
+  Args:
+    cmd_class: base._Common, A calliope command or group.
+
+  Returns:
+    A modified version of the provided class.
+  """
+  # pylint: disable=protected-access
+  cmd_class._is_unicode_supported = True
   return cmd_class
 
 

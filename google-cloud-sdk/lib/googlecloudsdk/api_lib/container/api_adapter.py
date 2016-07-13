@@ -458,7 +458,8 @@ class UpdateClusterOptions(object):
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
-               image_type=None):
+               image_type=None,
+               locations=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -469,6 +470,7 @@ class UpdateClusterOptions(object):
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
     self.image_type = image_type
+    self.locations = locations
 
 
 class CreateNodePoolOptions(object):
@@ -563,7 +565,7 @@ class V1Adapter(APIAdapter):
         masterAuth=self.messages.MasterAuth(username=options.user,
                                             password=options.password))
     if options.additional_zones:
-      cluster.locations = options.additional_zones + [cluster_ref.zone]
+      cluster.locations = sorted([cluster_ref.zone] + options.additional_zones)
     if options.cluster_version:
       cluster.initialClusterVersion = options.cluster_version
     if options.network:
@@ -616,9 +618,11 @@ class V1Adapter(APIAdapter):
           minNodeCount=options.min_nodes,
           maxNodeCount=options.max_nodes)
       update = self.messages.ClusterUpdate(
+          desiredNodePoolId=options.node_pool,
           desiredNodePoolAutoscaling=autoscaling)
+    elif options.locations:
+      update = self.messages.ClusterUpdate(desiredLocations=options.locations)
 
-    print update
     op = self.client.projects_zones_clusters.Update(
         self.messages.ContainerProjectsZonesClustersUpdateRequest(
             clusterId=cluster_ref.clusterId,
