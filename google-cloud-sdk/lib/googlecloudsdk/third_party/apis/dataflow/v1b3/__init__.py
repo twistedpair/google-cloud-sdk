@@ -3,7 +3,7 @@
 
 import pkgutil
 
-from googlecloudsdk.third_party.apitools.base.py import *
+from apitools.base.py import *
 from googlecloudsdk.third_party.apis.dataflow.v1b3.dataflow_v1b3_client import *
 from googlecloudsdk.third_party.apis.dataflow.v1b3.dataflow_v1b3_messages import *
 

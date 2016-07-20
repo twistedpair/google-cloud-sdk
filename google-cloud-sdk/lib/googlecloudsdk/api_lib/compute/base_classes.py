@@ -19,6 +19,9 @@ import cStringIO
 import json
 import textwrap
 
+from apitools.base.protorpclite import messages
+from apitools.base.py import encoding
+
 import enum
 from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import constants
@@ -42,8 +45,6 @@ from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import edit
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
-from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 import yaml
@@ -665,7 +666,7 @@ def GetGlobalRegionalListerHelp(resource):
   return GetMultiScopeListerHelp(resource, GlobalRegionalLister.SCOPES)
 
 
-class BaseDescriber(BaseCommand):
+class BaseDescriber(base.DescribeCommand, BaseCommand):
   """Base class for the describe subcommands."""
 
   @staticmethod

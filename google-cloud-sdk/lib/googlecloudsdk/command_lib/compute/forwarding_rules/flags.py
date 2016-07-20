@@ -14,7 +14,6 @@
 
 """Flags and helpers for the compute forwarding-rules commands."""
 
-import argparse
 import textwrap
 
 from googlecloudsdk.calliope import actions
@@ -101,19 +100,32 @@ def AddUpdateArgs(parser, include_alpha_targets, include_beta_targets):
         choices=['INTERNAL', 'EXTERNAL'],
         type=lambda x: x.upper(),
         default='EXTERNAL',
-        help=argparse.SUPPRESS)
+        help='This signifies what the forwarding rule will be used for and '
+             'can only take the following values: "INTERNAL", "EXTERNAL". '
+             'The value of "INTERNAL" means that this will be used for '
+             'Internal Network Load Balancing. The value of "EXTERNAL" '
+             'signifies that this will be used for HTTP or HTTPS for '
+             'External Load Balancing.')
 
     target.add_argument(
         '--backend-service',
-        help=argparse.SUPPRESS)
+        help='The target backend service that will receive the traffic.')
 
     parser.add_argument(
         '--subnet',
-        help=argparse.SUPPRESS)
+        help='(Only for Internal Load Balancing) '
+             'The subnetwork that this forwarding rule applies to. '
+             'If the network configured for this forwarding rule is in '
+             'auto subnet mode, the subnetwork is optional. However, if '
+             'the network is in custom subnet mode, a subnetwork must be '
+             'specified.')
 
     parser.add_argument(
         '--network',
-        help=argparse.SUPPRESS)
+        help='(Only for Internal Load Balancing) '
+             'The network that this forwarding rule applies to. If this field '
+             'is not specified, the default network will be used. In the '
+             'absence of the default network, this field must be specified.')
 
   target.add_argument(
       '--target-vpn-gateway',

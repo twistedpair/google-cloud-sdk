@@ -18,6 +18,12 @@ import json
 import sys
 import tempfile
 
+from apitools.base.protorpclite.messages import DecodeError
+from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import extra_types
+from apitools.base.py import transfer
+
 from googlecloudsdk.api_lib.genomics import exceptions as genomics_exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
@@ -25,11 +31,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
-from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
-from googlecloudsdk.third_party.apitools.base.py import encoding
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import extra_types
-from googlecloudsdk.third_party.apitools.base.py import transfer
 
 import yaml
 

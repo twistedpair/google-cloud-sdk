@@ -289,8 +289,13 @@ def _ParseTransformDocString(func):
     default_index = formal_index - default_index_start
     default = argspec.defaults[default_index] if default_index >= 0 else None
     if default is not None:
-      formals.append('{formal}={default}'.format(
-          formal=formal, default=repr(default)).replace("'", '"'))
+      default_display = repr(default).replace("'", '"')
+      if default_display == 'False':
+        default_display = 'false'
+      elif default_display == 'True':
+        default_display = 'true'
+      formals.append('{formal}={default_display}'.format(
+          formal=formal, default_display=default_display))
     else:
       formals.append(formal)
   if argspec.varargs:

@@ -20,17 +20,19 @@ import os
 import re
 import sys
 
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
-# FIXED(b/23150309): Error messages should be textual, not just regexp.
-_ENTRY_POINT_NAME_RE = re.compile(r'^[_a-zA-Z0-9]{1,128}$')
+_ENTRY_POINT_NAME_RE = re.compile(
+    r'^(?=.{1,128}$)[_a-zA-Z0-9]+(?:\.[_a-zA-Z0-9]+)*$')
 _ENTRY_POINT_NAME_ERROR = (
     'Entry point name must contain only Latin letters (lower- or '
-    'upper-case), digits and underscore (_), and must be at most 128 '
-    'characters long.')
+    'upper-case), digits, dot (.) and underscore (_), and must be at most 128 '
+    'characters long. It can neither begin nor end with a dot (.), '
+    'nor contain two consecutive dots (..).')
 
 _FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,46}[A-Za-z0-9])?$')
 _FUNCTION_NAME_ERROR = (

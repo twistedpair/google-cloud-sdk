@@ -17,9 +17,11 @@
 
 import re
 import time
+
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 _DELIMITER_MAP = {

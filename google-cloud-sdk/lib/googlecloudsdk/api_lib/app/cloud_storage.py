@@ -24,6 +24,10 @@ import mimetypes
 import os
 import re
 
+from apitools.base.py import exceptions as api_exceptions
+from apitools.base.py import list_pager
+from apitools.base.py import transfer
+
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import config
@@ -34,9 +38,6 @@ from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
-from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 GSUTIL_BUCKET_REGEX = r'^gs://.*$'

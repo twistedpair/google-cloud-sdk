@@ -112,15 +112,6 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
-        },
-        "https://www.googleapis.com/auth/devstorage.read_write": {
-          "description": "Manage your data in Google Cloud Storage"
-        },
-        "https://www.googleapis.com/auth/logging.write": {
-          "description": "Submit log data for your projects"
-        },
-        "https://www.googleapis.com/auth/pubsub": {
-          "description": "View and manage Pub/Sub topics and subscriptions"
         }
       }
     }
@@ -544,10 +535,7 @@
                     "$ref": "Operation"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/devstorage.read_write",
-                    "https://www.googleapis.com/auth/logging.write",
-                    "https://www.googleapis.com/auth/pubsub"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
                 "update": {
@@ -575,10 +563,7 @@
                     "$ref": "Operation"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/devstorage.read_write",
-                    "https://www.googleapis.com/auth/logging.write",
-                    "https://www.googleapis.com/auth/pubsub"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
                 "delete": {
@@ -603,10 +588,7 @@
                     "$ref": "Operation"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/devstorage.read_write",
-                    "https://www.googleapis.com/auth/logging.write",
-                    "https://www.googleapis.com/auth/pubsub"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 },
                 "call": {
@@ -634,10 +616,7 @@
                     "$ref": "CallFunctionResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/devstorage.read_write",
-                    "https://www.googleapis.com/auth/logging.write",
-                    "https://www.googleapis.com/auth/pubsub"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ]
                 }
               }

@@ -15,6 +15,7 @@
 """Functions to help with shelling out to other commands."""
 
 import cStringIO
+import errno
 import os
 import re
 import signal
@@ -22,11 +23,21 @@ import sys
 import time
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
+
+
+class PermissionError(exceptions.Error):
+  """User does not have execute permissions."""
+
+  def __init__(self, error):
+    super(PermissionError, self).__init__(
+        '{err}\nPlease verify that you have execute permission for all'
+        'files in your CLOUD SDK bin folder'.format(err=error))
 
 
 def GetPythonExecutable():
@@ -222,6 +233,10 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
   Returns:
     int, The exit code of the child if no_exit is True, else this method does
     not return.
+
+  Raises:
+    PermissionError: if user that not have execute permission for cloud sdk bin
+    files.
   """
   log.debug('Executing command: %s', args)
   # We use subprocess instead of execv because windows does not support process
@@ -239,10 +254,15 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
     if pipe_output_through_logger:
       extra_popen_kwargs['stderr'] = subprocess.PIPE
       extra_popen_kwargs['stdout'] = subprocess.PIPE
-
-    p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-    process_holder.process = p
-
+    try:
+      p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
+      process_holder.process = p
+    except OSError as err:
+      if err.errno == errno.EACCES:
+        raise PermissionError(err.strerror)
+      else:
+        # Raise stack trace.
+        raise
     if pipe_output_through_logger:
       if file_only_logger:
         out = cStringIO.StringIO()

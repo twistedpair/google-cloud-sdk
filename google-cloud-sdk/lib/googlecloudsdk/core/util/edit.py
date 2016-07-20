@@ -27,6 +27,7 @@ that the user may have saved while in the EDITOR.
 
 import os
 import tempfile
+from googlecloudsdk.core.util import platforms
 
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
@@ -37,6 +38,20 @@ class Error(Exception):
 
 class NoSaveException(Error):
   """NoSaveException is thrown when the user did not save the file."""
+
+
+class EditorException(Error):
+  """EditorException is thrown when the editor returns a non-zero exit code."""
+
+
+def FileModifiedTime(file_name):
+  """Enables mocking in the unit test."""
+  return os.stat(file_name).st_mtime
+
+
+def SubprocessCheckCall(*args, **kargs):
+  """Enables mocking in the unit test."""
+  return subprocess.check_call(*args, **kargs)
 
 
 def OnlineEdit(text):
@@ -50,7 +65,7 @@ def OnlineEdit(text):
 
   Raises:
     NoSaveException: If the user did not save the temporary file.
-    subprocess.CalledProcessError: If the process running the editor has a
+    EditorException: If the process running the editor has a
         problem.
   """
   fname = tempfile.NamedTemporaryFile(suffix='.txt').name
@@ -59,18 +74,29 @@ def OnlineEdit(text):
     f_out.write(text)
 
   # Get the mod time, so we can check if anything was actually done.
-  start_mtime = os.stat(fname).st_mtime
-
-  if os.name == 'nt':
-    subprocess.check_call([fname], shell=True)
+  start_mtime = FileModifiedTime(fname)
+  if (platforms.OperatingSystem.Current() is
+      platforms.OperatingSystem.WINDOWS):
+    try:
+      SubprocessCheckCall([fname], shell=True)
+    except subprocess.CalledProcessError as error:
+      raise EditorException('Your editor exited with return code {0}; '
+                            'please try again.'.format(error.returncode))
   else:
-    editor = os.getenv('EDITOR', 'vi')
-    # We use shell=True and manual smashing of the args to permit users to set
-    # EDITOR="emacs -nw", or similar things.
-    subprocess.check_call('{editor} {file}'.format(editor=editor, file=fname),
-                          shell=True)
-
-  end_mtime = os.stat(fname).st_mtime
+    try:
+      editor = os.getenv('EDITOR', 'vi')
+      # We use shell=True and manual smashing of the args to permit users to set
+      # EDITOR="emacs -nw", or similar things.
+      # We used suprocess.check_call instead of subprocess.check_output because
+      # subprocess.check_output requires a direct connection to a terminal.
+      SubprocessCheckCall('{editor} {file}'.format(
+          editor=editor, file=fname), shell=True)
+    except subprocess.CalledProcessError as error:
+      raise EditorException('Your editor exited with return code {0}; '
+                            'please try again. You may set the EDITOR '
+                            'environment to use a different text '
+                            'editor.'.format(error.returncode))
+  end_mtime = FileModifiedTime(fname)
   if start_mtime == end_mtime:
     raise NoSaveException('edit aborted by user')
 

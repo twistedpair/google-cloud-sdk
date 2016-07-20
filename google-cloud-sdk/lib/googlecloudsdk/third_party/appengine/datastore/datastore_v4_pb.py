@@ -45,6 +45,8 @@ class Error(ProtocolBuffer.ProtocolMessage):
   TRY_ALTERNATE_BACKEND =   10 
   SAFE_TIME_TOO_OLD =   11 
   RESOURCE_EXHAUSTED =   12 
+  NOT_FOUND    =   13 
+  ALREADY_EXISTS =   14 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -59,6 +61,8 @@ class Error(ProtocolBuffer.ProtocolMessage):
     10: "TRY_ALTERNATE_BACKEND",
     11: "SAFE_TIME_TOO_OLD",
     12: "RESOURCE_EXHAUSTED",
+    13: "NOT_FOUND",
+    14: "ALREADY_EXISTS",
   }
 
   def ErrorCode_Name(cls, x): return cls._ErrorCode_NAMES.get(x, "")

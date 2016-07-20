@@ -15,8 +15,8 @@
 import json
 import logging
 
-from googlecloudsdk.third_party.apitools.base.py import batch
-from googlecloudsdk.third_party.apitools.base.py import exceptions
+from apitools.base.py import batch
+from apitools.base.py import exceptions
 
 
 def MakeRequests(requests, http, batch_url=None):

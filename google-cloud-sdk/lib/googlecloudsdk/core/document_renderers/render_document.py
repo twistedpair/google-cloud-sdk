@@ -326,11 +326,11 @@ class _MarkdownConverter(object):
       if not line:
         break
       self._renderer.Write(line)
-      if self._notes and line == '== NOTES ==\n':
+      if self._notes and line == '## NOTES\n':
         self._renderer.Write('\n' + self._notes + '\n')
         self._notes = ''
     if self._notes:
-      self._renderer.Write('\n\n== NOTES ==\n\n' + self._notes + '\n')
+      self._renderer.Write('\n\n## NOTES\n\n' + self._notes + '\n')
 
   def _ConvertBlankLine(self, i):
     """Detects and converts a blank markdown line (length 0).

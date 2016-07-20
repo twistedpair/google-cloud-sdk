@@ -14,11 +14,12 @@
 
 """Base command classes for shared logic between gcloud dataproc commands."""
 
-# TODO(user): Add more classes.
-
 import abc
 import os
 import urlparse
+
+from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import storage_helpers
@@ -26,8 +27,6 @@ from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import encoding
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class JobSubmitter(base.Command):

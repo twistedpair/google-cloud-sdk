@@ -15,10 +15,11 @@
 """Manipulation of Bigquery API messages representing JSON values.
 """
 
+from apitools.base.py import exceptions
+from apitools.base.py import extra_types
+from apitools.base.py import util
+
 from googlecloudsdk.api_lib.bigquery import bigquery
-from googlecloudsdk.third_party.apitools.base.py import exceptions
-from googlecloudsdk.third_party.apitools.base.py import extra_types
-from googlecloudsdk.third_party.apitools.base.py import util
 
 
 class MessageBuilder(object):

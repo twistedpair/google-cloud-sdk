@@ -38,8 +38,12 @@ from oauth2client.contrib import gce as oauth2client_gce
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
     'https://accounts.google.com/o/oauth2/auth')
+GOOGLE_OAUTH2_PROVIDER_REVOKE_URI = (
+    'https://accounts.google.com/o/oauth2/revoke')
 GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
     'https://accounts.google.com/o/oauth2/token')
+
+
 REDIRECT_URI_AUTH_CODE_IN_TITLE_BAR = 'urn:ietf:wg:oauth:2.0:oob'
 
 
@@ -494,12 +498,14 @@ def AcquireFromWebFlowAndClientIdFile(client_id_file,
 
 
 def AcquireFromToken(refresh_token,
-                     token_uri=GOOGLE_OAUTH2_PROVIDER_TOKEN_URI):
+                     token_uri=GOOGLE_OAUTH2_PROVIDER_TOKEN_URI,
+                     revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI):
   """Get credentials from an already-valid refresh token.
 
   Args:
     refresh_token: An oauth2 refresh token.
     token_uri: str, URI to use for refreshing.
+    revoke_uri: str, URI to use for revoking.
 
   Returns:
     client.Credentials, Credentials made from the refresh token.
@@ -512,7 +518,8 @@ def AcquireFromToken(refresh_token,
       # always start expired
       token_expiry=datetime.datetime.utcnow(),
       token_uri=token_uri,
-      user_agent=config.CLOUDSDK_USER_AGENT)
+      user_agent=config.CLOUDSDK_USER_AGENT,
+      revoke_uri=revoke_uri)
   return cred
 
 

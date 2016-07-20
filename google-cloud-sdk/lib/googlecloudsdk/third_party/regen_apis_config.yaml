@@ -1,0 +1,179 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# This file lists apis used by gcloud (CloudSDK).
+# It is configuration for regen_apis.py script, which needs to be rerun
+# everytime some input discovery doc is added/updated or apitools generation
+# code has been changed.
+
+# To add new api simply add an entry with its api name and version
+# pointing to its discovery doc file which should be checked into root_dir.
+
+# api version can have the follwing fields:
+# api_name:
+#   api_version:
+#     discovery_doc: <relative path wrt root_dir>
+#     unelidable_request_methods: <list of request method id>
+#     default: <true|false in case there more that one api version>
+#     version: <actual private version of this api,
+#               defaults to public api_version>
+
+root_dir: googlecloudsdk/third_party/apis
+
+apis:
+  apikeys:
+    v1:
+      discovery_doc: apikeys_v1.json
+  appengine:
+    v1beta5:
+      discovery_doc: appengine_v1beta5.json
+      unelidable_request_methods:
+        - appengine.apps.create
+        - appengine.apps.patch
+        - appengine.apps.emailSenders.create
+        - appengine.apps.services.patch
+        - appengine.apps.services.versions.create
+  bigquery:
+    v2:
+      discovery_doc: bigquery_v2.json
+  bigtableadmin:
+    v2:
+      discovery_doc: bigtableadmin_v2.json
+  bigtableclusteradmin:
+    v1:
+      discovery_doc: bigtableclusteradmin_v1.json
+  cloudbilling:
+    v1:
+      discovery_doc: cloudbilling_v1.json
+      unelidable_request_methods:
+        - cloudbilling.projects.updateBillingInfo
+  cloudbuild:
+    v1:
+      discovery_doc: cloudbuild_v1.json
+      # The following stanza is a workaround for b/24867445. It prevents elision
+      # of the CreateBuildRequest (project_id + build) into just a Build object.
+      unelidable_request_methods:
+        - cloudbuild.projects.builds.create
+  clouddebugger:
+    v2:
+      discovery_doc: clouddebugger_v2.json
+  clouderrorreporting:
+    v1beta1:
+      discovery_doc: clouderrorreporting_v1beta1.json
+  cloudfunctions:
+    v1beta1:
+      discovery_doc: cloudfunctions_v1beta1.json
+  cloudresourcemanager:
+    v1beta1:
+      discovery_doc: cloudresourcemanager_v1beta1.json
+  clouduseraccounts:
+    alpha:
+      discovery_doc: clouduseraccounts_alpha.json
+    beta:
+      discovery_doc: clouduseraccounts_beta.json
+      default: true
+  compute:
+    alpha:
+      discovery_doc: compute_alpha.json
+    beta:
+      discovery_doc: compute_beta.json
+      unelidable_request_methods:
+        - compute.disks.resize
+    v1:
+      discovery_doc: compute_v1.json
+      default: true
+  container:
+    v1:
+      discovery_doc: container_v1.json
+  dataflow:
+    v1b3:
+      discovery_doc: dataflow_v1b3.json
+  dataproc:
+    v1:
+      discovery_doc: dataproc_v1.json
+  deploymentmanager:
+    alpha:
+      discovery_doc: deploymentmanager_alpha.json
+    v2:
+      discovery_doc: deploymentmanager_v2.json
+      default: true
+    v2beta:
+      discovery_doc: deploymentmanager_v2beta.json
+  dns:
+    v1:
+      discovery_doc: dns_v1.json
+      default: true
+    v1beta1:
+      discovery_doc: dns_v1beta1.json
+  genomics:
+    v1:
+      discovery_doc: genomics_v1.json
+      default: true
+    v1alpha2:
+      discovery_doc: genomics_v1alpha2.json
+  iam:
+    v1:
+      discovery_doc: iam_v1.json
+  logging:
+    v1beta3:
+      discovery_doc: logging_v1beta3.json
+      default: true
+    v2beta1:
+      discovery_doc: logging_v2beta1.json
+  manager:
+    v1beta2:
+      discovery_doc: manager_v1beta2.json
+  pubsub:
+    v1:
+      discovery_doc: pubsub_v1.json
+  replicapoolupdater:
+    v1beta1:
+      discovery_doc: replicapoolupdater_v1beta1.json
+  runtimeconfig:
+    v1beta1:
+      discovery_doc: runtimeconfig_v1beta1.json
+  servicemanagement:
+    v1:
+      discovery_doc: servicemanagement_v1.json
+  serviceregistry:
+    v1alpha:
+      discovery_doc: serviceregistry_v1alpha.json
+  source:
+    v1:
+      discovery_doc: source_v1.json
+  sqladmin:
+    v1beta3:
+      discovery_doc: sqladmin_v1beta3.json
+      default: true
+    v1beta4:
+      discovery_doc: sqladmin_v1beta4.json
+  storage:
+    v1:
+      discovery_doc: storage_v1.json
+  testing:
+    v1:
+      discovery_doc: testing_v1.json
+      # Methods in generated apis that should not have their requests elided.
+      # Currently if a request body has fields with the same names as all of the
+      # url parameters for a given method, then no request object is created for
+      # these methods. In some cases this is undesired because the value in the
+      # url and the value in the request body should be different and the
+      # request message is still needed.
+      unelidable_request_methods:
+        - testing.projects.testMatrices.create
+  toolresults:
+    v1beta3:
+      discovery_doc: toolresults_v1beta3.json
+

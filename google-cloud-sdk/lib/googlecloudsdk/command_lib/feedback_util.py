@@ -388,19 +388,29 @@ def _FormatTraceback(traceback):
                                    stacktrace.splitlines())
   formatted_stacktrace += '\n'
 
-  # Strip out common directory prefix
   stacktrace_files = re.findall(r'File "(.*)"', stacktrace)
   common_prefix = _CommonPrefix(stacktrace_files)
-  formatted_stacktrace = formatted_stacktrace.replace(common_prefix, '')
-
-  # Strip out ./, lib/, lib/googlecloudsdk, and lib/third_party
   sep = os.path.sep
-  formatted_stacktrace = formatted_stacktrace.replace('.' + sep, '')
+
+  # Strip out lib/googlecloudsdk
   formatted_stacktrace = formatted_stacktrace.replace(
-      'lib' + sep + 'googlecloudsdk' + sep, '')
+      common_prefix + 'lib' + sep + 'googlecloudsdk' + sep, '')
   formatted_stacktrace = formatted_stacktrace.replace(
-      'lib' + sep + 'third_party' + sep, '')
-  formatted_stacktrace = formatted_stacktrace.replace('lib' + sep, '')
+      sep + 'lib' + sep + 'googlecloudsdk' + sep, sep)
+
+  # Strip out lib/third_party
+  formatted_stacktrace = formatted_stacktrace.replace(
+      common_prefix + 'lib' + sep + 'third_party' + sep, '')
+  formatted_stacktrace = formatted_stacktrace.replace(
+      sep + 'lib' + sep + 'third_party' + sep, sep)
+
+  # Strip out ./
+  formatted_stacktrace = formatted_stacktrace.replace(common_prefix + '.' + sep,
+                                                      '')
+  formatted_stacktrace = formatted_stacktrace.replace(sep + '.' + sep, sep)
+
+  # Strip out common  prefix
+  formatted_stacktrace = formatted_stacktrace.replace(common_prefix, '')
 
   # Make each stack frame entry more compact
   formatted_stacktrace = re.sub(TRACEBACK_ENTRY_REGEXP,

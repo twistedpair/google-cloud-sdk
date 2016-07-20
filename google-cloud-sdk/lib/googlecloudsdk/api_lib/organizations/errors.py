@@ -16,9 +16,10 @@
 import functools
 import sys
 
+from apitools.base.py import exceptions as api_exceptions
+
 from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 
 
 def HandleHttpError(func):

@@ -184,8 +184,10 @@ def DoPrepareManagedVms(gae_client):
       gae_client.PrepareVmRuntime()
     log.status.Print()
   except util.RPCError:
-    log.warn('If this is your first deployment, please try again.')
-    raise
+    # Any failures due to an unprepared project will be noisy
+    log.warn(
+        "We couldn't validate that your project is ready to deploy to App "
+        'Engine Flexible Environment. If deployment fails, please try again.')
 
 
 def UseSsl(handlers):

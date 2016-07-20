@@ -3,7 +3,7 @@
 
 import pkgutil
 
-from googlecloudsdk.third_party.apitools.base.py import *
+from apitools.base.py import *
 from googlecloudsdk.third_party.apis.sqladmin.v1beta3.sqladmin_v1beta3_client import *
 from googlecloudsdk.third_party.apis.sqladmin.v1beta3.sqladmin_v1beta3_messages import *
 

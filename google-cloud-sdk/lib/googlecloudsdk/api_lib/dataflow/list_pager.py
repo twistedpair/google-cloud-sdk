@@ -17,9 +17,10 @@ Based on list_pager.py from //cloud/bigscience/apitools/base/py/list_pager.py,
 but modified to use pageSize rather than maxResults.
 """
 
+from apitools.base.py import exceptions
+
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 
 

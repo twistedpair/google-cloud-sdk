@@ -17,10 +17,10 @@ import json
 import os
 import sys
 
+from apitools.base.py import exceptions
+
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import apis
-from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class RepoCreationError(exceptions.Error):

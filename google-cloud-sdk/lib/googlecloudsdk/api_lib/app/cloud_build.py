@@ -144,7 +144,7 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
               ),
               steps=[cloudbuild_messages.BuildStep(
                   name=builder,
-                  args=[output_image]
+                  args=['build', '-t', output_image, '.']
               )],
               images=[output_image],
               logsBucket=logs_bucket,

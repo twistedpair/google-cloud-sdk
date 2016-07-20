@@ -374,6 +374,14 @@ def ExpandHelpText(command, text):
   else:
     long_help = ExpandHelpText(command, command.long_help)
   path = command.GetPath()
+
+  # The lower case keys in the optional detailed_help dict are user specified
+  # parameters to LazyFormat().
+  details = {}
+  for key, value in getattr(command, 'detailed_help', {}).iteritems():
+    if key.islower():
+      details[key] = value
+
   return console_io.LazyFormat(
       text or '',
       command=' '.join(path),
@@ -381,7 +389,9 @@ def ExpandHelpText(command, text):
       top_command=path[0],
       parent_command=' '.join(path[:-1]),
       index=command.short_help,
-      description=long_help)
+      description=long_help,
+      **details
+  )
 
 
 def GetFlagHeading(category):

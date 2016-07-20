@@ -14,10 +14,10 @@
 
 """Facilities for fetching and displaying table rows and field names."""
 
-from googlecloudsdk.api_lib.bigquery import bigquery
-from googlecloudsdk.third_party.apitools.base.py import exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
+from apitools.base.py import exceptions
+from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.bigquery import bigquery
 
 _REQUESTED_PAGE_SIZE = None  # Use server default.
 

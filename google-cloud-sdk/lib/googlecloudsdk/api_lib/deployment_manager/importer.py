@@ -17,10 +17,13 @@
 import os
 import posixpath
 import urlparse
+
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.deployment_manager import dm_v2_util
 from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
+
 import requests
 import yaml
 

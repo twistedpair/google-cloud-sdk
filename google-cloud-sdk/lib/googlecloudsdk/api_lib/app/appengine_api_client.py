@@ -15,6 +15,7 @@
 
 import json
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
@@ -24,7 +25,6 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import encoding
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1beta
 
 import yaml

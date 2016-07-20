@@ -6,7 +6,7 @@ manage resources on Google's Cloud Platform, including App Engine, Compute
 Engine, Cloud Storage, Cloud SQL, and BigQuery.
 
 For more information on how to set up and use the Cloud SDK, please see:
-  https://developers.google.com/cloud/sdk
+  https://cloud.google.com/sdk
 
 
 System Requirements:

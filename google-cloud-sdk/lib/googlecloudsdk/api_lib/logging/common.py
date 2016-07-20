@@ -14,11 +14,12 @@
 
 """A library that contains common logging commands."""
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 def FetchLogs(log_filter=None,

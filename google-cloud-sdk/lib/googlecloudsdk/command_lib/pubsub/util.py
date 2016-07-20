@@ -17,10 +17,11 @@ import abc
 import json
 import re
 
+from apitools.base.py import exceptions as api_ex
+
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_projector
-from googlecloudsdk.third_party.apitools.base.py import exceptions as api_ex
 
 # Maximum number of results that can be passed in pageSize to list operations.
 MAX_LIST_RESULTS = 10000
@@ -194,27 +195,6 @@ def TopicFormat(topic_name, topic_project=''):
   return TopicIdentifier(topic_name, topic_project).GetFullPath()
 
 
-def TopicMatches(topic_path, name_rgx):
-  """Matches a full topic path against a regular expression for a topic name.
-
-  Args:
-    topic_path: (string) Full topic path
-                       (ie. projects/my-project/topics/my-topic) to match.
-    name_rgx: (string) Topic name regular expression to match against
-              the topic_path.
-
-  Returns:
-    A re.match object if the regular expression matches
-    the topic_path or None otherwise.
-
-  Raises:
-    sdk_ex.HttpException On an invalid regular expression syntax.
-  """
-  if '/' in name_rgx:
-    raise sdk_ex.HttpException('Invalid --name-filter. Must not contain "/".')
-  return re.match(TopicIdentifier(name_rgx).GetFullPath(), topic_path)
-
-
 def SubscriptionFormat(subscription_name, project_name=''):
   """Formats a subscription name as a fully qualified subscription path.
 
@@ -229,30 +209,6 @@ def SubscriptionFormat(subscription_name, project_name=''):
     form project/foo/subscriptions/subscription_name.
   """
   return SubscriptionIdentifier(subscription_name, project_name).GetFullPath()
-
-
-def SubscriptionMatches(subscription_path, name_rgx):
-  """Matches a full subscription path against a regex for a subscription name.
-
-  Args:
-    subscription_path: (string) Full subscription path
-                       (ie. projects/my-project/subscriptions/my-subscription)
-                       to match.
-    name_rgx: (string) Subscription name regular expression to match against
-              the subscription_path.
-
-  Returns:
-    A re.match object if the regular expression matches the subscription_path
-    or None otherwise.
-
-  Raises:
-    sdk_ex.HttpException On an invalid regular expression syntax.
-  """
-  if '/' in name_rgx:
-    raise sdk_ex.HttpException('Invalid --name-filter. Must not contain "/".')
-
-  return re.match(SubscriptionIdentifier(name_rgx).GetFullPath(),
-                  subscription_path)
 
 
 def MapHttpError(f):

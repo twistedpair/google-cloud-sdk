@@ -13,10 +13,11 @@
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
 
+from apitools.base.protorpclite.messages import DecodeError
+from apitools.base.py import encoding
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.apitools.base.protorpclite.messages import DecodeError
-from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
 def _AddRoleArgument(

@@ -14,10 +14,12 @@
 """Facilities for getting a list of Cloud resources."""
 
 import itertools
+
+from apitools.base.py import encoding
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.core import remote_completion
-from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
 def _ConvertProtobufsToDicts(resources):

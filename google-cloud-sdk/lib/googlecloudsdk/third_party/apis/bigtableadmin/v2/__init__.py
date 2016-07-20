@@ -3,7 +3,7 @@
 
 import pkgutil
 
-from googlecloudsdk.third_party.apitools.base.py import *
+from apitools.base.py import *
 from googlecloudsdk.third_party.apis.bigtableadmin.v2.bigtableadmin_v2_client import *
 from googlecloudsdk.third_party.apis.bigtableadmin.v2.bigtableadmin_v2_messages import *
 

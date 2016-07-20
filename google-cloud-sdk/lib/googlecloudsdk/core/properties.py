@@ -529,7 +529,7 @@ class _SectionApp(_Section):
                   'Container Builder API.')
     self.container_builder_image = self._Add(
         'container_builder_image',
-        default='gcr.io/cloud-builders/dockerizer',
+        default='gcr.io/cloud-builders/docker',
         hidden=True)
     self.use_gsutil = self._AddBool(
         'use_gsutil',
@@ -579,6 +579,22 @@ class _SectionContainer(_Section):
         default=True,
         help_text='Use the cluster\'s client certificate to authenticate to '
         'the cluster API server.')
+    def BuildTimeoutValidator(build_timeout):
+      if build_timeout is None:
+        return
+      max_timeout = 5 * 60 * 60
+      try:
+        if int(build_timeout) > max_timeout:
+          raise InvalidValueError(
+              'build_timeout may not exceed %d', max_timeout)
+      except ValueError:
+        raise InvalidValueError(
+            'build_timeout must be an integer')
+    self.build_timeout = self._Add(
+        'build_timeout',
+        validator=BuildTimeoutValidator,
+        help_text='The timeout, in seconds, to wait for container builds to '
+        'complete.')
 
 
 def _GetGCEAccount():
@@ -618,6 +634,10 @@ class _SectionCore(_Section):
         'run `gcloud auth list` to see the accounts you currently have '
         'available.',
         callbacks=[_GetDevshellAccount, _GetGCEAccount])
+    self.activate_on_create = self._AddBool(
+        'activate_on_create',
+        help_text='If True, creating a new configuration using `gcloud config '
+        'configurations create` will also activate it.')
     self.disable_color = self._AddBool(
         'disable_color',
         help_text='If True, color will not be used when printing messages in '

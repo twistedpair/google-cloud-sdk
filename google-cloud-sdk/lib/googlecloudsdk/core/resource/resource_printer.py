@@ -34,6 +34,7 @@ Example:
 """
 
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core.resource import config_printer
 from googlecloudsdk.core.resource import csv_printer
 from googlecloudsdk.core.resource import flattened_printer
 from googlecloudsdk.core.resource import json_printer
@@ -122,6 +123,7 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
 
 
 _FORMATTERS = {
+    'config': config_printer.ConfigPrinter,
     'csv': csv_printer.CsvPrinter,
     'default': DefaultPrinter,
     'flattened': flattened_printer.FlattenedPrinter,

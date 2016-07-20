@@ -59,7 +59,7 @@ def AddCommonArgs(parser, for_update=False):
       example, the following will create a rule that allows TCP traffic
       through port 80 and allows ICMP traffic:
 
-        $ {command} MY-RULE --allow tcp:80 icmp
+        $ {command} MY-RULE --allow tcp:80,icmp
 
       TCP and UDP rules must include a port or port range.
       """

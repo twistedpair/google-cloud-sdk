@@ -290,7 +290,9 @@ class ResourceArgument(object):
                resource_name=None,
                completion_resource_id=None,
                plural=False, required=True, zonal_collection=None,
-               regional_collection=None, global_collection=None):
+               regional_collection=None, global_collection=None,
+               region_explanation=None, zone_explanation=None,
+               short_help=None, detailed_help=None):
 
     """Constructor.
 
@@ -307,10 +309,20 @@ class ResourceArgument(object):
       global_collection: str, if also zonal and/or regional adds global flag
                               and uses this collection to resolve as
                               global resource.
+      region_explanation: str, long help that will be given for region flag,
+                               empty by default.
+      zone_explanation: str, long help that will be given for zone flag, empty
+                             by default.
+      short_help: str, help for the flag being added, if not provided help text
+                       will be 'The name[s] of the ${resource_name}[s].'.
+      detailed_help: str, detailed help for the flag being added, if not
+                          provided there will be no detailed help for the flag.
     Raises:
       exceptions.Error: if there some inconsistency in arguments.
     """
     self.name_arg = name or 'name'
+    self._short_help = short_help
+    self._detailed_help = detailed_help
 
     if self.name_arg.startswith('--'):
       self.is_flag = True
@@ -333,6 +345,8 @@ class ResourceArgument(object):
       self.scopes.AddScope(ScopeEnum.REGION, collection=regional_collection)
     if global_collection:
       self.scopes.AddScope(ScopeEnum.GLOBAL, collection=global_collection)
+    self._region_explanation = region_explanation or ''
+    self._zone_explanation = zone_explanation or ''
 
   def AddArgument(self, parser):
     """Add this set of arguments to argparse parser."""
@@ -340,9 +354,13 @@ class ResourceArgument(object):
     params = dict(
         metavar=self.name.upper(),
         completion_resource=self.completion_resource_id,
-        help='The name{0} of the {1}{0}.'
-        .format('s' if self.plural else '', self.resource_name)
     )
+
+    if self._short_help:
+      params['help'] = self._short_help
+    else:
+      params['help'] = 'The name{0} of the {1}{0}.'.format(
+          's' if self.plural else '', self.resource_name)
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required
@@ -355,7 +373,10 @@ class ResourceArgument(object):
       else:
         params['nargs'] = '*' if self.plural else '?'
 
-    parser.add_argument(self.name_arg, **params)
+    argument = parser.add_argument(self.name_arg, **params)
+
+    if self._detailed_help:
+      argument.detailed_help = self._detailed_help
 
     if len(self.scopes) > 1:
       scope = parser.add_mutually_exclusive_group()
@@ -368,7 +389,7 @@ class ResourceArgument(object):
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
           operation_type='operate on',
-          explanation='')
+          explanation=self._zone_explanation)
 
     if ScopeEnum.REGION in self.scopes:
       AddRegionFlag(
@@ -376,7 +397,7 @@ class ResourceArgument(object):
           flag_prefix=self.scopes.flag_prefix,
           resource_type=self.resource_name,
           operation_type='operate on',
-          explanation='')
+          explanation=self._region_explanation)
 
     if ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
       scope.add_argument(
@@ -542,7 +563,8 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
   choice_mapping = []
   for scope in sorted(scope_value_choices.keys(),
                       key=operator.attrgetter('flag_name')):
-    for choice_resource in sorted(scope_value_choices[scope]):
+    for choice_resource in sorted(scope_value_choices[scope],
+                                  key=operator.attrgetter('name')):
       deprecated = getattr(choice_resource, 'deprecated', None)
       if deprecated is not None:
         choice_name = '{0} ({1})'.format(

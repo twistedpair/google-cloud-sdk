@@ -14,8 +14,6 @@
 
 """Flags and helpers for the compute backend-services commands."""
 
-import argparse
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -54,7 +52,7 @@ def AddLoadBalancingScheme(parser):
       choices=['INTERNAL', 'EXTERNAL'],
       type=lambda x: x.upper(),
       default='EXTERNAL',
-      help=argparse.SUPPRESS)
+      help='Specifies if this is internal or external load balancer.')
 
 
 def AddConnectionDrainingTimeout(parser):
@@ -130,10 +128,14 @@ def AddHttpsHealthChecks(parser):
       """
 
 
-def AddSessionAffinity(parser):
+def AddSessionAffinity(parser, internal_lb=False):
+  """Adds session affinity flag to the argparse."""
+  choices = ['CLIENT_IP', 'GENERATED_COOKIE', 'NONE']
+  if internal_lb:
+    choices.extend(['CLIENT_IP_PROTO', 'CLIENT_IP_PORT_PROTO'])
   session_affinity = parser.add_argument(
       '--session-affinity',
-      choices=['CLIENT_IP', 'GENERATED_COOKIE', 'NONE'],
+      choices=sorted(choices),
       default=None,  # Tri-valued, None => don't include property.
       type=lambda x: x.upper(),
       help='The type of session affinity to use.')
@@ -143,7 +145,17 @@ def AddSessionAffinity(parser):
 
         * none: Session affinity is disabled.
         * client_ip: Route requests to instances based on the hash of the
-          client's IP address.
+          client's IP address."""
+  if internal_lb:
+    session_affinity.detailed_help += """
+        * client_ip_proto: Connections from the same client IP with the same IP
+          protocol will go to the same VM in the pool while that VM remains
+          healthy. This option cannot be used for HTTP(s) load balancing.
+        * client_ip_port_proto: Connections from the same client IP with the
+          same IP protocol and port will go to the same VM in the backend while
+          that VM remains healthy. This option cannot be used for HTTP(S) load
+          balancing."""
+  session_affinity.detailed_help += """
         * generated_cookie: Route requests to instances based on the contents
           of the "GCLB" cookie set by the load balancer.
       """

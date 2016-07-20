@@ -16,9 +16,10 @@
 
 import functools
 
+from apitools.base.py import exceptions
+
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.core import apis
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class DeletedResource(object):

@@ -13,12 +13,12 @@
 # limitations under the License.
 """Code that's shared between multiple backend-buckets subcommands."""
 
+from googlecloudsdk.command_lib.compute.backend_buckets import flags as backend_buckets_flags
+
 
 def AddUpdatableArgs(parser):
   """Adds top-level backend bucket arguments that can be updated."""
-  parser.add_argument(
-      'name',
-      help='The name of the backend bucket.')
+  backend_buckets_flags.BACKEND_BUCKET_ARG.AddArgument(parser)
 
   parser.add_argument(
       '--description',

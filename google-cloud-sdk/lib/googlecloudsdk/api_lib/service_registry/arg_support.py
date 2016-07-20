@@ -258,3 +258,17 @@ def AddDescriptionArg(parser):
       help='A description of your endpoint.',
       default='',
       metavar='DESCRIPTION')
+
+
+def AddEnableExternalArg(parser):
+  """Provides the enableExternal arg.
+
+  Args:
+    parser: argparse parser for specifying command line arguments
+  """
+  parser.add_argument(
+      '--enable-external',
+      help='Externalize the endpoint through a cloud.goog record.'
+      '(default=False)',
+      default=False,
+      action='store_true')

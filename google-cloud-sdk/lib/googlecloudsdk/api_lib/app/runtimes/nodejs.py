@@ -24,7 +24,6 @@ import textwrap
 NODEJS_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
     vm: true
-    api_version: 1
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     # Copyright 2015 Google Inc. All Rights Reserved.

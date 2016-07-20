@@ -13,9 +13,10 @@
 # limitations under the License.
 """Convenience functions for dealing with gaia accounts."""
 
+from apitools.base.py import credentials_lib
+
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.third_party.apitools.base.py import credentials_lib
 
 # API restriction: account names cannot be greater than 32 characters.
 _MAX_ACCOUNT_NAME_LENGTH = 32

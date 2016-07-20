@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20160705",
+ "revision": "20160712",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -133,6 +133,10 @@
    "type": "object",
    "description": "A database instance backup run resource.",
    "properties": {
+    "description": {
+     "type": "string",
+     "description": "The description of this run, only applicable to on-demand backups."
+    },
     "endTime": {
      "type": "string",
      "description": "The time the backup operation completed in UTC timezone in RFC 3339 format, for example 2012-11-15T16:19:00.094Z.",
@@ -173,6 +177,10 @@
     "status": {
      "type": "string",
      "description": "The status of this run."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\"."
     },
     "windowStartTime": {
      "type": "string",
@@ -1468,6 +1476,36 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/sqlservice.admin"
      ]
+    },
+    "insert": {
+     "id": "sql.backupRuns.insert",
+     "path": "projects/{project}/instances/{instance}/backupRuns",
+     "httpMethod": "POST",
+     "description": "Creates a new backup run on demand.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Cloud SQL instance ID. This does not include the project ID.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID of the project that contains the instance.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "instance"
+     ],
+     "request": {
+      "$ref": "BackupRun"
+     },
+     "response": {
+      "$ref": "Operation"
+     }
     },
     "list": {
      "id": "sql.backupRuns.list",

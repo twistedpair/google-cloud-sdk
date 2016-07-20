@@ -296,6 +296,15 @@ class InvalidArgumentException(ToolException):
     self.parameter_name = parameter_name
 
 
+class ConflictingArgumentsException(ToolException):
+  """ConflictingArgumentsException arguments that are mutually exclusive."""
+
+  def __init__(self, *parameter_names):
+    super(ConflictingArgumentsException, self).__init__(
+        'arguments not allowed simultaneously: ' + ', '.join(parameter_names))
+    self.parameter_names = parameter_names
+
+
 class UnknownArgumentException(ToolException):
   """UnknownArgumentException is for arguments with unexpected values."""
 

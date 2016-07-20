@@ -17,6 +17,9 @@
 import json
 import re
 
+from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
+
 from dateutil import parser
 from dateutil import tz
 
@@ -25,8 +28,6 @@ from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.third_party.apitools.base.py import encoding
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 import yaml
 
@@ -43,6 +44,10 @@ def GetMessagesModule():
 
 def GetClientInstance():
   return apis.GetClientInstance('servicemanagement', 'v1')
+
+
+def GetIamMessagesModule():
+  return apis.GetMessagesModule('iam', 'v1')
 
 
 def GetEndpointsServiceName():

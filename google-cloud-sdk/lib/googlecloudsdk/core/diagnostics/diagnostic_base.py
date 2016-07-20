@@ -21,12 +21,14 @@ from googlecloudsdk.core.console import console_io
 class Diagnostic(object):
   """Base class for diagnostics."""
 
+  _MAX_RETRIES = 5
+
   def __init__(self, intro, title, checklist):
     self._intro = intro
     self._title = title
     self._checklist = checklist
 
-  def Run(self):
+  def RunChecks(self):
     """Runs one or more checks, tries fixes, and outputs results.
 
     Returns:
@@ -38,10 +40,16 @@ class Diagnostic(object):
     for check in self._checklist:
       num_checks_ran += 1
       result, fixer = self._RunCheck(check)
-      # If the initial check failed, try to fix issue and recheck.
-      if not result.passed and fixer:
+      # If the initial check failed, and a fixer is available try to fix issue
+      # and recheck.
+      num_retries = 0
+      while not result.passed and fixer and num_retries < self._MAX_RETRIES:
+        num_retries += 1
         result, fixer = self._RetryRunCheck(check, result, fixer)
 
+      if not result.passed and fixer and num_retries == self._MAX_RETRIES:
+        log.warn('Unable to fix {0} failure after {1} attempts.'.format(
+            self._title, num_retries))
       if result.passed:
         num_checks_passed += 1
 
@@ -63,12 +71,10 @@ class Diagnostic(object):
     return result, fixer
 
   def _RetryRunCheck(self, check, result, fixer):
-    while fixer:
-      should_check_again = fixer()
-      if not should_check_again:
-        break
-      result, fixer = self._RunCheck(check, first_run=False)
-    return result, fixer
+    should_check_again = fixer()
+    if should_check_again:
+      return self._RunCheck(check, first_run=False)
+    return result, None
 
   def _Print(self, message, as_error=False):
     logger = log.status.Print if not as_error else log.error

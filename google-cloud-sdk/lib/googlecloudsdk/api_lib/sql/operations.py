@@ -15,10 +15,12 @@
 """Common utility functions for sql operations."""
 
 import time
+
+from apitools.base.py import exceptions
+
 from googlecloudsdk.api_lib.sql import errors
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class _BaseOperations(object):

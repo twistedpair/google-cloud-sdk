@@ -472,6 +472,14 @@ _SUPPORTED_LIBRARIES = [
         default_version='1.0',
         ),
     _VersionedLibrary(
+        'pytz',
+        'https://pypi.python.org/pypi/pytz?',
+        'A library for cross-platform timezone calculations',
+        ['2016.4'],
+        latest_version='2016.4',
+        default_version='2016.4',
+        ),
+    _VersionedLibrary(
         'crcmod',
         'http://crcmod.sourceforge.net/',
         'A library for generating Cyclic Redundancy Checks (CRC).',

@@ -3,7 +3,7 @@
 
 import pkgutil
 
-from googlecloudsdk.third_party.apitools.base.py import *
+from apitools.base.py import *
 from googlecloudsdk.third_party.apis.runtimeconfig.v1beta1.runtimeconfig_v1beta1_client import *
 from googlecloudsdk.third_party.apis.runtimeconfig.v1beta1.runtimeconfig_v1beta1_messages import *
 

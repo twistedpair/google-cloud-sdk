@@ -16,6 +16,9 @@ from collections import deque
 from os import linesep
 import time
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import http_wrapper
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions
@@ -25,8 +28,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resolvers
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import http_wrapper
 
 WRONG_ZONE_ERROR_MSG = """\
 {error}

@@ -14,11 +14,12 @@
 """Annotates the resource types with extra information."""
 import httplib
 
+from apitools.base.protorpclite import messages
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 
 

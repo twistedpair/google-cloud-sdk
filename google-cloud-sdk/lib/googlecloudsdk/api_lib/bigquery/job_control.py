@@ -20,11 +20,12 @@ import logging
 import sys
 import time
 
+from apitools.base.py import exceptions
+from apitools.base.py import transfer
+
 from googlecloudsdk.api_lib.bigquery import bigquery
 from googlecloudsdk.api_lib.bigquery import job_ids
 from googlecloudsdk.api_lib.bigquery import job_progress
-from googlecloudsdk.third_party.apitools.base.py import exceptions
-from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 def ExecuteJob(

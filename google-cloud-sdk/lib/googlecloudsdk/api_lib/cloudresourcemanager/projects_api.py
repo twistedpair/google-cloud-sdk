@@ -13,13 +13,14 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Resource Management API."""
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.service_management import enable_api as services_enable_api
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.core import apis
 from googlecloudsdk.core.iam import iam_util
-from googlecloudsdk.third_party.apitools.base.py import list_pager
 
 
 def List(limit=None):

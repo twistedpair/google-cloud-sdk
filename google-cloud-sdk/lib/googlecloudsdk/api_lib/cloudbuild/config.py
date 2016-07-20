@@ -16,8 +16,11 @@
 """
 
 import os.path
+
+from apitools.base.py import encoding as apitools_encoding
+
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apitools.base.py import encoding as apitools_encoding
+from googlecloudsdk.core import properties
 import yaml
 import yaml.parser
 
@@ -59,6 +62,40 @@ class BadConfigException(exceptions.Error):
         msg=msg,
     )
     super(BadConfigException, self).__init__(msg)
+
+
+def _SubstituteVars(build):
+  """Substitute $VARS in text inside a build message.
+
+  $PROJECT_ID gets the core/project property.
+
+  Args:
+    build: Build message, The build whose values are translated.
+
+  Returns:
+    Build message, The build with translated values.
+  """
+  replacements = {
+      '$PROJECT_ID': properties.VALUES.core.project.Get(),
+  }
+
+  def MapValue(v):
+    if not v:
+      return v
+    for pat, val in replacements.iteritems():
+      if not val:
+        continue
+      v = v.replace(pat, val)
+    return v
+
+  for step in build.steps:
+    step.name = MapValue(step.name)
+    step.args = map(MapValue, step.args)
+    step.env = map(MapValue, step.env)
+    step.dir = MapValue(step.dir)
+  build.images = map(MapValue, build.images)
+
+  return build
 
 
 def LoadCloudbuildConfig(path, messages):
@@ -105,5 +142,7 @@ def LoadCloudbuildConfig(path, messages):
     raise BadConfigException(path, 'config cannot specify source')
   if not build.steps:
     raise BadConfigException(path, 'config must list at least one step')
+
+  build = _SubstituteVars(build)
 
   return build

@@ -17,13 +17,14 @@
 import json
 import os.path
 
+from apitools.base import py as apitools_base
+
 from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.service_management import services_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base import py as apitools_base
 
 
 class SwaggerOpenException(exceptions.Error):

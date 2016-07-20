@@ -25,10 +25,11 @@ import re
 import types
 import urllib
 
+from apitools.base.py import base_api
+
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apitools.base.py import base_api
 from googlecloudsdk.third_party.py27 import py27_collections as collections
 from googlecloudsdk.third_party.py27 import py27_copy as copy
 

@@ -24,33 +24,10 @@ PUBSUB = 'pubsub'
 PUBSUB_TITLE = 'Google Cloud Pub/Sub emulator'
 
 
-class NoPubSubError(exceptions.Error):
-  pass
-
-
 class InvalidArgumentError(exceptions.Error):
 
   def __init__(self, msg):
     super(InvalidArgumentError, self).__init__(msg)
-
-
-def ToArgsList(args):
-  """Converts an argparse.Namespace to a list of arg strings."""
-  args_list = []
-  if args.host_port:
-    if args.host_port.host is not None:
-      args_list.append('--host=%s' % args.host_port.host)
-    if args.host_port.port is not None:
-      args_list.append('--port=%s' % args.host_port.port)
-  return args_list
-
-
-def GetPubSubRoot():
-  pubsub_dir = os.path.join(util.GetCloudSDKRoot(), 'platform',
-                            'pubsub-emulator')
-  if not os.path.isdir(pubsub_dir):
-    raise NoPubSubError('No pubsub directory found.')
-  return pubsub_dir
 
 
 def GetDataDir():
@@ -68,7 +45,7 @@ def BuildStartArgs(args, current_os):
   Returns:
     A list of command arguments.
   """
-  pubsub_dir = GetPubSubRoot()
+  pubsub_dir = util.GetEmulatorRoot(PUBSUB)
   if current_os is platforms.OperatingSystem.WINDOWS:
     pubsub_executable = os.path.join(
         pubsub_dir, r'bin\cloud-pubsub-emulator.bat')
@@ -86,7 +63,7 @@ def GetEnv(args):
 
 def Start(args):
   pubsub_args = BuildStartArgs(
-      ToArgsList(args), platforms.OperatingSystem.Current())
+      util.BuildArgsList(args), platforms.OperatingSystem.Current())
   log.status.Print('Executing: {0}'.format(' '.join(pubsub_args)))
   pubsub_process = util.Exec(pubsub_args)
   util.WriteEnvYaml(GetEnv(args), args.data_dir)

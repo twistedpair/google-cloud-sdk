@@ -45,7 +45,7 @@ class CheckResult(object):
   def __init__(self, passed, message='', failures=None):
     self.passed = passed
     self.message = message
-    self.failures = failures
+    self.failures = failures or []
 
 
 class Failure(object):

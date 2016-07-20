@@ -51,6 +51,24 @@ from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times
 
 
+def GetBooleanArgValue(arg):
+  """Returns the Boolean value for arg."""
+  if arg in (True, False):
+    return arg
+  if not arg:
+    return False
+  try:
+    if arg.lower() == 'false':
+      return False
+  except AttributeError:
+    pass
+  try:
+    return bool(float(arg))
+  except ValueError:
+    pass
+  return True
+
+
 def TransformAlways(r):
   """Marks a transform sequence to always be applied.
 
@@ -291,12 +309,13 @@ def TransformEnum(r, projection, enums, inverse=False, undefined=''):
     r: A JSON-serializable object.
     projection: The parent ProjectionSpec.
     enums: The name of a message enum dictionary.
-    inverse: Do inverse lookup.
+    inverse: Do inverse lookup if true.
     undefined: Returns this value if there is no matching enum description.
 
   Returns:
     The enums dictionary description for the resource.
   """
+  inverse = GetBooleanArgValue(inverse)
   type_name = GetTypeDataName(enums, 'inverse-enum' if inverse else 'enum')
   descriptions = projection.symbols.get(type_name)
   if not descriptions and inverse:
@@ -623,7 +642,7 @@ def TransformResolution(r, undefined='', transpose=False):
   Args:
     r: object, A JSON-serializable object containing an x/y resolution.
     undefined: Returns this value if a recognizable resolution was not found.
-    transpose: Returns the y/x resolution if True.
+    transpose: Returns the y/x resolution if true.
 
   Returns:
     The human readable x/y resolution for r if it contains members that
@@ -666,7 +685,9 @@ def TransformResolution(r, undefined='', transpose=False):
     y = _Dimension(name_y)
     if y is None:
       continue
-    return ('{y} x {x}' if transpose else '{x} x {y}').format(x=x, y=y)
+    if GetBooleanArgValue(transpose):
+      return '{y} x {x}'.format(x=x, y=y)
+    return '{x} x {y}'.format(x=x, y=y)
   return undefined
 
 

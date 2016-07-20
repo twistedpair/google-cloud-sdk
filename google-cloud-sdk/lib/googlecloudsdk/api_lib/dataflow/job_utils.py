@@ -16,11 +16,12 @@
 
 import re
 
+from apitools.base.py import exceptions
+
 from googlecloudsdk.api_lib.dataflow import dataflow_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from surface import dataflow as commands
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 class _JobViewSummary(object):

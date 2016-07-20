@@ -25,6 +25,19 @@ class BaseServiceManagementCommand():
 
   __metaclass__ = abc.ABCMeta
 
+  _ALL_IAM_PERMISSIONS = [
+      'servicemanagement.services.get',
+      'servicemanagement.services.getProjectSettings',
+      'servicemanagement.services.delete',
+      'servicemanagement.services.update',
+      'servicemanagement.services.use',
+      'servicemanagement.services.updateProjectSettings',
+      'servicemanagement.services.check',
+      'servicemanagement.services.report',
+      'servicemanagement.services.setIamPolicy',
+      'servicemanagement.services.getIamPolicy',
+  ]
+
   @property
   def project(self):
     return properties.VALUES.core.project.Get()
@@ -45,17 +58,6 @@ class BaseServiceManagementCommand():
   def apikeys_messages(self):
     return self.context['apikeys-v1-messages']
 
-
-class AccessCommand(BaseServiceManagementCommand):
-  """A helper class with fields and methods related to principals."""
-
-  # The key is how the user enters the type in the command-line
-  # The value is what we prepend to the principal when talking to Inception
-  # (e.g., "user:foo@bar.com")
-  _PRINCIPAL_TYPES = {
-      'user': 'user',
-      'group': 'group',
-  }
-
-  def _BuildPrincipalString(self, principal, principal_type):
-    return '%s:%s' % (self._PRINCIPAL_TYPES[principal_type], principal)
+  @property
+  def all_iam_permissions(self):
+    return BaseServiceManagementCommand._ALL_IAM_PERMISSIONS

@@ -504,7 +504,7 @@ class Git(object):
               handle authentication to this repository. Otherwise, to
               authenticate, use your Google account and the password found by
               running the following command.
-               $ gcloud auth print-refresh-token
+               $ gcloud auth print-access-token
               """.format(helper_min)))
           cmd = ['git', 'clone', self._uri, abs_repository_path]
         else:

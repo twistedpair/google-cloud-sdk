@@ -18,12 +18,13 @@ import itertools
 import json
 import textwrap
 import time
+
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.bigquery import message_conversions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import list_pager
-
 
 DEFAULT_RESULTS_LIMIT = 100
 

@@ -105,9 +105,11 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
   A flattened tree. Each output line contains one *key*:*value* pair.
 
   Printer attributes:
-    no-pad: bool, Print only one space after ':'. The default adjusts the space
-      to align the values into the same output column. Use *no-pad* for
-      comparing resource outputs.
+    no-pad: Don't print space after the separator. The default adjusts the
+      space to align the values into the same output column. Use *no-pad*
+      for comparing resource outputs.
+    separator=_SEPARATOR_: Print _SEPARATOR_ between the *key* and *value*.
+      The default is ": ".
 
   For example:
 
@@ -138,10 +140,12 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
     flattened_record = _Flatten(record)
     if flattened_record:
       pad = 'no-pad' not in self.attributes
+      separator = self.attributes.get('separator', ': ')
       if pad:
         max_key_len = max(len(key) for key, _ in flattened_record)
       for key, value in flattened_record:
-        self._out.write(key + ': ')
+        self._out.write(key)
+        self._out.write(separator)
         if pad:
           self._out.write(' ' * (max_key_len - len(key)))
         val = unicode(value)

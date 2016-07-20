@@ -14,10 +14,11 @@
 
 """A library to find a Tool Results History to publish results to."""
 
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 class ToolResultsHistoryPicker(object):

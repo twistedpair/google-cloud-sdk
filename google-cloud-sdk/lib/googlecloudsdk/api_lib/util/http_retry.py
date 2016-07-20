@@ -14,8 +14,9 @@
 
 """Retry logic for HTTP exceptions."""
 
+from apitools.base.py import exceptions
+
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.third_party.apitools.base.py import exceptions
 
 
 def RetryOnHttpStatus(status):

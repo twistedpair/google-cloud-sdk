@@ -18,8 +18,9 @@ import json
 import os
 import threading
 
+from apitools.base.protorpclite import messages
+
 from googlecloudsdk.core import config
-from googlecloudsdk.third_party.apitools.base.protorpclite import messages
 from oauth2client import client
 
 

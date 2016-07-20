@@ -18,9 +18,10 @@
 
 import os.path
 
+from apitools.base.py import exceptions as api_exceptions
+from apitools.base.py import transfer
+
 from googlecloudsdk.core import apis as core_apis
-from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
-from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 class Client(object):

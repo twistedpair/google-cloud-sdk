@@ -39,7 +39,7 @@ class NetworkDiagnostic(diagnostic_base.Diagnostic):
         checklist=[ReachabilityChecker()])
 
 
-def _DefaultUrls():
+def DefaultUrls():
   """Returns a list of hosts whose reachability is essential for the Cloud SDK.
 
   Returns:
@@ -71,7 +71,8 @@ class ReachabilityChecker(check_base.Checker):
     """Run reachability check.
 
     Args:
-      urls: iterable(str), The list of urls to check connection to.
+      urls: iterable(str), The list of urls to check connection to. Defaults to
+        DefaultUrls() (above) if not supplied.
       first_run: bool, True if first time this has been run this invocation.
 
     Returns:
@@ -80,10 +81,7 @@ class ReachabilityChecker(check_base.Checker):
         fix the error or None.
     """
     if urls is None:
-      urls = _DefaultUrls()
-    if not urls:
-      result = check_base.CheckResult(passed=True, message='No urls to check.')
-      return result, None
+      urls = DefaultUrls()
 
     failures = filter(None, [self._CheckURL(url) for url in urls])
     if failures:
@@ -93,9 +91,10 @@ class ReachabilityChecker(check_base.Checker):
       fixer = http_proxy_setup.ChangeGcloudProxySettings
       return result, fixer
 
-    pass_message = 'Reachability Check {0}.\n'.format('passed' if first_run
-                                                      else 'now passes')
-    result = check_base.CheckResult(passed=True, message=pass_message)
+    pass_message = 'Reachability Check {0}.'.format('passed' if first_run else
+                                                    'now passes')
+    result = check_base.CheckResult(passed=True, message='No URLs to check.'
+                                    if not urls else pass_message)
     return result, None
 
   def _CheckURL(self, url):

@@ -188,6 +188,11 @@ MAP = {
             messages_modulepath='googlecloudsdk.third_party.apis.deploymentmanager.v2.deploymentmanager_v2_messages',
             default_version=True
         ),
+        'v2beta': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.deploymentmanager.v2beta.deploymentmanager_v2beta_client.DeploymentmanagerV2beta',
+            messages_modulepath='googlecloudsdk.third_party.apis.deploymentmanager.v2beta.deploymentmanager_v2beta_messages',
+            default_version=False
+        ),
     },
     'dns': {
         'v1': APIDef(

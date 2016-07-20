@@ -16,6 +16,9 @@
 
 import socket
 from string import lstrip
+
+from apitools.base.py import encoding
+
 from googlecloudsdk.api_lib.deployment_manager.runtime_configs import exceptions as rtc_exceptions
 from googlecloudsdk.calliope import exceptions as sdk_exceptions
 from googlecloudsdk.core import apis
@@ -24,7 +27,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
-from googlecloudsdk.third_party.apitools.base.py import encoding
 
 # The important substring from the error message "The read operation
 # timed out".

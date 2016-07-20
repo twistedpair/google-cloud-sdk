@@ -17,8 +17,9 @@
 import functools
 import json
 
+from apitools.base.py import exceptions as api_exceptions
+
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as api_exceptions
 
 
 class DebugError(exceptions.Error):

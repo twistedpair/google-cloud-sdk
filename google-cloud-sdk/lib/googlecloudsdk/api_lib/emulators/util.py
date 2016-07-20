@@ -55,6 +55,10 @@ class Java7Error(exceptions.Error):
     super(Java7Error, self).__init__(msg)
 
 
+class NoEmulatorError(exceptions.Error):
+  pass
+
+
 def EnsureComponentIsInstalled(component_id, for_text):
   """Ensures that the specified component is installed.
 
@@ -279,3 +283,22 @@ def PrefixOutput(process, prefix):
     log.status.Print('[{0}] {1}'.format(prefix, output_line.rstrip()))
     log.status.flush()
     output_line = process.stdout.readline()
+
+
+def BuildArgsList(args):
+  """Converts an argparse.Namespace to a list of arg strings."""
+  args_list = []
+  if args.host_port:
+    if args.host_port.host is not None:
+      args_list.append('--host={0}'.format(args.host_port.host))
+    if args.host_port.port is not None:
+      args_list.append('--port={0}'.format(args.host_port.port))
+  return args_list
+
+
+def GetEmulatorRoot(emulator):
+  emulator_dir = os.path.join(GetCloudSDKRoot(),
+                              'platform', '{0}-emulator'.format(emulator))
+  if not os.path.isdir(emulator_dir):
+    raise NoEmulatorError('No {0} directory found.'.format(emulator))
+  return emulator_dir

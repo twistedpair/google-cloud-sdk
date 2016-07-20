@@ -16,13 +16,14 @@
 
 import os
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import transfer
+
 from googlecloudsdk.api_lib.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import transfer
 
 
 GCS_PREFIX = 'gs://'

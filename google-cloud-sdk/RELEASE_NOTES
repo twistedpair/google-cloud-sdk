@@ -2,6 +2,37 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 118.0.0 (2016/07/20)
+
+### Emulators
+
+* There is a new `gcloud beta emulators start bigtable` command for starting a
+  Cloud Bigtable emulator.
+
+### Google Compute Engine/Networking
+
+* `gcloud alpha compute` now supports internal load balancing mode.
+  Please use `--load-balancing-scheme=internal` flag when creating backend
+  services and  forwading rules.
+  In addition `gcloud alpha compute forwarding-rules create` supports
+  `--backend-service` flag to allow forwarding to internal load balancers.
+
+### Google Container Engine
+
+* Bump kubectl from 1.2.4 to 1.2.5.
+
+### SQL
+
+* `gcloud beta sql instances create` supports new database type MYSQL_5_7.
+
+### Windows support
+
+* Beta launch of Google Cloud PowerShell. PowerShell cmdlets for managing
+  Google Cloud Storage and Google Compute Engine.
+  For more information see
+  https://googlecloudplatform.github.io/google-cloud-powershell.
+
+
 ## 117.0.0 (2016/07/13)
 
 ### Google Compute Engine
@@ -20,7 +51,7 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Container Engine
 
-*   Local SSDs are now supported for GKE clusters via the `--local-ssd-count`
+*   Local SSDs are now supported for clusters via the `--local-ssd-count`
     flag (in beta).
 
 *   Added `--additional-zones` flag to `gcloud beta container clusters update`.

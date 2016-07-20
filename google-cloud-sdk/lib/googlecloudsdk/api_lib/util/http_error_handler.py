@@ -18,8 +18,9 @@ from functools import wraps
 import json
 import sys
 
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
 
 
 def GetHttpErrorMessage(error):

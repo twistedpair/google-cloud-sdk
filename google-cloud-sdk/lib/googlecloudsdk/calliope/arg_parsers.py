@@ -53,8 +53,6 @@ import datetime
 import re
 import sys
 
-from googlecloudsdk.core import log
-
 
 __all__ = ['Duration', 'BinarySize']
 
@@ -754,24 +752,21 @@ def FloatingListValuesCatcher(
       super(FloatingListValuesCatcherAction, self).__init__(*args, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
+      class ArgShell(object):
+        """Class designed to trick argparse into displaying a nice error."""
+
+        def __init__(self, name):
+          self.option_strings = [name]
+
       if not values and switch_value is not None:
         msg = (
             'We noticed that you provided no value for flag [{flag}]. This '
             'behavior is deprecated.\nInstead, please provide an empty string '
             'as the explicit value (try [{flag} \'\']).').format(
                 flag=option_string)
-        log.warn(msg)
-        super(FloatingListValuesCatcherAction, self).__call__(
-            parser, namespace, switch_value, option_string=option_string)
-        return
+        raise argparse.ArgumentError(ArgShell(option_string), msg)
 
       if len(values) > 1:
-
-        class ArgShell(object):
-          """Class designed to trick argparse into displaying a nice error."""
-
-          def __init__(self, name):
-            self.option_strings = [name]
 
         suggestions = []
         if values and isinstance(values[0], dict):

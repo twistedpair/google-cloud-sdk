@@ -1154,7 +1154,7 @@
                   "required": true,
                   "type": "string"
                 },
-                "uid": {
+                "repoId.uid": {
                   "description": "A server-assigned, globally unique identifier.",
                   "location": "query",
                   "type": "string"
@@ -1248,7 +1248,7 @@
                   "required": true,
                   "type": "string"
                 },
-                "uid": {
+                "repoId.uid": {
                   "description": "A server-assigned, globally unique identifier.",
                   "location": "query",
                   "type": "string"
@@ -1323,7 +1323,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1382,7 +1382,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1420,7 +1420,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1485,7 +1485,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1550,7 +1550,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1611,67 +1611,67 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "sourceContext.cloudRepo.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "revisionId": {
+                    "sourceContext.cloudRepo.revisionId": {
                       "description": "A revision ID.",
                       "location": "query",
                       "type": "string"
                     },
-                    "aliasName": {
+                    "sourceContext.cloudRepo.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
                       "description": "The ID of the project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
                       "description": "The name of the repo. Leave empty for the default repo.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.uid": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.name": {
+                    "sourceContext.cloudWorkspace.workspaceId.name": {
                       "description": "The unique name of the workspace within the repo.  This is the name\nchosen by the client in the Source API's CreateWorkspace method.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.snapshotId": {
+                    "sourceContext.cloudWorkspace.snapshotId": {
                       "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.hostUri": {
+                    "sourceContext.gerrit.hostUri": {
                       "description": "The URI of a running Gerrit instance.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.gerritProject": {
+                    "sourceContext.gerrit.gerritProject": {
                       "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.revisionId": {
+                    "sourceContext.gerrit.revisionId": {
                       "description": "A revision (commit) ID.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasName": {
+                    "sourceContext.gerrit.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasContext.kind": {
+                    "sourceContext.gerrit.aliasContext.kind": {
                       "description": "The alias kind.",
                       "location": "query",
                       "type": "string",
@@ -1682,17 +1682,17 @@
                         "OTHER"
                       ]
                     },
-                    "gerrit.aliasContext.name": {
+                    "sourceContext.gerrit.aliasContext.name": {
                       "description": "The alias name.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.url": {
+                    "sourceContext.git.url": {
                       "description": "Git repository URL.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.revisionId": {
+                    "sourceContext.git.revisionId": {
                       "description": "Git commit hash.\nrequired.",
                       "location": "query",
                       "type": "string"
@@ -1771,67 +1771,67 @@
                           "pattern": "^.*$",
                           "type": "string"
                         },
-                        "uid": {
+                        "sourceContext.cloudRepo.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "revisionId": {
+                        "sourceContext.cloudRepo.revisionId": {
                           "description": "A revision ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "aliasName": {
+                        "sourceContext.cloudRepo.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
                           "description": "The ID of the project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
                           "description": "The name of the repo. Leave empty for the default repo.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.uid": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.name": {
+                        "sourceContext.cloudWorkspace.workspaceId.name": {
                           "description": "The unique name of the workspace within the repo.  This is the name\nchosen by the client in the Source API's CreateWorkspace method.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.snapshotId": {
+                        "sourceContext.cloudWorkspace.snapshotId": {
                           "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.hostUri": {
+                        "sourceContext.gerrit.hostUri": {
                           "description": "The URI of a running Gerrit instance.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.gerritProject": {
+                        "sourceContext.gerrit.gerritProject": {
                           "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.revisionId": {
+                        "sourceContext.gerrit.revisionId": {
                           "description": "A revision (commit) ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasName": {
+                        "sourceContext.gerrit.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasContext.kind": {
+                        "sourceContext.gerrit.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -1842,17 +1842,17 @@
                             "OTHER"
                           ]
                         },
-                        "gerrit.aliasContext.name": {
+                        "sourceContext.gerrit.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.url": {
+                        "sourceContext.git.url": {
                           "description": "Git repository URL.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.revisionId": {
+                        "sourceContext.git.revisionId": {
                           "description": "Git commit hash.\nrequired.",
                           "location": "query",
                           "type": "string"
@@ -1920,7 +1920,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1957,7 +1957,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -1999,7 +1999,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -2078,17 +2078,17 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "sourceContext.cloudRepo.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "aliasName": {
+                    "sourceContext.cloudRepo.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "aliasContext.kind": {
+                    "sourceContext.cloudRepo.aliasContext.kind": {
                       "description": "The alias kind.",
                       "location": "query",
                       "type": "string",
@@ -2099,57 +2099,57 @@
                         "OTHER"
                       ]
                     },
-                    "aliasContext.name": {
+                    "sourceContext.cloudRepo.aliasContext.name": {
                       "description": "The alias name.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
                       "description": "The ID of the project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
                       "description": "The name of the repo. Leave empty for the default repo.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.repoId.uid": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.workspaceId.name": {
+                    "sourceContext.cloudWorkspace.workspaceId.name": {
                       "description": "The unique name of the workspace within the repo.  This is the name\nchosen by the client in the Source API's CreateWorkspace method.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudWorkspace.snapshotId": {
+                    "sourceContext.cloudWorkspace.snapshotId": {
                       "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.hostUri": {
+                    "sourceContext.gerrit.hostUri": {
                       "description": "The URI of a running Gerrit instance.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.gerritProject": {
+                    "sourceContext.gerrit.gerritProject": {
                       "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.revisionId": {
+                    "sourceContext.gerrit.revisionId": {
                       "description": "A revision (commit) ID.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasName": {
+                    "sourceContext.gerrit.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasContext.kind": {
+                    "sourceContext.gerrit.aliasContext.kind": {
                       "description": "The alias kind.",
                       "location": "query",
                       "type": "string",
@@ -2160,17 +2160,17 @@
                         "OTHER"
                       ]
                     },
-                    "gerrit.aliasContext.name": {
+                    "sourceContext.gerrit.aliasContext.name": {
                       "description": "The alias name.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.url": {
+                    "sourceContext.git.url": {
                       "description": "Git repository URL.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.revisionId": {
+                    "sourceContext.git.revisionId": {
                       "description": "Git commit hash.\nrequired.",
                       "location": "query",
                       "type": "string"
@@ -2236,17 +2236,17 @@
                           "pattern": "^.*$",
                           "type": "string"
                         },
-                        "uid": {
+                        "sourceContext.cloudRepo.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "aliasName": {
+                        "sourceContext.cloudRepo.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "aliasContext.kind": {
+                        "sourceContext.cloudRepo.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -2257,57 +2257,57 @@
                             "OTHER"
                           ]
                         },
-                        "aliasContext.name": {
+                        "sourceContext.cloudRepo.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId": {
                           "description": "The ID of the project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName": {
                           "description": "The name of the repo. Leave empty for the default repo.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.repoId.uid": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.workspaceId.name": {
+                        "sourceContext.cloudWorkspace.workspaceId.name": {
                           "description": "The unique name of the workspace within the repo.  This is the name\nchosen by the client in the Source API's CreateWorkspace method.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudWorkspace.snapshotId": {
+                        "sourceContext.cloudWorkspace.snapshotId": {
                           "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.hostUri": {
+                        "sourceContext.gerrit.hostUri": {
                           "description": "The URI of a running Gerrit instance.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.gerritProject": {
+                        "sourceContext.gerrit.gerritProject": {
                           "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.revisionId": {
+                        "sourceContext.gerrit.revisionId": {
                           "description": "A revision (commit) ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasName": {
+                        "sourceContext.gerrit.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasContext.kind": {
+                        "sourceContext.gerrit.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -2318,17 +2318,17 @@
                             "OTHER"
                           ]
                         },
-                        "gerrit.aliasContext.name": {
+                        "sourceContext.gerrit.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.url": {
+                        "sourceContext.git.url": {
                           "description": "Git repository URL.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.revisionId": {
+                        "sourceContext.git.revisionId": {
                           "description": "Git commit hash.\nrequired.",
                           "location": "query",
                           "type": "string"
@@ -2396,7 +2396,7 @@
                       "pattern": "^.*$",
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -2470,32 +2470,32 @@
                       "required": true,
                       "type": "string"
                     },
-                    "cloudRepo.repoId.projectRepoId.projectId": {
+                    "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {
                       "description": "The ID of the project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudRepo.repoId.projectRepoId.repoName": {
+                    "sourceContext.cloudRepo.repoId.projectRepoId.repoName": {
                       "description": "The name of the repo. Leave empty for the default repo.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudRepo.repoId.uid": {
+                    "sourceContext.cloudRepo.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudRepo.revisionId": {
+                    "sourceContext.cloudRepo.revisionId": {
                       "description": "A revision ID.",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudRepo.aliasName": {
+                    "sourceContext.cloudRepo.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "cloudRepo.aliasContext.kind": {
+                    "sourceContext.cloudRepo.aliasContext.kind": {
                       "description": "The alias kind.",
                       "location": "query",
                       "type": "string",
@@ -2506,42 +2506,42 @@
                         "OTHER"
                       ]
                     },
-                    "cloudRepo.aliasContext.name": {
+                    "sourceContext.cloudRepo.aliasContext.name": {
                       "description": "The alias name.",
                       "location": "query",
                       "type": "string"
                     },
-                    "uid": {
+                    "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
                     },
-                    "snapshotId": {
+                    "sourceContext.cloudWorkspace.snapshotId": {
                       "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.hostUri": {
+                    "sourceContext.gerrit.hostUri": {
                       "description": "The URI of a running Gerrit instance.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.gerritProject": {
+                    "sourceContext.gerrit.gerritProject": {
                       "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.revisionId": {
+                    "sourceContext.gerrit.revisionId": {
                       "description": "A revision (commit) ID.",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasName": {
+                    "sourceContext.gerrit.aliasName": {
                       "description": "The name of an alias (branch, tag, etc.).",
                       "location": "query",
                       "type": "string"
                     },
-                    "gerrit.aliasContext.kind": {
+                    "sourceContext.gerrit.aliasContext.kind": {
                       "description": "The alias kind.",
                       "location": "query",
                       "type": "string",
@@ -2552,17 +2552,17 @@
                         "OTHER"
                       ]
                     },
-                    "gerrit.aliasContext.name": {
+                    "sourceContext.gerrit.aliasContext.name": {
                       "description": "The alias name.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.url": {
+                    "sourceContext.git.url": {
                       "description": "Git repository URL.",
                       "location": "query",
                       "type": "string"
                     },
-                    "git.revisionId": {
+                    "sourceContext.git.revisionId": {
                       "description": "Git commit hash.\nrequired.",
                       "location": "query",
                       "type": "string"
@@ -2650,7 +2650,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "workspaceId.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -2687,7 +2687,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -2821,7 +2821,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "uid": {
+                    "workspaceId.repoId.uid": {
                       "description": "A server-assigned, globally unique identifier.",
                       "location": "query",
                       "type": "string"
@@ -3004,32 +3004,32 @@
                           "pattern": "^.*$",
                           "type": "string"
                         },
-                        "cloudRepo.repoId.projectRepoId.projectId": {
+                        "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {
                           "description": "The ID of the project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.repoId.projectRepoId.repoName": {
+                        "sourceContext.cloudRepo.repoId.projectRepoId.repoName": {
                           "description": "The name of the repo. Leave empty for the default repo.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.repoId.uid": {
+                        "sourceContext.cloudRepo.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.revisionId": {
+                        "sourceContext.cloudRepo.revisionId": {
                           "description": "A revision ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.aliasName": {
+                        "sourceContext.cloudRepo.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.aliasContext.kind": {
+                        "sourceContext.cloudRepo.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -3040,42 +3040,42 @@
                             "OTHER"
                           ]
                         },
-                        "cloudRepo.aliasContext.name": {
+                        "sourceContext.cloudRepo.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "uid": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "snapshotId": {
+                        "sourceContext.cloudWorkspace.snapshotId": {
                           "description": "The ID of the snapshot.\nAn empty snapshot_id refers to the most recent snapshot.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.hostUri": {
+                        "sourceContext.gerrit.hostUri": {
                           "description": "The URI of a running Gerrit instance.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.gerritProject": {
+                        "sourceContext.gerrit.gerritProject": {
                           "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.revisionId": {
+                        "sourceContext.gerrit.revisionId": {
                           "description": "A revision (commit) ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasName": {
+                        "sourceContext.gerrit.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasContext.kind": {
+                        "sourceContext.gerrit.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -3086,17 +3086,17 @@
                             "OTHER"
                           ]
                         },
-                        "gerrit.aliasContext.name": {
+                        "sourceContext.gerrit.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.url": {
+                        "sourceContext.git.url": {
                           "description": "Git repository URL.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.revisionId": {
+                        "sourceContext.git.revisionId": {
                           "description": "Git commit hash.\nrequired.",
                           "location": "query",
                           "type": "string"
@@ -3167,32 +3167,32 @@
                           "required": true,
                           "type": "string"
                         },
-                        "cloudRepo.repoId.projectRepoId.projectId": {
+                        "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {
                           "description": "The ID of the project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.repoId.projectRepoId.repoName": {
+                        "sourceContext.cloudRepo.repoId.projectRepoId.repoName": {
                           "description": "The name of the repo. Leave empty for the default repo.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.repoId.uid": {
+                        "sourceContext.cloudRepo.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.revisionId": {
+                        "sourceContext.cloudRepo.revisionId": {
                           "description": "A revision ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.aliasName": {
+                        "sourceContext.cloudRepo.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "cloudRepo.aliasContext.kind": {
+                        "sourceContext.cloudRepo.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -3203,37 +3203,37 @@
                             "OTHER"
                           ]
                         },
-                        "cloudRepo.aliasContext.name": {
+                        "sourceContext.cloudRepo.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "uid": {
+                        "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.hostUri": {
+                        "sourceContext.gerrit.hostUri": {
                           "description": "The URI of a running Gerrit instance.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.gerritProject": {
+                        "sourceContext.gerrit.gerritProject": {
                           "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.revisionId": {
+                        "sourceContext.gerrit.revisionId": {
                           "description": "A revision (commit) ID.",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasName": {
+                        "sourceContext.gerrit.aliasName": {
                           "description": "The name of an alias (branch, tag, etc.).",
                           "location": "query",
                           "type": "string"
                         },
-                        "gerrit.aliasContext.kind": {
+                        "sourceContext.gerrit.aliasContext.kind": {
                           "description": "The alias kind.",
                           "location": "query",
                           "type": "string",
@@ -3244,17 +3244,17 @@
                             "OTHER"
                           ]
                         },
-                        "gerrit.aliasContext.name": {
+                        "sourceContext.gerrit.aliasContext.name": {
                           "description": "The alias name.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.url": {
+                        "sourceContext.git.url": {
                           "description": "Git repository URL.",
                           "location": "query",
                           "type": "string"
                         },
-                        "git.revisionId": {
+                        "sourceContext.git.revisionId": {
                           "description": "Git commit hash.\nrequired.",
                           "location": "query",
                           "type": "string"
@@ -3315,7 +3315,7 @@
                           "required": true,
                           "type": "string"
                         },
-                        "uid": {
+                        "workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
@@ -3359,7 +3359,7 @@
                           "required": true,
                           "type": "string"
                         },
-                        "uid": {
+                        "workspaceId.repoId.uid": {
                           "description": "A server-assigned, globally unique identifier.",
                           "location": "query",
                           "type": "string"
@@ -3431,32 +3431,32 @@
                               "pattern": "^.*$",
                               "type": "string"
                             },
-                            "cloudRepo.repoId.projectRepoId.projectId": {
+                            "sourceContext.cloudRepo.repoId.projectRepoId.projectId": {
                               "description": "The ID of the project.",
                               "location": "query",
                               "type": "string"
                             },
-                            "cloudRepo.repoId.projectRepoId.repoName": {
+                            "sourceContext.cloudRepo.repoId.projectRepoId.repoName": {
                               "description": "The name of the repo. Leave empty for the default repo.",
                               "location": "query",
                               "type": "string"
                             },
-                            "cloudRepo.repoId.uid": {
+                            "sourceContext.cloudRepo.repoId.uid": {
                               "description": "A server-assigned, globally unique identifier.",
                               "location": "query",
                               "type": "string"
                             },
-                            "cloudRepo.revisionId": {
+                            "sourceContext.cloudRepo.revisionId": {
                               "description": "A revision ID.",
                               "location": "query",
                               "type": "string"
                             },
-                            "cloudRepo.aliasName": {
+                            "sourceContext.cloudRepo.aliasName": {
                               "description": "The name of an alias (branch, tag, etc.).",
                               "location": "query",
                               "type": "string"
                             },
-                            "cloudRepo.aliasContext.kind": {
+                            "sourceContext.cloudRepo.aliasContext.kind": {
                               "description": "The alias kind.",
                               "location": "query",
                               "type": "string",
@@ -3467,37 +3467,37 @@
                                 "OTHER"
                               ]
                             },
-                            "cloudRepo.aliasContext.name": {
+                            "sourceContext.cloudRepo.aliasContext.name": {
                               "description": "The alias name.",
                               "location": "query",
                               "type": "string"
                             },
-                            "uid": {
+                            "sourceContext.cloudWorkspace.workspaceId.repoId.uid": {
                               "description": "A server-assigned, globally unique identifier.",
                               "location": "query",
                               "type": "string"
                             },
-                            "gerrit.hostUri": {
+                            "sourceContext.gerrit.hostUri": {
                               "description": "The URI of a running Gerrit instance.",
                               "location": "query",
                               "type": "string"
                             },
-                            "gerrit.gerritProject": {
+                            "sourceContext.gerrit.gerritProject": {
                               "description": "The full project name within the host. Projects may be nested, so\n\"project\/subproject\" is a valid project name.\nThe \"repo name\" is hostURI\/project.",
                               "location": "query",
                               "type": "string"
                             },
-                            "gerrit.revisionId": {
+                            "sourceContext.gerrit.revisionId": {
                               "description": "A revision (commit) ID.",
                               "location": "query",
                               "type": "string"
                             },
-                            "gerrit.aliasName": {
+                            "sourceContext.gerrit.aliasName": {
                               "description": "The name of an alias (branch, tag, etc.).",
                               "location": "query",
                               "type": "string"
                             },
-                            "gerrit.aliasContext.kind": {
+                            "sourceContext.gerrit.aliasContext.kind": {
                               "description": "The alias kind.",
                               "location": "query",
                               "type": "string",
@@ -3508,17 +3508,17 @@
                                 "OTHER"
                               ]
                             },
-                            "gerrit.aliasContext.name": {
+                            "sourceContext.gerrit.aliasContext.name": {
                               "description": "The alias name.",
                               "location": "query",
                               "type": "string"
                             },
-                            "git.url": {
+                            "sourceContext.git.url": {
                               "description": "Git repository URL.",
                               "location": "query",
                               "type": "string"
                             },
-                            "git.revisionId": {
+                            "sourceContext.git.revisionId": {
                               "description": "Git commit hash.\nrequired.",
                               "location": "query",
                               "type": "string"

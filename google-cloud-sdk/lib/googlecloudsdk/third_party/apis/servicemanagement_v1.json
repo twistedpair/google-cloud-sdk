@@ -114,8 +114,14 @@
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
         },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
+        },
         "https://www.googleapis.com/auth/service.management": {
           "description": "Manage your Google API service configuration"
+        },
+        "https://www.googleapis.com/auth/service.management.readonly": {
+          "description": "View your Google API service configuration"
         }
       }
     }
@@ -141,11 +147,11 @@
     },
     "ManagedService": {
       "id": "ManagedService",
-      "description": "The full representation of an API Service that is managed by the\n`ServiceManager` API.  Includes both the service configuration, as well as\nother control plane deployment related information.",
+      "description": "The full representation of a Service that is managed by\nGoogle Service Management.",
       "type": "object",
       "properties": {
         "serviceName": {
-          "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  This name must match `google.api.Service.name` in the\n`service_config` field.",
+          "description": "The name of the service. See the [overview](\/service-management\/overview)\nfor naming requirements.\nThis name must match `google.api.Service.name` in the\n`service_config` field.",
           "type": "string"
         },
         "producerProjectId": {
@@ -153,17 +159,13 @@
           "type": "string"
         },
         "generation": {
-          "description": "A server-assigned monotonically increasing number that changes whenever a\nmutation is made to the `ManagedService` or any of its components via the\n`ServiceManager` API.",
+          "description": "A server-assigned monotonically increasing number that changes whenever a\nmutation is made to the `ManagedService` or any of its components via\nGoogle Service Management.",
           "type": "string",
           "format": "int64"
         },
         "serviceConfig": {
           "description": "The service's generated configuration.",
           "$ref": "Service"
-        },
-        "configSource": {
-          "description": "User-supplied source configuration for the service. This is distinct from\nthe generated configuration provided in `google.api.Service`.\nThis is NOT populated on GetService calls at the moment.\nNOTE: Any upsert operation that contains both a service_config\nand a config_source is considered invalid and will result in\nan error being returned.",
-          "$ref": "ConfigSource"
         },
         "operations": {
           "description": "Read-only view of pending operations affecting this resource, if requested.",
@@ -241,10 +243,6 @@
           "description": "HTTP configuration.",
           "$ref": "Http"
         },
-        "quota": {
-          "description": "Quota configuration.",
-          "$ref": "Quota"
-        },
         "authentication": {
           "description": "Auth configuration.",
           "$ref": "Authentication"
@@ -260,10 +258,6 @@
         "customError": {
           "description": "Custom error configuration.",
           "$ref": "CustomError"
-        },
-        "projectProperties": {
-          "description": "Configuration of per-consumer project properties.",
-          "$ref": "ProjectProperties"
         },
         "control": {
           "description": "Configuration for the service control plane.",
@@ -289,10 +283,6 @@
           "items": {
             "$ref": "MonitoredResourceDescriptor"
           }
-        },
-        "billing": {
-          "description": "Billing configuration of the service.",
-          "$ref": "Billing"
         },
         "logging": {
           "description": "Logging configuration of the service.",
@@ -761,10 +751,6 @@
           "items": {
             "$ref": "VisibilityRule"
           }
-        },
-        "enforceRuntimeVisibility": {
-          "description": "This fields is deprecated and settings this will not have any affect. If\nyou have restriction set on an element, visibility is always enforced at\nruntime.\n\nControls whether visibility rules are enforced at runtime for requests to\nall APIs and methods.\n\nIf true, requests without method visibility will receive a\nNOT_FOUND error, and any non-visible fields will be scrubbed from\nthe response messages. In service config version 0, the default is false.\nIn later config versions, it's true.\n\nNote, the `enforce_runtime_visibility` specified in a visibility rule\noverrides this setting for the APIs or methods asscoiated with the rule.",
-          "type": "boolean"
         }
       }
     },
@@ -780,10 +766,6 @@
         "restriction": {
           "description": "Lists the visibility labels for this rule. Any of the listed labels grants\nvisibility to the element.\n\nIf a rule has multiple labels, removing one of the labels but not all of\nthem can break clients.\n\nExample:\n\n    visibility:\n      rules:\n      - selector: google.calendar.Calendar.EnhancedSearch\n        restriction: GOOGLE_INTERNAL, TRUSTED_TESTER\n\nRemoving GOOGLE_INTERNAL from this restriction will break clients that\nrely on this method and only had access to it through GOOGLE_INTERNAL.",
           "type": "string"
-        },
-        "enforceRuntimeVisibility": {
-          "description": "This fields is deprecated and settings this will not have any affect. If\nyou have restriction set on an element, visibility is always enforced at\nruntime.\n\nControls whether visibility is enforced at runtime for requests to an API\nmethod. This setting has meaning only when the selector applies to a method\nor an API.\n\nIf true, requests without method visibility will receive a\nNOT_FOUND error, and any non-visible fields will be scrubbed from\nthe response messages. The default is determined by the value of\ngoogle.api.Visibility.enforce_runtime_visibility.",
-          "type": "boolean"
         }
       }
     },
@@ -869,7 +851,11 @@
           "$ref": "CustomHttpPattern"
         },
         "body": {
-          "description": "The name of the request field whose value is mapped to the HTTP body, or\n`*` for mapping all fields not captured by the path pattern to the HTTP\nbody. NOTE: the referred field must not be a repeated field.",
+          "description": "The name of the request field whose value is mapped to the HTTP body, or\n`*` for mapping all fields not captured by the path pattern to the HTTP\nbody. NOTE: the referred field must not be a repeated field and must be\npresent at the top-level of response message type.",
+          "type": "string"
+        },
+        "responseBody": {
+          "description": "The name of the response field whose value is mapped to the HTTP body of\nresponse. Other response fields are ignored. This field is optional. When\nnot set, the response message will be used as HTTP body of response.\nNOTE: the referred field must be not a repeated field and must be present\nat the top-level of response message type.",
           "type": "string"
         },
         "mediaUpload": {
@@ -923,141 +909,6 @@
         "enabled": {
           "description": "Whether download is enabled.",
           "type": "boolean"
-        }
-      }
-    },
-    "Quota": {
-      "id": "Quota",
-      "description": "Quota configuration helps to achieve fairness and budgeting in service\nusage.\n\n- Fairness is achieved through the use of short-term quota limits\n  that are usually defined over a time window of several seconds or\n  minutes. When such a limit is applied, for example at the user\n  level, it ensures that no single user will monopolize the service\n  or a given customer's allocated portion of it.\n- Budgeting is achieved through the use of long-term quota limits\n  that are usually defined over a time window of one or more\n  days. These limits help client application developers predict the\n  usage and help budgeting.\n\nQuota enforcement uses a simple token-based algorithm for resource sharing.\n\nThe quota configuration structure is as follows:\n\n- `QuotaLimit` defines a single enforceable limit with a specified\n  token amount that can be consumed over a specific duration and\n  applies to a particular entity, like a project or an end user. If\n  the limit applies to a user, each user making the request will\n  get the specified number of tokens to consume. When the tokens\n  run out, the requests from that user will be blocked until the\n  duration elapses and the next duration window starts.\n\n- `QuotaGroup` groups a set of quota limits.\n\n- `QuotaRule` maps a method to a set of quota groups. This allows\n  sharing of quota groups across methods as well as one method\n  consuming tokens from more than one quota group. When a group\n  contains multiple limits, requests to a method consuming tokens\n  from that group must satisfy all the limits in that group.\n\nExample:\n\n    quota:\n      groups:\n      - name: ReadGroup\n        description: Read requests\n        limits:\n        - name: ProjectQpd\n          default_limit: 10000\n          duration: 1d\n          limit_by: CLIENT_PROJECT\n\n        - name: UserQps\n          default_limit: 20000\n          duration: 100s\n          limit_by: USER\n\n      - name: WriteGroup\n        description: Write requests\n        limits:\n        - name: ProjectQpd\n          default_limit: 1000\n          max_limit: 1000\n          duration: 1d\n          limit_by: CLIENT_PROJECT\n\n        - name: UserQps\n          default_limit: 2000\n          max_limit: 4000\n          duration: 100s\n          limit_by: USER\n\n      rules:\n      - selector: \"*\"\n        groups:\n        - group: ReadGroup\n      - selector: google.calendar.Calendar.Update\n        groups:\n        - group: WriteGroup\n          cost: 2\n      - selector: google.calendar.Calendar.Delete\n        groups:\n        - group: WriteGroup\n\nHere, the configuration defines two quota groups: ReadGroup and WriteGroup,\neach defining its own daily and per-second limits. Note that One Platform\nenforces per-second limits averaged over a duration of 100 seconds. The rules\nmap ReadGroup for all methods, except for the Update and Delete methods.\nThese two methods consume from WriteGroup, with Update method consuming at\ntwice the rate as Delete method.\n\nMultiple quota groups can be specified for a method. The quota limits in all\nof those groups will be enforced. Example:\n\n    quota:\n      groups:\n      - name: WriteGroup\n        description: Write requests\n        limits:\n        - name: ProjectQpd\n          default_limit: 1000\n          max_limit: 1000\n          duration: 1d\n          limit_by: CLIENT_PROJECT\n\n        - name: UserQps\n          default_limit: 2000\n          max_limit: 4000\n          duration: 100s\n          limit_by: USER\n\n      - name: StorageGroup\n        description: Storage requests\n        limits:\n        - name: StorageQuota\n          default_limit: 1000\n          duration: 0\n          limit_by: USER\n\n      rules:\n      - selector: google.calendar.Calendar.Create\n        groups:\n        - group: StorageGroup\n        - group: WriteGroup\n      - selector: google.calendar.Calendar.Delete\n        groups:\n        - group: StorageGroup\n\nIn the above example, the Create and Delete methods manage the user's\nstorage space. In addition, Create method uses WriteGroup to manage the\nrequests. In this case, requests to Create method need to satisfy all quota\nlimits defined in both quota groups.\n\nOne can disable quota for selected method(s) identified by the selector by\nsetting disable_quota to ture. For example,\n\n      rules:\n      - selector: \"*\"\n        group:\n        - group ReadGroup\n      - selector: google.calendar.Calendar.Select\n        disable_quota: true",
-      "type": "object",
-      "properties": {
-        "groups": {
-          "description": "List of `QuotaGroup` definitions for the service.",
-          "type": "array",
-          "items": {
-            "$ref": "QuotaGroup"
-          }
-        },
-        "rules": {
-          "description": "List of `QuotaRule` definitions, each one mapping a selected method to one\nor more quota groups.",
-          "type": "array",
-          "items": {
-            "$ref": "QuotaRule"
-          }
-        }
-      }
-    },
-    "QuotaGroup": {
-      "id": "QuotaGroup",
-      "description": "`QuotaGroup` defines a set of quota limits to enforce.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of this quota group. Must be unique within the service.\n\nQuota group name is used as part of the id for quota limits. Once the quota\ngroup has been put into use, the name of the quota group should be\nimmutable.",
-          "type": "string"
-        },
-        "description": {
-          "description": "User-visible description of this quota group.",
-          "type": "string"
-        },
-        "limits": {
-          "description": "Quota limits to be enforced when this quota group is used. A request must\nsatisfy all the limits in a group for it to be permitted.",
-          "type": "array",
-          "items": {
-            "$ref": "QuotaLimit"
-          }
-        },
-        "billable": {
-          "description": "Indicates if the quota limits defined in this quota group apply to\nconsumers who have active billing. Quota limits defined in billable\ngroups will be applied only to consumers who have active billing. The\namount of tokens consumed from billable quota group will also be reported\nfor billing. Quota limits defined in non-billable groups will be applied\nonly to consumers who have no active billing.",
-          "type": "boolean"
-        }
-      }
-    },
-    "QuotaLimit": {
-      "id": "QuotaLimit",
-      "description": "`QuotaLimit` defines a specific limit that applies over a specified duration\nfor a limit type. There can be at most one limit for a duration and limit\ntype combination defined within a `QuotaGroup`.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the quota limit.  Must be unique within the quota group.\nThis name is used to refer to the limit when overriding the limit on\na per-project basis.  If a name is not provided, it will be generated\nfrom the limit_by and duration fields.\n\nThe maximum length of the limit name is 64 characters.\n\nThe name of a limit is used as a unique identifier for this limit.\nTherefore, once a limit has been put into use, its name should be\nimmutable. You can use the display_name field to provide a user-friendly\nname for the limit. The display name can be evolved over time without\naffecting the identity of the limit.",
-          "type": "string"
-        },
-        "limitBy": {
-          "description": "Limit type to use for enforcing this quota limit. Each unique value gets\nthe defined number of tokens to consume from. For a quota limit that uses\nuser type, each user making requests through the same client application\nproject will get his\/her own pool of tokens to consume, whereas for a limit\nthat uses client project type, all users making requests through the same\nclient application project share a single pool of tokens.",
-          "enumDescriptions": [
-            "ID of the project owned by the client application developer making the\nrequest.",
-            "ID of the end user making the request using the client application."
-          ],
-          "type": "string",
-          "enum": [
-            "CLIENT_PROJECT",
-            "USER"
-          ]
-        },
-        "description": {
-          "description": "Optional. User-visible, extended description for this quota limit.\nShould be used only when more context is needed to understand this limit\nthan provided by the limit's display name (see: `display_name`).",
-          "type": "string"
-        },
-        "defaultLimit": {
-          "description": "Default number of tokens that can be consumed during the specified\nduration. This is the number of tokens assigned when a client\napplication developer activates the service for his\/her project.\n\nSpecifying a value of 0 will block all requests. This can be used if you\nare provisioning quota to selected consumers and blocking others.\nSimilarly, a value of -1 will indicate an unlimited quota. No other\nnegative values are allowed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxLimit": {
-          "description": "Maximum number of tokens that can be consumed during the specified\nduration. Client application developers can override the default limit up\nto this maximum. If specified, this value cannot be set to a value less\nthan the default limit. If not specified, it is set to the default limit.\n\nTo allow clients to apply overrides with no upper bound, set this to -1,\nindicating unlimited maximum quota.",
-          "type": "string",
-          "format": "int64"
-        },
-        "freeTier": {
-          "description": "Free tier value displayed in the Developers Console for this limit.\nThe free tier is the number of tokens that will be subtracted from the\nbilled amount when billing is enabled.\nThis field can only be set on a limit with duration \"1d\", in a billable\ngroup; it is invalid on any other limit. If this field is not set, it\ndefaults to 0, indicating that there is no free tier for this service.",
-          "type": "string",
-          "format": "int64"
-        },
-        "duration": {
-          "description": "Duration of this limit in textual notation. Example: \"100s\", \"24h\", \"1d\".\nFor duration longer than a day, only multiple of days is supported. We\nsupport only \"100s\" and \"1d\" for now. Additional support will be added in\nthe future. \"0\" indicates indefinite duration.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "User-visible display name for this limit.\nOptional. If not set, the UI will provide a default display name based on\nthe quota configuration. This field can be used to override the default\ndisplay name generated from the configuration.",
-          "type": "string"
-        }
-      }
-    },
-    "QuotaRule": {
-      "id": "QuotaRule",
-      "description": "`QuotaRule` maps a method to a set of `QuotaGroup`s.",
-      "type": "object",
-      "properties": {
-        "selector": {
-          "description": "Selects methods to which this rule applies.\n\nRefer to selector for syntax details.",
-          "type": "string"
-        },
-        "groups": {
-          "description": "Quota groups to be used for this method. This supports associating a cost\nwith each quota group.",
-          "type": "array",
-          "items": {
-            "$ref": "QuotaGroupMapping"
-          }
-        },
-        "disableQuota": {
-          "description": "Indicates if quota checking should be enforced. Quota will be disabled for\nmethods without quota rules or with quota rules having this field set to\ntrue. When this field is set to true, no quota group mapping is allowed.",
-          "type": "boolean"
-        }
-      }
-    },
-    "QuotaGroupMapping": {
-      "id": "QuotaGroupMapping",
-      "description": "A quota group mapping.",
-      "type": "object",
-      "properties": {
-        "group": {
-          "description": "The `QuotaGroup.name` of the group. Requests for the mapped methods will\nconsume tokens from each of the limits defined in this group.",
-          "type": "string"
-        },
-        "cost": {
-          "description": "Number of tokens to consume for each request. This allows different cost\nto be associated with different methods that consume from the same quota\ngroup. By default, each request will cost one token.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -1197,45 +1048,8 @@
       "description": "Configuration controlling usage of a service.",
       "type": "object",
       "properties": {
-        "serviceAccess": {
-          "description": "Controls which users can see or activate the service.",
-          "enumDescriptions": [
-            "The service can only be seen\/used by users identified in the service's\naccess control policy.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_RESTRICTED.",
-            "The service can be seen\/used by anyone.\n\nIf the service has not been whitelisted by your domain administrator\nfor out-of-org publishing, then this mode will be treated like\nORG_PUBLIC.\n\nThe discovery document for the service will also be public and allow\nunregistered access.",
-            "The service can be seen\/used by users identified in the service's\naccess control policy and they are within the organization that owns the\nservice.\n\nAccess is further constrained to the group\ncontrolled by the administrator of the project\/org that owns the\nservice.",
-            "The service can be seen\/used by the group of users controlled by the\nadministrator of the project\/org that owns the service."
-          ],
-          "type": "string",
-          "enum": [
-            "RESTRICTED",
-            "PUBLIC",
-            "ORG_RESTRICTED",
-            "ORG_PUBLIC"
-          ]
-        },
         "requirements": {
           "description": "Requirements that must be satisfied before a consumer project can use the\nservice. Each requirement is of the form <service.name>\/<requirement-id>;\nfor example 'serviceusage.googleapis.com\/billing-enabled'.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "dependsOnServices": {
-          "description": "Services that must be activated in order for this service to be used.\nThe set of services activated as a result of these relations are all\nactivated in parallel with no guaranteed order of activation.\nEach string is a service name, e.g. `calendar.googleapis.com`.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "activationHooks": {
-          "description": "Services that must be contacted before a consumer can begin using the\nservice. Each service will be contacted in sequence, and, if any activation\ncall fails, the entire activation will fail. Each hook is of the form\n<service.name>\/<hook-id>, where <hook-id> is optional; for example:\n'robotservice.googleapis.com\/default'.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deactivationHooks": {
-          "description": "Services that must be contacted before a consumer can deactivate a\nservice. Each service will be contacted in sequence, and, if any\ndeactivation call fails, the entire deactivation will fail. Each hook is\nof the form <service.name>\/<hook-id>, where <hook-id> is optional; for\nexample:\n'compute.googleapis.com\/'.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1298,53 +1112,6 @@
         "isErrorType": {
           "description": "Mark this message as possible payload in error response.  Otherwise,\nobjects of this type will be filtered when they appear in error payload.",
           "type": "boolean"
-        }
-      }
-    },
-    "ProjectProperties": {
-      "id": "ProjectProperties",
-      "description": "A descriptor for defining project properties for a service. One service may\nhave many consumer projects, and the service may want to behave differently\ndepending on some properties on the project. For example, a project may be\nassociated with a school, or a business, or a government agency, a business\ntype property on the project may affect how a service responds to the client.\nThis descriptor defines which properties are allowed to be set on a project.\n\nExample:\n\n   project_properties:\n     properties:\n     - name: NO_WATERMARK\n       type: BOOL\n       description: Allows usage of the API without watermarks.\n     - name: EXTENDED_TILE_CACHE_PERIOD\n       type: INT64",
-      "type": "object",
-      "properties": {
-        "properties": {
-          "description": "List of per consumer project-specific properties.",
-          "type": "array",
-          "items": {
-            "$ref": "Property"
-          }
-        }
-      }
-    },
-    "Property": {
-      "id": "Property",
-      "description": "Defines project properties.\n\nAPI services can define properties that can be assigned to consumer projects\nso that backends can perform response customization without having to make\nadditional calls or maintain additional storage. For example, Maps API\ndefines properties that controls map tile cache period, or whether to embed a\nwatermark in a result.\n\nThese values can be set via API producer console. Only API providers can\ndefine and set these properties.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the property (a.k.a key).",
-          "type": "string"
-        },
-        "type": {
-          "description": "The type of this property.",
-          "enumDescriptions": [
-            "The type is unspecified, and will result in an error.",
-            "The type is `int64`.",
-            "The type is `bool`.",
-            "The type is `string`.",
-            "The type is 'double'."
-          ],
-          "type": "string",
-          "enum": [
-            "UNSPECIFIED",
-            "INT64",
-            "BOOL",
-            "STRING",
-            "DOUBLE"
-          ]
-        },
-        "description": {
-          "description": "The description of the property",
-          "type": "string"
         }
       }
     },
@@ -1438,9 +1205,9 @@
           "description": "Whether the metric records instantaneous values, changes to a value, etc.",
           "enumDescriptions": [
             "Do not use this default value.",
-            "Instantaneous measurements of a varying quantity.",
-            "Changes over non-overlapping time intervals.",
-            "Cumulative value over time intervals that can overlap.\nThe overlapping intervals must have the same start time."
+            "An instantaneous measurement of a value.",
+            "The change in a value during a time interval.",
+            "A value accumulated over a time interval.  Cumulative\nmeasurements in a time series should have the same start time\nand increasing end times, until an event resets the cumulative\nvalue to zero and sets a new start time for the following\npoints."
           ],
           "type": "string",
           "enum": [
@@ -1513,71 +1280,6 @@
           "items": {
             "$ref": "LabelDescriptor"
           }
-        }
-      }
-    },
-    "Billing": {
-      "id": "Billing",
-      "description": "Billing related configuration of the service.\n\nThe following example shows how to configure metrics for billing:\n\n    metrics:\n    - name: library.googleapis.com\/read_calls\n      metric_kind: DELTA\n      value_type: INT64\n    - name: library.googleapis.com\/write_calls\n      metric_kind: DELTA\n      value_type: INT64\n    billing:\n      metrics:\n      - library.googleapis.com\/read_calls\n      - library.googleapis.com\/write_calls\n\nThe next example shows how to enable billing status check and customize the\ncheck behavior. It makes sure billing status check is included in the `Check`\nmethod of [Service Control API](https:\/\/cloud.google.com\/service-control\/).\nIn the example, \"google.storage.Get\" method can be served when the billing\nstatus is either `current` or `delinquent`, while \"google.storage.Write\"\nmethod can only be served when the billing status is `current`:\n\n    billing:\n      rules:\n      - selector: google.storage.Get\n        allowed_statuses:\n        - current\n        - delinquent\n      - selector: google.storage.Write\n        allowed_statuses: current\n\nMostly services should only allow `current` status when serving requests.\nIn addition, services can choose to allow both `current` and `delinquent`\nstatuses when serving read-only requests to resources. If there's no\nmatching selector for operation, no billing status check will be performed.",
-      "type": "object",
-      "properties": {
-        "metrics": {
-          "description": "Names of the metrics to report to billing. Each name must\nbe defined in Service.metrics section.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "rules": {
-          "description": "A list of billing status rules for configuring billing status check.",
-          "type": "array",
-          "items": {
-            "$ref": "BillingStatusRule"
-          }
-        },
-        "areaUnderCurveParams": {
-          "description": "Per resource grouping for delta billing based resource configs.",
-          "type": "array",
-          "items": {
-            "$ref": "AreaUnderCurveParams"
-          }
-        }
-      }
-    },
-    "BillingStatusRule": {
-      "id": "BillingStatusRule",
-      "description": "Defines the billing status requirements for operations.\n\nWhen used with\n[Service Control API](https:\/\/cloud.google.com\/service-control\/), the\nfollowing statuses are supported:\n\n- **current**: the associated billing account is up to date and capable of\n               paying for resource usages.\n- **delinquent**: the associated billing account has a correctable problem,\n                  such as late payment.\n\nMostly services should only allow `current` status when serving requests.\nIn addition, services can choose to allow both `current` and `delinquent`\nstatuses when serving read-only requests to resources. If the list of\nallowed_statuses is empty, it means no billing requirement.",
-      "type": "object",
-      "properties": {
-        "selector": {
-          "description": "Selects the operation names to which this rule applies.\nRefer to selector for syntax details.",
-          "type": "string"
-        },
-        "allowedStatuses": {
-          "description": "Allowed billing statuses. The billing status check passes if the actual\nbilling status matches any of the provided values here.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AreaUnderCurveParams": {
-      "id": "AreaUnderCurveParams",
-      "description": "AreaUnderCurveParams groups the metrics relevant to generating\nduration based metric from base (snapshot) metric and delta\n(change) metric.  The generated metric has two dimensions:\n   resource usage metric and the duration the metric applies.\n\nEssentially the generated metric is the Area Under Curve(AUC) of\nthe \"duration - resource\" usage curve. This AUC metric is readily\nappliable to billing since \"billable resource usage\" depends on\nresource usage and duration of the resource used.\n\nA service config may contain multiple resources and corresponding\nmetrics. AreaUnderCurveParams groups the relevant ones: which\nsnapshot_metric and change_metric are used to produce which\ngenerated_metric.",
-      "type": "object",
-      "properties": {
-        "snapshotMetric": {
-          "description": "Total usage of a resource at a particular timestamp. This should be\na GAUGE metric.",
-          "type": "string"
-        },
-        "changeMetric": {
-          "description": "Change of resource usage at a particular timestamp. This should a\nDELTA metric.",
-          "type": "string"
-        },
-        "generatedMetric": {
-          "description": "Metric generated from snapshot_metric and change_metric. This\nis also a DELTA metric.",
-          "type": "string"
         }
       }
     },
@@ -1707,122 +1409,6 @@
         "urlQueryParameter": {
           "description": "Define the URL query parameter name to use for the parameter. It is case\nsensitive.",
           "type": "string"
-        }
-      }
-    },
-    "ConfigSource": {
-      "id": "ConfigSource",
-      "description": "Represents a user-specified configuration for a service (as opposed to the\nthe generated service config form provided by `google.api.Service`). This is\nmeant to encode service config as manipulated directly by customers,\nrather than the config form resulting from toolchain generation and\nnormalization.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. If empty, the server may choose to\ngenerate one instead.",
-          "type": "string"
-        },
-        "options": {
-          "description": "Options to cover use of source config within ServiceManager and tools",
-          "$ref": "ConfigOptions"
-        },
-        "files": {
-          "description": "Set of source configuration files that are used to generate a service\nconfig (`google.api.Service`).",
-          "type": "array",
-          "items": {
-            "$ref": "ConfigFile"
-          }
-        },
-        "openApiSpec": {
-          "description": "OpenAPI specification",
-          "$ref": "OpenApiSpec"
-        },
-        "protoSpec": {
-          "description": "Protocol buffer API specification",
-          "$ref": "ProtoSpec"
-        }
-      }
-    },
-    "ConfigOptions": {
-      "id": "ConfigOptions",
-      "description": "A set of options to cover use of source config within `ServiceManager`\nand related tools.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ConfigFile": {
-      "id": "ConfigFile",
-      "description": "Generic specification of a source configuration file",
-      "type": "object",
-      "properties": {
-        "filePath": {
-          "description": "The file name of the configuration file (full or relative path).",
-          "type": "string"
-        },
-        "contents": {
-          "description": "DEPRECATED. The contents of the configuration file. Use file_contents\nmoving forward.",
-          "type": "string"
-        },
-        "fileContents": {
-          "description": "The bytes that constitute the file.",
-          "type": "string",
-          "format": "byte"
-        },
-        "fileType": {
-          "description": "The kind of configuration file represented. This is used to determine\nthe method for generating `google.api.Service` using this file.",
-          "enumDescriptions": [
-            "Unknown file type.",
-            "YAML-specification of service.",
-            "OpenAPI specification, serialized in JSON.",
-            "OpenAPI specification, serialized in YAML.",
-            "FileDescriptorSet, generated by protoc.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named out.pb.\n\n$protoc --include_imports --include_source_info test.proto -o out.pb"
-          ],
-          "type": "string",
-          "enum": [
-            "FILE_TYPE_UNSPECIFIED",
-            "SERVICE_CONFIG_YAML",
-            "OPEN_API_JSON",
-            "OPEN_API_YAML",
-            "FILE_DESCRIPTOR_SET_PROTO"
-          ]
-        }
-      }
-    },
-    "OpenApiSpec": {
-      "id": "OpenApiSpec",
-      "description": "A collection of OpenAPI specification files.",
-      "type": "object",
-      "properties": {
-        "openApiFiles": {
-          "description": "Individual files.",
-          "type": "array",
-          "items": {
-            "$ref": "ConfigFile"
-          }
-        }
-      }
-    },
-    "ProtoSpec": {
-      "id": "ProtoSpec",
-      "description": "A collection of protocol buffer service specification files.",
-      "type": "object",
-      "properties": {
-        "protoDescriptor": {
-          "description": "A complete descriptor of a protocol buffer specification",
-          "$ref": "ProtoDescriptor"
-        }
-      }
-    },
-    "ProtoDescriptor": {
-      "id": "ProtoDescriptor",
-      "description": "Contains a serialized protoc-generated protocol buffer message descriptor set\nalong with a URL that describes the type of the descriptor message.",
-      "type": "object",
-      "properties": {
-        "typeUrl": {
-          "description": "A URL\/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nOnly 'type.googleapis.com\/google.protobuf.FileDescriptorSet' is supported.\nIf the type_url is not specificed,\n'type.googleapis.com\/google.protobuf.FileDescriptorSet' will be assumed.",
-          "type": "string"
-        },
-        "value": {
-          "description": "Must be a valid serialized protocol buffer descriptor set.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named descriptor.pb.\n\n$protoc --include_imports --include_source_info test.proto -o descriptor.pb",
-          "type": "string",
-          "format": "byte"
         }
       }
     },
@@ -2107,6 +1693,82 @@
         }
       }
     },
+    "QuotaGroup": {
+      "id": "QuotaGroup",
+      "description": "`QuotaGroup` defines a set of quota limits to enforce.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of this quota group. Must be unique within the service.\n\nQuota group name is used as part of the id for quota limits. Once the quota\ngroup has been put into use, the name of the quota group should be\nimmutable.",
+          "type": "string"
+        },
+        "description": {
+          "description": "User-visible description of this quota group.",
+          "type": "string"
+        },
+        "limits": {
+          "description": "Quota limits to be enforced when this quota group is used. A request must\nsatisfy all the limits in a group for it to be permitted.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaLimit"
+          }
+        },
+        "billable": {
+          "description": "Indicates if the quota limits defined in this quota group apply to\nconsumers who have active billing. Quota limits defined in billable\ngroups will be applied only to consumers who have active billing. The\namount of tokens consumed from billable quota group will also be reported\nfor billing. Quota limits defined in non-billable groups will be applied\nonly to consumers who have no active billing.",
+          "type": "boolean"
+        }
+      }
+    },
+    "QuotaLimit": {
+      "id": "QuotaLimit",
+      "description": "`QuotaLimit` defines a specific limit that applies over a specified duration\nfor a limit type. There can be at most one limit for a duration and limit\ntype combination defined within a `QuotaGroup`.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the quota limit.  Must be unique within the quota group.\nThis name is used to refer to the limit when overriding the limit on\na per-project basis.  If a name is not provided, it will be generated\nfrom the limit_by and duration fields.\n\nThe maximum length of the limit name is 64 characters.\n\nThe name of a limit is used as a unique identifier for this limit.\nTherefore, once a limit has been put into use, its name should be\nimmutable. You can use the display_name field to provide a user-friendly\nname for the limit. The display name can be evolved over time without\naffecting the identity of the limit.",
+          "type": "string"
+        },
+        "limitBy": {
+          "description": "Limit type to use for enforcing this quota limit. Each unique value gets\nthe defined number of tokens to consume from. For a quota limit that uses\nuser type, each user making requests through the same client application\nproject will get his\/her own pool of tokens to consume, whereas for a limit\nthat uses client project type, all users making requests through the same\nclient application project share a single pool of tokens.",
+          "enumDescriptions": [
+            "ID of the project owned by the client application developer making the\nrequest.",
+            "ID of the end user making the request using the client application."
+          ],
+          "type": "string",
+          "enum": [
+            "CLIENT_PROJECT",
+            "USER"
+          ]
+        },
+        "description": {
+          "description": "Optional. User-visible, extended description for this quota limit.\nShould be used only when more context is needed to understand this limit\nthan provided by the limit's display name (see: `display_name`).",
+          "type": "string"
+        },
+        "defaultLimit": {
+          "description": "Default number of tokens that can be consumed during the specified\nduration. This is the number of tokens assigned when a client\napplication developer activates the service for his\/her project.\n\nSpecifying a value of 0 will block all requests. This can be used if you\nare provisioning quota to selected consumers and blocking others.\nSimilarly, a value of -1 will indicate an unlimited quota. No other\nnegative values are allowed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxLimit": {
+          "description": "Maximum number of tokens that can be consumed during the specified\nduration. Client application developers can override the default limit up\nto this maximum. If specified, this value cannot be set to a value less\nthan the default limit. If not specified, it is set to the default limit.\n\nTo allow clients to apply overrides with no upper bound, set this to -1,\nindicating unlimited maximum quota.",
+          "type": "string",
+          "format": "int64"
+        },
+        "freeTier": {
+          "description": "Free tier value displayed in the Developers Console for this limit.\nThe free tier is the number of tokens that will be subtracted from the\nbilled amount when billing is enabled.\nThis field can only be set on a limit with duration \"1d\", in a billable\ngroup; it is invalid on any other limit. If this field is not set, it\ndefaults to 0, indicating that there is no free tier for this service.",
+          "type": "string",
+          "format": "int64"
+        },
+        "duration": {
+          "description": "Duration of this limit in textual notation. Example: \"100s\", \"24h\", \"1d\".\nFor duration longer than a day, only multiple of days is supported. We\nsupport only \"100s\" and \"1d\" for now. Additional support will be added in\nthe future. \"0\" indicates indefinite duration.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "User-visible display name for this limit.\nOptional. If not set, the UI will provide a default display name based on\nthe quota configuration. This field can be used to override the default\ndisplay name generated from the configuration.",
+          "type": "string"
+        }
+      }
+    },
     "QuotaInfo": {
       "id": "QuotaInfo",
       "description": "Metadata about an individual quota, containing usage and limit information.",
@@ -2174,7 +1836,7 @@
       "type": "object",
       "properties": {
         "serviceConfigs": {
-          "description": "The list of service config resources.",
+          "description": "The list of service configuration resources.",
           "type": "array",
           "items": {
             "$ref": "Service"
@@ -2198,6 +1860,394 @@
         "validateOnly": {
           "description": "Optional. If set, this will result in the generation of a\n`google.api.Service` configuration based on the `ConfigSource` provided,\nbut the generated config and the sources will NOT be persisted.",
           "type": "boolean"
+        }
+      }
+    },
+    "ConfigSource": {
+      "id": "ConfigSource",
+      "description": "Represents a source file which is used to generate the service configuration\ndefined by `google.api.Service`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. If empty, the server may choose to\ngenerate one instead.",
+          "type": "string"
+        },
+        "options": {
+          "description": "Options to cover use of source configuration within ServiceManager and\ntools",
+          "$ref": "ConfigOptions"
+        },
+        "files": {
+          "description": "Set of source configuration files that are used to generate a service\nconfiguration (`google.api.Service`).",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigFile"
+          }
+        },
+        "openApiSpec": {
+          "description": "OpenAPI specification",
+          "$ref": "OpenApiSpec"
+        },
+        "protoSpec": {
+          "description": "Protocol buffer API specification",
+          "$ref": "ProtoSpec"
+        }
+      }
+    },
+    "ConfigOptions": {
+      "id": "ConfigOptions",
+      "description": "A set of options to cover use of source config within `ServiceManager`\nand related tools.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ConfigFile": {
+      "id": "ConfigFile",
+      "description": "Generic specification of a source configuration file",
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "description": "The file name of the configuration file (full or relative path).",
+          "type": "string"
+        },
+        "contents": {
+          "description": "DEPRECATED. The contents of the configuration file. Use file_contents\nmoving forward.",
+          "type": "string"
+        },
+        "fileContents": {
+          "description": "The bytes that constitute the file.",
+          "type": "string",
+          "format": "byte"
+        },
+        "fileType": {
+          "description": "The type of configuration file this represents.",
+          "enumDescriptions": [
+            "Unknown file type.",
+            "YAML-specification of service.",
+            "OpenAPI specification, serialized in JSON.",
+            "OpenAPI specification, serialized in YAML.",
+            "FileDescriptorSet, generated by protoc.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named out.pb.\n\n$protoc --include_imports --include_source_info test.proto -o out.pb"
+          ],
+          "type": "string",
+          "enum": [
+            "FILE_TYPE_UNSPECIFIED",
+            "SERVICE_CONFIG_YAML",
+            "OPEN_API_JSON",
+            "OPEN_API_YAML",
+            "FILE_DESCRIPTOR_SET_PROTO"
+          ]
+        }
+      }
+    },
+    "OpenApiSpec": {
+      "id": "OpenApiSpec",
+      "description": "A collection of OpenAPI specification files.",
+      "type": "object",
+      "properties": {
+        "openApiFiles": {
+          "description": "Individual files.",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigFile"
+          }
+        }
+      }
+    },
+    "ProtoSpec": {
+      "id": "ProtoSpec",
+      "description": "A collection of protocol buffer service specification files.",
+      "type": "object",
+      "properties": {
+        "protoDescriptor": {
+          "description": "A complete descriptor of a protocol buffer specification",
+          "$ref": "ProtoDescriptor"
+        }
+      }
+    },
+    "ProtoDescriptor": {
+      "id": "ProtoDescriptor",
+      "description": "Contains a serialized protoc-generated protocol buffer message descriptor set\nalong with a URL that describes the type of the descriptor message.",
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "description": "A URL\/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nOnly 'type.googleapis.com\/google.protobuf.FileDescriptorSet' is supported.\nIf the type_url is not specificed,\n'type.googleapis.com\/google.protobuf.FileDescriptorSet' will be assumed.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Must be a valid serialized protocol buffer descriptor set.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named descriptor.pb.\n\n$protoc --include_imports --include_source_info test.proto -o descriptor.pb",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ListServiceRolloutsResponse": {
+      "id": "ListServiceRolloutsResponse",
+      "description": "Response message for ListServiceRollouts method.",
+      "type": "object",
+      "properties": {
+        "rollouts": {
+          "description": "The list of rollout resources.",
+          "type": "array",
+          "items": {
+            "$ref": "Rollout"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token of the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "Rollout": {
+      "id": "Rollout",
+      "description": "A rollout resource that defines how service configuration versions are pushed\nto control plane systems. Typically, you create a new version of the\nservice config, and then create a Rollout to push the service config.",
+      "type": "object",
+      "properties": {
+        "rolloutId": {
+          "description": "Optional unique identifier of this Rollout.\nIf not specified by client, the server will generate one. The generated id\nwill have the form of <date><revision number>, where \"date\" is the create\ndate in ISO 8601 format.  \"revision number\" is a monotonically increasing\npositive number that is reset every day for each service.\nAn example of the generated rollout_id is '2016-02-16r1'",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Creation time of the rollout. Readonly.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "createdBy": {
+          "description": "The user who created the Rollout. Readonly.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The status of this rollout. Readonly. In case of a failed rollout,\nthe system will automatically rollback to the current Rollout\nversion. Readonly.",
+          "enumDescriptions": [
+            "No status specified.",
+            "The Rollout is in progress.",
+            "The Rollout has completed successfully.",
+            "The Rollout has been cancelled. This can happen if you have overlapping\nRollout pushes, and the previous ones will be cancelled.",
+            "The Rollout has failed. It is typically caused by configuration errors."
+          ],
+          "type": "string",
+          "enum": [
+            "ROLLOUT_STATUS_UNSPECIFIED",
+            "IN_PROGRESS",
+            "SUCCESS",
+            "CANCELLED",
+            "FAILED"
+          ]
+        },
+        "trafficPercentStrategy": {
+          "description": "Google Service Control selects service configurations based on\ntraffic\npercentage.",
+          "$ref": "TrafficPercentStrategy"
+        },
+        "serviceSelectionStrategy": {
+          "description": "The service itself specifies which configuration to use.",
+          "$ref": "ServiceSelectionStrategy"
+        },
+        "aliasStrategy": {
+          "description": "Google Service Control selects service configurations associated\nwith the\naliases\nsent from the service.",
+          "$ref": "AliasStrategy"
+        },
+        "deleteServiceStrategy": {
+          "description": "The strategy associated with a rollout to delete a `ManagedService`.\nReadonly.",
+          "$ref": "DeleteServiceStrategy"
+        },
+        "serviceName": {
+          "description": "The name of the service associated with this Rollout.",
+          "type": "string"
+        }
+      }
+    },
+    "TrafficPercentStrategy": {
+      "id": "TrafficPercentStrategy",
+      "description": "Strategy that specifies how Google Service Control should select\ndifferent\nversions of service configurations based on traffic percentage.\n\nOne example of how to gradually rollout a new service configuration using\nthis\nstrategy:\nDay 1\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      traffic_percent_strategy {\n        percentages: {\n          \"example.googleapis.com\/20160201\": 70.00\n          \"example.googleapis.com\/20160206\": 30.00\n        }\n      }\n    }\n\nDay 2\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160207\"\n      traffic_percent_strategy: {\n        percentages: {\n          \"example.googleapis.com\/20160206\": 100.00\n        }\n      }\n    }",
+      "type": "object",
+      "properties": {
+        "percentages": {
+          "description": "Maps service configuration IDs to their corresponding traffic percentage.\nKey is the service configuration ID, Value is the traffic percentage\nwhich must be greater than 0.0 and the sum must equal to 100.0.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "ServiceSelectionStrategy": {
+      "id": "ServiceSelectionStrategy",
+      "description": "Strategy that lets the service choose which\nservice configuration ID to use at runtime from the given collection of\nIDs.\n\nOne example of how to gradually rollout a new service configuration using\nthis\nstrategy:\nBefore rollout, all servers are sending traffic to the Google Service\nControl with configuration id `example.googleapis.com\/20160201`, and\nGoogle Service Control uses the version of service configuration whose\nID is the same as the specified request id.\n\nDay 1\nThe service producer can push this Rollout:\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      client_selection_strategy: {\n        service_config_ids: [\"example.googleapis.com\/20160201\",\n                             \"example.googleapis.com\/20160206\"]\n      }\n    }\n\nThen deploy some of the servers so that they can start sending\ntraffic with service configuration id `example.googleapis.com\/20160206`.\nAnd the other servers are still sending traffic with service configuration\nid\n`example.googleapis.com\/20160201`.\n\nDay 2\nDeploy all servers to send traffic with service configuration id\n`example.googleapis.com\/20160206`.",
+      "type": "object",
+      "properties": {
+        "serviceConfigIds": {
+          "description": "List of service configuration IDs that the service can select from.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AliasStrategy": {
+      "id": "AliasStrategy",
+      "description": "Strategy that associates each instance of service configuration with\nmultiple aliases.\nBackend servers are partitioned to send requests to\nGoogle Service Control with different aliases which may point to\ndifferent versions of service configurations.\n\nOne example of how to gradually rollout a new service configuration using\nthis strategy:\nservers are partitioned to use \"DAY_1\" and \"DAY_2\" aliases.\nDay 1\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      alias_strategy: {\n        aliases: {\n          \"DAY_1\": \"example.googleapis.com\/20160206\"\n          \"DAY_2\": \"example.googleapis.com\/20160201\"\n        }\n      }\n    }\n\nGoogle Service Control will start using\nthe new version of the configuration for traffic comfing from \"DAY_1\"\nserver group.\n\nDay 2\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      alias_strategy: {\n        aliases: {\n          \"DAY_1\": \"example.googleapis.com\/20160206\"\n          \"DAY_2\": \"example.googleapis.com\/20160206\"\n        }\n      }\n    }",
+      "type": "object",
+      "properties": {
+        "aliases": {
+          "description": "Maps aliases to service configuration IDs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DeleteServiceStrategy": {
+      "id": "DeleteServiceStrategy",
+      "description": "Strategy used to delete a service. This strategy is a placeholder only\nused by the system generated rollout to delete a service.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GenerateConfigReportRequest": {
+      "id": "GenerateConfigReportRequest",
+      "description": "Request message for GenerateConfigReport method.",
+      "type": "object",
+      "properties": {
+        "newConfig": {
+          "description": "Service configuration for which we want to generate the report.\nFor this version of API, the supported types are\ngoogle.api.servicemanagement.v1.ConfigRef,\ngoogle.api.servicemanagement.v1.ConfigSource,\nand google.api.Service",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "oldConfig": {
+          "description": "Service configuration against which the comparison will be done.\nFor this version of API, the supported types are\ngoogle.api.servicemanagement.v1.ConfigRef,\ngoogle.api.servicemanagement.v1.ConfigSource,\nand google.api.Service",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GenerateConfigReportResponse": {
+      "id": "GenerateConfigReportResponse",
+      "description": "Response message for GenerateConfigReport method.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "Name of the service this report belongs to.",
+          "type": "string"
+        },
+        "id": {
+          "description": "ID of the service configuration this report belongs to.",
+          "type": "string"
+        },
+        "changeReports": {
+          "description": "list of ChangeReport, each corresponding to comparison between two\nservice configurations.",
+          "type": "array",
+          "items": {
+            "$ref": "ChangeReport"
+          }
+        },
+        "diagnostics": {
+          "description": "Errors \/ Linter warnings associated with the service definition this\nreport\nbelongs to.",
+          "type": "array",
+          "items": {
+            "$ref": "Diagnostic"
+          }
+        }
+      }
+    },
+    "ChangeReport": {
+      "id": "ChangeReport",
+      "description": "Change report associated with a particular service configuration.\n\nIt contains a list of ConfigChanges based on the comparison between\ntwo service configurations.",
+      "type": "object",
+      "properties": {
+        "configChanges": {
+          "description": "List of changes between two service configurations.\nThe changes will be alphabetically sorted based on the identifier\nof each change.\nA ConfigChange identifier is a dot separated path to the configuration.\nExample: visibility.rules[selector='LibraryService.CreateBook'].restriction",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigChange"
+          }
+        }
+      }
+    },
+    "ConfigChange": {
+      "id": "ConfigChange",
+      "description": "Output generated from semantically comparing two versions of a service\nconfiguration.\n\nIncludes detailed information about a field that have changed with\napplicable advice about potential consequences for the change, such as\nbackwards-incompatibility.",
+      "type": "object",
+      "properties": {
+        "element": {
+          "description": "Object hierarchy path to the change, with levels separated by a '.'\ncharacter. For repeated fields, an applicable unique identifier field is\nused for the index (usually selector, name, or id). For maps, the term\n'key' is used. If the field has no unique identifier, the numeric index\nis used.\nExamples:\n- visibility.rules[selector==\"google.LibraryService.CreateBook\"].restriction\n- quota.metric_rules[selector==\"google\"].metric_costs[key==\"reads\"].value\n- logging.producer_destinations[0]",
+          "type": "string"
+        },
+        "oldValue": {
+          "description": "Value of the changed object in the old Service configuration,\nin JSON format. This field will not be populated if ChangeType == ADDED.",
+          "type": "string"
+        },
+        "newValue": {
+          "description": "Value of the changed object in the new Service configuration,\nin JSON format. This field will not be populated if ChangeType == REMOVED.",
+          "type": "string"
+        },
+        "changeType": {
+          "description": "The type for this change, either ADDED, REMOVED, or MODIFIED.",
+          "enumDescriptions": [
+            "No value was provided.",
+            "The changed object exists in the 'new' service configuration, but not\nin the 'old' service configuration.",
+            "The changed object exists in the 'old' service configuration, but not\nin the 'new' service configuration.",
+            "The changed object exists in both service configurations, but its value\nis different."
+          ],
+          "type": "string",
+          "enum": [
+            "CHANGE_TYPE_UNSPECIFIED",
+            "ADDED",
+            "REMOVED",
+            "MODIFIED"
+          ]
+        },
+        "advices": {
+          "description": "Collection of advice provided for this change, useful for determining the\npossible impact of this change.",
+          "type": "array",
+          "items": {
+            "$ref": "Advice"
+          }
+        }
+      }
+    },
+    "Advice": {
+      "id": "Advice",
+      "description": "Generated advice about this change, used for providing more\ninformation about how a change will affect the existing service.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Useful description for why this advice was applied and what actions should\nbe taken to mitigate any implied risks.",
+          "type": "string"
+        }
+      }
+    },
+    "Diagnostic": {
+      "id": "Diagnostic",
+      "description": "Represents a diagnostic message (error or warning)",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "File name and line number of the error or warning.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of diagnostic information provided.",
+          "enumDescriptions": [
+            "Warnings and errors",
+            "Only errors"
+          ],
+          "type": "string",
+          "enum": [
+            "WARNING",
+            "ERROR"
+          ]
+        },
+        "message": {
+          "description": "Message describing the error or warning.",
+          "type": "string"
         }
       }
     },
@@ -2272,33 +2322,6 @@
           "items": {
             "$ref": "Diagnostic"
           }
-        }
-      }
-    },
-    "Diagnostic": {
-      "id": "Diagnostic",
-      "description": "A collection that represents a diagnostic message (error or warning)",
-      "type": "object",
-      "properties": {
-        "location": {
-          "description": "Location of the cause or context of the diagnostic information.",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of diagnostic information provided.",
-          "enumDescriptions": [
-            "Warnings and errors",
-            "Only errors"
-          ],
-          "type": "string",
-          "enum": [
-            "WARNING",
-            "ERROR"
-          ]
-        },
-        "message": {
-          "description": "The string message of the diagnostic information.",
-          "type": "string"
         }
       }
     },
@@ -2812,7 +2835,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists all managed services. If the `consumer_project_id` is specified,\nthe project's settings for the specified service are also returned.",
+          "description": "Lists all managed services.",
           "parameters": {
             "producerProjectId": {
               "description": "Include services produced by the specified project.",
@@ -2854,7 +2877,9 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/service.management",
+            "https://www.googleapis.com/auth/service.management.readonly"
           ]
         },
         "get": {
@@ -2862,7 +2887,7 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "GET",
-          "description": "Gets a managed service. If the `consumer_project_id` is specified,\nthe project's settings for the specified service are also returned.",
+          "description": "Gets a managed service.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2871,7 +2896,6 @@
               "type": "string"
             },
             "expand": {
-              "description": "Fields to expand in any results.  By default, the following fields\nare not present in the result:\n- `operations`\n- `project_settings`\n- `project_settings.operations`\n- `quota_usage` (It requires `project_settings`)\n- `historical_quota_usage` (It requires `project_settings`)",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -2901,7 +2925,9 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/service.management",
+            "https://www.googleapis.com/auth/service.management.readonly"
           ]
         },
         "create": {
@@ -2930,10 +2956,35 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "DELETE",
-          "description": "Deletes a managed service.\n\nOperation<response: google.protobuf.Empty>",
+          "description": "Deletes a managed service. This method will change the serivce in the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall UndeleteService to restore the service.\nAfter 30 days, the service will be completely wiped out.\n\nOperation<response: google.protobuf.Empty>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "serviceName"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/service.management"
+          ]
+        },
+        "undelete": {
+          "id": "servicemanagement.services.undelete",
+          "path": "v1/services/{serviceName}:undelete",
+          "flatPath": "v1/services/{serviceName}:undelete",
+          "httpMethod": "POST",
+          "description": "Revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and be in the 'soft-deleted' state.\n\nOperation<response: ManagedService>",
+          "parameters": {
+            "serviceName": {
+              "description": "The name of the service. See the `ServiceManager` overview for naming\nrequirements. For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2955,7 +3006,7 @@
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "GET",
-          "description": "Gets a service config (version) for a managed service. If `config_id` is\nnot specified, the latest service config will be returned.",
+          "description": "Gets a service configuration (version) for a managed service.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -2964,7 +3015,6 @@
               "type": "string"
             },
             "configId": {
-              "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
               "location": "query",
               "type": "string"
             }
@@ -2974,6 +3024,29 @@
           ],
           "response": {
             "$ref": "Service"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/service.management",
+            "https://www.googleapis.com/auth/service.management.readonly"
+          ]
+        },
+        "generateConfigReport": {
+          "id": "servicemanagement.services.generateConfigReport",
+          "path": "v1/services:generateConfigReport",
+          "flatPath": "v1/services:generateConfigReport",
+          "httpMethod": "POST",
+          "description": "Generates and returns a report (errors, warnings and changes from\nexisting configurations) associated with\nGenerateConfigReportRequest.new_value\n\nIf GenerateConfigReportRequest.old_value is specified,\nGenerateConfigReportRequest will contain a single ChangeReport based on the\ncomparison between GenerateConfigReportRequest.new_value and\nGenerateConfigReportRequest.old_value.\nIf GenerateConfigReportRequest.old_value is not specified, this method\nwill compare GenerateConfigReportRequest.new_value with the last pushed\nservice configuration.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "GenerateConfigReportRequest"
+          },
+          "response": {
+            "$ref": "GenerateConfigReportResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
@@ -3006,7 +3079,7 @@
           "path": "v1/services/{serviceName}:enable",
           "flatPath": "v1/services/{serviceName}:enable",
           "httpMethod": "POST",
-          "description": "Enable a managed service for a project with default setting.\nIf the managed service has dependencies, they will be enabled as well.\n\nOperation<response: EnableServiceResponse>",
+          "description": "Enable a managed service for a project with default setting.\n\nOperation<response: EnableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to enable. Specifying an unknown service name will\ncause the request to fail.",
@@ -3034,7 +3107,7 @@
           "path": "v1/services/{serviceName}:disable",
           "flatPath": "v1/services/{serviceName}:disable",
           "httpMethod": "POST",
-          "description": "Disable a managed service for a project.\nGoogle Service Management will only disable the managed service even if\nthere are other services depend on the managed service.\n\nOperation<response: DisableServiceResponse>",
+          "description": "Disable a managed service for a project.\n\nOperation<response: DisableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to disable. Specifying an unknown service name\nwill cause the request to fail.",
@@ -3096,7 +3169,7 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "PATCH",
-          "description": "Updates the specified subset of the configuration. If the specified service\ndoes not exists the patch operation fails.\n\nOperation<response: ManagedService>",
+          "description": "Updates the specified subset of the configuration. If the specified service\ndoes not exist the patch operation fails.\n\nOperation<response: ManagedService>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3215,7 +3288,9 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/service.management",
+            "https://www.googleapis.com/auth/service.management.readonly"
           ]
         },
         "updateAccessPolicy": {
@@ -3340,7 +3415,7 @@
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "GET",
-              "description": "Lists the history of the service config for a managed service,\nfrom the newest to the oldest.",
+              "description": "Lists the history of the service configuration for a managed service,\nfrom the newest to the oldest.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3368,7 +3443,9 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
               ]
             },
             "get": {
@@ -3376,7 +3453,7 @@
               "path": "v1/services/{serviceName}/configs/{configId}",
               "flatPath": "v1/services/{serviceName}/configs/{configId}",
               "httpMethod": "GET",
-              "description": "Gets a service config (version) for a managed service. If `config_id` is\nnot specified, the latest service config will be returned.",
+              "description": "Gets a service configuration (version) for a managed service.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3385,7 +3462,6 @@
                   "type": "string"
                 },
                 "configId": {
-                  "description": "The id of the service config resource.\nOptional. If it is not specified, the latest version of config will be\nreturned.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3400,7 +3476,9 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
               ]
             },
             "create": {
@@ -3408,7 +3486,7 @@
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "POST",
-              "description": "Creates a new service config (version) for a managed service. This method\nonly stores the service config, but does not apply the service config to\nany backend services.",
+              "description": "Creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\nCreateServiceRollout.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3436,7 +3514,7 @@
               "path": "v1/services/{serviceName}/configs:submit",
               "flatPath": "v1/services/{serviceName}/configs:submit",
               "httpMethod": "POST",
-              "description": "Creates a new service config (version) for a managed service based on\nuser-supplied configuration sources files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service config. It does NOT apply the service config to any\nbackend services.\n\nOperation<response: SubmitConfigSourceResponse>",
+              "description": "Creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call CreateServiceRollout.\n\nOperation<response: SubmitConfigSourceResponse>",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3450,6 +3528,110 @@
               ],
               "request": {
                 "$ref": "SubmitConfigSourceRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ]
+            }
+          }
+        },
+        "rollouts": {
+          "methods": {
+            "list": {
+              "id": "servicemanagement.services.rollouts.list",
+              "path": "v1/services/{serviceName}/rollouts",
+              "flatPath": "v1/services/{serviceName}/rollouts",
+              "httpMethod": "GET",
+              "description": "Lists the history of the service configuration rollouts for a managed\nservice, from the newest to the oldest.",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "The token of the page to retrieve.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The max number of items to include in the response list.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "serviceName"
+              ],
+              "response": {
+                "$ref": "ListServiceRolloutsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
+              ]
+            },
+            "get": {
+              "id": "servicemanagement.services.rollouts.get",
+              "path": "v1/services/{serviceName}/rollouts/{rolloutId}",
+              "flatPath": "v1/services/{serviceName}/rollouts/{rolloutId}",
+              "httpMethod": "GET",
+              "description": "Gets a service configuration rollout.",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "rolloutId": {
+                  "description": "The id of the rollout resource.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "serviceName",
+                "rolloutId"
+              ],
+              "response": {
+                "$ref": "Rollout"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
+              ]
+            },
+            "create": {
+              "id": "servicemanagement.services.rollouts.create",
+              "path": "v1/services/{serviceName}/rollouts",
+              "flatPath": "v1/services/{serviceName}/rollouts",
+              "httpMethod": "POST",
+              "description": "Creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nOperation<response: Rollout>",
+              "parameters": {
+                "serviceName": {
+                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "serviceName"
+              ],
+              "request": {
+                "$ref": "Rollout"
               },
               "response": {
                 "$ref": "Operation"
@@ -3490,7 +3672,9 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
               ]
             }
           }
@@ -3543,7 +3727,9 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
               ]
             },
             "patch": {
@@ -3637,7 +3823,9 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/service.management",
+                "https://www.googleapis.com/auth/service.management.readonly"
               ]
             },
             "update": {

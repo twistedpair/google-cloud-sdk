@@ -20,7 +20,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.deployment_manager.runtime_configs import flags
 
 
-class VariableRetrieverCommand(base.Command):
+class VariableRetrieverCommand(base.DescribeCommand):
   """A base command that retrieves a single variable object.
   """
 

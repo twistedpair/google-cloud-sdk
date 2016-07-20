@@ -128,11 +128,11 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`",
+          "description": "The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`.",
           "type": "string"
         },
         "instanceId": {
-          "description": "The ID to be used when referring to the new instance within its project,\ne.g. just the `myinstance` section of the full name\n`projects\/myproject\/instances\/myinstance`",
+          "description": "The ID to be used when referring to the new instance within its project,\ne.g., just `myinstance` rather than\n`projects\/myproject\/instances\/myinstance`.",
           "type": "string"
         },
         "instance": {
@@ -140,7 +140,7 @@
           "$ref": "Instance"
         },
         "clusters": {
-          "description": "The clusters to be created within the instance, mapped by desired\ncluster ID (e.g. just the `mycluster` part of the full name\n`projects\/myproject\/instances\/myinstance\/clusters\/mycluster`).\nFields marked `OutputOnly` must be left blank.\nCurrently exactly one cluster must be specified.",
+          "description": "The clusters to be created within the instance, mapped by desired\ncluster ID, e.g., just `mycluster` rather than\n`projects\/myproject\/instances\/myinstance\/clusters\/mycluster`.\nFields marked `OutputOnly` must be left blank.\nCurrently exactly one cluster must be specified.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Cluster"
@@ -154,7 +154,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "(`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`",
+          "description": "(`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`.",
           "type": "string"
         },
         "displayName": {
@@ -183,11 +183,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "(`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`",
+          "description": "(`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
           "type": "string"
         },
         "location": {
-          "description": "(`CreationOnly`)\nThe location where this cluster's nodes and storage reside. For best\nperformance, clients should be located as close as possible to this cluster.\nCurrently only zones are supported, e.g.\n`projects\/*\/locations\/us-central1-b`",
+          "description": "(`CreationOnly`)\nThe location where this cluster's nodes and storage reside. For best\nperformance, clients should be located as close as possible to this cluster.\nCurrently only zones are supported, so values should be of the form\n`projects\/<project>\/locations\/<zone>`.",
           "type": "string"
         },
         "state": {
@@ -354,7 +354,7 @@
       "type": "object",
       "properties": {
         "tableId": {
-          "description": "The name by which the new table should be referred to within the parent\ninstance, e.g. `foobar` rather than `<parent>\/tables\/foobar`.",
+          "description": "The name by which the new table should be referred to within the parent\ninstance, e.g., `foobar` rather than `<parent>\/tables\/foobar`.",
           "type": "string"
         },
         "table": {
@@ -376,7 +376,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "(`OutputOnly`)\nThe unique name of the table. Values are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/_a-zA-Z0-9*`\nViews: `NAME_ONLY`, `SCHEMA_VIEW`, `FULL`",
+          "description": "(`OutputOnly`)\nThe unique name of the table. Values are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/_a-zA-Z0-9*`.\nViews: `NAME_ONLY`, `SCHEMA_VIEW`, `FULL`",
           "type": "string"
         },
         "columnFamilies": {
@@ -621,7 +621,7 @@
               "description": "Create an instance within a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`",
+                  "description": "Part of `parent`. The unique name of the project in which to create the new instance.\nValues are of the form `projects\/<project>`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -648,7 +648,7 @@
               "description": "Gets information about an instance.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. The unique name of the requested instance. Values are of the form\n`projects\/<project>\/instances\/<instance>`",
+                  "description": "Part of `name`. The unique name of the requested instance. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -680,7 +680,7 @@
               "description": "Lists information about instances in a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. The unique name of the project for which a list of instances is requested.\nValues are of the form `projects\/<project>`",
+                  "description": "Part of `parent`. The unique name of the project for which a list of instances is requested.\nValues are of the form `projects\/<project>`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -710,7 +710,7 @@
               "description": "Updates an instance within a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`",
+                  "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -744,7 +744,7 @@
               "description": "Delete an instance from a project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. The unique name of the instance to be deleted.\nValues are of the form `projects\/<project>\/instances\/<instance>`",
+                  "description": "Part of `name`. The unique name of the instance to be deleted.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -780,7 +780,7 @@
                   "description": "Creates a cluster within an instance.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`",
+                      "description": "Part of `parent`. The unique name of the instance in which to create the new cluster.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -792,7 +792,7 @@
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The ID to be used when referring to the new cluster within its instance,\ne.g. just the `mycluster` section of the full name\n`projects\/myproject\/instances\/myinstance\/clusters\/mycluster`",
+                      "description": "The ID to be used when referring to the new cluster within its instance,\ne.g., just `mycluster` rather than\n`projects\/myproject\/instances\/myinstance\/clusters\/mycluster`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -819,7 +819,7 @@
                   "description": "Gets information about a cluster.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the requested cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`",
+                      "description": "Part of `name`. The unique name of the requested cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -858,7 +858,7 @@
                   "description": "Lists information about clusters in an instance.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance for which a list of clusters is requested.\nValues are of the form `projects\/<project>\/instances\/<instance>`\nUse `<instance> = '-'` to list Clusters for all Instances in a project,\nfor example `projects\/myproject\/instances\/-`",
+                      "description": "Part of `parent`. The unique name of the instance for which a list of clusters is requested.\nValues are of the form `projects\/<project>\/instances\/<instance>`.\nUse `<instance> = '-'` to list Clusters for all Instances in a project,\ne.g., `projects\/myproject\/instances\/-`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -895,7 +895,7 @@
                   "description": "Updates a cluster within an instance.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`",
+                      "description": "Part of `name`. (`OutputOnly`)\nThe unique name of the cluster. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/a-z*`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -936,7 +936,7 @@
                   "description": "Deletes a cluster from an instance.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the cluster to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`",
+                      "description": "Part of `name`. The unique name of the cluster to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/clusters\/<cluster>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -978,7 +978,7 @@
                   "description": "Creates a new table in the specified instance.\nThe table can be created with a full set of initial column families,\nspecified in the request.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`",
+                      "description": "Part of `parent`. The unique name of the instance in which to create the table.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1012,7 +1012,7 @@
                   "description": "Lists all tables served from a specified instance.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. The unique name of the instance for which tables should be listed.\nValues are of the form `projects\/<project>\/instances\/<instance>`",
+                      "description": "Part of `parent`. The unique name of the instance for which tables should be listed.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1060,7 +1060,7 @@
                   "description": "Gets metadata information about the specified table.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the requested table.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`",
+                      "description": "Part of `name`. The unique name of the requested table.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1110,7 +1110,7 @@
                   "description": "Permanently deletes a specified table and all of its data.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the table to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`",
+                      "description": "Part of `name`. The unique name of the table to be deleted.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1148,7 +1148,7 @@
                   "description": "Atomically performs a series of column family modifications\non the specified table.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the table whose families should be modified.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`",
+                      "description": "Part of `name`. The unique name of the table whose families should be modified.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1189,7 +1189,7 @@
                   "description": "Permanently drop\/delete a row range from a specified table. The request can\nspecify whether to delete all rows in a table, or only those that match a\nparticular prefix.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. The unique name of the table on which to drop a range of rows.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`",
+                      "description": "Part of `name`. The unique name of the table on which to drop a range of rows.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
                       "location": "path",
                       "required": true,
                       "type": "string"

@@ -35,6 +35,8 @@ USER_DATA_KEY = 'user-data'
 
 CONTAINER_MANIFEST_KEY = 'google-container-manifest'
 
+GKE_DOCKER = 'gci-ensure-gke-docker'
+
 ALLOWED_PROTOCOLS = ['TCP', 'UDP']
 
 # Pin this version of gcloud to GCI image major release version
@@ -107,7 +109,7 @@ def ValidateUserMetadata(metadata):
     metadata
   """
   for entry in metadata.items:
-    if entry.key in [USER_DATA_KEY, CONTAINER_MANIFEST_KEY]:
+    if entry.key in [USER_DATA_KEY, CONTAINER_MANIFEST_KEY, GKE_DOCKER]:
       raise InvalidMetadataKeyException(entry.key)
 
 
@@ -124,12 +126,18 @@ def CreateMetadataMessage(
       run_command=run_command,
       run_as_privileged=run_as_privileged)
   docker_metadata = {}
+  docker_metadata[GKE_DOCKER] = 'true'
   docker_metadata[USER_DATA_KEY] = user_init
   docker_metadata[CONTAINER_MANIFEST_KEY] = container_manifest
   return metadata_utils.ConstructMetadataMessage(
       messages,
       metadata=docker_metadata,
       existing_metadata=user_metadata)
+
+
+def CreateTagsMessage(messages, tags):
+  """Create tags message with parameters for container VM or VM templates."""
+  return messages.Tags(items=(tags if tags else ['container-vm']))
 
 
 class NoGciImageException(core_exceptions.Error):

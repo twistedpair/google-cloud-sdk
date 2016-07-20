@@ -143,12 +143,14 @@ class MarkdownGenerator(object):
     _command: The CommandCommon instance for command.
     _command_name: The command name string.
     _command_path: Command path.
-    _detailed_help: Command detailed help string.
+    _description: The long_help description markdown.
+    _detailed_help: Command detailed help dict indexed by SECTION name.
     _doc: The output markdown document string.
     _file_name: The command path name (used to name documents).
     _is_top_element: True if command is the top CLI element.
     _is_topic: True if the command is a help topic.
     _out: Output writer.
+    _printed_sections: The set of already printed sections.
     _top_element: The top CLI element.
     _track: The Command release track prefix.
     _subcommand: The list of subcommand instances or None.
@@ -166,6 +168,7 @@ class MarkdownGenerator(object):
     self._command = command
     self._buf = StringIO.StringIO()
     self._out = self._buf.write
+    self._description = ''
     self._detailed_help = getattr(command, 'detailed_help', {})
     self._command_path = command.GetPath()
     self._command_name = ' '.join(self._command_path)
@@ -178,8 +181,34 @@ class MarkdownGenerator(object):
     # pylint: disable=protected-access
     self._top_element = command._TopCLIElement()
     self._is_top_element = command.IsRoot()
+    self._printed_sections = set()
     self._subcommands = command.GetSubCommandHelps()
     self._subgroups = command.GetSubGroupHelps()
+
+  def _SplitCommandFromArgs(self, cmd):
+    """Splits cmd into command and args lists.
+
+    The command list part is a valid command and the args list part is the
+    trailing args.
+
+    Args:
+      cmd: [str], A command + args list.
+
+    Returns:
+      (command, args): The command and args lists.
+    """
+    # The bare top level command always works.
+    if len(cmd) <= 1:
+      return cmd, []
+    # Skip the top level command name.
+    prefix = 1
+    i = prefix + 1
+    while i <= len(cmd):
+      if not self._top_element.IsValidSubPath(cmd[prefix:i]):
+        i -= 1
+        break
+      i += 1
+    return cmd[:i], cmd[i:]
 
   def _UserInput(self, msg):
     """Returns msg with user input markdown.
@@ -201,7 +230,8 @@ class MarkdownGenerator(object):
       name: str, The manpage section name.
       sep: boolean, Add trailing newline.
     """
-    self._out('\n\n== {name} ==\n'.format(name=name))
+    self._printed_sections.add(name)
+    self._out('\n\n## {name}\n'.format(name=name))
     if sep:
       self._out('\n')
 
@@ -325,6 +355,8 @@ class MarkdownGenerator(object):
     for arg in usage_text.FilterOutSuppressed(positional_args):
       self._out(usage_text.PositionalDisplayString(arg, markdown=True))
 
+    self._out('\n')
+
   def _PrintFlagSection(self, section, flags):
     self._Section(section, sep=False)
     for flag in sorted(flags, key=lambda f: f.option_strings):
@@ -362,12 +394,11 @@ class MarkdownGenerator(object):
       name: str, The manpage section name.
       default: str, Default help_stuff if section name is not defined.
     """
+    if name in self._printed_sections:
+      return
     help_stuff = self._detailed_help.get(name, default)
     if not help_stuff:
       return
-    # Trim off the additional section marker.
-    if name.startswith('+'):
-      name = name[1:]
     if callable(help_stuff):
       help_message = help_stuff()
     else:
@@ -376,10 +407,18 @@ class MarkdownGenerator(object):
     self._out('{message}\n'.format(
         message=textwrap.dedent(help_message).strip()))
 
-  def _PrintAllExtraSections(self):
-    """Print all extra man page sections.  These sections start with a '+'."""
+  def _PrintAllExtraSections(self, excluded_sections):
+    """Print all extra man page sections.
+
+    Args:
+      excluded_sections: A list of section names to exclude. These will be
+        printed later.
+
+    Extra sections are _detailed_help sections that have not been printed yet.
+    _PrintSectionIfExists() skips sections that have already been printed.
+    """
     for section in sorted(self._detailed_help):
-      if section.startswith('+'):
+      if section.isupper() and section not in excluded_sections:
         self._PrintSectionIfExists(section)
 
   def _PrintCommandSection(self, name, subcommands, is_topic=False):
@@ -478,19 +517,11 @@ class MarkdownGenerator(object):
       match = pat.search(self._doc, pos)
       if not match:
         break
-      cmd = match.group(1)
-      i = cmd.find('set ')
-      if i >= 0:
-        # This terminates the command at the first positional ending with set.
-        # This handles gcloud set and unset subcommands where 'set' and 'unset'
-        # are the last command args, the remainder user-specified.
-        i += 3
-        rem = cmd[i:]
-        cmd = cmd[0:i]
-      else:
-        rem = ''
-      ref = '/'.join(cmd.split(' '))
-      lnk = 'link:' + ref + '[' + cmd + ']' + rem
+      cmd, args = self._SplitCommandFromArgs(match.group(1).split(' '))
+      ref = '/'.join(cmd)
+      lnk = 'link:' + ref + '[' + ' '.join(cmd) + ']'
+      if args:
+        lnk += ' ' + ' '.join(args)
       rep += self._doc[pos:match.start(1)] + lnk
       pos = match.end(1)
     if rep:
@@ -535,16 +566,50 @@ class MarkdownGenerator(object):
     if rep:
       self._doc = rep + self._doc[pos:]
 
+  def _SetDetailedHelpSection(self, name, lines):
+    """Sets a _detailed_help name or _description section composed of lines.
+
+    Args:
+      name: The section name or None for the DESCRIPTION section.
+      lines: The list of lines in the section.
+    """
+    # Strip leading empty lines.
+    while lines and not lines[0]:
+      lines = lines[1:]
+    # Strip trailing empty lines.
+    while lines and not lines[-1]:
+      lines = lines[:-1]
+    if lines:
+      if name:
+        self._detailed_help[name] = '\n'.join(lines)
+      else:
+        self._description = '\n'.join(lines)
+
+  def _ExtractDetailedHelp(self):
+    """Extracts _detailed_help sections from the command long_help string."""
+    name = None  # DESRIPTION
+    lines = []
+    for line in textwrap.dedent(self._command.long_help).strip().splitlines():
+      # '## \n' is not section markdown.
+      if len(line) >= 4 and line.startswith('## '):
+        self._SetDetailedHelpSection(name, lines)
+        name = line[3:]
+        lines = []
+      else:
+        lines.append(line)
+    self._SetDetailedHelpSection(name, lines)
+
   def Generate(self):
     """Generates markdown for the command, group or topic, into a string."""
-    self._out('= {0}(1) =\n'.format(self._file_name.upper()))
+    self._out('# {0}(1)\n'.format(self._file_name.upper()))
     self._Section('NAME')
     self._out('{{command}} - {index}\n'.format(index=self._command.index_help))
     if not self._is_topic:
       self._PrintSynopsisSection()
+    self._ExtractDetailedHelp()
     self._PrintSectionIfExists(
-        'DESCRIPTION', default=usage_text.ExpandHelpText(
-            self._command, self._command.long_help))
+        'DESCRIPTION',
+        default=usage_text.ExpandHelpText(self._command, self._description))
     if not self._is_topic:
       self._PrintPositionalsAndFlagsSections()
     if self._subgroups:
@@ -554,9 +619,10 @@ class MarkdownGenerator(object):
         self._PrintCommandSection('TOPIC', self._subcommands, is_topic=True)
       else:
         self._PrintCommandSection('COMMAND', self._subcommands)
-    self._PrintSectionIfExists('EXAMPLES')
-    self._PrintSectionIfExists('SEE ALSO')
-    self._PrintAllExtraSections()
+    final_sections = ['EXAMPLES', 'SEE ALSO']
+    self._PrintAllExtraSections(excluded_sections=final_sections + ['NOTES'])
+    for section in final_sections:
+      self._PrintSectionIfExists(section)
     self._PrintNotesSection()
     self._doc = self._buf.getvalue()
 

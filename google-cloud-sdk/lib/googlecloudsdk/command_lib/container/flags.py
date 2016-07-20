@@ -22,7 +22,7 @@ from googlecloudsdk.core import properties
 
 
 # TODO(b/28318474): move flags common across commands here.
-def AddImageTypeFlag(parser, target, suppressed):
+def AddImageTypeFlag(parser, target, suppressed=False):
   """Adds a --image-type flag to the given parser."""
   help_text = argparse.SUPPRESS if suppressed else """\
 The image type to use for the {target}. Defaults to server-specified.
@@ -41,8 +41,7 @@ using the following command.
   parser.add_argument('--image-type', help=help_text)
 
 
-# TODO(b/28940220): unsupress help text in 7/6/2016 cloud-sdk build.
-def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=True):
+def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=False):
   """Adds autoscaling related flags to parser.
 
   Autoscaling related flags are: --enable-autoscaling
@@ -61,24 +60,41 @@ def AddClusterAutoscalingFlags(parser, exclusive_group=None, suppressed=True):
   autoscaling_group = group if exclusive_group is None else exclusive_group
   autoscaling_group.add_argument(
       '--enable-autoscaling',
-      # TODO(b/28940220): unhide in 7/6 cloud-sdk build.
-      help=hide_or('Enables autoscaling for the node pool.'),
+      help=hide_or("""\
+Enables autoscaling for a node pool.
+
+Enables autoscaling in the node pool specified by --node-pool or the
+default node pool if --node-pool is not provided."""),
       action='store_true')
   group.add_argument(
       '--max-nodes',
-      help=hide_or('Maximum number of nodes in the node pool.'),
+      help=hide_or("""\
+Maximum number of nodes in the node pool.
+
+Maximum number of nodes to which the node pool specified by --node-pool
+(or default node pool if unspecified) can scale. Ignored unless
+--enable-autoscaling is also specified."""),
       type=int)
   group.add_argument(
       '--min-nodes',
-      help=hide_or('Minimum number of nodes in the node pool.'),
+      help=hide_or("""\
+Minimum number of nodes in the node pool.
+
+Minimum number of nodes to which the node pool specified by --node-pool
+(or default node pool if unspecified) can scale. Ignored unless
+--enable-autoscaling is also specified."""),
       type=int)
 
 
-def AddLocalSSDFlag(parser, suppressed):
+def AddLocalSSDFlag(parser, suppressed=False):
   """Adds a --local-ssd-count flag to the given parser."""
   help_text = argparse.SUPPRESS if suppressed else """\
-The number of local SSD to provision on each node.
-"""
+The number of local SSD disks to provision on each node.
+
+Local SSDs have a fixed 375 GB capacity per device. The number of disks that
+can be attached to an instance is limited by the maximum number of disks
+available on a machine, which differs by compute zone. See
+https://cloud.google.com/compute/docs/disks/local-ssd for more information."""
   parser.add_argument(
       '--local-ssd-count',
       help=help_text,

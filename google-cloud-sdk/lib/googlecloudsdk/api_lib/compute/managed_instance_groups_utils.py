@@ -603,8 +603,9 @@ def AddAutohealingArgs(parser):
   initial_delay.detailed_help = """\
       Specifies the length of the period during which the instance is known to
       be initializing and should not be autohealed even if unhealthy.
-      Valid units for this flag are ``s'' for seconds, ``m'' for minutes, ``h''
-      for hours and ``d'' for days. If no unit is specified, seconds is assumed.
+      Valid units for this flag are ``s'' for seconds, ``m'' for minutes and
+      ``h'' for hours. If no unit is specified, seconds is assumed. This value
+      cannot be greater than 1 hour.
       """
 
 

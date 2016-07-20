@@ -18,11 +18,12 @@
 import json
 import time
 
+from apitools.base.py import encoding
+
 from googlecloudsdk.api_lib.app.api import constants
 from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apitools.base.py import encoding
 
 
 class OperationError(exceptions.Error):

@@ -17,10 +17,11 @@
 import functools
 import json
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import extra_types
+
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log as sdk_log
-from googlecloudsdk.third_party.apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.third_party.apitools.base.py import extra_types
 
 
 class TypedLogSink(object):

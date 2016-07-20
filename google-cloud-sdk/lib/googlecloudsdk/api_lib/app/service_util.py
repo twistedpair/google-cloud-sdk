@@ -51,6 +51,10 @@ class ServicesNotFoundError(exceptions.Error):
             ', '.join(all_services)))
 
 
+class ServicesSplitTrafficError(exceptions.Error):
+  pass
+
+
 class Service(object):
   """Value class representing a service resource."""
 
@@ -129,10 +133,18 @@ def ParseTrafficAllocations(args_allocations, split_method):
 
   Returns:
     A dict mapping version id (str) to traffic split (float).
+
+  Raises:
+    ServicesSplitTrafficError: if the sum of traffic allocations is zero.
   """
   # Splitting by IP allows 2 decimal places, splitting by cookie allows 3.
   max_decimal_places = 2 if split_method == 'ip' else 3
   sum_of_splits = sum([float(s) for s in args_allocations.values()])
+  if sum_of_splits < 10 ** -max_decimal_places:
+    raise ServicesSplitTrafficError(
+        'Cannot set traffic split to zero. If you would like a version to '
+        'receive no traffic, send 100% of traffic to other versions or delete '
+        'the service.')
 
   allocations = {}
   for version, split in args_allocations.iteritems():
