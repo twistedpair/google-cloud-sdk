@@ -20,11 +20,32 @@ from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources as resource_exceptions
+
+INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
+    'brief': 'Lists the named ports for an instance group resource',
+    'DESCRIPTION': """\
+        Named ports are key:value pairs metadata representing
+        the service name and the port that it's running on. Named ports
+        can be assigned to an instance group, which indicates that the service
+        is available on all instances in the group. This information is used
+        by the HTTP Load Balancing service.
+
+        *{command}* lists the named ports (name and port tuples)
+        for an instance group.
+        """,
+    'EXAMPLES': """\
+        For example, to list named ports for an instance group:
+
+          $ {command} example-instance-group --zone us-central1-a
+
+        The above example lists named ports assigned to an instance
+        group named 'example-instance-group' in the ``us-central1-a'' zone.
+        """,
+}
 
 
 def IsZonalGroup(group_ref):
@@ -295,77 +316,6 @@ def CreateInstanceGroupReference(
                                        [name], region, zone,
                                        zonal_resource_type,
                                        regional_resource_type)[0]
-
-
-class InstanceGroupGetNamedPortsBase(
-    base.ListCommand, base_classes.BaseCommand):
-  """Get named ports in Google Compute Engine instance groups."""
-
-  @staticmethod
-  def AddArgs(parser, multizonal):
-    parser.add_argument(
-        'name',
-        help='The name of the instance group.')
-
-    if multizonal:
-      scope_parser = parser.add_mutually_exclusive_group()
-      flags.AddRegionFlag(
-          scope_parser,
-          resource_type='instance or instance group',
-          operation_type='get named ports for',
-          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      flags.AddZoneFlag(
-          scope_parser,
-          resource_type='instance or instance group',
-          operation_type='get named ports for',
-          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
-    else:
-      flags.AddZoneFlag(
-          parser,
-          resource_type='instance or instance group',
-          operation_type='get named ports for')
-
-  @property
-  def service(self):
-    return self.compute.instanceGroups
-
-  @property
-  def resource_type(self):
-    return 'instanceGroups'
-
-  @property
-  def method(self):
-    return 'GetNamedPorts'
-
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    """This command class does not update the URI cache."""
-    return None
-
-  def Format(self, unused_args):
-    return 'table(name, port)'
-
-  detailed_help = {
-      'brief': 'Lists the named ports for an instance group resource',
-      'DESCRIPTION': """\
-          Named ports are key:value pairs metadata representing
-          the service name and the port that it's running on. Named ports
-          can be assigned to an instance group, which indicates that the service
-          is available on all instances in the group. This information is used
-          by the HTTP Load Balancing service.
-
-          *{command}* lists the named ports (name and port tuples)
-          for an instance group.
-          """,
-      'EXAMPLES': """\
-          For example, to list named ports for an instance group:
-
-            $ {command} example-instance-group --zone us-central1-a
-
-          The above example lists named ports assigned to an instance
-          group named 'example-instance-group' in the ``us-central1-a'' zone.
-          """,
-  }
 
 
 def OutputNamedPortsForGroup(group_ref, compute_client):

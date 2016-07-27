@@ -349,7 +349,8 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks.
+      Disk resource. This field is only applicable for persistent disks. Note
+      that for InstanceTemplate, it is just disk name, not URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -423,7 +424,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       URL. For example, the following are valid values:   - https://www.google
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
-      zones/zone/diskTypes/diskType
+      zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
+      the name of the disk type, not URL.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -855,8 +857,18 @@ class BackendService(_messages.Message):
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP
       and SSL. The default is HTTP.  For internal load balancing, the possible
       values are TCP and UDP, and the default is TCP.
+    SessionAffinityValueValuesEnum: Type of session affinity to use. The
+      default is NONE.  When the load balancing scheme is EXTERNAL, can be
+      NONE, CLIENT_IP, or GENERATED_COOKIE.  When the load balancing scheme is
+      INTERNAL, can be NONE, CLIENT_IP, CLIENT_IP_PROTO, or
+      CLIENT_IP_PORT_PROTO.  When the protocol is UDP, this field is not used.
 
   Fields:
+    affinityCookieTtlSec: Lifetime of cookies in seconds if session_affinity
+      is GENERATED_COOKIE. If set to 0, the cookie is non-persistent and lasts
+      only until the end of the browser session (or equivalent). The maximum
+      allowed value for TTL is one day.  When the load balancing scheme is
+      INTERNAL, this field is not used.
     backends: The list of backends that serve this BackendService.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -898,6 +910,11 @@ class BackendService(_messages.Message):
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
     selfLink: [Output Only] Server-defined URL for the resource.
+    sessionAffinity: Type of session affinity to use. The default is NONE.
+      When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
+      GENERATED_COOKIE.  When the load balancing scheme is INTERNAL, can be
+      NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
+      protocol is UDP, this field is not used.
     timeoutSec: How many seconds to wait for the backend before considering it
       a failed request. Default is 30 seconds.
   """
@@ -915,21 +932,41 @@ class BackendService(_messages.Message):
     HTTP = 0
     HTTPS = 1
 
-  backends = _messages.MessageField('Backend', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCDN = _messages.BooleanField(4)
-  fingerprint = _messages.BytesField(5)
-  healthChecks = _messages.StringField(6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#backendService')
-  name = _messages.StringField(9)
-  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(11)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  timeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  class SessionAffinityValueValuesEnum(_messages.Enum):
+    """Type of session affinity to use. The default is NONE.  When the load
+    balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or GENERATED_COOKIE.
+    When the load balancing scheme is INTERNAL, can be NONE, CLIENT_IP,
+    CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the protocol is UDP, this
+    field is not used.
+
+    Values:
+      CLIENT_IP: <no description>
+      CLIENT_IP_PROTO: <no description>
+      GENERATED_COOKIE: <no description>
+      NONE: <no description>
+    """
+    CLIENT_IP = 0
+    CLIENT_IP_PROTO = 1
+    GENERATED_COOKIE = 2
+    NONE = 3
+
+  affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backends = _messages.MessageField('Backend', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCDN = _messages.BooleanField(5)
+  fingerprint = _messages.BytesField(6)
+  healthChecks = _messages.StringField(7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#backendService')
+  name = _messages.StringField(10)
+  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(12)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 16)
+  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -10580,11 +10617,13 @@ class TargetPool(_messages.Message):
     Values:
       CLIENT_IP: <no description>
       CLIENT_IP_PROTO: <no description>
+      GENERATED_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PROTO = 1
-    NONE = 2
+    GENERATED_COOKIE = 2
+    NONE = 3
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)

@@ -46,69 +46,6 @@ class TestingV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(TestingV1.ProjectsDevicesService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.devices.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'sshPublicKey'],
-              relative_path=u'v1/projects/{projectId}/devices',
-              request_field=u'device',
-              request_type_name=u'TestingProjectsDevicesCreateRequest',
-              response_type_name=u'Device',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'testing.projects.devices.delete',
-              ordered_params=[u'projectId', u'deviceId'],
-              path_params=[u'deviceId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/devices/{deviceId}',
-              request_field='',
-              request_type_name=u'TestingProjectsDevicesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.devices.get',
-              ordered_params=[u'projectId', u'deviceId'],
-              path_params=[u'deviceId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/devices/{deviceId}',
-              request_field='',
-              request_type_name=u'TestingProjectsDevicesGetRequest',
-              response_type_name=u'Device',
-              supports_download=False,
-          ),
-          'Keepalive': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.devices.keepalive',
-              ordered_params=[u'projectId', u'deviceId'],
-              path_params=[u'deviceId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/devices/{deviceId}/keepalive',
-              request_field='',
-              request_type_name=u'TestingProjectsDevicesKeepaliveRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.devices.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/devices',
-              request_field='',
-              request_type_name=u'TestingProjectsDevicesListRequest',
-              response_type_name=u'ListDevicesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -131,6 +68,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.projects.devices.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'sshPublicKey'],
+        relative_path=u'v1/projects/{projectId}/devices',
+        request_field=u'device',
+        request_type_name=u'TestingProjectsDevicesCreateRequest',
+        response_type_name=u'Device',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a GCE Android device instance.
 
@@ -149,6 +99,19 @@ May return any of the following canonical error codes:
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'testing.projects.devices.delete',
+        ordered_params=[u'projectId', u'deviceId'],
+        path_params=[u'deviceId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/devices/{deviceId}',
+        request_field='',
+        request_type_name=u'TestingProjectsDevicesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns the GCE Android device.
@@ -169,6 +132,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'testing.projects.devices.get',
+        ordered_params=[u'projectId', u'deviceId'],
+        path_params=[u'deviceId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/devices/{deviceId}',
+        request_field='',
+        request_type_name=u'TestingProjectsDevicesGetRequest',
+        response_type_name=u'Device',
+        supports_download=False,
+    )
+
     def Keepalive(self, request, global_params=None):
       """Issues a keep-alive to a GCE Android device instance.
 
@@ -187,6 +163,19 @@ May return any of the following canonical error codes:
       config = self.GetMethodConfig('Keepalive')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Keepalive.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.projects.devices.keepalive',
+        ordered_params=[u'projectId', u'deviceId'],
+        path_params=[u'deviceId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/devices/{deviceId}/keepalive',
+        request_field='',
+        request_type_name=u'TestingProjectsDevicesKeepaliveRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all the current devices.
@@ -207,6 +196,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'testing.projects.devices.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/devices',
+        request_field='',
+        request_type_name=u'TestingProjectsDevicesListRequest',
+        response_type_name=u'ListDevicesResponse',
+        supports_download=False,
+    )
+
   class ProjectsTestMatricesService(base_api.BaseApiService):
     """Service class for the projects_testMatrices resource."""
 
@@ -214,69 +216,6 @@ May return any of the following canonical error codes:
 
     def __init__(self, client):
       super(TestingV1.ProjectsTestMatricesService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.testMatrices.cancel',
-              ordered_params=[u'projectId', u'testMatrixId'],
-              path_params=[u'projectId', u'testMatrixId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel',
-              request_field='',
-              request_type_name=u'TestingProjectsTestMatricesCancelRequest',
-              response_type_name=u'CancelTestMatrixResponse',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'testing.projects.testMatrices.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'requestId'],
-              relative_path=u'v1/projects/{projectId}/testMatrices',
-              request_field=u'testMatrix',
-              request_type_name=u'TestingProjectsTestMatricesCreateRequest',
-              response_type_name=u'TestMatrix',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'testing.projects.testMatrices.delete',
-              ordered_params=[u'projectId', u'testMatrixId'],
-              path_params=[u'projectId', u'testMatrixId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
-              request_field='',
-              request_type_name=u'TestingProjectsTestMatricesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.testMatrices.get',
-              ordered_params=[u'projectId', u'testMatrixId'],
-              path_params=[u'projectId', u'testMatrixId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
-              request_field='',
-              request_type_name=u'TestingProjectsTestMatricesGetRequest',
-              response_type_name=u'TestMatrix',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.projects.testMatrices.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/testMatrices',
-              request_field='',
-              request_type_name=u'TestingProjectsTestMatricesListRequest',
-              response_type_name=u'ListTestMatricesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -301,6 +240,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.projects.testMatrices.cancel',
+        ordered_params=[u'projectId', u'testMatrixId'],
+        path_params=[u'projectId', u'testMatrixId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}:cancel',
+        request_field='',
+        request_type_name=u'TestingProjectsTestMatricesCancelRequest',
+        response_type_name=u'CancelTestMatrixResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Request to run a matrix of tests according to the given specifications.
 Unsupported environments will be returned in the state UNSUPPORTED.
@@ -322,6 +274,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.projects.testMatrices.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'requestId'],
+        relative_path=u'v1/projects/{projectId}/testMatrices',
+        request_field=u'testMatrix',
+        request_type_name=u'TestingProjectsTestMatricesCreateRequest',
+        response_type_name=u'TestMatrix',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Delete all record of a test matrix plus any associated test executions.
 
@@ -340,6 +305,19 @@ May return any of the following canonical error codes:
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'testing.projects.testMatrices.delete',
+        ordered_params=[u'projectId', u'testMatrixId'],
+        path_params=[u'projectId', u'testMatrixId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
+        request_field='',
+        request_type_name=u'TestingProjectsTestMatricesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Check the status of a test matrix.
@@ -360,6 +338,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'testing.projects.testMatrices.get',
+        ordered_params=[u'projectId', u'testMatrixId'],
+        path_params=[u'projectId', u'testMatrixId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/testMatrices/{testMatrixId}',
+        request_field='',
+        request_type_name=u'TestingProjectsTestMatricesGetRequest',
+        response_type_name=u'TestMatrix',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """List test matrices.
 The matrices are returned in the order of newest first by submit time.
@@ -379,6 +370,19 @@ May return any of the following canonical error codes:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'testing.projects.testMatrices.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/testMatrices',
+        request_field='',
+        request_type_name=u'TestingProjectsTestMatricesListRequest',
+        response_type_name=u'ListTestMatricesResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -386,9 +390,6 @@ May return any of the following canonical error codes:
 
     def __init__(self, client):
       super(TestingV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -399,21 +400,6 @@ May return any of the following canonical error codes:
 
     def __init__(self, client):
       super(TestingV1.TestEnvironmentCatalogService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'testing.testEnvironmentCatalog.get',
-              ordered_params=[u'environmentType'],
-              path_params=[u'environmentType'],
-              query_params=[],
-              relative_path=u'v1/testEnvironmentCatalog/{environmentType}',
-              request_field='',
-              request_type_name=u'TestingTestEnvironmentCatalogGetRequest',
-              response_type_name=u'TestEnvironmentCatalog',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -435,3 +421,16 @@ May return any of the following canonical error codes:
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'testing.testEnvironmentCatalog.get',
+        ordered_params=[u'environmentType'],
+        path_params=[u'environmentType'],
+        query_params=[],
+        relative_path=u'v1/testEnvironmentCatalog/{environmentType}',
+        request_field='',
+        request_type_name=u'TestingTestEnvironmentCatalogGetRequest',
+        response_type_name=u'TestEnvironmentCatalog',
+        supports_download=False,
+    )

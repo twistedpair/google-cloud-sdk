@@ -45,35 +45,6 @@ class CloudbuildV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(CloudbuildV1.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'cloudbuild.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'CloudbuildOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/operations',
-              http_method=u'GET',
-              method_id=u'cloudbuild.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'CloudbuildOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -92,6 +63,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'cloudbuild.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'CloudbuildOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
@@ -109,6 +94,20 @@ to use different resource name schemes, such as `users/*/operations`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations',
+        http_method=u'GET',
+        method_id=u'cloudbuild.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'CloudbuildOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsBuildsService(base_api.BaseApiService):
     """Service class for the projects_builds resource."""
 
@@ -116,57 +115,6 @@ to use different resource name schemes, such as `users/*/operations`.
 
     def __init__(self, client):
       super(CloudbuildV1.ProjectsBuildsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'cloudbuild.projects.builds.cancel',
-              ordered_params=[u'projectId', u'id'],
-              path_params=[u'id', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/builds/{id}:cancel',
-              request_field=u'cancelBuildRequest',
-              request_type_name=u'CloudbuildProjectsBuildsCancelRequest',
-              response_type_name=u'Build',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'cloudbuild.projects.builds.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/builds',
-              request_field=u'build',
-              request_type_name=u'CloudbuildProjectsBuildsCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'cloudbuild.projects.builds.get',
-              ordered_params=[u'projectId', u'id'],
-              path_params=[u'id', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/builds/{id}',
-              request_field='',
-              request_type_name=u'CloudbuildProjectsBuildsGetRequest',
-              response_type_name=u'Build',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'cloudbuild.projects.builds.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/builds',
-              request_field='',
-              request_type_name=u'CloudbuildProjectsBuildsListRequest',
-              response_type_name=u'ListBuildsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -182,6 +130,19 @@ to use different resource name schemes, such as `users/*/operations`.
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbuild.projects.builds.cancel',
+        ordered_params=[u'projectId', u'id'],
+        path_params=[u'id', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/builds/{id}:cancel',
+        request_field=u'cancelBuildRequest',
+        request_type_name=u'CloudbuildProjectsBuildsCancelRequest',
+        response_type_name=u'Build',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       """Starts a build with the specified configuration.
@@ -200,6 +161,19 @@ success or failure).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbuild.projects.builds.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/builds',
+        request_field=u'build',
+        request_type_name=u'CloudbuildProjectsBuildsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns information about a previously requested build.
 
@@ -215,6 +189,19 @@ or in-progress), and timing information.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudbuild.projects.builds.get',
+        ordered_params=[u'projectId', u'id'],
+        path_params=[u'id', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/builds/{id}',
+        request_field='',
+        request_type_name=u'CloudbuildProjectsBuildsGetRequest',
+        response_type_name=u'Build',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists previously requested builds.
@@ -232,6 +219,19 @@ successfully or unsuccessfully.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudbuild.projects.builds.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/builds',
+        request_field='',
+        request_type_name=u'CloudbuildProjectsBuildsListRequest',
+        response_type_name=u'ListBuildsResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -239,8 +239,5 @@ successfully or unsuccessfully.
 
     def __init__(self, client):
       super(CloudbuildV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

@@ -386,7 +386,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nExample: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The cononical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
         "labels": {

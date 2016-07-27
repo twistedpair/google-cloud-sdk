@@ -132,11 +132,11 @@ def AddCommonArgs(parser, for_update=False):
       type=arg_parsers.ArgList(min_length=min_length),
       action=arg_parsers.FloatingListValuesCatcher(switch_value=switch),
       help=('A list of instance tags indicating the set of instances on the '
-            'network which may make accept inbound connections that match '
-            'the firewall rule.'))
+            'network which may accept inbound connections that match the '
+            'firewall rule.'))
   target_tags.detailed_help = """\
       A list of instance tags indicating the set of instances on the
-      network which may make accept inbound connections that match the
+      network which may accept inbound connections that match the
       firewall rule. If omitted, all instances on the network can
       receive inbound connections that match the rule.
 

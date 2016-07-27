@@ -14,12 +14,10 @@
 
 """Util for projects."""
 
-import functools
-
 from apitools.base.py import exceptions
-
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.core import apis
+from googlecloudsdk.core import log
 
 
 class DeletedResource(object):
@@ -55,37 +53,23 @@ def IsActive(project):
   return project.lifecycleState == lifecycle_enum.ACTIVE
 
 
-def GetError(error):
-  """Returns a more specific Projects error from an HttpError.
+def ConvertHttpError(error):
+  """Raises a more specific ProjectAccessError from an HttpError.
 
   Args:
     error: HttpError resulting from unsuccessful call to API.
 
   Returns:
-    Specific error based on error reason in HttpError.
+    ProjectAccessError or original error
 
   First line will parse project ID out of error url.
   Example:
-   URL = .../v1beta1/projects/BAD_ID?prettyPrint=True&alt=json
+   URL = .../v1beta1/projects/BAD_ID:method?prettyPrint=True&alt=json
    project_id = 'BAD_ID'
   """
-  project_id = error.url.split('/')[-1].split('?')[0]
-  if error.status_code == 403 or error.status_code == 404:
-    return errors.ProjectAccessError(project_id)
-  return None
-
-
-def HandleKnownHttpErrors(func):
-  """Decorator that catches HttpError and raises corresponding error."""
-
-  @functools.wraps(func)
-  def CatchHTTPErrorRaiseProjectError(*args, **kwargs):
-    try:
-      return func(*args, **kwargs)
-    except exceptions.HttpError as error:
-      processed_error = GetError(error)
-      if not processed_error:
-        raise
-      raise processed_error
-
-  return CatchHTTPErrorRaiseProjectError
+  log.debug('HttpError in projects API call.', exc_info=True)
+  if isinstance(error, exceptions.HttpError):
+    project_id = error.url.split('/')[-1].split('?')[0].split(':')[0]
+    if error.status_code == 403 or error.status_code == 404:
+      return errors.ProjectAccessError(project_id)
+  return error

@@ -65,19 +65,19 @@ def GetError(error, verbose=False):
   return 'ResponseError: code={0}, message={1}'.format(code, message)
 
 
-def WaitForOperation(operation_name, project, context, operation_description,
-                     timeout=None):
+def WaitForOperation(client, messages, operation_name, project,
+                     operation_description, timeout=None):
   """Wait for an operation to complete.
 
   Polls the operation requested approximately every second, showing a
   progress indicator. Returns when the operation has completed.
 
   Args:
+    client: Object to make requests with
+    messages: Object to build requests with
     operation_name: The name of the operation to wait on, as returned by
         operations.list.
     project: The name of the project that this operation belongs to.
-    context: Context object with messages and client to access the
-        deploymentmanager service.
     operation_description: A short description of the operation to wait on,
         such as 'create' or 'delete'. Will be displayed to the user.
     timeout: Optional (approximate) timeout in seconds, after which wait
@@ -89,8 +89,6 @@ def WaitForOperation(operation_name, project, context, operation_description,
       DeploymentManagerError: The operation finished with error(s) or exceeded
           the timeout without completing.
   """
-  client = context['deploymentmanager-client']
-  messages = context['deploymentmanager-messages']
   ticks = 0
   message = ('Waiting for '
              + ('{0} '.format(operation_description)

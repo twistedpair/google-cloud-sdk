@@ -45,22 +45,6 @@ class CloudbillingV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(CloudbillingV1.BillingAccountsProjectsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/billingAccounts/{billingAccountsId}/projects',
-              http_method=u'GET',
-              method_id=u'cloudbilling.billingAccounts.projects.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+name}/projects',
-              request_field='',
-              request_type_name=u'CloudbillingBillingAccountsProjectsListRequest',
-              response_type_name=u'ListProjectBillingInfoResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -79,6 +63,20 @@ account](https://support.google.com/cloud/answer/4430947).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}/projects',
+        http_method=u'GET',
+        method_id=u'cloudbilling.billingAccounts.projects.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}/projects',
+        request_field='',
+        request_type_name=u'CloudbillingBillingAccountsProjectsListRequest',
+        response_type_name=u'ListProjectBillingInfoResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
@@ -86,34 +84,6 @@ account](https://support.google.com/cloud/answer/4430947).
 
     def __init__(self, client):
       super(CloudbillingV1.BillingAccountsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/billingAccounts/{billingAccountsId}',
-              http_method=u'GET',
-              method_id=u'cloudbilling.billingAccounts.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'CloudbillingBillingAccountsGetRequest',
-              response_type_name=u'BillingAccount',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'cloudbilling.billingAccounts.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/billingAccounts',
-              request_field='',
-              request_type_name=u'CloudbillingBillingAccountsListRequest',
-              response_type_name=u'ListBillingAccountsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -132,6 +102,20 @@ account](https://support.google.com/cloud/answer/4430947).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}',
+        http_method=u'GET',
+        method_id=u'cloudbilling.billingAccounts.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'CloudbillingBillingAccountsGetRequest',
+        response_type_name=u'BillingAccount',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the billing accounts that the current authenticated user.
 [owns](https://support.google.com/cloud/answer/4430947).
@@ -146,6 +130,19 @@ account](https://support.google.com/cloud/answer/4430947).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudbilling.billingAccounts.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/billingAccounts',
+        request_field='',
+        request_type_name=u'CloudbillingBillingAccountsListRequest',
+        response_type_name=u'ListBillingAccountsResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -153,35 +150,6 @@ account](https://support.google.com/cloud/answer/4430947).
 
     def __init__(self, client):
       super(CloudbillingV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          'GetBillingInfo': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/billingInfo',
-              http_method=u'GET',
-              method_id=u'cloudbilling.projects.getBillingInfo',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}/billingInfo',
-              request_field='',
-              request_type_name=u'CloudbillingProjectsGetBillingInfoRequest',
-              response_type_name=u'ProjectBillingInfo',
-              supports_download=False,
-          ),
-          'UpdateBillingInfo': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/billingInfo',
-              http_method=u'PUT',
-              method_id=u'cloudbilling.projects.updateBillingInfo',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}/billingInfo',
-              request_field=u'projectBillingInfo',
-              request_type_name=u'CloudbillingProjectsUpdateBillingInfoRequest',
-              response_type_name=u'ProjectBillingInfo',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -200,6 +168,20 @@ project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
       config = self.GetMethodConfig('GetBillingInfo')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetBillingInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/billingInfo',
+        http_method=u'GET',
+        method_id=u'cloudbilling.projects.getBillingInfo',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/billingInfo',
+        request_field='',
+        request_type_name=u'CloudbillingProjectsGetBillingInfoRequest',
+        response_type_name=u'ProjectBillingInfo',
+        supports_download=False,
+    )
 
     def UpdateBillingInfo(self, request, global_params=None):
       """Sets or updates the billing account associated with a project. You specify.
@@ -243,3 +225,17 @@ disable billing, you should always call this method with the name of an
       config = self.GetMethodConfig('UpdateBillingInfo')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    UpdateBillingInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/billingInfo',
+        http_method=u'PUT',
+        method_id=u'cloudbilling.projects.updateBillingInfo',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/billingInfo',
+        request_field=u'projectBillingInfo',
+        request_type_name=u'CloudbillingProjectsUpdateBillingInfoRequest',
+        response_type_name=u'ProjectBillingInfo',
+        supports_download=False,
+    )

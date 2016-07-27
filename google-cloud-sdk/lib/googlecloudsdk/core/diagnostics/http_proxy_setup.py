@@ -28,7 +28,7 @@ def ChangeGcloudProxySettings():
     bool: Whether properties were successfully changed.
   """
   try:
-    proxy_info, is_existing_proxy = _CheckGcloudProxyInfo()
+    proxy_info, is_existing_proxy = EffectiveProxyInfo()
   except properties.InvalidValueError:
     log.status.Print(
         'Cloud SDK network proxy settings appear to be invalid. Proxy type, '
@@ -94,7 +94,7 @@ def ChangeGcloudProxySettings():
   return True
 
 
-def _CheckGcloudProxyInfo():
+def EffectiveProxyInfo():
   """Returns ProxyInfo effective in gcloud and if it is from gloud properties.
 
   Returns:

@@ -7,6 +7,7 @@ and continuous computation.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'dataflow'
@@ -322,6 +323,46 @@ class CounterUpdate(_messages.Message):
   structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 13)
 
 
+class CreateJobFromTemplateRequest(_messages.Message):
+  """Request to create a Dataflow job.
+
+  Messages:
+    ParametersValue: Dynamic parameterization of the job's runtime
+      environment.
+
+  Fields:
+    gcsPath: A path to the serialized JSON representation of the job.
+    parameters: Dynamic parameterization of the job's runtime environment.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    """Dynamic parameterization of the job's runtime environment.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  gcsPath = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+
+
 class CustomSourceLocation(_messages.Message):
   """Identifies the location of a custom souce.
 
@@ -599,6 +640,19 @@ class DataflowProjectsJobsWorkItemsReportStatusRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 3)
+
+
+class DataflowProjectsTemplatesCreateRequest(_messages.Message):
+  """A DataflowProjectsTemplatesCreateRequest object.
+
+  Fields:
+    createJobFromTemplateRequest: A CreateJobFromTemplateRequest resource to
+      be passed as the request body.
+    projectId: The project which owns the job.
+  """
+
+  createJobFromTemplateRequest = _messages.MessageField('CreateJobFromTemplateRequest', 1)
+  projectId = _messages.StringField(2, required=True)
 
 
 class DataflowProjectsWorkerMessagesRequest(_messages.Message):

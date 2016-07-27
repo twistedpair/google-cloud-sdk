@@ -897,6 +897,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
     self.logging = self._Add('logging')
+    self.ml = self._Add('ml')
     self.projects = self._Add('projects')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.testing = self._Add('testing')
@@ -1465,27 +1466,6 @@ def _GetIntProperty(prop, properties_file, required):
     raise InvalidValueError(
         'The property [{section}.{name}] must have an integer value: [{value}]'
         .format(section=prop.section, name=prop.name, value=value))
-
-
-def DisplayProperties(writer, properties):
-  """Pretty prints the properties passed in a dictionary.
-
-  Args:
-    writer: a file-like object to receive output
-    properties: {section: {property: value}} or {property: value} formatted
-      dictionary
-
-  Returns:
-    None
-  """
-
-  for section, props in sorted(properties.iteritems()):
-    writer.write('[{section}]\n'.format(section=section))
-    for prop, value in sorted(props.iteritems()):
-      if value is None:
-        writer.write('{prop} (unset)\n'.format(prop=prop))
-      else:
-        writer.write('{prop} = {value}\n'.format(prop=prop, value=value))
 
 
 def GetMetricsEnvironment():

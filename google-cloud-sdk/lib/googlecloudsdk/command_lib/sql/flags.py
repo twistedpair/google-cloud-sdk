@@ -22,3 +22,11 @@ INSTANCE_FLAG = base.Argument(
     required=True,
     completion_resource='sql.instances',
     help='Cloud SQL instance ID.')
+
+USERNAME_FLAG = base.Argument('username',
+                              completion_resource='sql.users',
+                              help='Cloud SQL username.')
+
+HOST_FLAG = base.Argument('host', help='Cloud SQL user\'s host.')
+
+PASSWORD_FLAG = base.Argument('--password', help='Cloud SQL user\'s password.')

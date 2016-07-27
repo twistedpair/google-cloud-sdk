@@ -13,12 +13,14 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Resource Management API."""
 
+from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.service_management import enable_api as services_enable_api
 from googlecloudsdk.api_lib.service_management import services_util
+from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import apis
 from googlecloudsdk.core.iam import iam_util
 
@@ -40,17 +42,22 @@ def List(limit=None):
       messages.CloudresourcemanagerProjectsListRequest(),
       limit=limit,
       field='projects',
-      predicate=projects_util.IsActive,
+      predicate=
+      projects_util.IsActive,
       batch_size_attribute='pageSize')
 
 
 def Get(project_ref):
   """Get project information."""
   client = projects_util.GetClient()
-  return client.projects.Get(project_ref.Request())
+  try:
+    return client.projects.Get(project_ref.Request())
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
-def Create(project_ref, project_name, enable_cloud_apis=True):
+def Create(project_ref, project_name, enable_cloud_apis=True,
+           update_labels=None):
   """Create a new project."""
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
@@ -59,7 +66,10 @@ def Create(project_ref, project_name, enable_cloud_apis=True):
   project_creation_result = client.projects.Create(
       messages.Project(
           projectId=project_ref.Name(),
-          name=project_name if project_name else project_ref.Name()))
+          name=project_name if project_name else project_ref.Name(),
+          labels=labels_util.UpdateLabels(None,
+                                          messages.Project.LabelsValue,
+                                          update_labels=update_labels)))
 
   if enable_cloud_apis:
     # Enable cloudapis.googleapis.com
@@ -77,9 +87,12 @@ def Delete(project_ref):
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
 
-  client.projects.Delete(
-      messages.CloudresourcemanagerProjectsDeleteRequest(
-          projectId=project_ref.Name()))
+  try:
+    client.projects.Delete(
+        messages.CloudresourcemanagerProjectsDeleteRequest(
+            projectId=project_ref.Name()))
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
   return projects_util.DeletedResource(project_ref.Name())
 
 
@@ -88,26 +101,40 @@ def Undelete(project_ref):
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
 
-  client.projects.Undelete(
-      messages.CloudresourcemanagerProjectsUndeleteRequest(
-          projectId=project_ref.Name()))
+  try:
+    client.projects.Undelete(
+        messages.CloudresourcemanagerProjectsUndeleteRequest(
+            projectId=project_ref.Name()))
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
   return projects_util.DeletedResource(project_ref.Name())
 
 
-def Update(project_ref, name=None, organization=None):
+def Update(project_ref, name=None, organization=None, update_labels=None,
+           remove_labels=None):
   """Update project information."""
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
 
-  project = client.projects.Get(project_ref.Request())
+  try:
+    project = client.projects.Get(project_ref.Request())
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
+
   if name:
     project.name = name
   if organization:
     if project.parent is not None:
       raise errors.ProjectMoveError(project, organization)
-    project.parent = messages.ResourceId(id=organization,
-                                         type='organization')
-  return client.projects.Update(project)
+    project.parent = messages.ResourceId(id=organization, type='organization')
+  project.labels = labels_util.UpdateLabels(project.labels,
+                                            messages.Project.LabelsValue,
+                                            update_labels=update_labels,
+                                            remove_labels=remove_labels)
+  try:
+    return client.projects.Update(project)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
 def GetIamPolicy(project_ref):
@@ -119,7 +146,10 @@ def GetIamPolicy(project_ref):
       resource=project_ref.Name(),
       getIamPolicyRequest=messages.GetIamPolicyRequest(),
   )
-  return client.projects.GetIamPolicy(policy_request)
+  try:
+    return client.projects.GetIamPolicy(policy_request)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
 def SetIamPolicy(project_ref, policy):
@@ -129,7 +159,10 @@ def SetIamPolicy(project_ref, policy):
   policy_request = messages.CloudresourcemanagerProjectsSetIamPolicyRequest(
       resource=project_ref.Name(),
       setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
-  return client.projects.SetIamPolicy(policy_request)
+  try:
+    return client.projects.SetIamPolicy(policy_request)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
 def SetIamPolicyFromFile(project_ref, policy_file):
@@ -137,18 +170,33 @@ def SetIamPolicyFromFile(project_ref, policy_file):
   messages = projects_util.GetMessages()
 
   policy = iam_util.ParseJsonPolicyFile(policy_file, messages.Policy)
-  return SetIamPolicy(project_ref, policy)
+  try:
+    return SetIamPolicy(project_ref, policy)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
 def AddIamPolicyBinding(project_ref, member, role):
   messages = projects_util.GetMessages()
 
-  policy = GetIamPolicy(project_ref)
+  try:
+    policy = GetIamPolicy(project_ref)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
   iam_util.AddBindingToIamPolicy(messages, policy, member, role)
-  return SetIamPolicy(project_ref, policy)
+  try:
+    return SetIamPolicy(project_ref, policy)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
 
 
 def RemoveIamPolicyBinding(project_ref, member, role):
-  policy = GetIamPolicy(project_ref)
+  try:
+    policy = GetIamPolicy(project_ref)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return SetIamPolicy(project_ref, policy)
+  try:
+    return SetIamPolicy(project_ref, policy)
+  except exceptions.HttpError as error:
+    raise projects_util.ConvertHttpError(error)

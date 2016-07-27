@@ -6,6 +6,7 @@ Stores, processes, explores and shares genomic data.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'genomics'

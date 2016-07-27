@@ -45,105 +45,6 @@ class ApikeysV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ApikeysV1.ProjectsApiKeysService, self).__init__(client)
-      self._method_configs = {
-          'BatchDelete': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'apikeys.projects.apiKeys.batchDelete',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'keyIds'],
-              relative_path=u'v1/projects/{projectId}/apiKeys:batchDelete',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysBatchDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'apikeys.projects.apiKeys.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/apiKeys',
-              request_field=u'apiKey',
-              request_type_name=u'ApikeysProjectsApiKeysCreateRequest',
-              response_type_name=u'ApiKey',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'apikeys.projects.apiKeys.delete',
-              ordered_params=[u'projectId', u'keyId'],
-              path_params=[u'keyId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'apikeys.projects.apiKeys.get',
-              ordered_params=[u'projectId', u'keyId'],
-              path_params=[u'keyId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysGetRequest',
-              response_type_name=u'ApiKey',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'apikeys.projects.apiKeys.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/apiKeys',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysListRequest',
-              response_type_name=u'ListApiKeysResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'apikeys.projects.apiKeys.patch',
-              ordered_params=[u'projectId', u'keyId'],
-              path_params=[u'keyId', u'projectId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
-              request_field=u'apiKey',
-              request_type_name=u'ApikeysProjectsApiKeysPatchRequest',
-              response_type_name=u'ApiKey',
-              supports_download=False,
-          ),
-          'Regenerate': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'apikeys.projects.apiKeys.regenerate',
-              ordered_params=[u'projectId', u'keyId'],
-              path_params=[u'keyId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}:regenerate',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysRegenerateRequest',
-              response_type_name=u'ApiKey',
-              supports_download=False,
-          ),
-          'Revert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'apikeys.projects.apiKeys.revert',
-              ordered_params=[u'projectId', u'keyId'],
-              path_params=[u'keyId', u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}:revert',
-              request_field='',
-              request_type_name=u'ApikeysProjectsApiKeysRevertRequest',
-              response_type_name=u'ApiKey',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -160,6 +61,19 @@ class ApikeysV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'apikeys.projects.apiKeys.batchDelete',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'keyIds'],
+        relative_path=u'v1/projects/{projectId}/apiKeys:batchDelete',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysBatchDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a new API key.
 
@@ -172,6 +86,19 @@ class ApikeysV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'apikeys.projects.apiKeys.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/apiKeys',
+        request_field=u'apiKey',
+        request_type_name=u'ApikeysProjectsApiKeysCreateRequest',
+        response_type_name=u'ApiKey',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes an API key.
@@ -186,6 +113,19 @@ class ApikeysV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'apikeys.projects.apiKeys.delete',
+        ordered_params=[u'projectId', u'keyId'],
+        path_params=[u'keyId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the metadata for an API key.
 
@@ -198,6 +138,19 @@ class ApikeysV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'apikeys.projects.apiKeys.get',
+        ordered_params=[u'projectId', u'keyId'],
+        path_params=[u'keyId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysGetRequest',
+        response_type_name=u'ApiKey',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists the API keys owned by a project.
@@ -212,6 +165,19 @@ class ApikeysV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'apikeys.projects.apiKeys.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/apiKeys',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysListRequest',
+        response_type_name=u'ListApiKeysResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Patches the modifiable fields of an API key.
 
@@ -224,6 +190,19 @@ class ApikeysV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'apikeys.projects.apiKeys.patch',
+        ordered_params=[u'projectId', u'keyId'],
+        path_params=[u'keyId', u'projectId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}',
+        request_field=u'apiKey',
+        request_type_name=u'ApikeysProjectsApiKeysPatchRequest',
+        response_type_name=u'ApiKey',
+        supports_download=False,
+    )
 
     def Regenerate(self, request, global_params=None):
       """Regenerates the key string for the specified API key.
@@ -241,6 +220,19 @@ Returns the updated key entry.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Regenerate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'apikeys.projects.apiKeys.regenerate',
+        ordered_params=[u'projectId', u'keyId'],
+        path_params=[u'keyId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}:regenerate',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysRegenerateRequest',
+        response_type_name=u'ApiKey',
+        supports_download=False,
+    )
+
     def Revert(self, request, global_params=None):
       """Reverts a previous key regeneration.
 This swaps the contents of `current_key` and `previous_key`.
@@ -256,6 +248,19 @@ Returns the updated key entry.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Revert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'apikeys.projects.apiKeys.revert',
+        ordered_params=[u'projectId', u'keyId'],
+        path_params=[u'keyId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/apiKeys/{keyId}:revert',
+        request_field='',
+        request_type_name=u'ApikeysProjectsApiKeysRevertRequest',
+        response_type_name=u'ApiKey',
+        supports_download=False,
+    )
+
   class ProjectsDeletedApiKeysService(base_api.BaseApiService):
     """Service class for the projects_deletedApiKeys resource."""
 
@@ -263,21 +268,6 @@ Returns the updated key entry.
 
     def __init__(self, client):
       super(ApikeysV1.ProjectsDeletedApiKeysService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'apikeys.projects.deletedApiKeys.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/deletedApiKeys',
-              request_field='',
-              request_type_name=u'ApikeysProjectsDeletedApiKeysListRequest',
-              response_type_name=u'ListDeletedApiKeysResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -294,6 +284,19 @@ Returns the updated key entry.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'apikeys.projects.deletedApiKeys.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/deletedApiKeys',
+        request_field='',
+        request_type_name=u'ApikeysProjectsDeletedApiKeysListRequest',
+        response_type_name=u'ListDeletedApiKeysResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -301,21 +304,6 @@ Returns the updated key entry.
 
     def __init__(self, client):
       super(ApikeysV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          'GetProjectForApiKey': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'apikeys.projects.getProjectForApiKey',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'apiKey'],
-              relative_path=u'v1/projects:getProjectForApiKey',
-              request_field='',
-              request_type_name=u'ApikeysProjectsGetProjectForApiKeyRequest',
-              response_type_name=u'GetProjectForApiKeyResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -331,3 +319,16 @@ Returns the updated key entry.
       config = self.GetMethodConfig('GetProjectForApiKey')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetProjectForApiKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'apikeys.projects.getProjectForApiKey',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'apiKey'],
+        relative_path=u'v1/projects:getProjectForApiKey',
+        request_field='',
+        request_type_name=u'ApikeysProjectsGetProjectForApiKeyRequest',
+        response_type_name=u'GetProjectForApiKeyResponse',
+        supports_download=False,
+    )

@@ -79,11 +79,26 @@ def FormatDuration(duration, parts=3, precision=3):
   return duration.Format(parts=parts, precision=precision)
 
 
-def ParseDuration(string):
+def ParseDuration(string, calendar=False):
   """Parses a duration string and returns a Duration object.
+
+  Durations using only hours, miniutes, seconds and microseconds are exact.
+  calendar=True allows the constructor to use duration units larger than hours.
+  These durations will be inexact across daylight savings time and leap year
+  boundaries, but will be "calendar" correct. For example:
+
+    2015-02-14 + P1Y   => 2016-02-14
+    2015-02-14 + P365D => 2016-02-14
+    2016-02-14 + P1Y   => 2017-02-14
+    2016-02-14 + P366D => 2017-02-14
+
+    2016-03-13T01:00:00 + P1D   => 2016-03-14T01:00:00
+    2016-03-13T01:00:00 + PT23H => 2016-03-14T01:00:00
+    2016-03-13T01:00:00 + PT24H => 2016-03-14T03:00:00
 
   Args:
     string: The ISO 8601 duration/period string to parse.
+    calendar: Use duration units larger than hours if True.
 
   Raises:
     ValueError: Invalid duration syntax.
@@ -92,7 +107,7 @@ def ParseDuration(string):
     An iso_duration.Duration object for the given ISO 8601 duration/period
     string.
   """
-  return iso_duration.Duration().Parse(string)
+  return iso_duration.Duration(calendar=calendar).Parse(string)
 
 
 def GetDurationFromTimeDelta(delta, calendar=False):

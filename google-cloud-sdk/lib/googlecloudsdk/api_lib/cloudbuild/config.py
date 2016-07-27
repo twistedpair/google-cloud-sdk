@@ -15,8 +15,10 @@
 
 """
 
+import json
 import os.path
 
+from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 
 from googlecloudsdk.core import exceptions
@@ -39,6 +41,15 @@ class NotFoundException(exceptions.Error):
 
   def __init__(self, path):
     msg = '{path} could not be found'.format(
+        path=path,
+    )
+    super(NotFoundException, self).__init__(msg)
+
+
+class FileReadException(exceptions.Error):
+
+  def __init__(self, path):
+    msg = '{path} could not be read'.format(
         path=path,
     )
     super(NotFoundException, self).__init__(msg)
@@ -98,6 +109,53 @@ def _SubstituteVars(build):
   return build
 
 
+def _UnpackCheckUnused(obj, msg_type):
+  """Stuff a dict into a proto message, and fail if there are unused values.
+
+  Args:
+    obj: dict(), The structured data to be reflected into the message type.
+    msg_type: type, The proto message type.
+
+  Raises:
+    ValueError: If there is an unused value in obj.
+
+  Returns:
+    Proto message, The message that was created from obj.
+  """
+  msg = apitools_encoding.DictToMessage(obj, msg_type)
+
+  def _CheckForUnusedFields(obj):
+    """Check for any unused fields in nested messages or lists."""
+    if isinstance(obj, proto_messages.Message):
+      unused_fields = obj.all_unrecognized_fields()
+      if unused_fields:
+        if len(unused_fields) > 1:
+          # Because this message shows up in a dotted path, use braces.
+          # eg .foo.bar.{x,y,z}
+          unused_msg = '{%s}' % ','.join(sorted(unused_fields))
+        else:
+          # For single items, omit the braces.
+          # eg .foo.bar.x
+          unused_msg = unused_fields[0]
+        raise ValueError('.%s: unused' % unused_msg)
+      for used_field in obj.all_fields():
+        try:
+          field = getattr(obj, used_field.name)
+          _CheckForUnusedFields(field)
+        except ValueError as e:
+          raise ValueError('.%s%s' % (used_field.name, e))
+    if isinstance(obj, list):
+      for i, item in enumerate(obj):
+        try:
+          _CheckForUnusedFields(item)
+        except ValueError as e:
+          raise ValueError('[%d]%s' % (i, e))
+
+  _CheckForUnusedFields(msg)
+
+  return msg
+
+
 def LoadCloudbuildConfig(path, messages):
   """Load a cloudbuild config file into a Build message.
 
@@ -122,20 +180,33 @@ def LoadCloudbuildConfig(path, messages):
   _, ext = os.path.splitext(path)
   ext = ext.lower()
 
+  # First, turn the file into a dict.
   if ext == '.json':
-    json_data = open(path).read()
     try:
-      build = apitools_encoding.JsonToMessage(messages.Build, json_data)
+      structured_data = json.load(open(path))
     except ValueError as ve:
       raise ParserError(path, ve)
+    except EnvironmentError:
+      # EnvironmentError is parent of IOError, OSError and WindowsError.
+      # Raised when file does not exist or can't be opened/read.
+      raise FileReadException(path)
   elif ext == '.yaml':
     try:
       structured_data = yaml.load(open(path))
     except yaml.parser.ParserError as pe:
       raise ParserError(path, pe)
-    build = apitools_encoding.DictToMessage(structured_data, messages.Build)
+    except EnvironmentError:
+      # EnvironmentError is parent of IOError, OSError and WindowsError.
+      # Raised when file does not exist or can't be opened/read.
+      raise FileReadException(path)
   else:
     raise UnsupportedEncodingException(path, ext)
+
+  # Then, turn the dict into a proto message.
+  try:
+    build = _UnpackCheckUnused(structured_data, messages.Build)
+  except ValueError as e:
+    raise BadConfigException(path, '%s' % e)
 
   # Some problems can be caught before talking to the cloudbuild service.
   if build.source:

@@ -69,6 +69,24 @@ def GetBooleanArgValue(arg):
   return True
 
 
+def _GetKeyValue(r, key, undefined=None):
+  """Returns the value for key in r.
+
+  Args:
+    r: The resource object.
+    key: The dotted attribute name.
+    undefined: This is returned if key is not in r.
+
+  Returns:
+    The value for key in r.
+  """
+  # Circular dependency on resource_lex for
+  #   parsed_key = resource_lex.Lexer(key).Key()
+  # so we settle for simple keys here.
+  parsed_key = key.split('.')
+  return resource_property.Get(r, parsed_key, undefined)
+
+
 def TransformAlways(r):
   """Marks a transform sequence to always be applied.
 
@@ -263,23 +281,96 @@ def TransformDecode(r, encoding, undefined=''):
   return undefined
 
 
-def TransformDuration(r, unit=1, undefined=''):
-  """Formats the resource as a duration string.
+def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
+                      unit=1, undefined=''):
+  """Formats the resource as an ISO 8601 duration string.
+
+  The [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations)
+  format is: "[-]P[nY][nM][nD][T[nH][nM][n[.m]S]]". The 0 duration is "P0".
+  Otherwise at least one part will always be displayed. Negative durations are
+  prefixed by "-". "T" disambiguates months "P2M" to the left of "T" and minutes
+  "PT5M" to the right.
+
+  If the resource is a datetime then the duration of `resource - current_time`
+  is returned.
 
   Args:
     r: A JSON-serializable object.
+    start: The name of a start time attribute in the resource. The duration of
+      the `end - start` time attributes in resource is returned. If `end` is
+      not specified then the current time is used.
+    end: The name of an end time attribute in the resource. Defaults to
+      the current time if omitted. Ignored if `start` is not specified.
+    parts: Format at most this many duration parts starting with largest
+      non-zero part.
+    precision: Format the last duration part with precision digits after the
+      decimal point. Trailing "0" and "." are always stripped.
+    calendar: Allow time units larger than hours in formated durations if true.
+      Durations specifying hours or smaller units are exact across daylight
+      savings time boundaries. On by default. Use calendar=false to disable.
+      For example, if `calendar=true` then at the daylight savings boundary
+      2016-03-13T01:00:00 + P1D => 2016-03-14T01:00:00 but 2016-03-13T01:00:00 +
+      PT24H => 2016-03-14T03:00:00. Similarly, a +P1Y duration will be inexact
+      but "calendar correct", yielding the same month and day number next year,
+      even in leap years.
     unit: Divide the resource numeric value by _unit_ to yield seconds.
     undefined: Returns this value if the resource is not a valid timestamp.
 
   Returns:
-    The duration string for r or undefined if r is not a duration.
+    The ISO 8601 duration string for r or undefined if r is not a duration.
   """
   try:
-    timestamp = float(r) / unit
-    d = datetime.timedelta(seconds=timestamp)
-    return unicode(d).replace(' ', '')
-  except (TypeError, ValueError):
+    parts = int(parts)
+    precision = int(precision)
+  except ValueError:
     return undefined
+  calendar = GetBooleanArgValue(calendar)
+
+  if start:
+    # Duration of ((end or Now()) - start).
+
+    # Get the datetime of both.
+    try:
+      start_datetime = times.ParseDateTime(_GetKeyValue(r, start))
+      end_value = _GetKeyValue(r, end) if end else None
+      if end_value:
+        end_datetime = times.ParseDateTime(end_value)
+      else:
+        end_datetime = times.Now(tzinfo=start_datetime.tzinfo)
+    except (AttributeError, ImportError, TypeError, ValueError):
+      return undefined
+
+    # Finally format the duration of the delta.
+    delta = end_datetime - start_datetime
+    return times.GetDurationFromTimeDelta(
+        delta=delta, calendar=calendar).Format(parts=parts, precision=precision)
+
+  # Check if the resource is a float duration.
+  try:
+    duration = times.ParseDuration('PT{0}S'.format(float(r) / unit),
+                                   calendar=calendar)
+    return duration.Format(parts=parts, precision=precision)
+  except (TypeError, ValueError):
+    pass
+
+  # Check if the resource is an ISO 8601 duration.
+  try:
+    duration = times.ParseDuration(r)
+    return duration.Format(parts=parts, precision=precision)
+  except (AttributeError, TypeError, ValueError):
+    pass
+
+  # Check if the resource is a datetime.
+  try:
+    start_datetime = times.ParseDateTime(r)
+  except (AttributeError, ImportError, TypeError, ValueError):
+    return undefined
+
+  # Format the duration of (now - r).
+  end_datetime = times.Now(tzinfo=start_datetime.tzinfo)
+  delta = end_datetime - start_datetime
+  return times.GetDurationFromTimeDelta(delta=delta, calendar=calendar).Format(
+      parts=parts, precision=precision)
 
 
 def TransformEncode(r, encoding, undefined=''):

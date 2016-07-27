@@ -1555,6 +1555,16 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'sql.users.v1beta4': ResourceInfo(
+        async_collection='sql.operations.v1beta4',
+        list_format="""
+          table(
+            name.yesno(no='(anonymous)'),
+            host
+          )
+        """,
+    ),
+
     # test
 
     'test.android.devices': ResourceInfo(

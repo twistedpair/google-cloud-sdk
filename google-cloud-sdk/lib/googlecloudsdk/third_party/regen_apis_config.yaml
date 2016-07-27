@@ -135,6 +135,9 @@ apis:
   manager:
     v1beta2:
       discovery_doc: manager_v1beta2.json
+  ml:
+    v1alpha3:
+      discovery_doc: ml_public_google_rest_simple_uri_v1alpha3.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

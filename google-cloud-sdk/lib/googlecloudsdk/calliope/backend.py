@@ -78,7 +78,7 @@ class ArgumentParser(argparse.ArgumentParser):
     return self._flag_collection
 
   def parse_known_args(self, args=None, namespace=None):
-    """Override's argparse.ArgumentParser's .parse_known_args method."""
+    """Overrides argparse.ArgumentParser's .parse_known_args method."""
     args, argv = super(ArgumentParser, self).parse_known_args(args, namespace)
     # Pass back a reference to the deepest parser used in the parse
     # as part of the returned args.
@@ -87,7 +87,7 @@ class ArgumentParser(argparse.ArgumentParser):
     return (args, argv)
 
   def parse_args(self, args=None, namespace=None):
-    """Override's argparse.ArgumentParser's .parse_args method."""
+    """Overrides argparse.ArgumentParser's .parse_args method."""
     args, argv = self.parse_known_args(args, namespace)
     if not argv:
       return args
@@ -144,7 +144,7 @@ class ArgumentParser(argparse.ArgumentParser):
         separator, separator.join(messages)))
 
   def _check_value(self, action, value):
-    """Override's argparse.ArgumentParser's ._check_value(action, value) method.
+    """Overrides argparse.ArgumentParser's ._check_value(action, value) method.
 
     Args:
       action: argparse.Action, The action being checked against this value.
@@ -244,7 +244,7 @@ class ArgumentParser(argparse.ArgumentParser):
     return existing_alternatives
 
   def error(self, message):
-    """Override's argparse.ArgumentParser's .error(message) method.
+    """Overrides argparse.ArgumentParser's .error(message) method.
 
     Specifically, it avoids reprinting the program name and the string "error:".
 
@@ -274,7 +274,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self.exit(2)
 
   def _parse_optional(self, arg_string):
-    """Override's argparse.ArgumentParser's ._parse_optional method.
+    """Overrides argparse.ArgumentParser's ._parse_optional method.
 
     This allows the parser to have leading flags included in the grabbed
     arguments and stored in the namespace.
@@ -297,7 +297,7 @@ class ArgumentParser(argparse.ArgumentParser):
     return option_tuple
 
   def _get_values(self, action, arg_strings):
-    """Override's argparse.ArgumentParser's ._get_values method.
+    """Overrides argparse.ArgumentParser's ._get_values method.
 
     This override does not actually change any behavior.  We use this hook to
     grab the flags and arguments that are actually seen at parse time.  The
@@ -331,6 +331,30 @@ class ArgumentParser(argparse.ArgumentParser):
       if name:
         self._flag_collection.append(name)
     return super(ArgumentParser, self)._get_values(action, arg_strings)
+
+  def _get_option_tuples(self, option_string):
+    """Overrides argparse.ArgumentParser's ._get_option_tuples method.
+
+    This warns about flag abbreviations unless its for arg completion.
+
+    Args:
+      option_string: The option string to match.
+
+    Returns:
+      A list of matching flag tuples.
+    """
+    matches = super(ArgumentParser, self)._get_option_tuples(option_string)
+    if '_ARGCOMPLETE' in os.environ:
+      return matches
+    if matches and len(matches) == 1:
+      matched_flag = matches[0][1]
+      log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
+               'use the full name [%s].', option_string, matched_flag)
+    return matches  # [] to disable abbreviations
+    # TODO(user): b/30268716 use this as the method body starting 132.0.0
+    # if '_ARGCOMPLETE' in os.environ:
+    #   return super(ArgumentParser, self)._get_option_tuples(option_string)
+    # return []
 
 
 # pylint:disable=protected-access

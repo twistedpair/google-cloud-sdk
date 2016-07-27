@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Stackdriver Error Reporting API",
-  "description": "Stackdriver Error Reporting groups and counts similar errors from cloud services. The Stackdriver Error Reporting API provides read access to error groups and their associated errors.\n",
+  "description": "Stackdriver Error Reporting groups and counts similar errors from cloud services. The Stackdriver Error Reporting API provides a way to report new errors and read access to error groups and their associated errors.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

@@ -55,81 +55,6 @@ class GenomicsV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(GenomicsV1.AnnotationsService, self).__init__(client)
-      self._method_configs = {
-          'BatchCreate': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.annotations.batchCreate',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/annotations:batchCreate',
-              request_field='<request>',
-              request_type_name=u'BatchCreateAnnotationsRequest',
-              response_type_name=u'BatchCreateAnnotationsResponse',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.annotations.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/annotations',
-              request_field='<request>',
-              request_type_name=u'Annotation',
-              response_type_name=u'Annotation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.annotations.delete',
-              ordered_params=[u'annotationId'],
-              path_params=[u'annotationId'],
-              query_params=[],
-              relative_path=u'v1/annotations/{annotationId}',
-              request_field='',
-              request_type_name=u'GenomicsAnnotationsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.annotations.get',
-              ordered_params=[u'annotationId'],
-              path_params=[u'annotationId'],
-              query_params=[],
-              relative_path=u'v1/annotations/{annotationId}',
-              request_field='',
-              request_type_name=u'GenomicsAnnotationsGetRequest',
-              response_type_name=u'Annotation',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.annotations.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/annotations/search',
-              request_field='<request>',
-              request_type_name=u'SearchAnnotationsRequest',
-              response_type_name=u'SearchAnnotationsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'genomics.annotations.update',
-              ordered_params=[u'annotationId'],
-              path_params=[u'annotationId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/annotations/{annotationId}',
-              request_field=u'annotation',
-              request_type_name=u'GenomicsAnnotationsUpdateRequest',
-              response_type_name=u'Annotation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -158,6 +83,19 @@ CreateAnnotation.
       config = self.GetMethodConfig('BatchCreate')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.annotations.batchCreate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/annotations:batchCreate',
+        request_field='<request>',
+        request_type_name=u'BatchCreateAnnotationsRequest',
+        response_type_name=u'BatchCreateAnnotationsResponse',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       """Creates a new annotation. Caller must have WRITE permission.
@@ -193,6 +131,19 @@ for additional restrictions on each field.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.annotations.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/annotations',
+        request_field='<request>',
+        request_type_name=u'Annotation',
+        response_type_name=u'Annotation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes an annotation. Caller must have WRITE permission for.
 the associated annotation set.
@@ -207,6 +158,19 @@ the associated annotation set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.annotations.delete',
+        ordered_params=[u'annotationId'],
+        path_params=[u'annotationId'],
+        query_params=[],
+        relative_path=u'v1/annotations/{annotationId}',
+        request_field='',
+        request_type_name=u'GenomicsAnnotationsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets an annotation. Caller must have READ permission.
 for the associated annotation set.
@@ -220,6 +184,19 @@ for the associated annotation set.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.annotations.get',
+        ordered_params=[u'annotationId'],
+        path_params=[u'annotationId'],
+        query_params=[],
+        relative_path=u'v1/annotations/{annotationId}',
+        request_field='',
+        request_type_name=u'GenomicsAnnotationsGetRequest',
+        response_type_name=u'Annotation',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Searches for annotations that match the given criteria. Results are.
@@ -240,6 +217,19 @@ READ permission for the queried annotation sets.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.annotations.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/annotations/search',
+        request_field='<request>',
+        request_type_name=u'SearchAnnotationsRequest',
+        response_type_name=u'SearchAnnotationsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an annotation. Caller must have.
 WRITE permission for the associated dataset.
@@ -254,6 +244,19 @@ WRITE permission for the associated dataset.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'genomics.annotations.update',
+        ordered_params=[u'annotationId'],
+        path_params=[u'annotationId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/annotations/{annotationId}',
+        request_field=u'annotation',
+        request_type_name=u'GenomicsAnnotationsUpdateRequest',
+        response_type_name=u'Annotation',
+        supports_download=False,
+    )
+
   class AnnotationsetsService(base_api.BaseApiService):
     """Service class for the annotationsets resource."""
 
@@ -261,69 +264,6 @@ WRITE permission for the associated dataset.
 
     def __init__(self, client):
       super(GenomicsV1.AnnotationsetsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.annotationsets.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/annotationsets',
-              request_field='<request>',
-              request_type_name=u'AnnotationSet',
-              response_type_name=u'AnnotationSet',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.annotationsets.delete',
-              ordered_params=[u'annotationSetId'],
-              path_params=[u'annotationSetId'],
-              query_params=[],
-              relative_path=u'v1/annotationsets/{annotationSetId}',
-              request_field='',
-              request_type_name=u'GenomicsAnnotationsetsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.annotationsets.get',
-              ordered_params=[u'annotationSetId'],
-              path_params=[u'annotationSetId'],
-              query_params=[],
-              relative_path=u'v1/annotationsets/{annotationSetId}',
-              request_field='',
-              request_type_name=u'GenomicsAnnotationsetsGetRequest',
-              response_type_name=u'AnnotationSet',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.annotationsets.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/annotationsets/search',
-              request_field='<request>',
-              request_type_name=u'SearchAnnotationSetsRequest',
-              response_type_name=u'SearchAnnotationSetsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'genomics.annotationsets.update',
-              ordered_params=[u'annotationSetId'],
-              path_params=[u'annotationSetId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/annotationsets/{annotationSetId}',
-              request_field=u'annotationSet',
-              request_type_name=u'GenomicsAnnotationsetsUpdateRequest',
-              response_type_name=u'AnnotationSet',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -349,6 +289,19 @@ server-generated (for example, the `id` field).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.annotationsets.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/annotationsets',
+        request_field='<request>',
+        request_type_name=u'AnnotationSet',
+        response_type_name=u'AnnotationSet',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes an annotation set. Caller must have WRITE permission.
 for the associated annotation set.
@@ -363,6 +316,19 @@ for the associated annotation set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.annotationsets.delete',
+        ordered_params=[u'annotationSetId'],
+        path_params=[u'annotationSetId'],
+        query_params=[],
+        relative_path=u'v1/annotationsets/{annotationSetId}',
+        request_field='',
+        request_type_name=u'GenomicsAnnotationsetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets an annotation set. Caller must have READ permission for.
 the associated dataset.
@@ -376,6 +342,19 @@ the associated dataset.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.annotationsets.get',
+        ordered_params=[u'annotationSetId'],
+        path_params=[u'annotationSetId'],
+        query_params=[],
+        relative_path=u'v1/annotationsets/{annotationSetId}',
+        request_field='',
+        request_type_name=u'GenomicsAnnotationsetsGetRequest',
+        response_type_name=u'AnnotationSet',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Searches for annotation sets that match the given criteria. Annotation sets.
@@ -394,6 +373,19 @@ responses. Caller must have READ permission for the queried datasets.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.annotationsets.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/annotationsets/search',
+        request_field='<request>',
+        request_type_name=u'SearchAnnotationSetsRequest',
+        response_type_name=u'SearchAnnotationSetsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an annotation set. The update must respect all mutability.
 restrictions and other invariants described on the annotation set resource.
@@ -409,6 +401,19 @@ Caller must have WRITE permission for the associated dataset.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'genomics.annotationsets.update',
+        ordered_params=[u'annotationSetId'],
+        path_params=[u'annotationSetId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/annotationsets/{annotationSetId}',
+        request_field=u'annotationSet',
+        request_type_name=u'GenomicsAnnotationsetsUpdateRequest',
+        response_type_name=u'AnnotationSet',
+        supports_download=False,
+    )
+
   class CallsetsService(base_api.BaseApiService):
     """Service class for the callsets resource."""
 
@@ -416,69 +421,6 @@ Caller must have WRITE permission for the associated dataset.
 
     def __init__(self, client):
       super(GenomicsV1.CallsetsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.callsets.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/callsets',
-              request_field='<request>',
-              request_type_name=u'CallSet',
-              response_type_name=u'CallSet',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.callsets.delete',
-              ordered_params=[u'callSetId'],
-              path_params=[u'callSetId'],
-              query_params=[],
-              relative_path=u'v1/callsets/{callSetId}',
-              request_field='',
-              request_type_name=u'GenomicsCallsetsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.callsets.get',
-              ordered_params=[u'callSetId'],
-              path_params=[u'callSetId'],
-              query_params=[],
-              relative_path=u'v1/callsets/{callSetId}',
-              request_field='',
-              request_type_name=u'GenomicsCallsetsGetRequest',
-              response_type_name=u'CallSet',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'genomics.callsets.patch',
-              ordered_params=[u'callSetId'],
-              path_params=[u'callSetId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/callsets/{callSetId}',
-              request_field=u'callSet',
-              request_type_name=u'GenomicsCallsetsPatchRequest',
-              response_type_name=u'CallSet',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.callsets.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/callsets/search',
-              request_field='<request>',
-              request_type_name=u'SearchCallSetsRequest',
-              response_type_name=u'SearchCallSetsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -499,6 +441,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.callsets.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/callsets',
+        request_field='<request>',
+        request_type_name=u'CallSet',
+        response_type_name=u'CallSet',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a call set.
 
@@ -516,6 +471,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.callsets.delete',
+        ordered_params=[u'callSetId'],
+        path_params=[u'callSetId'],
+        query_params=[],
+        relative_path=u'v1/callsets/{callSetId}',
+        request_field='',
+        request_type_name=u'GenomicsCallsetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets a call set by ID.
 
@@ -532,6 +500,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.callsets.get',
+        ordered_params=[u'callSetId'],
+        path_params=[u'callSetId'],
+        query_params=[],
+        relative_path=u'v1/callsets/{callSetId}',
+        request_field='',
+        request_type_name=u'GenomicsCallsetsGetRequest',
+        response_type_name=u'CallSet',
+        supports_download=False,
+    )
 
     def Patch(self, request, global_params=None):
       """Updates a call set.
@@ -551,6 +532,19 @@ This method supports patch semantics.
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'genomics.callsets.patch',
+        ordered_params=[u'callSetId'],
+        path_params=[u'callSetId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/callsets/{callSetId}',
+        request_field=u'callSet',
+        request_type_name=u'GenomicsCallsetsPatchRequest',
+        response_type_name=u'CallSet',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Gets a list of call sets matching the criteria.
@@ -572,6 +566,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.callsets.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/callsets/search',
+        request_field='<request>',
+        request_type_name=u'SearchCallSetsRequest',
+        response_type_name=u'SearchCallSetsResponse',
+        supports_download=False,
+    )
+
   class DatasetsService(base_api.BaseApiService):
     """Service class for the datasets resource."""
 
@@ -579,120 +586,6 @@ Implements
 
     def __init__(self, client):
       super(GenomicsV1.DatasetsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.datasets.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/datasets',
-              request_field='<request>',
-              request_type_name=u'Dataset',
-              response_type_name=u'Dataset',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.datasets.delete',
-              ordered_params=[u'datasetId'],
-              path_params=[u'datasetId'],
-              query_params=[],
-              relative_path=u'v1/datasets/{datasetId}',
-              request_field='',
-              request_type_name=u'GenomicsDatasetsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.datasets.get',
-              ordered_params=[u'datasetId'],
-              path_params=[u'datasetId'],
-              query_params=[],
-              relative_path=u'v1/datasets/{datasetId}',
-              request_field='',
-              request_type_name=u'GenomicsDatasetsGetRequest',
-              response_type_name=u'Dataset',
-              supports_download=False,
-          ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/datasets/{datasetsId}:getIamPolicy',
-              http_method=u'POST',
-              method_id=u'genomics.datasets.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field=u'getIamPolicyRequest',
-              request_type_name=u'GenomicsDatasetsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.datasets.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'pageSize', u'pageToken', u'projectId'],
-              relative_path=u'v1/datasets',
-              request_field='',
-              request_type_name=u'GenomicsDatasetsListRequest',
-              response_type_name=u'ListDatasetsResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'genomics.datasets.patch',
-              ordered_params=[u'datasetId'],
-              path_params=[u'datasetId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/datasets/{datasetId}',
-              request_field=u'dataset',
-              request_type_name=u'GenomicsDatasetsPatchRequest',
-              response_type_name=u'Dataset',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/datasets/{datasetsId}:setIamPolicy',
-              http_method=u'POST',
-              method_id=u'genomics.datasets.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'GenomicsDatasetsSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              flat_path=u'v1/datasets/{datasetsId}:testIamPermissions',
-              http_method=u'POST',
-              method_id=u'genomics.datasets.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'GenomicsDatasetsTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
-              supports_download=False,
-          ),
-          'Undelete': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.datasets.undelete',
-              ordered_params=[u'datasetId'],
-              path_params=[u'datasetId'],
-              query_params=[],
-              relative_path=u'v1/datasets/{datasetId}:undelete',
-              request_field=u'undeleteDatasetRequest',
-              request_type_name=u'GenomicsDatasetsUndeleteRequest',
-              response_type_name=u'Dataset',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -712,6 +605,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.datasets.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/datasets',
+        request_field='<request>',
+        request_type_name=u'Dataset',
+        response_type_name=u'Dataset',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes a dataset and all of its contents (all read group sets,.
@@ -735,6 +641,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.datasets.delete',
+        ordered_params=[u'datasetId'],
+        path_params=[u'datasetId'],
+        query_params=[],
+        relative_path=u'v1/datasets/{datasetId}',
+        request_field='',
+        request_type_name=u'GenomicsDatasetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets a dataset by ID.
 
@@ -751,6 +670,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.datasets.get',
+        ordered_params=[u'datasetId'],
+        path_params=[u'datasetId'],
+        query_params=[],
+        relative_path=u'v1/datasets/{datasetId}',
+        request_field='',
+        request_type_name=u'GenomicsDatasetsGetRequest',
+        response_type_name=u'Dataset',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for the dataset. This is empty if the.
@@ -773,6 +705,20 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/datasets/{datasetsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'genomics.datasets.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'GenomicsDatasetsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists datasets within a project.
 
@@ -789,6 +735,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.datasets.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'pageSize', u'pageToken', u'projectId'],
+        relative_path=u'v1/datasets',
+        request_field='',
+        request_type_name=u'GenomicsDatasetsListRequest',
+        response_type_name=u'ListDatasetsResponse',
+        supports_download=False,
+    )
 
     def Patch(self, request, global_params=None):
       """Updates a dataset.
@@ -808,6 +767,19 @@ This method supports patch semantics.
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'genomics.datasets.patch',
+        ordered_params=[u'datasetId'],
+        path_params=[u'datasetId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/datasets/{datasetId}',
+        request_field=u'dataset',
+        request_type_name=u'GenomicsDatasetsPatchRequest',
+        response_type_name=u'Dataset',
+        supports_download=False,
+    )
 
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified dataset. Replaces any.
@@ -830,6 +802,20 @@ Policy</a> for more information.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/datasets/{datasetsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'genomics.datasets.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'GenomicsDatasetsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 See <a href="/iam/docs/managing-policies#testing_permissions">Testing
@@ -848,6 +834,20 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/datasets/{datasetsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'genomics.datasets.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'GenomicsDatasetsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
     def Undelete(self, request, global_params=None):
       """Undeletes a dataset by restoring a dataset which was deleted via this API.
@@ -868,6 +868,19 @@ This operation is only possible for a week after the deletion occurred.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.datasets.undelete',
+        ordered_params=[u'datasetId'],
+        path_params=[u'datasetId'],
+        query_params=[],
+        relative_path=u'v1/datasets/{datasetId}:undelete',
+        request_field=u'undeleteDatasetRequest',
+        request_type_name=u'GenomicsDatasetsUndeleteRequest',
+        response_type_name=u'Dataset',
+        supports_download=False,
+    )
+
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
@@ -875,48 +888,6 @@ This operation is only possible for a week after the deletion occurred.
 
     def __init__(self, client):
       super(GenomicsV1.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              flat_path=u'v1/operations/{operationsId}:cancel',
-              http_method=u'POST',
-              method_id=u'genomics.operations.cancel',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}:cancel',
-              request_field=u'cancelOperationRequest',
-              request_type_name=u'GenomicsOperationsCancelRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'genomics.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'GenomicsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/operations',
-              http_method=u'GET',
-              method_id=u'genomics.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'GenomicsOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -933,6 +904,20 @@ This operation is only possible for a week after the deletion occurred.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'genomics.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'GenomicsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
@@ -948,6 +933,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'genomics.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'GenomicsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request.
 
@@ -961,6 +960,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/operations',
+        http_method=u'GET',
+        method_id=u'genomics.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'GenomicsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ReadgroupsetsCoveragebucketsService(base_api.BaseApiService):
     """Service class for the readgroupsets_coveragebuckets resource."""
 
@@ -968,21 +981,6 @@ service.
 
     def __init__(self, client):
       super(GenomicsV1.ReadgroupsetsCoveragebucketsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.readgroupsets.coveragebuckets.list',
-              ordered_params=[u'readGroupSetId'],
-              path_params=[u'readGroupSetId'],
-              query_params=[u'end', u'pageSize', u'pageToken', u'referenceName', u'start', u'targetBucketWidth'],
-              relative_path=u'v1/readgroupsets/{readGroupSetId}/coveragebuckets',
-              request_field='',
-              request_type_name=u'GenomicsReadgroupsetsCoveragebucketsListRequest',
-              response_type_name=u'ListCoverageBucketsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1011,6 +1009,19 @@ set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.readgroupsets.coveragebuckets.list',
+        ordered_params=[u'readGroupSetId'],
+        path_params=[u'readGroupSetId'],
+        query_params=[u'end', u'pageSize', u'pageToken', u'referenceName', u'start', u'targetBucketWidth'],
+        relative_path=u'v1/readgroupsets/{readGroupSetId}/coveragebuckets',
+        request_field='',
+        request_type_name=u'GenomicsReadgroupsetsCoveragebucketsListRequest',
+        response_type_name=u'ListCoverageBucketsResponse',
+        supports_download=False,
+    )
+
   class ReadgroupsetsService(base_api.BaseApiService):
     """Service class for the readgroupsets resource."""
 
@@ -1018,81 +1029,6 @@ set.
 
     def __init__(self, client):
       super(GenomicsV1.ReadgroupsetsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.readgroupsets.delete',
-              ordered_params=[u'readGroupSetId'],
-              path_params=[u'readGroupSetId'],
-              query_params=[],
-              relative_path=u'v1/readgroupsets/{readGroupSetId}',
-              request_field='',
-              request_type_name=u'GenomicsReadgroupsetsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Export': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.readgroupsets.export',
-              ordered_params=[u'readGroupSetId'],
-              path_params=[u'readGroupSetId'],
-              query_params=[],
-              relative_path=u'v1/readgroupsets/{readGroupSetId}:export',
-              request_field=u'exportReadGroupSetRequest',
-              request_type_name=u'GenomicsReadgroupsetsExportRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.readgroupsets.get',
-              ordered_params=[u'readGroupSetId'],
-              path_params=[u'readGroupSetId'],
-              query_params=[],
-              relative_path=u'v1/readgroupsets/{readGroupSetId}',
-              request_field='',
-              request_type_name=u'GenomicsReadgroupsetsGetRequest',
-              response_type_name=u'ReadGroupSet',
-              supports_download=False,
-          ),
-          'Import': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.readgroupsets.import',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/readgroupsets:import',
-              request_field='<request>',
-              request_type_name=u'ImportReadGroupSetsRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'genomics.readgroupsets.patch',
-              ordered_params=[u'readGroupSetId'],
-              path_params=[u'readGroupSetId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/readgroupsets/{readGroupSetId}',
-              request_field=u'readGroupSet',
-              request_type_name=u'GenomicsReadgroupsetsPatchRequest',
-              response_type_name=u'ReadGroupSet',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.readgroupsets.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/readgroupsets/search',
-              request_field='<request>',
-              request_type_name=u'SearchReadGroupSetsRequest',
-              response_type_name=u'SearchReadGroupSetsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1112,6 +1048,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.readgroupsets.delete',
+        ordered_params=[u'readGroupSetId'],
+        path_params=[u'readGroupSetId'],
+        query_params=[],
+        relative_path=u'v1/readgroupsets/{readGroupSetId}',
+        request_field='',
+        request_type_name=u'GenomicsReadgroupsetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Export(self, request, global_params=None):
       """Exports a read group set to a BAM file in Google Cloud Storage.
@@ -1135,6 +1084,19 @@ for caveats.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.readgroupsets.export',
+        ordered_params=[u'readGroupSetId'],
+        path_params=[u'readGroupSetId'],
+        query_params=[],
+        relative_path=u'v1/readgroupsets/{readGroupSetId}:export',
+        request_field=u'exportReadGroupSetRequest',
+        request_type_name=u'GenomicsReadgroupsetsExportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets a read group set by ID.
 
@@ -1151,6 +1113,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.readgroupsets.get',
+        ordered_params=[u'readGroupSetId'],
+        path_params=[u'readGroupSetId'],
+        query_params=[],
+        relative_path=u'v1/readgroupsets/{readGroupSetId}',
+        request_field='',
+        request_type_name=u'GenomicsReadgroupsetsGetRequest',
+        response_type_name=u'ReadGroupSet',
+        supports_download=False,
+    )
 
     def Import(self, request, global_params=None):
       """Creates read group sets by asynchronously importing the provided.
@@ -1182,6 +1157,19 @@ and position)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.readgroupsets.import',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/readgroupsets:import',
+        request_field='<request>',
+        request_type_name=u'ImportReadGroupSetsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a read group set.
 
@@ -1200,6 +1188,19 @@ This method supports patch semantics.
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'genomics.readgroupsets.patch',
+        ordered_params=[u'readGroupSetId'],
+        path_params=[u'readGroupSetId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/readgroupsets/{readGroupSetId}',
+        request_field=u'readGroupSet',
+        request_type_name=u'GenomicsReadgroupsetsPatchRequest',
+        response_type_name=u'ReadGroupSet',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Searches for read group sets matching the criteria.
@@ -1221,6 +1222,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.readgroupsets.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/readgroupsets/search',
+        request_field='<request>',
+        request_type_name=u'SearchReadGroupSetsRequest',
+        response_type_name=u'SearchReadGroupSetsResponse',
+        supports_download=False,
+    )
+
   class ReadsService(base_api.BaseApiService):
     """Service class for the reads resource."""
 
@@ -1228,33 +1242,6 @@ Implements
 
     def __init__(self, client):
       super(GenomicsV1.ReadsService, self).__init__(client)
-      self._method_configs = {
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.reads.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/reads/search',
-              request_field='<request>',
-              request_type_name=u'SearchReadsRequest',
-              response_type_name=u'SearchReadsResponse',
-              supports_download=False,
-          ),
-          'Stream': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.reads.stream',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/reads:stream',
-              request_field='<request>',
-              request_type_name=u'StreamReadsRequest',
-              response_type_name=u'StreamReadsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1294,6 +1281,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.reads.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/reads/search',
+        request_field='<request>',
+        request_type_name=u'SearchReadsRequest',
+        response_type_name=u'SearchReadsResponse',
+        supports_download=False,
+    )
+
     def Stream(self, request, global_params=None):
       """Returns a stream of all the reads matching the search request, ordered.
 by reference name, position, and ID.
@@ -1308,6 +1308,19 @@ by reference name, position, and ID.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Stream.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.reads.stream',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/reads:stream',
+        request_field='<request>',
+        request_type_name=u'StreamReadsRequest',
+        response_type_name=u'StreamReadsResponse',
+        supports_download=False,
+    )
+
   class ReferencesBasesService(base_api.BaseApiService):
     """Service class for the references_bases resource."""
 
@@ -1315,21 +1328,6 @@ by reference name, position, and ID.
 
     def __init__(self, client):
       super(GenomicsV1.ReferencesBasesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.references.bases.list',
-              ordered_params=[u'referenceId'],
-              path_params=[u'referenceId'],
-              query_params=[u'end', u'pageSize', u'pageToken', u'start'],
-              relative_path=u'v1/references/{referenceId}/bases',
-              request_field='',
-              request_type_name=u'GenomicsReferencesBasesListRequest',
-              response_type_name=u'ListBasesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1353,6 +1351,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.references.bases.list',
+        ordered_params=[u'referenceId'],
+        path_params=[u'referenceId'],
+        query_params=[u'end', u'pageSize', u'pageToken', u'start'],
+        relative_path=u'v1/references/{referenceId}/bases',
+        request_field='',
+        request_type_name=u'GenomicsReferencesBasesListRequest',
+        response_type_name=u'ListBasesResponse',
+        supports_download=False,
+    )
+
   class ReferencesService(base_api.BaseApiService):
     """Service class for the references resource."""
 
@@ -1360,33 +1371,6 @@ Implements
 
     def __init__(self, client):
       super(GenomicsV1.ReferencesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.references.get',
-              ordered_params=[u'referenceId'],
-              path_params=[u'referenceId'],
-              query_params=[],
-              relative_path=u'v1/references/{referenceId}',
-              request_field='',
-              request_type_name=u'GenomicsReferencesGetRequest',
-              response_type_name=u'Reference',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.references.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/references/search',
-              request_field='<request>',
-              request_type_name=u'SearchReferencesRequest',
-              response_type_name=u'SearchReferencesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1410,6 +1394,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.references.get',
+        ordered_params=[u'referenceId'],
+        path_params=[u'referenceId'],
+        query_params=[],
+        relative_path=u'v1/references/{referenceId}',
+        request_field='',
+        request_type_name=u'GenomicsReferencesGetRequest',
+        response_type_name=u'Reference',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       """Searches for references which match the given criteria.
 
@@ -1430,6 +1427,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.references.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/references/search',
+        request_field='<request>',
+        request_type_name=u'SearchReferencesRequest',
+        response_type_name=u'SearchReferencesResponse',
+        supports_download=False,
+    )
+
   class ReferencesetsService(base_api.BaseApiService):
     """Service class for the referencesets resource."""
 
@@ -1437,33 +1447,6 @@ Implements
 
     def __init__(self, client):
       super(GenomicsV1.ReferencesetsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.referencesets.get',
-              ordered_params=[u'referenceSetId'],
-              path_params=[u'referenceSetId'],
-              query_params=[],
-              relative_path=u'v1/referencesets/{referenceSetId}',
-              request_field='',
-              request_type_name=u'GenomicsReferencesetsGetRequest',
-              response_type_name=u'ReferenceSet',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.referencesets.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/referencesets/search',
-              request_field='<request>',
-              request_type_name=u'SearchReferenceSetsRequest',
-              response_type_name=u'SearchReferenceSetsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1487,6 +1470,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.referencesets.get',
+        ordered_params=[u'referenceSetId'],
+        path_params=[u'referenceSetId'],
+        query_params=[],
+        relative_path=u'v1/referencesets/{referenceSetId}',
+        request_field='',
+        request_type_name=u'GenomicsReferencesetsGetRequest',
+        response_type_name=u'ReferenceSet',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       """Searches for reference sets which match the given criteria.
 
@@ -1507,6 +1503,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.referencesets.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/referencesets/search',
+        request_field='<request>',
+        request_type_name=u'SearchReferenceSetsRequest',
+        response_type_name=u'SearchReferenceSetsResponse',
+        supports_download=False,
+    )
+
   class VariantsService(base_api.BaseApiService):
     """Service class for the variants resource."""
 
@@ -1514,105 +1523,6 @@ Implements
 
     def __init__(self, client):
       super(GenomicsV1.VariantsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variants.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variants',
-              request_field='<request>',
-              request_type_name=u'Variant',
-              response_type_name=u'Variant',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.variants.delete',
-              ordered_params=[u'variantId'],
-              path_params=[u'variantId'],
-              query_params=[],
-              relative_path=u'v1/variants/{variantId}',
-              request_field='',
-              request_type_name=u'GenomicsVariantsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.variants.get',
-              ordered_params=[u'variantId'],
-              path_params=[u'variantId'],
-              query_params=[],
-              relative_path=u'v1/variants/{variantId}',
-              request_field='',
-              request_type_name=u'GenomicsVariantsGetRequest',
-              response_type_name=u'Variant',
-              supports_download=False,
-          ),
-          'Import': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variants.import',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variants:import',
-              request_field='<request>',
-              request_type_name=u'ImportVariantsRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Merge': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variants.merge',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variants:merge',
-              request_field='<request>',
-              request_type_name=u'MergeVariantsRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'genomics.variants.patch',
-              ordered_params=[u'variantId'],
-              path_params=[u'variantId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/variants/{variantId}',
-              request_field=u'variant',
-              request_type_name=u'GenomicsVariantsPatchRequest',
-              response_type_name=u'Variant',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variants.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variants/search',
-              request_field='<request>',
-              request_type_name=u'SearchVariantsRequest',
-              response_type_name=u'SearchVariantsResponse',
-              supports_download=False,
-          ),
-          'Stream': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variants.stream',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variants:stream',
-              request_field='<request>',
-              request_type_name=u'StreamVariantsRequest',
-              response_type_name=u'StreamVariantsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1633,6 +1543,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variants.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variants',
+        request_field='<request>',
+        request_type_name=u'Variant',
+        response_type_name=u'Variant',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a variant.
 
@@ -1650,6 +1573,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.variants.delete',
+        ordered_params=[u'variantId'],
+        path_params=[u'variantId'],
+        query_params=[],
+        relative_path=u'v1/variants/{variantId}',
+        request_field='',
+        request_type_name=u'GenomicsVariantsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets a variant by ID.
 
@@ -1666,6 +1602,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.variants.get',
+        ordered_params=[u'variantId'],
+        path_params=[u'variantId'],
+        query_params=[],
+        relative_path=u'v1/variants/{variantId}',
+        request_field='',
+        request_type_name=u'GenomicsVariantsGetRequest',
+        response_type_name=u'Variant',
+        supports_download=False,
+    )
 
     def Import(self, request, global_params=None):
       """Creates variant data by asynchronously importing the provided information.
@@ -1696,6 +1645,19 @@ Imported VCF headers are appended to the metadata already in a variant set.
       config = self.GetMethodConfig('Import')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variants.import',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variants:import',
+        request_field='<request>',
+        request_type_name=u'ImportVariantsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Merge(self, request, global_params=None):
       """Merges the given variants with existing variants.
@@ -1800,6 +1762,19 @@ if that is indeed the case.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Merge.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variants.merge',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variants:merge',
+        request_field='<request>',
+        request_type_name=u'MergeVariantsRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a variant.
 
@@ -1819,6 +1794,19 @@ its calls.
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'genomics.variants.patch',
+        ordered_params=[u'variantId'],
+        path_params=[u'variantId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/variants/{variantId}',
+        request_field=u'variant',
+        request_type_name=u'GenomicsVariantsPatchRequest',
+        response_type_name=u'Variant',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Gets a list of variants matching the criteria.
@@ -1840,6 +1828,19 @@ Implements
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variants.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variants/search',
+        request_field='<request>',
+        request_type_name=u'SearchVariantsRequest',
+        response_type_name=u'SearchVariantsResponse',
+        supports_download=False,
+    )
+
     def Stream(self, request, global_params=None):
       """Returns a stream of all the variants matching the search request, ordered.
 by reference name, position, and ID.
@@ -1854,6 +1855,19 @@ by reference name, position, and ID.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Stream.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variants.stream',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variants:stream',
+        request_field='<request>',
+        request_type_name=u'StreamVariantsRequest',
+        response_type_name=u'StreamVariantsResponse',
+        supports_download=False,
+    )
+
   class VariantsetsService(base_api.BaseApiService):
     """Service class for the variantsets resource."""
 
@@ -1861,81 +1875,6 @@ by reference name, position, and ID.
 
     def __init__(self, client):
       super(GenomicsV1.VariantsetsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variantsets.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variantsets',
-              request_field='<request>',
-              request_type_name=u'VariantSet',
-              response_type_name=u'VariantSet',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.variantsets.delete',
-              ordered_params=[u'variantSetId'],
-              path_params=[u'variantSetId'],
-              query_params=[],
-              relative_path=u'v1/variantsets/{variantSetId}',
-              request_field='',
-              request_type_name=u'GenomicsVariantsetsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Export': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variantsets.export',
-              ordered_params=[u'variantSetId'],
-              path_params=[u'variantSetId'],
-              query_params=[],
-              relative_path=u'v1/variantsets/{variantSetId}:export',
-              request_field=u'exportVariantSetRequest',
-              request_type_name=u'GenomicsVariantsetsExportRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.variantsets.get',
-              ordered_params=[u'variantSetId'],
-              path_params=[u'variantSetId'],
-              query_params=[],
-              relative_path=u'v1/variantsets/{variantSetId}',
-              request_field='',
-              request_type_name=u'GenomicsVariantsetsGetRequest',
-              response_type_name=u'VariantSet',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'genomics.variantsets.patch',
-              ordered_params=[u'variantSetId'],
-              path_params=[u'variantSetId'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/variantsets/{variantSetId}',
-              request_field=u'variantSet',
-              request_type_name=u'GenomicsVariantsetsPatchRequest',
-              response_type_name=u'VariantSet',
-              supports_download=False,
-          ),
-          'Search': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.variantsets.search',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1/variantsets/search',
-              request_field='<request>',
-              request_type_name=u'SearchVariantSetsRequest',
-              response_type_name=u'SearchVariantSetsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1960,6 +1899,19 @@ assigned by the server.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variantsets.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variantsets',
+        request_field='<request>',
+        request_type_name=u'VariantSet',
+        response_type_name=u'VariantSet',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a variant set including all variants, call sets, and calls within.
 This is not reversible.
@@ -1978,6 +1930,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.variantsets.delete',
+        ordered_params=[u'variantSetId'],
+        path_params=[u'variantSetId'],
+        query_params=[],
+        relative_path=u'v1/variantsets/{variantSetId}',
+        request_field='',
+        request_type_name=u'GenomicsVariantsetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       """Exports variant set data to an external destination.
 
@@ -1994,6 +1959,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Export')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variantsets.export',
+        ordered_params=[u'variantSetId'],
+        path_params=[u'variantSetId'],
+        query_params=[],
+        relative_path=u'v1/variantsets/{variantSetId}:export',
+        request_field=u'exportVariantSetRequest',
+        request_type_name=u'GenomicsVariantsetsExportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets a variant set by ID.
@@ -2012,6 +1990,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.variantsets.get',
+        ordered_params=[u'variantSetId'],
+        path_params=[u'variantSetId'],
+        query_params=[],
+        relative_path=u'v1/variantsets/{variantSetId}',
+        request_field='',
+        request_type_name=u'GenomicsVariantsetsGetRequest',
+        response_type_name=u'VariantSet',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a variant set using patch semantics.
 
@@ -2028,6 +2019,19 @@ Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'genomics.variantsets.patch',
+        ordered_params=[u'variantSetId'],
+        path_params=[u'variantSetId'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/variantsets/{variantSetId}',
+        request_field=u'variantSet',
+        request_type_name=u'GenomicsVariantsetsPatchRequest',
+        response_type_name=u'VariantSet',
+        supports_download=False,
+    )
 
     def Search(self, request, global_params=None):
       """Returns a list of all variant sets matching search criteria.
@@ -2048,3 +2052,16 @@ Implements
       config = self.GetMethodConfig('Search')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.variantsets.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/variantsets/search',
+        request_field='<request>',
+        request_type_name=u'SearchVariantSetsRequest',
+        response_type_name=u'SearchVariantSetsResponse',
+        supports_download=False,
+    )

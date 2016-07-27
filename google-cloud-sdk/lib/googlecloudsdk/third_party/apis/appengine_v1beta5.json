@@ -1242,7 +1242,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nExample: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The cononical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
         "labels": {
@@ -1358,6 +1362,18 @@
       "description": "Metadata for the given google.cloud.location.Location.",
       "type": "object",
       "properties": {
+        "standardEnvironmentAvailable": {
+          "description": "App Engine Standard Environment is available in the given location.\n\n@OutputOnly",
+          "type": "boolean"
+        },
+        "managedVmsAvailable": {
+          "description": "App Engine Managed VMs is available in the given location.\n\n@OutputOnly",
+          "type": "boolean"
+        },
+        "flexibleEnvironmentAvailable": {
+          "description": "App Engine Flexible Environment is available in the given location.\n\n@OutputOnly",
+          "type": "boolean"
+        }
       }
     }
   },

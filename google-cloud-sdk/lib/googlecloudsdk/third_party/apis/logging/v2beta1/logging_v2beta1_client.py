@@ -52,45 +52,6 @@ class LoggingV2beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(LoggingV2beta1.EntriesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'logging.entries.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v2beta1/entries:list',
-              request_field='<request>',
-              request_type_name=u'ListLogEntriesRequest',
-              response_type_name=u'ListLogEntriesResponse',
-              supports_download=False,
-          ),
-          'Read': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'logging.entries.read',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v2beta1/entries:read',
-              request_field='<request>',
-              request_type_name=u'ReadLogEntriesRequest',
-              response_type_name=u'ReadLogEntriesResponse',
-              supports_download=False,
-          ),
-          'Write': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'logging.entries.write',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v2beta1/entries:write',
-              request_field='<request>',
-              request_type_name=u'WriteLogEntriesRequest',
-              response_type_name=u'WriteLogEntriesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -109,6 +70,19 @@ Logging.  For ways to export log entries, see
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.entries.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v2beta1/entries:list',
+        request_field='<request>',
+        request_type_name=u'ListLogEntriesRequest',
+        response_type_name=u'ListLogEntriesResponse',
+        supports_download=False,
+    )
+
     def Read(self, request, global_params=None):
       """Streaming read of log entries.  Similar to `List`, this method is intended.
 for a large volume of log entries.
@@ -122,6 +96,19 @@ for a large volume of log entries.
       config = self.GetMethodConfig('Read')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Read.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.entries.read',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v2beta1/entries:read',
+        request_field='<request>',
+        request_type_name=u'ReadLogEntriesRequest',
+        response_type_name=u'ReadLogEntriesResponse',
+        supports_download=False,
+    )
 
     def Write(self, request, global_params=None):
       """Writes log entries to Stackdriver Logging.  All log entries are.
@@ -137,6 +124,19 @@ written by this method.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Write.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.entries.write',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v2beta1/entries:write',
+        request_field='<request>',
+        request_type_name=u'WriteLogEntriesRequest',
+        response_type_name=u'WriteLogEntriesResponse',
+        supports_download=False,
+    )
+
   class MonitoredResourceDescriptorsService(base_api.BaseApiService):
     """Service class for the monitoredResourceDescriptors resource."""
 
@@ -144,21 +144,6 @@ written by this method.
 
     def __init__(self, client):
       super(LoggingV2beta1.MonitoredResourceDescriptorsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.monitoredResourceDescriptors.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/monitoredResourceDescriptors',
-              request_field='',
-              request_type_name=u'LoggingMonitoredResourceDescriptorsListRequest',
-              response_type_name=u'ListMonitoredResourceDescriptorsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -175,6 +160,19 @@ written by this method.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.monitoredResourceDescriptors.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/monitoredResourceDescriptors',
+        request_field='',
+        request_type_name=u'LoggingMonitoredResourceDescriptorsListRequest',
+        response_type_name=u'ListMonitoredResourceDescriptorsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLogsService(base_api.BaseApiService):
     """Service class for the projects_logs resource."""
 
@@ -182,33 +180,6 @@ written by this method.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsLogsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'logging.projects.logs.delete',
-              ordered_params=[u'projectsId', u'logsId'],
-              path_params=[u'logsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/logs/{logsId}',
-              request_field='',
-              request_type_name=u'LoggingProjectsLogsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.logs.list',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[u'pageSize', u'pageToken', u'resourceIndexPrefix', u'resourceType'],
-              relative_path=u'v2beta1/projects/{projectsId}/logs',
-              request_field='',
-              request_type_name=u'LoggingProjectsLogsListRequest',
-              response_type_name=u'ListLogsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -226,6 +197,19 @@ The log will reappear if it receives new entries.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'logging.projects.logs.delete',
+        ordered_params=[u'projectsId', u'logsId'],
+        path_params=[u'logsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/logs/{logsId}',
+        request_field='',
+        request_type_name=u'LoggingProjectsLogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the logs in the project.
 Only logs that have entries are listed.
@@ -240,6 +224,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.logs.list',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[u'pageSize', u'pageToken', u'resourceIndexPrefix', u'resourceType'],
+        relative_path=u'v2beta1/projects/{projectsId}/logs',
+        request_field='',
+        request_type_name=u'LoggingProjectsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
+        supports_download=False,
+    )
+
   class ProjectsMetricsService(base_api.BaseApiService):
     """Service class for the projects_metrics resource."""
 
@@ -247,69 +244,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsMetricsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'logging.projects.metrics.create',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/metrics',
-              request_field=u'logMetric',
-              request_type_name=u'LoggingProjectsMetricsCreateRequest',
-              response_type_name=u'LogMetric',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'logging.projects.metrics.delete',
-              ordered_params=[u'projectsId', u'metricsId'],
-              path_params=[u'metricsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
-              request_field='',
-              request_type_name=u'LoggingProjectsMetricsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.metrics.get',
-              ordered_params=[u'projectsId', u'metricsId'],
-              path_params=[u'metricsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
-              request_field='',
-              request_type_name=u'LoggingProjectsMetricsGetRequest',
-              response_type_name=u'LogMetric',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.metrics.list',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/projects/{projectsId}/metrics',
-              request_field='',
-              request_type_name=u'LoggingProjectsMetricsListRequest',
-              response_type_name=u'ListLogMetricsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'logging.projects.metrics.update',
-              ordered_params=[u'projectsId', u'metricsId'],
-              path_params=[u'metricsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
-              request_field=u'logMetric',
-              request_type_name=u'LoggingProjectsMetricsUpdateRequest',
-              response_type_name=u'LogMetric',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -326,6 +260,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.projects.metrics.create',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/metrics',
+        request_field=u'logMetric',
+        request_type_name=u'LoggingProjectsMetricsCreateRequest',
+        response_type_name=u'LogMetric',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a logs-based metric.
 
@@ -338,6 +285,19 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'logging.projects.metrics.delete',
+        ordered_params=[u'projectsId', u'metricsId'],
+        path_params=[u'metricsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
+        request_field='',
+        request_type_name=u'LoggingProjectsMetricsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets a logs-based metric.
@@ -352,6 +312,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.metrics.get',
+        ordered_params=[u'projectsId', u'metricsId'],
+        path_params=[u'metricsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
+        request_field='',
+        request_type_name=u'LoggingProjectsMetricsGetRequest',
+        response_type_name=u'LogMetric',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists logs-based metrics.
 
@@ -364,6 +337,19 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.metrics.list',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/projects/{projectsId}/metrics',
+        request_field='',
+        request_type_name=u'LoggingProjectsMetricsListRequest',
+        response_type_name=u'ListLogMetricsResponse',
+        supports_download=False,
+    )
 
     def Update(self, request, global_params=None):
       """Creates or updates a logs-based metric.
@@ -378,6 +364,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'logging.projects.metrics.update',
+        ordered_params=[u'projectsId', u'metricsId'],
+        path_params=[u'metricsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/metrics/{metricsId}',
+        request_field=u'logMetric',
+        request_type_name=u'LoggingProjectsMetricsUpdateRequest',
+        response_type_name=u'LogMetric',
+        supports_download=False,
+    )
+
   class ProjectsResourceKeysService(base_api.BaseApiService):
     """Service class for the projects_resourceKeys resource."""
 
@@ -385,21 +384,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsResourceKeysService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.resourceKeys.list',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/projects/{projectsId}/resourceKeys',
-              request_field='',
-              request_type_name=u'LoggingProjectsResourceKeysListRequest',
-              response_type_name=u'ListResourceKeysResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -416,6 +400,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.resourceKeys.list',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/projects/{projectsId}/resourceKeys',
+        request_field='',
+        request_type_name=u'LoggingProjectsResourceKeysListRequest',
+        response_type_name=u'ListResourceKeysResponse',
+        supports_download=False,
+    )
+
   class ProjectsResourceTypesValuesService(base_api.BaseApiService):
     """Service class for the projects_resourceTypes_values resource."""
 
@@ -423,21 +420,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsResourceTypesValuesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.resourceTypes.values.list',
-              ordered_params=[u'projectsId', u'resourceTypesId'],
-              path_params=[u'projectsId', u'resourceTypesId'],
-              query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/projects/{projectsId}/resourceTypes/{resourceTypesId}/values',
-              request_field='',
-              request_type_name=u'LoggingProjectsResourceTypesValuesListRequest',
-              response_type_name=u'ListResourceValuesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -454,6 +436,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.resourceTypes.values.list',
+        ordered_params=[u'projectsId', u'resourceTypesId'],
+        path_params=[u'projectsId', u'resourceTypesId'],
+        query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/projects/{projectsId}/resourceTypes/{resourceTypesId}/values',
+        request_field='',
+        request_type_name=u'LoggingProjectsResourceTypesValuesListRequest',
+        response_type_name=u'ListResourceValuesResponse',
+        supports_download=False,
+    )
+
   class ProjectsResourceTypesService(base_api.BaseApiService):
     """Service class for the projects_resourceTypes resource."""
 
@@ -461,9 +456,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsResourceTypesService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -474,69 +466,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsSinksService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'logging.projects.sinks.create',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/sinks',
-              request_field=u'logSink',
-              request_type_name=u'LoggingProjectsSinksCreateRequest',
-              response_type_name=u'LogSink',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'logging.projects.sinks.delete',
-              ordered_params=[u'projectsId', u'sinksId'],
-              path_params=[u'projectsId', u'sinksId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
-              request_field='',
-              request_type_name=u'LoggingProjectsSinksDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.sinks.get',
-              ordered_params=[u'projectsId', u'sinksId'],
-              path_params=[u'projectsId', u'sinksId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
-              request_field='',
-              request_type_name=u'LoggingProjectsSinksGetRequest',
-              response_type_name=u'LogSink',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.projects.sinks.list',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v2beta1/projects/{projectsId}/sinks',
-              request_field='',
-              request_type_name=u'LoggingProjectsSinksListRequest',
-              response_type_name=u'ListSinksResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'logging.projects.sinks.update',
-              ordered_params=[u'projectsId', u'sinksId'],
-              path_params=[u'projectsId', u'sinksId'],
-              query_params=[],
-              relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
-              request_field=u'logSink',
-              request_type_name=u'LoggingProjectsSinksUpdateRequest',
-              response_type_name=u'LogSink',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -553,6 +482,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.projects.sinks.create',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/sinks',
+        request_field=u'logSink',
+        request_type_name=u'LoggingProjectsSinksCreateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a sink.
 
@@ -565,6 +507,19 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'logging.projects.sinks.delete',
+        ordered_params=[u'projectsId', u'sinksId'],
+        path_params=[u'projectsId', u'sinksId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
+        request_field='',
+        request_type_name=u'LoggingProjectsSinksDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets a sink.
@@ -579,6 +534,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.sinks.get',
+        ordered_params=[u'projectsId', u'sinksId'],
+        path_params=[u'projectsId', u'sinksId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
+        request_field='',
+        request_type_name=u'LoggingProjectsSinksGetRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists sinks.
 
@@ -591,6 +559,19 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.projects.sinks.list',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/projects/{projectsId}/sinks',
+        request_field='',
+        request_type_name=u'LoggingProjectsSinksListRequest',
+        response_type_name=u'ListSinksResponse',
+        supports_download=False,
+    )
 
     def Update(self, request, global_params=None):
       """Creates or updates a sink.
@@ -605,6 +586,19 @@ Only logs that have entries are listed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'logging.projects.sinks.update',
+        ordered_params=[u'projectsId', u'sinksId'],
+        path_params=[u'projectsId', u'sinksId'],
+        query_params=[],
+        relative_path=u'v2beta1/projects/{projectsId}/sinks/{sinksId}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingProjectsSinksUpdateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -612,9 +606,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -625,21 +616,6 @@ Only logs that have entries are listed.
 
     def __init__(self, client):
       super(LoggingV2beta1.V2beta1Service, self).__init__(client)
-      self._method_configs = {
-          'GetLogsUsage': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'logging.getLogs_usage',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'endTime', u'resourceName', u'resourceTier', u'startTime'],
-              relative_path=u'v2beta1/logs_usage',
-              request_field='',
-              request_type_name=u'LoggingGetLogsUsageRequest',
-              response_type_name=u'GetLogsUsageResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -655,3 +631,16 @@ Only logs that have entries are listed.
       config = self.GetMethodConfig('GetLogsUsage')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetLogsUsage.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.getLogs_usage',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'endTime', u'resourceName', u'resourceTier', u'startTime'],
+        relative_path=u'v2beta1/logs_usage',
+        request_field='',
+        request_type_name=u'LoggingGetLogsUsageRequest',
+        response_type_name=u'GetLogsUsageResponse',
+        supports_download=False,
+    )

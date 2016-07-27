@@ -26,6 +26,7 @@ from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 import httplib2
+import socks
 
 
 class NetworkDiagnostic(diagnostic_base.Diagnostic):
@@ -102,7 +103,7 @@ class ReachabilityChecker(check_base.Checker):
       _, _ = http.Http(auth=False).request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
     except (httplib.HTTPException, socket.error, ssl.SSLError,
-            httplib2.HttpLib2Error) as err:
+            httplib2.HttpLib2Error, socks.HTTPError) as err:
       msg = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
       return check_base.Failure(message=msg, exception=err)
 

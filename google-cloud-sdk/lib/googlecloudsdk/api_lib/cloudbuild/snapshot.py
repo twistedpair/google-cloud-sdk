@@ -83,7 +83,6 @@ class Snapshot(object):
     """
     with files.ChDir(self.src_dir):
       with files.TemporaryDirectory() as tmp:
-        log.status.write('Creating temporary tarball archive...\n')
         archive_path = os.path.join(tmp, 'file.tgz')
         tf = tarfile.open(archive_path, mode='w:gz')
         for path in self.files:

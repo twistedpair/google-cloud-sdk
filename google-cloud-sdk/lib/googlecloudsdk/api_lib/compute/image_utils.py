@@ -121,12 +121,13 @@ class ImageExpander(object):
       if not image_ref.image.startswith(FAMILY_PREFIX):
         image_ref.image = FAMILY_PREFIX + image_ref.image
     else:
-      # TODO(b/29177598): Stop using an alias for the default image
-      warn_alias = False
       image_ref = self.resources.Parse(
-          constants.DEFAULT_IMAGE,
+          constants.DEFAULT_IMAGE_FAMILY,
           collection='compute.images',
+          params={'project': 'debian-cloud'},
           resolve=False)
+      if not image_ref.image.startswith(FAMILY_PREFIX):
+        image_ref.image = FAMILY_PREFIX + image_ref.image
 
     # If an image project was specified, then assume that image refers
     # to an image in that project.

@@ -44,81 +44,6 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ServiceregistryV1alpha.EndpointsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'serviceregistry.endpoints.delete',
-              ordered_params=[u'project', u'endpoint'],
-              path_params=[u'endpoint', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/endpoints/{endpoint}',
-              request_field='',
-              request_type_name=u'ServiceregistryEndpointsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'serviceregistry.endpoints.get',
-              ordered_params=[u'project', u'endpoint'],
-              path_params=[u'endpoint', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/endpoints/{endpoint}',
-              request_field='',
-              request_type_name=u'ServiceregistryEndpointsGetRequest',
-              response_type_name=u'Endpoint',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'serviceregistry.endpoints.insert',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/endpoints',
-              request_field=u'endpoint',
-              request_type_name=u'ServiceregistryEndpointsInsertRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'serviceregistry.endpoints.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/endpoints',
-              request_field='',
-              request_type_name=u'ServiceregistryEndpointsListRequest',
-              response_type_name=u'EndpointsListResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'serviceregistry.endpoints.patch',
-              ordered_params=[u'project', u'endpoint'],
-              path_params=[u'endpoint', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/endpoints/{endpoint}',
-              request_field=u'endpointResource',
-              request_type_name=u'ServiceregistryEndpointsPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'serviceregistry.endpoints.update',
-              ordered_params=[u'project', u'endpoint'],
-              path_params=[u'endpoint', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/endpoints/{endpoint}',
-              request_field=u'endpointResource',
-              request_type_name=u'ServiceregistryEndpointsUpdateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -135,6 +60,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'serviceregistry.endpoints.delete',
+        ordered_params=[u'project', u'endpoint'],
+        path_params=[u'endpoint', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/endpoints/{endpoint}',
+        request_field='',
+        request_type_name=u'ServiceregistryEndpointsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets an endpoint.
 
@@ -147,6 +85,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceregistry.endpoints.get',
+        ordered_params=[u'project', u'endpoint'],
+        path_params=[u'endpoint', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/endpoints/{endpoint}',
+        request_field='',
+        request_type_name=u'ServiceregistryEndpointsGetRequest',
+        response_type_name=u'Endpoint',
+        supports_download=False,
+    )
 
     def Insert(self, request, global_params=None):
       """Creates an endpoint.
@@ -161,6 +112,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'serviceregistry.endpoints.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/endpoints',
+        request_field=u'endpoint',
+        request_type_name=u'ServiceregistryEndpointsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists endpoints for a project.
 
@@ -173,6 +137,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceregistry.endpoints.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/endpoints',
+        request_field='',
+        request_type_name=u'ServiceregistryEndpointsListRequest',
+        response_type_name=u'EndpointsListResponse',
+        supports_download=False,
+    )
 
     def Patch(self, request, global_params=None):
       """Updates an endpoint. This method supports patch semantics.
@@ -187,6 +164,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'serviceregistry.endpoints.patch',
+        ordered_params=[u'project', u'endpoint'],
+        path_params=[u'endpoint', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/endpoints/{endpoint}',
+        request_field=u'endpointResource',
+        request_type_name=u'ServiceregistryEndpointsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an endpoint.
 
@@ -200,6 +190,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'serviceregistry.endpoints.update',
+        ordered_params=[u'project', u'endpoint'],
+        path_params=[u'endpoint', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/endpoints/{endpoint}',
+        request_field=u'endpointResource',
+        request_type_name=u'ServiceregistryEndpointsUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
@@ -207,33 +210,6 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ServiceregistryV1alpha.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'serviceregistry.operations.get',
-              ordered_params=[u'project', u'operation'],
-              path_params=[u'operation', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/operations/{operation}',
-              request_field='',
-              request_type_name=u'ServiceregistryOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'serviceregistry.operations.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/operations',
-              request_field='',
-              request_type_name=u'ServiceregistryOperationsListRequest',
-              response_type_name=u'OperationsListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -250,6 +226,19 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceregistry.operations.get',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'ServiceregistryOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all operations for a project.
 
@@ -262,3 +251,16 @@ class ServiceregistryV1alpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'serviceregistry.operations.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/operations',
+        request_field='',
+        request_type_name=u'ServiceregistryOperationsListRequest',
+        response_type_name=u'OperationsListResponse',
+        supports_download=False,
+    )

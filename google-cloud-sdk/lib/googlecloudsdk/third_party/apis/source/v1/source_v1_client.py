@@ -54,22 +54,6 @@ class SourceV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposAliasesFilesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{filesId}',
-              http_method=u'GET',
-              method_id=u'source.projects.repos.aliases.files.get',
-              ordered_params=[u'projectId', u'repoName', u'kind', u'name', u'path'],
-              path_params=[u'kind', u'name', u'path', u'projectId', u'repoName'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{+path}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposAliasesFilesGetRequest',
-              response_type_name=u'ReadResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -87,6 +71,20 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{filesId}',
+        http_method=u'GET',
+        method_id=u'source.projects.repos.aliases.files.get',
+        ordered_params=[u'projectId', u'repoName', u'kind', u'name', u'path'],
+        path_params=[u'kind', u'name', u'path', u'projectId', u'repoName'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/{+path}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposAliasesFilesGetRequest',
+        response_type_name=u'ReadResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposAliasesService(base_api.BaseApiService):
     """Service class for the projects_repos_aliases resource."""
 
@@ -94,81 +92,6 @@ file or directory information about that path.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposAliasesService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.aliases.create',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases',
-              request_field=u'alias',
-              request_type_name=u'SourceProjectsReposAliasesCreateRequest',
-              response_type_name=u'Alias',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'source.projects.repos.aliases.delete',
-              ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
-              path_params=[u'kind', u'name', u'projectId', u'repoName'],
-              query_params=[u'repoId_uid', u'revisionId'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposAliasesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.aliases.get',
-              ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
-              path_params=[u'kind', u'name', u'projectId', u'repoName'],
-              query_params=[u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposAliasesGetRequest',
-              response_type_name=u'Alias',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.aliases.list',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'kind', u'pageSize', u'pageToken', u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases',
-              request_field='',
-              request_type_name=u'SourceProjectsReposAliasesListRequest',
-              response_type_name=u'ListAliasesResponse',
-              supports_download=False,
-          ),
-          'ListFiles': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.aliases.listFiles',
-              ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
-              path_params=[u'kind', u'name', u'projectId', u'repoName'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}:listFiles',
-              request_field='',
-              request_type_name=u'SourceProjectsReposAliasesListFilesRequest',
-              response_type_name=u'ListFilesResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'source.projects.repos.aliases.update',
-              ordered_params=[u'projectId', u'repoName', u'aliasesId'],
-              path_params=[u'aliasesId', u'projectId', u'repoName'],
-              query_params=[u'oldRevisionId', u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{aliasesId}',
-              request_field=u'alias',
-              request_type_name=u'SourceProjectsReposAliasesUpdateRequest',
-              response_type_name=u'Alias',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -186,6 +109,19 @@ name and kind already exists.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.aliases.create',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases',
+        request_field=u'alias',
+        request_type_name=u'SourceProjectsReposAliasesCreateRequest',
+        response_type_name=u'Alias',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the alias with the given name and kind. Kind cannot be ANY.  If.
 the alias does not exist, NOT_FOUND is returned.  If the request provides
@@ -202,6 +138,19 @@ returned.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'source.projects.repos.aliases.delete',
+        ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
+        path_params=[u'kind', u'name', u'projectId', u'repoName'],
+        query_params=[u'repoId_uid', u'revisionId'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposAliasesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns information about an alias. Kind ANY returns a FIXED or.
 MOVABLE alias, in that order, and ignores all other kinds.
@@ -215,6 +164,19 @@ MOVABLE alias, in that order, and ignores all other kinds.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.aliases.get',
+        ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
+        path_params=[u'kind', u'name', u'projectId', u'repoName'],
+        query_params=[u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposAliasesGetRequest',
+        response_type_name=u'Alias',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Returns a list of aliases of the given kind. Kind ANY returns all aliases.
@@ -230,6 +192,19 @@ in the repo. The order in which the aliases are returned is undefined.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.aliases.list',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'kind', u'pageSize', u'pageToken', u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases',
+        request_field='',
+        request_type_name=u'SourceProjectsReposAliasesListRequest',
+        response_type_name=u'ListAliasesResponse',
+        supports_download=False,
+    )
+
     def ListFiles(self, request, global_params=None):
       """ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
@@ -244,6 +219,19 @@ The result is ordered by path. Pagination is supported.
       config = self.GetMethodConfig('ListFiles')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    ListFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.aliases.listFiles',
+        ordered_params=[u'projectId', u'repoName', u'kind', u'name'],
+        path_params=[u'kind', u'name', u'projectId', u'repoName'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}:listFiles',
+        request_field='',
+        request_type_name=u'SourceProjectsReposAliasesListFilesRequest',
+        response_type_name=u'ListFilesResponse',
+        supports_download=False,
+    )
 
     def Update(self, request, global_params=None):
       """Updates the alias with the given name and kind. Kind cannot be ANY.  If.
@@ -261,6 +249,19 @@ is returned.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'source.projects.repos.aliases.update',
+        ordered_params=[u'projectId', u'repoName', u'aliasesId'],
+        path_params=[u'aliasesId', u'projectId', u'repoName'],
+        query_params=[u'oldRevisionId', u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/aliases/{aliasesId}',
+        request_field=u'alias',
+        request_type_name=u'SourceProjectsReposAliasesUpdateRequest',
+        response_type_name=u'Alias',
+        supports_download=False,
+    )
+
   class ProjectsReposFilesService(base_api.BaseApiService):
     """Service class for the projects_repos_files resource."""
 
@@ -268,22 +269,6 @@ is returned.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposFilesService, self).__init__(client)
-      self._method_configs = {
-          'ReadFromWorkspaceOrAlias': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectId}/repos/{repoName}/files/{filesId}:readFromWorkspaceOrAlias',
-              http_method=u'GET',
-              method_id=u'source.projects.repos.files.readFromWorkspaceOrAlias',
-              ordered_params=[u'projectId', u'repoName', u'path'],
-              path_params=[u'path', u'projectId', u'repoName'],
-              query_params=[u'alias', u'pageSize', u'pageToken', u'repoId_uid', u'startPosition', u'workspaceName'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/files/{+path}:readFromWorkspaceOrAlias',
-              request_field='',
-              request_type_name=u'SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest',
-              response_type_name=u'ReadResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -302,6 +287,20 @@ revision referred to by the given alias if the workspace does not exist.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    ReadFromWorkspaceOrAlias.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectId}/repos/{repoName}/files/{filesId}:readFromWorkspaceOrAlias',
+        http_method=u'GET',
+        method_id=u'source.projects.repos.files.readFromWorkspaceOrAlias',
+        ordered_params=[u'projectId', u'repoName', u'path'],
+        path_params=[u'path', u'projectId', u'repoName'],
+        query_params=[u'alias', u'pageSize', u'pageToken', u'repoId_uid', u'startPosition', u'workspaceName'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/files/{+path}:readFromWorkspaceOrAlias',
+        request_field='',
+        request_type_name=u'SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest',
+        response_type_name=u'ReadResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposRevisionsFilesService(base_api.BaseApiService):
     """Service class for the projects_repos_revisions_files resource."""
 
@@ -309,22 +308,6 @@ revision referred to by the given alias if the workspace does not exist.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposRevisionsFilesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{filesId}',
-              http_method=u'GET',
-              method_id=u'source.projects.repos.revisions.files.get',
-              ordered_params=[u'projectId', u'repoName', u'revisionId', u'path'],
-              path_params=[u'path', u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{+path}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposRevisionsFilesGetRequest',
-              response_type_name=u'ReadResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -342,6 +325,20 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{filesId}',
+        http_method=u'GET',
+        method_id=u'source.projects.repos.revisions.files.get',
+        ordered_params=[u'projectId', u'repoName', u'revisionId', u'path'],
+        path_params=[u'path', u'projectId', u'repoName', u'revisionId'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/{+path}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposRevisionsFilesGetRequest',
+        response_type_name=u'ReadResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposRevisionsService(base_api.BaseApiService):
     """Service class for the projects_repos_revisions resource."""
 
@@ -349,57 +346,6 @@ file or directory information about that path.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposRevisionsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.revisions.get',
-              ordered_params=[u'projectId', u'repoName', u'revisionId'],
-              path_params=[u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposRevisionsGetRequest',
-              response_type_name=u'Revision',
-              supports_download=False,
-          ),
-          'GetBatchGet': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.revisions.getBatchGet',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoId_uid', u'revisionIds'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions:batchGet',
-              request_field='',
-              request_type_name=u'SourceProjectsReposRevisionsGetBatchGetRequest',
-              response_type_name=u'GetRevisionsResponse',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.revisions.list',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'ends', u'pageSize', u'pageToken', u'path', u'repoId_uid', u'starts', u'walkDirection'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions',
-              request_field='',
-              request_type_name=u'SourceProjectsReposRevisionsListRequest',
-              response_type_name=u'ListRevisionsResponse',
-              supports_download=False,
-          ),
-          'ListFiles': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.revisions.listFiles',
-              ordered_params=[u'projectId', u'repoName', u'revisionId'],
-              path_params=[u'projectId', u'repoName', u'revisionId'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}:listFiles',
-              request_field='',
-              request_type_name=u'SourceProjectsReposRevisionsListFilesRequest',
-              response_type_name=u'ListFilesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -416,6 +362,19 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.revisions.get',
+        ordered_params=[u'projectId', u'repoName', u'revisionId'],
+        path_params=[u'projectId', u'repoName', u'revisionId'],
+        query_params=[u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposRevisionsGetRequest',
+        response_type_name=u'Revision',
+        supports_download=False,
+    )
+
     def GetBatchGet(self, request, global_params=None):
       """Retrieves revision metadata for several revisions at once. It returns an.
 error if any retrieval fails.
@@ -429,6 +388,19 @@ error if any retrieval fails.
       config = self.GetMethodConfig('GetBatchGet')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetBatchGet.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.revisions.getBatchGet',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'repoId_uid', u'revisionIds'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions:batchGet',
+        request_field='',
+        request_type_name=u'SourceProjectsReposRevisionsGetBatchGetRequest',
+        response_type_name=u'GetRevisionsResponse',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Retrieves all revisions topologically between the starts and ends.
@@ -445,6 +417,19 @@ has two parents).
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.revisions.list',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'ends', u'pageSize', u'pageToken', u'path', u'repoId_uid', u'starts', u'walkDirection'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions',
+        request_field='',
+        request_type_name=u'SourceProjectsReposRevisionsListRequest',
+        response_type_name=u'ListRevisionsResponse',
+        supports_download=False,
+    )
+
     def ListFiles(self, request, global_params=None):
       """ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
@@ -460,6 +445,19 @@ The result is ordered by path. Pagination is supported.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    ListFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.revisions.listFiles',
+        ordered_params=[u'projectId', u'repoName', u'revisionId'],
+        path_params=[u'projectId', u'repoName', u'revisionId'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_name', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', u'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}:listFiles',
+        request_field='',
+        request_type_name=u'SourceProjectsReposRevisionsListFilesRequest',
+        response_type_name=u'ListFilesResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposWorkspacesFilesService(base_api.BaseApiService):
     """Service class for the projects_repos_workspaces_files resource."""
 
@@ -467,22 +465,6 @@ The result is ordered by path. Pagination is supported.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposWorkspacesFilesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{filesId}',
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.files.get',
-              ordered_params=[u'projectId', u'repoName', u'name', u'path'],
-              path_params=[u'name', u'path', u'projectId', u'repoName'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesFilesGetRequest',
-              response_type_name=u'ReadResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -500,6 +482,20 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{filesId}',
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.files.get',
+        ordered_params=[u'projectId', u'repoName', u'name', u'path'],
+        path_params=[u'name', u'path', u'projectId', u'repoName'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/{+path}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesFilesGetRequest',
+        response_type_name=u'ReadResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposWorkspacesSnapshotsFilesService(base_api.BaseApiService):
     """Service class for the projects_repos_workspaces_snapshots_files resource."""
 
@@ -507,22 +503,6 @@ file or directory information about that path.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposWorkspacesSnapshotsFilesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{filesId}',
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.snapshots.files.get',
-              ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
-              path_params=[u'name', u'path', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{+path}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',
-              response_type_name=u'ReadResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -540,6 +520,20 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{filesId}',
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.snapshots.files.get',
+        ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId', u'path'],
+        path_params=[u'name', u'path', u'projectId', u'repoName', u'snapshotId'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url', u'startPosition'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}/files/{+path}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesSnapshotsFilesGetRequest',
+        response_type_name=u'ReadResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposWorkspacesSnapshotsService(base_api.BaseApiService):
     """Service class for the projects_repos_workspaces_snapshots resource."""
 
@@ -547,45 +541,6 @@ file or directory information about that path.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposWorkspacesSnapshotsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.snapshots.get',
-              ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
-              path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'workspaceId_repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesSnapshotsGetRequest',
-              response_type_name=u'Snapshot',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.snapshots.list',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[u'pageSize', u'pageToken', u'workspaceId_repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListRequest',
-              response_type_name=u'ListSnapshotsResponse',
-              supports_download=False,
-          ),
-          'ListFiles': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.snapshots.listFiles',
-              ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
-              path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}:listFiles',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListFilesRequest',
-              response_type_name=u'ListFilesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -602,6 +557,19 @@ file or directory information about that path.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.snapshots.get',
+        ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
+        path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
+        query_params=[u'workspaceId_repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesSnapshotsGetRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all the snapshots made to a workspace, sorted from most recent to.
 least recent.
@@ -615,6 +583,19 @@ least recent.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.snapshots.list',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[u'pageSize', u'pageToken', u'workspaceId_repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListRequest',
+        response_type_name=u'ListSnapshotsResponse',
+        supports_download=False,
+    )
 
     def ListFiles(self, request, global_params=None):
       """ListFiles returns a list of all files in a SourceContext. The.
@@ -631,6 +612,19 @@ The result is ordered by path. Pagination is supported.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    ListFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.snapshots.listFiles',
+        ordered_params=[u'projectId', u'repoName', u'name', u'snapshotId'],
+        path_params=[u'name', u'projectId', u'repoName', u'snapshotId'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/{snapshotId}:listFiles',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesSnapshotsListFilesRequest',
+        response_type_name=u'ListFilesResponse',
+        supports_download=False,
+    )
+
   class ProjectsReposWorkspacesService(base_api.BaseApiService):
     """Service class for the projects_repos_workspaces resource."""
 
@@ -638,129 +632,6 @@ The result is ordered by path. Pagination is supported.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposWorkspacesService, self).__init__(client)
-      self._method_configs = {
-          'CommitWorkspace': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.commitWorkspace',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:commitWorkspace',
-              request_field=u'commitWorkspaceRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesCommitWorkspaceRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.create',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces',
-              request_field=u'createWorkspaceRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesCreateRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'source.projects.repos.workspaces.delete',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[u'currentSnapshotId', u'workspaceId_repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.get',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[u'workspaceId_repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesGetRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.list',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoId_uid', u'view'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesListRequest',
-              response_type_name=u'ListWorkspacesResponse',
-              supports_download=False,
-          ),
-          'ListFiles': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.workspaces.listFiles',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:listFiles',
-              request_field='',
-              request_type_name=u'SourceProjectsReposWorkspacesListFilesRequest',
-              response_type_name=u'ListFilesResponse',
-              supports_download=False,
-          ),
-          'ModifyWorkspace': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.modifyWorkspace',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:modifyWorkspace',
-              request_field=u'modifyWorkspaceRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesModifyWorkspaceRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'RefreshWorkspace': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.refreshWorkspace',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:refreshWorkspace',
-              request_field=u'refreshWorkspaceRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesRefreshWorkspaceRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'ResolveFiles': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.resolveFiles',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:resolveFiles',
-              request_field=u'resolveFilesRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesResolveFilesRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'RevertRefresh': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.workspaces.revertRefresh',
-              ordered_params=[u'projectId', u'repoName', u'name'],
-              path_params=[u'name', u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:revertRefresh',
-              request_field=u'revertRefreshRequest',
-              request_type_name=u'SourceProjectsReposWorkspacesRevertRefreshRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -781,6 +652,19 @@ modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    CommitWorkspace.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.commitWorkspace',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:commitWorkspace',
+        request_field=u'commitWorkspaceRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesCommitWorkspaceRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a workspace.
 
@@ -793,6 +677,19 @@ modified by another client.
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.create',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces',
+        request_field=u'createWorkspaceRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesCreateRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes a workspace. Uncommitted changes are lost. If the workspace does.
@@ -809,6 +706,19 @@ simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'source.projects.repos.workspaces.delete',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[u'currentSnapshotId', u'workspaceId_repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns workspace metadata.
 
@@ -822,6 +732,19 @@ simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.get',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[u'workspaceId_repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesGetRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Returns all workspaces belonging to a repo.
 
@@ -834,6 +757,19 @@ simultaneously modified by another client.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.list',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'repoId_uid', u'view'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesListRequest',
+        response_type_name=u'ListWorkspacesResponse',
+        supports_download=False,
+    )
 
     def ListFiles(self, request, global_params=None):
       """ListFiles returns a list of all files in a SourceContext. The.
@@ -850,6 +786,19 @@ The result is ordered by path. Pagination is supported.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    ListFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.workspaces.listFiles',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[u'pageSize', u'pageToken', u'sourceContext_cloudRepo_aliasContext_kind', u'sourceContext_cloudRepo_aliasContext_name', u'sourceContext_cloudRepo_aliasName', u'sourceContext_cloudRepo_repoId_projectRepoId_projectId', u'sourceContext_cloudRepo_repoId_projectRepoId_repoName', u'sourceContext_cloudRepo_repoId_uid', u'sourceContext_cloudRepo_revisionId', u'sourceContext_cloudWorkspace_snapshotId', u'sourceContext_cloudWorkspace_workspaceId_repoId_uid', u'sourceContext_gerrit_aliasContext_kind', u'sourceContext_gerrit_aliasContext_name', u'sourceContext_gerrit_aliasName', u'sourceContext_gerrit_gerritProject', u'sourceContext_gerrit_hostUri', u'sourceContext_gerrit_revisionId', u'sourceContext_git_revisionId', u'sourceContext_git_url'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:listFiles',
+        request_field='',
+        request_type_name=u'SourceProjectsReposWorkspacesListFilesRequest',
+        response_type_name=u'ListFilesResponse',
+        supports_download=False,
+    )
+
     def ModifyWorkspace(self, request, global_params=None):
       """Applies an ordered sequence of file modification actions to a workspace.
 Returns ABORTED if current_snapshot_id in the request does not refer to
@@ -865,6 +814,19 @@ simultaneously modified by another client.
       config = self.GetMethodConfig('ModifyWorkspace')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    ModifyWorkspace.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.modifyWorkspace',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:modifyWorkspace',
+        request_field=u'modifyWorkspaceRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesModifyWorkspaceRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
 
     def RefreshWorkspace(self, request, global_params=None):
       """Brings a workspace up to date by merging in the changes made between its.
@@ -890,6 +852,19 @@ markers.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    RefreshWorkspace.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.refreshWorkspace',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:refreshWorkspace',
+        request_field=u'refreshWorkspaceRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesRefreshWorkspaceRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
+
     def ResolveFiles(self, request, global_params=None):
       """Marks files modified as part of a merge as having been resolved. Returns.
 ABORTED when the workspace is simultaneously modified by another client.
@@ -903,6 +878,19 @@ ABORTED when the workspace is simultaneously modified by another client.
       config = self.GetMethodConfig('ResolveFiles')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    ResolveFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.resolveFiles',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:resolveFiles',
+        request_field=u'resolveFilesRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesResolveFilesRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
 
     def RevertRefresh(self, request, global_params=None):
       """If a call to RefreshWorkspace results in conflicts, use RevertRefresh to.
@@ -921,6 +909,19 @@ workspace is simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    RevertRefresh.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.workspaces.revertRefresh',
+        ordered_params=[u'projectId', u'repoName', u'name'],
+        path_params=[u'name', u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}:revertRefresh',
+        request_field=u'revertRefreshRequest',
+        request_type_name=u'SourceProjectsReposWorkspacesRevertRefreshRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
+
   class ProjectsReposService(base_api.BaseApiService):
     """Service class for the projects_repos resource."""
 
@@ -928,81 +929,6 @@ workspace is simultaneously modified by another client.
 
     def __init__(self, client):
       super(SourceV1.ProjectsReposService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.create',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos',
-              request_field='<request>',
-              request_type_name=u'Repo',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'source.projects.repos.delete',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.get',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[u'repoId_uid'],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}',
-              request_field='',
-              request_type_name=u'SourceProjectsReposGetRequest',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'source.projects.repos.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos',
-              request_field='',
-              request_type_name=u'SourceProjectsReposListRequest',
-              response_type_name=u'ListReposResponse',
-              supports_download=False,
-          ),
-          'Merge': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.projects.repos.merge',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}:merge',
-              request_field=u'mergeRequest',
-              request_type_name=u'SourceProjectsReposMergeRequest',
-              response_type_name=u'Workspace',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'source.projects.repos.update',
-              ordered_params=[u'projectId', u'repoName'],
-              path_params=[u'projectId', u'repoName'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/repos/{repoName}',
-              request_field=u'updateRepoRequest',
-              request_type_name=u'SourceProjectsReposUpdateRequest',
-              response_type_name=u'Repo',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1030,6 +956,19 @@ create other repos with this API and access them at
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos',
+        request_field='<request>',
+        request_type_name=u'Repo',
+        response_type_name=u'Repo',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a repo.
 
@@ -1042,6 +981,19 @@ create other repos with this API and access them at
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'source.projects.repos.delete',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns information about a repo.
@@ -1056,6 +1008,19 @@ create other repos with this API and access them at
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.get',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[u'repoId_uid'],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}',
+        request_field='',
+        request_type_name=u'SourceProjectsReposGetRequest',
+        response_type_name=u'Repo',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Returns all repos belonging to a project, specified by its project ID. The.
 response list is sorted by name with the default repo listed first.
@@ -1069,6 +1034,19 @@ response list is sorted by name with the default repo listed first.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'source.projects.repos.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos',
+        request_field='',
+        request_type_name=u'SourceProjectsReposListRequest',
+        response_type_name=u'ListReposResponse',
+        supports_download=False,
+    )
 
     def Merge(self, request, global_params=None):
       """Merges a revision into a movable alias, using a workspace associated with.
@@ -1087,6 +1065,19 @@ workspace is simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Merge.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.projects.repos.merge',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}:merge',
+        request_field=u'mergeRequest',
+        request_type_name=u'SourceProjectsReposMergeRequest',
+        response_type_name=u'Workspace',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an existing repo. The only things you can change about a repo are:.
   1) its repo_sync_config (and then only to add one that is not present);
@@ -1103,6 +1094,19 @@ workspace is simultaneously modified by another client.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'source.projects.repos.update',
+        ordered_params=[u'projectId', u'repoName'],
+        path_params=[u'projectId', u'repoName'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/repos/{repoName}',
+        request_field=u'updateRepoRequest',
+        request_type_name=u'SourceProjectsReposUpdateRequest',
+        response_type_name=u'Repo',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -1110,9 +1114,6 @@ workspace is simultaneously modified by another client.
 
     def __init__(self, client):
       super(SourceV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -1123,21 +1124,6 @@ workspace is simultaneously modified by another client.
 
     def __init__(self, client):
       super(SourceV1.V1Service, self).__init__(client)
-      self._method_configs = {
-          'ListChangedFiles': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'source.listChangedFiles',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1:listChangedFiles',
-              request_field='<request>',
-              request_type_name=u'ListChangedFilesRequest',
-              response_type_name=u'ListChangedFilesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -1161,3 +1147,16 @@ The result is ordered by path. Pagination is supported.
       config = self.GetMethodConfig('ListChangedFiles')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    ListChangedFiles.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'source.listChangedFiles',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1:listChangedFiles',
+        request_field='<request>',
+        request_type_name=u'ListChangedFilesRequest',
+        response_type_name=u'ListChangedFilesResponse',
+        supports_download=False,
+    )

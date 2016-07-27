@@ -177,11 +177,24 @@ class _MarkdownConverter(object):
       return 0, 0, None, None
     text_beg = 0
     text_end = 0
-    while i < len(buf):
+    while True:
+      if i >= len(buf) or buf[i].isspace():
+        # Just a link with no text.
+        if buf[i - 1] == '.':
+          # Drop trailing '.' that is probably a sentence-ending period.
+          i -= 1
+        target_end = i
+        text_beg = i
+        text_end = i - 1
+        break
       if buf[i] == '[':
+        # Explicit link text inside [...].
         target_end = i
         text_beg = i + 1
         text_end = _GetNestedGroup(buf, i, '[', ']')
+        break
+      if buf[i] in '{}()<>\'"`*':
+        # Reject code sample or parameterized links
         break
       i += 1
     if not text_end:

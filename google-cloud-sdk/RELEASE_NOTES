@@ -2,6 +2,42 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 119.0.0 (2016/07/27)
+
+### Google BigQuery
+
+* Added support for dataset labels. See:
+  <https://cloud.google.com/bigquery/docs/labeling-datasets> for more details.
+
+* Now sending progress output to stderr and query output to stdout. This fixes
+  <https://code.google.com/p/google-cloud-sdk/issues/detail?id=780>.
+
+### Google Cloud SDK
+
+* `gcloud auth login` will stop writing application default credentials in a
+  future release. See: <https://developers.google.com/identity/protocols/application-default-credentials#toolcloudsdk>
+  for more information.
+
+* Command line flag abbreviations are now deprecated and produce warning
+  messages. Flag abbreviations will be completely disabled in release 130.0.0.
+  This pre-empts the problem of future flag additions making some flag
+  abbreviations ambiguous, possibly breaking scripts.
+
+### Google Cloud SQL
+
+* Added the `gcloud beta sql users` command group with commands that enable
+  management of users on Cloud SQL instances.
+
+### Google Cloud Platform Projects
+
+* `gcloud alpha projects update` now support labels.
+
+### Google Container Engine
+
+* Added the `delete` command to the `gcloud alpha container images` command
+  group.
+
+
 ## 118.0.0 (2016/07/20)
 
 ### Emulators
@@ -11,11 +47,16 @@ Copyright 2014-2016 Google Inc. All rights reserved.
 
 ### Google Compute Engine/Networking
 
-* `gcloud alpha compute` now supports internal load balancing mode.
-  Please use `--load-balancing-scheme=internal` flag when creating backend
-  services and  forwading rules.
+* `gcloud alpha compute backend-services` and `forwarding-rules` commands now
+  support the internal load balancing scheme. Please use
+  `--load-balancing-scheme=internal` flag when creating these resources.
   In addition `gcloud alpha compute forwarding-rules create` supports
   `--backend-service` flag to allow forwarding to internal load balancers.
+
+* Beta release of `compute connect-to-serial-port` command for
+  Interactive Serial Console support. See
+  http://cloud.google.com/compute/docs/instances/interacting-with-serial-console
+  for details.
 
 ### Google Container Engine
 

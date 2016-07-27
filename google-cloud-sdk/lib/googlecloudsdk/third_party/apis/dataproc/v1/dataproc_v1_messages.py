@@ -6,6 +6,7 @@ Manages Hadoop-based clusters and jobs on Google Cloud Platform.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'dataproc'

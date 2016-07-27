@@ -1053,11 +1053,12 @@ class BaseAsyncMutator(BaseCommand):
     return resource_list
 
 
-class NoOutputAsyncMutator(BaseAsyncMutator):
+class NoOutputMutator(base.SilentCommand, BaseCommand):
   """Base class for mutating subcommands that don't display resources."""
 
-  def Format(self, args):
-    return 'none'
+
+class NoOutputAsyncMutator(base.SilentCommand, BaseAsyncMutator):
+  """Base class for mutating subcommands that don't display resources."""
 
 
 class InstanceGroupManagerDynamicProperiesMixin(object):

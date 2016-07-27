@@ -36,7 +36,7 @@ def AddImageArgs(parser):
 
   def AddImageHelp():
     """Returns the detailed help for the `--image` flag."""
-    template = """
+    return """
           Specifies the boot image for the instances. For each
           instance, a new boot disk will be created from the given
           image. Each boot disk will have the same name as the
@@ -46,9 +46,7 @@ def AddImageArgs(parser):
           ``--boot-disk-size'' can be used to override the boot disk's
           device name and size, respectively.
 
-          By default, ``{default_image}'' is assumed for this flag.
           """
-    return template.format(default_image=constants.DEFAULT_IMAGE)
 
   image_group = parser.add_mutually_exclusive_group()
   image = image_group.add_argument(
@@ -60,10 +58,14 @@ def AddImageArgs(parser):
 
   image_group.add_argument(
       '--image-family',
-      help=('The family of the image that the boot disk will be initialized '
-            'with. When a family is specified instead of an image, the latest '
-            'non-deprecated image associated with that family is used.')
-  )
+      help=("""\
+          The family of the image that the boot disk will be initialized
+          with. When a family is specified instead of an image, the latest
+          non-deprecated image associated with that family is used.
+
+          By default, ``{default_image_family}'' is assumed for this flag.
+          """.format(
+              default_image_family=constants.DEFAULT_IMAGE_FAMILY)))
 
 
 def AddCanIpForwardArgs(parser):

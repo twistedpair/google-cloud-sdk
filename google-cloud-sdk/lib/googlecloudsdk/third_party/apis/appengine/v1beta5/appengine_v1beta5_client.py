@@ -48,35 +48,6 @@ class AppengineV1beta5(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsLocationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/locations/{locationsId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.locations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsLocationsGetRequest',
-              response_type_name=u'Location',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/locations',
-              http_method=u'GET',
-              method_id=u'appengine.apps.locations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1beta5/{+name}/locations',
-              request_field='',
-              request_type_name=u'AppengineAppsLocationsListRequest',
-              response_type_name=u'ListLocationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -93,6 +64,20 @@ class AppengineV1beta5(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/locations/{locationsId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.locations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsLocationsGetRequest',
+        response_type_name=u'Location',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists information about the supported locations for this service.
 
@@ -106,6 +91,20 @@ class AppengineV1beta5(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/locations',
+        http_method=u'GET',
+        method_id=u'appengine.apps.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta5/{+name}/locations',
+        request_field='',
+        request_type_name=u'AppengineAppsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
+        supports_download=False,
+    )
+
   class AppsOperationsService(base_api.BaseApiService):
     """Service class for the apps_operations resource."""
 
@@ -113,35 +112,6 @@ class AppengineV1beta5(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsOperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/operations',
-              http_method=u'GET',
-              method_id=u'appengine.apps.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1beta5/{+name}/operations',
-              request_field='',
-              request_type_name=u'AppengineAppsOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -160,6 +130,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
@@ -177,6 +161,20 @@ to use different resource name schemes, such as `users/*/operations`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/operations',
+        http_method=u'GET',
+        method_id=u'appengine.apps.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta5/{+name}/operations',
+        request_field='',
+        request_type_name=u'AppengineAppsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class AppsServicesVersionsInstancesService(base_api.BaseApiService):
     """Service class for the apps_services_versions_instances resource."""
 
@@ -184,61 +182,6 @@ to use different resource name schemes, such as `users/*/operations`.
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsServicesVersionsInstancesService, self).__init__(client)
-      self._method_configs = {
-          'Debug': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug',
-              http_method=u'POST',
-              method_id=u'appengine.apps.services.versions.instances.debug',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}:debug',
-              request_field=u'debugInstanceRequest',
-              request_type_name=u'AppengineAppsServicesVersionsInstancesDebugRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
-              http_method=u'DELETE',
-              method_id=u'appengine.apps.services.versions.instances.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsInstancesDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.versions.instances.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsInstancesGetRequest',
-              response_type_name=u'Instance',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.versions.instances.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1beta5/{+name}/instances',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsInstancesListRequest',
-              response_type_name=u'ListInstancesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -261,6 +204,20 @@ Only applicable for instances in App Engine flexible environment.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Debug.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug',
+        http_method=u'POST',
+        method_id=u'appengine.apps.services.versions.instances.debug',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}:debug',
+        request_field=u'debugInstanceRequest',
+        request_type_name=u'AppengineAppsServicesVersionsInstancesDebugRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Stops a running instance.
 
@@ -273,6 +230,20 @@ Only applicable for instances in App Engine flexible environment.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+        http_method=u'DELETE',
+        method_id=u'appengine.apps.services.versions.instances.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsInstancesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets instance information.
@@ -287,6 +258,20 @@ Only applicable for instances in App Engine flexible environment.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.versions.instances.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsInstancesGetRequest',
+        response_type_name=u'Instance',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the instances of a version.
 
@@ -300,6 +285,20 @@ Only applicable for instances in App Engine flexible environment.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.versions.instances.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta5/{+name}/instances',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsInstancesListRequest',
+        response_type_name=u'ListInstancesResponse',
+        supports_download=False,
+    )
+
   class AppsServicesVersionsService(base_api.BaseApiService):
     """Service class for the apps_services_versions resource."""
 
@@ -307,74 +306,6 @@ Only applicable for instances in App Engine flexible environment.
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsServicesVersionsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions',
-              http_method=u'POST',
-              method_id=u'appengine.apps.services.versions.create',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}/versions',
-              request_field=u'version',
-              request_type_name=u'AppengineAppsServicesVersionsCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
-              http_method=u'DELETE',
-              method_id=u'appengine.apps.services.versions.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.versions.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'view'],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsGetRequest',
-              response_type_name=u'Version',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.versions.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'pageSize', u'pageToken', u'view'],
-              relative_path=u'v1beta5/{+name}/versions',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesVersionsListRequest',
-              response_type_name=u'ListVersionsResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
-              http_method=u'PATCH',
-              method_id=u'appengine.apps.services.versions.patch',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'mask'],
-              relative_path=u'v1beta5/{+name}',
-              request_field=u'version',
-              request_type_name=u'AppengineAppsServicesVersionsPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -391,6 +322,20 @@ Only applicable for instances in App Engine flexible environment.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions',
+        http_method=u'POST',
+        method_id=u'appengine.apps.services.versions.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}/versions',
+        request_field=u'version',
+        request_type_name=u'AppengineAppsServicesVersionsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes an existing version.
 
@@ -403,6 +348,20 @@ Only applicable for instances in App Engine flexible environment.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method=u'DELETE',
+        method_id=u'appengine.apps.services.versions.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets the specified Version resource.
@@ -419,6 +378,20 @@ Specify the `FULL_VIEW` parameter to get the full resource.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.versions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'view'],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsGetRequest',
+        response_type_name=u'Version',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the versions of a service.
 
@@ -431,6 +404,20 @@ Specify the `FULL_VIEW` parameter to get the full resource.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.versions.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1beta5/{+name}/versions',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesVersionsListRequest',
+        response_type_name=u'ListVersionsResponse',
+        supports_download=False,
+    )
 
     def Patch(self, request, global_params=None):
       """Updates the specified Version resource.
@@ -459,6 +446,20 @@ environment and type of scaling that the version resource uses:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+        http_method=u'PATCH',
+        method_id=u'appengine.apps.services.versions.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'mask'],
+        relative_path=u'v1beta5/{+name}',
+        request_field=u'version',
+        request_type_name=u'AppengineAppsServicesVersionsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class AppsServicesService(base_api.BaseApiService):
     """Service class for the apps_services resource."""
 
@@ -466,61 +467,6 @@ environment and type of scaling that the version resource uses:
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsServicesService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
-              http_method=u'DELETE',
-              method_id=u'appengine.apps.services.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesGetRequest',
-              response_type_name=u'Service',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services',
-              http_method=u'GET',
-              method_id=u'appengine.apps.services.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1beta5/{+name}/services',
-              request_field='',
-              request_type_name=u'AppengineAppsServicesListRequest',
-              response_type_name=u'ListServicesResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
-              http_method=u'PATCH',
-              method_id=u'appengine.apps.services.patch',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'mask', u'migrateTraffic'],
-              relative_path=u'v1beta5/{+name}',
-              request_field=u'service',
-              request_type_name=u'AppengineAppsServicesPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -537,6 +483,20 @@ environment and type of scaling that the version resource uses:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
+        http_method=u'DELETE',
+        method_id=u'appengine.apps.services.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the current configuration of the specified service.
 
@@ -549,6 +509,20 @@ environment and type of scaling that the version resource uses:
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesGetRequest',
+        response_type_name=u'Service',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all the services in the application.
@@ -563,6 +537,20 @@ environment and type of scaling that the version resource uses:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services',
+        http_method=u'GET',
+        method_id=u'appengine.apps.services.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta5/{+name}/services',
+        request_field='',
+        request_type_name=u'AppengineAppsServicesListRequest',
+        response_type_name=u'ListServicesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates the configuration of the specified service.
 
@@ -576,6 +564,20 @@ environment and type of scaling that the version resource uses:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}/services/{servicesId}',
+        http_method=u'PATCH',
+        method_id=u'appengine.apps.services.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'mask', u'migrateTraffic'],
+        relative_path=u'v1beta5/{+name}',
+        request_field=u'service',
+        request_type_name=u'AppengineAppsServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class AppsService(base_api.BaseApiService):
     """Service class for the apps resource."""
 
@@ -583,34 +585,6 @@ environment and type of scaling that the version resource uses:
 
     def __init__(self, client):
       super(AppengineV1beta5.AppsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'appengine.apps.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1beta5/apps',
-              request_field=u'application',
-              request_type_name=u'AppengineAppsCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta5/apps/{appsId}',
-              http_method=u'GET',
-              method_id=u'appengine.apps.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'ensureResourcesExist'],
-              relative_path=u'v1beta5/{+name}',
-              request_field='',
-              request_type_name=u'AppengineAppsGetRequest',
-              response_type_name=u'Application',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -630,6 +604,19 @@ details about creating a project without an application, see the
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'appengine.apps.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1beta5/apps',
+        request_field=u'application',
+        request_type_name=u'AppengineAppsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets information about an application.
 
@@ -642,3 +629,17 @@ details about creating a project without an application, see the
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta5/apps/{appsId}',
+        http_method=u'GET',
+        method_id=u'appengine.apps.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'ensureResourcesExist'],
+        relative_path=u'v1beta5/{+name}',
+        request_field='',
+        request_type_name=u'AppengineAppsGetRequest',
+        response_type_name=u'Application',
+        supports_download=False,
+    )

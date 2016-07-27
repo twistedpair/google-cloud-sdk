@@ -12,14 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Common flags for the consumers subcommand group."""
-
-from googlecloudsdk.calliope import base
-
-CONSUMER_PROJECT_FLAG = base.Argument(
-    '--consumer-project',
-    help='The consumer project ID.')
-
-SERVICE_FLAG = base.Argument(
-    'service',
-    help='The service to act on for this consumer project.')
+"""Package marker file."""

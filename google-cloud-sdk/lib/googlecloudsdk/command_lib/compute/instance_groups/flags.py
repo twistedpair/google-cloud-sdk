@@ -16,6 +16,17 @@
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 
+ZONAL_INSTANCE_GROUP_ARG = flags.ResourceArgument(
+    resource_name='instance group',
+    completion_resource_id='compute.instanceGroups',
+    zonal_collection='compute.instanceGroups')
+
+MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
+    resource_name='instance group',
+    completion_resource_id='compute.instanceGroups',
+    zonal_collection='compute.instanceGroups',
+    regional_collection='compute.regionInstanceGroups')
+
 
 def AddNamedPortsArgs(parser):
   """Adds flags for handling named ports."""

@@ -172,7 +172,6 @@ def _HandleRemoveError(func, failed_path, exc_info):
     raise exc_info[0], exc_info[1], exc_info[2]
 
 
-# TODO(user): Add unit tests for Windows specific code paths, b/28869930
 def RmTree(path):
   """Calls shutil.rmtree() with error handling to fix Windows problems.
 

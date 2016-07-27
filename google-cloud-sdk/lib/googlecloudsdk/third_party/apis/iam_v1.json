@@ -718,6 +718,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "lifecyclePhase": {
+
+          "type": "string"
+        },
+        "groupTitle": {
+
+          "type": "string"
         }
       }
     },

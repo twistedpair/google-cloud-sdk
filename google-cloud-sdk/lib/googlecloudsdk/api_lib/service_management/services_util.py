@@ -26,6 +26,7 @@ from dateutil import tz
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
 
@@ -56,6 +57,15 @@ def GetEndpointsServiceName():
 
 def GetServiceManagementServiceName():
   return 'servicemanagement.googleapis.com'
+
+
+def GetValidatedProject(project_id):
+  # If supplied a project explicitly, validate it, then return it.
+  if project_id:
+    properties.VALUES.core.project.Validate(project_id)
+  else:
+    project_id = properties.VALUES.core.project.Get(required=True)
+  return project_id
 
 
 def GetError(error, verbose=False):

@@ -33,7 +33,7 @@ DEFAULT_ACCESS_CONFIG_NAME = 'external-nat'
 DEFAULT_MACHINE_TYPE = 'n1-standard-1'
 DEFAULT_NETWORK = 'default'
 
-DEFAULT_IMAGE = 'debian-8'
+DEFAULT_IMAGE_FAMILY = 'debian-8'
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix', 'family'])
@@ -141,7 +141,7 @@ _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
 _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
 _SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
-_SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management'
+_SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management.readonly'
 
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,

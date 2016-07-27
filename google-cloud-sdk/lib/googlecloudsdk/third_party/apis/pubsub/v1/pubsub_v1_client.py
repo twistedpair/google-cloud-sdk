@@ -46,152 +46,6 @@ class PubsubV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(PubsubV1.ProjectsSubscriptionsService, self).__init__(client)
-      self._method_configs = {
-          'Acknowledge': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:acknowledge',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.acknowledge',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}:acknowledge',
-              request_field=u'acknowledgeRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsAcknowledgeRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
-              http_method=u'PUT',
-              method_id=u'pubsub.projects.subscriptions.create',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='<request>',
-              request_type_name=u'Subscription',
-              response_type_name=u'Subscription',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
-              http_method=u'DELETE',
-              method_id=u'pubsub.projects.subscriptions.delete',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}',
-              request_field='',
-              request_type_name=u'PubsubProjectsSubscriptionsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.subscriptions.get',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}',
-              request_field='',
-              request_type_name=u'PubsubProjectsSubscriptionsGetRequest',
-              response_type_name=u'Subscription',
-              supports_download=False,
-          ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:getIamPolicy',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.subscriptions.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field='',
-              request_type_name=u'PubsubProjectsSubscriptionsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.subscriptions.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+project}/subscriptions',
-              request_field='',
-              request_type_name=u'PubsubProjectsSubscriptionsListRequest',
-              response_type_name=u'ListSubscriptionsResponse',
-              supports_download=False,
-          ),
-          'ModifyAckDeadline': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyAckDeadline',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.modifyAckDeadline',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}:modifyAckDeadline',
-              request_field=u'modifyAckDeadlineRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsModifyAckDeadlineRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'ModifyPushConfig': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyPushConfig',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.modifyPushConfig',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}:modifyPushConfig',
-              request_field=u'modifyPushConfigRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsModifyPushConfigRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Pull': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:pull',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.pull',
-              ordered_params=[u'subscription'],
-              path_params=[u'subscription'],
-              query_params=[],
-              relative_path=u'v1/{+subscription}:pull',
-              request_field=u'pullRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsPullRequest',
-              response_type_name=u'PullResponse',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:setIamPolicy',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:testIamPermissions',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.subscriptions.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'PubsubProjectsSubscriptionsTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -214,6 +68,20 @@ than once will not result in an error.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Acknowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:acknowledge',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.acknowledge',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}:acknowledge',
+        request_field=u'acknowledgeRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsAcknowledgeRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a subscription to a given topic.
 If the subscription already exists, returns `ALREADY_EXISTS`.
@@ -232,6 +100,20 @@ name for this subscription on the same project as the topic.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
+        http_method=u'PUT',
+        method_id=u'pubsub.projects.subscriptions.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Subscription',
+        response_type_name=u'Subscription',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes an existing subscription. All pending messages in the subscription.
 are immediately dropped. Calls to `Pull` after deletion will return
@@ -249,6 +131,20 @@ subscription, or its topic unless the same topic is specified.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
+        http_method=u'DELETE',
+        method_id=u'pubsub.projects.subscriptions.delete',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}',
+        request_field='',
+        request_type_name=u'PubsubProjectsSubscriptionsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the configuration details of a subscription.
 
@@ -261,6 +157,20 @@ subscription, or its topic unless the same topic is specified.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.subscriptions.get',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}',
+        request_field='',
+        request_type_name=u'PubsubProjectsSubscriptionsGetRequest',
+        response_type_name=u'Subscription',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource.
@@ -277,6 +187,20 @@ set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.subscriptions.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'PubsubProjectsSubscriptionsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists matching subscriptions.
 
@@ -289,6 +213,20 @@ set.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.subscriptions.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+project}/subscriptions',
+        request_field='',
+        request_type_name=u'PubsubProjectsSubscriptionsListRequest',
+        response_type_name=u'ListSubscriptionsResponse',
+        supports_download=False,
+    )
 
     def ModifyAckDeadline(self, request, global_params=None):
       """Modifies the ack deadline for a specific message. This method is useful.
@@ -305,6 +243,20 @@ processing was interrupted.
       config = self.GetMethodConfig('ModifyAckDeadline')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    ModifyAckDeadline.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyAckDeadline',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.modifyAckDeadline',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}:modifyAckDeadline',
+        request_field=u'modifyAckDeadlineRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsModifyAckDeadlineRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def ModifyPushConfig(self, request, global_params=None):
       """Modifies the `PushConfig` for a specified subscription.
@@ -324,6 +276,20 @@ continuously through the call regardless of changes to the `PushConfig`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    ModifyPushConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:modifyPushConfig',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.modifyPushConfig',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}:modifyPushConfig',
+        request_field=u'modifyPushConfigRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsModifyPushConfigRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Pull(self, request, global_params=None):
       """Pulls messages from the server. Returns an empty list if there are no.
 messages available in the backlog. The server may return `UNAVAILABLE` if
@@ -340,6 +306,20 @@ subscription.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Pull.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:pull',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.pull',
+        ordered_params=[u'subscription'],
+        path_params=[u'subscription'],
+        query_params=[],
+        relative_path=u'v1/{+subscription}:pull',
+        request_field=u'pullRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsPullRequest',
+        response_type_name=u'PullResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any.
 existing policy.
@@ -354,6 +334,20 @@ existing policy.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -367,6 +361,20 @@ existing policy.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/subscriptions/{subscriptionsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.subscriptions.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'PubsubProjectsSubscriptionsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsTopicsSubscriptionsService(base_api.BaseApiService):
     """Service class for the projects_topics_subscriptions resource."""
 
@@ -374,22 +382,6 @@ existing policy.
 
     def __init__(self, client):
       super(PubsubV1.ProjectsTopicsSubscriptionsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}/subscriptions',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.topics.subscriptions.list',
-              ordered_params=[u'topic'],
-              path_params=[u'topic'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+topic}/subscriptions',
-              request_field='',
-              request_type_name=u'PubsubProjectsTopicsSubscriptionsListRequest',
-              response_type_name=u'ListTopicSubscriptionsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -406,6 +398,20 @@ existing policy.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}/subscriptions',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.subscriptions.list',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+topic}/subscriptions',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsSubscriptionsListRequest',
+        response_type_name=u'ListTopicSubscriptionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsTopicsService(base_api.BaseApiService):
     """Service class for the projects_topics resource."""
 
@@ -413,113 +419,6 @@ existing policy.
 
     def __init__(self, client):
       super(PubsubV1.ProjectsTopicsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
-              http_method=u'PUT',
-              method_id=u'pubsub.projects.topics.create',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='<request>',
-              request_type_name=u'Topic',
-              response_type_name=u'Topic',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
-              http_method=u'DELETE',
-              method_id=u'pubsub.projects.topics.delete',
-              ordered_params=[u'topic'],
-              path_params=[u'topic'],
-              query_params=[],
-              relative_path=u'v1/{+topic}',
-              request_field='',
-              request_type_name=u'PubsubProjectsTopicsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.topics.get',
-              ordered_params=[u'topic'],
-              path_params=[u'topic'],
-              query_params=[],
-              relative_path=u'v1/{+topic}',
-              request_field='',
-              request_type_name=u'PubsubProjectsTopicsGetRequest',
-              response_type_name=u'Topic',
-              supports_download=False,
-          ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:getIamPolicy',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.topics.getIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:getIamPolicy',
-              request_field='',
-              request_type_name=u'PubsubProjectsTopicsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics',
-              http_method=u'GET',
-              method_id=u'pubsub.projects.topics.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+project}/topics',
-              request_field='',
-              request_type_name=u'PubsubProjectsTopicsListRequest',
-              response_type_name=u'ListTopicsResponse',
-              supports_download=False,
-          ),
-          'Publish': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:publish',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.topics.publish',
-              ordered_params=[u'topic'],
-              path_params=[u'topic'],
-              query_params=[],
-              relative_path=u'v1/{+topic}:publish',
-              request_field=u'publishRequest',
-              request_type_name=u'PubsubProjectsTopicsPublishRequest',
-              response_type_name=u'PublishResponse',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:setIamPolicy',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.topics.setIamPolicy',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:setIamPolicy',
-              request_field=u'setIamPolicyRequest',
-              request_type_name=u'PubsubProjectsTopicsSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:testIamPermissions',
-              http_method=u'POST',
-              method_id=u'pubsub.projects.topics.testIamPermissions',
-              ordered_params=[u'resource'],
-              path_params=[u'resource'],
-              query_params=[],
-              relative_path=u'v1/{+resource}:testIamPermissions',
-              request_field=u'testIamPermissionsRequest',
-              request_type_name=u'PubsubProjectsTopicsTestIamPermissionsRequest',
-              response_type_name=u'TestIamPermissionsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -535,6 +434,20 @@ existing policy.
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
+        http_method=u'PUT',
+        method_id=u'pubsub.projects.topics.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='<request>',
+        request_type_name=u'Topic',
+        response_type_name=u'Topic',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes the topic with the given name. Returns `NOT_FOUND` if the topic.
@@ -553,6 +466,20 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
+        http_method=u'DELETE',
+        method_id=u'pubsub.projects.topics.delete',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[],
+        relative_path=u'v1/{+topic}',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the configuration of a topic.
 
@@ -565,6 +492,20 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.get',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[],
+        relative_path=u'v1/{+topic}',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsGetRequest',
+        response_type_name=u'Topic',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource.
@@ -581,6 +522,20 @@ set.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists matching topics.
 
@@ -593,6 +548,20 @@ set.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+project}/topics',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsListRequest',
+        response_type_name=u'ListTopicsResponse',
+        supports_download=False,
+    )
 
     def Publish(self, request, global_params=None):
       """Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
@@ -609,6 +578,20 @@ does not exist. The message payload must not be empty; it must contain
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Publish.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:publish',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.topics.publish',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[],
+        relative_path=u'v1/{+topic}:publish',
+        request_field=u'publishRequest',
+        request_type_name=u'PubsubProjectsTopicsPublishRequest',
+        response_type_name=u'PublishResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any.
 existing policy.
@@ -623,6 +606,20 @@ existing policy.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.topics.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'PubsubProjectsTopicsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -636,6 +633,20 @@ existing policy.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'pubsub.projects.topics.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'PubsubProjectsTopicsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -643,8 +654,5 @@ existing policy.
 
     def __init__(self, client):
       super(PubsubV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

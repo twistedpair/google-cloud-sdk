@@ -74,7 +74,9 @@ class Duration(_messages.Message):
   + Duration in pseudo code.  Timestamp start = ...; Duration duration = ...;
   Timestamp end = ...;  end.seconds = start.seconds + duration.seconds;
   end.nanos = start.nanos + duration.nanos;  if (end.nanos = 1000000000) {
-  end.seconds += 1; end.nanos -= 1000000000; }
+  end.seconds += 1; end.nanos -= 1000000000; }  Example 3: Compute Duration
+  from datetime.timedelta in Python.  td = datetime.timedelta(days=3,
+  minutes=10) duration = Duration() duration.FromTimedelta(td)
 
   Fields:
     nanos: Signed fractions of a second at nanosecond resolution of the span
@@ -847,8 +849,7 @@ class Timestamp(_messages.Message):
   millis = System.currentTimeMillis();  Timestamp timestamp =
   Timestamp.newBuilder().setSeconds(millis / 1000) .setNanos((int) ((millis %
   1000) * 1000000)).build();    Example 5: Compute Timestamp from current time
-  in Python.  now = time.time() seconds = int(now) nanos = int((now - seconds)
-  * 10**9) timestamp = Timestamp(seconds=seconds, nanos=nanos)
+  in Python.  timestamp = Timestamp() timestamp.GetCurrentTime()
 
   Fields:
     nanos: Non-negative fractions of a second at nanosecond resolution.
@@ -856,7 +857,7 @@ class Timestamp(_messages.Message):
       values that count forward in time. Must be from 0 to 999,999,999
       inclusive.
     seconds: Represents seconds of UTC time since Unix epoch
-      1970-01-01T00:00:00Z. Must be from from 0001-01-01T00:00:00Z to
+      1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
       9999-12-31T23:59:59Z inclusive.
   """
 

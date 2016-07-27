@@ -2022,7 +2022,8 @@
             "The Rollout is in progress.",
             "The Rollout has completed successfully.",
             "The Rollout has been cancelled. This can happen if you have overlapping\nRollout pushes, and the previous ones will be cancelled.",
-            "The Rollout has failed. It is typically caused by configuration errors."
+            "The Rollout has failed. It is typically caused by configuration errors.",
+            "The Rollout has started yet and is pending for execution."
           ],
           "type": "string",
           "enum": [
@@ -2030,7 +2031,8 @@
             "IN_PROGRESS",
             "SUCCESS",
             "CANCELLED",
-            "FAILED"
+            "FAILED",
+            "PENDING"
           ]
         },
         "trafficPercentStrategy": {
@@ -2813,7 +2815,8 @@
             "The step has completed without errors.",
             "The step has not started yet.",
             "The step is in progress.",
-            "The step has completed with errors."
+            "The step has completed with errors.",
+            "The step has completed with cancellation."
           ],
           "type": "string",
           "enum": [
@@ -2821,8 +2824,20 @@
             "DONE",
             "NOT_STARTED",
             "IN_PROGRESS",
-            "FAILED"
+            "FAILED",
+            "CANCELLED"
           ]
+        }
+      }
+    },
+    "SubmitConfigSourceResponse": {
+      "id": "SubmitConfigSourceResponse",
+      "description": "Response message for SubmitConfigSource method.",
+      "type": "object",
+      "properties": {
+        "serviceConfig": {
+          "description": "The generated service configuration.",
+          "$ref": "Service"
         }
       }
     }

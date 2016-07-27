@@ -117,6 +117,24 @@ class ZonalGetIamPolicy(BaseGetIamPolicy):
     request.zone = ref.zone
 
 
+class RegionalGetIamPolicy(BaseGetIamPolicy):
+  """Base class for regional iam_get_policy commands."""
+
+  @staticmethod
+  def Args(parser, resource=None, command=None):
+    BaseGetIamPolicy.AddArgs(parser, resource, command)
+    flags.AddRegionFlag(
+        parser,
+        resource_type='resource',
+        operation_type='fetch')
+
+  def CreateReference(self, args):
+    return self.CreateRegionalReference(args.name, args.region)
+
+  def ScopeRequest(self, ref, request):
+    request.region = ref.region
+
+
 class GlobalGetIamPolicy(BaseGetIamPolicy):
   """Base class for global iam_get_policy commands."""
 
@@ -232,6 +250,24 @@ class ZonalSetIamPolicy(BaseSetIamPolicy):
 
   def ScopeRequest(self, ref, request):
     request.zone = ref.zone
+
+
+class RegionalSetIamPolicy(BaseSetIamPolicy):
+  """Base class for regional iam_get_policy commands."""
+
+  @staticmethod
+  def Args(parser, resource=None, command=None):
+    BaseSetIamPolicy.AddArgs(parser, resource, command)
+    flags.AddRegionFlag(
+        parser,
+        resource_type='resource',
+        operation_type='fetch')
+
+  def CreateReference(self, args):
+    return self.CreateRegionalReference(args.name, args.region)
+
+  def ScopeRequest(self, ref, request):
+    request.region = ref.region
 
 
 class GlobalSetIamPolicy(BaseSetIamPolicy):

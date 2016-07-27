@@ -15,6 +15,7 @@
 
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
+from containerregistry.client.v2 import docker_image
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
@@ -105,3 +106,43 @@ def TransformManifests(manifests):
     results.append(result)
 
   return sorted(results, key=lambda x: x.get('timestamp'))
+
+
+def GetTagNamesForDigest(digest, http_obj):
+  """Gets all of the tags for a given digest.
+
+  Args:
+    digest: docker_name.Digest, The digest supplied by a user.
+    http_obj: http.Http(), The http transport.
+
+  Returns:
+    A list of all of the tags associated with the input digest.
+  """
+  repository_path = digest.registry + '/' + digest.repository
+  repository = ValidateImage(repository_path)
+  with docker_image.FromRegistry(basic_creds=CredentialProvider(),
+                                 name=repository,
+                                 transport=http_obj) as image:
+    if digest.digest not in image.manifests():
+      return []
+    manifest_value = image.manifests().get(digest.digest, {})
+    return manifest_value.get('tag', [])  # digest tags
+
+
+def GetDockerTagsForDigest(digest, http_obj):
+  """Gets all of the tags for a given digest.
+
+  Args:
+    digest: docker_name.Digest, The digest supplied by a user.
+    http_obj: http.Http(), The http transport.
+
+  Returns:
+    A list of all of the tags associated with the input digest.
+  """
+  repository_path = digest.registry + '/' + digest.repository
+  repository = ValidateImage(repository_path)
+  tags = []
+  tag_names = GetTagNamesForDigest(digest, http_obj)
+  for tag_name in tag_names:  # iterate over digest tags
+    tags.append(docker_name.Tag(str(repository) + ':' + tag_name))
+  return tags

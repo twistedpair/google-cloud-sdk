@@ -47,22 +47,6 @@ class CloudfunctionsV1beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(CloudfunctionsV1beta1.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'cloudfunctions.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}',
-              request_field='',
-              request_type_name=u'CloudfunctionsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -81,6 +65,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'cloudfunctions.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudfunctionsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -88,22 +86,6 @@ service.
 
     def __init__(self, client):
       super(CloudfunctionsV1beta1.ProjectsLocationsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/locations',
-              http_method=u'GET',
-              method_id=u'cloudfunctions.projects.locations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1beta1/{+name}/locations',
-              request_field='',
-              request_type_name=u'CloudfunctionsProjectsLocationsListRequest',
-              response_type_name=u'ListLocationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -120,6 +102,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'cloudfunctions.projects.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+name}/locations',
+        request_field='',
+        request_type_name=u'CloudfunctionsProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsRegionsFunctionsService(base_api.BaseApiService):
     """Service class for the projects_regions_functions resource."""
 
@@ -127,87 +123,6 @@ service.
 
     def __init__(self, client):
       super(CloudfunctionsV1beta1.ProjectsRegionsFunctionsService, self).__init__(client)
-      self._method_configs = {
-          'Call': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}:call',
-              http_method=u'POST',
-              method_id=u'cloudfunctions.projects.regions.functions.call',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}:call',
-              request_field=u'callFunctionRequest',
-              request_type_name=u'CloudfunctionsProjectsRegionsFunctionsCallRequest',
-              response_type_name=u'CallFunctionResponse',
-              supports_download=False,
-          ),
-          'Create': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
-              http_method=u'POST',
-              method_id=u'cloudfunctions.projects.regions.functions.create',
-              ordered_params=[u'location'],
-              path_params=[u'location'],
-              query_params=[],
-              relative_path=u'v1beta1/{+location}/functions',
-              request_field=u'hostedFunction',
-              request_type_name=u'CloudfunctionsProjectsRegionsFunctionsCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
-              http_method=u'DELETE',
-              method_id=u'cloudfunctions.projects.regions.functions.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}',
-              request_field='',
-              request_type_name=u'CloudfunctionsProjectsRegionsFunctionsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
-              http_method=u'GET',
-              method_id=u'cloudfunctions.projects.regions.functions.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}',
-              request_field='',
-              request_type_name=u'CloudfunctionsProjectsRegionsFunctionsGetRequest',
-              response_type_name=u'HostedFunction',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
-              http_method=u'GET',
-              method_id=u'cloudfunctions.projects.regions.functions.list',
-              ordered_params=[u'location'],
-              path_params=[u'location'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1beta1/{+location}/functions',
-              request_field='',
-              request_type_name=u'CloudfunctionsProjectsRegionsFunctionsListRequest',
-              response_type_name=u'ListFunctionsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
-              http_method=u'PUT',
-              method_id=u'cloudfunctions.projects.regions.functions.update',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}',
-              request_field='<request>',
-              request_type_name=u'HostedFunction',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -225,6 +140,20 @@ limited traffic allowed.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Call.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}:call',
+        http_method=u'POST',
+        method_id=u'cloudfunctions.projects.regions.functions.call',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:call',
+        request_field=u'callFunctionRequest',
+        request_type_name=u'CloudfunctionsProjectsRegionsFunctionsCallRequest',
+        response_type_name=u'CallFunctionResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a new function. If a function with the given name already exists in.
 the specified project, it will return ALREADY_EXISTS error.
@@ -238,6 +167,20 @@ the specified project, it will return ALREADY_EXISTS error.
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
+        http_method=u'POST',
+        method_id=u'cloudfunctions.projects.regions.functions.create',
+        ordered_params=[u'location'],
+        path_params=[u'location'],
+        query_params=[],
+        relative_path=u'v1beta1/{+location}/functions',
+        request_field=u'hostedFunction',
+        request_type_name=u'CloudfunctionsProjectsRegionsFunctionsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes a function with the given name from the specified project. If the.
@@ -254,6 +197,20 @@ remove this function.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
+        http_method=u'DELETE',
+        method_id=u'cloudfunctions.projects.regions.functions.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudfunctionsProjectsRegionsFunctionsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns a function with the given name from the requested project.
 
@@ -266,6 +223,20 @@ remove this function.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
+        http_method=u'GET',
+        method_id=u'cloudfunctions.projects.regions.functions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudfunctionsProjectsRegionsFunctionsGetRequest',
+        response_type_name=u'HostedFunction',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Returns a list of all functions that belong to the requested project.
@@ -280,6 +251,20 @@ remove this function.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions',
+        http_method=u'GET',
+        method_id=u'cloudfunctions.projects.regions.functions.list',
+        ordered_params=[u'location'],
+        path_params=[u'location'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+location}/functions',
+        request_field='',
+        request_type_name=u'CloudfunctionsProjectsRegionsFunctionsListRequest',
+        response_type_name=u'ListFunctionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates existing function.
 
@@ -293,6 +278,20 @@ remove this function.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
+        http_method=u'PUT',
+        method_id=u'cloudfunctions.projects.regions.functions.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name=u'HostedFunction',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsRegionsService(base_api.BaseApiService):
     """Service class for the projects_regions resource."""
 
@@ -300,9 +299,6 @@ remove this function.
 
     def __init__(self, client):
       super(CloudfunctionsV1beta1.ProjectsRegionsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -313,8 +309,5 @@ remove this function.
 
     def __init__(self, client):
       super(CloudfunctionsV1beta1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

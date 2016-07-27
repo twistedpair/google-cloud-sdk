@@ -105,11 +105,15 @@ def RunDeploy(unused_self, args, enable_endpoints=False):
       properties.VALUES.app.stop_previous_version.GetBool())
   if args.docker_build:
     raise exceptions.DeployError("""\
-Docker builds now use Container Builder by default. To run a Docker build on
-your own host, you can run:
+The --docker-build flag no longer exists. Docker images are now built remotely
+using Google Container Builder by default. To run a Docker build on your own
+host, you can run:
   docker build -t gcr.io/<project>/<service.version> .
   gcloud docker push gcr.io/<project>/<service.version>
   gcloud app deploy --image-url=gcr.io/<project>/<service.version>
+If you don't already have a Dockerfile, you must run
+  gcloud beta app gen-config
+first to get one.
   """)
 
   # Parse existing app.yamls or try to generate a new one if the directory is

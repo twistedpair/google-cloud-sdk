@@ -7,6 +7,7 @@ events.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'cloudfunctions'
@@ -245,10 +246,11 @@ class Location(_messages.Message):
   Fields:
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The cononical id for this location. For example: `"us-east1"`.
     metadata: Service-specific metadata. For example the available capacity at
       the given location.
     name: Resource name for the location, which may vary between
-      implementations. Example: `"projects/example-project/locations/us-
+      implementations. For example: `"projects/example-project/locations/us-
       east1"`
   """
 
@@ -304,8 +306,9 @@ class Location(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   labels = _messages.MessageField('LabelsValue', 1)
-  metadata = _messages.MessageField('MetadataValue', 2)
-  name = _messages.StringField(3)
+  locationId = _messages.StringField(2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
 
 
 class Operation(_messages.Message):

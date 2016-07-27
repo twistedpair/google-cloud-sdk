@@ -48,33 +48,6 @@ class ClouddebuggerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerDebuggeesBreakpointsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouddebugger.controller.debuggees.breakpoints.list',
-              ordered_params=[u'debuggeeId'],
-              path_params=[u'debuggeeId'],
-              query_params=[u'successOnTimeout', u'waitToken'],
-              relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints',
-              request_field='',
-              request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsListRequest',
-              response_type_name=u'ListActiveBreakpointsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'clouddebugger.controller.debuggees.breakpoints.update',
-              ordered_params=[u'debuggeeId', u'id'],
-              path_params=[u'debuggeeId', u'id'],
-              query_params=[],
-              relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints/{id}',
-              request_field=u'updateActiveBreakpointRequest',
-              request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest',
-              response_type_name=u'UpdateActiveBreakpointResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -103,6 +76,19 @@ setting those breakpoints again.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouddebugger.controller.debuggees.breakpoints.list',
+        ordered_params=[u'debuggeeId'],
+        path_params=[u'debuggeeId'],
+        query_params=[u'successOnTimeout', u'waitToken'],
+        relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints',
+        request_field='',
+        request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsListRequest',
+        response_type_name=u'ListActiveBreakpointsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates the breakpoint state or mutable fields.
 The entire Breakpoint message must be sent back to the controller
@@ -124,6 +110,19 @@ or snapping the location to the correct line of code.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'clouddebugger.controller.debuggees.breakpoints.update',
+        ordered_params=[u'debuggeeId', u'id'],
+        path_params=[u'debuggeeId', u'id'],
+        query_params=[],
+        relative_path=u'v2/controller/debuggees/{debuggeeId}/breakpoints/{id}',
+        request_field=u'updateActiveBreakpointRequest',
+        request_type_name=u'ClouddebuggerControllerDebuggeesBreakpointsUpdateRequest',
+        response_type_name=u'UpdateActiveBreakpointResponse',
+        supports_download=False,
+    )
+
   class ControllerDebuggeesService(base_api.BaseApiService):
     """Service class for the controller_debuggees resource."""
 
@@ -131,21 +130,6 @@ or snapping the location to the correct line of code.
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerDebuggeesService, self).__init__(client)
-      self._method_configs = {
-          'Register': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouddebugger.controller.debuggees.register',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v2/controller/debuggees/register',
-              request_field='<request>',
-              request_type_name=u'RegisterDebuggeeRequest',
-              response_type_name=u'RegisterDebuggeeResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -171,6 +155,19 @@ have `is_disabled` set to `true`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Register.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouddebugger.controller.debuggees.register',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v2/controller/debuggees/register',
+        request_field='<request>',
+        request_type_name=u'RegisterDebuggeeRequest',
+        response_type_name=u'RegisterDebuggeeResponse',
+        supports_download=False,
+    )
+
   class ControllerService(base_api.BaseApiService):
     """Service class for the controller resource."""
 
@@ -178,9 +175,6 @@ have `is_disabled` set to `true`.
 
     def __init__(self, client):
       super(ClouddebuggerV2.ControllerService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -191,57 +185,6 @@ have `is_disabled` set to `true`.
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerDebuggeesBreakpointsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'clouddebugger.debugger.debuggees.breakpoints.delete',
-              ordered_params=[u'debuggeeId', u'breakpointId'],
-              path_params=[u'breakpointId', u'debuggeeId'],
-              query_params=[u'clientVersion'],
-              relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
-              request_field='',
-              request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouddebugger.debugger.debuggees.breakpoints.get',
-              ordered_params=[u'debuggeeId', u'breakpointId'],
-              path_params=[u'breakpointId', u'debuggeeId'],
-              query_params=[u'clientVersion'],
-              relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
-              request_field='',
-              request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest',
-              response_type_name=u'GetBreakpointResponse',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouddebugger.debugger.debuggees.breakpoints.list',
-              ordered_params=[u'debuggeeId'],
-              path_params=[u'debuggeeId'],
-              query_params=[u'action_value', u'clientVersion', u'includeAllUsers', u'includeInactive', u'stripResults', u'waitToken'],
-              relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints',
-              request_field='',
-              request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsListRequest',
-              response_type_name=u'ListBreakpointsResponse',
-              supports_download=False,
-          ),
-          'Set': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouddebugger.debugger.debuggees.breakpoints.set',
-              ordered_params=[u'debuggeeId'],
-              path_params=[u'debuggeeId'],
-              query_params=[u'clientVersion'],
-              relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/set',
-              request_field=u'breakpoint',
-              request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest',
-              response_type_name=u'SetBreakpointResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -258,6 +201,19 @@ have `is_disabled` set to `true`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'clouddebugger.debugger.debuggees.breakpoints.delete',
+        ordered_params=[u'debuggeeId', u'breakpointId'],
+        path_params=[u'breakpointId', u'debuggeeId'],
+        query_params=[u'clientVersion'],
+        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
+        request_field='',
+        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets breakpoint information.
 
@@ -270,6 +226,19 @@ have `is_disabled` set to `true`.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouddebugger.debugger.debuggees.breakpoints.get',
+        ordered_params=[u'debuggeeId', u'breakpointId'],
+        path_params=[u'breakpointId', u'debuggeeId'],
+        query_params=[u'clientVersion'],
+        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
+        request_field='',
+        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest',
+        response_type_name=u'GetBreakpointResponse',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all breakpoints for the debuggee.
@@ -284,6 +253,19 @@ have `is_disabled` set to `true`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouddebugger.debugger.debuggees.breakpoints.list',
+        ordered_params=[u'debuggeeId'],
+        path_params=[u'debuggeeId'],
+        query_params=[u'action_value', u'clientVersion', u'includeAllUsers', u'includeInactive', u'stripResults', u'waitToken'],
+        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints',
+        request_field='',
+        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsListRequest',
+        response_type_name=u'ListBreakpointsResponse',
+        supports_download=False,
+    )
+
     def Set(self, request, global_params=None):
       """Sets the breakpoint to the debuggee.
 
@@ -297,6 +279,19 @@ have `is_disabled` set to `true`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Set.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouddebugger.debugger.debuggees.breakpoints.set',
+        ordered_params=[u'debuggeeId'],
+        path_params=[u'debuggeeId'],
+        query_params=[u'clientVersion'],
+        relative_path=u'v2/debugger/debuggees/{debuggeeId}/breakpoints/set',
+        request_field=u'breakpoint',
+        request_type_name=u'ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest',
+        response_type_name=u'SetBreakpointResponse',
+        supports_download=False,
+    )
+
   class DebuggerDebuggeesService(base_api.BaseApiService):
     """Service class for the debugger_debuggees resource."""
 
@@ -304,21 +299,6 @@ have `is_disabled` set to `true`.
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerDebuggeesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouddebugger.debugger.debuggees.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'clientVersion', u'includeInactive', u'project'],
-              relative_path=u'v2/debugger/debuggees',
-              request_field='',
-              request_type_name=u'ClouddebuggerDebuggerDebuggeesListRequest',
-              response_type_name=u'ListDebuggeesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -335,6 +315,19 @@ have `is_disabled` set to `true`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouddebugger.debugger.debuggees.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'clientVersion', u'includeInactive', u'project'],
+        relative_path=u'v2/debugger/debuggees',
+        request_field='',
+        request_type_name=u'ClouddebuggerDebuggerDebuggeesListRequest',
+        response_type_name=u'ListDebuggeesResponse',
+        supports_download=False,
+    )
+
   class DebuggerService(base_api.BaseApiService):
     """Service class for the debugger resource."""
 
@@ -342,8 +335,5 @@ have `is_disabled` set to `true`.
 
     def __init__(self, client):
       super(ClouddebuggerV2.DebuggerService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

@@ -40,6 +40,9 @@ def GetDefaultProxyInfo(method='http'):
   if not proxy_url:
     return None
 
+  if isinstance(proxy_url, unicode):
+    proxy_url = proxy_url.encode('idna')
+
   pi = httplib2.proxy_info_from_url(proxy_url, method)
 
   # The ProxyInfo object has a bypass_host method that takes the hostname as an

@@ -48,57 +48,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'bigtableclusteradmin.operations.cancel',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}:cancel',
-              request_field=u'cancelOperationRequest',
-              request_type_name=u'BigtableclusteradminOperationsCancelRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'bigtableclusteradmin.operations.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminOperationsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'{name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -115,6 +64,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'bigtableclusteradmin.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'BigtableclusteradminOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
@@ -127,6 +89,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'bigtableclusteradmin.operations.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='',
+        request_type_name=u'BigtableclusteradminOperationsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
@@ -141,6 +116,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigtableclusteradmin.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='',
+        request_type_name=u'BigtableclusteradminOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding below allows API services to override the binding to use different resource name schemes, such as `users/*/operations`.
 
@@ -154,6 +142,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigtableclusteradmin.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'{name}',
+        request_field='',
+        request_type_name=u'BigtableclusteradminOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsAggregatedClustersService(base_api.BaseApiService):
     """Service class for the projects_aggregated_clusters resource."""
 
@@ -161,21 +162,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsAggregatedClustersService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.projects.aggregated.clusters.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}/aggregated/clusters',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsAggregatedClustersListRequest',
-              response_type_name=u'ListClustersResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -192,6 +178,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigtableclusteradmin.projects.aggregated.clusters.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}/aggregated/clusters',
+        request_field='',
+        request_type_name=u'BigtableclusteradminProjectsAggregatedClustersListRequest',
+        response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
   class ProjectsAggregatedService(base_api.BaseApiService):
     """Service class for the projects_aggregated resource."""
 
@@ -199,9 +198,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsAggregatedService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -212,81 +208,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsZonesClustersService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.create',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}/clusters',
-              request_field='<request>',
-              request_type_name=u'CreateClusterRequest',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsZonesClustersDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsZonesClustersGetRequest',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.patch',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='<request>',
-              request_type_name=u'Cluster',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          'Undelete': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.undelete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}:undelete',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsZonesClustersUndeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'bigtableclusteradmin.projects.zones.clusters.update',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}',
-              request_field='<request>',
-              request_type_name=u'Cluster',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -303,6 +224,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}/clusters',
+        request_field='<request>',
+        request_type_name=u'CreateClusterRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Marks a cluster and all of its tables for permanent deletion in 7 days. Immediately upon completion of the request: * Billing will cease for all of the cluster's reserved resources. * The cluster's "delete_time" field will be set 7 days in the future. Soon afterward: * All tables within the cluster will become unavailable. Prior to the cluster's "delete_time": * The cluster can be recovered with a call to UndeleteCluster. * All other attempts to modify or delete the cluster will be rejected. At the cluster's "delete_time": * The cluster and *all of its tables* will immediately and irrevocably disappear from the API, and their data will be permanently deleted.
 
@@ -315,6 +249,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='',
+        request_type_name=u'BigtableclusteradminProjectsZonesClustersDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets information about a particular cluster.
@@ -329,6 +276,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='',
+        request_type_name=u'BigtableclusteradminProjectsZonesClustersGetRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a cluster, and begins allocating or releasing resources as requested. The returned cluster embeds as its "current_operation" a long-running operation which can be used to track the progress of updating the cluster. Immediately upon completion of this request: * For resource types where a decrease in the cluster's allocation has been requested, billing will be based on the newly-requested level. Until completion of the embedded operation: * Cancelling the operation will set its metadata's "cancelled_at_time", and begin restoring resources to their pre-request values. The operation is guaranteed to succeed at undoing all resource changes, after which point it will terminate with a CANCELLED status. * All other attempts to modify or delete the cluster will be rejected. * Reading the cluster via the API will continue to give the pre-request resource levels. Upon completion of the embedded operation: * Billing will begin for all successfully-allocated resources (some types may have lower than the requested levels). * All newly-reserved resources will be available for serving the cluster's tables. * The cluster's new resource levels will be readable via the API. [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's "response" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful. This method supports patch semantics.
 
@@ -341,6 +301,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='<request>',
+        request_type_name=u'Cluster',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
 
     def Undelete(self, request, global_params=None):
       """Cancels the scheduled deletion of an cluster and begins preparing it to resume serving. The returned operation will also be embedded as the cluster's "current_operation". Immediately upon completion of this request: * The cluster's "delete_time" field will be unset, protecting it from automatic deletion. Until completion of the returned operation: * The operation cannot be cancelled. Upon completion of the returned operation: * Billing for the cluster's resources will resume. * All tables within the cluster will be available. [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's "response" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
@@ -355,6 +328,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}:undelete',
+        request_field='',
+        request_type_name=u'BigtableclusteradminProjectsZonesClustersUndeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates a cluster, and begins allocating or releasing resources as requested. The returned cluster embeds as its "current_operation" a long-running operation which can be used to track the progress of updating the cluster. Immediately upon completion of this request: * For resource types where a decrease in the cluster's allocation has been requested, billing will be based on the newly-requested level. Until completion of the embedded operation: * Cancelling the operation will set its metadata's "cancelled_at_time", and begin restoring resources to their pre-request values. The operation is guaranteed to succeed at undoing all resource changes, after which point it will terminate with a CANCELLED status. * All other attempts to modify or delete the cluster will be rejected. * Reading the cluster via the API will continue to give the pre-request resource levels. Upon completion of the embedded operation: * Billing will begin for all successfully-allocated resources (some types may have lower than the requested levels). * All newly-reserved resources will be available for serving the cluster's tables. * The cluster's new resource levels will be readable via the API. [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's "response" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
 
@@ -368,6 +354,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'bigtableclusteradmin.projects.zones.clusters.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}',
+        request_field='<request>',
+        request_type_name=u'Cluster',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
   class ProjectsZonesService(base_api.BaseApiService):
     """Service class for the projects_zones resource."""
 
@@ -375,21 +374,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsZonesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'bigtableclusteradmin.projects.zones.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'{+name}/zones',
-              request_field='',
-              request_type_name=u'BigtableclusteradminProjectsZonesListRequest',
-              response_type_name=u'ListZonesResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -406,6 +390,19 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigtableclusteradmin.projects.zones.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'{+name}/zones',
+        request_field='',
+        request_type_name=u'BigtableclusteradminProjectsZonesListRequest',
+        response_type_name=u'ListZonesResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -413,8 +410,5 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(BigtableclusteradminV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

@@ -6,6 +6,7 @@ The service management API for Google Cloud Platform
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'servicemanagement'
@@ -2660,12 +2661,14 @@ class Rollout(_messages.Message):
         overlapping Rollout pushes, and the previous ones will be cancelled.
       FAILED: The Rollout has failed. It is typically caused by configuration
         errors.
+      PENDING: The Rollout has started yet and is pending for execution.
     """
     ROLLOUT_STATUS_UNSPECIFIED = 0
     IN_PROGRESS = 1
     SUCCESS = 2
     CANCELLED = 3
     FAILED = 4
+    PENDING = 5
 
   aliasStrategy = _messages.MessageField('AliasStrategy', 1)
   createTime = _messages.StringField(2)
@@ -3574,12 +3577,14 @@ class Step(_messages.Message):
       NOT_STARTED: The step has not started yet.
       IN_PROGRESS: The step is in progress.
       FAILED: The step has completed with errors.
+      CANCELLED: The step has completed with cancellation.
     """
     STATUS_UNSPECIFIED = 0
     DONE = 1
     NOT_STARTED = 2
     IN_PROGRESS = 3
     FAILED = 4
+    CANCELLED = 5
 
   description = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)
@@ -3597,6 +3602,16 @@ class SubmitConfigSourceRequest(_messages.Message):
 
   configSource = _messages.MessageField('ConfigSource', 1)
   validateOnly = _messages.BooleanField(2)
+
+
+class SubmitConfigSourceResponse(_messages.Message):
+  """Response message for SubmitConfigSource method.
+
+  Fields:
+    serviceConfig: The generated service configuration.
+  """
+
+  serviceConfig = _messages.MessageField('Service', 1)
 
 
 class SwaggerSpec(_messages.Message):

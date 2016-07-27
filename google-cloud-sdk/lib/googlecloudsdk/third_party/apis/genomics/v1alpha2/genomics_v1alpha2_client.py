@@ -44,48 +44,6 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(GenomicsV1alpha2.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              flat_path=u'v1alpha2/operations/{operationsId}:cancel',
-              http_method=u'POST',
-              method_id=u'genomics.operations.cancel',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1alpha2/{+name}:cancel',
-              request_field=u'cancelOperationRequest',
-              request_type_name=u'GenomicsOperationsCancelRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1alpha2/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'genomics.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1alpha2/{+name}',
-              request_field='',
-              request_type_name=u'GenomicsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1alpha2/operations',
-              http_method=u'GET',
-              method_id=u'genomics.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1alpha2/{+name}',
-              request_field='',
-              request_type_name=u'GenomicsOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -102,6 +60,20 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'genomics.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}:cancel',
+        request_field=u'cancelOperationRequest',
+        request_type_name=u'GenomicsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
@@ -117,6 +89,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'genomics.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}',
+        request_field='',
+        request_type_name=u'GenomicsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request.
 
@@ -130,6 +116,20 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/operations',
+        http_method=u'GET',
+        method_id=u'genomics.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha2/{+name}',
+        request_field='',
+        request_type_name=u'GenomicsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class PipelinesService(base_api.BaseApiService):
     """Service class for the pipelines resource."""
 
@@ -137,93 +137,6 @@ service.
 
     def __init__(self, client):
       super(GenomicsV1alpha2.PipelinesService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.pipelines.create',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines',
-              request_field='<request>',
-              request_type_name=u'Pipeline',
-              response_type_name=u'Pipeline',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'genomics.pipelines.delete',
-              ordered_params=[u'pipelineId'],
-              path_params=[u'pipelineId'],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines/{pipelineId}',
-              request_field='',
-              request_type_name=u'GenomicsPipelinesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.pipelines.get',
-              ordered_params=[u'pipelineId'],
-              path_params=[u'pipelineId'],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines/{pipelineId}',
-              request_field='',
-              request_type_name=u'GenomicsPipelinesGetRequest',
-              response_type_name=u'Pipeline',
-              supports_download=False,
-          ),
-          'GetControllerConfig': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.pipelines.getControllerConfig',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'operationId', u'validationToken'],
-              relative_path=u'v1alpha2/pipelines:getControllerConfig',
-              request_field='',
-              request_type_name=u'GenomicsPipelinesGetControllerConfigRequest',
-              response_type_name=u'ControllerConfig',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'genomics.pipelines.list',
-              ordered_params=[],
-              path_params=[],
-              query_params=[u'namePrefix', u'pageSize', u'pageToken', u'projectId'],
-              relative_path=u'v1alpha2/pipelines',
-              request_field='',
-              request_type_name=u'GenomicsPipelinesListRequest',
-              response_type_name=u'ListPipelinesResponse',
-              supports_download=False,
-          ),
-          'Run': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'genomics.pipelines.run',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines:run',
-              request_field='<request>',
-              request_type_name=u'RunPipelineRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetOperationStatus': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'genomics.pipelines.setOperationStatus',
-              ordered_params=[],
-              path_params=[],
-              query_params=[],
-              relative_path=u'v1alpha2/pipelines:setOperationStatus',
-              request_field='<request>',
-              request_type_name=u'SetOperationStatusRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -245,6 +158,19 @@ Caller must have WRITE permission to the project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.pipelines.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1alpha2/pipelines',
+        request_field='<request>',
+        request_type_name=u'Pipeline',
+        response_type_name=u'Pipeline',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a pipeline based on ID.
 
@@ -259,6 +185,19 @@ Caller must have WRITE permission to the project.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'genomics.pipelines.delete',
+        ordered_params=[u'pipelineId'],
+        path_params=[u'pipelineId'],
+        query_params=[],
+        relative_path=u'v1alpha2/pipelines/{pipelineId}',
+        request_field='',
+        request_type_name=u'GenomicsPipelinesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Retrieves a pipeline based on ID.
@@ -275,6 +214,19 @@ Caller must have READ permission to the project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.pipelines.get',
+        ordered_params=[u'pipelineId'],
+        path_params=[u'pipelineId'],
+        query_params=[],
+        relative_path=u'v1alpha2/pipelines/{pipelineId}',
+        request_field='',
+        request_type_name=u'GenomicsPipelinesGetRequest',
+        response_type_name=u'Pipeline',
+        supports_download=False,
+    )
+
     def GetControllerConfig(self, request, global_params=None):
       """Gets controller configuration information. Should only be called.
 by VMs created by the Pipelines Service and not by end users.
@@ -288,6 +240,19 @@ by VMs created by the Pipelines Service and not by end users.
       config = self.GetMethodConfig('GetControllerConfig')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetControllerConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.pipelines.getControllerConfig',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'operationId', u'validationToken'],
+        relative_path=u'v1alpha2/pipelines:getControllerConfig',
+        request_field='',
+        request_type_name=u'GenomicsPipelinesGetControllerConfigRequest',
+        response_type_name=u'ControllerConfig',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists pipelines.
@@ -303,6 +268,19 @@ Caller must have READ permission to the project.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'genomics.pipelines.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'namePrefix', u'pageSize', u'pageToken', u'projectId'],
+        relative_path=u'v1alpha2/pipelines',
+        request_field='',
+        request_type_name=u'GenomicsPipelinesListRequest',
+        response_type_name=u'ListPipelinesResponse',
+        supports_download=False,
+    )
 
     def Run(self, request, global_params=None):
       """Runs a pipeline. If `pipelineId` is specified in the request, then.
@@ -323,6 +301,19 @@ run, as VMs will be created and storage will be used.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'genomics.pipelines.run',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1alpha2/pipelines:run',
+        request_field='<request>',
+        request_type_name=u'RunPipelineRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetOperationStatus(self, request, global_params=None):
       """Sets status of a given operation. All timestamps are sent on each.
 call, and the whole series of events is replaced, in case
@@ -338,3 +329,16 @@ by the Pipelines Service and not by end users.
       config = self.GetMethodConfig('SetOperationStatus')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    SetOperationStatus.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'genomics.pipelines.setOperationStatus',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1alpha2/pipelines:setOperationStatus',
+        request_field='<request>',
+        request_type_name=u'SetOperationStatusRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )

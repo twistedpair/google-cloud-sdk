@@ -349,7 +349,8 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks.
+      Disk resource. This field is only applicable for persistent disks. Note
+      that for InstanceTemplate, it is just disk name, not URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -427,7 +428,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       URL. For example, the following are valid values:   - https://www.google
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
-      zones/zone/diskTypes/diskType
+      zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
+      the name of the disk type, not URL.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -4648,28 +4650,34 @@ class ComputeInstancesStopRequest(_messages.Message):
   """A ComputeInstancesStopRequest object.
 
   Fields:
+    discardLocalSsd: If true, discard the contents of any attached localSSD
+      partitions. Default value is false.
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  discardLocalSsd = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesSuspendRequest(_messages.Message):
   """A ComputeInstancesSuspendRequest object.
 
   Fields:
+    discardLocalSsd: If true, discard the contents of any attached localSSD
+      partitions. Default value is false.
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  discardLocalSsd = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
@@ -4927,6 +4935,52 @@ class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeProjectsDisableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsDisableXpnResourceRequest: A ProjectsDisableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsDisableXpnResourceRequest = _messages.MessageField('ProjectsDisableXpnResourceRequest', 2)
+
+
+class ComputeProjectsEnableXpnHostRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ComputeProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsEnableXpnResourceRequest: A ProjectsEnableXpnResourceRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsEnableXpnResourceRequest = _messages.MessageField('ProjectsEnableXpnResourceRequest', 2)
+
+
 class ComputeProjectsGetRequest(_messages.Message):
   """A ComputeProjectsGetRequest object.
 
@@ -4935,6 +4989,39 @@ class ComputeProjectsGetRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnHostRequest(_messages.Message):
+  """A ComputeProjectsGetXpnHostRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
+  """A ComputeProjectsGetXpnResourcesRequest object.
+
+  Fields:
+    project: Project ID for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+
+
+class ComputeProjectsListXpnHostsRequest(_messages.Message):
+  """A ComputeProjectsListXpnHostsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
+      passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 2)
 
 
 class ComputeProjectsMoveDiskRequest(_messages.Message):
@@ -9686,9 +9773,9 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
-      one of the protocol-specific health check field must be specified, which
-      must match type field.
+      UDP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP.
+      Exactly one of the protocol-specific health check field must be
+      specified, which must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -9717,8 +9804,8 @@ class HealthCheck(_messages.Message):
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
-    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
-      or HTTP2. If not specified, the default is TCP. Exactly one of the
+    type: Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+      HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
@@ -9726,10 +9813,10 @@ class HealthCheck(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
-    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
-    specific health check field must be specified, which must match type
-    field.
+    """Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+    HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
+    protocol-specific health check field must be specified, which must match
+    type field.
 
     Values:
       HTTP: <no description>
@@ -12893,6 +12980,51 @@ class Project(_messages.Message):
   selfLink = _messages.StringField(10)
   usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
   xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+
+
+class ProjectsDisableXpnResourceRequest(_messages.Message):
+  """A ProjectsDisableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsEnableXpnResourceRequest(_messages.Message):
+  """A ProjectsEnableXpnResourceRequest object.
+
+  Fields:
+    xpnResource: XPN resource ID.
+  """
+
+  xpnResource = _messages.MessageField('XpnResourceId', 1)
+
+
+class ProjectsGetXpnResources(_messages.Message):
+  """A ProjectsGetXpnResources object.
+
+  Fields:
+    kind: [Output Only] Type of resource. Always
+      compute#projectsGetXpnResources for lists of XPN resources.
+    resources: XPN resources attached to this project as their XPN host.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#projectsGetXpnResources')
+  resources = _messages.MessageField('XpnResourceId', 2, repeated=True)
+
+
+class ProjectsListXpnHostsRequest(_messages.Message):
+  """A ProjectsListXpnHostsRequest object.
+
+  Fields:
+    organization: Optional organization ID managed by Cloud Resource Manager,
+      for which to list XPN host projects. If not specified, the organization
+      will be inferred from the project.
+  """
+
+  organization = _messages.StringField(1)
 
 
 class Quota(_messages.Message):
@@ -16205,6 +16337,56 @@ class VpnTunnelsScopedList(_messages.Message):
 
   vpnTunnels = _messages.MessageField('VpnTunnel', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class XpnHostList(_messages.Message):
+  """A XpnHostList object.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of XPN host project URLs.
+    kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
+      of XPN hosts.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource .
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Project', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#xpnHostList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+
+
+class XpnResourceId(_messages.Message):
+  """XpnResourceId
+
+  Enums:
+    TypeValueValuesEnum: The type of the XPN resource.
+
+  Fields:
+    id: The ID of the XPN resource. In the case of projects, this field
+      matches the project's name, not the canonical ID.
+    type: The type of the XPN resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of the XPN resource.
+
+    Values:
+      PROJECT: <no description>
+      XPN_RESOURCE_TYPE_UNSPECIFIED: <no description>
+    """
+    PROJECT = 0
+    XPN_RESOURCE_TYPE_UNSPECIFIED = 1
+
+  id = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Zone(_messages.Message):

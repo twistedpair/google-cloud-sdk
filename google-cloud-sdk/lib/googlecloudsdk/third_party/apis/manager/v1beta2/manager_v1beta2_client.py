@@ -44,57 +44,6 @@ class ManagerV1beta2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ManagerV1beta2.DeploymentsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'manager.deployments.delete',
-              ordered_params=[u'projectId', u'region', u'deploymentName'],
-              path_params=[u'deploymentName', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
-              request_field='',
-              request_type_name=u'ManagerDeploymentsDeleteRequest',
-              response_type_name=u'ManagerDeploymentsDeleteResponse',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'manager.deployments.get',
-              ordered_params=[u'projectId', u'region', u'deploymentName'],
-              path_params=[u'deploymentName', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
-              request_field='',
-              request_type_name=u'ManagerDeploymentsGetRequest',
-              response_type_name=u'Deployment',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'manager.deployments.insert',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/regions/{region}/deployments',
-              request_field=u'deployment',
-              request_type_name=u'ManagerDeploymentsInsertRequest',
-              response_type_name=u'Deployment',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'manager.deployments.list',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[u'maxResults', u'pageToken'],
-              relative_path=u'projects/{projectId}/regions/{region}/deployments',
-              request_field='',
-              request_type_name=u'ManagerDeploymentsListRequest',
-              response_type_name=u'DeploymentsListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -111,6 +60,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'manager.deployments.delete',
+        ordered_params=[u'projectId', u'region', u'deploymentName'],
+        path_params=[u'deploymentName', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
+        request_field='',
+        request_type_name=u'ManagerDeploymentsDeleteRequest',
+        response_type_name=u'ManagerDeploymentsDeleteResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Get method for the deployments service.
 
@@ -123,6 +85,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'manager.deployments.get',
+        ordered_params=[u'projectId', u'region', u'deploymentName'],
+        path_params=[u'deploymentName', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
+        request_field='',
+        request_type_name=u'ManagerDeploymentsGetRequest',
+        response_type_name=u'Deployment',
+        supports_download=False,
+    )
 
     def Insert(self, request, global_params=None):
       """Insert method for the deployments service.
@@ -137,6 +112,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'manager.deployments.insert',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/regions/{region}/deployments',
+        request_field=u'deployment',
+        request_type_name=u'ManagerDeploymentsInsertRequest',
+        response_type_name=u'Deployment',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """List method for the deployments service.
 
@@ -150,6 +138,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'manager.deployments.list',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[u'maxResults', u'pageToken'],
+        relative_path=u'projects/{projectId}/regions/{region}/deployments',
+        request_field='',
+        request_type_name=u'ManagerDeploymentsListRequest',
+        response_type_name=u'DeploymentsListResponse',
+        supports_download=False,
+    )
+
   class TemplatesService(base_api.BaseApiService):
     """Service class for the templates resource."""
 
@@ -157,57 +158,6 @@ class ManagerV1beta2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ManagerV1beta2.TemplatesService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'manager.templates.delete',
-              ordered_params=[u'projectId', u'templateName'],
-              path_params=[u'projectId', u'templateName'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/templates/{templateName}',
-              request_field='',
-              request_type_name=u'ManagerTemplatesDeleteRequest',
-              response_type_name=u'ManagerTemplatesDeleteResponse',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'manager.templates.get',
-              ordered_params=[u'projectId', u'templateName'],
-              path_params=[u'projectId', u'templateName'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/templates/{templateName}',
-              request_field='',
-              request_type_name=u'ManagerTemplatesGetRequest',
-              response_type_name=u'Template',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'manager.templates.insert',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[],
-              relative_path=u'projects/{projectId}/templates',
-              request_field=u'template',
-              request_type_name=u'ManagerTemplatesInsertRequest',
-              response_type_name=u'Template',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'manager.templates.list',
-              ordered_params=[u'projectId'],
-              path_params=[u'projectId'],
-              query_params=[u'maxResults', u'pageToken'],
-              relative_path=u'projects/{projectId}/templates',
-              request_field='',
-              request_type_name=u'ManagerTemplatesListRequest',
-              response_type_name=u'TemplatesListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -224,6 +174,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'manager.templates.delete',
+        ordered_params=[u'projectId', u'templateName'],
+        path_params=[u'projectId', u'templateName'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/templates/{templateName}',
+        request_field='',
+        request_type_name=u'ManagerTemplatesDeleteRequest',
+        response_type_name=u'ManagerTemplatesDeleteResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Get method for the templates service.
 
@@ -236,6 +199,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'manager.templates.get',
+        ordered_params=[u'projectId', u'templateName'],
+        path_params=[u'projectId', u'templateName'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/templates/{templateName}',
+        request_field='',
+        request_type_name=u'ManagerTemplatesGetRequest',
+        response_type_name=u'Template',
+        supports_download=False,
+    )
 
     def Insert(self, request, global_params=None):
       """Insert method for the templates service.
@@ -250,6 +226,19 @@ class ManagerV1beta2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'manager.templates.insert',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/templates',
+        request_field=u'template',
+        request_type_name=u'ManagerTemplatesInsertRequest',
+        response_type_name=u'Template',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """List method for the templates service.
 
@@ -262,3 +251,16 @@ class ManagerV1beta2(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'manager.templates.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'maxResults', u'pageToken'],
+        relative_path=u'projects/{projectId}/templates',
+        request_field='',
+        request_type_name=u'ManagerTemplatesListRequest',
+        response_type_name=u'TemplatesListResponse',
+        supports_download=False,
+    )

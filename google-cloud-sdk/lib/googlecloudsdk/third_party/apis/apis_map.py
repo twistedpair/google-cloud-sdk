@@ -244,6 +244,13 @@ MAP = {
             default_version=True
         ),
     },
+    'ml': {
+        'v1alpha3': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.ml.v1alpha3.ml_v1alpha3_client.MlV1alpha3',
+            messages_modulepath='googlecloudsdk.third_party.apis.ml.v1alpha3.ml_v1alpha3_messages',
+            default_version=True
+        ),
+    },
     'pubsub': {
         'v1': APIDef(
             client_classpath='googlecloudsdk.third_party.apis.pubsub.v1.pubsub_v1_client.PubsubV1',

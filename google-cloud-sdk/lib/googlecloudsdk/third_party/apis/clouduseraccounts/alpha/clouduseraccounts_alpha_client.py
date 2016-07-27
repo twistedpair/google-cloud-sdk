@@ -46,45 +46,6 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouduseraccountsAlpha.GlobalAccountsOperationsService, self).__init__(client)
-      self._method_configs = {
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'clouduseraccounts.globalAccountsOperations.delete',
-              ordered_params=[u'project', u'operation'],
-              path_params=[u'operation', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/operations/{operation}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGlobalAccountsOperationsDeleteRequest',
-              response_type_name=u'ClouduseraccountsGlobalAccountsOperationsDeleteResponse',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.globalAccountsOperations.get',
-              ordered_params=[u'project', u'operation'],
-              path_params=[u'operation', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/operations/{operation}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGlobalAccountsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.globalAccountsOperations.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-              relative_path=u'projects/{project}/global/operations',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGlobalAccountsOperationsListRequest',
-              response_type_name=u'OperationList',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -101,6 +62,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'clouduseraccounts.globalAccountsOperations.delete',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGlobalAccountsOperationsDeleteRequest',
+        response_type_name=u'ClouduseraccountsGlobalAccountsOperationsDeleteResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Retrieves the specified operation resource.
 
@@ -113,6 +87,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.globalAccountsOperations.get',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGlobalAccountsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Retrieves the list of operation resources contained within the specified project.
@@ -127,6 +114,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.globalAccountsOperations.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/operations',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGlobalAccountsOperationsListRequest',
+        response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
   class GroupsService(base_api.BaseApiService):
     """Service class for the groups resource."""
 
@@ -134,117 +134,6 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouduseraccountsAlpha.GroupsService, self).__init__(client)
-      self._method_configs = {
-          'AddMember': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.groups.addMember',
-              ordered_params=[u'project', u'groupName'],
-              path_params=[u'groupName', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{groupName}/addMember',
-              request_field=u'groupsAddMemberRequest',
-              request_type_name=u'ClouduseraccountsGroupsAddMemberRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'clouduseraccounts.groups.delete',
-              ordered_params=[u'project', u'groupName'],
-              path_params=[u'groupName', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{groupName}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGroupsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.groups.get',
-              ordered_params=[u'project', u'groupName'],
-              path_params=[u'groupName', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{groupName}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGroupsGetRequest',
-              response_type_name=u'Group',
-              supports_download=False,
-          ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.groups.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGroupsGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.groups.insert',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups',
-              request_field=u'group',
-              request_type_name=u'ClouduseraccountsGroupsInsertRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.groups.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-              relative_path=u'projects/{project}/global/groups',
-              request_field='',
-              request_type_name=u'ClouduseraccountsGroupsListRequest',
-              response_type_name=u'GroupList',
-              supports_download=False,
-          ),
-          'RemoveMember': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.groups.removeMember',
-              ordered_params=[u'project', u'groupName'],
-              path_params=[u'groupName', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{groupName}/removeMember',
-              request_field=u'groupsRemoveMemberRequest',
-              request_type_name=u'ClouduseraccountsGroupsRemoveMemberRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.groups.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ClouduseraccountsGroupsSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.groups.testIamPermissions',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/groups/{resource}/testIamPermissions',
-              request_field=u'testPermissionsRequest',
-              request_type_name=u'ClouduseraccountsGroupsTestIamPermissionsRequest',
-              response_type_name=u'TestPermissionsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -261,6 +150,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    AddMember.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.groups.addMember',
+        ordered_params=[u'project', u'groupName'],
+        path_params=[u'groupName', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{groupName}/addMember',
+        request_field=u'groupsAddMemberRequest',
+        request_type_name=u'ClouduseraccountsGroupsAddMemberRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified Group resource.
 
@@ -273,6 +175,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'clouduseraccounts.groups.delete',
+        ordered_params=[u'project', u'groupName'],
+        path_params=[u'groupName', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{groupName}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGroupsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns the specified Group resource.
@@ -287,6 +202,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.groups.get',
+        ordered_params=[u'project', u'groupName'],
+        path_params=[u'groupName', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{groupName}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGroupsGetRequest',
+        response_type_name=u'Group',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -299,6 +227,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.groups.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGroupsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
 
     def Insert(self, request, global_params=None):
       """Creates a Group resource in the specified project using the data included in the request.
@@ -313,6 +254,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.groups.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups',
+        request_field=u'group',
+        request_type_name=u'ClouduseraccountsGroupsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Retrieves the list of groups contained within the specified project.
 
@@ -325,6 +279,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.groups.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/groups',
+        request_field='',
+        request_type_name=u'ClouduseraccountsGroupsListRequest',
+        response_type_name=u'GroupList',
+        supports_download=False,
+    )
 
     def RemoveMember(self, request, global_params=None):
       """Removes users from the specified group.
@@ -339,6 +306,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    RemoveMember.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.groups.removeMember',
+        ordered_params=[u'project', u'groupName'],
+        path_params=[u'groupName', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{groupName}/removeMember',
+        request_field=u'groupsRemoveMemberRequest',
+        request_type_name=u'ClouduseraccountsGroupsRemoveMemberRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -351,6 +331,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.groups.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ClouduseraccountsGroupsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
 
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
@@ -365,6 +358,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.groups.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/groups/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ClouduseraccountsGroupsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class LinuxService(base_api.BaseApiService):
     """Service class for the linux resource."""
 
@@ -372,33 +378,6 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouduseraccountsAlpha.LinuxService, self).__init__(client)
-      self._method_configs = {
-          'GetAuthorizedKeysView': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.linux.getAuthorizedKeysView',
-              ordered_params=[u'project', u'zone', u'user', u'instance'],
-              path_params=[u'project', u'user', u'zone'],
-              query_params=[u'instance', u'login'],
-              relative_path=u'projects/{project}/zones/{zone}/authorizedKeysView/{user}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsLinuxGetAuthorizedKeysViewRequest',
-              response_type_name=u'LinuxGetAuthorizedKeysViewResponse',
-              supports_download=False,
-          ),
-          'GetLinuxAccountViews': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.linux.getLinuxAccountViews',
-              ordered_params=[u'project', u'zone', u'instance'],
-              path_params=[u'project', u'zone'],
-              query_params=[u'filter', u'instance', u'maxResults', u'orderBy', u'pageToken'],
-              relative_path=u'projects/{project}/zones/{zone}/linuxAccountViews',
-              request_field='',
-              request_type_name=u'ClouduseraccountsLinuxGetLinuxAccountViewsRequest',
-              response_type_name=u'LinuxGetLinuxAccountViewsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -415,6 +394,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetAuthorizedKeysView.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.linux.getAuthorizedKeysView',
+        ordered_params=[u'project', u'zone', u'user', u'instance'],
+        path_params=[u'project', u'user', u'zone'],
+        query_params=[u'instance', u'login'],
+        relative_path=u'projects/{project}/zones/{zone}/authorizedKeysView/{user}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsLinuxGetAuthorizedKeysViewRequest',
+        response_type_name=u'LinuxGetAuthorizedKeysViewResponse',
+        supports_download=False,
+    )
+
     def GetLinuxAccountViews(self, request, global_params=None):
       """Retrieves a list of user accounts for an instance within a specific project.
 
@@ -428,6 +420,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetLinuxAccountViews.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.linux.getLinuxAccountViews',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'instance', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/linuxAccountViews',
+        request_field='',
+        request_type_name=u'ClouduseraccountsLinuxGetLinuxAccountViewsRequest',
+        response_type_name=u'LinuxGetLinuxAccountViewsResponse',
+        supports_download=False,
+    )
+
   class UsersService(base_api.BaseApiService):
     """Service class for the users resource."""
 
@@ -435,117 +440,6 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouduseraccountsAlpha.UsersService, self).__init__(client)
-      self._method_configs = {
-          'AddPublicKey': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.users.addPublicKey',
-              ordered_params=[u'project', u'user'],
-              path_params=[u'project', u'user'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{user}/addPublicKey',
-              request_field=u'publicKey',
-              request_type_name=u'ClouduseraccountsUsersAddPublicKeyRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'clouduseraccounts.users.delete',
-              ordered_params=[u'project', u'user'],
-              path_params=[u'project', u'user'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{user}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsUsersDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.users.get',
-              ordered_params=[u'project', u'user'],
-              path_params=[u'project', u'user'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{user}',
-              request_field='',
-              request_type_name=u'ClouduseraccountsUsersGetRequest',
-              response_type_name=u'User',
-              supports_download=False,
-          ),
-          'GetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.users.getIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{resource}/getIamPolicy',
-              request_field='',
-              request_type_name=u'ClouduseraccountsUsersGetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.users.insert',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users',
-              request_field=u'user',
-              request_type_name=u'ClouduseraccountsUsersInsertRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'clouduseraccounts.users.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
-              relative_path=u'projects/{project}/global/users',
-              request_field='',
-              request_type_name=u'ClouduseraccountsUsersListRequest',
-              response_type_name=u'UserList',
-              supports_download=False,
-          ),
-          'RemovePublicKey': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.users.removePublicKey',
-              ordered_params=[u'project', u'user', u'fingerprint'],
-              path_params=[u'project', u'user'],
-              query_params=[u'fingerprint'],
-              relative_path=u'projects/{project}/global/users/{user}/removePublicKey',
-              request_field='',
-              request_type_name=u'ClouduseraccountsUsersRemovePublicKeyRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'SetIamPolicy': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.users.setIamPolicy',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{resource}/setIamPolicy',
-              request_field=u'policy',
-              request_type_name=u'ClouduseraccountsUsersSetIamPolicyRequest',
-              response_type_name=u'Policy',
-              supports_download=False,
-          ),
-          'TestIamPermissions': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'clouduseraccounts.users.testIamPermissions',
-              ordered_params=[u'project', u'resource'],
-              path_params=[u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/users/{resource}/testIamPermissions',
-              request_field=u'testPermissionsRequest',
-              request_type_name=u'ClouduseraccountsUsersTestIamPermissionsRequest',
-              response_type_name=u'TestPermissionsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -562,6 +456,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    AddPublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.users.addPublicKey',
+        ordered_params=[u'project', u'user'],
+        path_params=[u'project', u'user'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{user}/addPublicKey',
+        request_field=u'publicKey',
+        request_type_name=u'ClouduseraccountsUsersAddPublicKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified User resource.
 
@@ -574,6 +481,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'clouduseraccounts.users.delete',
+        ordered_params=[u'project', u'user'],
+        path_params=[u'project', u'user'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{user}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsUsersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns the specified User resource.
@@ -588,6 +508,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.users.get',
+        ordered_params=[u'project', u'user'],
+        path_params=[u'project', u'user'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{user}',
+        request_field='',
+        request_type_name=u'ClouduseraccountsUsersGetRequest',
+        response_type_name=u'User',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -600,6 +533,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.users.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ClouduseraccountsUsersGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
 
     def Insert(self, request, global_params=None):
       """Creates a User resource in the specified project using the data included in the request.
@@ -614,6 +560,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.users.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users',
+        request_field=u'user',
+        request_type_name=u'ClouduseraccountsUsersInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Retrieves a list of users contained within the specified project.
 
@@ -626,6 +585,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'clouduseraccounts.users.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/users',
+        request_field='',
+        request_type_name=u'ClouduseraccountsUsersListRequest',
+        response_type_name=u'UserList',
+        supports_download=False,
+    )
 
     def RemovePublicKey(self, request, global_params=None):
       """Removes the specified public key from the user.
@@ -640,6 +612,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    RemovePublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.users.removePublicKey',
+        ordered_params=[u'project', u'user', u'fingerprint'],
+        path_params=[u'project', u'user'],
+        query_params=[u'fingerprint'],
+        relative_path=u'projects/{project}/global/users/{user}/removePublicKey',
+        request_field='',
+        request_type_name=u'ClouduseraccountsUsersRemovePublicKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -653,6 +638,19 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.users.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ClouduseraccountsUsersSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -665,3 +663,16 @@ class ClouduseraccountsAlpha(base_api.BaseApiClient):
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'clouduseraccounts.users.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/users/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ClouduseraccountsUsersTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )

@@ -47,105 +47,6 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DeploymentmanagerV2.DeploymentsService, self).__init__(client)
-      self._method_configs = {
-          'CancelPreview': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'deploymentmanager.deployments.cancelPreview',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/cancelPreview',
-              request_field=u'deploymentsCancelPreviewRequest',
-              request_type_name=u'DeploymentmanagerDeploymentsCancelPreviewRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'deploymentmanager.deployments.delete',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}',
-              request_field='',
-              request_type_name=u'DeploymentmanagerDeploymentsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.deployments.get',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}',
-              request_field='',
-              request_type_name=u'DeploymentmanagerDeploymentsGetRequest',
-              response_type_name=u'Deployment',
-              supports_download=False,
-          ),
-          'Insert': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'deploymentmanager.deployments.insert',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'preview'],
-              relative_path=u'projects/{project}/global/deployments',
-              request_field=u'deployment',
-              request_type_name=u'DeploymentmanagerDeploymentsInsertRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.deployments.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/deployments',
-              request_field='',
-              request_type_name=u'DeploymentmanagerDeploymentsListRequest',
-              response_type_name=u'DeploymentsListResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'deploymentmanager.deployments.patch',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[u'createPolicy', u'deletePolicy', u'preview'],
-              relative_path=u'projects/{project}/global/deployments/{deployment}',
-              request_field=u'deploymentResource',
-              request_type_name=u'DeploymentmanagerDeploymentsPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Stop': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'deploymentmanager.deployments.stop',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/stop',
-              request_field=u'deploymentsStopRequest',
-              request_type_name=u'DeploymentmanagerDeploymentsStopRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'deploymentmanager.deployments.update',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[u'createPolicy', u'deletePolicy', u'preview'],
-              relative_path=u'projects/{project}/global/deployments/{deployment}',
-              request_field=u'deploymentResource',
-              request_type_name=u'DeploymentmanagerDeploymentsUpdateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -162,6 +63,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    CancelPreview.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.deployments.cancelPreview',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/cancelPreview',
+        request_field=u'deploymentsCancelPreviewRequest',
+        request_type_name=u'DeploymentmanagerDeploymentsCancelPreviewRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a deployment and all of the resources in the deployment.
 
@@ -174,6 +88,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'deploymentmanager.deployments.delete',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerDeploymentsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets information about a specific deployment.
@@ -188,6 +115,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.deployments.get',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerDeploymentsGetRequest',
+        response_type_name=u'Deployment',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a deployment and all of the resources described by the deployment manifest.
 
@@ -200,6 +140,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       config = self.GetMethodConfig('Insert')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.deployments.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'preview'],
+        relative_path=u'projects/{project}/global/deployments',
+        request_field=u'deployment',
+        request_type_name=u'DeploymentmanagerDeploymentsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all deployments for a given project.
@@ -214,6 +167,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.deployments.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/deployments',
+        request_field='',
+        request_type_name=u'DeploymentmanagerDeploymentsListRequest',
+        response_type_name=u'DeploymentsListResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
 
@@ -226,6 +192,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'deploymentmanager.deployments.patch',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[u'createPolicy', u'deletePolicy', u'preview'],
+        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        request_field=u'deploymentResource',
+        request_type_name=u'DeploymentmanagerDeploymentsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Stop(self, request, global_params=None):
       """Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
@@ -240,6 +219,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.deployments.stop',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/stop',
+        request_field=u'deploymentsStopRequest',
+        request_type_name=u'DeploymentmanagerDeploymentsStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates a deployment and all of the resources described by the deployment manifest.
 
@@ -253,6 +245,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'deploymentmanager.deployments.update',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[u'createPolicy', u'deletePolicy', u'preview'],
+        relative_path=u'projects/{project}/global/deployments/{deployment}',
+        request_field=u'deploymentResource',
+        request_type_name=u'DeploymentmanagerDeploymentsUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ManifestsService(base_api.BaseApiService):
     """Service class for the manifests resource."""
 
@@ -260,33 +265,6 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DeploymentmanagerV2.ManifestsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.manifests.get',
-              ordered_params=[u'project', u'deployment', u'manifest'],
-              path_params=[u'deployment', u'manifest', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/manifests/{manifest}',
-              request_field='',
-              request_type_name=u'DeploymentmanagerManifestsGetRequest',
-              response_type_name=u'Manifest',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.manifests.list',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/manifests',
-              request_field='',
-              request_type_name=u'DeploymentmanagerManifestsListRequest',
-              response_type_name=u'ManifestsListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -303,6 +281,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.manifests.get',
+        ordered_params=[u'project', u'deployment', u'manifest'],
+        path_params=[u'deployment', u'manifest', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/manifests/{manifest}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerManifestsGetRequest',
+        response_type_name=u'Manifest',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all manifests for a given deployment.
 
@@ -316,6 +307,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.manifests.list',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/manifests',
+        request_field='',
+        request_type_name=u'DeploymentmanagerManifestsListRequest',
+        response_type_name=u'ManifestsListResponse',
+        supports_download=False,
+    )
+
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 
@@ -323,33 +327,6 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DeploymentmanagerV2.OperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.operations.get',
-              ordered_params=[u'project', u'operation'],
-              path_params=[u'operation', u'project'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/operations/{operation}',
-              request_field='',
-              request_type_name=u'DeploymentmanagerOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.operations.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/operations',
-              request_field='',
-              request_type_name=u'DeploymentmanagerOperationsListRequest',
-              response_type_name=u'OperationsListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -366,6 +343,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.operations.get',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all operations for a project.
 
@@ -379,6 +369,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.operations.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/operations',
+        request_field='',
+        request_type_name=u'DeploymentmanagerOperationsListRequest',
+        response_type_name=u'OperationsListResponse',
+        supports_download=False,
+    )
+
   class ResourcesService(base_api.BaseApiService):
     """Service class for the resources resource."""
 
@@ -386,33 +389,6 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DeploymentmanagerV2.ResourcesService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.resources.get',
-              ordered_params=[u'project', u'deployment', u'resource'],
-              path_params=[u'deployment', u'project', u'resource'],
-              query_params=[],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/resources/{resource}',
-              request_field='',
-              request_type_name=u'DeploymentmanagerResourcesGetRequest',
-              response_type_name=u'Resource',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.resources.list',
-              ordered_params=[u'project', u'deployment'],
-              path_params=[u'deployment', u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/deployments/{deployment}/resources',
-              request_field='',
-              request_type_name=u'DeploymentmanagerResourcesListRequest',
-              response_type_name=u'ResourcesListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -429,6 +405,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.resources.get',
+        ordered_params=[u'project', u'deployment', u'resource'],
+        path_params=[u'deployment', u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/resources/{resource}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerResourcesGetRequest',
+        response_type_name=u'Resource',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all resources in a given deployment.
 
@@ -442,6 +431,19 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.resources.list',
+        ordered_params=[u'project', u'deployment'],
+        path_params=[u'deployment', u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/deployments/{deployment}/resources',
+        request_field='',
+        request_type_name=u'DeploymentmanagerResourcesListRequest',
+        response_type_name=u'ResourcesListResponse',
+        supports_download=False,
+    )
+
   class TypesService(base_api.BaseApiService):
     """Service class for the types resource."""
 
@@ -449,21 +451,6 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DeploymentmanagerV2.TypesService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'deploymentmanager.types.list',
-              ordered_params=[u'project'],
-              path_params=[u'project'],
-              query_params=[u'filter', u'maxResults', u'pageToken'],
-              relative_path=u'projects/{project}/global/types',
-              request_field='',
-              request_type_name=u'DeploymentmanagerTypesListRequest',
-              response_type_name=u'TypesListResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -479,3 +466,16 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.types.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/types',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypesListRequest',
+        response_type_name=u'TypesListResponse',
+        supports_download=False,
+    )

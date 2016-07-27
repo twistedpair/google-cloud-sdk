@@ -30,7 +30,9 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.diagnostics import http_proxy_setup
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
 
@@ -41,6 +43,7 @@ class InfoHolder(object):
     self.basic = BasicInfo()
     self.installation = InstallationInfo()
     self.config = ConfigInfo()
+    self.env_proxy = ProxyInfoFromEnvironmentVars()
     self.logs = LogsInfo()
 
   def __str__(self):
@@ -48,6 +51,8 @@ class InfoHolder(object):
     out.write(str(self.basic) + '\n')
     out.write(str(self.installation) + '\n')
     out.write(str(self.config) + '\n')
+    if str(self.env_proxy):
+      out.write(str(self.env_proxy) + '\n')
     out.write(str(self.logs) + '\n')
     return out.getvalue()
 
@@ -171,6 +176,50 @@ class ConfigInfo(object):
       for name, value in props.iteritems():
         out.write('    {name}: [{value}]\n'.format(
             name=name, value=value))
+
+    return out.getvalue()
+
+
+class ProxyInfoFromEnvironmentVars(object):
+  """Proxy info if it is in the environment but not set in gcloud properties."""
+
+  def __init__(self):
+    self.type = None
+    self.address = None
+    self.port = None
+    self.username = None
+    self.password = None
+
+    try:
+      proxy_info, from_gcloud = http_proxy_setup.EffectiveProxyInfo()
+    except properties.InvalidValueError:
+      return
+
+    if proxy_info and not from_gcloud:
+      self.type = http_proxy_types.GetReverseProxyTypeMap().get(
+          proxy_info.proxy_type, 'UNKNOWN PROXY TYPE')
+      self.address = proxy_info.proxy_host
+      self.port = proxy_info.proxy_port
+      self.username = proxy_info.proxy_user
+      self.password = proxy_info.proxy_pass
+
+  def __str__(self):
+    if not any([self.type, self.address, self.port, self.username,
+                self.password]):
+      return ''
+
+    out = StringIO.StringIO()
+    out.write('Environmental Proxy Settings:\n')
+    if self.type:
+      out.write('  type: [{0}]\n'.format(self.type))
+    if self.address:
+      out.write('  address: [{0}]\n'.format(self.address))
+    if self.port:
+      out.write('  port: [{0}]\n'.format(self.port))
+    if self.username:
+      out.write('  username: [{0}]\n'.format(self.username))
+    if self.password:
+      out.write('  password: [{0}]\n'.format(self.password))
     return out.getvalue()
 
 

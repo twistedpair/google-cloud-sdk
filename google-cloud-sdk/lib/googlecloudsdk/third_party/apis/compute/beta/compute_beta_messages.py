@@ -349,7 +349,8 @@ class AttachedDisk(_messages.Message):
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks.
+      Disk resource. This field is only applicable for persistent disks. Note
+      that for InstanceTemplate, it is just disk name, not URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -427,7 +428,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       URL. For example, the following are valid values:   - https://www.google
       apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
-      zones/zone/diskTypes/diskType
+      zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
+      the name of the disk type, not URL.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -8529,9 +8531,9 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
-      one of the protocol-specific health check field must be specified, which
-      must match type field.
+      UDP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP.
+      Exactly one of the protocol-specific health check field must be
+      specified, which must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -8560,8 +8562,8 @@ class HealthCheck(_messages.Message):
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
-    type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
-      or HTTP2. If not specified, the default is TCP. Exactly one of the
+    type: Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+      HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
@@ -8569,10 +8571,10 @@ class HealthCheck(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
-    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
-    specific health check field must be specified, which must match type
-    field.
+    """Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+    HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
+    protocol-specific health check field must be specified, which must match
+    type field.
 
     Values:
       HTTP: <no description>

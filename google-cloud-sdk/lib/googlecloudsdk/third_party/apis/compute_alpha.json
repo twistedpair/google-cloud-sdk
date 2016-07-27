@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20160713",
+ "revision": "20160718",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -395,7 +395,7 @@
     },
     "source": {
      "type": "string",
-     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks."
+     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks. Note that for InstanceTemplate, it is just disk name, not URL for the disk."
     },
     "type": {
      "type": "string",
@@ -444,7 +444,7 @@
     },
     "diskType": {
      "type": "string",
-     "description": "Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:\n\nhttps://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard \n\nOther values include pd-ssd and local-ssd. If you define this field, you can provide either the full or partial URL. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType \n- projects/project/zones/zone/diskTypes/diskType \n- zones/zone/diskTypes/diskType"
+     "description": "Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:\n\nhttps://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard \n\nOther values include pd-ssd and local-ssd. If you define this field, you can provide either the full or partial URL. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType \n- projects/project/zones/zone/diskTypes/diskType \n- zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is the name of the disk type, not URL."
     },
     "sourceImage": {
      "type": "string",
@@ -2504,7 +2504,7 @@
     },
     "type": {
      "type": "string",
-     "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
+     "description": "Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -5436,6 +5436,54 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "ProjectsDisableXpnResourceRequest": {
+   "id": "ProjectsDisableXpnResourceRequest",
+   "type": "object",
+   "properties": {
+    "xpnResource": {
+     "$ref": "XpnResourceId",
+     "description": "XPN resource ID."
+    }
+   }
+  },
+  "ProjectsEnableXpnResourceRequest": {
+   "id": "ProjectsEnableXpnResourceRequest",
+   "type": "object",
+   "properties": {
+    "xpnResource": {
+     "$ref": "XpnResourceId",
+     "description": "XPN resource ID."
+    }
+   }
+  },
+  "ProjectsGetXpnResources": {
+   "id": "ProjectsGetXpnResources",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#projectsGetXpnResources for lists of XPN resources.",
+     "default": "compute#projectsGetXpnResources"
+    },
+    "resources": {
+     "type": "array",
+     "description": "XPN resources attached to this project as their XPN host.",
+     "items": {
+      "$ref": "XpnResourceId"
+     }
+    }
+   }
+  },
+  "ProjectsListXpnHostsRequest": {
+   "id": "ProjectsListXpnHostsRequest",
+   "type": "object",
+   "properties": {
+    "organization": {
+     "type": "string",
+     "description": "Optional organization ID managed by Cloud Resource Manager, for which to list XPN host projects. If not specified, the organization will be inferred from the project."
     }
    }
   },
@@ -8704,6 +8752,59 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "XpnHostList": {
+   "id": "XpnHostList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "[Output Only] A list of XPN host project URLs.",
+     "items": {
+      "$ref": "Project"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#xpnHostList for lists of XPN hosts.",
+     "default": "compute#xpnHostList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource ."
+    }
+   }
+  },
+  "XpnResourceId": {
+   "id": "XpnResourceId",
+   "type": "object",
+   "description": "XpnResourceId",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "The ID of the XPN resource. In the case of projects, this field matches the project's name, not the canonical ID."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of the XPN resource.",
+     "enum": [
+      "PROJECT",
+      "XPN_RESOURCE_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -15314,6 +15415,11 @@
      "httpMethod": "POST",
      "description": "Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur per-minute, virtual machine usage charges while they are stopped, but any resources that the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.",
      "parameters": {
+      "discardLocalSsd": {
+       "type": "boolean",
+       "description": "If true, discard the contents of any attached localSSD partitions. Default value is false.",
+       "location": "query"
+      },
       "instance": {
        "type": "string",
        "description": "Name of the instance resource to stop.",
@@ -15355,6 +15461,11 @@
      "httpMethod": "POST",
      "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.",
      "parameters": {
+      "discardLocalSsd": {
+       "type": "boolean",
+       "description": "If true, discard the contents of any attached localSSD partitions. Default value is false.",
+       "location": "query"
+      },
       "instance": {
        "type": "string",
        "description": "Name of the instance resource to suspend.",
@@ -15850,6 +15961,112 @@
   },
   "projects": {
    "methods": {
+    "disableXpnHost": {
+     "id": "compute.projects.disableXpnHost",
+     "path": "{project}/disableXpnHost",
+     "httpMethod": "POST",
+     "description": "Disable this project as an XPN host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "disableXpnResource": {
+     "id": "compute.projects.disableXpnResource",
+     "path": "{project}/disableXpnResource",
+     "httpMethod": "POST",
+     "description": "Disable an XPN resource associated with this host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsDisableXpnResourceRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "enableXpnHost": {
+     "id": "compute.projects.enableXpnHost",
+     "path": "{project}/enableXpnHost",
+     "httpMethod": "POST",
+     "description": "Enable this project as an XPN host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "enableXpnResource": {
+     "id": "compute.projects.enableXpnResource",
+     "path": "{project}/enableXpnResource",
+     "httpMethod": "POST",
+     "description": "Enable XPN resource (a.k.a service project or service folder in the future) for a host project, so that subnetworks in the host project can be used by instances in the service project or folder.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsEnableXpnResourceRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "get": {
      "id": "compute.projects.get",
      "path": "{project}",
@@ -15874,6 +16091,84 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getXpnHost": {
+     "id": "compute.projects.getXpnHost",
+     "path": "{project}/getXpnHost",
+     "httpMethod": "GET",
+     "description": "Get the XPN host project that this project links to. May be empty if no link exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "Project"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "getXpnResources": {
+     "id": "compute.projects.getXpnResources",
+     "path": "{project}/getXpnResources",
+     "httpMethod": "GET",
+     "description": "Get XPN resources associated with this host project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "ProjectsGetXpnResources"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "listXpnHosts": {
+     "id": "compute.projects.listXpnHosts",
+     "path": "{project}/listXpnHosts",
+     "httpMethod": "POST",
+     "description": "List all XPN host projects visible to the user in an organization.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsListXpnHostsRequest"
+     },
+     "response": {
+      "$ref": "XpnHostList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "moveDisk": {

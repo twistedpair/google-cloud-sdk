@@ -654,6 +654,8 @@ class Role(_messages.Message):
   Fields:
     apiTokens: A string attribute.
     description: Optional.  A human-readable description for the role.
+    groupTitle: A string attribute.
+    lifecyclePhase: A string attribute.
     name: The name of the role.  Examples of roles names are: `roles/editor`,
       `roles/viewer` and `roles/logging.viewer`.
     title: Optional.  A human-readable title for the role.  Typically this is
@@ -662,8 +664,10 @@ class Role(_messages.Message):
 
   apiTokens = _messages.StringField(1, repeated=True)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  title = _messages.StringField(4)
+  groupTitle = _messages.StringField(3)
+  lifecyclePhase = _messages.StringField(4)
+  name = _messages.StringField(5)
+  title = _messages.StringField(6)
 
 
 class Rule(_messages.Message):

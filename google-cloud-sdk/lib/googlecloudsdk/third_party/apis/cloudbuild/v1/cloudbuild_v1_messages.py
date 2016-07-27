@@ -6,6 +6,7 @@ Builds container images in the cloud.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'cloudbuild'
@@ -464,6 +465,8 @@ class SourceProvenance(_messages.Message):
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
       @OutputOnly
+    resolvedStorageSource: A copy of the build's source.storage_source, if
+      exists, with any generations resolved.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -497,6 +500,7 @@ class SourceProvenance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   fileHashes = _messages.MessageField('FileHashesValue', 1)
+  resolvedStorageSource = _messages.MessageField('StorageSource', 2)
 
 
 class StandardQueryParameters(_messages.Message):

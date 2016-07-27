@@ -911,6 +911,24 @@
         }
       }
     },
+    "CreateJobFromTemplateRequest": {
+      "id": "CreateJobFromTemplateRequest",
+      "description": "Request to create a Dataflow job.",
+      "type": "object",
+      "properties": {
+        "gcsPath": {
+          "description": "A path to the serialized JSON representation of the job.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Dynamic parameterization of the job's runtime environment.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ReportWorkItemStatusRequest": {
       "id": "ReportWorkItemStatusRequest",
       "description": "Request to report the status of WorkItems.",
@@ -3321,6 +3339,38 @@
                   ]
                 }
               }
+            }
+          }
+        },
+        "templates": {
+          "methods": {
+            "create": {
+              "id": "dataflow.projects.templates.create",
+              "path": "v1b3/projects/{projectId}/templates",
+              "flatPath": "v1b3/projects/{projectId}/templates",
+              "httpMethod": "POST",
+              "description": "Creates a dataflow job from a template.",
+              "parameters": {
+                "projectId": {
+                  "description": "The project which owns the job.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "CreateJobFromTemplateRequest"
+              },
+              "response": {
+                "$ref": "Job"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
             }
           }
         }

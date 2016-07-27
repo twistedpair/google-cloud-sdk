@@ -51,21 +51,6 @@ class ContainerV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ContainerV1.MasterProjectsZonesSignedUrlsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.masterProjects.zones.signedUrls.create',
-              ordered_params=[u'masterProjectId', u'zone'],
-              path_params=[u'masterProjectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/signedUrls',
-              request_field=u'createSignedUrlsRequest',
-              request_type_name=u'ContainerMasterProjectsZonesSignedUrlsCreateRequest',
-              response_type_name=u'SignedUrls',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -84,6 +69,19 @@ https://cloud.google.com/storage/docs/access-control#Signed-URLs
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.signedUrls.create',
+        ordered_params=[u'masterProjectId', u'zone'],
+        path_params=[u'masterProjectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/signedUrls',
+        request_field=u'createSignedUrlsRequest',
+        request_type_name=u'ContainerMasterProjectsZonesSignedUrlsCreateRequest',
+        response_type_name=u'SignedUrls',
+        supports_download=False,
+    )
+
   class MasterProjectsZonesTokensService(base_api.BaseApiService):
     """Service class for the masterProjects_zones_tokens resource."""
 
@@ -91,21 +89,6 @@ https://cloud.google.com/storage/docs/access-control#Signed-URLs
 
     def __init__(self, client):
       super(ContainerV1.MasterProjectsZonesTokensService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.masterProjects.zones.tokens.create',
-              ordered_params=[u'masterProjectId', u'zone'],
-              path_params=[u'masterProjectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/tokens',
-              request_field=u'createTokenRequest',
-              request_type_name=u'ContainerMasterProjectsZonesTokensCreateRequest',
-              response_type_name=u'Token',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -124,6 +107,19 @@ to make modifications to its user's project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.tokens.create',
+        ordered_params=[u'masterProjectId', u'zone'],
+        path_params=[u'masterProjectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/tokens',
+        request_field=u'createTokenRequest',
+        request_type_name=u'ContainerMasterProjectsZonesTokensCreateRequest',
+        response_type_name=u'Token',
+        supports_download=False,
+    )
+
   class MasterProjectsZonesService(base_api.BaseApiService):
     """Service class for the masterProjects_zones resource."""
 
@@ -131,33 +127,6 @@ to make modifications to its user's project.
 
     def __init__(self, client):
       super(ContainerV1.MasterProjectsZonesService, self).__init__(client)
-      self._method_configs = {
-          'Authenticate': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.masterProjects.zones.authenticate',
-              ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-              path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-              query_params=[],
-              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate',
-              request_field=u'authenticateRequest',
-              request_type_name=u'ContainerMasterProjectsZonesAuthenticateRequest',
-              response_type_name=u'AuthenticateResponse',
-              supports_download=False,
-          ),
-          'Authorize': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.masterProjects.zones.authorize',
-              ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-              path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-              query_params=[],
-              relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize',
-              request_field=u'authorizeRequest',
-              request_type_name=u'ContainerMasterProjectsZonesAuthorizeRequest',
-              response_type_name=u'AuthorizeResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -180,6 +149,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Authenticate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.authenticate',
+        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate',
+        request_field=u'authenticateRequest',
+        request_type_name=u'ContainerMasterProjectsZonesAuthenticateRequest',
+        response_type_name=u'AuthenticateResponse',
+        supports_download=False,
+    )
+
     def Authorize(self, request, global_params=None):
       """Processes the attributes of a user request and determines whether or not.
 to authorize the request. If unauthorized, a reason is also provided. The
@@ -199,6 +181,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Authorize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.authorize',
+        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize',
+        request_field=u'authorizeRequest',
+        request_type_name=u'ContainerMasterProjectsZonesAuthorizeRequest',
+        response_type_name=u'AuthorizeResponse',
+        supports_download=False,
+    )
+
   class MasterProjectsService(base_api.BaseApiService):
     """Service class for the masterProjects resource."""
 
@@ -206,9 +201,6 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
 
     def __init__(self, client):
       super(ContainerV1.MasterProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -219,57 +211,6 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
 
     def __init__(self, client):
       super(ContainerV1.ProjectsZonesClustersNodePoolsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.projects.zones.clusters.nodePools.create',
-              ordered_params=[u'projectId', u'zone', u'clusterId'],
-              path_params=[u'clusterId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
-              request_field=u'createNodePoolRequest',
-              request_type_name=u'ContainerProjectsZonesClustersNodePoolsCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'container.projects.zones.clusters.nodePools.delete',
-              ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-              path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.clusters.nodePools.get',
-              ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
-              path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
-              response_type_name=u'NodePool',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.clusters.nodePools.list',
-              ordered_params=[u'projectId', u'zone', u'clusterId'],
-              path_params=[u'clusterId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
-              response_type_name=u'ListNodePoolsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -286,6 +227,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.nodePools.create',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        request_field=u'createNodePoolRequest',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a node pool from a cluster.
 
@@ -298,6 +252,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.zones.clusters.nodePools.delete',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Retrieves the node pool requested.
@@ -312,6 +279,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.nodePools.get',
+        ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
+        path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
+        response_type_name=u'NodePool',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists the node pools for a cluster.
 
@@ -325,6 +305,19 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.nodePools.list',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
+        response_type_name=u'ListNodePoolsResponse',
+        supports_download=False,
+    )
+
   class ProjectsZonesClustersService(base_api.BaseApiService):
     """Service class for the projects_zones_clusters resource."""
 
@@ -332,69 +325,6 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
 
     def __init__(self, client):
       super(ContainerV1.ProjectsZonesClustersService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'container.projects.zones.clusters.create',
-              ordered_params=[u'projectId', u'zone'],
-              path_params=[u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters',
-              request_field=u'createClusterRequest',
-              request_type_name=u'ContainerProjectsZonesClustersCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'container.projects.zones.clusters.delete',
-              ordered_params=[u'projectId', u'zone', u'clusterId'],
-              path_params=[u'clusterId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.clusters.get',
-              ordered_params=[u'projectId', u'zone', u'clusterId'],
-              path_params=[u'clusterId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersGetRequest',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.clusters.list',
-              ordered_params=[u'projectId', u'zone'],
-              path_params=[u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesClustersListRequest',
-              response_type_name=u'ListClustersResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'container.projects.zones.clusters.update',
-              ordered_params=[u'projectId', u'zone', u'clusterId'],
-              path_params=[u'clusterId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-              request_field=u'updateClusterRequest',
-              request_type_name=u'ContainerProjectsZonesClustersUpdateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -423,6 +353,19 @@ which CIDR range is being used by the cluster.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.create',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters',
+        request_field=u'createClusterRequest',
+        request_type_name=u'ContainerProjectsZonesClustersCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the cluster, including the Kubernetes endpoint and all worker.
 nodes.
@@ -444,6 +387,19 @@ at the initial create time.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'container.projects.zones.clusters.delete',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the details of a specific cluster.
 
@@ -456,6 +412,19 @@ at the initial create time.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.get',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersGetRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all clusters owned by a project in either the specified zone or all.
@@ -471,6 +440,19 @@ zones.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.clusters.list',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesClustersListRequest',
+        response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates the settings of a specific cluster.
 
@@ -484,6 +466,19 @@ zones.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'container.projects.zones.clusters.update',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+        request_field=u'updateClusterRequest',
+        request_type_name=u'ContainerProjectsZonesClustersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsZonesOperationsService(base_api.BaseApiService):
     """Service class for the projects_zones_operations resource."""
 
@@ -491,33 +486,6 @@ zones.
 
     def __init__(self, client):
       super(ContainerV1.ProjectsZonesOperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.operations.get',
-              ordered_params=[u'projectId', u'zone', u'operationId'],
-              path_params=[u'operationId', u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/operations/{operationId}',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.operations.list',
-              ordered_params=[u'projectId', u'zone'],
-              path_params=[u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/operations',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -534,6 +502,19 @@ zones.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.operations.get',
+        ordered_params=[u'projectId', u'zone', u'operationId'],
+        path_params=[u'operationId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/operations/{operationId}',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all operations in a project in a specific zone or all zones.
 
@@ -547,6 +528,19 @@ zones.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.operations.list',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/operations',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsZonesService(base_api.BaseApiService):
     """Service class for the projects_zones resource."""
 
@@ -554,21 +548,6 @@ zones.
 
     def __init__(self, client):
       super(ContainerV1.ProjectsZonesService, self).__init__(client)
-      self._method_configs = {
-          'GetServerconfig': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'container.projects.zones.getServerconfig',
-              ordered_params=[u'projectId', u'zone'],
-              path_params=[u'projectId', u'zone'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/zones/{zone}/serverconfig',
-              request_field='',
-              request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',
-              response_type_name=u'ServerConfig',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -585,6 +564,19 @@ zones.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    GetServerconfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.projects.zones.getServerconfig',
+        ordered_params=[u'projectId', u'zone'],
+        path_params=[u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/zones/{zone}/serverconfig',
+        request_field='',
+        request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',
+        response_type_name=u'ServerConfig',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -592,8 +584,5 @@ zones.
 
     def __init__(self, client):
       super(ContainerV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

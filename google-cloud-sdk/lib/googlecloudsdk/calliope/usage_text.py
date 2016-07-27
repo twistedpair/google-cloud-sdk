@@ -359,12 +359,13 @@ def GenerateUsage(command, argument_interceptor, topic=False):
   return buf.getvalue()
 
 
-def ExpandHelpText(command, text):
+def ExpandHelpText(command, text, sections=True):
   """Expand command {...} references in text.
 
   Args:
     command: calliope._CommandCommon, The command object that we're helping.
     text: str, The text chunk to expand.
+    sections: bool, Include #... markdown sections if True.
 
   Returns:
     str, The expanded help text.
@@ -372,8 +373,12 @@ def ExpandHelpText(command, text):
   if text == command.long_help:
     long_help = ''
   else:
-    long_help = ExpandHelpText(command, command.long_help)
+    long_help = ExpandHelpText(command, command.long_help, sections=False)
   path = command.GetPath()
+  if not sections and text:
+    section_markdown_index = text.find('\n\n#')
+    if section_markdown_index >= 0:
+      text = text[:section_markdown_index]
 
   # The lower case keys in the optional detailed_help dict are user specified
   # parameters to LazyFormat().
@@ -536,8 +541,8 @@ def ShortHelpText(command, argument_interceptor):
 
   # Second, print out the long help.
 
-  buf.write('\n'.join(textwrap.wrap(ExpandHelpText(command, command.long_help),
-                                    LINE_WIDTH)))
+  buf.write('\n'.join(textwrap.wrap(
+      ExpandHelpText(command, command.long_help, sections=False), LINE_WIDTH)))
   buf.write('\n\n')
 
   # Third, print out the short help for everything that can come on

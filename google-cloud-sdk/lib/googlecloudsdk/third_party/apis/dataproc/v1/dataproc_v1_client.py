@@ -47,81 +47,6 @@ class DataprocV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(DataprocV1.ProjectsRegionsClustersService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.clusters.create',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters',
-              request_field=u'cluster',
-              request_type_name=u'DataprocProjectsRegionsClustersCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'dataproc.projects.regions.clusters.delete',
-              ordered_params=[u'projectId', u'region', u'clusterName'],
-              path_params=[u'clusterName', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsClustersDeleteRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Diagnose': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.clusters.diagnose',
-              ordered_params=[u'projectId', u'region', u'clusterName'],
-              path_params=[u'clusterName', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}:diagnose',
-              request_field=u'diagnoseClusterRequest',
-              request_type_name=u'DataprocProjectsRegionsClustersDiagnoseRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.clusters.get',
-              ordered_params=[u'projectId', u'region', u'clusterName'],
-              path_params=[u'clusterName', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsClustersGetRequest',
-              response_type_name=u'Cluster',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.clusters.list',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsClustersListRequest',
-              response_type_name=u'ListClustersResponse',
-              supports_download=False,
-          ),
-          'Patch': base_api.ApiMethodInfo(
-              http_method=u'PATCH',
-              method_id=u'dataproc.projects.regions.clusters.patch',
-              ordered_params=[u'projectId', u'region', u'clusterName'],
-              path_params=[u'clusterName', u'projectId', u'region'],
-              query_params=[u'updateMask'],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
-              request_field=u'cluster',
-              request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -138,6 +63,19 @@ class DataprocV1(base_api.BaseApiClient):
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.create',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters',
+        request_field=u'cluster',
+        request_type_name=u'DataprocProjectsRegionsClustersCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a cluster in a project.
 
@@ -150,6 +88,19 @@ class DataprocV1(base_api.BaseApiClient):
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.regions.clusters.delete',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Diagnose(self, request, global_params=None):
       """Gets cluster diagnostic information.
@@ -166,6 +117,19 @@ contains `DiagnoseClusterOutputLocation`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.diagnose',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}:diagnose',
+        request_field=u'diagnoseClusterRequest',
+        request_type_name=u'DataprocProjectsRegionsClustersDiagnoseRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the resource representation for a cluster in a project.
 
@@ -178,6 +142,19 @@ contains `DiagnoseClusterOutputLocation`.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.clusters.get',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersGetRequest',
+        response_type_name=u'Cluster',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists all regions/{region}/clusters in a project.
@@ -192,6 +169,19 @@ contains `DiagnoseClusterOutputLocation`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.clusters.list',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersListRequest',
+        response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a cluster in a project.
 
@@ -205,6 +195,19 @@ contains `DiagnoseClusterOutputLocation`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'dataproc.projects.regions.clusters.patch',
+        ordered_params=[u'projectId', u'region', u'clusterName'],
+        path_params=[u'clusterName', u'projectId', u'region'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+        request_field=u'cluster',
+        request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsRegionsJobsService(base_api.BaseApiService):
     """Service class for the projects_regions_jobs resource."""
 
@@ -212,69 +215,6 @@ contains `DiagnoseClusterOutputLocation`.
 
     def __init__(self, client):
       super(DataprocV1.ProjectsRegionsJobsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.jobs.cancel',
-              ordered_params=[u'projectId', u'region', u'jobId'],
-              path_params=[u'jobId', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel',
-              request_field=u'cancelJobRequest',
-              request_type_name=u'DataprocProjectsRegionsJobsCancelRequest',
-              response_type_name=u'Job',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'dataproc.projects.regions.jobs.delete',
-              ordered_params=[u'projectId', u'region', u'jobId'],
-              path_params=[u'jobId', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsJobsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.jobs.get',
-              ordered_params=[u'projectId', u'region', u'jobId'],
-              path_params=[u'jobId', u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsJobsGetRequest',
-              response_type_name=u'Job',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.jobs.list',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[u'clusterName', u'jobStateMatcher', u'pageSize', u'pageToken'],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/jobs',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsJobsListRequest',
-              response_type_name=u'ListJobsResponse',
-              supports_download=False,
-          ),
-          'Submit': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.jobs.submit',
-              ordered_params=[u'projectId', u'region'],
-              path_params=[u'projectId', u'region'],
-              query_params=[],
-              relative_path=u'v1/projects/{projectId}/regions/{region}/jobs:submit',
-              request_field=u'submitJobRequest',
-              request_type_name=u'DataprocProjectsRegionsJobsSubmitRequest',
-              response_type_name=u'Job',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -294,6 +234,19 @@ after cancellation, call
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.jobs.cancel',
+        ordered_params=[u'projectId', u'region', u'jobId'],
+        path_params=[u'jobId', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}:cancel',
+        request_field=u'cancelJobRequest',
+        request_type_name=u'DataprocProjectsRegionsJobsCancelRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the job from the project. If the job is active, the delete fails,.
 and the response returns `FAILED_PRECONDITION`.
@@ -308,6 +261,19 @@ and the response returns `FAILED_PRECONDITION`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.regions.jobs.delete',
+        ordered_params=[u'projectId', u'region', u'jobId'],
+        path_params=[u'jobId', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsJobsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the resource representation for a job in a project.
 
@@ -320,6 +286,19 @@ and the response returns `FAILED_PRECONDITION`.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.jobs.get',
+        ordered_params=[u'projectId', u'region', u'jobId'],
+        path_params=[u'jobId', u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsJobsGetRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists regions/{region}/jobs in a project.
@@ -334,6 +313,19 @@ and the response returns `FAILED_PRECONDITION`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.jobs.list',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[u'clusterName', u'jobStateMatcher', u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsJobsListRequest',
+        response_type_name=u'ListJobsResponse',
+        supports_download=False,
+    )
+
     def Submit(self, request, global_params=None):
       """Submits a job to a cluster.
 
@@ -347,6 +339,19 @@ and the response returns `FAILED_PRECONDITION`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Submit.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.jobs.submit',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/regions/{region}/jobs:submit',
+        request_field=u'submitJobRequest',
+        request_type_name=u'DataprocProjectsRegionsJobsSubmitRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
   class ProjectsRegionsOperationsService(base_api.BaseApiService):
     """Service class for the projects_regions_operations resource."""
 
@@ -354,61 +359,6 @@ and the response returns `FAILED_PRECONDITION`.
 
     def __init__(self, client):
       super(DataprocV1.ProjectsRegionsOperationsService, self).__init__(client)
-      self._method_configs = {
-          'Cancel': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel',
-              http_method=u'POST',
-              method_id=u'dataproc.projects.regions.operations.cancel',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}:cancel',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsOperationsCancelRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
-              http_method=u'DELETE',
-              method_id=u'dataproc.projects.regions.operations.delete',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsOperationsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.operations.get',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations',
-              http_method=u'GET',
-              method_id=u'dataproc.projects.regions.operations.list',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1/{+name}',
-              request_field='',
-              request_type_name=u'DataprocProjectsRegionsOperationsListRequest',
-              response_type_name=u'ListOperationsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -431,6 +381,20 @@ operation completed despite cancellation.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:cancel',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
@@ -447,6 +411,20 @@ operation. If the server doesn't support this method, it returns
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.regions.operations.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsOperationsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
@@ -461,6 +439,20 @@ service.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists operations that match the specified filter in the request. If the.
@@ -479,6 +471,20 @@ to use different resource name schemes, such as `users/*/operations`.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/regions/{regionsId}/operations',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsRegionsService(base_api.BaseApiService):
     """Service class for the projects_regions resource."""
 
@@ -486,9 +492,6 @@ to use different resource name schemes, such as `users/*/operations`.
 
     def __init__(self, client):
       super(DataprocV1.ProjectsRegionsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }
 
@@ -499,8 +502,5 @@ to use different resource name schemes, such as `users/*/operations`.
 
     def __init__(self, client):
       super(DataprocV1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

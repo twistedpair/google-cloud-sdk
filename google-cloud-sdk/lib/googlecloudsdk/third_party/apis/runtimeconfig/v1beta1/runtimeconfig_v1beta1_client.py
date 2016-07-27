@@ -47,21 +47,6 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsOperationsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.operations.get',
-              ordered_params=[u'projectsId', u'configsId', u'operationsId'],
-              path_params=[u'configsId', u'operationsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsOperationsGetRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -80,6 +65,19 @@ service.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.operations.get',
+        ordered_params=[u'projectsId', u'configsId', u'operationsId'],
+        path_params=[u'configsId', u'operationsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsConfigsVariablesService(base_api.BaseApiService):
     """Service class for the projects_configs_variables resource."""
 
@@ -87,81 +85,6 @@ service.
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsVariablesService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'runtimeconfig.projects.configs.variables.create',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
-              request_field=u'variable',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesCreateRequest',
-              response_type_name=u'Variable',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'runtimeconfig.projects.configs.variables.delete',
-              ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-              path_params=[u'configsId', u'projectsId', u'variablesId'],
-              query_params=[u'recursive'],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.variables.get',
-              ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-              path_params=[u'configsId', u'projectsId', u'variablesId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesGetRequest',
-              response_type_name=u'Variable',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.variables.list',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[u'filter', u'pageSize', u'pageToken'],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',
-              response_type_name=u'ListVariablesResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'runtimeconfig.projects.configs.variables.update',
-              ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-              path_params=[u'configsId', u'projectsId', u'variablesId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
-              request_field=u'variable',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesUpdateRequest',
-              response_type_name=u'Variable',
-              supports_download=False,
-          ),
-          'Watch': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'runtimeconfig.projects.configs.variables.watch',
-              ordered_params=[u'projectsId', u'configsId', u'variablesId'],
-              path_params=[u'configsId', u'projectsId', u'variablesId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
-              request_field=u'watchVariableRequest',
-              request_type_name=u'RuntimeconfigProjectsConfigsVariablesWatchRequest',
-              response_type_name=u'Variable',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -184,6 +107,19 @@ documentation.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.variables.create',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        request_field=u'variable',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesCreateRequest',
+        response_type_name=u'Variable',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a variable or multiple variables.
 
@@ -202,6 +138,19 @@ variables by prefix.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'runtimeconfig.projects.configs.variables.delete',
+        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
+        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        query_params=[u'recursive'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Gets information about a single variable.
 
@@ -214,6 +163,19 @@ variables by prefix.
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.variables.get',
+        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
+        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesGetRequest',
+        response_type_name=u'Variable',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       """Lists variables within given a configuration, matching any provided filters.
@@ -229,6 +191,19 @@ This only lists variable names, not the values.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.variables.list',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesListRequest',
+        response_type_name=u'ListVariablesResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an existing variable with a new value.
 
@@ -241,6 +216,19 @@ This only lists variable names, not the values.
       config = self.GetMethodConfig('Update')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'runtimeconfig.projects.configs.variables.update',
+        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
+        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
+        request_field=u'variable',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesUpdateRequest',
+        response_type_name=u'Variable',
+        supports_download=False,
+    )
 
     def Watch(self, request, global_params=None):
       """Watches a specific variable and waits for a change in the variable's value.
@@ -267,6 +255,19 @@ documentation.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Watch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.variables.watch',
+        ordered_params=[u'projectsId', u'configsId', u'variablesId'],
+        path_params=[u'configsId', u'projectsId', u'variablesId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch',
+        request_field=u'watchVariableRequest',
+        request_type_name=u'RuntimeconfigProjectsConfigsVariablesWatchRequest',
+        response_type_name=u'Variable',
+        supports_download=False,
+    )
+
   class ProjectsConfigsWaitersService(base_api.BaseApiService):
     """Service class for the projects_configs_waiters resource."""
 
@@ -274,57 +275,6 @@ documentation.
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsWaitersService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'runtimeconfig.projects.configs.waiters.create',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
-              request_field=u'waiter',
-              request_type_name=u'RuntimeconfigProjectsConfigsWaitersCreateRequest',
-              response_type_name=u'Operation',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'runtimeconfig.projects.configs.waiters.delete',
-              ordered_params=[u'projectsId', u'configsId', u'waitersId'],
-              path_params=[u'configsId', u'projectsId', u'waitersId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsWaitersDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.waiters.get',
-              ordered_params=[u'projectsId', u'configsId', u'waitersId'],
-              path_params=[u'configsId', u'projectsId', u'waitersId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsWaitersGetRequest',
-              response_type_name=u'Waiter',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.waiters.list',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsWaitersListRequest',
-              response_type_name=u'ListWaitersResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -345,6 +295,19 @@ still exist and must be deleted prior to subsequent creation attempts.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.waiters.create',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        request_field=u'waiter',
+        request_type_name=u'RuntimeconfigProjectsConfigsWaitersCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the waiter with the specified name.
 
@@ -357,6 +320,19 @@ still exist and must be deleted prior to subsequent creation attempts.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'runtimeconfig.projects.configs.waiters.delete',
+        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
+        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsWaitersDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets information about a single waiter.
@@ -371,6 +347,19 @@ still exist and must be deleted prior to subsequent creation attempts.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.waiters.get',
+        ordered_params=[u'projectsId', u'configsId', u'waitersId'],
+        path_params=[u'configsId', u'projectsId', u'waitersId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsWaitersGetRequest',
+        response_type_name=u'Waiter',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """List waiters within the given configuration.
 
@@ -384,6 +373,19 @@ still exist and must be deleted prior to subsequent creation attempts.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.waiters.list',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}/waiters',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsWaitersListRequest',
+        response_type_name=u'ListWaitersResponse',
+        supports_download=False,
+    )
+
   class ProjectsConfigsService(base_api.BaseApiService):
     """Service class for the projects_configs resource."""
 
@@ -391,69 +393,6 @@ still exist and must be deleted prior to subsequent creation attempts.
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsConfigsService, self).__init__(client)
-      self._method_configs = {
-          'Create': base_api.ApiMethodInfo(
-              http_method=u'POST',
-              method_id=u'runtimeconfig.projects.configs.create',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs',
-              request_field=u'runtimeConfig',
-              request_type_name=u'RuntimeconfigProjectsConfigsCreateRequest',
-              response_type_name=u'RuntimeConfig',
-              supports_download=False,
-          ),
-          'Delete': base_api.ApiMethodInfo(
-              http_method=u'DELETE',
-              method_id=u'runtimeconfig.projects.configs.delete',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsDeleteRequest',
-              response_type_name=u'Empty',
-              supports_download=False,
-          ),
-          'Get': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.get',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsGetRequest',
-              response_type_name=u'RuntimeConfig',
-              supports_download=False,
-          ),
-          'List': base_api.ApiMethodInfo(
-              http_method=u'GET',
-              method_id=u'runtimeconfig.projects.configs.list',
-              ordered_params=[u'projectsId'],
-              path_params=[u'projectsId'],
-              query_params=[u'pageSize', u'pageToken'],
-              relative_path=u'v1beta1/projects/{projectsId}/configs',
-              request_field='',
-              request_type_name=u'RuntimeconfigProjectsConfigsListRequest',
-              response_type_name=u'ListConfigsResponse',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              http_method=u'PUT',
-              method_id=u'runtimeconfig.projects.configs.update',
-              ordered_params=[u'projectsId', u'configsId'],
-              path_params=[u'configsId', u'projectsId'],
-              query_params=[],
-              relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
-              request_field=u'runtimeConfig',
-              request_type_name=u'RuntimeconfigProjectsConfigsUpdateRequest',
-              response_type_name=u'RuntimeConfig',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -471,6 +410,19 @@ unique within project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'runtimeconfig.projects.configs.create',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs',
+        request_field=u'runtimeConfig',
+        request_type_name=u'RuntimeconfigProjectsConfigsCreateRequest',
+        response_type_name=u'RuntimeConfig',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes a RuntimeConfig resource.
 
@@ -483,6 +435,19 @@ unique within project.
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'runtimeconfig.projects.configs.delete',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Gets information about a RuntimeConfig resource.
@@ -497,6 +462,19 @@ unique within project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.get',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsGetRequest',
+        response_type_name=u'RuntimeConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all the RuntimeConfig resources within project.
 
@@ -509,6 +487,19 @@ unique within project.
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'runtimeconfig.projects.configs.list',
+        ordered_params=[u'projectsId'],
+        path_params=[u'projectsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/projects/{projectsId}/configs',
+        request_field='',
+        request_type_name=u'RuntimeconfigProjectsConfigsListRequest',
+        response_type_name=u'ListConfigsResponse',
+        supports_download=False,
+    )
 
     def Update(self, request, global_params=None):
       """Updates a RuntimeConfig resource. The configuration must exist beforehand.
@@ -523,6 +514,19 @@ unique within project.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'runtimeconfig.projects.configs.update',
+        ordered_params=[u'projectsId', u'configsId'],
+        path_params=[u'configsId', u'projectsId'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectsId}/configs/{configsId}',
+        request_field=u'runtimeConfig',
+        request_type_name=u'RuntimeconfigProjectsConfigsUpdateRequest',
+        response_type_name=u'RuntimeConfig',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -530,8 +534,5 @@ unique within project.
 
     def __init__(self, client):
       super(RuntimeconfigV1beta1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          }
-
       self._upload_configs = {
           }

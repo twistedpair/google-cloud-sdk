@@ -46,35 +46,6 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsEventsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/events',
-              http_method=u'GET',
-              method_id=u'clouderrorreporting.projects.events.list',
-              ordered_params=[u'projectName'],
-              path_params=[u'projectName'],
-              query_params=[u'groupId', u'pageSize', u'pageToken', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period'],
-              relative_path=u'v1beta1/{+projectName}/events',
-              request_field='',
-              request_type_name=u'ClouderrorreportingProjectsEventsListRequest',
-              response_type_name=u'ListEventsResponse',
-              supports_download=False,
-          ),
-          'Report': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/events:report',
-              http_method=u'POST',
-              method_id=u'clouderrorreporting.projects.events.report',
-              ordered_params=[u'projectName'],
-              path_params=[u'projectName'],
-              query_params=[],
-              relative_path=u'v1beta1/{+projectName}/events:report',
-              request_field=u'reportedErrorEvent',
-              request_type_name=u'ClouderrorreportingProjectsEventsReportRequest',
-              response_type_name=u'ReportErrorEventResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -90,6 +61,20 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/events',
+        http_method=u'GET',
+        method_id=u'clouderrorreporting.projects.events.list',
+        ordered_params=[u'projectName'],
+        path_params=[u'projectName'],
+        query_params=[u'groupId', u'pageSize', u'pageToken', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period'],
+        relative_path=u'v1beta1/{+projectName}/events',
+        request_field='',
+        request_type_name=u'ClouderrorreportingProjectsEventsListRequest',
+        response_type_name=u'ListEventsResponse',
+        supports_download=False,
+    )
 
     def Report(self, request, global_params=None):
       """Report an individual error event.
@@ -111,6 +96,20 @@ a `key` parameter. For example:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Report.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/events:report',
+        http_method=u'POST',
+        method_id=u'clouderrorreporting.projects.events.report',
+        ordered_params=[u'projectName'],
+        path_params=[u'projectName'],
+        query_params=[],
+        relative_path=u'v1beta1/{+projectName}/events:report',
+        request_field=u'reportedErrorEvent',
+        request_type_name=u'ClouderrorreportingProjectsEventsReportRequest',
+        response_type_name=u'ReportErrorEventResponse',
+        supports_download=False,
+    )
+
   class ProjectsGroupStatsService(base_api.BaseApiService):
     """Service class for the projects_groupStats resource."""
 
@@ -118,22 +117,6 @@ a `key` parameter. For example:
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsGroupStatsService, self).__init__(client)
-      self._method_configs = {
-          'List': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/groupStats',
-              http_method=u'GET',
-              method_id=u'clouderrorreporting.projects.groupStats.list',
-              ordered_params=[u'projectName'],
-              path_params=[u'projectName'],
-              query_params=[u'alignment', u'alignmentTime', u'groupId', u'order', u'pageSize', u'pageToken', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period', u'timedCountDuration'],
-              relative_path=u'v1beta1/{+projectName}/groupStats',
-              request_field='',
-              request_type_name=u'ClouderrorreportingProjectsGroupStatsListRequest',
-              response_type_name=u'ListGroupStatsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -150,6 +133,20 @@ a `key` parameter. For example:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/groupStats',
+        http_method=u'GET',
+        method_id=u'clouderrorreporting.projects.groupStats.list',
+        ordered_params=[u'projectName'],
+        path_params=[u'projectName'],
+        query_params=[u'alignment', u'alignmentTime', u'groupId', u'order', u'pageSize', u'pageToken', u'serviceFilter_service', u'serviceFilter_version', u'timeRange_period', u'timedCountDuration'],
+        relative_path=u'v1beta1/{+projectName}/groupStats',
+        request_field='',
+        request_type_name=u'ClouderrorreportingProjectsGroupStatsListRequest',
+        response_type_name=u'ListGroupStatsResponse',
+        supports_download=False,
+    )
+
   class ProjectsGroupsService(base_api.BaseApiService):
     """Service class for the projects_groups resource."""
 
@@ -157,35 +154,6 @@ a `key` parameter. For example:
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsGroupsService, self).__init__(client)
-      self._method_configs = {
-          'Get': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
-              http_method=u'GET',
-              method_id=u'clouderrorreporting.projects.groups.get',
-              ordered_params=[u'groupName'],
-              path_params=[u'groupName'],
-              query_params=[],
-              relative_path=u'v1beta1/{+groupName}',
-              request_field='',
-              request_type_name=u'ClouderrorreportingProjectsGroupsGetRequest',
-              response_type_name=u'ErrorGroup',
-              supports_download=False,
-          ),
-          'Update': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
-              http_method=u'PUT',
-              method_id=u'clouderrorreporting.projects.groups.update',
-              ordered_params=[u'name'],
-              path_params=[u'name'],
-              query_params=[],
-              relative_path=u'v1beta1/{+name}',
-              request_field='<request>',
-              request_type_name=u'ErrorGroup',
-              response_type_name=u'ErrorGroup',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -202,6 +170,20 @@ a `key` parameter. For example:
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
+        http_method=u'GET',
+        method_id=u'clouderrorreporting.projects.groups.get',
+        ordered_params=[u'groupName'],
+        path_params=[u'groupName'],
+        query_params=[],
+        relative_path=u'v1beta1/{+groupName}',
+        request_field='',
+        request_type_name=u'ClouderrorreportingProjectsGroupsGetRequest',
+        response_type_name=u'ErrorGroup',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Replace the data for the specified group.
 Fails if the group does not exist.
@@ -216,6 +198,20 @@ Fails if the group does not exist.
       return self._RunMethod(
           config, request, global_params=global_params)
 
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/groups/{groupsId}',
+        http_method=u'PUT',
+        method_id=u'clouderrorreporting.projects.groups.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name=u'ErrorGroup',
+        response_type_name=u'ErrorGroup',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -223,22 +219,6 @@ Fails if the group does not exist.
 
     def __init__(self, client):
       super(ClouderrorreportingV1beta1.ProjectsService, self).__init__(client)
-      self._method_configs = {
-          'DeleteEvents': base_api.ApiMethodInfo(
-              flat_path=u'v1beta1/projects/{projectsId}/events',
-              http_method=u'DELETE',
-              method_id=u'clouderrorreporting.projects.deleteEvents',
-              ordered_params=[u'projectName'],
-              path_params=[u'projectName'],
-              query_params=[],
-              relative_path=u'v1beta1/{+projectName}/events',
-              request_field='',
-              request_type_name=u'ClouderrorreportingProjectsDeleteEventsRequest',
-              response_type_name=u'DeleteEventsResponse',
-              supports_download=False,
-          ),
-          }
-
       self._upload_configs = {
           }
 
@@ -254,3 +234,17 @@ Fails if the group does not exist.
       config = self.GetMethodConfig('DeleteEvents')
       return self._RunMethod(
           config, request, global_params=global_params)
+
+    DeleteEvents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/events',
+        http_method=u'DELETE',
+        method_id=u'clouderrorreporting.projects.deleteEvents',
+        ordered_params=[u'projectName'],
+        path_params=[u'projectName'],
+        query_params=[],
+        relative_path=u'v1beta1/{+projectName}/events',
+        request_field='',
+        request_type_name=u'ClouderrorreportingProjectsDeleteEventsRequest',
+        response_type_name=u'DeleteEventsResponse',
+        supports_download=False,
+    )
