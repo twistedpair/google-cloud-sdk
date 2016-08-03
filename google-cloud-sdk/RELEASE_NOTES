@@ -2,6 +2,50 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 120.0.0 (2016/08/03)
+
+### Deployment Manager
+
+* `deployment-manager resources list` will show INTENT when the resource STATE
+  is `IN_PREVIEW`.
+
+* `deployment-manager deployments describe` will show output values in addition
+  to listing the resources.
+
+### Emulators
+
+* Added a `gcloud beta emulators bigtable env-init` command to export
+  environment variables required to communicate with the bigtable emulator.
+
+* The PubSub emulator now correctly starts the push loops when creating a push
+  subscription.
+
+### Google Cloud DNS
+
+* `gcloud dns` now supports CAA records.
+
+### Google Cloud Storage
+
+* Update gsutil component to 4.20.
+  See: <https://github.com/GoogleCloudPlatform/gsutil/blob/v4.20/CHANGES.md>
+
+### Google Compute Engine/Networking
+
+* `gcloud alpha compute instance-groups managed wait-for-stable` command waits
+  until all `current_action` fields are set to none and there are only no
+  `pending_actions` in managed instance group.
+
+* `gcloud compute xpn` commands now available in the alpha release track. These
+  commands configure cross-project networking.
+
+* `gcloud compute networks subnets {get,set}-iam-policy` commands now available
+  in alpha.
+
+### Google Container Engine
+
+* Update kubectl to 1.3.3.
+
+
 ## 119.0.0 (2016/07/27)
 
 ### Google BigQuery

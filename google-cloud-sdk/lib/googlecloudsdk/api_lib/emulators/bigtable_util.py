@@ -23,6 +23,10 @@ BIGTABLE_TITLE = 'Google Cloud Bigtable emulator'
 BIGTABLE_EXECUTABLE = 'cbtemulator'
 
 
+def GetDataDir():
+  return util.GetDataDir(BIGTABLE)
+
+
 def BuildStartArgs(args):
   """Builds the command for starting the bigtable emulator.
 
@@ -39,8 +43,15 @@ def BuildStartArgs(args):
   return execution_utils.ArgsForExecutableTool(bigtable_executable, *args)
 
 
+def GetEnv(args):
+  """Returns an environment variable mapping from an argparse.Namespace."""
+  return {'BIGTABLE_EMULATOR_HOST': '%s:%s' %
+                                    (args.host_port.host, args.host_port.port)}
+
+
 def Start(args):
   bigtable_args = BuildStartArgs(util.BuildArgsList(args))
   log.status.Print('Executing: {0}'.format(' '.join(bigtable_args)))
   bigtable_process = util.Exec(bigtable_args)
+  util.WriteEnvYaml(GetEnv(args), GetDataDir())
   util.PrefixOutput(bigtable_process, BIGTABLE)

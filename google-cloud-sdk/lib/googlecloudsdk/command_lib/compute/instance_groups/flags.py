@@ -19,13 +19,30 @@ from googlecloudsdk.command_lib.compute import flags
 ZONAL_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     resource_name='instance group',
     completion_resource_id='compute.instanceGroups',
-    zonal_collection='compute.instanceGroups')
+    zonal_collection='compute.instanceGroups',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
 MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     resource_name='instance group',
     completion_resource_id='compute.instanceGroups',
     zonal_collection='compute.instanceGroups',
-    regional_collection='compute.regionInstanceGroups')
+    regional_collection='compute.regionInstanceGroups',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
+
+ZONAL_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
+    resource_name='instance group manager',
+    completion_resource_id='compute.instanceGroupManagers',
+    zonal_collection='compute.instanceGroups',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
+
+MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
+    resource_name='instance group manager',
+    completion_resource_id='compute.regionInstanceGroupManagers',
+    zonal_collection='compute.instanceGroups',
+    regional_collection='compute.regionInstanceGroupManagers',
+    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION,
+    region_explanation=flags.REGION_PROPERTY_EXPLANATION)
 
 
 def AddNamedPortsArgs(parser):

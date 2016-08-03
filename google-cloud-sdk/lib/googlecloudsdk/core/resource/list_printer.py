@@ -17,12 +17,22 @@
 from googlecloudsdk.core.resource import resource_printer_base
 
 
+def _HasDefaultRepr(obj):
+  """Returns True if obj has default __repr__ and __str__ methods."""
+  try:
+    d = obj.__class__.__dict__
+    return '__str__' not in d and '__repr__' not in d
+  except AttributeError:
+    return False
+
+
 class ListPrinter(resource_printer_base.ResourcePrinter):
   """Prints the list representations of a JSON-serializable list.
 
   An ordered list of items.
 
   Printer attributes:
+    always-display-title: Display the title even if there are no records.
     compact: Display all items in a record on one line.
   """
 
@@ -31,12 +41,14 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     self._process_record_orig = self._process_record
     self._process_record = self._ProcessRecord
     self._separator = u' ' if 'compact' in self.attributes else u'\n   '
-    # Print the title if specified.
-    if 'title' in self.attributes:
-      self._out.write(self.attributes['title'] + '\n')
+    title = self.attributes.get('title', None)
+    if title and 'always-display-title' in self.attributes:
+      self._out.write(title + u'\n')
+      title = None
+    self._title = title
 
   def _ProcessRecord(self, record):
-    """Applies the original process_record on dict and list records.
+    """Applies process_record_orig to dict, list and default repr records.
 
     Args:
       record: A JSON-serializable object.
@@ -44,14 +56,14 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     Returns:
       The processed record.
     """
-    if isinstance(record, (dict, list)):
+    if isinstance(record, (dict, list)) or _HasDefaultRepr(record):
       record = self._process_record_orig(record)
     if isinstance(record, dict):
-      record = [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
-                if v is not None]
-    elif not isinstance(record, list):
-      record = [unicode(record or '')]
-    return [i for i in record if i is not None]
+      return [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
+              if v is not None]
+    if isinstance(record, list):
+      return [i for i in record if i is not None]
+    return [unicode(record or '')]
 
   def _AddRecord(self, record, delimit=False):
     """Immediately prints the given record as a list item.
@@ -60,6 +72,9 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       record: A JSON-serializable object.
       delimit: Prints resource delimiters if True.
     """
+    if self._title:
+      self._out.write(self._title + u'\n')
+      self._title = None
     self._out.write(u' - ' + self._separator.join(record) + u'\n')
 
   # TODO(b/27967563): remove 3Q2016

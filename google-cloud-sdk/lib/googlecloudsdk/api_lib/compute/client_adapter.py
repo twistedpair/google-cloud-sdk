@@ -21,6 +21,14 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import apis as core_apis
 
 
+def GetBatchUrl(endpoint_url):
+  """Return a batch URL for the given endpoint URL."""
+  parsed_endpoint = urlparse.urlparse(endpoint_url)
+  return urlparse.urljoin(
+      '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
+      'batch')
+
+
 class ClientAdapter(object):
   """Encapsulates compute apitools interactions."""
   _API_NAME = 'compute'
@@ -35,10 +43,7 @@ class ClientAdapter(object):
     # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
     endpoint_url = core_apis.GetEffectiveApiEndpoint(
         self._API_NAME, self._api_version)
-    parsed_endpoint = urlparse.urlparse(endpoint_url)
-    self._batch_url = urlparse.urljoin(
-        '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
-        'batch')
+    self._batch_url = GetBatchUrl(endpoint_url)
 
   @property
   def api_version(self):

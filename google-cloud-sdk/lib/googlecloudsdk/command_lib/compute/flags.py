@@ -615,3 +615,13 @@ def _GetGCEZone():
   if properties.VALUES.core.check_gce_metadata.GetBool():
     return c_gce.Metadata().Zone()
   return None
+
+
+def AddRegexArg(parser):
+  regexp = parser.add_argument(
+      '--regexp', '-r',
+      help='A regular expression to filter the names of the results on.')
+  regexp.detailed_help = """\
+      A regular expression to filter the names of the results on. Any names
+      that do not match the entire regular expression will be filtered out.
+      """

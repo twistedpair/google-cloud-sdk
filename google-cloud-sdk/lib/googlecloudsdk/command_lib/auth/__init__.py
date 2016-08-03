@@ -11,18 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
-from googlecloudsdk.calliope import base
 
-
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
-
-
-def IdArg(description, nargs=None):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      nargs=nargs,
-      help='ID for the organization {0}'.format(description))
+"""Libraries to support the auth command surface."""

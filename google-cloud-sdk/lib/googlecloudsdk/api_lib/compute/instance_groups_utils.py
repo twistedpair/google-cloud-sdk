@@ -203,17 +203,6 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
 class InstanceGroupListInstances(InstanceGroupListInstancesBase):
   """List Google Compute Engine instances present in instance group."""
 
-  @staticmethod
-  def Args(parser):
-    InstanceGroupListInstancesBase.ListInstancesArgs(parser, multizonal=False)
-    regexp = parser.add_argument(
-        '--regexp', '-r',
-        help='A regular expression to filter the names of the results on.')
-    regexp.detailed_help = """\
-        A regular expression to filter the names of the results on. Any names
-        that do not match the entire regular expression will be filtered out.
-        """
-
   def GetResources(self, args):
     """Retrieves response with instance in the instance group."""
     group_ref = self.CreateZonalReference(args.name, args.zone)

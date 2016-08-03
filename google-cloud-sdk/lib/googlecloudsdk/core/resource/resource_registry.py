@@ -247,7 +247,6 @@ RESOURCE_REGISTRY = {
 
     # cloud build
 
-    # TODO(user): use durations instead of finishTime with cl/123214184.
     'cloudbuild.projects.builds': ResourceInfo(
         cache_command='cloud build list',
         bypass_cache=True,
@@ -256,8 +255,7 @@ RESOURCE_REGISTRY = {
           table(
             id,
             createTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
-            startTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
-            finishTime.date('%Y-%m-%dT%H:%M:%S%Oz', undefined='-'),
+            duration(start=startTime,end=finishTime,precision=0,calendar=false,undefined="  -").slice(2:).join(""):label=DURATION,
             status
           )
         """,
@@ -590,6 +588,24 @@ RESOURCE_REGISTRY = {
           value(
             format("There is no API support yet.")
           )
+        """,
+    ),
+
+    'compute.xpnProjects': ResourceInfo(
+        list_format="""
+          table(
+            name,
+            creationTimestamp,
+            xpnProjectStatus
+          )
+        """,
+    ),
+
+    'compute.xpnResourceId': ResourceInfo(
+        list_format="""
+          table(
+            id:label=RESOURCE_ID,
+            type:label=RESOURCE_TYPE)
         """,
     ),
 
@@ -1007,7 +1023,8 @@ RESOURCE_REGISTRY = {
             name,
             type,
             update.state.yesno(no="COMPLETED"),
-            update.error.errors.group(code, message)
+            update.error.errors.group(code, message),
+            update.intent
           )
         """,
     ),
@@ -1021,6 +1038,24 @@ RESOURCE_REGISTRY = {
               type,
               update.state.yesno(no="COMPLETED"),
               update.error.errors.group(code, message))',
+            outputs:format='table(
+              name:label=OUTPUTS,
+              finalValue:label=VALUE)'
+          )
+        """,
+    ),
+
+    'deploymentmanager.deployments_and_resources_and_outputs': ResourceInfo(
+        list_format="""
+          table(
+            deployment:format='default(name, id, fingerprint, insertTime,
+            manifest.basename(), operation.operationType, operation.name,
+            operation.progress, operation.status, operation.user,
+            operation.endTime, operation.startTime,operation.error)',
+            resources:format='table(
+              name:label=NAME,
+              type:label=TYPE,
+              update.state.yesno(no="COMPLETED"))',
             outputs:format='table(
               name:label=OUTPUTS,
               finalValue:label=VALUE)'

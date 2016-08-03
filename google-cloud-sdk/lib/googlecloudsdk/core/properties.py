@@ -703,6 +703,23 @@ class _SectionCore(_Section):
         help_text='If True, pass the configured Cloud SDK authentication '
                   'to gsutil.')
 
+    def MaxLogDaysValidator(max_log_days):
+      if max_log_days is None:
+        return
+      try:
+        if int(max_log_days) < 1:
+          raise InvalidValueError(
+              'Max number of days must be at least 1')
+      except ValueError:
+        raise InvalidValueError(
+            'Max number of days must be an integer')
+    self.max_log_days = self._Add(
+        'max_log_days',
+        validator=MaxLogDaysValidator,
+        help_text='Maximum number of days to retain log files before deleting.'
+        'If unset, defaults to 30.',
+        default='30')
+
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
       if project is None:

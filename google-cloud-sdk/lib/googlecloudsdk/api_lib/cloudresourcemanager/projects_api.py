@@ -20,9 +20,9 @@ from googlecloudsdk.api_lib.cloudresourcemanager import errors
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.service_management import enable_api as services_enable_api
 from googlecloudsdk.api_lib.service_management import services_util
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import apis
-from googlecloudsdk.core.iam import iam_util
 
 
 def List(limit=None):

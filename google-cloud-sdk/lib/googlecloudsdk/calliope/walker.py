@@ -78,14 +78,20 @@ class Walker(object):
         The return value of the outer Visit() call.
       """
       parent = self.Visit(node, parent, is_group=True)
+      commands_and_groups = []
       if node.commands:
-        for _, command in sorted(node.commands.iteritems()):
+        for name, command in node.commands.iteritems():
           if _Include(command):
-            self.Visit(command, parent, is_group=False)
+            commands_and_groups.append((name, command, False))
       if node.groups:
-        for _, command in sorted(node.groups.iteritems()):
+        for name, command in node.groups.iteritems():
           if _Include(command, traverse=True):
-            _Walk(command, parent)
+            commands_and_groups.append((name, command, True))
+      for _, command, is_group in sorted(commands_and_groups):
+        if is_group:
+          _Walk(command, parent)
+        else:
+          self.Visit(command, parent, is_group=False)
       return parent
 
     root = self._cli._TopElement()  # pylint: disable=protected-access

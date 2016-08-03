@@ -11,18 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
-from googlecloudsdk.calliope import base
+
+"""Support library for the auth command."""
 
 
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
+class _AcctInfo(object):
+  """An auth command resource list item.
+
+  Attributes:
+    account: The account name.
+    status: The account status, one of ['ACTIVE', ''].
+  """
+
+  def __init__(self, account, active):
+    self.account = account
+    self.status = 'ACTIVE' if active else ''
 
 
-def IdArg(description, nargs=None):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      nargs=nargs,
-      help='ID for the organization {0}'.format(description))
+def AuthResults(accounts, active_account):
+  """The resource list return value for the auth command Run() method."""
+  return [_AcctInfo(account, account == active_account) for account in accounts]

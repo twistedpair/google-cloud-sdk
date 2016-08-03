@@ -18,6 +18,7 @@ from googlecloudsdk.calliope import base
 
 CONSUMER_PROJECT_FLAG = base.Argument(
     '--consumer-project',
+    required=False,
     help='The consumer project ID.')
 
 SERVICE_FLAG = base.Argument(

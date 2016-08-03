@@ -17,7 +17,7 @@ from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import flags
-from googlecloudsdk.core.iam import iam_util
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 # TODO(user): Investigate sharing more code with BaseDescriber command.

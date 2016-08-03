@@ -88,6 +88,7 @@ Usage:
 
 
 import os
+import sys
 import unicodedata
 
 from googlecloudsdk.core import log
@@ -656,4 +657,35 @@ def EncodeForOutput(string, encoding=None, escape=True):
     # according to escape.
     string = string.encode(
         encoding, 'backslashreplace' if escape else 'replace')
+  return string
+
+
+def DecodeFromInput(string):
+  """Returns string with non-ascii characters decoded."""
+  # Just return the string if its pure ascii.
+  try:
+    string.decode('ascii')
+    return string
+  except UnicodeError:
+    pass
+
+  # Try the console encoding.
+  try:
+    return string.decode(GetConsoleAttr().GetEncoding())
+  except UnicodeError:
+    pass
+
+  # Try the filesystem encoding.
+  try:
+    return string.decode(sys.getfilesystemencoding())
+  except UnicodeError:
+    pass
+
+  # Try the system default encoding.
+  try:
+    return string.decode(sys.getdefaultencoding())
+  except UnicodeError:
+    pass
+
+  # Give up and just return the string.
   return string

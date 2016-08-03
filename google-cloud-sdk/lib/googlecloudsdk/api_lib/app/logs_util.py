@@ -140,7 +140,7 @@ class LogPrinter(object):
     timestamp = re.sub(r'(?P<micro>\d{6})\d*Z$', r'\g<micro>Z', entry.timestamp)
     time = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    out = '{timestamp} {log_text}'.format(
+    out = u'{timestamp} {log_text}'.format(
         timestamp=time.strftime(self.time_format),
         log_text=text)
     if self.max_length and len(out) > self.max_length:

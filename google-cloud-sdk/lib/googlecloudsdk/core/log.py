@@ -212,8 +212,6 @@ class _LogManager(object):
   mode.  This sets up the required handlers to do this.
   """
   FILE_ONLY_LOGGER_NAME = '___FILE_ONLY___'
-  MAX_AGE = 60 * 60 * 24 * 30  # 30 days' worth of seconds.
-  MAX_AGE_TIMEDELTA = datetime.timedelta(days=30)
 
   def __init__(self):
     # Note: if this ever changes, please update LOG_PREFIX_PATTERN
@@ -332,6 +330,26 @@ class _LogManager(object):
     self.user_output_enabled = enabled
     return old_enabled
 
+  def _GetMaxLogDays(self):
+    """Gets the max log days for the logger.
+
+    Returns:
+      max_log_days: int, the maximum days for log file retention
+    """
+    # Fetch from properties. Defaults to 30 if unset.
+    return properties.VALUES.core.max_log_days.GetInt()
+
+  def _GetMaxAge(self):
+    """Gets max_log_day's worth of seconds."""
+    return 60 * 60 * 24 * self._GetMaxLogDays()
+
+  def _GetMaxAgeTimeDelta(self):
+    return datetime.timedelta(days=self._GetMaxLogDays())
+
+  def _GetFileDatetime(self, path):
+    return datetime.datetime.strptime(os.path.basename(path),
+                                      DAY_DIR_FORMAT)
+
   def AddLogsDir(self, logs_dir):
     """Adds a new logging directory to the logging config.
 
@@ -416,8 +434,7 @@ class _LogManager(object):
     if not os.path.isdir(path):
       return False
     try:
-      dir_date = datetime.datetime.strptime(os.path.basename(path),
-                                            DAY_DIR_FORMAT)
+      dir_date = self._GetFileDatetime(path)
     except ValueError:
       # Not in a format we're expecting; we probably shouldn't mess with it
       return False
@@ -425,7 +442,7 @@ class _LogManager(object):
     # Add an additional day to this. It's better to delete a whole directory at
     # once and leave some extra files on disk than to loop through on each run
     # (some customers have pathologically large numbers of log files).
-    return dir_age > _LogManager.MAX_AGE_TIMEDELTA + datetime.timedelta(1)
+    return dir_age > self._GetMaxAgeTimeDelta() + datetime.timedelta(1)
 
   def _ShouldDeleteFile(self, now_seconds, path):
     """Determines if the file is old enough to be deleted.
@@ -443,7 +460,7 @@ class _LogManager(object):
       # If we don't recognize this file, don't delete it
       return False
     stat_info = os.stat(path)
-    return now_seconds - stat_info.st_mtime > _LogManager.MAX_AGE
+    return now_seconds - stat_info.st_mtime > self._GetMaxAge()
 
   def _SetupLogsDir(self, logs_dir):
     """Creates the necessary log directories and get the file name to log to.

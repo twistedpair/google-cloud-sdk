@@ -545,7 +545,9 @@ def TransformFormat(r, projection, fmt, *args):
     fmt: The format string with {0} ... {nargs-1} references to the resource
       attribute name arg values.
     *args: The resource attribute key expression to format. The printer
-      projection symbols and aliases may be used in key expressions.
+      projection symbols and aliases may be used in key expressions. If no args
+      are specified then the resource is used as the arg list if it is a list,
+      otherwise the resource is used as the only arg.
 
   Returns:
     The formatted string.
@@ -553,9 +555,14 @@ def TransformFormat(r, projection, fmt, *args):
   Example:
     --format='value(format("{0:f.1}/{0:f.1}", q.CPU.default, q.CPU.limit))'
   """
-  columns = projection.compiler('(' + ','.join(args) + ')',
-                                by_columns=True,
-                                defaults=projection).Evaluate(r)
+  if args:
+    columns = projection.compiler('({0})'.format(','.join(args)),
+                                  by_columns=True,
+                                  defaults=projection).Evaluate(r)
+  elif isinstance(r, list):
+    columns = r
+  else:
+    columns = [r or '']
   return fmt.format(*columns)
 
 

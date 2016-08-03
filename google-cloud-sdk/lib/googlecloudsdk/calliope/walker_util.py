@@ -77,21 +77,22 @@ class DevSiteGenerator(walker.Walker):
       depth = len(command) - 1
       if not depth:
         return
+      title = ' '.join(command)
       while depth >= len(self._need_section_tag):
         self._need_section_tag.append(False)
       if depth == 1:
-        if self._toc_main:
-          # Close the current main group toc if needed.
-          self._toc_main.close()
-        # Create a new main group toc.
-        toc_path = os.path.join(directory, self._TOC)
-        toc = open(toc_path, 'w')
-        self._toc_main = toc
-        title = ' '.join(command)
-        toc.write('toc:\n')
-        toc.write('- title: "%s"\n' % title)
-        toc.write('  path: %s\n' % '/'.join([self._REFERENCE] + command[1:]))
-        self._need_section_tag[depth] = True
+        if is_group:
+          if self._toc_main:
+            # Close the current main group toc if needed.
+            self._toc_main.close()
+          # Create a new main group toc.
+          toc_path = os.path.join(directory, self._TOC)
+          toc = open(toc_path, 'w')
+          self._toc_main = toc
+          toc.write('toc:\n')
+          toc.write('- title: "%s"\n' % title)
+          toc.write('  path: %s\n' % '/'.join([self._REFERENCE] + command[1:]))
+          self._need_section_tag[depth] = True
 
         toc = self._toc_root
         indent = '  '

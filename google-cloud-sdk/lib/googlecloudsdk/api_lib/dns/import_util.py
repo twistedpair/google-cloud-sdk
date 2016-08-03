@@ -38,6 +38,19 @@ def _AddressTranslation(rdata, unused_origin):
   return rdata.address
 
 
+def _CAATranslation(rdata, unused_origin):
+  """Returns the translation of the given CAA rdata.
+
+  Args:
+    rdata: Rdata, The data to be translated.
+    unused_origin: Name, The origin domain name.
+
+  Returns:
+    str, The translation of the given CAA rdata. See RFC 6844.
+  """
+  return '{0} {1} {2}'.format(rdata.flags, rdata.tag, QuotedText(rdata.value))
+
+
 def _MXTranslation(rdata, origin):
   """Returns the translation of the given MX rdata.
 
@@ -146,6 +159,7 @@ def _QuotedTextTranslation(rdata, unused_origin=None):
 RDATA_TRANSLATIONS = {
     rdatatype.A: _AddressTranslation,
     rdatatype.AAAA: _AddressTranslation,
+    rdatatype.CAA: _CAATranslation,
     rdatatype.CNAME: _TargetTranslation,
     rdatatype.MX: _MXTranslation,
     rdatatype.PTR: _TargetTranslation,
@@ -329,6 +343,7 @@ def _RDataReplacement(current_record, record_to_be_imported):
 _RDATA_REPLACEMENTS = {
     rdatatype.A: _RDataReplacement,
     rdatatype.AAAA: _RDataReplacement,
+    rdatatype.CAA: _RDataReplacement,
     rdatatype.CNAME: _RDataReplacement,
     rdatatype.MX: _RDataReplacement,
     rdatatype.PTR: _RDataReplacement,

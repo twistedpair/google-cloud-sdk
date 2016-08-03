@@ -11,18 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
+"""Flags for commands dealing with cross-project networking (XPN)."""
 from googlecloudsdk.calliope import base
 
 
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
+def GetProjectIdArgument(verb):
+  """Return the PROJECT_ID argument for XPN commands."""
+  arg = base.Argument(
+      'project', metavar='PROJECT_ID',
+      help='ID for the project to {verb}'.format(verb=verb))
+  return arg
 
 
-def IdArg(description, nargs=None):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      nargs=nargs,
-      help='ID for the organization {0}'.format(description))
+def GetHostProjectFlag(verb):
+  """Return the --host-project flag for XPN commands."""
+  arg = base.Argument('--host-project', required=True,
+                      help='The XPN host to {verb}'.format(verb=verb))
+  return arg

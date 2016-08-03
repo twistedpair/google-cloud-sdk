@@ -11,18 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
-from googlecloudsdk.calliope import base
+"""Utilities for the API to configure cross-project networking (XPN)."""
+from googlecloudsdk.core import apis
+# from googlecloudsdk.core.credentials import http
 
 
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
+_API_NAME = 'compute'
+_API_VERSION = 'alpha'
 
 
-def IdArg(description, nargs=None):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      nargs=nargs,
-      help='ID for the organization {0}'.format(description))
+def GetMessagesModule():
+  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
+
+
+def GetClientClass():
+  return apis.GetClientClass(_API_NAME, _API_VERSION)
+
+
+def GetClientInstance(use_http=True):
+  return apis.GetClientInstance(_API_NAME, _API_VERSION, no_http=(not use_http))

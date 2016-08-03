@@ -108,7 +108,7 @@ def CamelCaseToOutputFriendly(string):
 def ConstructList(title, items):
   """Returns a string displaying the items and a title."""
   buf = cStringIO.StringIO()
-  fmt = 'list[title="{title}"]'.format(title=title)
+  fmt = 'list[title="{title}",always-display-title]'.format(title=title)
   resource_printer.Print(sorted(set(items)), fmt, out=buf)
   return buf.getvalue()
 
