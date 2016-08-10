@@ -239,8 +239,8 @@ def CreateNetworkInterfaceMessage(
     network, subnet, private_network_ip, no_address, address,
     instance_refs):
   """Returns a new NetworkInterface message."""
-  region = utils.ZoneNameToRegionName(instance_refs[0].zone)
-
+  # TODO(b/30460572): instance reference should have zone name, not zone URI.
+  region = utils.ZoneNameToRegionName(instance_refs[0].zone.split('/')[-1])
   messages = compute_client.messages
   network_interface = None
   if subnet is not None:

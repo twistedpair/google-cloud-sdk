@@ -2,6 +2,51 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 121.0.0 (2016/08/10)
+
+### Google App Engine
+
+* Cloud SDK dev_appserver.py supports running App Engine Standard Go
+  applications.
+
+* `gcloud app instances disable-debug` now deletes the instance rather than
+  restarting it. New instance(s) may spawn based on the app's scaling settings.
+
+### Google Cloud Dataproc
+
+* Added the `--preemptible-worker-boot-disk-size` flag to
+  `gcloud dataproc clusters create`.
+
+### Google Compute Engine
+
+* `gcloud compute backend-services` session affinity flags have been promoted
+  from beta to GA.
+
+### Google Container Engine
+
+* Changed the `container/use_client_certificate` property default value to
+  `false`. This makes the `gcloud container clusters create` and
+  `gcloud container clusters get-credentials` commands configure `kubectl` to
+  use Google OAuth2 credentials by default instead of the legacy client
+  certificate.
+
+### Google Cloud Dataflow
+
+* Added the `gcloud alpha dataflow jobs drain` command. The `drain` command
+  takes a streaming job and stops receiving new data from the sources. It then
+  processes the buffered data. For more information please see the documentation
+  for stopping a running pipeline at <https://cloud.google.com/dataflow/pipelines/stopping-a-pipeline>.
+
+### Google Cloud DNS
+
+* Fix for issue reported in: <http://stackoverflow.com/questions/38636010/removing-dns-entries-with-gcloud>.
+
+### Stackdriver Error Reporting
+
+* Added `gcloud beta error-reporting events report` command for reporting
+  errors.
+
+
 ## 120.0.0 (2016/08/03)
 
 ### Deployment Manager

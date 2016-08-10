@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,17 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
-from googlecloudsdk.calliope import base
 
-
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
-
-
-def IdArg(description):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      help='ID for the organization {0}'.format(description))
+"""Package marker file."""

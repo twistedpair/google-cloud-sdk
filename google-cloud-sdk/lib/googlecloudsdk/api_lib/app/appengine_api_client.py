@@ -58,6 +58,29 @@ class AppengineApiClient(object):
     else:
       return ''
 
+  def CreateApp(self, location):
+    """Creates an App Engine app within the current cloud project.
+
+    Creates a new singleton app within the currently selected Cloud Project.
+    The action is one-time and irreversible.
+
+    Args:
+      location: str, The location (region) of the app, i.e. "us-central"
+    Returns:
+      A long running operation.
+    """
+    create_request = self.messages.AppengineAppsCreateRequest(
+        application=self.messages.Application(id=self.project,
+                                              location=location))
+
+    operation = requests.MakeRequest(
+        self.client.apps.Create, create_request)
+
+    log.debug('Received operation: [{operation}]'.format(
+        operation=operation.name))
+
+    return operations.WaitForOperation(self.client.apps_operations, operation)
+
   def DeployService(
       self, service_name, version_id, service_config, manifest, image):
     """Updates and deploys new app versions based on given config.
@@ -215,6 +238,46 @@ class AppengineApiClient(object):
 
     return self.ListInstances(versions)
 
+  def DebugInstance(self, service, version, instance):
+    """Enable debugging of a Flexible instance.
+
+    Args:
+      service: str, The service id
+      version: str, The version id
+      instance: str, The instance id
+
+    Returns:
+      The completed Operation.
+    """
+    request = self.messages.AppengineAppsServicesVersionsInstancesDebugRequest(
+        name=self._FormatInstance(app_id=self.project,
+                                  service_name=service,
+                                  version_id=version,
+                                  instance_id=instance))
+    operation = requests.MakeRequest(
+        self.client.apps_services_versions_instances.Debug, request)
+    return operations.WaitForOperation(self.client.apps_operations, operation)
+
+  def DeleteInstance(self, service, version, instance):
+    """Delete a Flexible instance.
+
+    Args:
+      service: str, The service id
+      version: str, The version id
+      instance: str, The instance id
+
+    Returns:
+      The completed Operation.
+    """
+    request = self.messages.AppengineAppsServicesVersionsInstancesDeleteRequest(
+        name=self._FormatInstance(app_id=self.project,
+                                  service_name=service,
+                                  version_id=version,
+                                  instance_id=instance))
+    operation = requests.MakeRequest(
+        self.client.apps_services_versions_instances.Delete, request)
+    return operations.WaitForOperation(self.client.apps_operations, operation)
+
   def StopVersion(self, service_name, version_id):
     """Stops the specified version.
 
@@ -362,6 +425,14 @@ class AppengineApiClient(object):
   def _FormatVersion(self, app_id, service_name, version_id):
     return 'apps/{app_id}/services/{service_name}/versions/{version_id}'.format(
         app_id=app_id, service_name=service_name, version_id=version_id)
+
+  def _FormatInstance(self, app_id, service_name, version_id, instance_id):
+    return ('apps/{app_id}/services/{service_name}/versions/{version_id}/'
+            'instances/{instance_id}'.format(
+                app_id=app_id,
+                service_name=service_name,
+                version_id=version_id,
+                instance_id=instance_id))
 
 
 def GetApiClient():

@@ -1260,6 +1260,26 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    # ml
+
+    'ml.models': ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            defaultVersion.name.basename()
+          )
+        """,
+    ),
+
+    'ml.models.versions': ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            originUri
+          )
+        """,
+    ),
+
     # projects
 
     'developerprojects.projects': ResourceInfo(

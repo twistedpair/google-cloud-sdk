@@ -36,6 +36,14 @@ class UnknownVersionError(exceptions.Error):
             api_name, api_version))
 
 
+class InvalidEndpointException(exceptions.Error):
+  """Exception for when an API endpoint is malformed."""
+
+  def __init__(self, url):
+    super(InvalidEndpointException, self).__init__(
+        "URL does not start with 'http://' or 'https://' [{0}]".format(url))
+
+
 # This is the map of API name aliases to actual API names.
 # The apis_map uses the actual API names. The rest of the Cloud SDK, including
 # property sections, and command surfaces use the API name alias.
@@ -253,6 +261,51 @@ def GetEffectiveApiEndpoint(api_name, api_version=None, client_class=None):
   return client_class.BASE_URL
 
 
+def GetDefaultEndpoint(url):
+  """Looks up default endpoint based on overridden endpoint value."""
+  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
+  for api_name, overridden_url in endpoint_overrides.iteritems():
+    if overridden_url == url:
+      return GetClientClass(api_name).BASE_URL
+  return url
+
+
+def GetApiFromDefaultEndpoint(url):
+  """Returns api_name, api_version tuple for given default api url.
+
+  Supports four formats:
+  http(s)://www.googleapis.com/api/version/resource-path,
+  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path,
+  http(s)://api.googleapis.com/version/resource-path, and
+  http(s)://someotherdoman/api/version/resource-path.
+
+  If there is an api endpoint override defined that maches the url,
+  that api name will be returned.
+
+  Args:
+    url: str, The resource url.
+
+  Returns:
+    (str, str): The API name. and version
+  """
+  tokens = _StripUrl(url).split('/')
+  domain = tokens[0]
+  if ('googleapis' not in domain
+      or domain.startswith('www.') or domain.startswith('www-')):
+    api_name = tokens[1]
+    if len(tokens) > 2:
+      version = tokens[2]
+    else:
+      version = None
+  else:
+    api_name = tokens[0].split('.')[0]
+    if len(tokens) > 1:
+      version = tokens[1]
+    else:
+      version = GetDefaultVersion(api_name)
+  return api_name, version
+
+
 def GetMessagesModule(api_name, api_version=None):
   """Returns the messages module for the API specified in the args.
 
@@ -265,3 +318,11 @@ def GetMessagesModule(api_name, api_version=None):
   """
   api_def = _GetApiDef(api_name, api_version)
   return __import__(api_def.messages_modulepath, fromlist=['something'])
+
+
+def _StripUrl(url):
+  """Strip a http: or https: prefix, then strip leading and trailing slashes."""
+  if url.startswith('https://') or url.startswith('http://'):
+    return url[url.index(':') + 1:].strip('/')
+  raise InvalidEndpointException(url)
+

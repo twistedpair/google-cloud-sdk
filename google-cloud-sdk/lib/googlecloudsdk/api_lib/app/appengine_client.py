@@ -206,8 +206,8 @@ class AppengineClient(object):
     rpcserver = self._GetRpcServer(timeout_max_errors=5)
     rpcserver.Send('/api/vms/prepare', app_id=self.project)
 
-  # TODO(b/29059251): vm_name and instance id are different, this API client
-  # needs the VM name. The Zeus API will use instance id instead.
+  # Note: vm_name and instance id are different, this API client
+  # needs the VM name. The Zeus API uses instance id instead.
   def SetManagedByGoogle(self, service, version, vm_name=None, wait=True):
     """Sets a service version (and optionally an instance) to Google managed.
 

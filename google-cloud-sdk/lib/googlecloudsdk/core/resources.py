@@ -45,7 +45,6 @@ _COLLECTIONPATH_RE = re.compile(
 _URL_RE = re.compile(r'(https?://[^/]+/[^/]+/[^/]+/)(.+)')
 _METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE))
-_HTTP_RE = re.compile(r'^https?://')
 _GCS_URL_RE = re.compile('^gs://([^/]*)(?:/(.*))?$')
 _GCS_URL = 'https://www.googleapis.com/storage/v1/'
 _GCS_ALT_URL = 'https://storage.googleapis.com/'
@@ -53,14 +52,6 @@ _GCS_ALT_URL = 'https://storage.googleapis.com/'
 
 class Error(Exception):
   """Exceptions for this module."""
-
-
-class InvalidEndpointException(Error):
-  """Exception for when an API endpoint is malformed."""
-
-  def __init__(self, url):
-    super(InvalidEndpointException, self).__init__(
-        "URL does not start with 'http://' or 'https://' [{0}]".format(url))
 
 
 class _ResourceWithoutGetException(Error):
@@ -83,6 +74,15 @@ class AmbiguousAPIException(Error):
         'collection [{collection}] defined in multiple APIs: {apis}'.format(
             collection=collection,
             apis=repr(base_urls)))
+
+
+class AmbiguousResourcePath(Error):
+  """Exception for when API path maps to two different resources."""
+
+  def __init__(self, parser1, parser2):
+    super(AmbiguousResourcePath, self).__init__(
+        'There already exists parser {0} for same path, '
+        'can not register another one {1}'.format(parser1, parser2))
 
 
 class UserError(exceptions.Error, Error):
@@ -151,34 +151,50 @@ class InvalidCollectionException(UserError):
         'unknown collection [{collection}]'.format(collection=collection))
 
 
-# TODO(user): Ensure that all the user-facing error messages help the
-# user figure out what to do.
+class CollectionInfo(object):
+  """Holds information about a resource collection.
+
+  Attributes:
+      api_name: str, name of the api of resources parsed by this parser.
+      api_version: str, version id for this api.
+      path: str, URI template for this resource.
+      params: list(str), description of parameters in the path.
+      request_type:  apitools.base.protorpclite.messages.Message, Message type
+        for Get request.
+      name: str, collection name for this resource.
+      base_url: str, URL for service providing these resources.
+  """
+
+  def __init__(self, api_name, api_version, base_url, name,
+               request_type, path, params):
+    self.api_name = api_name
+    self.api_version = api_version
+    self.base_url = base_url
+    self.name = name
+    self.request_type = request_type
+    self.path = path
+    self.params = params
+
+  def __cmp__(self, other):
+    return cmp((self.api_name, self.api_version, self.name),
+               (other.api_name, other.api_version, other.name))
+
+  def __str__(self):
+    return self.name
 
 
 class _ResourceParser(object):
   """Class that turns command-line arguments into a cloud resource message."""
 
-  def __init__(self, registry, api_name, relative_path, ordered_params,
-               request_type, collection, base_url):
+  def __init__(self, registry, collection_info):
     """Create a _ResourceParser for a given relative_path, and register it.
 
     Args:
       registry: Registry, The registry that this parser should be added to.
-      api_name: str, name of the api of resources parsed by this parser.
-      relative_path: str, URI template for this resource.
-      ordered_params: list(str), description of parameters in relative_path.
-      request_type:  apitools.base.protorpclite.messages.Message, Message type
-        for Get request.
-      collection: str, collection name for this resource.
-      base_url: str, URL for service providing these resources.
+      collection_info: CollectionInfo, description for collection.
     """
     self.registry = registry
-    self.api_name = api_name
-    self.relative_path = relative_path
-    self.ordered_params = ordered_params
-    self.request_type = request_type
-    self.collection = collection
-    self.base_url = base_url
+    self.collection_info = collection_info
 
   def ParseCollectionPath(self, collection_path, kwargs, resolve):
     """Given a command line and some keyword args, get the resource.
@@ -210,21 +226,21 @@ class _ResourceParser(object):
     if collection_path is not None:
       fields = self._GetFieldsForKnownCollection(collection_path)
     else:
-      fields = [None] * len(self.ordered_params)
+      fields = [None] * len(self.collection_info.params)
 
     # Build up the resource params from kwargs or the fields in the
     # collection-path.
-    request = self.request_type()
-    for param, field in zip(self.ordered_params, fields):
+    request = self.collection_info.request_type()
+    for param, field in zip(self.collection_info.params, fields):
       setattr(request, param, field)
 
-    api, resource_collection = self.collection.split('.', 1)
+    api, resource_collection = self.collection_info.name.split('.', 1)
     param_defaults = functools.partial(
         self.registry.GetParamDefault, api, resource_collection)
     resource = Resource(
-        self.collection, self.relative_path, request,
-        self.ordered_params, kwargs,
-        collection_path, self.base_url, param_defaults)
+        self.collection_info.name, self.collection_info.path, request,
+        self.collection_info.params, kwargs,
+        collection_path, self.collection_info.base_url, param_defaults)
 
     if resolve:
       resource.Resolve()
@@ -259,9 +275,10 @@ class _ResourceParser(object):
       raise InvalidResourceException(collection_path)
     collection, path = match.groups()
 
-    if collection and collection != self.collection:
+    if collection and collection != self.collection_info.name:
       raise WrongResourceCollectionException(
-          expected=self.collection, got=collection, path=collection_path)
+          expected=self.collection_info.name,
+          got=collection, path=collection_path)
 
     # collection-paths that begin with a slash must have an entry for all
     # ordered params, especially including the project.
@@ -276,22 +293,22 @@ class _ResourceParser(object):
       # next token must be the project
       fields = fields[1:]
 
-    total_param_count = len(self.ordered_params)
+    total_param_count = len(self.collection_info.params)
 
     if has_project and total_param_count != len(fields):
       raise WrongFieldNumberException(
-          path=path, ordered_params=self.ordered_params)
+          path=path, ordered_params=self.collection_info.params)
 
     # Check if there were too many fields provided.
     if len(fields) > total_param_count:
       raise WrongFieldNumberException(
-          path=path, ordered_params=self.ordered_params)
+          path=path, ordered_params=self.collection_info.params)
 
     # If the project is not included, we can either have only one or all-but-one
     # token. So, just simple names or everything that isn't the project.
     if not has_project and len(fields) not in [1, total_param_count - 1]:
       raise WrongFieldNumberException(
-          path=path, ordered_params=self.ordered_params)
+          path=path, ordered_params=self.collection_info.params)
 
     num_missing = total_param_count - len(fields)
     # pad the beginning with Nones so we don't have to count backwards.
@@ -300,16 +317,16 @@ class _ResourceParser(object):
     # Did the user enter a literal empty argument at any stage?
     if '' in fields:
       raise WrongFieldNumberException(
-          path=path, ordered_params=self.ordered_params)
+          path=path, ordered_params=self.collection_info.params)
 
     return fields
 
   def __str__(self):
     path_str = ''
-    for param in self.ordered_params:
+    for param in self.collection_info.params:
       path_str = '[{path}]/{param}'.format(path=path_str, param=param)
     return '[{collection}::]{path}'.format(
-        collection=self.collection, path=path_str)
+        collection=self.collection_info.name, path=path_str)
 
 
 class Resource(object):
@@ -456,42 +473,14 @@ def _CopyNestedDictSpine(maybe_dictionary):
 def _APINameAndVersionFromURL(url):
   """Get the API name and version from a resource url.
 
-  Supports four formats:
-  http(s)://www.googleapis.com/api/version/resource-path,
-  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path,
-  http(s)://api.googleapis.com/version/resource-path, and
-  http(s)://someotherdoman/api/version/resource-path.
-
-  If there is an api endpoint override defined that maches the url,
-  that api name will be returned.
-
   Args:
-    url: str, The resource url.
+    url: str, The resource (possibly overriden) endpoint url.
 
   Returns:
     (str, str): The API name. and version
   """
-  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  for name, overridden_url in endpoint_overrides.iteritems():
-    if overridden_url == url:
-      return name, core_apis.GetDefaultVersion(name)
-
-  tokens = _StripUrl(url).split('/')
-  domain = tokens[0]
-  if ('googleapis' not in domain
-      or domain.startswith('www.') or domain.startswith('www-')):
-    api_name = tokens[1]
-    if len(tokens) > 2:
-      version = tokens[2]
-    else:
-      version = None
-  else:
-    api_name = tokens[0].split('.')[0]
-    if len(tokens) > 1:
-      version = tokens[1]
-    else:
-      version = core_apis.GetDefaultVersion(api_name)
-  return api_name, version
+  default_url = core_apis.GetDefaultEndpoint(url)
+  return core_apis.GetApiFromDefaultEndpoint(default_url)
 
 
 def _APINameFromCollection(collection):
@@ -571,20 +560,23 @@ class Registry(object):
       api_version: str, the version of the API if it's not in the API client
           URL.
     """
+    api_name, parsed_api_version = _APINameAndVersionFromURL(api_client.url)
     for service in _GetApiServices(api_client):
       try:
         self._RegisterService(
+            api_name,
             api_client, service,
             api_client.url, urls_only)
       except _ResourceWithoutGetException:
         pass
-    api_name, parsed_api_version = _APINameAndVersionFromURL(api_client.url)
     self.registered_apis[api_name].add(parsed_api_version or api_version)
 
-  def _RegisterService(self, api_client, service, base_url, urls_only):
+  def _RegisterService(self, api_name, api_client, service,
+                       base_url, urls_only):
     """Register one service for an API with this registry.
 
     Args:
+      api_name: str, name of api to register under.
       api_client: base_api.BaseApiClient, The client for a Google Cloud API.
       service: base_api.BaseApiService, the service to be registered.
       base_url: str, base url for this service and its resources.
@@ -595,6 +587,7 @@ class Registry(object):
       AmbiguousAPIException: If the API defines a collection that has already
           been added.
       _ResourceWithoutGetException: If given service does not have Get method.
+      AmbiguousResourcePath: If api uses same path for multiple resources.
     """
     try:
       method_config = service.GetMethodConfig('Get')
@@ -608,23 +601,25 @@ class Registry(object):
     request_type = getattr(api_client.MESSAGES_MODULE,
                            method_config.request_type_name)
 
-    parser = _ResourceParser(
-        self, api_client._PACKAGE,    # pylint:disable=protected-access
-        method_config.relative_path,
-        method_config.ordered_params, request_type, collection,
-        base_url=base_url)
+    # pylint:disable=protected-access
+    collection_info = CollectionInfo(
+        api_name, api_client._VERSION,
+        base_url, collection, request_type,
+        method_config.relative_path, method_config.ordered_params)
+    parser = _ResourceParser(self, collection_info)
 
     if not urls_only:
-      if parser.collection in self.parsers_by_collection:
-        urls = [base_url,
-                self.parsers_by_collection[parser.collection].base_url]
-        raise AmbiguousAPIException(parser.collection, urls)
-      self.parsers_by_collection[parser.collection] = parser
+      existing_parser = self.parsers_by_collection.get(collection_info.name)
+      if existing_parser is not None:
+        raise AmbiguousAPIException(collection_info.name,
+                                    [collection_info.base_url,
+                                     existing_parser.collection_info.base_url])
+      self.parsers_by_collection[collection_info.name] = parser
 
     # so we don't confuse the splitting
-    endpoint = _StripUrl(base_url)
+    endpoint = base_url[base_url.index(':') + 2:].strip('/')
 
-    tokens = endpoint.split('/') + method_config.relative_path.split('/')
+    tokens = endpoint.split('/') + collection_info.path.split('/')
     # Build up a search tree to match URLs against URL templates.
     # The tree will branch at each URL segment, where the first segment
     # is the API's base url, and each subsequent segment is a token in
@@ -637,6 +632,9 @@ class Registry(object):
       if token not in cur_level:
         cur_level[token] = {}
       cur_level = cur_level[token]
+    if None in cur_level:
+      raise AmbiguousResourcePath(cur_level[None], parser)
+
     cur_level[None] = parser
 
   def _SwitchAPI(self, api):
@@ -648,11 +646,14 @@ class Registry(object):
     Args:
       api: base_api.BaseApiClient, The client for a Google Cloud API.
     """
+    api_name, _ = _APINameAndVersionFromURL(api.url)
     # Clear out the old collections.
     for collection, parser in self.parsers_by_collection.items():
-      if parser.api_name == api._PACKAGE:  # pylint:disable=protected-access
+      if parser.collection_info.api_name == api_name:
         del self.parsers_by_collection[collection]
-    # TODO(user): Maybe remove the url parsers as well?
+    # Remove the url parsers, can't register new parser for existing path.
+    _RemoveParsersForApi(api_name, self.parsers_by_url)
+    self.registered_apis[api_name].clear()
 
     self._RegisterAPI(api)
 
@@ -799,7 +800,9 @@ class Registry(object):
     if not match:
       raise InvalidResourceException('unknown API host: [{0}]'.format(url))
     endpoint, path = match.groups()
-    tokens = _StripUrl(endpoint).split('/') + path.split('/')
+    # Remove leading https?://.
+    endpoint = endpoint[endpoint.index(':') + 2:].strip('/')
+    tokens = endpoint.split('/') + path.split('/')
     params = {}
 
     # Register relevant API if necessary and possible
@@ -1054,14 +1057,19 @@ def Create(collection, **params):
   return REGISTRY.Create(collection, **params)
 
 
-def _StripUrl(url):
-  """Strip a http: or https: prefix, then strip leading and trailing slashes."""
-  if not _HTTP_RE.match(url):
-    raise InvalidEndpointException(url)
-  return url[url.index(':') + 1:].strip('/')
-
-
 def _GetApiServices(api_client):
   return [potential_service
           for potential_service in api_client.__dict__.itervalues()
           if isinstance(potential_service, base_api.BaseApiService)]
+
+
+def _RemoveParsersForApi(api_name, url_parser_map):
+  """Removed parsers for given api name from url parser map."""
+  parser = url_parser_map.get(None)
+  if parser and parser.collection_info.api_name == api_name:
+    del url_parser_map[None]
+  for token, sub_map in url_parser_map.items():
+    if token is not None:
+      _RemoveParsersForApi(api_name, sub_map)
+    if not sub_map:
+      del url_parser_map[token]

@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-services commands."""
 
+import argparse
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -128,26 +129,31 @@ def AddHttpsHealthChecks(parser):
       """
 
 
-def AddSessionAffinity(parser, internal_lb=False):
+def AddSessionAffinity(parser, internal_lb=False, hidden=False):
   """Adds session affinity flag to the argparse."""
   choices = ['CLIENT_IP', 'GENERATED_COOKIE', 'NONE']
   if internal_lb:
     choices.extend(['CLIENT_IP_PROTO', 'CLIENT_IP_PORT_PROTO'])
+  if hidden:
+    help_str = argparse.SUPPRESS
+  else:
+    help_str = 'The type of session affinity to use.'
   session_affinity = parser.add_argument(
       '--session-affinity',
       choices=sorted(choices),
       default=None,  # Tri-valued, None => don't include property.
       type=lambda x: x.upper(),
-      help='The type of session affinity to use.')
-  session_affinity.detailed_help = """\
+      help=help_str)
+  if not hidden:
+    session_affinity.detailed_help = """\
       The type of session affinity to use for this backend service.  Possible
       values are:
 
         * none: Session affinity is disabled.
         * client_ip: Route requests to instances based on the hash of the
           client's IP address."""
-  if internal_lb:
-    session_affinity.detailed_help += """
+    if internal_lb:
+      session_affinity.detailed_help += """
         * client_ip_proto: Connections from the same client IP with the same IP
           protocol will go to the same VM in the pool while that VM remains
           healthy. This option cannot be used for HTTP(s) load balancing.
@@ -155,20 +161,25 @@ def AddSessionAffinity(parser, internal_lb=False):
           same IP protocol and port will go to the same VM in the backend while
           that VM remains healthy. This option cannot be used for HTTP(S) load
           balancing."""
-  session_affinity.detailed_help += """
+    session_affinity.detailed_help += """
         * generated_cookie: Route requests to instances based on the contents
           of the "GCLB" cookie set by the load balancer.
       """
 
 
-def AddAffinityCookieTtl(parser):
+def AddAffinityCookieTtl(parser, hidden=False):
+  if hidden:
+    help_str = argparse.SUPPRESS
+  else:
+    help_str = """If session-affinity is set to "generated_cookie", this flag
+            sets the TTL, in seconds, of the resulting cookie."""
   affinity_cookie_ttl = parser.add_argument(
       '--affinity-cookie-ttl',
-      type=int,
+      type=arg_parsers.Duration(),
       default=None,  # Tri-valued, None => don't include property.
-      help=("""If session-affinity is set to "generated_cookie", this flag sets
-            the TTL, in seconds, of the resulting cookie."""))
-  affinity_cookie_ttl.detailed_helpr = """\
+      help=help_str)
+  if not hidden:
+    affinity_cookie_ttl.detailed_help = """\
       If session-affinity is set to "generated_cookie", this flag sets
       the TTL, in seconds, of the resulting cookie.  A setting of 0
       indicates that the cookie should be transient.

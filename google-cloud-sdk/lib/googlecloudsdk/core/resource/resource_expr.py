@@ -21,6 +21,78 @@ from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
 
 
+def _Equals(value, operand):
+  """Applies string equality check to operand."""
+  if value == operand:
+    return True
+  try:
+    if value == float(operand):
+      return True
+  except ValueError:
+    pass
+  try:
+    if value == int(operand):
+      return True
+  except ValueError:
+    pass
+  return False
+
+
+def _Has(value, pattern):
+  """Returns True if value HAS matches pattern.
+
+  Args:
+    value: The value to be matched by pattern.
+    pattern: A (prefix, suffix) string tuple. prefix and/or suffix can be
+      omitted. String comparisons are case insensitive.
+        prefix,suffix   value must start with prefix and end with suffix
+        prefix,None     value must start with prefix
+        None,suffix     value must end with suffix
+        None,None       special case to match non-empty string
+
+  Returns:
+    True if pattern matches value.
+
+  Examples:
+    PATTERN   VALUE       MATCHES
+    abc*xyz   abcpdqxyz   True
+    abc*      abcpdqxyz   True
+    abc       abcpdqxyz   True
+    *         abcpdqxyz   True
+    *                     False (where value is empty string or None)
+    *xyz      abcpdqxyz   True
+    xyz       abcpdqxyz   False
+  """
+  try:
+    value = value.lower()
+  except AttributeError:
+    pass
+  if len(pattern) == 1:
+    try:
+      if int(pattern[0]) == value:
+        return True
+    except ValueError:
+      pass
+    try:
+      if float(pattern[0]) == value:
+        return True
+      if str(float(pattern[0])) == str(value):
+        # Formatting gets rid of epsilon diffs, close enough for filteirng.
+        return True
+    except ValueError:
+      pass
+    return pattern[0] == value
+  if pattern[0]:
+    if not value.startswith(pattern[0]):
+      return False
+    if not pattern[1]:
+      return True
+  if pattern[1]:
+    return value.endswith(pattern[1])
+  # key:* (empty prefix and suffix) special-cased for non-empty string match.
+  return bool(value)
+
+
 def _IsIn(matcher, value, operand):
   """Applies matcher to determine if value matches/contains operand.
 
@@ -247,6 +319,11 @@ class _ExprOperand(object):
     string_value: The token string.
   """
 
+  _NUMERIC_CONSTANTS = {
+      'false': 0,
+      'true': 1,
+  }
+
   def __init__(self, backend, value):
     self.backend = backend
     self.list_value = None
@@ -259,12 +336,15 @@ class _ExprOperand(object):
     elif isinstance(value, basestring):
       self.string_value = value
       try:
-        self.numeric_value = int(value)
-      except ValueError:
+        self.numeric_value = self._NUMERIC_CONSTANTS[value.lower()]
+      except KeyError:
         try:
-          self.numeric_value = float(value)
+          self.numeric_value = int(value)
         except ValueError:
-          pass
+          try:
+            self.numeric_value = float(value)
+          except ValueError:
+            pass
     else:
       self.string_value = unicode(value)
       self.numeric_value = value
@@ -394,71 +474,26 @@ class _ExprHAS(_ExprOperator):
           'Zero or one * expected in : patterns.')
     self._patterns.append(parts)
 
-  @staticmethod
-  def _Has(value, pattern):
-    """Returns True if value HAS matches pattern."""
-    try:
-      value = value.lower()
-    except AttributeError:
-      pass
-    if len(pattern) == 1:
-      try:
-        if int(pattern[0]) == value:
-          return True
-      except ValueError:
-        pass
-      try:
-        if float(pattern[0]) == value:
-          return True
-        if str(float(pattern[0])) == str(value):
-          # Formatting gets rid of epsilon diffs, close enough for filteirng.
-          return True
-      except ValueError:
-        pass
-      return pattern[0] == value
-    if pattern[0]:
-      if not value.startswith(pattern[0]):
-        return False
-      if not pattern[1]:
-        return True
-    if pattern[1]:
-      return value.endswith(pattern[1])
-    # key:* (empty prefix and suffix) special-cased for non-empty string match.
-    return bool(value)
-
-  def Apply(self, value, unused_operand):
+  def Apply(self, value, operand):
     """Checks if value HAS matches operand ignoring case differences.
 
     Args:
       value: The number, string, dict or list object value.
-      unused_operand: Ignored. Precompiled into self._patterns.
+      operand: Non-pattern operand for equality check. The ':' HAS operator
+        operand can be a prefix*suffix pattern or a literal value. Literal
+        values are first checked by the _Equals method to handle numeric
+        constant matching. String literals and patterns are then matched by the
+        _Has method.
 
     Returns:
       True if value HAS matches operand (or any value in operand if it is a
       list) ignoring case differences.
     """
-    return _IsIn(self._Has, value, self._patterns)
+    return _IsIn(_Equals, value, operand) or _IsIn(_Has, value, self._patterns)
 
 
 class _ExprEQ(_ExprOperator):
   """Membership equality match node."""
-
-  @staticmethod
-  def _Equals(value, operand):
-    """Applies string equality check to operand."""
-    if value == operand:
-      return True
-    try:
-      if value == float(operand):
-        return True
-    except ValueError:
-      pass
-    try:
-      if value == int(operand):
-        return True
-    except ValueError:
-      pass
-    return False
 
   def Apply(self, value, operand):
     """Checks if value is equal to operand.
@@ -471,7 +506,7 @@ class _ExprEQ(_ExprOperator):
       True if value is equal to operand (or any value in operand if it is a
       list).
     """
-    return _IsIn(self._Equals, value, operand)
+    return _IsIn(_Equals, value, operand)
 
 
 class _ExprMatch(_ExprOperator):

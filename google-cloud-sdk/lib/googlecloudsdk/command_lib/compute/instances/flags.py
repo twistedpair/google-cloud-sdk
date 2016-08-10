@@ -20,6 +20,7 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 import ipaddr
 
 MIGRATION_OPTIONS = ['MIGRATE', 'TERMINATE']
@@ -29,6 +30,20 @@ LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
 DISK_METAVAR = (
     'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
     '[auto-delete={yes,no}]')
+
+INSTANCE_ARG = compute_flags.ResourceArgument(
+    resource_name='instance',
+    completion_resource_id='compute.instances',
+    zonal_collection='compute.instances',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+INSTANCES_ARG = compute_flags.ResourceArgument(
+    resource_name='instance',
+    name='names',
+    completion_resource_id='compute.instances',
+    zonal_collection='compute.instances',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    plural=True)
 
 
 def AddImageArgs(parser):

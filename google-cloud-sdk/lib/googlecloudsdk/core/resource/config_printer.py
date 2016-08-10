@@ -14,6 +14,8 @@
 
 """config format resource printer."""
 
+import StringIO
+
 from googlecloudsdk.core.resource import resource_printer_base
 
 
@@ -30,17 +32,52 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
     if 'title' in self.attributes:
       self._out.write(self.attributes['title'] + u'\n')
 
-  def _AddRecord(self, record, delimit=False):
-    """Immediately prints the given record in config style.
+  def _AddCategory(self, out, label, items):
+    """Prints items in the label category to out.
 
     Args:
-      record: A JSON-serializable dict of dicts.
+      out: The output stream.
+      label: A list of label strings.
+      items: The items to list for label, either dict iteritems, an enumerated
+        list, or a scalar value.
+    """
+    top = StringIO.StringIO()
+    sub = StringIO.StringIO()
+    for name, value in sorted(items):
+      name = unicode(name)
+      try:
+        values = value.iteritems()
+        self._AddCategory(sub, label + [name], values)
+        continue
+      except AttributeError:
+        pass
+      if value is None:
+        top.write(u'{name} (unset)\n'.format(name=name))
+      elif isinstance(value, list):
+        self._AddCategory(sub, label + [name], enumerate(value))
+      else:
+        top.write(u'{name} = {value}\n'.format(name=name, value=value))
+    top_content = top.getvalue()
+    sub_content = sub.getvalue()
+    if label and (top_content or
+                  sub_content and not sub_content.startswith('[')):
+      out.write(u'[{0}]\n'.format('.'.join(label)))
+    if top_content:
+      out.write(top_content)
+    if sub_content:
+      out.write(sub_content)
+
+  def _AddRecord(self, record, delimit=False):
+    """Prints the given record to self._out in config style.
+
+    Nothing is printed if the record is not a JSON-serializable dict.
+
+    Args:
+      record: A JSON-serializable dict.
       delimit: Ignored.
     """
-    for category, values in sorted(record.iteritems()):
-      self._out.write(u'[{category}]\n'.format(category=category))
-      for name, value in sorted(values.iteritems()):
-        if value is None:
-          self._out.write(u'{name} (unset)\n'.format(name=name))
-        else:
-          self._out.write(u'{name} = {value}\n'.format(name=name, value=value))
+    try:
+      values = record.iteritems()
+      self._AddCategory(self._out, [], values)
+    except AttributeError:
+      pass

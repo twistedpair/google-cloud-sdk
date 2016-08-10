@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common utility functions for Autoscaler processing."""
+"""Common functions and classes for dealing with managed instances groups."""
 
 import argparse
 import random
@@ -134,7 +134,7 @@ def AddAutoscalerArgs(parser,
     """
     parser.add_argument('--queue-scaling-acceptable-backlog-per-instance',
                         type=arg_parsers.BoundedFloat(0.0, None),
-                        help='Queue-based scaling target: auotscaler will aim '
+                        help='Queue-based scaling target: autoscaler will aim '
                         'to assure that average number of tasks in the queue '
                         'is no greater than this value.',)
     parser.add_argument('--queue-scaling-single-worker-throughput',
@@ -229,9 +229,9 @@ def ValidateAutoscalerArgs(args):
           'for queue-based autoscaling.')
 
 
-def AssertInstanceGroupManagerExists(igm_ref, project, compute,
-                                     http, batch_url):
-  """Makes sure the given Instance Group Manager exists.
+def GetInstanceGroupManagerOrThrow(igm_ref, project, compute,
+                                   http, batch_url):
+  """Retrieves the given Instance Group Manager if possible.
 
   Args:
     igm_ref: reference to the Instance Group Manager.
@@ -239,6 +239,8 @@ def AssertInstanceGroupManagerExists(igm_ref, project, compute,
     compute: module representing compute api.
     http: communication channel.
     batch_url: batch url.
+  Returns:
+    Instance Group Manager object.
   """
   if hasattr(igm_ref, 'region'):
     service = compute.regionInstanceGroupManagers
@@ -264,6 +266,7 @@ def AssertInstanceGroupManagerExists(igm_ref, project, compute,
   if errors or len(igm_details) != 1:
     utils.RaiseException(errors, ResourceNotFoundException,
                          error_message='Could not fetch resource:')
+  return igm_details[0]
 
 
 def AutoscalersForZones(zones, project, compute, http, batch_url,
@@ -628,3 +631,49 @@ def CreateAutohealingPolicies(cmd, args):
         policy.initialDelaySec = args.initial_delay
       return [policy]
   return []
+
+
+def _GetInstanceTemplatesSet(*versions_lists):
+  versions_set = set()
+  for versions_list in versions_lists:
+    versions_set.update(versions_list)
+  return versions_set
+
+
+def ValidateVersions(igm_info, new_versions, force=False):
+  """Validates whether versions provided by user are consistent.
+
+  Args:
+    igm_info: instance group manager resource.
+    new_versions: list of new versions.
+    force: if true, we allow any combination of instance templates, as long as
+    they are different. If false, only the following transitions are allowed:
+    X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
+  """
+  if (len(new_versions) == 2
+      and new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
+    raise exceptions.ToolException(
+        'Provided instance templates must be different.')
+  if force:
+    return
+
+  # Only X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
+  # are allowed in gcloud (unless --force)
+  # Equivalently, at most two versions in old and new versions set union
+  if igm_info.versions:
+    igm_templates = [version.instanceTemplate for version in igm_info.versions]
+  elif igm_info.instanceTemplate:
+    igm_templates = [igm_info.instanceTemplate]
+  else:
+    raise exceptions.ToolException(
+        'Either versions or instance template must be specified for '
+        'managed instance group.')
+
+  new_templates = [version.instanceTemplate for version in new_versions]
+  version_count = len(_GetInstanceTemplatesSet(igm_templates, new_templates))
+  if version_count > 2:
+    raise exceptions.ToolException(
+        'Update inconsistent with current state. '
+        'The only allowed transitions between versions are: '
+        'X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y). '
+        'Please check versions templates or use --force.')

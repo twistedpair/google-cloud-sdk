@@ -68,6 +68,7 @@ class ArgumentParser(argparse.ArgumentParser):
   def __init__(self, *args, **kwargs):
     self._calliope_command = kwargs.pop('calliope_command')
     self._flag_collection = kwargs.pop('flag_collection')
+    self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     self._is_group = isinstance(self._calliope_command, CommandGroup)
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
@@ -88,7 +89,13 @@ class ArgumentParser(argparse.ArgumentParser):
 
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
+    self._abbreviated_flags.clear()
     args, argv = self.parse_known_args(args, namespace)
+    for flag, matched_flag in sorted(self._abbreviated_flags.iteritems()):
+      dest = flag[2:].replace('-', '_')
+      if not hasattr(args, dest):
+        log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
+                 'use the full name [%s].', flag, matched_flag)
     if not argv:
       return args
     if hasattr(args, 'implementation_args'):
@@ -347,9 +354,13 @@ class ArgumentParser(argparse.ArgumentParser):
     if '_ARGCOMPLETE' in os.environ:
       return matches
     if matches and len(matches) == 1:
-      matched_flag = matches[0][1]
-      log.warn('Abbreviated flag [%s] will be disabled in release 132.0.0, '
-               'use the full name [%s].', option_string, matched_flag)
+      # Because of nested parsers the same abbreviated flag can get to this spot
+      # multiple times during a single parse_args() call.  Some of the prefix
+      # matches here may actually be exact matches for flags that will appear
+      # in subsequent nested parsers.  We add the abbreviated flags to a dict
+      # that will be checked later to emit one warning per distinct
+      # abbreviation.  argparse catches ambiguous flag matches elsewhere.
+      self._abbreviated_flags[option_string.split('=', 1)[0]] = matches[0][1]
     return matches  # [] to disable abbreviations
     # TODO(user): b/30268716 use this as the method body starting 132.0.0
     # if '_ARGCOMPLETE' in os.environ:
@@ -371,11 +382,14 @@ class CloudSDKSubParsersAction(argparse._SubParsersAction):
   def __init__(self, *args, **kwargs):
     self._calliope_command = kwargs.pop('calliope_command')
     self._flag_collection = kwargs.pop('flag_collection')
+    self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     super(CloudSDKSubParsersAction, self).__init__(*args, **kwargs)
 
   def add_parser(self, name, **kwargs):
     # Pass the same flag collection down to any sub parsers that are created.
     kwargs['flag_collection'] = self._flag_collection
+    # Pass the same abbreviated flags down to any sub parsers that are created.
+    kwargs['abbreviated_flags'] = self._abbreviated_flags
     return super(CloudSDKSubParsersAction, self).add_parser(name, **kwargs)
 
   def IsValidChoice(self, choice):
@@ -528,6 +542,10 @@ class ArgumentInterceptor(object):
     # Callback function that receives the currently entered args at the time of
     # remote completion processing, and returns the command to run.
     list_command_callback_fn = kwargs.pop('list_command_callback_fn', None)
+    # hidden=True => help=argparse.SUPPRESS, but retains help and detailed_help
+    # in the source.
+    if kwargs.pop('hidden', False):
+      kwargs['help'] = argparse.SUPPRESS
 
     positional = not name.startswith('-')
     if positional:
@@ -910,7 +928,8 @@ class CommandCommon(object):
           add_help=False,
           prog=self.dotted_name,
           calliope_command=self,
-          flag_collection=[])
+          flag_collection=[],
+          abbreviated_flags={})
     else:
       # This is a normal sub group, so just add a new subparser to the existing
       # one.
@@ -1233,7 +1252,8 @@ class CommandGroup(CommandCommon):
     if not self._sub_parser:
       self._sub_parser = self._parser.add_subparsers(
           action=CloudSDKSubParsersAction, calliope_command=self,
-          flag_collection=self._parser._flag_collection)
+          flag_collection=self._parser._flag_collection,
+          abbreviated_flags=self._parser._abbreviated_flags)
     return self._sub_parser
 
   def AllSubElements(self):

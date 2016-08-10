@@ -24,13 +24,11 @@ import yaml
 _RUNTIME_COMPONENTS = {
     'java': 'app-engine-java',
     'php55': 'app-engine-php',
+    'go': 'app-engine-go',
 }
 
 
 _WARNING_RUNTIMES = {
-    'go': ('The Cloud SDK no longer ships runtimes for Go apps.  Please use '
-           'the Go SDK that can be found at: '
-           'https://cloud.google.com/appengine/downloads'),
     'php': ('The Cloud SDK no longer ships runtimes for PHP 5.4.  Please set '
             'your runtime to be "php55".')
 }

@@ -100,12 +100,12 @@ class XpnClient(object):
            'XPN host').format(project=project)
     return self._MakeRequestSync(request_tuple, msg)
 
-  def ListOrganizationHostProjects(self, project, organization_id=None):
+  def ListOrganizationHostProjects(self, project, organization_id):
     """List the projects in an organization that are enabled as XPN hosts.
 
     Args:
       project: str, project ID to make the request with.
-      organization_id: str or None, the ID of the organization to list XPN hosts
+      organization_id: str, the ID of the organization to list XPN hosts
           for. If None, the organization is inferred from the project.
 
     Returns:

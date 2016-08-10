@@ -537,6 +537,7 @@ class ResourceArgument(object):
 
     resource_scope_enum, scope_value = _PromptWithScopeChoices(
         self.resource_name, underspecified_names, scope_value_choices)
+
     return self.scopes[resource_scope_enum], scope_value
 
 
@@ -585,12 +586,10 @@ def _PromptWithScopeChoices(resource_name, underspecified_names,
            .format(resource_name,
                    '\n '.join('- [{0}]'.format(n)
                               for n in sorted(underspecified_names))))
+  flags = ' or '.join(sorted([s.flag_name for s in scope_value_choices.keys()]))
+
   idx = console_io.PromptChoice(
-      options=choice_names,
-      message='{0}choose a {1}:'.format(
-          title,
-          ' or '.join(sorted([s.flag_name
-                              for s in scope_value_choices.keys()]))))
+      options=choice_names, message='{0}choose a {1}:'.format(title, flags))
   if idx is None:
     return None, None
   else:

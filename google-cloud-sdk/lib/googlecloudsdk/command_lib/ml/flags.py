@@ -11,17 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for commands that deal with Organizations."""
+"""Provides common arguments for the ML command surface."""
+
 from googlecloudsdk.calliope import base
 
+VERSION_NAME = base.Argument('version', help='Name of the model version.')
+VERSION_DATA = base.Argument(
+    '--origin', required=True, help='GCS location containing the model graph.')
+JOB_NAME = base.Argument('job', help='Name of the job.')
 
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
 
-
-def IdArg(description):
-  return base.Argument(
-      'id',
-      metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations',
-      help='ID for the organization {0}'.format(description))
+def GetModelName(positional=True, required=False):
+  help_text = 'Name of the model.'
+  if positional:
+    return base.Argument('model', help=help_text)
+  else:
+    return base.Argument('--model', help=help_text, required=required)

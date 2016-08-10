@@ -1294,6 +1294,7 @@ def RestartCommand(command=None, args=None, python=None, block=True):
     execution_utils.Exec(args)
   else:
     current_platform = platforms.Platform.Current()
+    popen_args = {}
     if console_io.CanPrompt():
       popen_args = current_platform.AsyncPopenArgs()
       if (current_platform.operating_system is
@@ -1304,8 +1305,4 @@ def RestartCommand(command=None, args=None, python=None, block=True):
         def Quote(s):
           return '"' + s + '"'
         args = 'cmd.exe /c "{0} && pause"'.format(' '.join(map(Quote, args)))
-    else:
-      # We're in the non-interactive setting, so we don't want to e.g. open a
-      # new window or wait for user acknowledgement
-      popen_args = current_platform.SyncPopenArgs()
     subprocess.Popen(args, shell=True, **popen_args)

@@ -55,6 +55,7 @@ class GitVersionException(Error):
   """Exceptions for when git version is too old."""
 
   def __init__(self, fmtstr, cur_version, min_version):
+    self.cur_version = cur_version
     super(GitVersionException, self).__init__(
         fmtstr.format(cur_version=cur_version, min_version=min_version))
 
@@ -496,16 +497,16 @@ class Git(object):
         # If this is a Google-hosted repo, clone with the cred helper.
         try:
           CheckGitVersion(_HELPER_MIN)
-        except GitVersionException:
+        except GitVersionException as e:
           helper_min = '.'.join(str(i) for i in _HELPER_MIN)
           log.warn(textwrap.dedent("""\
-              You are cloning a Google-hosted repository with a {0} version of git
-              which is older than 2.0.1. If you upgrade to 2.0.1 or later, gcloud can
-              handle authentication to this repository. Otherwise, to
-              authenticate, use your Google account and the password found by
-              running the following command.
-               $ gcloud auth print-access-token
-              """.format(helper_min)))
+          You are cloning a Google-hosted repository with a
+          {current} which is older than {min_version}. If you upgrade
+          to {min_version} or later, gcloud can handle authentication to
+          this repository. Otherwise, to authenticate, use your Google
+          account and the password found by running the following command.
+           $ gcloud auth print-access-token""".format(
+               current=e.cur_version, min_version=helper_min)))
           cmd = ['git', 'clone', self._uri, abs_repository_path]
         else:
           cmd = ['git', 'clone', self._uri, abs_repository_path,

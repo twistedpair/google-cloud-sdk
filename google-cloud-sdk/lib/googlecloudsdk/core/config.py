@@ -437,6 +437,31 @@ def GcloudPath():
       os.path.dirname(os.path.dirname(googlecloudsdk.__file__)), 'gcloud.py')
 
 
+_CLOUDSDK_GLOBAL_CONFIG_DIR_NAME = ('gcloud' +
+                                    INSTALLATION_CONFIG.config_suffix)
+
+
+def _GetGlobalConfigDir():
+  """Returns the path to the user's global config area.
+
+  Returns:
+    str: The path to the user's global config area.
+  """
+  # Name of the directory that roots a cloud SDK workspace.
+  global_config_dir = file_utils.GetEnvPathValue(CLOUDSDK_CONFIG)
+  if global_config_dir:
+    return global_config_dir
+  if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
+    return os.path.join(os.path.expanduser('~'), '.config',
+                        _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
+  appdata = file_utils.GetEnvPathValue('APPDATA')
+  if appdata:
+    return os.path.join(appdata, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
+  # This shouldn't happen unless someone is really messing with things.
+  drive = os.environ.get('SystemDrive', 'C:')
+  return os.path.join(drive, os.path.sep, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
+
+
 class Paths(object):
   """Class to encapsulate the various directory paths of the Cloud SDK.
 
@@ -447,28 +472,11 @@ class Paths(object):
     workspace_config_dir: str, The path to the config directory under the
       current workspace, or None if not in a workspace.
   """
-  # Name of the directory that roots a cloud SDK workspace.
-  _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME = ('gcloud' +
-                                      INSTALLATION_CONFIG.config_suffix)
-
   CLOUDSDK_STATE_DIR = '.install'
   CLOUDSDK_PROPERTIES_NAME = 'properties'
 
   def __init__(self):
-    if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-      try:
-        default_config_path = os.path.join(
-            os.environ['APPDATA'], Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
-      except KeyError:
-        # This should never happen unless someone is really messing with things.
-        drive = os.environ.get('SystemDrive', 'C:')
-        default_config_path = os.path.join(
-            drive, '\\', Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
-    else:
-      default_config_path = os.path.join(
-          os.path.expanduser('~'), '.config',
-          Paths._CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
-    self.global_config_dir = os.getenv(CLOUDSDK_CONFIG, default_config_path)
+    self.global_config_dir = _GetGlobalConfigDir()
 
   @property
   def sdk_root(self):

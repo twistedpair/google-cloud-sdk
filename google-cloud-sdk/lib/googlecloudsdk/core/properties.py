@@ -14,6 +14,7 @@
 
 """Read and write properties for the CloudSDK."""
 
+import functools
 import os
 import re
 import sys
@@ -87,6 +88,9 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     r'(?:/|[/?]\S+/)'
     r'$', re.IGNORECASE)
 
+_NEVER = 'never'
+_PROMPT = 'prompt'
+
 
 def _LooksLikeAProjectName(project):
   """Heuristics testing if a string looks like a project name, but an id."""
@@ -95,6 +99,27 @@ def _LooksLikeAProjectName(project):
     return True
 
   return any(c in project for c in ' !"\'')
+
+
+def _BooleanValidator(property_name, value):
+  """Validates boolean properties.
+
+  Args:
+    property_name: str, the name of the property
+    value: str | bool, the value to validate
+
+  Raises:
+    InvalidValueError: if value is not boolean
+  """
+  accepted_strings = ['true', '1', 'on', 'yes', 'y',
+                      'false', '0', 'off', 'no', 'n',
+                      '', 'none']
+  if str(value).lower() not in accepted_strings:
+    raise InvalidValueError(
+        'The [{0}] value [{1}] is not valid. Possible values: [{2}]. '
+        '(See http://yaml.org/type/bool.html)'.format(
+            property_name, value,
+            ', '.join([x if x else "''" for x in accepted_strings])))
 
 
 class Error(exceptions.Error):
@@ -388,6 +413,7 @@ class _Section(object):
                callbacks=None, default=None):
     return self._Add(name=name, help_text=help_text, internal=internal,
                      hidden=hidden, callbacks=callbacks, default=default,
+                     validator=functools.partial(_BooleanValidator, name),
                      choices=('true', 'false'))
 
   def Property(self, property_name):
@@ -573,10 +599,7 @@ class _SectionContainer(_Section):
         'Container Engine.')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
-        # TODO(b/28962426): Default to True (use legacy client cert auth) until
-        # we bundle a kubectl that understands how to use GCP auth. Once we ship
-        # a 1.3 kubectl, the default should change to False.
-        default=True,
+        default=False,
         help_text='Use the cluster\'s client certificate to authenticate to '
         'the cluster API server.')
     def BuildTimeoutValidator(build_timeout):
@@ -719,6 +742,14 @@ class _SectionCore(_Section):
         help_text='Maximum number of days to retain log files before deleting.'
         'If unset, defaults to 30.',
         default='30')
+    self.enable_crash_reporting = self._Add(
+        'enable_crash_reporting',
+        choices=(_NEVER, _PROMPT),
+        default=_NEVER,
+        hidden=True,
+        help_text='If set to {0}, prompt to report an error after failed gcloud'
+        ' invocations. If set to {1}, do not ever report errors.'.format(
+            _PROMPT, _NEVER))
 
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
@@ -1105,11 +1136,16 @@ class _Property(object):
     if self.__validator:
       self.__validator(value)
 
-  def GetBool(self, required=False, validate=True):
+  # TODO(b/30403873): Make this validate by default
+  def GetBool(self, required=False, validate=False):
     """Gets the boolean value for this property.
 
     Looks first in the environment, then in the workspace config, then in the
     global config, and finally at callbacks.
+
+    Does not validate by default because boolean properties were not previously
+    validated, and startup functions rely on boolean properties that may have
+    invalid values from previous installations
 
     Args:
       required: bool, True to raise an exception if the property is not set.
@@ -1118,11 +1154,12 @@ class _Property(object):
 
     Returns:
       bool, The boolean value for this property, or None if it is not set.
+
+    Raises:
+      InvalidValueError: if value is not boolean
     """
     value = _GetBoolProperty(self, named_configs.ActivePropertiesFile.Load(),
-                             required)
-    if validate:
-      self.Validate(value)
+                             required, validate=validate)
     return value
 
   def GetInt(self, required=False, validate=True):
@@ -1444,7 +1481,7 @@ def _GetPropertyWithoutCallback(prop, properties_file):
   return None
 
 
-def _GetBoolProperty(prop, properties_file, required):
+def _GetBoolProperty(prop, properties_file, required, validate=False):
   """Gets the given property in bool form.
 
   Args:
@@ -1452,14 +1489,17 @@ def _GetBoolProperty(prop, properties_file, required):
     properties_file: properties_file.PropertiesFile, An already loaded
       properties files to use.
     required: bool, True to raise an exception if the property is not set.
+    validate: bool, True to validate the value
 
   Returns:
     bool, The value of the property, or None if it is not set.
   """
   value = _GetProperty(prop, properties_file, required)
-  if value is None:
+  if validate:
+    _BooleanValidator(prop.name, value)
+  if value is None or str(value).lower() == 'none':
     return None
-  return value.lower() in ['1', 'true', 'on', 'yes']
+  return value.lower() in ['1', 'true', 'on', 'yes', 'y']
 
 
 def _GetIntProperty(prop, properties_file, required):

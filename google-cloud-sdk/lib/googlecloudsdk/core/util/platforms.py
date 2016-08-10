@@ -16,6 +16,7 @@
 
 import os
 import platform
+import subprocess
 import sys
 
 
@@ -257,25 +258,37 @@ class Platform(object):
   def AsyncPopenArgs(self):
     """Returns the args for spawning an async process using Popen on this OS.
 
+    Make sure the main process does not wait for the new process. On windows
+    this means setting the 0x8 creation flag to detach the process.
+
+    Killing a group leader kills the whole group. Setting creation flag 0x200 on
+    Windows or running setsid on *nix makes sure the new process is in a new
+    session with the new process the group leader. This means it can't be killed
+    if the parent is killed.
+
+    Finally, all file descriptors (FD) need to be closed so that waiting for the
+    output of the main process does not inadvertently wait for the output of the
+    new process, which means waiting for the termination of the new process.
+    If the new process wants to write to a file, it can open new FDs.
+
     Returns:
       {str:}, The args for spawning an async process using Popen on this OS.
     """
     args = {}
     if self.operating_system == OperatingSystem.WINDOWS:
-      args['close_fds'] = True
+      args['close_fds'] = True  # This is enough to close _all_ FDs on windows.
       detached_process = 0x00000008
-      args['creationflags'] = detached_process
-    return args
-
-  def SyncPopenArgs(self):
-    """Returns args for spawning a synchronous process using Popen on this OS.
-
-    Returns:
-      {str:}, The args for spawning a syncronous process using Popen on this OS.
-    """
-    args = {}
-    if self.operating_system == OperatingSystem.WINDOWS:
-      args['close_fds'] = True
+      create_new_process_group = 0x00000200
+      # 0x008 | 0x200 == 0x208
+      args['creationflags'] = detached_process | create_new_process_group
+    else:
+      # Killing a group leader kills the whole group.
+      # Create a new session with the new process the group leader.
+      args['preexec_fn'] = os.setsid
+      args['close_fds'] = True  # This closes all FDs _except_ 0, 1, 2 on *nix.
+      args['stdin'] = subprocess.PIPE
+      args['stdout'] = subprocess.PIPE
+      args['stderr'] = subprocess.PIPE
     return args
 
 

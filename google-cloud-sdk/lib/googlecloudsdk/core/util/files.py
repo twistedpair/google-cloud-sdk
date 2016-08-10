@@ -25,6 +25,7 @@ import tempfile
 import time
 import traceback
 
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 
@@ -44,6 +45,20 @@ class Error(Exception):
   pass
 
 
+def GetEnvPathValue(name):
+  """Returns the value of the env var name decoded as a file system path.
+
+  Args:
+    name: str, The env var name. The value contains a possibly encoded file
+      system path name.
+
+  Returns:
+    The value of the env var name decoded as a file system path.
+  """
+  value = os.getenv(name)
+  return console_attr.DecodeFromInput(value) if value else value
+
+
 def MakeDir(path, mode=0777):
   """Creates the given directory and its parents and does not fail if it exists.
 
@@ -60,16 +75,16 @@ def MakeDir(path, mode=0777):
   try:
     os.makedirs(path, mode=mode)
   except OSError as ex:
-    base_msg = 'Could not create directory [{0}]: '.format(path)
+    base_msg = u'Could not create directory [{0}]: '.format(path)
     if ex.errno == errno.EEXIST and os.path.isdir(path):
       pass
     elif ex.errno == errno.EEXIST and os.path.isfile(path):
-      raise Error(base_msg + 'A file exists at that location.\n\n')
+      raise Error(base_msg + u'A file exists at that location.\n\n')
     elif ex.errno == errno.EACCES:
       raise Error(
-          base_msg + 'Permission denied.\n\n' +
-          ('Please verify that you have permissions to write to the parent '
-           'directory.'))
+          base_msg + u'Permission denied.\n\n' +
+          (u'Please verify that you have permissions to write to the parent '
+           u'directory.'))
     else:
       raise
 
@@ -133,8 +148,9 @@ def _RetryOperation(exc_info, func, args,
   """
   retries_left = NUM_RETRIES
   while retries_left > 0 and retry_test_function(func, exc_info):
-    logging.debug('Retrying file system operation: %s, %s, %s, retries_left=%s',
-                  func, args, exc_info, retries_left)
+    logging.debug(
+        u'Retrying file system operation: %s, %s, %s, retries_left=%s',
+        func, args, exc_info, retries_left)
     retries_left -= 1
     try:
       _WaitForRetry(retries_left)
@@ -154,7 +170,7 @@ def _HandleRemoveError(func, failed_path, exc_info):
     failed_path: str, The path of the file the error occurred on.
     exc_info: sys.exc_info(), The current exception state.
   """
-  logging.debug('Handling file system error: %s, %s, %s',
+  logging.debug(u'Handling file system error: %s, %s, %s',
                 func, failed_path, exc_info)
 
   # Access denied on Windows. This happens when trying to delete a readonly
@@ -184,7 +200,7 @@ def RmTree(path):
   shutil.rmtree(path, onerror=_HandleRemoveError)
   retries_left = NUM_RETRIES
   while os.path.isdir(path) and retries_left > 0:
-    logging.debug('Waiting for directory to disappear: %s', path)
+    logging.debug(u'Waiting for directory to disappear: %s', path)
     retries_left -= 1
     _WaitForRetry(retries_left)
 
@@ -218,21 +234,21 @@ def MoveDir(src, dst):
     Error: If the src or dst directories are not valid.
   """
   if not os.path.isdir(src):
-    raise Error("Source path '{0}' must be a directory".format(src))
+    raise Error(u"Source path '{0}' must be a directory".format(src))
   if os.path.exists(dst):
-    raise Error("Destination path '{0}' already exists".format(dst))
+    raise Error(u"Destination path '{0}' already exists".format(dst))
   if _DestInSrc(src, dst):
-    raise Error("Cannot move a directory '{0}' into itself '{0}'."
+    raise Error(u"Cannot move a directory '{0}' into itself '{0}'."
                 .format(src, dst))
   try:
-    logging.debug('Attempting to move directory [%s] to [%s]', src, dst)
+    logging.debug(u'Attempting to move directory [%s] to [%s]', src, dst)
     try:
       os.rename(src, dst)
     except OSError:
       if not _RetryOperation(sys.exc_info(), os.rename, (src, dst)):
         raise
   except OSError as e:
-    logging.debug('Directory rename failed.  Falling back to copy. [%s]', e)
+    logging.debug(u'Directory rename failed.  Falling back to copy. [%s]', e)
     shutil.copytree(src, dst, symlinks=True)
     RmTree(src)
 
@@ -282,7 +298,7 @@ def IsDirAncestorOf(ancestor_directory, path):
     ValueError: if the given ancestor_directory is not, in fact, a directory.
   """
   if not os.path.isdir(ancestor_directory):
-    raise ValueError('[{0}] is not a directory.'.format(ancestor_directory))
+    raise ValueError(u'[{0}] is not a directory.'.format(ancestor_directory))
 
   path = os.path.realpath(path)
   ancestor_directory = os.path.realpath(ancestor_directory)
@@ -294,7 +310,7 @@ def IsDirAncestorOf(ancestor_directory, path):
 
   rel = os.path.relpath(path, ancestor_directory)
   # rel can be just '..' if path is a child of ancestor_directory
-  return not rel.startswith('..' + os.path.sep) and rel != '..'
+  return not rel.startswith(u'..' + os.path.sep) and rel != '..'
 
 
 def SearchForExecutableOnPath(executable, path=None):
@@ -316,7 +332,7 @@ def SearchForExecutableOnPath(executable, path=None):
     are found.
   """
   if not path:
-    path = os.getenv('PATH')
+    path = GetEnvPathValue('PATH')
   paths = path.split(os.pathsep)
 
   matching = []
@@ -389,14 +405,14 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
     internal error.
   """
   if os.path.splitext(executable)[1]:
-    raise ValueError('FindExecutableOnPath({0},...) failed because first '
-                     'argument must not have an extension.'.format(executable))
+    raise ValueError(u'FindExecutableOnPath({0},...) failed because first '
+                     u'argument must not have an extension.'.format(executable))
 
   if os.path.dirname(executable):
-    raise ValueError('FindExecutableOnPath({0},...) failed because first '
-                     'argument must not have a path.'.format(executable))
+    raise ValueError(u'FindExecutableOnPath({0},...) failed because first '
+                     u'argument must not have a path.'.format(executable))
 
-  effective_path = path if path is not None else os.environ.get('PATH')
+  effective_path = path if path is not None else GetEnvPathValue('PATH')
   effective_pathext = (pathext if pathext is not None
                        else _PlatformExecutableExtensions(
                            platforms.OperatingSystem.Current()))
@@ -419,7 +435,7 @@ def HasWriteAccessInDir(directory):
   """
   if not os.path.isdir(directory):
     raise ValueError(
-        'The given path [{path}] is not a directory.'.format(path=directory))
+        u'The given path [{path}] is not a directory.'.format(path=directory))
   # Appending . tests search permissions, especially on windows, by forcing
   # 'directory' to be treated as a directory
   path = os.path.join(directory, '.')
@@ -435,7 +451,7 @@ def HasWriteAccessInDir(directory):
   # results in false positive writability tests.
 
   path = os.path.join(directory,
-                      '.HasWriteAccessInDir{pid}'.format(pid=os.getpid()))
+                      u'.HasWriteAccessInDir{pid}'.format(pid=os.getpid()))
   # while True: should work here, but we limit the retries just in case.
   for _ in range(10):
 
@@ -448,7 +464,7 @@ def HasWriteAccessInDir(directory):
         return False
       if e.errno in [errno.ENOTDIR, errno.ENOENT]:
         # The directory has been removed or replaced by a file.
-        raise ValueError('The given path [{path}] is not a directory.'.format(
+        raise ValueError(u'The given path [{path}] is not a directory.'.format(
             path=directory))
       raise
 
@@ -497,8 +513,8 @@ class TemporaryDirectory(object):
     except:  # pylint: disable=bare-except
       if not prev_exc_type:
         raise
-      message = ('Got exception {0}'
-                 'while another exception was active {1} [{2}]'
+      message = (u'Got exception {0}'
+                 u'while another exception was active {1} [{2}]'
                  .format(traceback.format_exc(),
                          prev_exc_type, prev_exc_val))
       raise prev_exc_type, message, prev_exc_trace
@@ -763,7 +779,7 @@ class FileLock(object):
     try:
       self.Unlock()
     except Error as e:
-      logging.debug('Encountered error unlocking file %s: %s', self._path, e)
+      logging.debug(u'Encountered error unlocking file %s: %s', self._path, e)
     # Have Python re-raise the exception which caused the context to exit, if
     # any.
     return False
@@ -819,4 +835,4 @@ def GetFileContents(path):
   except EnvironmentError:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
-    raise Error('Unable to read file [{0}]'.format(path))
+    raise Error(u'Unable to read file [{0}]'.format(path))

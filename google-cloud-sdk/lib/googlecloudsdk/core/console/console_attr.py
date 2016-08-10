@@ -91,7 +91,6 @@ import os
 import sys
 import unicodedata
 
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 
 
@@ -204,7 +203,10 @@ class ConsoleAttr(object):
         win -- Windows code page 437.
       out: The console output file stream, log.out if None.
     """
-    self._out = out or log.out
+    if not out:
+      from googlecloudsdk.core import log  # pylint: disable=g-import-not-at-top, avoid config import loop
+      out = log.out
+    self._out = out
     # Normalize the encoding name.
     console_encoding = None
     if not encoding:
@@ -544,13 +546,19 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
   return attr
 
 
-def ResetConsoleAttr():
+def ResetConsoleAttr(encoding=None):
   """Resets the console attribute state to the console default.
+
+  Args:
+    encoding: Reset to this encoding instead of the default.
+      ascii -- ASCII. This is the default.
+      utf8 -- UTF-8 unicode.
+      win -- Windows code page 437.
 
   Returns:
     The global ConsoleAttr state object.
   """
-  return GetConsoleAttr(reset=True)
+  return GetConsoleAttr(encoding=encoding, reset=True)
 
 
 def GetCharacterDisplayWidth(char):
