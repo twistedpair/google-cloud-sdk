@@ -29,6 +29,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -206,8 +207,12 @@ class _MetricsCollector(object):
         ('cd4', 'interactive', console_io.IsInteractive(error=True,
                                                         heuristic=True)),
         ('cd5', 'python_version', platform.python_version()),
+        # cd6 passed as argument to _GAEvent - cd6 = Flag Names
         ('cd7', 'environment_version',
-         properties.VALUES.metrics.environment_version.Get())]
+         properties.VALUES.metrics.environment_version.Get()),
+        # cd8 passed as argument to _GAEvent - cd8 = Error
+        # cd9 passed as argument to _GAEvent - cd9 = Error Extra Info
+    ]
 
     self._ga_params = [
         ('v', '1'),
@@ -313,8 +318,9 @@ class _MetricsCollector(object):
         ('el', event.label),
         ('ev', event.value),
     ]
-    params.extend([(k, v) for k, v in event.custom_dimensions.iteritems()
-                   if v is not None])
+    custom_dimensions = [(k, v) for k, v in event.custom_dimensions.iteritems()
+                         if v is not None]
+    params.extend(sorted(custom_dimensions))
     params.extend(self._ga_params)
     data = urllib.urlencode(params)
 
@@ -331,8 +337,9 @@ class _MetricsCollector(object):
       self._metrics = []
 
     # TODO(user): make this not depend on the file.
+    this_file = console_attr.DecodeFromInput(__file__)
     reporting_script_path = os.path.realpath(
-        os.path.join(os.path.dirname(__file__), 'metrics_reporter.py'))
+        os.path.join(os.path.dirname(this_file), 'metrics_reporter.py'))
     execution_args = execution_utils.ArgsForPythonTool(
         reporting_script_path, temp_metrics_file.name)
 
@@ -354,17 +361,28 @@ class _MetricsCollector(object):
       log.debug('Metrics reporting process finished.')
 
 
-def _CollectGAMetricAndSetTimerContext(category, action, label, value=0,
-                                       flag_names=None):
+def _CollectGAMetricAndSetTimerContext(
+    category, action, label, value=0, flag_names=None,
+    error=None, error_extra_info=None):
   """Common code for processing a GA event."""
   collector = _MetricsCollector.GetCollector()
+
   if collector:
     # Override label for tests. This way we can filter by test group.
     if _MetricsCollector.test_group and category is not _GA_ERROR_CATEGORY:
       label = _MetricsCollector.test_group
+
+    cds = {}
+    if flag_names is not None:
+      cds['cd6'] = flag_names
+    if error is not None:
+      cds['cd8'] = error
+    if error_extra_info is not None:
+      cds['cd9'] = str(error_extra_info)
+
     collector.CollectGAMetric(
         _GAEvent(category=category, action=action, label=label, value=value,
-                 cd6=flag_names))
+                 **cds))
 
     # Dont include version. We already send it as the rls CSI parameter.
     if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
@@ -415,6 +433,22 @@ def StopTestMetrics():
   _MetricsCollector.ResetCollectorInstance(True)
 
 
+def GetCIDIfMetricsEnabled():
+  """Gets the client id if metrics collection is enabled.
+
+  Returns:
+    str, The hex string of the client id if metrics is enabled, else an empty
+    string.
+  """
+  # pylint: disable=protected-access
+  if _MetricsCollector._IsDisabled():
+    # We directly set an environment variable with the return value of this
+    # function, and so return the empty string rather than None.
+    return ''
+  return _MetricsCollector._GetCID()
+  # pylint: enable=protected-access
+
+
 @CaptureAndLogException
 @atexit.register
 def Shutdown():
@@ -439,20 +473,34 @@ def Installs(component_id, version_string):
 
 
 @CaptureAndLogException
-def Commands(command_path, version_string, flag_names):
+def Commands(command_path, version_string, flag_names,
+             error=None, error_extra_info=None):
   """Logs that a gcloud command was run.
 
   Args:
-    command_path: str, The '.' separated name of the calliope command.
-    version_string: str, The version of the command.
+    command_path: [str], The '.' separated name of the calliope command.
+    version_string: [str], The version of the command.
     flag_names: [str], The names of the flags that were used during this
       execution.
+    error: [class], The class (not the instance) of the Exception if a user
+      tried to run a command that produced an error.
+    error_extra_info: [str], Extra info that that we want to log with the error.
+      This can be the error message or suggestion for parse error, etc.
   """
   if not version_string:
     version_string = 'unknown'
+
+  if error:
+    try:
+      error = '{0}.{1}'.format(error.__module__, error.__name__)
+    # pylint:disable=bare-except, Never want to fail on metrics reporting.
+    except:
+      error = 'unknown'
+
   _CollectGAMetricAndSetTimerContext(
       _GA_COMMANDS_CATEGORY, command_path, version_string,
-      flag_names=_GetFlagNameString(flag_names))
+      flag_names=_GetFlagNameString(flag_names),
+      error=error, error_extra_info=error_extra_info)
 
 
 @CaptureAndLogException
@@ -471,19 +519,18 @@ def Error(command_path, exc, flag_names):
   """Logs that a top level Exception was caught for a gcloud command.
 
   Args:
-    command_path: str, The '.' separated name of the calliope command.
-    exc: Exception, The exception that was caught.
+    command_path: [str], The '.' separated name of the calliope command.
+    exc: [class], The class (not the instance) of the exception that was caught.
     flag_names: [str], The names of the flags that were used during this
       execution.
   """
   try:
-    cls = exc.__class__
-    name = '{0}.{1}'.format(cls.__module__, cls.__name__)
+    exc_path = '{0}.{1}'.format(exc.__module__, exc.__name__)
   # pylint:disable=bare-except, Never want to fail on metrics reporting.
   except:
-    name = 'unknown'
+    exc_path = 'unknown'
   _CollectGAMetricAndSetTimerContext(
-      _GA_ERROR_CATEGORY, command_path, name,
+      _GA_ERROR_CATEGORY, command_path, exc_path,
       flag_names=_GetFlagNameString(flag_names))
 
 

@@ -37,13 +37,17 @@ _python_argcomplete() {
             COMPREPLY[$n]=$prefix${COMPREPLY[$n]}
         done
     fi
-    pat='\ '
     for ((n=0; n < ${#COMPREPLY[@]}; n++)); do
         match=${COMPREPLY[$n]%' '}
         if [[ $match != '' ]]; then
             COMPREPLY[$n]=${match//? /' '}' '
         fi
     done
+    # if flags argument has a single completion and ends in  '= ', delete ' '
+    if [[ ${#COMPREPLY[@]} == 1 && ${COMPREPLY[0]} == -* &&
+          ${COMPREPLY[0]} == *'= ' ]]; then
+        COMPREPLY[0]=${COMPREPLY[0]%' '}
+    fi
 }
 complete -o nospace -o default -F _python_argcomplete "gcloud"
 

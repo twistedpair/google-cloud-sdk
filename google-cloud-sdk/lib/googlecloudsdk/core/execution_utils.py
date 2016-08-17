@@ -27,6 +27,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess
 
@@ -127,23 +128,16 @@ def _GetToolEnv(env=None):
   # environment so that those commands will use the same settings.
   for s in properties.VALUES:
     for p in s:
-      _AddOrRemoveVar(
+      console_attr.SetEncodedValue(
           env, p.EnvironmentName(), p.Get(required=False, validate=False))
 
   # Configuration needs to be handled separately because it's not a real
   # property (although it behaves like one).
-  _AddOrRemoveVar(env,
-                  config.CLOUDSDK_ACTIVE_CONFIG_NAME,
-                  named_configs.ConfigurationStore.ActiveConfig().name)
+  console_attr.SetEncodedValue(
+      env, config.CLOUDSDK_ACTIVE_CONFIG_NAME,
+      named_configs.ConfigurationStore.ActiveConfig().name)
 
   return env
-
-
-def _AddOrRemoveVar(d, name, value):
-  if value is None:
-    d.pop(name, None)
-  else:
-    d[name] = value
 
 
 def ArgsForPythonTool(executable_path, *args, **kwargs):

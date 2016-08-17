@@ -23,6 +23,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from dateutil import parser
 from dateutil import tz
 
+from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
@@ -34,7 +35,9 @@ import yaml
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
-OP_BASE_CMD = 'gcloud alpha service-management operations '
+FINGERPRINT_REGEX = re.compile(
+    r'^([a-f0-9][a-f0-9]:){19}[a-f0-9][a-f0-9]$', re.IGNORECASE)
+OP_BASE_CMD = 'gcloud beta service-management operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
 
@@ -45,6 +48,14 @@ def GetMessagesModule():
 
 def GetClientInstance():
   return apis.GetClientInstance('servicemanagement', 'v1')
+
+
+def GetApiKeysMessagesModule():
+  return apis.GetMessagesModule('apikeys', 'v1')
+
+
+def GetApiKeysClientInstance():
+  return apis.GetClientInstance('apikeys', 'v1')
 
 
 def GetIamMessagesModule():
@@ -59,6 +70,16 @@ def GetServiceManagementServiceName():
   return 'servicemanagement.googleapis.com'
 
 
+def ParseOperationName(op_name):
+  optional_prefix_to_strip = 'operations/'
+
+  # If a user includes the leading "operations/", just strip it off
+  if op_name.startswith(optional_prefix_to_strip):
+    op_name = op_name[len(optional_prefix_to_strip):]
+
+  return op_name
+
+
 def GetValidatedProject(project_id):
   # If supplied a project explicitly, validate it, then return it.
   if project_id:
@@ -66,6 +87,55 @@ def GetValidatedProject(project_id):
   else:
     project_id = properties.VALUES.core.project.Get(required=True)
   return project_id
+
+
+def GetProjectSettings(service, consumer_project_id, view):
+  """Returns the project settings for a given service, project, and view.
+
+  Args:
+    service: The service for which to return project settings.
+    consumer_project_id: The consumer project id for which to return settings.
+    view: The view (CONSUMER_VIEW or PRODUCER_VIEW).
+
+  Returns:
+    A ProjectSettings message with the settings populated.
+  """
+  # Shorten the request names for better readability
+  get_request = (GetMessagesModule()
+                 .ServicemanagementServicesProjectSettingsGetRequest)
+
+  # Get the current list of quota settings to see if the quota override
+  # exists in the first place.
+  request = get_request(
+      serviceName=service,
+      consumerProjectId=consumer_project_id,
+      view=view,
+  )
+
+  return GetClientInstance().services_projectSettings.Get(request)
+
+
+def GetEnabledListRequest(project_id):
+  return GetMessagesModule().ServicemanagementServicesListRequest(
+      consumerProjectId=project_id
+  )
+
+
+def GetAvailableListRequest(project_id):
+  # The constant strings here are special settings that will make Inception
+  # return all service-management available to a project.
+  return GetMessagesModule().ServicemanagementServicesListRequest(
+      consumerProjectId=project_id,
+      category=('servicemanagement.googleapis.com/'
+                'categories/google-services'),
+      expand='consumerSettings',
+  )
+
+
+def GetProducedListRequest(project_id):
+  return GetMessagesModule().ServicemanagementServicesListRequest(
+      producerProjectId=project_id
+  )
 
 
 def GetError(error, verbose=False):
@@ -92,6 +162,109 @@ def PrettyPrint(resource, print_format='json'):
       resources=[resource],
       print_format=print_format,
       out=log.out)
+
+
+@http_error_handler.HandleHttpErrors
+def PushGoogleServiceConfig(service_name, project, config_contents):
+  """Pushes a given Google service configuration.
+
+  Args:
+    service_name: name of the service
+    project: the producer project Id
+    config_contents: the contents of the Google Service Config file.
+
+  Returns:
+    Config Id assigned by the server which is the service configuration version
+  """
+  messages = GetMessagesModule()
+  client = GetClientInstance()
+
+  service_config = encoding.JsonToMessage(messages.Service, config_contents)
+  service_config.producerProjectId = project
+  create_request = (
+      messages.ServicemanagementServicesConfigsCreateRequest(
+          serviceName=service_name,
+          service=service_config,
+      ))
+  service_resource = client.services_configs.Create(create_request)
+  return service_resource.id
+
+
+@http_error_handler.HandleHttpErrors
+def PushOpenApiServiceConfig(
+    service_name, spec_file_contents, spec_file_path, async):
+  """Pushes a given Open API service configuration.
+
+  Args:
+    service_name: name of the service
+    spec_file_contents: the contents of the Open API spec file.
+    spec_file_path: the path of the Open API spec file.
+    async: whether to wait for aync operations or not.
+
+  Returns:
+    Config Id assigned by the server which is the service configuration version
+  """
+  messages = GetMessagesModule()
+  client = GetClientInstance()
+
+  config_file = messages.ConfigFile(
+      fileContents=spec_file_contents,
+      filePath=spec_file_path,
+      # Always use YAML because JSON is a subset of YAML.
+      fileType=(messages.ConfigFile.
+                FileTypeValueValuesEnum.OPEN_API_YAML),
+  )
+  config_source = messages.ConfigSource()
+  config_source.files.append(config_file)
+  config_source_request = messages.SubmitConfigSourceRequest(
+      configSource=config_source,
+  )
+  submit_request = (
+      messages.ServicemanagementServicesConfigsSubmitRequest(
+          serviceName=service_name,
+          submitConfigSourceRequest=config_source_request,
+      ))
+  operation = client.services_configs.Submit(submit_request)
+  ProcessOperationResult(operation, async)
+
+  # TODO(b/30276465): Get warnings/errors out of response when available.
+
+  # Fish the serviceConfig.id fields from the proto Any that is returned
+  # in operation.response
+  for prop in operation.response.additionalProperties:
+    if prop.key == 'serviceConfig':
+      for item in prop.value.object_value.properties:
+        if item.key == 'id':
+          return item.value.string_value
+
+  return None
+
+
+@http_error_handler.HandleHttpErrors
+def CreateServiceIfNew(service_name, project):
+  """Creates a Service resource if it does not already exist.
+
+  Args:
+    service_name: name of the service to be returned or created.
+    project: the project Id
+  """
+  messages = GetMessagesModule()
+  client = GetClientInstance()
+  get_request = messages.ServicemanagementServicesGetRequest(
+      serviceName=service_name,
+  )
+  try:
+    client.services.Get(get_request)
+  except apitools_exceptions.HttpError as error:
+    if error.status_code == 404:
+      # create service
+      create_request = messages.ManagedService(
+          serviceName=service_name,
+          producerProjectId=project,
+      )
+      client.services.Create(create_request)
+    else:
+      raise error
 
 
 def ConvertUTCDateTimeStringToLocalTimeString(utc_string):
@@ -134,12 +307,8 @@ def GetByteStringFromFingerprint(fingerprint):
   return str(bytearray([int(b, 16) for b in byte_tokens]))
 
 
-_FINGERPRINT_RE = re.compile(
-    r'^([a-f0-9][a-f0-9]:){19}[a-f0-9][a-f0-9]$', re.IGNORECASE)
-
-
 def ValidateFingerprint(fingerprint):
-  return re.match(_FINGERPRINT_RE, fingerprint) is not None
+  return re.match(FINGERPRINT_REGEX, fingerprint) is not None
 
 
 def ValidateEmailString(email):
@@ -237,9 +406,6 @@ def GetCallerViews():
   }
 
 
-OPTIONAL_PREFIX_TO_STRIP = 'operations/'
-
-
 def WaitForOperation(op_name, client):
   """Waits for an operation to complete.
 
@@ -258,9 +424,7 @@ def WaitForOperation(op_name, client):
   messages = GetMessagesModule()
 
   def _CheckOperation(op_name):  # pylint: disable=missing-docstring
-    # If a user includes the leading "operations/", just strip it off
-    if op_name.startswith(OPTIONAL_PREFIX_TO_STRIP):
-      op_name = op_name[len(OPTIONAL_PREFIX_TO_STRIP):]
+    op_name = ParseOperationName(op_name)
 
     request = messages.ServicemanagementOperationsGetRequest(
         operationsId=op_name,

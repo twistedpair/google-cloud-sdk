@@ -275,10 +275,9 @@ def _DockerLogin(server, email, username, access_token):
     _SurfaceUnexpectedInfo(stdoutdata, stderrdata)
   else:
     # If the login failed, print everything.
-    sys.stdout.write(stdoutdata)
-    sys.stdout.flush()
-    sys.stderr.write(stderrdata)
-    sys.stderr.flush()
+    log.error('Docker CLI operation failed:')
+    log.out.Print(stdoutdata)
+    log.status.Print(stderrdata)
     raise exceptions.Error('Docker login failed.')
 
 
@@ -301,19 +300,14 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
     if (line != 'Login Succeeded') and (
         'login credentials saved in' not in line):
       line = '%s%s' % (line, os.linesep)
-      sys.stdout.write(line)
-
-  sys.stdout.flush()
+      log.out.Print(line)  # log.out => stdout
 
   for line in stderr:
     # Swallow warnings about --email and 'saved in', surface any other error
     # output.
-    if ('\'--email\' is deprecated' not in line) and (
-        'login credentials saved in' not in line):
+    if ('--email' not in line) and ('login credentials saved in' not in line):
       line = '%s%s' % (line, os.linesep)
-      sys.stderr.write(line)
-
-  sys.stderr.flush()
+      log.status.Print(line)  # log.status => stderr
 
 
 def _UpdateDockerConfig(server, username, access_token):
@@ -354,7 +348,6 @@ def _UpdateDockerConfig(server, username, access_token):
   WriteDockerConfig(dockercfg_contents)
 
 
-# Modeled after EnsureGit in workspaces.py
 def EnsureDocker(func):
   """Wraps a function that uses subprocess to invoke docker.
 

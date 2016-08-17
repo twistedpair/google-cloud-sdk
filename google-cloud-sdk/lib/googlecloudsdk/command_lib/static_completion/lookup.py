@@ -36,7 +36,20 @@ _VALUE_SEP = '='
 _SPACE = ' '
 
 
-def _LoadTable(gcloud_py_dir):
+class CannotHandleCompletionError(Exception):
+  """Error for when completions cannot be handled."""
+  pass
+
+
+def LoadTable(gcloud_py_dir):
+  """Returns table to be used for finding completions.
+
+  Args:
+    gcloud_py_dir: str, Directory path of currently executing gcloud.py.
+
+  Returns:
+    table: tree.
+  """
   # installation root path
   table_py_path = os.path.dirname(gcloud_py_dir)
   # .install/static_completion/table.pyc
@@ -47,15 +60,27 @@ def _LoadTable(gcloud_py_dir):
   return imp.load_source('static_completion_table', table_py_path).table
 
 
-def _CmdWordQueue():
-  """Converts the command line into a queue of words to be used for completion.
+def _GetCmdLineFromEnv():
+  """Gets the command line from the environment.
 
   Returns:
-    [str], Queue of command line words.
+    str, Command line.
   """
   cmd_line = os.environ.get(LINE)
   completion_point = int(os.environ.get(POINT))
   cmd_line = cmd_line[:completion_point]
+  return cmd_line
+
+
+def _GetCmdWordQueue(cmd_line):
+  """Converts the given cmd_line to a queue of command line words.
+
+  Args:
+    cmd_line: str, full command line before parsing.
+
+  Returns:
+    [str], Queue of command line words.
+  """
   cmd_words = shlex.split(cmd_line)[1:]  # First word should always be 'gcloud'
 
   # We need to know if last word was empty. Shlex removes trailing whitespaces.
@@ -71,17 +96,47 @@ def _OpenCompletionsStream():
   return os.fdopen(8, 'wb')
 
 
+def _CloseCompletionsStream(file_object):
+  file_object.close()
+
+
 def Complete(gcloud_py_dir):
-  """Try to perform a completion based on the static completion table.
+  """Attemps to do completions and successful completions are written to stream.
 
   Args:
     gcloud_py_dir: str, Directory path of currently executing gcloud.py.
+  """
+  node = LoadTable(gcloud_py_dir)
+  cmd_line = _GetCmdLineFromEnv()
+
+  completions = FindCompletions(node, cmd_line)
+  if completions:
+    # The bash/zsh completion scripts set IFS to one character.
+    ifs = os.environ.get(IFS, IFS_DEFAULT)
+    # Write completions to stream
+    out_stream = _OpenCompletionsStream()
+    out_stream.write(ifs.join(completions))
+    out_stream.flush()
+    _CloseCompletionsStream(out_stream)
+
+
+def FindCompletions(table, cmd_line):
+  """Try to perform a completion based on the static completion table.
+
+  Args:
+    table: Tree that will be traversed to find completions.
+    cmd_line: [str], original command line.
 
   Returns:
-    bool, True if completion was performed, False otherwise.
+    []: No completions.
+    [completions]: List, all possible sorted completions.
+
+  Raises:
+    CannotHandleCompletionError: If FindCompletions cannot handle completion.
   """
-  words = _CmdWordQueue()
-  node = _LoadTable(gcloud_py_dir)
+  words = _GetCmdWordQueue(cmd_line)
+  node = table
+
   global_flags = node[FLAGS_KEY]
 
   completions = []
@@ -113,20 +168,22 @@ def Complete(gcloud_py_dir):
         flag_value_mode = None
         continue  # Just consume if we are expecting a flag value
       else:
-        return True  # Non-existing command/flag, so nothing to do
+        return []  # Non-existing command/flag, so nothing to do
 
     # Complete word
     else:
       if flag_value_mode == DYNAMIC:
-        return False  # Fall back to dynamic completion
+        raise CannotHandleCompletionError(
+            'Dynamic completions are not handled by this module')
       elif flag_value_mode == CANNOT_BE_COMPLETED:
-        return True  # Cannot complete, so nothing to do
+        return []  # Cannot complete, so nothing to do
       elif flag_value_mode:  # Must be list of choices
         for value in flag_value_mode:
           if value.startswith(word):
             completions.append(value)
       elif not child_nodes and node.get(POSITIONALS_KEY, None):
-        return False  # Fall back to dynamic completion
+        raise CannotHandleCompletionError(
+            'Completion of positionals is not handled by this module')
       else:  # Command/flag completion
         for child, value in child_nodes.iteritems():
           if not child.startswith(word):
@@ -134,13 +191,5 @@ def Complete(gcloud_py_dir):
           if is_flag_word and value:
             child += _VALUE_SEP
           completions.append(child)
-
-  # Write completions to stream
   completions.sort()
-  # The bash/zsh completion scripts set IFS to one character.
-  ifs = os.environ.get(IFS, IFS_DEFAULT)
-  out_stream = _OpenCompletionsStream()
-  out_stream.write(ifs.join(completions))
-  out_stream.flush()
-
-  return True
+  return completions

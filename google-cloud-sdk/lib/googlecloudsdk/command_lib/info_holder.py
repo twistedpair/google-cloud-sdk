@@ -30,6 +30,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import http_proxy_types
@@ -48,12 +49,12 @@ class InfoHolder(object):
 
   def __str__(self):
     out = StringIO.StringIO()
-    out.write(str(self.basic) + '\n')
-    out.write(str(self.installation) + '\n')
-    out.write(str(self.config) + '\n')
-    if str(self.env_proxy):
-      out.write(str(self.env_proxy) + '\n')
-    out.write(str(self.logs) + '\n')
+    out.write(unicode(self.basic) + '\n')
+    out.write(unicode(self.installation) + '\n')
+    out.write(unicode(self.config) + '\n')
+    if unicode(self.env_proxy):
+      out.write(unicode(self.env_proxy) + '\n')
+    out.write(unicode(self.logs) + '\n')
     return out.getvalue()
 
 
@@ -69,7 +70,7 @@ class BasicInfo(object):
     self.site_packages = 'site' in sys.modules
 
   def __str__(self):
-    return textwrap.dedent("""\
+    return textwrap.dedent(u"""\
         Google Cloud SDK [{version}]
 
         Platform: [{os}, {arch}]
@@ -95,7 +96,7 @@ class InstallationInfo(object):
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
     self.additional_repos = repos.split(',') if repos else []
-    self.path = os.environ.get('PATH', '')
+    self.path = console_attr.GetEncodedValue(os.environ, 'PATH', '')
 
     if self.sdk_root:
       manager = update_manager.UpdateManager()
@@ -115,27 +116,27 @@ class InstallationInfo(object):
 
   def __str__(self):
     out = StringIO.StringIO()
-    out.write('Installation Root: [{0}]\n'.format(
+    out.write(u'Installation Root: [{0}]\n'.format(
         self.sdk_root if self.sdk_root else 'N/A'))
     if config.INSTALLATION_CONFIG.IsAlternateReleaseChannel():
-      out.write('Release Channel: [{0}]\n'.format(self.release_channel))
-      out.write('Repository URL: [{0}]\n'.format(self.repo_url))
+      out.write(u'Release Channel: [{0}]\n'.format(self.release_channel))
+      out.write(u'Repository URL: [{0}]\n'.format(self.repo_url))
     if self.additional_repos:
-      out.write('Additional Repositories:\n  {0}\n'.format(
+      out.write(u'Additional Repositories:\n  {0}\n'.format(
           '\n  '.join(self.additional_repos)))
 
     if self.components:
-      components = ['{0}: [{1}]'.format(name, value) for name, value in
+      components = [u'{0}: [{1}]'.format(name, value) for name, value in
                     self.components.iteritems()]
-      out.write('Installed Components:\n  {0}\n'.format(
-          '\n  '.join(components)))
+      out.write(u'Installed Components:\n  {0}\n'.format(
+          u'\n  '.join(components)))
 
-    out.write('System PATH: [{0}]\n'.format(self.path))
-    out.write('Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
+    out.write(u'System PATH: [{0}]\n'.format(self.path))
+    out.write(u'Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
 
     if self.old_tool_paths:
-      out.write('\nWARNING: There are old versions of the Google Cloud '
-                'Platform tools on your system PATH.\n  {0}\n'
+      out.write(u'\nWARNING: There are old versions of the Google Cloud '
+                u'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.old_tool_paths)))
     return out.getvalue()
 
@@ -158,23 +159,23 @@ class ConfigInfo(object):
 
   def __str__(self):
     out = StringIO.StringIO()
-    out.write('Installation Properties: [{0}]\n'
+    out.write(u'Installation Properties: [{0}]\n'
               .format(self.paths['installation_properties_path']))
-    out.write('User Config Directory: [{0}]\n'
+    out.write(u'User Config Directory: [{0}]\n'
               .format(self.paths['global_config_dir']))
-    out.write('Active Configuration Name: [{0}]\n'
+    out.write(u'Active Configuration Name: [{0}]\n'
               .format(self.active_config_name))
-    out.write('Active Configuration Path: [{0}]\n\n'
+    out.write(u'Active Configuration Path: [{0}]\n\n'
               .format(self.paths['active_config_path']))
 
-    out.write('Account: [{0}]\n'.format(self.account))
-    out.write('Project: [{0}]\n\n'.format(self.project))
+    out.write(u'Account: [{0}]\n'.format(self.account))
+    out.write(u'Project: [{0}]\n\n'.format(self.project))
 
-    out.write('Current Properties:\n')
+    out.write(u'Current Properties:\n')
     for section, props in self.properties.iteritems():
-      out.write('  [{section}]\n'.format(section=section))
+      out.write(u'  [{section}]\n'.format(section=section))
       for name, value in props.iteritems():
-        out.write('    {name}: [{value}]\n'.format(
+        out.write(u'    {name}: [{value}]\n'.format(
             name=name, value=value))
 
     return out.getvalue()
@@ -211,15 +212,15 @@ class ProxyInfoFromEnvironmentVars(object):
     out = StringIO.StringIO()
     out.write('Environmental Proxy Settings:\n')
     if self.type:
-      out.write('  type: [{0}]\n'.format(self.type))
+      out.write(u'  type: [{0}]\n'.format(self.type))
     if self.address:
-      out.write('  address: [{0}]\n'.format(self.address))
+      out.write(u'  address: [{0}]\n'.format(self.address))
     if self.port:
-      out.write('  port: [{0}]\n'.format(self.port))
+      out.write(u'  port: [{0}]\n'.format(self.port))
     if self.username:
-      out.write('  username: [{0}]\n'.format(self.username))
+      out.write(u'  username: [{0}]\n'.format(self.username))
     if self.password:
-      out.write('  password: [{0}]\n'.format(self.password))
+      out.write(u'  password: [{0}]\n'.format(self.password))
     return out.getvalue()
 
 
@@ -303,8 +304,8 @@ class LogData(object):
 
   def __str__(self):
     crash_detected = ' (crash detected)' if self.traceback else ''
-    return '[{0}]: [{1}]{2}'.format(self.relative_path, self.command,
-                                    crash_detected)
+    return u'[{0}]: [{1}]{2}'.format(self.relative_path, self.command,
+                                     crash_detected)
 
   @property
   def relative_path(self):
@@ -369,7 +370,7 @@ class LogsInfo(object):
     self.last_logs = RecentLogFiles(self.logs_dir, self.NUM_RECENT_LOG_FILES)
 
   def __str__(self):
-    return textwrap.dedent("""\
+    return textwrap.dedent(u"""\
         Logs Directory: [{logs_dir}]
         Last Log File: [{log_file}]
         """.format(logs_dir=self.logs_dir, log_file=self.last_log))

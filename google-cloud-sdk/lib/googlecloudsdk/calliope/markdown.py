@@ -480,9 +480,9 @@ class MarkdownGenerator(object):
           help_message += inverted_help + '\n'
     return help_message.replace('\n\n', '\n+\n').strip()
 
-  def _ExpandFormatReferences(self):
-    """Expand {...} references."""
-    self._doc = usage_text.ExpandHelpText(self._command, self._buf.getvalue())
+  def _ExpandFormatReferences(self, doc):
+    """Expand {...} references in doc."""
+    doc = usage_text.ExpandHelpText(self._command, doc)
 
     # Split long $ ... example lines.
     pat = re.compile(r'^ *(\$ .{%d,})$' % (
@@ -490,18 +490,47 @@ class MarkdownGenerator(object):
     pos = 0
     rep = ''
     while True:
-      match = pat.search(self._doc, pos)
+      match = pat.search(doc, pos)
       if not match:
         break
-      rep += (self._doc[pos:match.start(1)] +
-              ExampleCommandLineSplitter().Split(
-                  self._doc[match.start(1):match.end(1)]))
+      rep += (doc[pos:match.start(1)] + ExampleCommandLineSplitter().Split(
+          doc[match.start(1):match.end(1)]))
       pos = match.end(1)
     if rep:
-      self._doc = rep + self._doc[pos:]
+      doc = rep + doc[pos:]
+    return doc
 
-  def _AddCommandLineLinkMarkdown(self):
-    """Add $ command ... link markdown."""
+  def _AddCommandLinkMarkdown(self, doc):
+    r"""Add ([`*])command ...\1 link markdown to doc."""
+    top = self._command_path[0]
+    # This pattern matches "([`*]){top} {arg}*\1" where {top}...{arg} is a
+    # known command. The negative lookbehind prefix prevents hyperlinks in
+    # SYNOPSIS sections and as the first line in a paragraph.
+    pat = re.compile(r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )'
+                     r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)\1'.format(
+                         top=top))
+    pos = 0
+    rep = ''
+    while True:
+      match = pat.search(doc, pos)
+      if not match:
+        break
+      cmd, args = self._SplitCommandFromArgs(match.group('command').split(' '))
+      if args:
+        # Skip invalid commands.
+        rep += doc[pos:match.end(0)]
+      else:
+        ref = '/'.join(cmd)
+        lnk = 'link:' + ref + '[' + ' '.join(cmd) + ']'
+        rep += (doc[pos:match.start('command')] + lnk +
+                doc[match.end('command'):match.end(0)])
+      pos = match.end(0)
+    if rep:
+      doc = rep + doc[pos:]
+    return doc
+
+  def _AddCommandLineLinkMarkdown(self, doc):
+    """Add $ command ... link markdown to doc."""
     top = self._command_path[0]
     # This pattern matches "$ {top} {arg}*" where each arg is lower case and
     # does not start with example-, my-, or sample-. This follows the style
@@ -514,7 +543,7 @@ class MarkdownGenerator(object):
     pos = 0
     rep = ''
     while True:
-      match = pat.search(self._doc, pos)
+      match = pat.search(doc, pos)
       if not match:
         break
       cmd, args = self._SplitCommandFromArgs(match.group(1).split(' '))
@@ -522,49 +551,51 @@ class MarkdownGenerator(object):
       lnk = 'link:' + ref + '[' + ' '.join(cmd) + ']'
       if args:
         lnk += ' ' + ' '.join(args)
-      rep += self._doc[pos:match.start(1)] + lnk
+      rep += doc[pos:match.start(1)] + lnk
       pos = match.end(1)
     if rep:
-      self._doc = rep + self._doc[pos:]
+      doc = rep + doc[pos:]
+    return doc
 
-  def _AddManPageLinkMarkdown(self):
-    """Add gcloud ...(1) man page link markdown."""
+  def _AddManPageLinkMarkdown(self, doc):
+    """Add gcloud ...(1) man page link markdown to doc."""
     top = self._command_path[0]
     pat = re.compile(r'(\*?(' + top + r'(?:[-_ a-z])*)\*?)\(1\)')
     pos = 0
     rep = ''
     while True:
-      match = pat.search(self._doc, pos)
+      match = pat.search(doc, pos)
       if not match:
         break
       cmd = match.group(2).replace('_', ' ')
       ref = cmd.replace(' ', '/')
       lnk = '*link:' + ref + '[' + cmd + ']*'
-      rep += self._doc[pos:match.start(2)] + lnk
+      rep += doc[pos:match.start(2)] + lnk
       pos = match.end(1)
     if rep:
-      self._doc = rep + self._doc[pos:]
+      doc = rep + doc[pos:]
+    return doc
 
-  def _FixAirQuotesMarkdown(self):
-    """Change ``.*[[:alnum:]]{2,}.*'' emphasis quotes => UserInput(*).
+  def _FixAirQuotesMarkdown(self, doc):
+    """Change ``.*[[:alnum:]]{2,}.*'' quotes => UserInput(*) in doc."""
 
-    Double ``air quotes'' on strings with no identifier chars or groups of
-    singleton identifier chars are literal. All other double air quote forms
-    are converted to unquoted strings with the _UserInput() font embellishment.
-
-    This is a subjective choice for aesthetically pleasing renderings.
-    """
+    # Double ``air quotes'' on strings with no identifier chars or groups of
+    # singleton identifier chars are literal. All other double air quote forms
+    # are converted to unquoted strings with the _UserInput() font
+    # embellishment. This is a subjective choice for aesthetically pleasing
+    # renderings.
     pat = re.compile(r"[^`](``([^`]*\w{2,}[^`']*)'')")
     pos = 0
     rep = ''
     while True:
-      match = pat.search(self._doc, pos)
+      match = pat.search(doc, pos)
       if not match:
         break
-      rep += self._doc[pos:match.start(1)] + self._UserInput(match.group(2))
+      rep += doc[pos:match.start(1)] + self._UserInput(match.group(2))
       pos = match.end(1)
     if rep:
-      self._doc = rep + self._doc[pos:]
+      doc = rep + doc[pos:]
+    return doc
 
   def _SetDetailedHelpSection(self, name, lines):
     """Sets a _detailed_help name or _description section composed of lines.
@@ -599,6 +630,25 @@ class MarkdownGenerator(object):
         lines.append(line)
     self._SetDetailedHelpSection(name, lines)
 
+  def _Edit(self, doc):
+    """Applies edits to a copy of the generated markdown in doc.
+
+    The sub-edit method call order might be significant. This method allows
+    the combined edits to be tested without relying on the order.
+
+    Args:
+      doc: The markdown document to edit.
+
+    Returns:
+      An edited copy of the generated markdown.
+    """
+    doc = self._ExpandFormatReferences(doc)
+    doc = self._AddCommandLineLinkMarkdown(doc)
+    doc = self._AddCommandLinkMarkdown(doc)
+    doc = self._AddManPageLinkMarkdown(doc)
+    doc = self._FixAirQuotesMarkdown(doc)
+    return doc
+
   def Generate(self):
     """Generates markdown for the command, group or topic, into a string."""
     self._out('# {0}(1)\n'.format(self._file_name.upper()))
@@ -624,14 +674,7 @@ class MarkdownGenerator(object):
     for section in final_sections:
       self._PrintSectionIfExists(section)
     self._PrintNotesSection()
-    self._doc = self._buf.getvalue()
-
-    # Apply edits to the generated markdown.
-    self._ExpandFormatReferences()
-    self._AddCommandLineLinkMarkdown()
-    self._AddManPageLinkMarkdown()
-    self._FixAirQuotesMarkdown()
-    return self._doc
+    return self._Edit(self._buf.getvalue())
 
 
 def Markdown(command):

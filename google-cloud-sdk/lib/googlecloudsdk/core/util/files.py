@@ -45,20 +45,6 @@ class Error(Exception):
   pass
 
 
-def GetEnvPathValue(name):
-  """Returns the value of the env var name decoded as a file system path.
-
-  Args:
-    name: str, The env var name. The value contains a possibly encoded file
-      system path name.
-
-  Returns:
-    The value of the env var name decoded as a file system path.
-  """
-  value = os.getenv(name)
-  return console_attr.DecodeFromInput(value) if value else value
-
-
 def MakeDir(path, mode=0777):
   """Creates the given directory and its parents and does not fail if it exists.
 
@@ -197,6 +183,11 @@ def RmTree(path):
   Args:
     path: str, The path to remove.
   """
+  # The subdirectories and/or files under dir_path may have file names
+  # containing unicode characters. If the arg to shutil.rmtree() is not unicode
+  # then any child unicode files will raise an exception. Coercing dir_path to
+  # unicode makes shutil.rmtree() play nice with unicode.
+  path = unicode(path)
   shutil.rmtree(path, onerror=_HandleRemoveError)
   retries_left = NUM_RETRIES
   while os.path.isdir(path) and retries_left > 0:
@@ -332,7 +323,7 @@ def SearchForExecutableOnPath(executable, path=None):
     are found.
   """
   if not path:
-    path = GetEnvPathValue('PATH')
+    path = console_attr.GetEncodedValue(os.environ, 'PATH')
   paths = path.split(os.pathsep)
 
   matching = []
@@ -412,7 +403,10 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
     raise ValueError(u'FindExecutableOnPath({0},...) failed because first '
                      u'argument must not have a path.'.format(executable))
 
-  effective_path = path if path is not None else GetEnvPathValue('PATH')
+  if path is None:
+    effective_path = console_attr.GetEncodedValue(os.environ, 'PATH')
+  else:
+    effective_path = path
   effective_pathext = (pathext if pathext is not None
                        else _PlatformExecutableExtensions(
                            platforms.OperatingSystem.Current()))
@@ -578,6 +572,11 @@ class Checksum(object):
     Returns:
       self, For method chaining.
     """
+    # The subdirectories and/or files under dir_path may have file names
+    # containing unicode characters. If the arg to os.walk() is not unicode then
+    # any child unicode files will raise an exception. Coercing dir_path to
+    # unicode makes os.walk() play nice with unicode.
+    dir_path = unicode(dir_path)
     for root, dirs, files in os.walk(dir_path):
       dirs.sort(key=os.path.normcase)
       files.sort(key=os.path.normcase)

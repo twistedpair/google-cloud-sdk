@@ -364,7 +364,7 @@ class RemoteCompletion(object):
     for ref in self_links:
       if not collection:
         try:
-          instance_ref = resources.Parse(ref)
+          instance_ref = resources.REGISTRY.Parse(ref)
           collection = instance_ref.Collection()
         # construct collection from self link if the resources parser
         # can't parse due to, for example, a service that can't be registered
@@ -571,7 +571,8 @@ class RemoteCompletion(object):
                   command.append('--' + attrib)
                   command.append(value)
         parms['project'] = project
-        resource_link = resources.Parse('+', parms, resource, resolve=False)
+        resource_link = resources.REGISTRY.Parse(
+            '+', parms, resource, resolve=False)
         resource_link = resource_link.WeakSelfLink()
         lst = resource_link.split('*')
         resource_missing = len(lst) > 1
@@ -595,7 +596,7 @@ class RemoteCompletion(object):
           # Get a selflink for the item
           if command[0] == 'compute':
             if 'selfLink' in item:
-              instance_ref = resources.Parse(item['selfLink'])
+              instance_ref = resources.REGISTRY.Parse(item['selfLink'])
               selflink = instance_ref.SelfLink()
             elif resource_link:
               selflink = resource_link.rstrip('+') + item['name']

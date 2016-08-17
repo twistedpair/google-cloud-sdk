@@ -175,25 +175,29 @@ class CollectionInfo(object):
     self.path = path
     self.params = params
 
+  @property
+  def full_name(self):
+    return self.api_name + '.'  + self.name
+
   def __cmp__(self, other):
     return cmp((self.api_name, self.api_version, self.name),
                (other.api_name, other.api_version, other.name))
 
   def __str__(self):
-    return self.name
+    return self.full_name
 
 
 class _ResourceParser(object):
   """Class that turns command-line arguments into a cloud resource message."""
 
-  def __init__(self, registry, collection_info):
-    """Create a _ResourceParser for a given relative_path, and register it.
+  def __init__(self, params_defaults_func, collection_info):
+    """Create a _ResourceParser for a given collection.
 
     Args:
-      registry: Registry, The registry that this parser should be added to.
+      params_defaults_func: func(param)->value.
       collection_info: CollectionInfo, description for collection.
     """
-    self.registry = registry
+    self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
 
   def ParseCollectionPath(self, collection_path, kwargs, resolve):
@@ -234,13 +238,11 @@ class _ResourceParser(object):
     for param, field in zip(self.collection_info.params, fields):
       setattr(request, param, field)
 
-    api, resource_collection = self.collection_info.name.split('.', 1)
-    param_defaults = functools.partial(
-        self.registry.GetParamDefault, api, resource_collection)
     resource = Resource(
-        self.collection_info.name, self.collection_info.path, request,
+        self.collection_info.full_name, self.collection_info.path, request,
         self.collection_info.params, kwargs,
-        collection_path, self.collection_info.base_url, param_defaults)
+        collection_path, self.collection_info.base_url,
+        self.params_defaults_func)
 
     if resolve:
       resource.Resolve()
@@ -275,9 +277,9 @@ class _ResourceParser(object):
       raise InvalidResourceException(collection_path)
     collection, path = match.groups()
 
-    if collection and collection != self.collection_info.name:
+    if collection and collection != self.collection_info.full_name:
       raise WrongResourceCollectionException(
-          expected=self.collection_info.name,
+          expected=self.collection_info.full_name,
           got=collection, path=collection_path)
 
     # collection-paths that begin with a slash must have an entry for all
@@ -326,7 +328,7 @@ class _ResourceParser(object):
     for param in self.collection_info.params:
       path_str = '[{path}]/{param}'.format(path=path_str, param=param)
     return '[{collection}::]{path}'.format(
-        collection=self.collection_info.name, path=path_str)
+        collection=self.collection_info.full_name, path=path_str)
 
 
 class Resource(object):
@@ -499,8 +501,9 @@ class Registry(object):
   """Keep a list of all the resource collections and their parsing functions.
 
   Attributes:
-    parsers_by_collection: {str:_ResourceParser}, All the resource parsers
-        indexed by their collection.
+    parsers_by_collection: {str: {str: {str: _ResourceParser}}}, All the
+        resource parsers indexed by their api name, api version
+        and collection name.
     parsers_by_url: Deeply-nested dict. The first key is the API's URL root,
         and each key after that is one of the remaining tokens which can be
         either a constant or a parameter name. At the end, a key of None
@@ -534,21 +537,24 @@ class Registry(object):
     Args:
       api_name: str, The API name.
       api_version: if available, the version of the API being registered.
+    Returns:
+      api version which was registered.
     """
-    registered_versions = self.registered_apis.get(api_name, [])
+    registered_versions = self.registered_apis.get(api_name, set([]))
+    if not api_version:
+      if len(registered_versions) == 1:
+        api_version = next(iter(registered_versions))
+      else:
+        api_version = core_apis.GetDefaultVersion(api_name)
     if api_version and api_version in registered_versions:
       # This API version has been registered.
-      return
-    if not api_version and api_name in self.registered_apis:
-      # This API doesn't have a specified version, and we have some API version
-      # registered under this name.
-      return
+      return api_version
 
     api_client = core_apis.GetClientInstance(api_name, api_version,
                                              no_http=True)
-    self._RegisterAPI(api_client,
-                      urls_only=bool(registered_versions),
-                      api_version=api_version)
+    return self._RegisterAPI(api_client,
+                             urls_only=bool(registered_versions),
+                             api_version=api_version)
 
   def _RegisterAPI(self, api_client, urls_only=False, api_version=None):
     """Register a generated API with this registry.
@@ -559,8 +565,11 @@ class Registry(object):
           and not to interpret collection-paths.
       api_version: str, the version of the API if it's not in the API client
           URL.
+    Returns:
+      api version which got registered.
     """
     api_name, parsed_api_version = _APINameAndVersionFromURL(api_client.url)
+    api_version = parsed_api_version or api_version
     for service in _GetApiServices(api_client):
       try:
         self._RegisterService(
@@ -569,7 +578,8 @@ class Registry(object):
             api_client.url, urls_only)
       except _ResourceWithoutGetException:
         pass
-    self.registered_apis[api_name].add(parsed_api_version or api_version)
+    self.registered_apis[api_name].add(api_version)
+    return api_version
 
   def _RegisterService(self, api_name, api_client, service,
                        base_url, urls_only):
@@ -598,23 +608,28 @@ class Registry(object):
       raise _ResourceWithoutGetException()
 
     collection = match.group('collection')
+    collection = collection.split('.', 1)[1]  # drop api name
     request_type = getattr(api_client.MESSAGES_MODULE,
                            method_config.request_type_name)
 
-    # pylint:disable=protected-access
+    api_version = api_client._VERSION  # pylint:disable=protected-access
     collection_info = CollectionInfo(
-        api_name, api_client._VERSION,
+        api_name, api_version,
         base_url, collection, request_type,
         method_config.relative_path, method_config.ordered_params)
-    parser = _ResourceParser(self, collection_info)
+    parser = _ResourceParser(
+        functools.partial(self.GetParamDefault, api_name, collection),
+        collection_info)
 
     if not urls_only:
-      existing_parser = self.parsers_by_collection.get(collection_info.name)
+      existing_parser = (self.parsers_by_collection.get(api_name, {})
+                         .get(api_version, {}).get(collection_info.full_name))
       if existing_parser is not None:
-        raise AmbiguousAPIException(collection_info.name,
+        raise AmbiguousAPIException(collection_info.full_name,
                                     [collection_info.base_url,
                                      existing_parser.collection_info.base_url])
-      self.parsers_by_collection[collection_info.name] = parser
+    self.parsers_by_collection.setdefault(api_name, {}).setdefault(
+        api_version, {})[collection_info.full_name] = parser
 
     # so we don't confuse the splitting
     endpoint = base_url[base_url.index(':') + 2:].strip('/')
@@ -646,11 +661,13 @@ class Registry(object):
     Args:
       api: base_api.BaseApiClient, The client for a Google Cloud API.
     """
-    api_name, _ = _APINameAndVersionFromURL(api.url)
+    api_name, api_version = _APINameAndVersionFromURL(api.url)
+    # core_apis.SetDefaultVersion(api_name, api_version)
     # Clear out the old collections.
-    for collection, parser in self.parsers_by_collection.items():
-      if parser.collection_info.api_name == api_name:
-        del self.parsers_by_collection[collection]
+    if api_name in self.parsers_by_collection:
+      api_versions = self.parsers_by_collection.get(api_name, {})
+      if api_version in api_versions:
+        del api_versions[api_version]
     # Remove the url parsers, can't register new parser for existing path.
     _RemoveParsersForApi(api_name, self.parsers_by_url)
     self.registered_apis[api_name].clear()
@@ -660,15 +677,23 @@ class Registry(object):
   def CloneAndSwitchAPIs(self, *apis):
     """Clone registry and replace any given apis."""
     reg = self._Clone()
-    for _, parser in reg.parsers_by_collection.iteritems():
-      parser.registry = reg
+    for _, version_collections in reg.parsers_by_collection.iteritems():
+      for _, collection_parsers in version_collections.iteritems():
+        for _, parser in collection_parsers.iteritems():
+          parser.param_defaults_func = functools.partial(
+              reg.GetParamDefault,
+              parser.collection_info.api_name,
+              parser.collection_info.name)
 
     def _UpdateParser(dict_or_parser):
       if type(dict_or_parser) is types.DictType:
         for _, val in dict_or_parser.iteritems():
           _UpdateParser(val)
       else:
-        dict_or_parser.registry = reg
+        dict_or_parser.param_default_func = functools.partial(
+            reg.GetParamDefault,
+            dict_or_parser.collection_info.api_name,
+            dict_or_parser.collection_info.name)
     _UpdateParser(reg.parsers_by_url)
     for api in apis:
       reg._SwitchAPI(api)  # pylint:disable=protected-access
@@ -759,12 +784,14 @@ class Registry(object):
 
     """
     # Register relevant API if necessary and possible
-    self._RegisterAPIByName(_APINameFromCollection(collection))
+    api_name = _APINameFromCollection(collection)
+    api_version = self._RegisterAPIByName(api_name)
 
-    if collection not in self.parsers_by_collection:
+    parser = (self.parsers_by_collection
+              .get(api_name, {}).get(api_version, {}).get(collection, None))
+    if parser is None:
       raise InvalidCollectionException(collection)
-    return self.parsers_by_collection[collection].ParseCollectionPath(
-        collection_path, kwargs, resolve)
+    return parser.ParseCollectionPath(collection_path, kwargs, resolve)
 
   def ParseURL(self, url):
     """Parse a URL into a Resource.
@@ -977,84 +1004,12 @@ class Registry(object):
 REGISTRY = Registry()
 
 
-def SetParamDefault(api, collection, param, resolver):
-  """Provide a function that will be used to fill in missing values.
-
-  Args:
-    api: str, The name of the API that func will apply to.
-    collection: str, The name of the collection that func will apply to. Can
-        be None to indicate all collections within the API.
-    param: str, The param that can be satisfied with func, if no value is
-        provided by the path.
-    resolver: str or func()->str, A function that returns a string or raises an
-        exception that tells the user how to fix the problem, or the value
-        itself.
-  """
-  REGISTRY.SetParamDefault(api, collection, param, resolver)
-
-
-def GetParamDefault(api, collection, param):
-  """Return the default value for the specified parameter.
-
-  Args:
-    api: str, The name of the API that param is part of.
-    collection: str, The name of the collection to query. Can be None to
-        indicate all collections within the API.
-    param: str, The param to return a default for.
-
-  Raises:
-    ValueError: If api or param is None.
-
-  Returns:
-    The default value for a parameter or None if there is no default.
-  """
-  return REGISTRY.GetParamDefault(api, collection, param)
-
-
 def _ClearAPIs():
   """For testing, clear out any APIs to start with a clean slate.
 
   """
   global REGISTRY
   REGISTRY = Registry()
-
-
-def Parse(line, params=None, collection=None, resolve=True):
-  """Parse a Cloud resource from a command line.
-
-  Args:
-    line: str, The argument provided on the command line.
-    params: {str:str}, The keyword argument context.
-    collection: str, The resource's collection, or None if it should be
-      inferred from the line.
-    resolve: bool, If True, call the resource's .Resolve() method before
-        returning, ensuring that all of the resource parameters are defined.
-        If False, don't call them, under the assumption that it will be called
-        later.
-
-  Returns:
-    A resource object.
-
-  Raises:
-    InvalidResourceException: If the line is invalid.
-    UnknownCollectionException: If no collection is provided or can be inferred.
-    WrongProtocolException: If the input was http:// instead of https://
-  """
-  return REGISTRY.Parse(
-      line=line, params=params, collection=collection, resolve=resolve)
-
-
-def Create(collection, **params):
-  """Create a Resource from known collection and params.
-
-  Args:
-    collection: str, The name of the collection the resource belongs to.
-    **params: {str:str}, The values for each of the resource params.
-
-  Returns:
-    Resource, The constructed resource.
-  """
-  return REGISTRY.Create(collection, **params)
 
 
 def _GetApiServices(api_client):

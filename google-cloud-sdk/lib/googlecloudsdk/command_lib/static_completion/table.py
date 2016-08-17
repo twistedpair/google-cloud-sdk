@@ -154,5 +154,9 @@ def Update(cli):
     table = CompletionTableGenerator(cli).Walk(hidden=True)
     table_file.write('table=')
     pprint(table, table_file)
-  # Pre-compile table source to enable fast loading
-  compileall.compile_dir(_TableDirPath(), quiet=True)
+  # _TableDirPath() could contain unicode chars and py_compile chokes on unicode
+  # paths. Using relative paths from _TableDirPath() works around the problem.
+  table_dir_path = _TableDirPath()
+  with files.ChDir(table_dir_path):
+    # Pre-compile table source to enable fast loading
+    compileall.compile_dir('.', quiet=True)

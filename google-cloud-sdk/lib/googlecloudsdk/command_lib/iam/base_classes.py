@@ -51,7 +51,7 @@ class BaseIamCommand(base.Command):
   # We don't yet have support for atomic names in gcloud resources. When we
   # do, this is the code we'll need to invoke.
   def ParseServiceAccount(self, email):
-    ref = self.resources.Parse(
+    ref = self.resources.REGISTRY.Parse(
         email,
         collection='iam.projects.serviceAccounts',
         params={'project': '-'})

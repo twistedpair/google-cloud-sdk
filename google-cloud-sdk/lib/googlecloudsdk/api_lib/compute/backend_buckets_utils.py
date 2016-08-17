@@ -23,3 +23,14 @@ def AddUpdatableArgs(parser):
   parser.add_argument(
       '--description',
       help='An optional, textual description for the backend bucket.')
+
+  enable_cdn = parser.add_argument(
+      '--enable-cdn',
+      action='store_true',
+      default=None,  # Tri-valued, None => don't change the setting.
+      help='Enable cloud CDN.')
+  enable_cdn.detailed_help = """\
+      Enable Cloud CDN for the backend bucket. Cloud CDN can cache HTTP
+      responses from a backend bucket at the edge of the network, close to
+      users.
+      """

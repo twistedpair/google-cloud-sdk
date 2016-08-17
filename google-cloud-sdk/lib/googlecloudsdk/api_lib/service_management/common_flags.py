@@ -11,21 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Provides common arguments for the ML command surface."""
+
+"""Common flags for the consumers subcommand group."""
 
 from googlecloudsdk.calliope import base
 
-VERSION_NAME = base.Argument('version', help='Name of the model version.')
-VERSION_DATA = base.Argument(
-    '--origin',
-    required=True,
-    help='Google Cloud Storage location containing the model graph.')
-JOB_NAME = base.Argument('job', help='Name of the job.')
+CONSUMER_PROJECT_FLAG = base.Argument(
+    '--consumer-project',
+    help='The consumer project ID.')
 
 
-def GetModelName(positional=True, required=False):
-  help_text = 'Name of the model.'
-  if positional:
-    return base.Argument('model', help=help_text)
-  else:
-    return base.Argument('--model', help=help_text, required=required)
+def operation_flag(suffix='to act on'):
+  return base.Argument(
+      'operation',
+      help='The name of the operation {0}.'.format(suffix))
+
+
+def service_flag(suffix='to act on'):
+  return base.Argument(
+      'service',
+      help='The service {0}.'.format(suffix))
+
+
+def key_flag(suffix='to act on'):
+  return base.Argument(
+      '--key',
+      '-k',
+      help='The identifier of the key {0}.'.format(suffix))

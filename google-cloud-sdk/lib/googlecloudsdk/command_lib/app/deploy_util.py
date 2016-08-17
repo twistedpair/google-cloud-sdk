@@ -30,15 +30,21 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.app import flags
 from googlecloudsdk.command_lib.app import output_helpers
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
+
+
+class VersionPromotionError(core_exceptions.Error):
+  pass
 
 
 def ArgsDeploy(parser):
@@ -215,8 +221,20 @@ first to get one.
       api_client.DeployService(name, version, service, manifest, image)
       metrics.CustomTimedEvent(metric_names.DEPLOY_API)
       if promote:
-        version_util.PromoteVersion(all_services, new_version, api_client,
-                                    stop_previous_version)
+        try:
+          version_util.PromoteVersion(all_services, new_version, api_client,
+                                      stop_previous_version)
+        except calliope_exceptions.HttpException as err:
+          raise VersionPromotionError(
+              'Your deployment has succeeded, but promoting the new version to '
+              'default failed. '
+              'You may not have permissions to change traffic splits. '
+              'Changing traffic splits requires the Owner, Editor, App Engine '
+              'Admin, or App Engine Service Admin role. '
+              'Please contact your project owner and use the '
+              '`gcloud app services set-traffic --splits <version>=1` command '
+              'to redirect traffic to your newly deployed version.\n\n'
+              'Original error: ' + str(err))
       elif stop_previous_version:
         log.info('Not stopping previous version because new version was '
                  'not promoted.')

@@ -23,11 +23,11 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       the deleted snapshot. To get a list of snapshots in your
       current project, run `gcloud compute snapshots list`. A
       snapshot from an existing disk can be created using the
-      'gcloud compute disks snapshot' command. This flag is mutually
-      exclusive with ``--image''.
+      `gcloud compute disks snapshot` command. This flag is mutually
+      exclusive with *--image*.
 
       When using this option, the size of the disks must be at least
-      as large as the snapshot size. Use ``--size'' to adjust the
+      as large as the snapshot size. Use *--size* to adjust the
       size of the disks.
 """
 

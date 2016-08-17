@@ -278,6 +278,22 @@ class AppengineApiClient(object):
         self.client.apps_services_versions_instances.Delete, request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
+  def GetInstanceResource(self, service, version, instance):
+    """Describe the given instance of the given version of the given service.
+
+    Args:
+      service: str, the ID of the service
+      version: str, the ID of the version
+      instance: str, the ID of the instance
+
+    Returns:
+      Version resource object from the API
+    """
+    request = self.messages.AppengineAppsServicesVersionsInstancesGetRequest(
+        name=self._FormatInstance(self.project, service, version, instance))
+    return requests.MakeRequest(
+        self.client.apps_services_versions_instances.Get, request)
+
   def StopVersion(self, service_name, version_id):
     """Stops the specified version.
 

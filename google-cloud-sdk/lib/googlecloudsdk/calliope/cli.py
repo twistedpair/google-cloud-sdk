@@ -734,7 +734,7 @@ class CLI(object):
         # Make sure any uncaught exceptions still make it into the log file.
         exc_printable = self.SafeExceptionToString(exc)
         log.debug(exc_printable, exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc, flag_names)
+        metrics.Error(command_path_string, exc.__class__, flag_names)
         raise
     finally:
       properties.VALUES.PopInvocationValues()
@@ -799,7 +799,9 @@ class CLI(object):
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)
-    metrics.Error(command_path_string, orig_exc or exc, flag_names)
+    metrics_exc = orig_exc or exc
+    metrics_exc_class = metrics_exc.__class__
+    metrics.Error(command_path_string, metrics_exc_class, flag_names)
     self._Exit(exc)
 
   def _Exit(self, exc):

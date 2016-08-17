@@ -116,7 +116,7 @@ def GetObjectRef(path, messages):
   Raises:
     ToolException: If there is a parsing issue or the bucket is unspecified.
   """
-  # TODO(user): Let resources.Parse take GCS paths.
+  # TODO(user): resources.REGISTRY.Parse now supports GCS paths.
   url = urlparse.urlparse(path)
   if url.scheme != STORAGE_SCHEME:
     log.warn(path)

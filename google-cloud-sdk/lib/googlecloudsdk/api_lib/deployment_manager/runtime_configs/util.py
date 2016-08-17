@@ -69,9 +69,9 @@ def ParseConfigName(config_name):
   params = {
       'projectsId': Project
   }
-  return resources.Parse(config_name,
-                         collection='runtimeconfig.projects.configs',
-                         params=params)
+  return resources.REGISTRY.Parse(config_name,
+                                  collection='runtimeconfig.projects.configs',
+                                  params=params)
 
 
 def _ParseMultipartName(name, args, collection, resource_field):
@@ -92,7 +92,7 @@ def _ParseMultipartName(name, args, collection, resource_field):
       'configsId': lambda: ParseConfigName(ConfigName(args)).configsId
   }
 
-  # Workaround for resources.Parse's inability to parse names with '/'
+  # Workaround for resources.REGISTRY.Parse's inability to parse names with '/'
   # characters. If the given resource name is not a full http URL,
   # set the resource_field parameter to the name and pass None as the
   # string to parse. This causes Parse to construct a resource using
@@ -104,9 +104,9 @@ def _ParseMultipartName(name, args, collection, resource_field):
     resource_name = None
     params[resource_field] = name
 
-  return resources.Parse(resource_name,
-                         collection=collection,
-                         params=params)
+  return resources.REGISTRY.Parse(resource_name,
+                                  collection=collection,
+                                  params=params)
 
 
 def ParseVariableName(variable_name, args):
@@ -139,9 +139,10 @@ def ParseWaiterName(waiter_name, args):
       'configsId': lambda: ParseConfigName(ConfigName(args)).configsId
   }
 
-  return resources.Parse(waiter_name,
-                         collection='runtimeconfig.projects.configs.waiters',
-                         params=params)
+  return resources.REGISTRY.Parse(
+      waiter_name,
+      collection='runtimeconfig.projects.configs.waiters',
+      params=params)
 
 
 def ConfigName(args, required=True):

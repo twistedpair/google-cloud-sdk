@@ -21,7 +21,7 @@ PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
 
 
 def ParseProject(project_id):
-  return resources.Parse(project_id, collection=PROJECTS_COLLECTION)
+  return resources.REGISTRY.Parse(project_id, collection=PROJECTS_COLLECTION)
 
 
 def ProjectsUriFunc(resource):

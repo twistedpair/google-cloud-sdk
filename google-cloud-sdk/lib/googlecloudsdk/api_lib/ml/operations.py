@@ -45,7 +45,7 @@ def WaitForOperation(operation_service, operation):
   """
   if operation.done:
     return operation
-  request = resources.Parse(
+  request = resources.REGISTRY.Parse(
       operation.name, collection='ml.projects.operations').Request()
   try:
     operation = retry.Retryer(max_wait_ms=60 * 60 * 1000).RetryOnResult(

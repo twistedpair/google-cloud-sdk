@@ -20,6 +20,7 @@ import time
 
 import googlecloudsdk
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
@@ -448,13 +449,13 @@ def _GetGlobalConfigDir():
     str: The path to the user's global config area.
   """
   # Name of the directory that roots a cloud SDK workspace.
-  global_config_dir = file_utils.GetEnvPathValue(CLOUDSDK_CONFIG)
+  global_config_dir = console_attr.GetEncodedValue(os.environ, CLOUDSDK_CONFIG)
   if global_config_dir:
     return global_config_dir
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
     return os.path.join(os.path.expanduser('~'), '.config',
                         _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
-  appdata = file_utils.GetEnvPathValue('APPDATA')
+  appdata = console_attr.GetEncodedValue(os.environ, 'APPDATA')
   if appdata:
     return os.path.join(appdata, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
   # This shouldn't happen unless someone is really messing with things.
@@ -486,8 +487,9 @@ class Paths(object):
       str, The path to the root of the Cloud SDK or None if it could not be
       found.
     """
-    return file_utils.FindDirectoryContaining(os.path.dirname(__file__),
-                                              Paths.CLOUDSDK_STATE_DIR)
+    return file_utils.FindDirectoryContaining(
+        os.path.dirname(console_attr.DecodeFromInput(__file__)),
+        Paths.CLOUDSDK_STATE_DIR)
 
   @property
   def sdk_bin_path(self):

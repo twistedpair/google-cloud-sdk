@@ -29,6 +29,7 @@ class Build(_messages.Message):
       Registry. If an image is listed here and the image is not produced by
       one of the build steps, the build will fail. Any images present when the
       build steps are complete will be pushed to Container Registry.
+    logUrl: URL to logs for this build in Google Cloud Logging. @OutputOnly
     logsBucket: Google Cloud Storage bucket where logs should be written (see
       [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
@@ -61,7 +62,7 @@ class Build(_messages.Message):
       FAILURE: Build failed to complete successfully.
       INTERNAL_ERROR: Build failed due to an internal cause.
       TIMEOUT: Build took longer than was allowed.
-      CANCELLED: Build was canceled by a user. next_id = 9
+      CANCELLED: Build was canceled by a user.
     """
     STATUS_UNKNOWN = 0
     QUEUING = 1
@@ -77,17 +78,18 @@ class Build(_messages.Message):
   finishTime = _messages.StringField(2)
   id = _messages.StringField(3)
   images = _messages.StringField(4, repeated=True)
-  logsBucket = _messages.StringField(5)
-  options = _messages.MessageField('BuildOptions', 6)
-  projectId = _messages.StringField(7)
-  results = _messages.MessageField('Results', 8)
-  source = _messages.MessageField('Source', 9)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 10)
-  startTime = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusDetail = _messages.StringField(13)
-  steps = _messages.MessageField('BuildStep', 14, repeated=True)
-  timeout = _messages.StringField(15)
+  logUrl = _messages.StringField(5)
+  logsBucket = _messages.StringField(6)
+  options = _messages.MessageField('BuildOptions', 7)
+  projectId = _messages.StringField(8)
+  results = _messages.MessageField('Results', 9)
+  source = _messages.MessageField('Source', 10)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 11)
+  startTime = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusDetail = _messages.StringField(14)
+  steps = _messages.MessageField('BuildStep', 15, repeated=True)
+  timeout = _messages.StringField(16)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -147,14 +149,23 @@ class BuildStep(_messages.Message):
     dir: Working directory (relative to project source root) to use when
       running this operation's container.
     env: Additional environment variables to set for this step's container.
+    id: Optional unique identifier for this build step, used in wait_for to
+      reference this build step as a dependency.
     name: Name of the container image to use for creating this stage in the
       pipeline, as presented to `docker pull`.
+    waitFor: The ID(s) of the step(s) that this build step depends on. This
+      build step will not start until all the build steps in wait_for have
+      completed successfully. If wait_for is empty, this build step will start
+      when all previous build steps in the Build.Steps list have completed
+      successfully.
   """
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)
   env = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
+  id = _messages.StringField(4)
+  name = _messages.StringField(5)
+  waitFor = _messages.StringField(6, repeated=True)
 
 
 class BuiltImage(_messages.Message):
@@ -420,14 +431,37 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class RepoSource(_messages.Message):
+  """RepoSource describes the location of the source in a Google Cloud Source
+  Repository.
+
+  Fields:
+    branchName: Name of the branch to build.
+    commitSha: Explicit commit SHA to build.
+    projectId: ID of the project that owns the repo. If omitted, the project
+      ID requesting the build is assumed.
+    repoName: Name of the repo. If omitted, the name "default" is assumed.
+    tagName: Name of the tag to build.
+  """
+
+  branchName = _messages.StringField(1)
+  commitSha = _messages.StringField(2)
+  projectId = _messages.StringField(3)
+  repoName = _messages.StringField(4)
+  tagName = _messages.StringField(5)
+
+
 class Results(_messages.Message):
   """Results describes the artifacts created by the build pipeline.
 
   Fields:
+    buildStepImages: List of build step digests, in order corresponding to
+      build step indices.
     images: Images that were built as a part of the build.
   """
 
-  images = _messages.MessageField('BuiltImage', 1, repeated=True)
+  buildStepImages = _messages.StringField(1, repeated=True)
+  images = _messages.MessageField('BuiltImage', 2, repeated=True)
 
 
 class Source(_messages.Message):
@@ -435,11 +469,13 @@ class Source(_messages.Message):
   service.
 
   Fields:
+    repoSource: If provided, get source from this location in a Cloud Repo.
     storageSource: If provided, get the source from this location in in Google
       Cloud Storage.
   """
 
-  storageSource = _messages.MessageField('StorageSource', 1)
+  repoSource = _messages.MessageField('RepoSource', 1)
+  storageSource = _messages.MessageField('StorageSource', 2)
 
 
 class SourceProvenance(_messages.Message):
@@ -465,6 +501,8 @@ class SourceProvenance(_messages.Message):
       build source came in a single package such as a gzipped tarfile
       (.tar.gz), the FileHash will be for the single path to that file.
       @OutputOnly
+    resolvedRepoSource: A copy of the build's source.repo_source, if exists,
+      with any revisions resolved.
     resolvedStorageSource: A copy of the build's source.storage_source, if
       exists, with any generations resolved.
   """
@@ -500,7 +538,8 @@ class SourceProvenance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   fileHashes = _messages.MessageField('FileHashesValue', 1)
-  resolvedStorageSource = _messages.MessageField('StorageSource', 2)
+  resolvedRepoSource = _messages.MessageField('RepoSource', 2)
+  resolvedStorageSource = _messages.MessageField('StorageSource', 3)
 
 
 class StandardQueryParameters(_messages.Message):

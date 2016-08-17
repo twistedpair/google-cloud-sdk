@@ -28,7 +28,9 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parse_errors
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import remote_completion
@@ -213,6 +215,19 @@ class ArgumentParser(argparse.ArgumentParser):
       message += (u'\nThis command is available in one or more alternate '
                   u'release tracks.  Try:\n  ')
       message += u'\n  '.join(existing_alternatives)
+
+      # Log to analytics the attempt to execute a command.
+      # We know the user entered 'value' is a valid command in a different
+      # release track. It's safe to include it.
+      dotted_command_path = '.'.join(self._calliope_command.GetPath() + [value])
+      metrics.Commands(
+          dotted_command_path, config.CLOUD_SDK_VERSION, self._flag_collection,
+          error=parse_errors.WrongTrackException,
+          error_extra_info=','.join(existing_alternatives))
+      metrics.Error(
+          dotted_command_path,
+          parse_errors.WrongTrackException,
+          self._flag_collection)
     # See if the spelling was close to something else that exists here.
     else:
       choices = sorted(action.choices)
@@ -223,6 +238,21 @@ class ArgumentParser(argparse.ArgumentParser):
         message += " Did you mean '{0}'?".format(suggestion)
       else:
         message += '\n\nValid choices are [{0}].'.format(', '.join(choices))
+
+      # Log to analytics the attempt to execute a command.
+      # We don't know if the user entered 'value' is a mistyped command or
+      # some resource name that the user entered and we incorrectly thought it's
+      # a command. We can't include it since it might be PII.
+      dotted_command_path = '.'.join(self._calliope_command.GetPath())
+      metrics.Commands(
+          dotted_command_path, config.CLOUD_SDK_VERSION, self._flag_collection,
+          error=parse_errors.ParsingCommandException,
+          error_extra_info=(suggestion if suggestion else ','.join(choices)))
+      metrics.Error(
+          dotted_command_path,
+          parse_errors.ParsingCommandException,
+          self._flag_collection)
+
     raise argparse.ArgumentError(action, message)
 
   def _ExistingAlternativeReleaseTracks(self, value):
@@ -278,6 +308,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
     message = console_attr.EncodeForOutput(message)
     log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
+
     self.exit(2)
 
   def _parse_optional(self, arg_string):

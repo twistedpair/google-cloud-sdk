@@ -21,7 +21,6 @@ from apitools.base import py as apitools_base
 
 from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.service_management import services_util
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -92,7 +91,8 @@ def PushServiceConfig(swagger_file, project, client, messages):
     Operation: a long running asynchronous Operation
   """
   if not swagger_file:
-    raise ValueError('Swagger specification file path must be provided.')
+    raise ValueError(
+        'Open API (Swagger) specification file path must be provided.')
   if not project:
     raise ValueError('Project Id must be provided.')
   if not client:
@@ -100,28 +100,34 @@ def PushServiceConfig(swagger_file, project, client, messages):
   if not messages:
     raise ValueError('Service Management client messages must be provided.')
 
-  swagger_path = os.path.dirname(swagger_file)
-
-  # First, convert the swagger specification to Google Service Configuration
+  swagger_file_contents = None
   try:
     with open(swagger_file) as f:
-      swagger_file = messages.File(
-          contents=f.read(),
-          path=swagger_file,
-      )
+      swagger_file_contents = f.read()
   except IOError:
     raise SwaggerOpenException(
         'Unable to read swagger spec file "{0}"'.format(swagger_file))
+
+  # Try to load the file as JSON or YAML.
+  service_config_dict = services_util.LoadJsonOrYaml(swagger_file_contents)
+  if not service_config_dict:
+    raise SwaggerOpenException(
+        'Could not read JSON or YAML from Open API (Swagger) file {}.'.format(
+            swagger_file))
 
   # Check to see if the Endpoints meta service needs to be enabled.
   enable_api.EnableServiceIfDisabled(
       project, services_util.GetEndpointsServiceName(), async=False)
 
-  swagger_spec = messages.SwaggerSpec(swaggerFiles=[swagger_file])
-  request = messages.ConvertConfigRequest(
-      swaggerSpec=swagger_spec,
-  )
-
+  # First, get the Open API specification contents, and convert it to
+  # Google Service Config. This is only needed at the moment for the
+  # Diagnostics information the ConvertConfig generates.
+  # TODO(b/30276465): When the Diagnostics information is available via the
+  # SubmitSourceConfig API, remove the usage of ConvertConfig API.
+  swagger_file_obj = messages.File(
+      contents=swagger_file_contents, path=swagger_file)
+  swagger_spec = messages.SwaggerSpec(swaggerFiles=[swagger_file_obj])
+  request = messages.ConvertConfigRequest(swaggerSpec=swagger_spec)
   try:
     response = client.v1.ConvertConfig(request)
   except apitools_base.exceptions.HttpError as error:
@@ -140,37 +146,53 @@ def PushServiceConfig(swagger_file, project, client, messages):
   # which will contain the service.json file needed by ESP.
   # This file+directory will be carried to the App Engine Flexible VM via the
   # app container.
-  # TODO(user): Remove this when ESP is able to pull this configuration
-  # directly from Inception.
+  # TODO(b/28090287): Remove this when ESP is able to pull this configuration
+  # directly from Service Management API.
+  swagger_path = os.path.dirname(swagger_file)
   endpoints_dir = os.path.join(swagger_path, 'endpoints')
   if not os.path.exists(endpoints_dir):
-    os.makedirs(endpoints_dir)
-  with open(endpoints_dir + '/service.json', 'w') as out:
-    out.write(apitools_base.encoding.MessageToJson(response.serviceConfig))
+    try:
+      os.makedirs(endpoints_dir)
+      with open(endpoints_dir + '/service.json', 'w') as out:
+        out.write(apitools_base.encoding.MessageToJson(response.serviceConfig))
+    except (IOError, OSError) as e:
+      raise SwaggerUploadException(
+          'Failed to write Google Service Configuration to disk: ' + str(e))
 
-  # Second, upload Google Service Configuration to Service Management API
-  service_name = response.serviceConfig.name
-  managed_service = messages.ManagedService(
-      serviceConfig=response.serviceConfig,
-      serviceName=service_name)
-  # Set the serviceConfig producerProjectId
-  managed_service.serviceConfig.producerProjectId = project
+  service_name = service_config_dict.get('host', None)
+  # Create the Service resource if it does not already exist.
+  services_util.CreateServiceIfNew(service_name, project)
 
-  request = messages.ServicemanagementServicesUpdateRequest(
+  # Push the service configuration.
+  config_id = services_util.PushOpenApiServiceConfig(
+      service_name,
+      swagger_file_contents,
+      os.path.basename(swagger_file),
+      async=False)
+
+  if config_id and service_name:
+    # Print this to screen and to the log because the output is needed by the
+    # human user.
+    log.status.Print(
+        ('\nService Configuration with version [{0}] uploaded '
+         'for service [{1}]\n').format(config_id, service_name))
+  else:
+    raise SwaggerUploadException(
+        'Failed to retrieve Service Configuration Version')
+
+  # Create a Rollout for the new service configuration
+  percentages = messages.TrafficPercentStrategy.PercentagesValue()
+  percentages.additionalProperties.append(
+      messages.TrafficPercentStrategy.PercentagesValue.AdditionalProperty(
+          key=config_id, value=100.0))
+  traffic_percent_strategy = messages.TrafficPercentStrategy(
+      percentages=percentages)
+  rollout = messages.Rollout(
       serviceName=service_name,
-      managedService=managed_service,
+      trafficPercentStrategy=traffic_percent_strategy,
   )
-
-  try:
-    update_operation = client.services.Update(request)
-  except apitools_base.exceptions.HttpError as error:
-    raise SwaggerUploadException(_GetErrorMessage(error))
-
-  # Wait on the operation to complete
-  try:
-    services_util.ProcessOperationResult(update_operation, async=False)
-  except calliope_exceptions.ToolException:
-    raise SwaggerUploadException('Failed to upload service configuration.')
+  rollout_operation = client.services_rollouts.Create(rollout)
+  services_util.ProcessOperationResult(rollout_operation, async=False)
 
   # Enable the service for the producer project if it is not already enabled
   enable_api.EnableServiceIfDisabled(project, service_name, async=False)

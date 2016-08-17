@@ -63,7 +63,8 @@ class ResultsBucketOps(object):
     else:
       bucket_name = self._GetDefaultBucket(tr_client, tr_messages)
 
-    bucket_ref = resources.Parse(bucket_name, collection='storage.buckets')
+    bucket_ref = resources.REGISTRY.Parse(
+        bucket_name, collection='storage.buckets')
     self._results_bucket = bucket_ref.bucket
 
     self._gcs_results_url = (

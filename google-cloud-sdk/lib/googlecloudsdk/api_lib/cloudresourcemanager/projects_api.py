@@ -64,12 +64,13 @@ def Create(project_ref, project_name, enable_cloud_apis=True,
 
   # Create project.
   project_creation_result = client.projects.Create(
-      messages.Project(
-          projectId=project_ref.Name(),
-          name=project_name if project_name else project_ref.Name(),
-          labels=labels_util.UpdateLabels(None,
-                                          messages.Project.LabelsValue,
-                                          update_labels=update_labels)))
+      messages.CloudresourcemanagerProjectsCreateRequest(
+          project=messages.Project(
+              projectId=project_ref.Name(),
+              name=project_name if project_name else project_ref.Name(),
+              labels=labels_util.UpdateLabels(None,
+                                              messages.Project.LabelsValue,
+                                              update_labels=update_labels))))
 
   if enable_cloud_apis:
     # Enable cloudapis.googleapis.com

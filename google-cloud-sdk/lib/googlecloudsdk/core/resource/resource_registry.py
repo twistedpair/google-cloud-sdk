@@ -319,7 +319,8 @@ RESOURCE_REGISTRY = {
         list_format="""
           table(
             name,
-            bucketName:label=GCS_BUCKET_NAME
+            bucketName:label=GCS_BUCKET_NAME,
+            enableCdn
           )
         """,
     ),

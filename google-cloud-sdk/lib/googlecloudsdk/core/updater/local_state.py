@@ -28,6 +28,7 @@ import sys
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import snapshots
@@ -70,8 +71,8 @@ class PermissionsError(Error):
           operated on, but can't because of insufficient permissions.
     """
     super(PermissionsError, self).__init__(
-        '{message}: [{path}]\n\nEnsure you have the permissions to access the '
-        'file and that the file is not in use.'
+        u'{message}: [{path}]\n\nEnsure you have the permissions to access the '
+        u'file and that the file is not in use.'
         .format(message=message, path=path))
 
 
@@ -190,7 +191,7 @@ class InstallationState(object):
       raise ValueError('The given Cloud SDK root does not exist: [{0}]'
                        .format(sdk_root))
 
-    self.__sdk_root = sdk_root
+    self.__sdk_root = console_attr.DecodeFromInput(sdk_root)
     self._state_directory = os.path.join(sdk_root,
                                          InstallationState.STATE_DIR_NAME)
     self.__backup_directory = os.path.join(self._state_directory,
@@ -589,14 +590,18 @@ class InstallationState(object):
 
     This does not raise exceptions if compiling a given file fails.
     """
-    root = self.sdk_root
-    to_compile = [
-        os.path.join(root, 'bin', 'bootstrapping'),
-        os.path.join(root, 'lib'),
-        os.path.join(root, 'platform'),
-    ]
-    for d in to_compile:
-      compileall.compile_dir(d, quiet=True)
+    # The self.sdk_root pathname could contain unicode chars and py_compile
+    # chokes on unicode paths. Using relative paths from self.sdk_root works
+    # around the problem.
+    with file_utils.ChDir(self.sdk_root):
+      to_compile = [
+          os.path.join('bin', 'bootstrapping'),
+          'lib',
+          'platform',
+      ]
+      for d in to_compile:
+        d = console_attr.DecodeFromInput(d)
+        compileall.compile_dir(d, quiet=True)
 
 
 class InstallationManifest(object):

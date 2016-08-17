@@ -25,7 +25,7 @@ def _AddRoleArgument(
   """Helper function to add the --role flag with remote completion."""
 
   def CompletionCallback(parsed_args):
-    resource_ref = resources.Parse(
+    resource_ref = resources.REGISTRY.Parse(
         getattr(parsed_args, completion_resource_arg),
         collection=completion_resource_collection)
     resource_uri = resource_ref.SelfLink()
@@ -177,16 +177,23 @@ def ParseJsonPolicyFile(policy_file_path, policy_message_type):
         .format(policy_file_path, str(e)))
   return policy
 
-def GetDetailedHelpForSetIamPolicy(collection, example_id):
+def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more=''):
   """Returns a detailed_help for a set-iam-policy command
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
+    example_see_more: Optional "See ... for details" message. If not specified,
+        includes a default reference to IAM managing-policies documentation
   Returns:
     a dict with boilerplate help text for the set-iam-policy command
   """
+  if not example_see_more:
+    example_see_more = """
+          See https://cloud.google.com/iam/docs/managing-policies for details
+          of the policy file format and contents."""
+
   return {
       'brief': 'Set IAM policy for a {0}.'.format(collection),
       'DESCRIPTION': '{description}',
@@ -196,9 +203,7 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id):
 
             $ {{command}} {1} policy.json
 
-          See https://cloud.google.com/iam/docs/managing-policies for details
-          of the policy file format and contents.
-          """.format(collection, example_id)
+          {2}""".format(collection, example_id, example_see_more)
   }
 
 

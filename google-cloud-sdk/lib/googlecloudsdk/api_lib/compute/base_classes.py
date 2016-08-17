@@ -103,7 +103,7 @@ class ComputeUserAccountsApiHolder(object):
   def resources(self):
     """Specifies the resources parser for compute resources."""
     if self._resources is None:
-      resources.SetParamDefault(
+      resources.REGISTRY.SetParamDefault(
           api='clouduseraccounts',
           collection=None,
           param='project',
@@ -1784,7 +1784,7 @@ def _SetResourceParamDefaults():
       ('resourceviews', 'zone', compute_values.zone),
       ('compute', 'region', compute_values.region),
       ('resourceviews', 'region', compute_values.region)):
-    resources.SetParamDefault(
+    resources.REGISTRY.SetParamDefault(
         api=api,
         collection=None,
         param=param,

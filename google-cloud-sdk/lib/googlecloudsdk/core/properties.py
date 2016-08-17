@@ -23,6 +23,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import http_proxy_types
 
@@ -92,6 +93,12 @@ _NEVER = 'never'
 _PROMPT = 'prompt'
 
 
+def Stringize(value):
+  if isinstance(value, basestring):
+    return value
+  return str(value)
+
+
 def _LooksLikeAProjectName(project):
   """Heuristics testing if a string looks like a project name, but an id."""
 
@@ -114,7 +121,7 @@ def _BooleanValidator(property_name, value):
   accepted_strings = ['true', '1', 'on', 'yes', 'y',
                       'false', '0', 'off', 'no', 'n',
                       '', 'none']
-  if str(value).lower() not in accepted_strings:
+  if Stringize(value).lower() not in accepted_strings:
     raise InvalidValueError(
         'The [{0}] value [{1}] is not valid. Possible values: [{2}]. '
         '(See http://yaml.org/type/bool.html)'.format(
@@ -543,7 +550,7 @@ class _SectionApp(_Section):
       try:
         if int(cloud_build_timeout) > max_timeout:
           raise InvalidValueError(
-              'cloud_build_timeout may not exceed %d', max_timeout)
+              'cloud_build_timeout may not exceed {0}'.format(max_timeout))
       except ValueError:
         raise InvalidValueError(
             'cloud_build_timeout must be an integer')
@@ -1191,9 +1198,8 @@ class _Property(object):
     """
     self.Validate(value)
     if value is not None:
-      os.environ[self.EnvironmentName()] = str(value)
-    elif self.EnvironmentName() in os.environ:
-      del os.environ[self.EnvironmentName()]
+      value = Stringize(value)
+    console_attr.SetEncodedValue(os.environ, self.EnvironmentName(), value)
 
   def EnvironmentName(self):
     """Get the name of the environment variable for this property.
@@ -1398,16 +1404,15 @@ def _GetProperty(prop, properties_file, required):
 
   value = _GetPropertyWithoutDefault(prop, properties_file)
   if value is not None:
-    return str(value)
+    return Stringize(value)
 
   # Still nothing, check the final default.
   if prop.default is not None:
-    return str(prop.default)
+    return Stringize(prop.default)
 
   # Not set, throw if required.
   if required:
-    raise RequiredPropertyError(
-        prop, flag=flag_to_use)
+    raise RequiredPropertyError(prop, flag=flag_to_use)
 
   return None
 
@@ -1431,13 +1436,13 @@ def _GetPropertyWithoutDefault(prop, properties_file):
   # Try to get a value from args, env, or property file.
   value = _GetPropertyWithoutCallback(prop, properties_file)
   if value is not None:
-    return str(value)
+    return Stringize(value)
 
   # No value, try getting a value from the callbacks.
   for callback in prop.callbacks:
     value = callback()
     if value is not None:
-      return str(value)
+      return Stringize(value)
 
   return None
 
@@ -1466,17 +1471,17 @@ def _GetPropertyWithoutCallback(prop, properties_file):
     if not value_flag:
       continue
     if value_flag.value is not None:
-      return str(value_flag.value)
+      return Stringize(value_flag.value)
 
   # Check the environment variable overrides.
-  value = os.environ.get(prop.EnvironmentName(), None)
+  value = console_attr.GetEncodedValue(os.environ, prop.EnvironmentName())
   if value is not None:
-    return str(value)
+    return Stringize(value)
 
   # Check the property file itself.
   value = properties_file.Get(prop.section, prop.name)
   if value is not None:
-    return str(value)
+    return Stringize(value)
 
   return None
 
@@ -1497,7 +1502,7 @@ def _GetBoolProperty(prop, properties_file, required, validate=False):
   value = _GetProperty(prop, properties_file, required)
   if validate:
     _BooleanValidator(prop.name, value)
-  if value is None or str(value).lower() == 'none':
+  if value is None or Stringize(value).lower() == 'none':
     return None
   return value.lower() in ['1', 'true', 'on', 'yes', 'y']
 

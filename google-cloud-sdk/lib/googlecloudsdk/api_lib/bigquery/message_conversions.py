@@ -70,5 +70,5 @@ def JobReferenceToResource(reference):
   Returns:
     the resource
   """
-  return resources.Create(
+  return resources.REGISTRY.Create(
       'bigquery.jobs', projectId=reference.projectId, jobId=reference.projectId)

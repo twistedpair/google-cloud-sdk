@@ -45,6 +45,8 @@ class XpnClient(object):
   def batch_url(self):
     return client_adapter.GetBatchUrl(self.client.url)
 
+  # TODO(b/30465957): Refactor to use apitools clients directly and not the
+  # compute utilities
   def _MakeRequest(self, request, errors):
     return request_helper.MakeRequests(
         requests=[request],

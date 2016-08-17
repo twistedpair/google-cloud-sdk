@@ -204,8 +204,11 @@ class ConsoleAttr(object):
       out: The console output file stream, log.out if None.
     """
     if not out:
-      from googlecloudsdk.core import log  # pylint: disable=g-import-not-at-top, avoid config import loop
-      out = log.out
+      try:
+        from googlecloudsdk.core import log  # pylint: disable=g-import-not-at-top, avoid config import loop
+        out = log.out
+      except ImportError:
+        out = sys.stdout
     self._out = out
     # Normalize the encoding name.
     console_encoding = None
@@ -674,26 +677,80 @@ def DecodeFromInput(string):
   try:
     string.decode('ascii')
     return string
+  except AttributeError:
+    # string does not have decode method.
+    try:
+      return unicode(string)
+    except TypeError:
+      # string cannot be converted to unicode -- default to str() which will
+      # catch objects with special __str__ methods.
+      return str(string)
   except UnicodeError:
+    # string is not ASCII encoded.
     pass
 
   # Try the console encoding.
   try:
     return string.decode(GetConsoleAttr().GetEncoding())
   except UnicodeError:
+    # string is not encoded for the console.
     pass
 
   # Try the filesystem encoding.
   try:
     return string.decode(sys.getfilesystemencoding())
   except UnicodeError:
+    # string is not encoded for filesystem paths.
     pass
 
   # Try the system default encoding.
   try:
     return string.decode(sys.getdefaultencoding())
   except UnicodeError:
+    # string is not encoded using the default encoding.
     pass
 
   # Give up and just return the string.
   return string
+
+
+def GetEncodedValue(env, name, default=None):
+  """Returns the decoded value of the env var name.
+
+  Args:
+    env: {str: str}, The env dict.
+    name: str, The env var name.
+    default: The value to return if name is not in env.
+
+  Returns:
+    The decoded value of the env var name.
+  """
+  value = env.get(name)
+  return default if value is None else DecodeFromInput(value)
+
+
+def SetEncodedValue(env, name, value):
+  """Sets the value of name in env to an encoded value.
+
+  Args:
+    env: {str: str}, The env dict.
+    name: str, The env var name.
+    value: str or unicode, The value for name. If None then name is removed from
+      env.
+  """
+  # Python 2 *and* 3 unicode support falls apart at filesystem/argv/environment
+  # boundaries. The encoding used for filesystem paths and environment variable
+  # names/values is under user control on most systems. With one of those values
+  # in hand there is no way to tell exactly how the value was encoded. We get
+  # some reasonable hints from sys.getfilesystemencoding() or
+  # sys.getdefaultencoding() and use them to encode values that the receiving
+  # process will have a chance at decoding. Leaving the values as unicode
+  # strings will cause os module Unicode exceptions. What good is a language
+  # unicode model when the module support could care less?
+  if value is None:
+    env.pop(name, None)
+    return
+  if isinstance(value, unicode):
+    encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+    value = value.encode(encoding)
+  env[name] = value

@@ -21,6 +21,7 @@ START_TIME = time.time()
 
 # pylint:disable=g-bad-import-order
 # pylint:disable=g-import-not-at-top, We want to get the start time first.
+import errno
 import os
 import signal
 import sys
@@ -56,14 +57,6 @@ def CTRLCHandler(unused_signal, unused_frame):
   # Just in case the kill failed ...
   sys.exit(1)
 signal.signal(signal.SIGINT, CTRLCHandler)
-
-
-# Enable normal UNIX handling of SIGPIPE to play nice with grep -q, head, etc.
-# See https://mail.python.org/pipermail/python-list/2004-June/273297.html and
-# http://utcc.utoronto.ca/~cks/space/blog/python/SignalExceptionSurprise
-# for more details.
-if hasattr(signal, 'SIGPIPE'):
-  signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 
 def _DoStartupChecks():
@@ -168,7 +161,21 @@ def main(gcloud_cli=None):
   if gcloud_cli is None:
     gcloud_cli = CreateCLI([])
   try:
-    gcloud_cli.Execute()
+    try:
+      gcloud_cli.Execute()
+    except IOError as err:
+      # We want to ignore EPIPE IOErrors.
+      # By default, Python ignores SIGPIPE (see
+      # http://utcc.utoronto.ca/~cks/space/blog/python/SignalExceptionSurprise).
+      # This means that attempting to write any output to a closed pipe (e.g. in
+      # the case of output piped to `head` or `grep -q`) will result in an
+      # IOError, which gets reported as a gcloud crash. We don't want this
+      # behavior, so we ignore EPIPE (it's not a real error; it's a normal thing
+      # to occur).
+      # Before, we restore the SIGPIPE signal handler, but that caused issues
+      # with scripts/programs that wrapped gcloud.
+      if err.errno != errno.EPIPE:
+        raise
   except Exception as err:  # pylint:disable=broad-except
     # We want this to be parsable by `gcloud feedback`, so we print the
     # stacktrace with a nice recognizable string

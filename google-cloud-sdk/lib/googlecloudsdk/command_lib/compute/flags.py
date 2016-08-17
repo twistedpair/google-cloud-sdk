@@ -86,6 +86,10 @@ A list of regions can be fetched by running:
 """
 
 
+class ScopesFetchingException(exceptions.Error):
+  pass
+
+
 def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
                 explanation=ZONE_PROPERTY_EXPLANATION):
   """Adds a --zone flag to the given parser.
@@ -155,6 +159,8 @@ class UnderSpecifiedResourceError(exceptions.Error):
 
 
 class ScopeEnum(enum.Enum):
+  """Enum representing GCE scope."""
+
   ZONE = ('zone')
   REGION = ('region')
   GLOBAL = ('global')
@@ -163,6 +169,15 @@ class ScopeEnum(enum.Enum):
     # Collection parameter name matches command line file in this case.
     self.param_name = flag_name
     self.flag_name = flag_name
+
+  @classmethod
+  def CollectionForScope(cls, scope):
+    if scope == cls.ZONE:
+      return 'compute.zones'
+    if scope == cls.REGION:
+      return 'compute.regions'
+    raise exceptions.Error(
+        'Expected scope to be ZONE or REGION, got {0!r}'.format(scope))
 
 
 class ResourceStub(object):
@@ -439,7 +454,13 @@ class ResourceArgument(object):
         raise exceptions.Error('Can\'t specify --zone, --region or --global'
                                ' without specifying resource via {0}'
                                .format(self.name))
-      params[resource_scope.scope_enum.param_name] = scope_value
+      if resource_scope.scope_enum == ScopeEnum.GLOBAL:
+        stored_value = scope_value
+      else:
+        collection = ScopeEnum.CollectionForScope(resource_scope.scope_enum)
+        stored_value = api_resource_registry.Parse(
+            scope_value, collection=collection).Name()
+      params[resource_scope.scope_enum.param_name] = stored_value
     else:
       resource_scope = self.scopes.GetImplicitScope(default_scope)
 

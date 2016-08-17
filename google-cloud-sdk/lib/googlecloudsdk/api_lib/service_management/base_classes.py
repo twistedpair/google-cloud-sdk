@@ -16,6 +16,8 @@
 
 import abc
 
+from googlecloudsdk.api_lib.service_management import services_util
+
 from googlecloudsdk.core import properties
 
 
@@ -44,19 +46,19 @@ class BaseServiceManagementCommand():
 
   @property
   def services_client(self):
-    return self.context['servicemanagement-v1']
+    return services_util.GetClientInstance()
 
   @property
   def services_messages(self):
-    return self.context['servicemanagement-v1-messages']
+    return services_util.GetMessagesModule()
 
   @property
   def apikeys_client(self):
-    return self.context['apikeys-v1']
+    return services_util.GetApiKeysClientInstance()
 
   @property
   def apikeys_messages(self):
-    return self.context['apikeys-v1-messages']
+    return services_util.GetApiKeysMessagesModule()
 
   @property
   def all_iam_permissions(self):

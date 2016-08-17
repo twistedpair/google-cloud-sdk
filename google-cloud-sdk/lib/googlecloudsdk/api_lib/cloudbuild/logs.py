@@ -57,6 +57,7 @@ def Stream(build_ref, client, messages):
   statuses = messages.Build.StatusValueValuesEnum
   working_statuses = [
       statuses.QUEUED,
+      statuses.QUEUING,
       statuses.WORKING,
   ]
 

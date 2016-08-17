@@ -102,7 +102,7 @@ def ConstructApiDef(api_name,
   return apis_map.APIDef(client_cls_path, messages_mod_path, is_default)
 
 
-def AddToApisMap(api_name, api_version, is_default,
+def AddToApisMap(api_name, api_version, is_default=None,
                  base_pkg='googlecloudsdk.third_party.apis'):
   """Adds the APIDef specified by the given arguments to the APIs map.
 
@@ -113,12 +113,15 @@ def AddToApisMap(api_name, api_version, is_default,
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    is_default: bool, Whether this API version is the default.
+    is_default: bool, Whether this API version is the default. If set to None
+      will be set to True if this is first version of api, otherwise false.
     base_pkg: str, Base package from which generated API files are accessed.
   """
   api_name, _ = _GetApiNameAndAlias(api_name)
   api_def = ConstructApiDef(api_name, api_version, is_default, base_pkg)
   api_versions = apis_map.MAP.get(api_name, {})
+  if is_default is None:
+    api_def.default_version = not api_versions
   api_versions[api_version] = api_def
   apis_map.MAP[api_name] = api_versions
 
@@ -130,6 +133,14 @@ def GetDefaultVersion(api_name):
     if api_def.default_version:
       return ver
   return None
+
+
+def SetDefaultVersion(api_name, api_version):
+  """Resets default version for given api."""
+  api_def = _GetApiDef(api_name, api_version)
+  default_api_def = _GetApiDef(api_name)
+  default_api_def.default_version = False
+  api_def.default_version = True
 
 
 def GetVersions(api_name):

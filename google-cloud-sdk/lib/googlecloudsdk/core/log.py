@@ -132,9 +132,11 @@ class _ConsoleWriter(object):
       *msg: str, The messages to print.
     """
 
-    msg = (x if isinstance(x, unicode) else str(x) for x in msg)
-    message = ' '.join(msg)
-    self.write(message + '\n')
+    from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
+    msg = (x if isinstance(x, unicode) else console_attr.DecodeFromInput(x)
+           for x in msg)
+    message = u' '.join(msg)
+    self.write(message + u'\n')
 
   def GetConsoleWriterStream(self):
     """Returns the console writer output stream."""

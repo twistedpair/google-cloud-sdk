@@ -19,13 +19,18 @@ from googlecloudsdk.core.resource import resource_transform
 
 
 class CsvPrinter(resource_printer_base.ResourcePrinter):
-  """A printer for printing CSV data.
+  r"""A printer for printing CSV data.
 
   [Comma Separated Values](http://www.ietf.org/rfc/rfc4180.txt) with no keys.
   This format requires a projection to define the values to be printed.
 
   Printer attributes:
+    delimiter="string": The string printed between list value items,
+      default ";".
     no-heading: Disables the initial key name heading record.
+    separator="string": The string printed between values, default ",".
+    terminator="string": The string printed after each record, default
+      "\n" (newline).
   """
 
   def __init__(self, *args, **kwargs):
@@ -33,8 +38,10 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
                                      non_empty_projection_required=True,
                                      **kwargs)
     self._heading_printed = False
-    self._separator = ','
+    self._delimiter = self.attributes.get('delimiter', ';')
     self._quote = None if self.attributes.get('no-quote', 0) else '"'
+    self._separator = self.attributes.get('separator', ',')
+    self._terminator = self.attributes.get('terminator', '\n')
 
   def _QuoteField(self, field):
     """Returns field quoted by self._quote if necessary.
@@ -50,7 +57,10 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
     """
     if not field or not self._quote:
       return field
-    if not (self._separator in field or self._quote in field or '\n' in field or
+    if not (self._delimiter in field or
+            self._quote in field or
+            self._separator in field or
+            self._terminator in field or
             field[0].isspace() or field[-1].isspace()):
       return field
     return (self._quote +
@@ -85,40 +95,50 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
             labels = [x.lower() for x in labels]
         if labels:
           self._out.write(self._separator.join(
-              [self._QuoteField(label) for label in labels]) + '\n')
+              [self._QuoteField(label) for label in labels]) + self._terminator)
     line = []
     for col in record:
       if col is None:
         val = ''
       elif isinstance(col, dict):
-        val = ';'.join([unicode(k) + '=' + unicode(v)
-                        for k, v in sorted(col.iteritems())])
+        val = self._delimiter.join(
+            [self._QuoteField(u'{0}={1}'.format(unicode(k), unicode(v)))
+             for k, v in sorted(col.iteritems())])
       elif isinstance(col, list):
-        val = ';'.join([unicode(x) for x in col])
+        val = self._delimiter.join([self._QuoteField(unicode(x)) for x in col])
       elif isinstance(col, float):
-        val = resource_transform.TransformFloat(col)
+        val = self._QuoteField(resource_transform.TransformFloat(col))
       else:
-        val = unicode(col)
-      line.append(self._QuoteField(val))
-    self._out.write(self._separator.join(line) + '\n')
+        val = self._QuoteField(unicode(col))
+      line.append(val)
+    self._out.write(self._separator.join(line) + self._terminator)
 
 
 class ValuePrinter(CsvPrinter):
-  """A printer for printing value data.
+  r"""A printer for printing value data.
 
   CSV with no heading and <TAB> separator instead of <COMMA>. Used to retrieve
   individual resource values. This format requires a projection to define the
   value(s) to be printed.
 
   Printer attributes:
-    quote: "..." quote values that contain <TAB>, <NEWLINE> or ".
+    delimiter="string": The string printed between list value items,
+      default ";".
+    quote: "..." quote values that contain delimiter, separator or terminator
+      strings.
+    separator="string": The string printed between values, default
+      "\t" (tab).
+    terminator="string": The string printed after each record, default
+      "\n" (newline).
   """
 
   def __init__(self, *args, **kwargs):
     super(ValuePrinter, self).__init__(*args, **kwargs)
     self._heading_printed = True
-    self._separator = '\t'
+    self._delimiter = self.attributes.get('delimiter', ';')
     self._quote = '"' if self.attributes.get('quote', 0) else None
+    self._separator = self.attributes.get('separator', '\t')
+    self._terminator = self.attributes.get('terminator', '\n')
 
   # TODO(b/27967563): remove 3Q2016
   def Finish(self):

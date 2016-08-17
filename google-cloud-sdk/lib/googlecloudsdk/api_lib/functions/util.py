@@ -78,7 +78,7 @@ def GetHttpErrorMessage(error):
         message += '\nProblems:\n' + violations
   except (ValueError, TypeError):
     message = error.content
-  return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
+  return u'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
       status, code, message)
 
 
@@ -91,7 +91,7 @@ def GetOperationError(error):
   Returns:
     A human readable string representation of the error.
   """
-  return 'OperationError: code={0}, message={1}'.format(
+  return u'OperationError: code={0}, message={1}'.format(
       error.code, error.message)
 
 

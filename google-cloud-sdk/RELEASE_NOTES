@@ -2,6 +2,62 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+
+## 122.0.0 (2016/08/17)
+
+### Google App Engine
+
+* Added `gcloud beta app instances describe`, which shows information about a
+  running App Engine Flexible instance.
+
+* Add new flags to `gcloud alpha functions deploy`, hide flags that are being
+  replaced with new flags, log a warning when someone uses a flag to be
+  replaced:
+
+  * *--bucket* to be replaced by *--stage-bucket*.
+  * *--source* to be replaced by *--local-path* (for code in local file system)
+    and *--source-path* (for code in Google Code Storage).
+  * *--trigger-gs-uri* to be replaced by *--trigger-bucket*.
+
+### Cloud SDK
+
+* `gcloud init` now has an opt-in for listing all user projects, which
+  could be in the hundreds. The user can now to opt-in to see all projects,
+  or they can just type in a known project.
+
+### Google Cloud Machine Learning
+
+* Add `gcloud alpha ml models versions` group to manage Cloud ML model versions.
+* Add `gcloud alpha ml models` group to manage Cloud ML models
+* Add `gcloud alpha ml jobs` group to manage Cloud ML training and prediction
+  jobs.
+
+### Google Cloud Genomics
+
+* The `gcloud genomics pipelines run` command now uses the default Compute
+  Engine zone property if the *--zones* flag is not specified.
+
+### Google Cloud Pub/Sub
+
+* Fixed error handling bug in `gcloud beta pubsub subscriptions create`
+  (https://code.google.com/p/google-cloud-sdk/issues/detail?id=1017).
+
+### Google Compute Engine
+
+* Enable *--health-checks* flag for the `gcloud beta compute backend-services`
+  `create` and `update` commands.
+
+### Google Container Builder
+
+* *RepoSource* is now available as a source for builds.
+* *BuildSteps* now respect arbitrary dependencies on each other as defined by
+  the `waitFor` field.
+
+### Google Container Engine
+
+* Update kubectl to version 1.3.4.
+
+
 ## 121.0.0 (2016/08/10)
 
 ### Google App Engine

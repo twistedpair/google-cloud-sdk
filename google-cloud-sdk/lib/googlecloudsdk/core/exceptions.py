@@ -63,8 +63,8 @@ class RequiresAdminRightsError(Error):
 
   def __init__(self, sdk_root):
     message = (
-        'You cannot perform this action because you do not have permission '
-        'to modify the Google Cloud SDK installation directory [{root}].\n\n'
+        u'You cannot perform this action because you do not have permission '
+        u'to modify the Google Cloud SDK installation directory [{root}].\n\n'
         .format(root=sdk_root))
     if (platforms.OperatingSystem.Current() ==
         platforms.OperatingSystem.WINDOWS):
@@ -77,7 +77,7 @@ class RequiresAdminRightsError(Error):
       # respect the user's $PATH settings.
       gcloud_path = os.path.join(sdk_root, 'bin', 'gcloud')
       message += (
-          'Re-run the command with sudo: sudo {0} ...'.format(gcloud_path))
+          u'Re-run the command with sudo: sudo {0} ...'.format(gcloud_path))
     super(RequiresAdminRightsError, self).__init__(message)
 
 

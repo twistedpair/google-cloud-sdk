@@ -263,7 +263,68 @@ def PromptWithDefault(message, default=None):
   return response
 
 
-def PromptChoice(options, default=None, message=None, prompt_string=None):
+def _ParseAnswer(answer, options, allow_freeform):
+  """Parses answer and returns 1-based index in options list.
+
+  Args:
+    answer: str, The answer input by the user to be parsed as a choice.
+    options: [object], A list of objects to select.  Their str()
+          method will be used to select them via freeform text.
+    allow_freeform: bool, A flag which, if defined, will allow the user to input
+          the choice as a str, not just as a number. If not set, only numbers
+          will be accepted.
+
+  Returns:
+    int, The 1-indexed value in the options list that corresponds to the answer
+          that was given, or None if the selection is invalid. Note that this
+          function does not do any validation that the value is a valid index
+          (in the case that an integer answer was given)
+  """
+  try:
+    # If this fails to parse, will throw a ValueError
+    return int(answer)
+  except ValueError:
+    # Answer is not an int
+    pass
+
+  # If the user has specified that they want to allow freeform selections,
+  # we will attempt to find a match.
+  if not allow_freeform:
+    return None
+
+  try:
+    return map(str, options).index(answer) + 1
+  except ValueError:
+    # Answer not an entry in the options list
+    pass
+
+  # Couldn't interpret the user's input
+  return None
+
+
+def _PrintOptions(options, limit=None):
+  """Prints the options provided to stderr.
+
+  Args:
+    options:  [object], A list of objects to print as choices.  Their str()
+      method will be used to display them.
+    limit: int, If set, will only print the first number of options equal
+      to the given limit.
+  """
+  limited_options = options if limit is None else options[:limit]
+  for i, option in enumerate(limited_options):
+    sys.stderr.write(' [{index}] {option}\n'.format(
+        index=i + 1, option=str(option)))
+
+
+# This defines the point at which, in a PromptChoice, the options
+# will not be listed unless the user enters 'list' and hits enter.
+# When too many results are displayed they can cease to be useful.
+PROMPT_OPTIONS_OVERFLOW = 50
+
+
+def PromptChoice(options, default=None, message=None,
+                 prompt_string=None, allow_freeform=False):
   """Prompt the user to select a choice from a list of items.
 
   Args:
@@ -274,6 +335,9 @@ def PromptChoice(options, default=None, message=None, prompt_string=None):
     message: str, An optional message to print before the choices are displayed.
     prompt_string: str, A string to print when prompting the user to enter a
       choice.  If not given, a default prompt is used.
+    allow_freeform: bool, A flag which, if defined, will allow the user to input
+      the choice as a str, not just as a number. If not set, only numbers will
+      be accepted.
 
   Raises:
     ValueError: If no options are given or if the default is not in the range of
@@ -295,17 +359,33 @@ def PromptChoice(options, default=None, message=None, prompt_string=None):
 
   if message:
     sys.stderr.write(_DoWrap(message) + '\n')
-  for i, option in enumerate(options):
-    sys.stderr.write(' [{index}] {option}\n'.format(
-        index=i + 1, option=str(option)))
+
+  if maximum > PROMPT_OPTIONS_OVERFLOW:
+    _PrintOptions(options, limit=PROMPT_OPTIONS_OVERFLOW)
+    truncated = maximum - PROMPT_OPTIONS_OVERFLOW
+    sys.stderr.write('Did not print [{truncated}] options.\n'
+                     .format(truncated=truncated))
+    sys.stderr.write(('Too many options [{maximum}]. Enter "list" at '
+                      'prompt to print choices fully.\n').format(
+                          maximum=maximum))
+  else:
+    _PrintOptions(options)
 
   if not prompt_string:
-    prompt_string = 'Please enter your numeric choice'
+    if allow_freeform:
+      prompt_string = ('Please enter numeric choice or text value '
+                       '(must exactly match list item)')
+    else:
+      prompt_string = 'Please enter your numeric choice'
   if default is None:
     suffix_string = ':  '
   else:
     suffix_string = ' ({default}):  '.format(default=default + 1)
-  sys.stderr.write(_DoWrap(prompt_string + suffix_string))
+
+  def _PrintPrompt():
+    sys.stderr.write(_DoWrap(prompt_string + suffix_string))
+  _PrintPrompt()
+
   while True:
     answer = _RawInput()
     if answer is None or (answer is '' and default is not None):
@@ -314,14 +394,19 @@ def PromptChoice(options, default=None, message=None, prompt_string=None):
       # Prompt again otherwise
       sys.stderr.write('\n')
       return default
-    try:
-      num_choice = int(answer)
-      if num_choice < 1 or num_choice > maximum:
-        raise ValueError('Choice must be between 1 and {maximum}'.format(
-            maximum=maximum))
+    if answer == 'list':
+      _PrintOptions(options)
+      _PrintPrompt()
+      continue
+    num_choice = _ParseAnswer(answer, options, allow_freeform)
+    if num_choice is not None and num_choice >= 1 and num_choice <= maximum:
       sys.stderr.write('\n')
       return num_choice - 1
-    except ValueError:
+    if allow_freeform:
+      sys.stderr.write(('Please enter a value between 1 and {maximum}, '
+                        'or a value present in the list:  ')
+                       .format(maximum=maximum))
+    else:
       sys.stderr.write('Please enter a value between 1 and {maximum}:  '
                        .format(maximum=maximum))
 

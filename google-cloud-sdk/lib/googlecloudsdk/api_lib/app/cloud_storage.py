@@ -69,8 +69,8 @@ class BucketReference(object):
       bucket_url: str, The bucket to reference. Format: gs://<bucket_name>
     """
     self._bucket_url = bucket_url
-    bucket_name = bucket_url.replace('gs://', '').rstrip('/')
-    self._ref = resources.Parse(bucket_name, collection='storage.buckets')
+    self._ref = resources.REGISTRY.Parse(bucket_url.rstrip('/'),
+                                         collection='storage.buckets')
 
   @property
   def bucket(self):

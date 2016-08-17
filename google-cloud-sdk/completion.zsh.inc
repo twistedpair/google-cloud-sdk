@@ -25,6 +25,10 @@ _python_argcomplete() {
         unset COMPREPLY
         return
     fi
+    # if one completion without a trailing space, add the space
+    if [[ ${#COMPREPLY[@]} == 1 && $COMPREPLY != *[=' '] ]]; then
+        COMPREPLY+=' '
+    fi
     if [[ $prefix != '' ]]; then
         typeset -i n
         for ((n=0; n < ${#COMPREPLY[@]}; n++));do

@@ -26,6 +26,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import installers
@@ -238,6 +239,7 @@ class UpdateManager(object):
       self.__sdk_root = config.Paths().sdk_root
     if not self.__sdk_root:
       raise local_state.InvalidSDKRootError()
+    self.__sdk_root = console_attr.DecodeFromInput(self.__sdk_root)
 
     if not url:
       url = properties.VALUES.component_manager.snapshot_url.Get()
@@ -299,7 +301,7 @@ class UpdateManager(object):
     if fast_mode_impossible:
       force_fast = False
 
-    cwd = os.path.realpath(os.getcwd())
+    cwd = console_attr.DecodeFromInput(os.path.realpath(os.getcwd()))
     if not cwd.startswith(self.__sdk_root):
       # Outside of the root entirely, this is always fine.
       return force_fast

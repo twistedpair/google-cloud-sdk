@@ -23,7 +23,7 @@ from googlecloudsdk.core import resources
 def Cancel(job):
   client = apis.GetClientInstance('ml', 'v1alpha3')
   msgs = apis.GetMessagesModule('ml', 'v1alpha3')
-  res = resources.Parse(job, collection='ml.projects.operations')
+  res = resources.REGISTRY.Parse(job, collection='ml.projects.operations')
   req = msgs.MlProjectsOperationsCancelRequest(
       projectsId=res.projectsId, operationsId=res.Name())
   resp = client.projects_operations.Cancel(req)
@@ -32,7 +32,7 @@ def Cancel(job):
 
 def Get(job):
   client = apis.GetClientInstance('ml', 'v1alpha3')
-  res = resources.Parse(job, collection='ml.projects.operations')
+  res = resources.REGISTRY.Parse(job, collection='ml.projects.operations')
   req = res.Request()
   resp = client.projects_operations.Get(req)
   return resp
