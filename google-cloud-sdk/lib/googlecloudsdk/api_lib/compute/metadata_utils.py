@@ -123,7 +123,6 @@ def AddMetadataArgs(parser):
   metadata = parser.add_argument(
       '--metadata',
       type=arg_parsers.ArgDict(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       default={},
       help=('Metadata to be made available to the guest operating system '
             'running on the instances'),
@@ -155,7 +154,6 @@ def AddMetadataArgs(parser):
   metadata_from_file = parser.add_argument(
       '--metadata-from-file',
       type=arg_parsers.ArgDict(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       default={},
       help=('Same as ``--metadata'' except that the value for the entry '
             'will be read from a local file.'),

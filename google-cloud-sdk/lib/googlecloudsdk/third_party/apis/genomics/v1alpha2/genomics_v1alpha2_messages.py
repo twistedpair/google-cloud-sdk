@@ -200,11 +200,10 @@ class Disk(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Default disk type. Use one of the other options below.
       PERSISTENT_HDD: Specifies a Google Compute Engine persistent hard disk.
-        See https://cloud.google.com/compute/docs/disks/persistent-
-        disks#typeofdisks for details.
+        See https://cloud.google.com/compute/docs/disks/#pdspecs for details.
       PERSISTENT_SSD: Specifies a Google Compute Engine persistent solid-state
-        disk. See https://cloud.google.com/compute/docs/disks/persistent-
-        disks#typeofdisks for details.
+        disk. See https://cloud.google.com/compute/docs/disks/#pdspecs for
+        details.
       LOCAL_SSD: Specifies a Google Compute Engine local SSD. See
         https://cloud.google.com/compute/docs/disks/local-ssd for details.
     """
@@ -775,6 +774,10 @@ class RunPipelineArgs(_messages.Message):
       documentation. All input parameters that do not have default values
       must be specified. If parameters with defaults are specified here, the
       defaults will be overridden.
+    keepVmAliveOnFailureDuration: How long to keep the VM up after a failure
+      (for example docker command failed, copying input or output files
+      failed, etc). While the VM is up, one can ssh into the VM to debug.
+      Default is 0; maximum allowed value is 1 day.
     logging: Required. Logging options. Used by the service to communicate
       results to the user.
     outputs: Pipeline output arguments; keys are defined in the pipeline
@@ -846,11 +849,12 @@ class RunPipelineArgs(_messages.Message):
 
   clientId = _messages.StringField(1)
   inputs = _messages.MessageField('InputsValue', 2)
-  logging = _messages.MessageField('LoggingOptions', 3)
-  outputs = _messages.MessageField('OutputsValue', 4)
-  projectId = _messages.StringField(5)
-  resources = _messages.MessageField('PipelineResources', 6)
-  serviceAccount = _messages.MessageField('ServiceAccount', 7)
+  keepVmAliveOnFailureDuration = _messages.StringField(3)
+  logging = _messages.MessageField('LoggingOptions', 4)
+  outputs = _messages.MessageField('OutputsValue', 5)
+  projectId = _messages.StringField(6)
+  resources = _messages.MessageField('PipelineResources', 7)
+  serviceAccount = _messages.MessageField('ServiceAccount', 8)
 
 
 class RunPipelineRequest(_messages.Message):

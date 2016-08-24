@@ -1058,7 +1058,7 @@
           "type": "string"
         },
         "split": {
-          "description": "<apping that defines fractional HTTP traffic diversion to\ndifferent versions within the service.",
+          "description": "Mapping that defines fractional HTTP traffic diversion to\ndifferent versions within the service.",
           "$ref": "TrafficSplit"
         }
       }
@@ -1246,7 +1246,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The cononical id for this location. For example: `\"us-east1\"`.",
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
         "labels": {
@@ -1364,10 +1364,6 @@
       "properties": {
         "standardEnvironmentAvailable": {
           "description": "App Engine Standard Environment is available in the given location.\n\n@OutputOnly",
-          "type": "boolean"
-        },
-        "managedVmsAvailable": {
-          "description": "App Engine Managed VMs is available in the given location.\n\n@OutputOnly",
           "type": "boolean"
         },
         "flexibleEnvironmentAvailable": {
@@ -1612,7 +1608,7 @@
                   "format": "google-fieldmask"
                 },
                 "migrateTraffic": {
-                  "description": "Whether to use\n[traffic migration](https:\/\/cloud.google.com\/appengine\/docs\/python\/migrating-traffic)\nto gradually shift traffic from one version to another single version.\n[Warmup requests](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1\/apps.services.versions#inboundservicetype)\nmust be enabled for the target version.",
+                  "description": "Set to `true` to gradually shift traffic from one version to another\nsingle version. By default, traffic is shifted immediately.\nFor gradual traffic migration, the target version\nmust be located within instances that are configured for both\n[warmup requests](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1beta5\/apps.services.versions#inboundservicetype)\nand\n[automatic scaling](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1beta5\/apps.services.versions#automaticscaling).\nYou must specify the\n[`shardBy`](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1beta5\/apps.services#shardby)\nfield in the Service resource. Gradual traffic migration is not\nsupported in the App Engine flexible environment. For examples, see\n[Migrating and Splitting Traffic](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/migrating-splitting-traffic).",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -1897,7 +1893,7 @@
                       "path": "v1beta5/{+name}:debug",
                       "flatPath": "v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug",
                       "httpMethod": "POST",
-                      "description": "Enables debugging on a VM instance. This allows you to SSH into the\nvirtual machine where the instance lives. While in \"debug mode\", the\ninstance continues to serve live traffic. You should delete the instance\nwhen you are done debugging and then allow the system to take over and\ndetermine if another instance should be started.\n\nOnly applicable for instances in App Engine flexible environment.",
+                      "description": "Enables debugging on a VM instance. This allows you to use the SSH\ncommand to connect to the virtual machine where the instance lives.\nWhile in \"debug mode\", the instance continues to serve live traffic.\nYou should delete the instance when you are done debugging and then\nallow the system to take over and determine if another instance\nshould be started.\n\nOnly applicable for instances in App Engine flexible environment.",
                       "parameters": {
                         "name": {
                           "description": "Name of the resource requested. Example:\n`apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1`.",

@@ -46,7 +46,8 @@ def WaitForOperation(operation_service, operation):
   if operation.done:
     return operation
   request = resources.REGISTRY.Parse(
-      operation.name, collection='ml.projects.operations').Request()
+      operation.name.split('/')[-1],
+      collection='ml.projects.operations').Request()
   try:
     operation = retry.Retryer(max_wait_ms=60 * 60 * 1000).RetryOnResult(
         operation_service.Get,

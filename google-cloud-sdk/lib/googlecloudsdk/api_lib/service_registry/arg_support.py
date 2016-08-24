@@ -14,8 +14,6 @@
 
 """A module for Service Registry address parsing with argparse."""
 
-import argparse
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
@@ -44,6 +42,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
     if not arg_value:
       self.raiseValidationError('Address arguments can not be empty')
 
+    messages = apis.GetMessagesModule('serviceregistry', 'v1alpha')
     if arg_value.startswith('address='):
       # It's a keyed address
       arg_parts = arg_value.split(';')
@@ -54,8 +53,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
 
       address = address_parts[1]
       ports = self.parse_port_specs(address_parts[1], arg_parts[1:])
-      return apis.GetMessagesModule('serviceregistry').EndpointAddress(
-          address=address, ports=ports)
+      return messages.EndpointAddress(address=address, ports=ports)
     elif ';' in arg_value or ',' in arg_value:
       # Don't let users accidentally mix the simple and keyed schemes
       self.raiseValidationError(
@@ -66,13 +64,11 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       # It's just an ADDRESS:PORT
       host_port = arg_parsers.HostPort.Parse(arg_value, ipv6_enabled=True)
 
-      endpoint_address = (apis.GetMessagesModule('serviceregistry')
-                          .EndpointAddress(address=host_port.host))
+      endpoint_address = messages.EndpointAddress(address=host_port.host)
 
       if host_port.port:
         endpoint_address.ports = [
-            apis.GetMessagesModule('serviceregistry').EndpointPort(
-                portNumber=int(host_port.port))
+            messages.EndpointPort(portNumber=int(host_port.port))
         ]
 
       return endpoint_address
@@ -80,6 +76,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
   def parse_port_specs(self, address, port_specifications):
     name_required = len(port_specifications) > 1
 
+    messages = apis.GetMessagesModule('serviceregistry', 'v1alpha')
     ports = []
     for port_spec in port_specifications:
       if not port_spec:
@@ -89,8 +86,7 @@ class ArgEndpointAddress(arg_parsers.ArgType):
       if name_required and not port_name:
         self.raiseValidationError(
             '"port_name" is required when adding multiple ports to an address.')
-      endpoint_port = apis.GetMessagesModule('serviceregistry').EndpointPort(
-          portNumber=port_number)
+      endpoint_port = messages.EndpointPort(portNumber=port_number)
       if port_name:
         endpoint_port.name = port_name
       if protocol:
@@ -160,7 +156,7 @@ def AddTargetArg(parser):
   parser.add_argument(
       '--target',
       type=ArgEndpointAddress(),
-      action=arg_parsers.FloatingListValuesCatcher(argparse._AppendAction),  # pylint:disable=protected-access
+      action='append',
       required=True,
       help='A target specifies an address (with optional ports) for an '
       'endpoint. This argument is repeatable for multiple addresses and can '

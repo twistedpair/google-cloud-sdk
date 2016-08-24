@@ -30,6 +30,57 @@ class AuditConfig(_messages.Message):
   service = _messages.StringField(2)
 
 
+class AuditConfigDelta(_messages.Message):
+  """One delta entry for AuditConfig. Each individual change (only one
+  exempted_member in each entry) to a AuditConfig will be a separate entry.
+
+  Enums:
+    ActionValueValuesEnum: The action that was performed on an audit
+      configuration in a policy. Required
+
+  Fields:
+    action: The action that was performed on an audit configuration in a
+      policy. Required
+    exemptedMember: A single identity that is exempted from "data access"
+      audit logging for the `service` specified above. Follows the same format
+      of Binding.members. Required
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services. Required
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """The action that was performed on an audit configuration in a policy.
+    Required
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADD: Addition of an audit configuration.
+      REMOVE: Removal of an audit configuration.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  exemptedMember = _messages.StringField(2)
+  service = _messages.StringField(3)
+
+
+class AuditData(_messages.Message):
+  """Audit log information specific to Cloud IAM. This message is serialized
+  as an `Any` type in the `ServiceData` message of an `AuditLog` message.
+
+  Fields:
+    policyDelta: Policy delta between the original policy and the newly set
+      policy.
+    policyUpdate: Update to the IAM policy.
+  """
+
+  policyDelta = _messages.MessageField('PolicyDelta', 1)
+  policyUpdate = _messages.MessageField('Policy', 2)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -53,6 +104,39 @@ class Binding(_messages.Message):
 
   members = _messages.StringField(1, repeated=True)
   role = _messages.StringField(2)
+
+
+class BindingDelta(_messages.Message):
+  """One delta entry for Binding. Each individual change (only one member in
+  each entry) to a binding will be a separate entry.
+
+  Enums:
+    ActionValueValuesEnum: The action that was performed on a Binding.
+      Required
+
+  Fields:
+    action: The action that was performed on a Binding. Required
+    member: A single identity requesting access for a Cloud Platform resource.
+      Follows the same format of Binding.members. Required
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`. Required
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    """The action that was performed on a Binding. Required
+
+    Values:
+      ACTION_UNSPECIFIED: Unspecified.
+      ADD: Addition of a Binding.
+      REMOVE: Removal of a Binding.
+    """
+    ACTION_UNSPECIFIED = 0
+    ADD = 1
+    REMOVE = 2
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  member = _messages.StringField(2)
+  role = _messages.StringField(3)
 
 
 class CloudAuditOptions(_messages.Message):
@@ -146,6 +230,16 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
+class CreateRoleRequest(_messages.Message):
+  """The request to create a new role.
+
+  Fields:
+    role: The Role resource to create.
+  """
+
+  role = _messages.MessageField('Role', 1)
+
+
 class CreateServiceAccountKeyRequest(_messages.Message):
   """The service account key create request.
 
@@ -169,7 +263,7 @@ class CreateServiceAccountKeyRequest(_messages.Message):
     currently a 4K RSA key.  However this may change in the future.
 
     Values:
-      KEY_ALG_UNSPECIFIED: <no description>
+      KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
       KEY_ALG_RSA_4096: 4k RSA Key.
@@ -234,7 +328,7 @@ class GetPolicyDetailsRequest(_messages.Message):
   resources the user has access to.
 
   Fields:
-    fullResourcePath: REQUIRED: The full resource path of the current policy
+    fullResourceName: REQUIRED: The full resource name of the current policy
       being requested, e.g., `//dataflow.googleapis.com/projects/../jobs/..`.
     pageSize: Limit on the number of policies to include in the response.
       Further accounts can subsequently be obtained by including the
@@ -245,7 +339,7 @@ class GetPolicyDetailsRequest(_messages.Message):
       GetPolicyDetailsResponse.next_page_token response.
   """
 
-  fullResourcePath = _messages.StringField(1)
+  fullResourceName = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
 
@@ -266,6 +360,152 @@ class GetPolicyDetailsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   policies = _messages.MessageField('PolicyDetail', 2, repeated=True)
+
+
+class IamOrganizationsRolesCreateRequest(_messages.Message):
+  """A IamOrganizationsRolesCreateRequest object.
+
+  Fields:
+    createRoleRequest: A CreateRoleRequest resource to be passed as the
+      request body.
+    parent: The resource name of the parent resource in the following format:
+      `organizations/{organization-id}`.
+  """
+
+  createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class IamOrganizationsRolesGetRequest(_messages.Message):
+  """A IamOrganizationsRolesGetRequest object.
+
+  Fields:
+    name: The resource name of the role in one the following formats:
+      `roles/{role}`. `organizations/{organization-id}/roles/{role}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamOrganizationsRolesListRequest(_messages.Message):
+  """A IamOrganizationsRolesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional view for the returned Role objects.
+
+  Fields:
+    pageSize: Optional limit on the number of roles to include in the
+      response.
+    pageToken: Optional pagination token returned in an earlier
+      ListRolesResponse.
+    parent: The resource name of the parent resource in one the following
+      formats: `` (empty string) -- this refers to curated roles.
+      `organizations/{organization-id}`.
+    view: Optional view for the returned Role objects.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Optional view for the returned Role objects.
+
+    Values:
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    BASIC = 0
+    FULL = 1
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class IamOrganizationsRolesPatchRequest(_messages.Message):
+  """A IamOrganizationsRolesPatchRequest object.
+
+  Fields:
+    name: The name of the role.  Examples of roles names are: `roles/editor`,
+      `roles/viewer` and `roles/logging.viewer`.
+    role: A Role resource to be passed as the request body.
+    updateMask: A mask describing which fields in the Role have changed.
+  """
+
+  name = _messages.StringField(1, required=True)
+  role = _messages.MessageField('Role', 2)
+  updateMask = _messages.StringField(3)
+
+
+class IamProjectsRolesCreateRequest(_messages.Message):
+  """A IamProjectsRolesCreateRequest object.
+
+  Fields:
+    createRoleRequest: A CreateRoleRequest resource to be passed as the
+      request body.
+    parent: The resource name of the parent resource in the following format:
+      `organizations/{organization-id}`.
+  """
+
+  createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class IamProjectsRolesGetRequest(_messages.Message):
+  """A IamProjectsRolesGetRequest object.
+
+  Fields:
+    name: The resource name of the role in one the following formats:
+      `roles/{role}`. `organizations/{organization-id}/roles/{role}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsRolesListRequest(_messages.Message):
+  """A IamProjectsRolesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional view for the returned Role objects.
+
+  Fields:
+    pageSize: Optional limit on the number of roles to include in the
+      response.
+    pageToken: Optional pagination token returned in an earlier
+      ListRolesResponse.
+    parent: The resource name of the parent resource in one the following
+      formats: `` (empty string) -- this refers to curated roles.
+      `organizations/{organization-id}`.
+    view: Optional view for the returned Role objects.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Optional view for the returned Role objects.
+
+    Values:
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    BASIC = 0
+    FULL = 1
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class IamProjectsRolesPatchRequest(_messages.Message):
+  """A IamProjectsRolesPatchRequest object.
+
+  Fields:
+    name: The name of the role.  Examples of roles names are: `roles/editor`,
+      `roles/viewer` and `roles/logging.viewer`.
+    role: A Role resource to be passed as the request body.
+    updateMask: A mask describing which fields in the Role have changed.
+  """
+
+  name = _messages.StringField(1, required=True)
+  role = _messages.MessageField('Role', 2)
+  updateMask = _messages.StringField(3)
 
 
 class IamProjectsServiceAccountsCreateRequest(_messages.Message):
@@ -510,6 +750,63 @@ class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class IamRolesGetRequest(_messages.Message):
+  """A IamRolesGetRequest object.
+
+  Fields:
+    name: The resource name of the role in one the following formats:
+      `roles/{role}`. `organizations/{organization-id}/roles/{role}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamRolesListRequest(_messages.Message):
+  """A IamRolesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional view for the returned Role objects.
+
+  Fields:
+    pageSize: Optional limit on the number of roles to include in the
+      response.
+    pageToken: Optional pagination token returned in an earlier
+      ListRolesResponse.
+    parent: The resource name of the parent resource in one the following
+      formats: `` (empty string) -- this refers to curated roles.
+      `organizations/{organization-id}`.
+    view: Optional view for the returned Role objects.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Optional view for the returned Role objects.
+
+    Values:
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    BASIC = 0
+    FULL = 1
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class ListRolesResponse(_messages.Message):
+  """The response containing the roles defined under a resource.
+
+  Fields:
+    nextPageToken: To retrieve the next page of results, set
+      `QueryTestableRolesRequest.page_token` to this value.
+    roles: The Roles defined on this resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  roles = _messages.MessageField('Role', 2, repeated=True)
+
+
 class ListServiceAccountKeysResponse(_messages.Message):
   """The service account keys list response.
 
@@ -558,6 +855,20 @@ class LogConfig(_messages.Message):
   cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
   counter = _messages.MessageField('CounterOptions', 2)
   dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
+class Permission(_messages.Message):
+  """A permission which can be included by a role.
+
+  Fields:
+    description: A brief description of what this Permission is used for.
+    name: The name of this Permission.
+    title: The title of this Permission.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  title = _messages.StringField(3)
 
 
 class Policy(_messages.Message):
@@ -611,31 +922,59 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
-class PolicyDetail(_messages.Message):
-  """A policy and its full resource path.
+class PolicyDelta(_messages.Message):
+  """The difference delta between two policies.
 
   Fields:
-    fullResourcePath: The full resource path of the policy e.g.,
+    auditConfigDeltas: The delta for AuditConfigs between two policies.
+    bindingDeltas: The delta for Bindings between two policies.
+  """
+
+  auditConfigDeltas = _messages.MessageField('AuditConfigDelta', 1, repeated=True)
+  bindingDeltas = _messages.MessageField('BindingDelta', 2, repeated=True)
+
+
+class PolicyDetail(_messages.Message):
+  """A policy and its full resource name.
+
+  Fields:
+    fullResourceName: The full resource name of the policy e.g.,
       `//dataflow.googleapis.com/projects/../jobs/..`. Note that a resource
-      and its inherited resource have different `full_resource_path`.
+      and its inherited resource have different `full_resource_name`.
     policy: The policy of a `resource/project/folder`.
   """
 
-  fullResourcePath = _messages.StringField(1)
+  fullResourceName = _messages.StringField(1)
   policy = _messages.MessageField('Policy', 2)
 
 
 class QueryGrantableRolesRequest(_messages.Message):
   """The grantable role query request.
 
+  Enums:
+    ViewValueValuesEnum:
+
   Fields:
     fullResourceName: Required. The full resource name to query from the list
       of grantable roles.  The name follows the Google Cloud Platform resource
       format. For example, a Cloud Platform project with id `my-project` will
       be named `//cloudresourcemanager.googleapis.com/projects/my-project`.
+    view: A ViewValueValuesEnum attribute.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    """ViewValueValuesEnum enum type.
+
+    Values:
+      BASIC: Omits the `included_permissions` field. This is the default
+        value.
+      FULL: Returns all fields.
+    """
+    BASIC = 0
+    FULL = 1
+
   fullResourceName = _messages.StringField(1)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class QueryGrantableRolesResponse(_messages.Message):
@@ -648,26 +987,85 @@ class QueryGrantableRolesResponse(_messages.Message):
   roles = _messages.MessageField('Role', 1, repeated=True)
 
 
+class QueryTestablePermissionsRequest(_messages.Message):
+  """A request to get permissions which can be tested on a resource.
+
+  Fields:
+    fullResourceName: Required. The full resource name to query from the list
+      of testable permissions.  The name follows the Google Cloud Platform
+      resource format. For example, a Cloud Platform project with id `my-
+      project` will be named `//cloudresourcemanager.googleapis.com/projects
+      /my-project`.
+    pageSize: Optional limit on the number of permissions to include in the
+      response.
+    pageToken: Optional pagination token returned in an earlier
+      QueryTestablePermissionsRequest.
+  """
+
+  fullResourceName = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class QueryTestablePermissionsResponse(_messages.Message):
+  """The response containing permissions which can be tested on a resource.
+
+  Fields:
+    nextPageToken: To retrieve the next page of results, set
+      `QueryTestableRolesRequest.page_token` to this value.
+    permissions: The Permissions testable on the requested resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  permissions = _messages.MessageField('Permission', 2, repeated=True)
+
+
 class Role(_messages.Message):
   """A role in the Identity and Access Management API.
+
+  Enums:
+    StageValueValuesEnum:
 
   Fields:
     apiTokens: A string attribute.
     description: Optional.  A human-readable description for the role.
+    etag: A string attribute.
     groupTitle: A string attribute.
+    includedPermissions: A string attribute.
     lifecyclePhase: A string attribute.
     name: The name of the role.  Examples of roles names are: `roles/editor`,
       `roles/viewer` and `roles/logging.viewer`.
+    stage: A StageValueValuesEnum attribute.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """
 
+  class StageValueValuesEnum(_messages.Enum):
+    """StageValueValuesEnum enum type.
+
+    Values:
+      ALPHA: The user has indicated this role is currently in an alpha phase.
+      BETA: The user has indicated this role is currently in a beta phase.
+      GA: The user has indicated this role is generally available.
+      DEPRECATED: The user has indicated this role is being deprecated.
+      DISABLED: This role is disabled and will not contribute permissions to
+        any members it is granted to in policies.
+    """
+    ALPHA = 0
+    BETA = 1
+    GA = 2
+    DEPRECATED = 3
+    DISABLED = 4
+
   apiTokens = _messages.StringField(1, repeated=True)
   description = _messages.StringField(2)
-  groupTitle = _messages.StringField(3)
-  lifecyclePhase = _messages.StringField(4)
-  name = _messages.StringField(5)
-  title = _messages.StringField(6)
+  etag = _messages.StringField(3)
+  groupTitle = _messages.StringField(4)
+  includedPermissions = _messages.StringField(5, repeated=True)
+  lifecyclePhase = _messages.StringField(6)
+  name = _messages.StringField(7)
+  stage = _messages.EnumField('StageValueValuesEnum', 8)
+  title = _messages.StringField(9)
 
 
 class Rule(_messages.Message):
@@ -780,7 +1178,8 @@ class ServiceAccountKey(_messages.Message):
   published at the OAuth2 Service Account API.
 
   Enums:
-    KeyAlgorithmValueValuesEnum:
+    KeyAlgorithmValueValuesEnum: Specifies the algorithm (and possibly key
+      size) for the key.
     PrivateKeyTypeValueValuesEnum: The output format for the private key. Only
       provided in `CreateServiceAccountKey` responses, not in
       `GetServiceAccountKey` or `ListServiceAccountKey` responses.  Google
@@ -788,7 +1187,7 @@ class ServiceAccountKey(_messages.Message):
       managed private keys.
 
   Fields:
-    keyAlgorithm: A KeyAlgorithmValueValuesEnum attribute.
+    keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
     name: The resource name of the service account key in the following format
       `projects/{project}/serviceAccounts/{account}/keys/{key}`.
     privateKeyData: The private key data. Only provided in
@@ -804,10 +1203,10 @@ class ServiceAccountKey(_messages.Message):
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
-    """KeyAlgorithmValueValuesEnum enum type.
+    """Specifies the algorithm (and possibly key size) for the key.
 
     Values:
-      KEY_ALG_UNSPECIFIED: <no description>
+      KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
       KEY_ALG_RSA_4096: 4k RSA Key.

@@ -390,7 +390,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "The cononical id for this location. For example: `\"us-east1\"`.",
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
         "labels": {

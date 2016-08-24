@@ -15,12 +15,19 @@
 
 from googlecloudsdk.calliope import base
 
+# TODO(user): move these into a class
+CONFIG = base.Argument('--config', help='Path to yaml configuration file.')
+JOB_NAME = base.Argument('job', help='Name of the job.')
+MODULE_NAME = base.Argument('--module', help='Name of Python module to run.')
+TRAINER_URI = base.Argument(
+    '--trainer-uri',
+    help='Google Cloud Storage location of the training program.',
+    nargs='+')
 VERSION_NAME = base.Argument('version', help='Name of the model version.')
 VERSION_DATA = base.Argument(
     '--origin',
     required=True,
     help='Google Cloud Storage location containing the model graph.')
-JOB_NAME = base.Argument('job', help='Name of the job.')
 
 
 def GetModelName(positional=True, required=False):

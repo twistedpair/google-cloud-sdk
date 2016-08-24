@@ -57,7 +57,7 @@ class HelpInfo(object):
     self.release_track = release_track
 
 
-class CommandChoiceSuggester(object):
+class TextChoiceSuggester(object):
   """Utility to suggest mistyped commands.
 
   """
@@ -105,7 +105,7 @@ class CommandChoiceSuggester(object):
 
   def AddSynonyms(self):
     """Activate the set of synonyms for this suggester."""
-    for s_set in CommandChoiceSuggester._SYNONYM_SETS:
+    for s_set in TextChoiceSuggester._SYNONYM_SETS:
       valid_choices = set(self._choices.keys()) & s_set
       for choice in valid_choices:
         # Add all synonyms in the set as aliases for each real choice that is

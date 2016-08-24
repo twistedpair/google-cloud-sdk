@@ -23,7 +23,9 @@ class Empty(_messages.Message):
 
 
 class HttpRequest(_messages.Message):
-  """A common proto for logging HTTP requests.
+  """A common proto for logging HTTP requests. Only contains semantics defined
+  by the HTTP specification. Product-specific logging information MUST be
+  defined in a separate message.
 
   Fields:
     cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
@@ -261,7 +263,7 @@ class LogEntry(_messages.Message):
     httpRequest: Information about the HTTP request associated with this log
       entry, if applicable.
     insertId: A unique ID for the log entry. If you provide this field, the
-      logging service considers other log entries in the same log with the
+      logging service considers other log entries in the same project with the
       same ID as duplicates which can be removed.  If omitted, Stackdriver
       Logging will generate a unique ID for this log entry.
     log: The log to which this entry belongs. When a log entry is written, the

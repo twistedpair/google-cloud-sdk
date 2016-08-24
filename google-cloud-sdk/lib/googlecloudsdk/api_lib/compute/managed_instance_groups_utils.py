@@ -13,7 +13,6 @@
 # limitations under the License.
 """Common functions and classes for dealing with managed instances groups."""
 
-import argparse
 import random
 import re
 import string
@@ -91,8 +90,7 @@ def AddAutoscalerArgs(parser,
               'utilization-target-type': str,
           },
       ),
-      # pylint:disable=protected-access
-      action=arg_parsers.FloatingListValuesCatcher(argparse._AppendAction),
+      action='append',
       help=('Adds target value of a Google Cloud Monitoring metric Autoscaler '
             'will aim to maintain.'),
       metavar='PROPERTY=VALUE',

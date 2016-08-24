@@ -76,6 +76,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.targetInstances = self.TargetInstancesService(self)
     self.targetPools = self.TargetPoolsService(self)
     self.targetSslProxies = self.TargetSslProxiesService(self)
+    self.targetTcpProxies = self.TargetTcpProxiesService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
     self.urlMaps = self.UrlMapsService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
@@ -719,6 +720,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       super(ComputeAlpha.BackendServicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of all BackendService resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeBackendServicesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.backendServices.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/backendServices',
+        request_field='',
+        request_type_name=u'ComputeBackendServicesAggregatedListRequest',
+        response_type_name=u'BackendServiceAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes the specified BackendService resource.
@@ -5006,6 +5033,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def SetDefaultServiceAccount(self, request, global_params=None):
+      """Sets the default service account of the project. The default service account is used when a VM instance is created with the service account email address set to "default".
+
+      Args:
+        request: (ComputeProjectsSetDefaultServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetDefaultServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetDefaultServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.setDefaultServiceAccount',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/setDefaultServiceAccount',
+        request_field=u'projectsSetDefaultServiceAccountRequest',
+        request_type_name=u'ComputeProjectsSetDefaultServiceAccountRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetUsageExportBucket(self, request, global_params=None):
       """Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
 
@@ -5914,6 +5967,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionInstanceGroupManagers.patch',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeRegionInstanceGroupManagersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
@@ -6067,6 +6146,32 @@ If you increase the size of the instance group, the group creates new instances 
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'compute.regionInstanceGroupManagers.update',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeRegionInstanceGroupManagersUpdateRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -8356,6 +8461,198 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/global/targetSslProxies/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeTargetSslProxiesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class TargetTcpProxiesService(base_api.BaseApiService):
+    """Service class for the targetTcpProxies resource."""
+
+    _NAME = u'targetTcpProxies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.TargetTcpProxiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified TargetTcpProxy resource.
+
+      Args:
+        request: (ComputeTargetTcpProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.targetTcpProxies.delete',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified TargetTcpProxy resource. Get a list of available target TCP proxies by making a list() request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.get',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesGetRequest',
+        response_type_name=u'TargetTcpProxy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a TargetTcpProxy resource in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeTargetTcpProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field=u'targetTcpProxy',
+        request_type_name=u'ComputeTargetTcpProxiesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of TargetTcpProxy resources available to the specified project.
+
+      Args:
+        request: (ComputeTargetTcpProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetTcpProxies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/targetTcpProxies',
+        request_field='',
+        request_type_name=u'ComputeTargetTcpProxiesListRequest',
+        response_type_name=u'TargetTcpProxyList',
+        supports_download=False,
+    )
+
+    def SetBackendService(self, request, global_params=None):
+      """Changes the BackendService for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetBackendServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetBackendService')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetBackendService.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setBackendService',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setBackendService',
+        request_field=u'targetTcpProxiesSetBackendServiceRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetBackendServiceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetProxyHeader(self, request, global_params=None):
+      """Changes the ProxyHeaderType for TargetTcpProxy.
+
+      Args:
+        request: (ComputeTargetTcpProxiesSetProxyHeaderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetProxyHeader')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetProxyHeader.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.setProxyHeader',
+        ordered_params=[u'project', u'targetTcpProxy'],
+        path_params=[u'project', u'targetTcpProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{targetTcpProxy}/setProxyHeader',
+        request_field=u'targetTcpProxiesSetProxyHeaderRequest',
+        request_type_name=u'ComputeTargetTcpProxiesSetProxyHeaderRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetTcpProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetTcpProxies.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/targetTcpProxies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeTargetTcpProxiesTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )

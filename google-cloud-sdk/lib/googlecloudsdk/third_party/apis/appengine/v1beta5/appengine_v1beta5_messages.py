@@ -232,12 +232,20 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
 
   Fields:
     mask: Standard field mask for the set of fields to be updated.
-    migrateTraffic: Whether to use [traffic
-      migration](https://cloud.google.com/appengine/docs/python/migrating-
-      traffic) to gradually shift traffic from one version to another single
-      version. [Warmup requests](https://cloud.google.com/appengine/docs
-      /admin-api/reference/rest/v1/apps.services.versions#inboundservicetype)
-      must be enabled for the target version.
+    migrateTraffic: Set to `true` to gradually shift traffic from one version
+      to another single version. By default, traffic is shifted immediately.
+      For gradual traffic migration, the target version must be located within
+      instances that are configured for both [warmup
+      requests](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1beta5/apps.services.versions#inboundservicetype)
+      and [automatic scaling](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1beta5/apps.services.versions#automaticscaling). You
+      must specify the [`shardBy`](https://cloud.google.com/appengine/docs
+      /admin-api/reference/rest/v1beta5/apps.services#shardby) field in the
+      Service resource. Gradual traffic migration is not supported in the App
+      Engine flexible environment. For examples, see [Migrating and Splitting
+      Traffic](https://cloud.google.com/appengine/docs/admin-api/migrating-
+      splitting-traffic).
     name: Name of the resource to update. Example:
       `apps/myapp/services/default`.
     service: A Service resource to be passed as the request body.
@@ -831,7 +839,7 @@ class Location(_messages.Message):
   Fields:
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The cononical id for this location. For example: `"us-east1"`.
+    locationId: The canonical id for this location. For example: `"us-east1"`.
     metadata: Service-specific metadata. For example the available capacity at
       the given location.
     name: Resource name for the location, which may vary between
@@ -902,15 +910,12 @@ class LocationMetadata(_messages.Message):
   Fields:
     flexibleEnvironmentAvailable: App Engine Flexible Environment is available
       in the given location.  @OutputOnly
-    managedVmsAvailable: App Engine Managed VMs is available in the given
-      location.  @OutputOnly
     standardEnvironmentAvailable: App Engine Standard Environment is available
       in the given location.  @OutputOnly
   """
 
   flexibleEnvironmentAvailable = _messages.BooleanField(1)
-  managedVmsAvailable = _messages.BooleanField(2)
-  standardEnvironmentAvailable = _messages.BooleanField(3)
+  standardEnvironmentAvailable = _messages.BooleanField(2)
 
 
 class ManualScaling(_messages.Message):
@@ -1179,7 +1184,7 @@ class Service(_messages.Message):
       `default`.  @OutputOnly
     name: Full path to the Service resource in the API. Example:
       `apps/myapp/services/default`.  @OutputOnly
-    split: <apping that defines fractional HTTP traffic diversion to different
+    split: Mapping that defines fractional HTTP traffic diversion to different
       versions within the service.
   """
 

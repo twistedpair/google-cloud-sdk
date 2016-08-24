@@ -569,6 +569,10 @@
           "items": {
             "$ref": "Annotation"
           }
+        },
+        "requestId": {
+          "description": "A unique request ID which enables the server to detect duplicated requests.\nIf provided, duplicated requests will result in the same response; if not\nprovided, duplicated requests may result in duplicated data. For a given\nannotation set, callers should not reuse `request_id`s when writing\ndifferent batches of annotations - behavior in this case is undefined.\nA common approach is to use a UUID. For batch jobs where worker crashes are\na possibility, consider using some unique variant of a worker or run ID.",
+          "type": "string"
         }
       }
     },
@@ -1956,7 +1960,7 @@
           "type": "string"
         },
         "callSetIds": {
-          "description": "Only return variant calls which belong to call sets with these ids.\nLeaving this blank returns all variant calls. If a variant has no\ncalls belonging to any of these call sets, it won't be returned at all.\nCurrently, variants with no calls from any call set will never be returned.",
+          "description": "Only return variant calls which belong to call sets with these ids.\nLeaving this blank returns all variant calls. If a variant has no\ncalls belonging to any of these call sets, it won't be returned at all.",
           "type": "array",
           "items": {
             "type": "string"

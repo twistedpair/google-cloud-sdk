@@ -257,7 +257,8 @@ def _DockerLogin(server, email, username, access_token):
   # TODO(user) leverage https://github.com/docker/docker-py/issues/1023 when
   # Docker-py 1.9 is released.
   docker_args = ['login']
-  docker_args.append('--email=' + email)
+  if not _EmailFlagDeprecatedForDockerVersion():
+    docker_args.append('--email=' + email)
   docker_args.append('--username=' + username)
   docker_args.append('--password=' + access_token)
   docker_args.append(server)  # The auth endpoint must be the last argument.
@@ -279,6 +280,57 @@ def _DockerLogin(server, email, username, access_token):
     log.out.Print(stdoutdata)
     log.status.Print(stderrdata)
     raise exceptions.Error('Docker login failed.')
+
+
+def _EmailFlagDeprecatedForDockerVersion():
+  """Checks to see if --email flag is deprecated.
+
+  Returns:
+    True if the installed Docker client version has deprecated the
+    --email flag during 'docker login,' False otherwise.
+  """
+  try:
+    version = _GetDockerVersionString()
+  except exceptions.Error:
+    # Docker doesn't exist or doesn't like the modern version query format.
+    # Assume that --email is not deprecated, return False.
+    return False
+
+  version_split = version.split('.')
+  major_version = int(version_split[0])
+  minor_version = int(version_split[1])
+  if major_version == 1 and minor_version >= 11:
+    return True
+
+  return False
+
+
+def _GetDockerVersionString():
+  """Returns the installed Docker client version string.
+
+  Returns:
+    The installed Docker client version string of the form '1.11.2' or
+    '1.12.0-dev'.
+
+  Raises:
+    DockerError: Docker cannot be run or does not accept 'docker version
+    --format '{{.Client.Version}}''.
+  """
+  docker_args = "version --format '{{.Client.Version}}'".split()
+
+  docker_p = _GetProcess(docker_args,
+                         stdin_file=sys.stdin,
+                         stdout_file=subprocess.PIPE,
+                         stderr_file=subprocess.PIPE)
+
+  # Wait for docker to finished executing and retrieve its stdout/stderr.
+  stdoutdata, _ = docker_p.communicate()
+
+  if docker_p.returncode != 0 or not stdoutdata:
+    raise DockerError('could not retrieve Docker client version')
+
+  # Remove ' from beginning and end of line.
+  return stdoutdata.strip("'")
 
 
 def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):

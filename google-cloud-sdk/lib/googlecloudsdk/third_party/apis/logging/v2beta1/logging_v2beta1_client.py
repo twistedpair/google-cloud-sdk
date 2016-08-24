@@ -34,8 +34,18 @@ class LoggingV2beta1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.billingAccounts_logs = self.BillingAccountsLogsService(self)
+    self.billingAccounts_resourceKeys = self.BillingAccountsResourceKeysService(self)
+    self.billingAccounts_resourceTypes_values = self.BillingAccountsResourceTypesValuesService(self)
+    self.billingAccounts_resourceTypes = self.BillingAccountsResourceTypesService(self)
+    self.billingAccounts = self.BillingAccountsService(self)
     self.entries = self.EntriesService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
+    self.organizations_logs = self.OrganizationsLogsService(self)
+    self.organizations_resourceKeys = self.OrganizationsResourceKeysService(self)
+    self.organizations_resourceTypes_values = self.OrganizationsResourceTypesValuesService(self)
+    self.organizations_resourceTypes = self.OrganizationsResourceTypesService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_metrics = self.ProjectsMetricsService(self)
     self.projects_resourceKeys = self.ProjectsResourceKeysService(self)
@@ -44,6 +54,162 @@ class LoggingV2beta1(base_api.BaseApiClient):
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
     self.v2beta1 = self.V2beta1Service(self)
+
+  class BillingAccountsLogsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_logs resource."""
+
+    _NAME = u'billingAccounts_logs'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.BillingAccountsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes a log and all its log entries.
+The log will reappear if it receives new entries.
+
+      Args:
+        request: (LoggingBillingAccountsLogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'logging.billingAccounts.logs.delete',
+        ordered_params=[u'billingAccountsId', u'logsId'],
+        path_params=[u'billingAccountsId', u'logsId'],
+        query_params=[],
+        relative_path=u'v2beta1/billingAccounts/{billingAccountsId}/logs/{logsId}',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingBillingAccountsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.logs.list',
+        ordered_params=[u'billingAccountsId'],
+        path_params=[u'billingAccountsId'],
+        query_params=[u'pageSize', u'pageToken', u'resourceIndexPrefix', u'resourceType'],
+        relative_path=u'v2beta1/billingAccounts/{billingAccountsId}/logs',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsResourceKeysService(base_api.BaseApiService):
+    """Service class for the billingAccounts_resourceKeys resource."""
+
+    _NAME = u'billingAccounts_resourceKeys'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.BillingAccountsResourceKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the resource keys that have log entries in this project.
+
+      Args:
+        request: (LoggingBillingAccountsResourceKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.resourceKeys.list',
+        ordered_params=[u'billingAccountsId'],
+        path_params=[u'billingAccountsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/billingAccounts/{billingAccountsId}/resourceKeys',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsResourceKeysListRequest',
+        response_type_name=u'ListResourceKeysResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsResourceTypesValuesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_resourceTypes_values resource."""
+
+    _NAME = u'billingAccounts_resourceTypes_values'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.BillingAccountsResourceTypesValuesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the current index values for a log resource type.
+
+      Args:
+        request: (LoggingBillingAccountsResourceTypesValuesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.resourceTypes.values.list',
+        ordered_params=[u'billingAccountsId', u'resourceTypesId'],
+        path_params=[u'billingAccountsId', u'resourceTypesId'],
+        query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/billingAccounts/{billingAccountsId}/resourceTypes/{resourceTypesId}/values',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsResourceTypesValuesListRequest',
+        response_type_name=u'ListResourceValuesResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsResourceTypesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_resourceTypes resource."""
+
+    _NAME = u'billingAccounts_resourceTypes'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.BillingAccountsResourceTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class BillingAccountsService(base_api.BaseApiService):
+    """Service class for the billingAccounts resource."""
+
+    _NAME = u'billingAccounts'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.BillingAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
@@ -172,6 +338,162 @@ written by this method.
         response_type_name=u'ListMonitoredResourceDescriptorsResponse',
         supports_download=False,
     )
+
+  class OrganizationsLogsService(base_api.BaseApiService):
+    """Service class for the organizations_logs resource."""
+
+    _NAME = u'organizations_logs'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.OrganizationsLogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes a log and all its log entries.
+The log will reappear if it receives new entries.
+
+      Args:
+        request: (LoggingOrganizationsLogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'logging.organizations.logs.delete',
+        ordered_params=[u'organizationsId', u'logsId'],
+        path_params=[u'logsId', u'organizationsId'],
+        query_params=[],
+        relative_path=u'v2beta1/organizations/{organizationsId}/logs/{logsId}',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in the project.
+Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingOrganizationsLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.organizations.logs.list',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[u'pageSize', u'pageToken', u'resourceIndexPrefix', u'resourceType'],
+        relative_path=u'v2beta1/organizations/{organizationsId}/logs',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLogsListRequest',
+        response_type_name=u'ListLogsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsResourceKeysService(base_api.BaseApiService):
+    """Service class for the organizations_resourceKeys resource."""
+
+    _NAME = u'organizations_resourceKeys'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.OrganizationsResourceKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the resource keys that have log entries in this project.
+
+      Args:
+        request: (LoggingOrganizationsResourceKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.organizations.resourceKeys.list',
+        ordered_params=[u'organizationsId'],
+        path_params=[u'organizationsId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/organizations/{organizationsId}/resourceKeys',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsResourceKeysListRequest',
+        response_type_name=u'ListResourceKeysResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsResourceTypesValuesService(base_api.BaseApiService):
+    """Service class for the organizations_resourceTypes_values resource."""
+
+    _NAME = u'organizations_resourceTypes_values'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.OrganizationsResourceTypesValuesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the current index values for a log resource type.
+
+      Args:
+        request: (LoggingOrganizationsResourceTypesValuesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'logging.organizations.resourceTypes.values.list',
+        ordered_params=[u'organizationsId', u'resourceTypesId'],
+        path_params=[u'organizationsId', u'resourceTypesId'],
+        query_params=[u'depth', u'indexPrefix', u'pageSize', u'pageToken'],
+        relative_path=u'v2beta1/organizations/{organizationsId}/resourceTypes/{resourceTypesId}/values',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsResourceTypesValuesListRequest',
+        response_type_name=u'ListResourceValuesResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsResourceTypesService(base_api.BaseApiService):
+    """Service class for the organizations_resourceTypes resource."""
+
+    _NAME = u'organizations_resourceTypes'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.OrganizationsResourceTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = u'organizations'
+
+    def __init__(self, client):
+      super(LoggingV2beta1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLogsService(base_api.BaseApiService):
     """Service class for the projects_logs resource."""
@@ -574,7 +896,7 @@ Only logs that have entries are listed.
     )
 
     def Update(self, request, global_params=None):
-      """Creates or updates a sink.
+      """Updates or creates a sink.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message

@@ -29,10 +29,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 CLOUDBUILD_SUCCESS = 'SUCCESS'
-CLOUDBUILD_LOGS_URI_TEMPLATE = (
-    'https://console.developers.google.com/logs?project={project_id}'
-    '&service=cloudbuild.googleapis.com&key1={build_id}'
-    '&logName=projects/{project_id}/logs/cloudbuild')
 CLOUDBUILD_LOGFILE_FMT_STRING = 'log-{build_id}.txt'
 
 # Paths that shouldn't be ignored client-side.
@@ -153,13 +149,19 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   )
   # Find build ID from operation metadata and print the logs URL.
   build_id = None
+  logs_uri = None
   if build_op.metadata is not None:
     for prop in build_op.metadata.additionalProperties:
       if prop.key == 'build':
         for build_prop in prop.value.object_value.properties:
           if build_prop.key == 'id':
             build_id = build_prop.value.string_value
-            break
+            if logs_uri is not None:
+              break
+          if build_prop.key == 'logUrl':
+            logs_uri = build_prop.value.string_value
+            if build_id is not None:
+              break
         break
 
   if build_id is None:
@@ -170,9 +172,13 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   log_tailer = cloud_storage.LogTailer(
       bucket=logs_bucket,
       obj=log_object)
-  logs_uri = CLOUDBUILD_LOGS_URI_TEMPLATE.format(project_id=project,
-                                                 build_id=build_id)
-  log.status.Print('To see logs in the Cloud Console: ' + logs_uri)
+  log_loc = None
+  if logs_uri:
+    log.status.Print('To see logs in the Cloud Console: ' + logs_uri)
+    log_loc = 'at ' + logs_uri
+  else:
+    log.status.Print('Logs can be found in the Cloud Console.')
+    log_loc = 'in the Cloud Console.'
   op = operations.WaitForOperation(
       operation_service=cloudbuild_client.operations,
       operation=build_op,
@@ -187,7 +193,7 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   final_status = _GetStatusFromOp(op)
   if final_status != CLOUDBUILD_SUCCESS:
     raise BuildFailedError('Cloud build failed with status '
-                           + final_status + '. Check logs at ' + logs_uri)
+                           + final_status + '. Check logs ' + log_loc)
 
 
 def _GetStatusFromOp(op):

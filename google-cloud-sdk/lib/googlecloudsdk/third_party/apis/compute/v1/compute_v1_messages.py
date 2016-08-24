@@ -228,6 +228,7 @@ class AddressesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -244,18 +245,19 @@ class AddressesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -464,7 +466,7 @@ class Autoscaler(_messages.Message):
       algorithm. You can define one or more of the policies for an autoscaler:
       cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
       If none of these are specified, the default will be to autoscale based
-      on cpuUtilization to 0.8 or 80%.
+      on cpuUtilization to 0.6 or 60%.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -482,7 +484,8 @@ class Autoscaler(_messages.Message):
       cannot be a dash.
     selfLink: [Output Only] Server-defined URL for the resource.
     target: URL of the managed instance group that this autoscaler will scale.
-    zone: [Output Only] URL of the zone where the instance group resides.
+    zone: [Output Only] URL of the zone where the instance group resides (for
+      autoscalers living in zonal scope).
   """
 
   autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
@@ -615,6 +618,7 @@ class AutoscalersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -631,18 +635,19 @@ class AutoscalersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -713,7 +718,7 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
   Fields:
     utilizationTarget: The target CPU utilization that the autoscaler should
       maintain. Must be a float value in the range (0, 1]. If not specified,
-      the default is 0.8.  If the CPU level is below the target utilization,
+      the default is 0.6.  If the CPU level is below the target utilization,
       the autoscaler scales down the number of instances until it reaches the
       minimum number of instances you specified or until the average CPU of
       your instances reaches the target utilization.  If the average CPU is
@@ -788,20 +793,22 @@ class Backend(_messages.Message):
 
   Enums:
     BalancingModeValueValuesEnum: Specifies the balancing mode for this
-      backend. For global HTTP(S) load balancing, the default is UTILIZATION.
-      Valid values are UTILIZATION and RATE.  This cannot be used for internal
-      load balancing.
+      backend. For global HTTP(S) or TCP/SSL load balancing, the default is
+      UTILIZATION. Valid values are UTILIZATION, RATE (for HTTP(S)) and
+      CONNECTION (for TCP/SSL).  This cannot be used for internal load
+      balancing.
 
   Fields:
     balancingMode: Specifies the balancing mode for this backend. For global
-      HTTP(S) load balancing, the default is UTILIZATION. Valid values are
-      UTILIZATION and RATE.  This cannot be used for internal load balancing.
+      HTTP(S) or TCP/SSL load balancing, the default is UTILIZATION. Valid
+      values are UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).
+      This cannot be used for internal load balancing.
     capacityScaler: A multiplier applied to the group's maximum servicing
-      capacity (either UTILIZATION or RATE). Default value is 1, which means
-      the group will serve up to 100% of its configured CPU or RPS (depending
-      on balancingMode). A setting of 0 means the group is completely drained,
-      offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].  This
-      cannot be used for internal load balancing.
+      capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
+      which means the group will serve up to 100% of its configured capacity
+      (depending on balancingMode). A setting of 0 means the group is
+      completely drained, offering 0% of its available Capacity. Valid range
+      is [0.0,1.0].  This cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     group: The fully-qualified URL of a zonal Instance Group resource. This
@@ -813,6 +820,16 @@ class Backend(_messages.Message):
       than a partial URL.  When the BackendService has load balancing scheme
       INTERNAL, the instance group must be in a zone within the same region as
       the BackendService.
+    maxConnections: The max number of simultaneous connections for the group.
+      Can be used with either CONNECTION or UTILIZATION balancing modes. For
+      CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
+      be set.  This cannot be used for internal load balancing.
+    maxConnectionsPerInstance: The max number of simultaneous connections that
+      a single backend instance can handle. This is used to calculate the
+      capacity of the group. Can be used in either CONNECTION or UTILIZATION
+      balancing modes. For CONNECTION mode, either maxConnections or
+      maxConnectionsPerInstance must be set.  This cannot be used for internal
+      load balancing.
     maxRate: The max requests per second (RPS) of the group. Can be used with
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
       For RATE mode, either maxRate or maxRatePerInstance must be set.  This
@@ -828,24 +845,29 @@ class Backend(_messages.Message):
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
-    """Specifies the balancing mode for this backend. For global HTTP(S) load
-    balancing, the default is UTILIZATION. Valid values are UTILIZATION and
-    RATE.  This cannot be used for internal load balancing.
+    """Specifies the balancing mode for this backend. For global HTTP(S) or
+    TCP/SSL load balancing, the default is UTILIZATION. Valid values are
+    UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).  This cannot
+    be used for internal load balancing.
 
     Values:
+      CONNECTION: <no description>
       RATE: <no description>
       UTILIZATION: <no description>
     """
-    RATE = 0
-    UTILIZATION = 1
+    CONNECTION = 0
+    RATE = 1
+    UTILIZATION = 2
 
   balancingMode = _messages.EnumField('BalancingModeValueValuesEnum', 1)
   capacityScaler = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   description = _messages.StringField(3)
   group = _messages.StringField(4)
-  maxRate = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  maxConnections = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxRatePerInstance = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class BackendService(_messages.Message):
@@ -870,6 +892,7 @@ class BackendService(_messages.Message):
       allowed value for TTL is one day.  When the load balancing scheme is
       INTERNAL, this field is not used.
     backends: The list of backends that serve this BackendService.
+    connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -928,9 +951,13 @@ class BackendService(_messages.Message):
     Values:
       HTTP: <no description>
       HTTPS: <no description>
+      SSL: <no description>
+      TCP: <no description>
     """
     HTTP = 0
     HTTPS = 1
+    SSL = 2
+    TCP = 3
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     """Type of session affinity to use. The default is NONE.  When the load
@@ -952,21 +979,22 @@ class BackendService(_messages.Message):
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enableCDN = _messages.BooleanField(5)
-  fingerprint = _messages.BytesField(6)
-  healthChecks = _messages.StringField(7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#backendService')
-  name = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(12)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 16)
-  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enableCDN = _messages.BooleanField(6)
+  fingerprint = _messages.BytesField(7)
+  healthChecks = _messages.StringField(8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#backendService')
+  name = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(13)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 17)
+  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -2195,6 +2223,112 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
+
+
+class ComputeHealthChecksDeleteRequest(_messages.Message):
+  """A ComputeHealthChecksDeleteRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to delete.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksGetRequest(_messages.Message):
+  """A ComputeHealthChecksGetRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to return.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksInsertRequest(_messages.Message):
+  """A ComputeHealthChecksInsertRequest object.
+
+  Fields:
+    healthCheck: A HealthCheck resource to be passed as the request body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.MessageField('HealthCheck', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeHealthChecksListRequest(_messages.Message):
+  """A ComputeHealthChecksListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeHealthChecksPatchRequest(_messages.Message):
+  """A ComputeHealthChecksPatchRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to update.
+    healthCheckResource: A HealthCheck resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  healthCheckResource = _messages.MessageField('HealthCheck', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeHealthChecksUpdateRequest(_messages.Message):
+  """A ComputeHealthChecksUpdateRequest object.
+
+  Fields:
+    healthCheck: Name of the HealthCheck resource to update.
+    healthCheckResource: A HealthCheck resource to be passed as the request
+      body.
+    project: Project ID for this request.
+  """
+
+  healthCheck = _messages.StringField(1, required=True)
+  healthCheckResource = _messages.MessageField('HealthCheck', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class ComputeHttpHealthChecksDeleteRequest(_messages.Message):
@@ -3944,6 +4078,22 @@ class ComputeRoutersPatchRequest(_messages.Message):
   routerResource = _messages.MessageField('Router', 4)
 
 
+class ComputeRoutersPreviewRequest(_messages.Message):
+  """A ComputeRoutersPreviewRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query.
+    routerResource: A Router resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  router = _messages.StringField(3, required=True)
+  routerResource = _messages.MessageField('Router', 4)
+
+
 class ComputeRoutersUpdateRequest(_messages.Message):
   """A ComputeRoutersUpdateRequest object.
 
@@ -4857,6 +5007,134 @@ class ComputeTargetPoolsSetBackupRequest(_messages.Message):
   targetReference = _messages.MessageField('TargetReference', 5)
 
 
+class ComputeTargetSslProxiesDeleteRequest(_messages.Message):
+  """A ComputeTargetSslProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesGetRequest(_messages.Message):
+  """A ComputeTargetSslProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: Name of the TargetSslProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetSslProxiesInsertRequest(_messages.Message):
+  """A ComputeTargetSslProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxy: A TargetSslProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxy = _messages.MessageField('TargetSslProxy', 2)
+
+
+class ComputeTargetSslProxiesListRequest(_messages.Message):
+  """A ComputeTargetSslProxiesListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetBackendServiceRequest: A
+      TargetSslProxiesSetBackendServiceRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose BackendService
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetBackendServiceRequest = _messages.MessageField('TargetSslProxiesSetBackendServiceRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetProxyHeaderRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetProxyHeaderRequest: A
+      TargetSslProxiesSetProxyHeaderRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose ProxyHeader is
+      to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetProxyHeaderRequest = _messages.MessageField('TargetSslProxiesSetProxyHeaderRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetSslProxiesSetSslCertificatesRequest: A
+      TargetSslProxiesSetSslCertificatesRequest resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose SslCertificate
+      resource is to be set.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 2)
+  targetSslProxy = _messages.StringField(3, required=True)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -5366,6 +5644,17 @@ class ComputeZonesListRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class ConnectionDraining(_messages.Message):
+  """Message containing connection draining configuration.
+
+  Fields:
+    drainingTimeoutSec: Time for which instance will be drained (not accept
+      new connections, but still work to finish started).
+  """
+
+  drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class CustomerEncryptionKey(_messages.Message):
   """Represents a customer-supplied encryption key
 
@@ -5822,6 +6111,7 @@ class DiskTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -5838,18 +6128,19 @@ class DiskTypesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -5930,6 +6221,7 @@ class DisksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -5946,18 +6238,19 @@ class DisksScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -6301,6 +6594,7 @@ class ForwardingRulesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -6317,18 +6611,19 @@ class ForwardingRulesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -6354,6 +6649,234 @@ class ForwardingRulesScopedList(_messages.Message):
 
   forwardingRules = _messages.MessageField('ForwardingRule', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class HTTP2HealthCheck(_messages.Message):
+  """A HTTP2HealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP/2 health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP/2 health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HTTPHealthCheck(_messages.Message):
+  """A HTTPHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 80.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HTTPSHealthCheck(_messages.Message):
+  """A HTTPSHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTPS health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTPS health check request. The
+      default value is /.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+
+
+class HealthCheck(_messages.Message):
+  """An HealthCheck resource. This resource defines a template for how
+  individual virtual machines should be checked for health, via one of the
+  supported protocols.
+
+  Enums:
+    TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
+      UDP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP.
+      Exactly one of the protocol-specific health check field must be
+      specified, which must match type field.
+
+  Fields:
+    checkIntervalSec: How often (in seconds) to send a health check. The
+      default value is 5 seconds.
+    creationTimestamp: [Output Only] Creation timestamp in 3339 text format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    healthyThreshold: A so-far unhealthy instance will be marked healthy after
+      this many consecutive successes. The default value is 2.
+    http2HealthCheck: A HTTP2HealthCheck attribute.
+    httpHealthCheck: A HTTPHealthCheck attribute.
+    httpsHealthCheck: A HTTPSHealthCheck attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: Type of the resource.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    sslHealthCheck: A SSLHealthCheck attribute.
+    tcpHealthCheck: A TCPHealthCheck attribute.
+    timeoutSec: How long (in seconds) to wait before claiming failure. The
+      default value is 5 seconds. It is invalid for timeoutSec to have greater
+      value than checkIntervalSec.
+    type: Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+      HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
+      protocol-specific health check field must be specified, which must match
+      type field.
+    unhealthyThreshold: A so-far healthy instance will be marked unhealthy
+      after this many consecutive failures. The default value is 2.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Specifies the type of the healthCheck, either TCP, UDP, SSL, HTTP,
+    HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
+    protocol-specific health check field must be specified, which must match
+    type field.
+
+    Values:
+      HTTP: <no description>
+      HTTP2: <no description>
+      HTTPS: <no description>
+      INVALID: <no description>
+      SSL: <no description>
+      TCP: <no description>
+    """
+    HTTP = 0
+    HTTP2 = 1
+    HTTPS = 2
+    INVALID = 3
+    SSL = 4
+    TCP = 5
+
+  checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#healthCheck')
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 12)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
+  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+
+
+class HealthCheckList(_messages.Message):
+  """Contains a list of HealthCheck resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of HealthCheck resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('HealthCheck', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#healthCheckList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class HealthCheckReference(_messages.Message):
@@ -6589,8 +7112,7 @@ class Image(_messages.Message):
   Fields:
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: Creation timestamp in RFC3339 text format.
     deprecated: The deprecation status associated with this image.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -6749,7 +7271,7 @@ class Instance(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
-      SUSPENDED, SUSPENDING, and TERMINATED.
+      SUSPENDING, SUSPENDED, and TERMINATED.
 
   Fields:
     canIpForward: Allows this instance to send and receive packets with non-
@@ -6800,7 +7322,7 @@ class Instance(_messages.Message):
       authenticate applications on the instance. See Service Accounts for more
       information.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING,
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
@@ -6813,7 +7335,7 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, and
     TERMINATED.
 
     Values:
@@ -6919,7 +7441,7 @@ class InstanceGroup(_messages.Message):
     fingerprint: [Output Only] The fingerprint of the named ports. The system
       uses this fingerprint to detect conflicts when multiple users change the
       named ports concurrently.
-    id: [Output Only] A unique identifier for this resource type. The server
+    id: [Output Only] A unique identifier for this instance group. The server
       generates this identifier.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroup for instance groups.
@@ -6938,7 +7460,7 @@ class InstanceGroup(_messages.Message):
     subnetwork: The URL of the subnetwork to which all instances in the
       instance group belong.
     zone: [Output Only] The URL of the zone where the instance group is
-      located.
+      located (for zonal resources).
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -7072,7 +7594,8 @@ class InstanceGroupManager(_messages.Message):
     targetSize: The target number of running instances for this managed
       instance group. Deleting or abandoning instances reduces this number.
       Resizing the group changes this number.
-    zone: The name of the zone where the managed instance group is located.
+    zone: [Output Only] The URL of the zone where the managed instance group
+      is located (for zonal resources).
   """
 
   baseInstanceName = _messages.StringField(1)
@@ -7105,6 +7628,10 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       until it creates the instance successfully.  If you have disabled
       creation retries, this field will not be populated; instead, the
       creatingWithoutRetries field will be populated.
+    creatingWithoutRetries: [Output Only] The number of instances that the
+      managed instance group will attempt to create. The group attempts to
+      create each instance only once. If the group fails to create any of
+      these instances, it decreases the group's target_size value accordingly.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group
@@ -7125,11 +7652,12 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creating = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  deleting = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  none = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  recreating = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  refreshing = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  restarting = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  creatingWithoutRetries = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  deleting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  none = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -7298,6 +7826,7 @@ class InstanceGroupManagersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -7314,18 +7843,19 @@ class InstanceGroupManagersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -7506,6 +8036,7 @@ class InstanceGroupsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -7522,18 +8053,19 @@ class InstanceGroupsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -7820,6 +8352,7 @@ class InstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -7836,18 +8369,19 @@ class InstancesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8100,6 +8634,7 @@ class MachineTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -8116,18 +8651,19 @@ class MachineTypesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8234,6 +8770,7 @@ class ManagedInstance(_messages.Message):
     Values:
       ABANDONING: <no description>
       CREATING: <no description>
+      CREATING_WITHOUT_RETRIES: <no description>
       DELETING: <no description>
       NONE: <no description>
       RECREATING: <no description>
@@ -8242,11 +8779,12 @@ class ManagedInstance(_messages.Message):
     """
     ABANDONING = 0
     CREATING = 1
-    DELETING = 2
-    NONE = 3
-    RECREATING = 4
-    REFRESHING = 5
-    RESTARTING = 6
+    CREATING_WITHOUT_RETRIES = 2
+    DELETING = 3
+    NONE = 4
+    RECREATING = 5
+    REFRESHING = 6
+    RESTARTING = 7
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. This field is empty when the
@@ -8618,6 +9156,7 @@ class Operation(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -8634,18 +9173,19 @@ class Operation(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8813,6 +9353,7 @@ class OperationsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -8829,18 +9370,19 @@ class OperationsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8981,6 +9523,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      PREEMPTIBLE_CPUS: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
@@ -8992,6 +9535,7 @@ class Quota(_messages.Message):
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
+      TARGET_SSL_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
@@ -9011,20 +9555,22 @@ class Quota(_messages.Message):
     IN_USE_ADDRESSES = 12
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
-    ROUTERS = 15
-    ROUTES = 16
-    SNAPSHOTS = 17
-    SSD_TOTAL_GB = 18
-    SSL_CERTIFICATES = 19
-    STATIC_ADDRESSES = 20
-    SUBNETWORKS = 21
-    TARGET_HTTPS_PROXIES = 22
-    TARGET_HTTP_PROXIES = 23
-    TARGET_INSTANCES = 24
-    TARGET_POOLS = 25
-    TARGET_VPN_GATEWAYS = 26
-    URL_MAPS = 27
-    VPN_TUNNELS = 28
+    PREEMPTIBLE_CPUS = 15
+    ROUTERS = 16
+    ROUTES = 17
+    SNAPSHOTS = 18
+    SSD_TOTAL_GB = 19
+    SSL_CERTIFICATES = 20
+    STATIC_ADDRESSES = 21
+    SUBNETWORKS = 22
+    TARGET_HTTPS_PROXIES = 23
+    TARGET_HTTP_PROXIES = 24
+    TARGET_INSTANCES = 25
+    TARGET_POOLS = 26
+    TARGET_SSL_PROXIES = 27
+    TARGET_VPN_GATEWAYS = 28
+    URL_MAPS = 29
+    VPN_TUNNELS = 30
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -9106,7 +9652,7 @@ class ResourceGroupReference(_messages.Message):
   """A ResourceGroupReference object.
 
   Fields:
-    group: A URI referencing one of the resource views listed in the backend
+    group: A URI referencing one of the instance groups listed in the backend
       service.
   """
 
@@ -9204,6 +9750,7 @@ class Route(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -9220,18 +9767,19 @@ class Route(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9538,6 +10086,16 @@ class RouterStatusResponse(_messages.Message):
   result = _messages.MessageField('RouterStatus', 2)
 
 
+class RoutersPreviewResponse(_messages.Message):
+  """A RoutersPreviewResponse object.
+
+  Fields:
+    resource: Preview of given router.
+  """
+
+  resource = _messages.MessageField('Router', 1)
+
+
 class RoutersScopedList(_messages.Message):
   """A RoutersScopedList object.
 
@@ -9581,6 +10139,7 @@ class RoutersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -9597,18 +10156,19 @@ class RoutersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9634,6 +10194,48 @@ class RoutersScopedList(_messages.Message):
 
   routers = _messages.MessageField('Router', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SSLHealthCheck(_messages.Message):
+  """A SSLHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    port: The TCP port number for the health check request. The default value
+      is 443.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    request: The application data to send once the SSL connection has been
+      established (default value is empty). If both request and response are
+      empty, the connection establishment alone will indicate health. The
+      request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      If left empty (the default value), any response will indicate health.
+      The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Scheduling(_messages.Message):
@@ -10100,6 +10702,7 @@ class SubnetworksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -10116,18 +10719,19 @@ class SubnetworksScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10153,6 +10757,48 @@ class SubnetworksScopedList(_messages.Message):
 
   subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class TCPHealthCheck(_messages.Message):
+  """A TCPHealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    port: The TCP port number for the health check request. The default value
+      is 80.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    request: The application data to send once the TCP connection has been
+      established (default value is empty). If both request and response are
+      empty, the connection establishment alone will indicate health. The
+      request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      If left empty (the default value), any response will indicate health.
+      The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
+  request = _messages.StringField(4)
+  response = _messages.StringField(5)
 
 
 class Tags(_messages.Message):
@@ -10481,6 +11127,7 @@ class TargetInstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -10497,18 +11144,19 @@ class TargetInstancesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10822,6 +11470,7 @@ class TargetPoolsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -10838,18 +11487,19 @@ class TargetPoolsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10885,6 +11535,133 @@ class TargetReference(_messages.Message):
   """
 
   target = _messages.StringField(1)
+
+
+class TargetSslProxiesSetBackendServiceRequest(_messages.Message):
+  """A TargetSslProxiesSetBackendServiceRequest object.
+
+  Fields:
+    service: The URL of the new BackendService resource for the
+      targetSslProxy.
+  """
+
+  service = _messages.StringField(1)
+
+
+class TargetSslProxiesSetProxyHeaderRequest(_messages.Message):
+  """A TargetSslProxiesSetProxyHeaderRequest object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: The new type of proxy header to append before
+      sending data to the backend. NONE or PROXY_V1 are allowed.
+
+  Fields:
+    proxyHeader: The new type of proxy header to append before sending data to
+      the backend. NONE or PROXY_V1 are allowed.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """The new type of proxy header to append before sending data to the
+    backend. NONE or PROXY_V1 are allowed.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 1)
+
+
+class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
+  """A TargetSslProxiesSetSslCertificatesRequest object.
+
+  Fields:
+    sslCertificates: New set of URLs to SslCertificate resources to associate
+      with this TargetSslProxy. Currently exactly one ssl certificate must be
+      specified.
+  """
+
+  sslCertificates = _messages.StringField(1, repeated=True)
+
+
+class TargetSslProxy(_messages.Message):
+  """A TargetSslProxy resource. This resource defines an SSL proxy.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#targetSslProxy
+      for target SSL proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    service: URL to the BackendService resource.
+    sslCertificates: URLs to SslCertificate resources that are used to
+      authenticate connections to Backends. Currently exactly one SSL
+      certificate must be specified.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetSslProxy')
+  name = _messages.StringField(5)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  service = _messages.StringField(8)
+  sslCertificates = _messages.StringField(9, repeated=True)
+
+
+class TargetSslProxyList(_messages.Message):
+  """Contains a list of TargetSslProxy resources.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: A list of TargetSslProxy resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetSslProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetSslProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
 
 
 class TargetVpnGateway(_messages.Message):
@@ -11070,6 +11847,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -11086,18 +11864,19 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11511,6 +12290,7 @@ class VpnTunnelsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -11527,18 +12307,19 @@ class VpnTunnelsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.

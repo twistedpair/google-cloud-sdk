@@ -441,8 +441,6 @@ they must be sent only using the Cloud Platform Console.
 + Membership changes that leave the project without any owners that have
 accepted the Terms of Service (ToS) will be rejected.
 
-+ Members cannot be added to more than one role in the same policy.
-
 + There must be at least one owner who has accepted the Terms of
 Service (ToS) agreement in the policy. Calling `setIamPolicy()` to
 to remove the last ToS-accepted owner from the policy will fail. This

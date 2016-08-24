@@ -91,7 +91,6 @@ def AddHealthChecks(parser):
       '--health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HEALTH_CHECK',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help=('Specifies a list of health check objects for checking the '
             'health of the backend service.'))
   health_checks.detailed_help = """\
@@ -106,7 +105,6 @@ def AddHttpHealthChecks(parser):
       '--http-health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HTTP_HEALTH_CHECK',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help=('Specifies a list of HTTP health check objects for checking the '
             'health of the backend service.'))
   http_health_checks.detailed_help = """\
@@ -120,7 +118,6 @@ def AddHttpsHealthChecks(parser):
       '--https-health-checks',
       type=arg_parsers.ArgList(min_length=1),
       metavar='HTTPS_HEALTH_CHECK',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help=('Specifies a list of HTTPS health check objects for checking the '
             'health of the backend service.'))
   https_health_checks.detailed_help = """\

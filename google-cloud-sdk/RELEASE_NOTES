@@ -2,6 +2,51 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 123.0.0 (2016/08/24)
+
+### Google App Engine
+
+* The `gcloud beta app regions list` command is now available. It shows support
+  for the standard and flexible environments for each geographical region.
+
+* `gcloud app versions describe` now shows more extensive information about the
+  deployed version, including the container used for App Engine Flexible.
+
+* Built-in versions will no longer appear when listing App Engine versions
+  (`gcloud app versions list`).
+
+### Cloud SDK
+
+* Users can now make logs garbage collection optional by changing the value of
+  the `core/max_log_days` property to 0.
+
+* The `gsutil` component has been upgraded to version 4.21.
+
+### Google Cloud Machine Learning
+
+* Added `gcloud alpha ml jobs submit training` command to start a Cloud ML
+  training job.
+
+### Google Compute Engine/Networking
+
+* `compute networks switch-mode` and `compute networks expand-ip-range` commands
+  are now in beta.
+
+### Google Container Engine
+
+* Image Type selection for `gcloud container` commands is now GA.
+
+### Google Cloud Deployment Manager
+
+* `gcloud deployment-manager deployments` will now display `INTENT` when
+  applicable.
+
+### Emulators
+
+* A bug causing the rejection of unpadded base64-encoded bytes data in the
+  Pub/Sub emulator (INVALID_ARGUMENT: "Payload isn't valid for request") has
+  been fixed.
+
 
 ## 122.0.0 (2016/08/17)
 

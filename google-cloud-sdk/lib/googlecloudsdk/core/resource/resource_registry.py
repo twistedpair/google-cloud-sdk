@@ -98,6 +98,16 @@ RESOURCE_REGISTRY = {
         """,
     ),
 
+    'appengine.regions': ResourceInfo(
+        list_format="""
+          table(
+           region:sort=1,
+           standard.yesno(yes="YES", no="NO"):label='SUPPORTS STANDARD',
+           flexible.yesno(yes="YES", no="NO"):label='SUPPORTS FLEXIBLE'
+          )
+        """,
+    ),
+
     'appengine.services': ResourceInfo(
         list_format="""
           table(
@@ -1038,7 +1048,8 @@ RESOURCE_REGISTRY = {
               name,
               type,
               update.state.yesno(no="COMPLETED"),
-              update.error.errors.group(code, message))',
+              update.error.errors.group(code, message),
+              update.intent)',
             outputs:format='table(
               name:label=OUTPUTS,
               finalValue:label=VALUE)'
@@ -1056,7 +1067,8 @@ RESOURCE_REGISTRY = {
             resources:format='table(
               name:label=NAME,
               type:label=TYPE,
-              update.state.yesno(no="COMPLETED"))',
+              update.state.yesno(no="COMPLETED"),
+              update.intent)',
             outputs:format='table(
               name:label=OUTPUTS,
               finalValue:label=VALUE)'
@@ -1262,6 +1274,16 @@ RESOURCE_REGISTRY = {
     ),
 
     # ml
+
+    'ml.jobs': ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            metadata.jobState:label=STATUS,
+            metadata.createTime.date():label=CREATED
+          )
+        """,
+    ),
 
     'ml.models': ResourceInfo(
         list_format="""

@@ -19,13 +19,14 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import http_proxy_types
+import httplib2
 
 
 def ChangeGcloudProxySettings():
-  """Walks user through setting up gcloud proxy properties.
+  """Displays proxy information and helps user set up gcloud proxy properties.
 
   Returns:
-    bool: Whether properties were successfully changed.
+    Whether properties were successfully changed.
   """
   try:
     proxy_info, is_existing_proxy = EffectiveProxyInfo()
@@ -44,20 +45,27 @@ def ChangeGcloudProxySettings():
                'Exit']
     existing_proxy_idx = console_io.PromptChoice(
         options, message='What would you like to do?')
+
+    if existing_proxy_idx == 0:
+      return _ProxySetupWalkthrough()
+
     if existing_proxy_idx == 1:
       SetGcloudProxyProperties()
       log.status.Print('Cloud SDK proxy properties cleared.\n')
       return True
-    if existing_proxy_idx == 2 or existing_proxy_idx is None:
-      return False
-  else:
-    from_scratch_prompt = (
-        'Do you have a network proxy you would like to set in gcloud')
-    if not console_io.PromptContinue(prompt_string=from_scratch_prompt):
-      return False
 
+    return False
+  else:
+    if console_io.PromptContinue(prompt_string='Do you have a network proxy '
+                                 'you would like to set in gcloud'):
+      return _ProxySetupWalkthrough()
+    return False
+
+
+def _ProxySetupWalkthrough():
+  """Walks user through setting up gcloud proxy properties."""
   proxy_type_options = sorted(
-      [t.upper() for t in http_proxy_types.GetProxyTypeMap()])
+      t.upper() for t in http_proxy_types.PROXY_TYPE_MAP)
   proxy_type_idx = console_io.PromptChoice(
       proxy_type_options, message='Select the proxy type:')
   if proxy_type_idx is None:
@@ -69,10 +77,17 @@ def ChangeGcloudProxySettings():
   if not address:
     return False
 
-  # TODO(user): Restrict port number to 0-65535.
   port = console_io.PromptResponse('Enter the proxy port: ')
   log.status.Print()
+  # Restrict port number to 0-65535.
   if not port:
+    return False
+  try:
+    if not 0 <= int(port) <= 65535:
+      log.status.Print('Port number must be between 0 and 65535.')
+      return False
+  except ValueError:
+    log.status.Print('Please enter an integer for the port number.')
     return False
 
   username, password = None, None
@@ -98,9 +113,9 @@ def EffectiveProxyInfo():
   """Returns ProxyInfo effective in gcloud and if it is from gloud properties.
 
   Returns:
-    tuple of (httplib2.ProxyInfo, bool): First entry is proxy information, and
-      second is whether that proxy information came from previously set Cloud
-      SDK proxy properties.
+    A tuple of two elements in which the first element is an httplib2.ProxyInfo
+      object and the second is a bool that is True if the proxy info came from
+      previously set Cloud SDK proxy properties.
 
   Raises:
     properties.InvalidValueError: If the properties did not include a valid set.
@@ -115,7 +130,7 @@ def EffectiveProxyInfo():
   # if there are no valid proxy settings in gcloud properties. Otherwise, it
   # will return an instantiated httplib2.ProxyInfo object.
   from_gcloud_properties = True
-  if callable(proxy_info):
+  if not isinstance(proxy_info, httplib2.ProxyInfo):
     from_gcloud_properties = False
     # All Google Cloud SDK network calls use https.
     proxy_info = proxy_info('https')
@@ -133,7 +148,7 @@ def _DisplayGcloudProxyInfo(proxy_info, from_gcloud):
   if not from_gcloud:
     log.status.Print('(These settings are from your machine\'s environment, '
                      'not gcloud properties.)')
-  proxy_type_name = http_proxy_types.GetReverseProxyTypeMap().get(
+  proxy_type_name = http_proxy_types.REVERSE_PROXY_TYPE_MAP.get(
       proxy_info.proxy_type, 'UNKNOWN PROXY TYPE')
   log.status.Print('    type = {0}'.format(proxy_type_name))
   log.status.Print('    host = {0}'.format(proxy_info.proxy_host))

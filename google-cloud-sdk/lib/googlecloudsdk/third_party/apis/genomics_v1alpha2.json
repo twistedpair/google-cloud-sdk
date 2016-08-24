@@ -368,8 +368,8 @@
           "description": "Required. The type of the disk to create.",
           "enumDescriptions": [
             "Default disk type. Use one of the other options below.",
-            "Specifies a Google Compute Engine persistent hard disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#typeofdisks\nfor details.",
-            "Specifies a Google Compute Engine persistent solid-state disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/persistent-disks#typeofdisks\nfor details.",
+            "Specifies a Google Compute Engine persistent hard disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/#pdspecs for details.",
+            "Specifies a Google Compute Engine persistent solid-state disk. See\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/#pdspecs for details.",
             "Specifies a Google Compute Engine local SSD.\nSee https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd for details."
           ],
           "type": "string",
@@ -460,6 +460,11 @@
         "logging": {
           "description": "Required. Logging options. Used by the service to communicate results\nto the user.",
           "$ref": "LoggingOptions"
+        },
+        "keepVmAliveOnFailureDuration": {
+          "description": "How long to keep the VM up after a failure (for example docker command\nfailed, copying input or output files failed, etc). While the VM is up, one\ncan ssh into the VM to debug. Default is 0; maximum allowed value is 1 day.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1069,7 +1074,7 @@
           "path": "v1alpha2/pipelines:setOperationStatus",
           "flatPath": "v1alpha2/pipelines:setOperationStatus",
           "httpMethod": "PUT",
-          "description": "Sets status of a given operation. All timestamps are sent on each\ncall, and the whole series of events is replaced, in case\nintermediate calls are lost. Should only be called by VMs created\nby the Pipelines Service and not by end users.",
+          "description": "Sets status of a given operation. Any new timestamps (as determined by\ndescription) are appended to TimestampEvents. Should only be called by VMs\ncreated by the Pipelines Service and not by end users.",
           "parameters": {
           },
           "parameterOrder": [

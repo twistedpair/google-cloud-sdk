@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Service Management API",
-  "description": "The service management API for Google Cloud Platform",
+  "description": "Google Service Management allows service producers to publish their services on Google Cloud Platform so that they can be discovered and used by service consumers.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -151,7 +151,7 @@
       "type": "object",
       "properties": {
         "serviceName": {
-          "description": "The name of the service. See the [overview](\/service-management\/overview)\nfor naming requirements.\nThis name must match `google.api.Service.name` in the\n`service_config` field.",
+          "description": "The name of the service. See the [overview](\/service-management\/overview)\nfor naming requirements.",
           "type": "string"
         },
         "producerProjectId": {
@@ -258,6 +258,13 @@
         "customError": {
           "description": "Custom error configuration.",
           "$ref": "CustomError"
+        },
+        "endpoints": {
+          "description": "Configuration for network endpoints.  If this is empty, then an endpoint\nwith the same name as the service is automatically generated to service all\ndefined APIs.",
+          "type": "array",
+          "items": {
+            "$ref": "Endpoint"
+          }
         },
         "control": {
           "description": "Configuration for the service control plane.",
@@ -683,7 +690,7 @@
           }
         },
         "rules": {
-          "description": "Documentation rules for individual elements of the service.",
+          "description": "A list of documentation rules that apply to individual API elements.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "DocumentationRule"
@@ -746,7 +753,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "A list of visibility rules providing visibility configuration for\nindividual API elements.",
+          "description": "A list of visibility rules that apply to individual API elements.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "VisibilityRule"
@@ -775,7 +782,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "A list of backend rules providing configuration for individual API\nelements.",
+          "description": "A list of API backend rules that apply to individual API methods.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "BackendRule"
@@ -809,7 +816,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "A list of HTTP rules for configuring the HTTP REST API methods.",
+          "description": "A list of HTTP configuration rules that apply to individual API methods.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "HttpRule"
@@ -918,7 +925,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "Individual rules for authentication.",
+          "description": "A list of authentication rules that apply to individual API methods.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "AuthenticationRule"
@@ -947,7 +954,7 @@
           "$ref": "OAuthRequirements"
         },
         "allowWithoutCredential": {
-          "description": "Whether to allow requests without a credential.  If quota is enabled, an\nAPI key is required for such request to pass the quota check.",
+          "description": "Whether to allow requests without a credential. The credential can be\nan OAuth token, Google cookies (first-party auth) or EndUserCreds.\n\nFor requests without credentials, if the service control environment is\nspecified, each incoming request **must** be associated with a service\nconsumer. This can be done by passing an API key that belongs to a consumer\nproject.",
           "type": "boolean"
         },
         "requirements": {
@@ -1010,7 +1017,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "List of rules for context, applicable to methods.",
+          "description": "A list of RPC context rules that apply to individual API methods.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "ContextRule"
@@ -1056,7 +1063,7 @@
           }
         },
         "rules": {
-          "description": "Individual rules for configuring usage on selected methods.",
+          "description": "A list of usage rules that apply to individual API methods.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "UsageRule"
@@ -1085,7 +1092,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "The list of custom error rules to select to which messages this should\napply.",
+          "description": "The list of custom error rules that apply to individual API messages.\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "CustomErrorRule"
@@ -1111,6 +1118,42 @@
         },
         "isErrorType": {
           "description": "Mark this message as possible payload in error response.  Otherwise,\nobjects of this type will be filtered when they appear in error payload.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Endpoint": {
+      "id": "Endpoint",
+      "description": "`Endpoint` describes a network endpoint that serves a set of APIs.\nA service may expose any number of endpoints, and all endpoints share the\nsame service configuration, such as quota configuration and monitoring\nconfiguration.\n\nExample service configuration:\n\n    name: library-example.googleapis.com\n    endpoints:\n      # Below entry makes 'google.example.library.v1.Library'\n      # API be served from endpoint address library-example.googleapis.com.\n      # It also allows HTTP OPTIONS calls to be passed to the backend, for\n      # it to decide whether the subsequent cross-origin request is\n      # allowed to proceed.\n    - name: library-example.googleapis.com\n      apis: google.example.library.v1.Library\n      allow_cors: true\n      # Below entry makes 'google.example.library.v1.Library'\n      # API be served from endpoint address\n      # google.example.library-example.v1.LibraryManager.\n    - name: library-manager.googleapis.com\n      apis: google.example.library.v1.LibraryManager\n      # BNS address for a borg job. Can specify a task by appending\n      # \"\/taskId\" (e.g. \"\/0\") to the job spec.\n\nExample OpenAPI extension for endpoint with allow_cors set to true:\n\n    {\n      \"swagger\": \"2.0\",\n      \"info\": {\n        \"description\": \"A simple...\"\n      },\n      \"host\": \"MY_PROJECT_ID.appspot.com\",\n      \"x-google-endpoints\": [{\n        \"name\": \"MY_PROJECT_ID.appspot.com\",\n        \"allow_cors\": \"true\"\n      }]\n    }",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The canonical name of this endpoint.",
+          "type": "string"
+        },
+        "aliases": {
+          "description": "DEPRECATED: This field is no longer supported. Instead of using aliases,\nplease specify multiple google.api.Endpoint for each of the intented\nalias.\n\nAdditional names that this endpoint will be hosted on.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "apis": {
+          "description": "The list of APIs served by this endpoint.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "features": {
+          "description": "The list of features enabled on this endpoint.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowCors": {
+          "description": "Allowing\n[CORS](https:\/\/en.wikipedia.org\/wiki\/Cross-origin_resource_sharing), aka\ncross-domain traffic, would allow the backends served from this endpoint to\nreceive and respond to HTTP OPTIONS requests. The response will be used by\nthe browser to determine whether the subsequent cross-origin request is\nallowed to proceed.",
           "type": "boolean"
         }
       }
@@ -1267,7 +1310,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Optional. A concise name for the monitored resource type that might be\ndisplayed in user interfaces. For example, `\"Google Cloud SQL Database\"`.",
+          "description": "Optional. A concise name for the monitored resource type that might be\ndisplayed in user interfaces. It should be a Title Cased Noun Phrase,\nwithout any article or other determiners. For example,\n`\"Google Cloud SQL Database\"`.",
           "type": "string"
         },
         "description": {
@@ -1367,7 +1410,7 @@
       "type": "object",
       "properties": {
         "rules": {
-          "description": "Define system parameters.\n\nThe parameters defined here will override the default parameters\nimplemented by the system. If this field is missing from the service\nconfig, default system parameters will be used. Default system parameters\nand names is implementation-dependent.\n\nExample: define api key and alt name for all methods\n\nsystem_parameters\n  rules:\n    - selector: \"*\"\n      parameters:\n        - name: api_key\n          url_query_parameter: api_key\n        - name: alt\n          http_header: Response-Content-Type\n\nExample: define 2 api key names for a specific method.\n\nsystem_parameters\n  rules:\n    - selector: \"\/ListShelves\"\n      parameters:\n        - name: api_key\n          http_header: Api-Key1\n        - name: api_key\n          http_header: Api-Key2",
+          "description": "Define system parameters.\n\nThe parameters defined here will override the default parameters\nimplemented by the system. If this field is missing from the service\nconfig, default system parameters will be used. Default system parameters\nand names is implementation-dependent.\n\nExample: define api key and alt name for all methods\n\nsystem_parameters\n  rules:\n    - selector: \"*\"\n      parameters:\n        - name: api_key\n          url_query_parameter: api_key\n        - name: alt\n          http_header: Response-Content-Type\n\nExample: define 2 api key names for a specific method.\n\nsystem_parameters\n  rules:\n    - selector: \"\/ListShelves\"\n      parameters:\n        - name: api_key\n          http_header: Api-Key1\n        - name: api_key\n          http_header: Api-Key2\n\n**NOTE:** All service configuration rules follow \"last one wins\" order.",
           "type": "array",
           "items": {
             "$ref": "SystemParameterRule"
@@ -1575,6 +1618,13 @@
           "type": "array",
           "items": {
             "$ref": "EffectiveQuotaGroup"
+          }
+        },
+        "effectiveQuotaForMetrics": {
+          "description": "Use this field for quota limits defined without quota groups, i.e., new\nstyle quota configuration.\nCombines service quota configuration and project-specific settings, as\na map from metric name to the effective quota information for quota limits\non that metric.\nOutput-only",
+          "type": "array",
+          "items": {
+            "$ref": "EffectiveQuotasForMetric"
           }
         }
       }
@@ -1816,6 +1866,82 @@
         }
       }
     },
+    "EffectiveQuotasForMetric": {
+      "id": "EffectiveQuotasForMetric",
+      "description": "Effective quotas for a metric. It contains both the metadata for\nthe metric as defined in the service config, and the effective limits for\nquota limits defined on the metric as calculated from service default,\nproducer and consumer overrides, and adjusted by the reputation tier of the\nuser.\nThis is used only for quota limits that are grouped by metrics instead of\nquota groups.",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "The metric descriptor in service config.",
+          "$ref": "MetricDescriptor"
+        },
+        "effectiveLimits": {
+          "description": "Effective limit values for all quota limits defined on the metric.\nThe keys of the map are the name of the quota limits.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "EffectiveQuotaLimit2"
+          }
+        }
+      }
+    },
+    "EffectiveQuotaLimit2": {
+      "id": "EffectiveQuotaLimit2",
+      "description": "An effective quota limit contains the metadata for a quota limit\nas derived from the service config, together with fields that describe\nthe effective limit value and what overrides can be applied to it.\nThis is used only for quota limits that are grouped by metrics instead of\nquota groups.",
+      "type": "object",
+      "properties": {
+        "baseLimit": {
+          "description": "The service's configuration for this quota limit.",
+          "$ref": "QuotaLimit"
+        },
+        "quotaBuckets": {
+          "description": "Effective quota limit, maximum override allowed, and usage for each quota\nbucket.",
+          "type": "array",
+          "items": {
+            "$ref": "QuotaBucket"
+          }
+        }
+      }
+    },
+    "QuotaBucket": {
+      "id": "QuotaBucket",
+      "description": "The quota limit value and current usage for a quota bucket.",
+      "type": "object",
+      "properties": {
+        "bucketId": {
+          "description": "The quota bucket id",
+          "$ref": "QuotaBucketId"
+        },
+        "limitValue": {
+          "description": "Limit value of the bucket, i.e., the maximum number of tokens in the\nbucket.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxConsumerOverrideAllowed": {
+          "description": "The maximum overrides value that a consumer may specify on the bucket.",
+          "type": "string",
+          "format": "int64"
+        },
+        "usage": {
+          "description": "The usage data for the bucket.",
+          "$ref": "QuotaUsage"
+        }
+      }
+    },
+    "QuotaBucketId": {
+      "id": "QuotaBucketId",
+      "description": "A quota bucket is an instance of a quota limit.",
+      "type": "object",
+      "properties": {
+        "containerId": {
+          "description": "A Quota limit is defined at container level ORGANIZATION, PROJECT, or\nRESOURCE. The container of a quota bucket for a quota limit is identified\nby organization id, project id, or resource id respectively. For example:\nresource:\/projects\/my-project-123\/vms\/ABCDEF\norganization:google.com\nproject:my-project-123",
+          "type": "string"
+        },
+        "region": {
+          "description": "If a quota limit is defined on PER_REGION dimension, then each region will\nhave its own quota bucket.\nThis field is non-empty only if the quota limit is defined on PER_REGION\ndimension.",
+          "type": "string"
+        }
+      }
+    },
     "VisibilitySettings": {
       "id": "VisibilitySettings",
       "description": "Settings that control which features of the service are visible to the\nconsumer project.",
@@ -1872,32 +1998,13 @@
           "description": "A unique ID for a specific instance of this message, typically assigned\nby the client for tracking purpose. If empty, the server may choose to\ngenerate one instead.",
           "type": "string"
         },
-        "options": {
-          "description": "Options to cover use of source configuration within ServiceManager and\ntools",
-          "$ref": "ConfigOptions"
-        },
         "files": {
           "description": "Set of source configuration files that are used to generate a service\nconfiguration (`google.api.Service`).",
           "type": "array",
           "items": {
             "$ref": "ConfigFile"
           }
-        },
-        "openApiSpec": {
-          "description": "OpenAPI specification",
-          "$ref": "OpenApiSpec"
-        },
-        "protoSpec": {
-          "description": "Protocol buffer API specification",
-          "$ref": "ProtoSpec"
         }
-      }
-    },
-    "ConfigOptions": {
-      "id": "ConfigOptions",
-      "description": "A set of options to cover use of source config within `ServiceManager`\nand related tools.",
-      "type": "object",
-      "properties": {
       }
     },
     "ConfigFile": {
@@ -1938,47 +2045,6 @@
         }
       }
     },
-    "OpenApiSpec": {
-      "id": "OpenApiSpec",
-      "description": "A collection of OpenAPI specification files.",
-      "type": "object",
-      "properties": {
-        "openApiFiles": {
-          "description": "Individual files.",
-          "type": "array",
-          "items": {
-            "$ref": "ConfigFile"
-          }
-        }
-      }
-    },
-    "ProtoSpec": {
-      "id": "ProtoSpec",
-      "description": "A collection of protocol buffer service specification files.",
-      "type": "object",
-      "properties": {
-        "protoDescriptor": {
-          "description": "A complete descriptor of a protocol buffer specification",
-          "$ref": "ProtoDescriptor"
-        }
-      }
-    },
-    "ProtoDescriptor": {
-      "id": "ProtoDescriptor",
-      "description": "Contains a serialized protoc-generated protocol buffer message descriptor set\nalong with a URL that describes the type of the descriptor message.",
-      "type": "object",
-      "properties": {
-        "typeUrl": {
-          "description": "A URL\/resource name whose content describes the type of the\nserialized protocol buffer message.\n\nOnly 'type.googleapis.com\/google.protobuf.FileDescriptorSet' is supported.\nIf the type_url is not specificed,\n'type.googleapis.com\/google.protobuf.FileDescriptorSet' will be assumed.",
-          "type": "string"
-        },
-        "value": {
-          "description": "Must be a valid serialized protocol buffer descriptor set.\n\nTo generate, use protoc with imports and source info included.\nFor an example test.proto file, the following command would put the value\nin a new file named descriptor.pb.\n\n$protoc --include_imports --include_source_info test.proto -o descriptor.pb",
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
     "ListServiceRolloutsResponse": {
       "id": "ListServiceRolloutsResponse",
       "description": "Response message for ListServiceRollouts method.",
@@ -2003,7 +2069,7 @@
       "type": "object",
       "properties": {
         "rolloutId": {
-          "description": "Optional unique identifier of this Rollout.\nIf not specified by client, the server will generate one. The generated id\nwill have the form of <date><revision number>, where \"date\" is the create\ndate in ISO 8601 format.  \"revision number\" is a monotonically increasing\npositive number that is reset every day for each service.\nAn example of the generated rollout_id is '2016-02-16r1'",
+          "description": "Optional unique identifier of this Rollout. Only lower case letters, digits\n and '-' are allowed.\n\nIf not specified by client, the server will generate one. The generated id\nwill have the form of <date><revision number>, where \"date\" is the create\ndate in ISO 8601 format.  \"revision number\" is a monotonically increasing\npositive number that is reset every day for each service.\nAn example of the generated rollout_id is '2016-02-16r1'",
           "type": "string"
         },
         "createTime": {
@@ -2023,7 +2089,7 @@
             "The Rollout has completed successfully.",
             "The Rollout has been cancelled. This can happen if you have overlapping\nRollout pushes, and the previous ones will be cancelled.",
             "The Rollout has failed. It is typically caused by configuration errors.",
-            "The Rollout has started yet and is pending for execution."
+            "The Rollout has not started yet and is pending for execution."
           ],
           "type": "string",
           "enum": [
@@ -2036,16 +2102,8 @@
           ]
         },
         "trafficPercentStrategy": {
-          "description": "Google Service Control selects service configurations based on\ntraffic\npercentage.",
+          "description": "Google Service Control selects service configurations based on\ntraffic percentage.",
           "$ref": "TrafficPercentStrategy"
-        },
-        "serviceSelectionStrategy": {
-          "description": "The service itself specifies which configuration to use.",
-          "$ref": "ServiceSelectionStrategy"
-        },
-        "aliasStrategy": {
-          "description": "Google Service Control selects service configurations associated\nwith the\naliases\nsent from the service.",
-          "$ref": "AliasStrategy"
         },
         "deleteServiceStrategy": {
           "description": "The strategy associated with a rollout to delete a `ManagedService`.\nReadonly.",
@@ -2068,34 +2126,6 @@
           "additionalProperties": {
             "type": "number",
             "format": "double"
-          }
-        }
-      }
-    },
-    "ServiceSelectionStrategy": {
-      "id": "ServiceSelectionStrategy",
-      "description": "Strategy that lets the service choose which\nservice configuration ID to use at runtime from the given collection of\nIDs.\n\nOne example of how to gradually rollout a new service configuration using\nthis\nstrategy:\nBefore rollout, all servers are sending traffic to the Google Service\nControl with configuration id `example.googleapis.com\/20160201`, and\nGoogle Service Control uses the version of service configuration whose\nID is the same as the specified request id.\n\nDay 1\nThe service producer can push this Rollout:\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      client_selection_strategy: {\n        service_config_ids: [\"example.googleapis.com\/20160201\",\n                             \"example.googleapis.com\/20160206\"]\n      }\n    }\n\nThen deploy some of the servers so that they can start sending\ntraffic with service configuration id `example.googleapis.com\/20160206`.\nAnd the other servers are still sending traffic with service configuration\nid\n`example.googleapis.com\/20160201`.\n\nDay 2\nDeploy all servers to send traffic with service configuration id\n`example.googleapis.com\/20160206`.",
-      "type": "object",
-      "properties": {
-        "serviceConfigIds": {
-          "description": "List of service configuration IDs that the service can select from.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AliasStrategy": {
-      "id": "AliasStrategy",
-      "description": "Strategy that associates each instance of service configuration with\nmultiple aliases.\nBackend servers are partitioned to send requests to\nGoogle Service Control with different aliases which may point to\ndifferent versions of service configurations.\n\nOne example of how to gradually rollout a new service configuration using\nthis strategy:\nservers are partitioned to use \"DAY_1\" and \"DAY_2\" aliases.\nDay 1\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      alias_strategy: {\n        aliases: {\n          \"DAY_1\": \"example.googleapis.com\/20160206\"\n          \"DAY_2\": \"example.googleapis.com\/20160201\"\n        }\n      }\n    }\n\nGoogle Service Control will start using\nthe new version of the configuration for traffic comfing from \"DAY_1\"\nserver group.\n\nDay 2\n\n    Rollout {\n      id: \"example.googleapis.com\/rollout_20160206\"\n      alias_strategy: {\n        aliases: {\n          \"DAY_1\": \"example.googleapis.com\/20160206\"\n          \"DAY_2\": \"example.googleapis.com\/20160206\"\n        }\n      }\n    }",
-      "type": "object",
-      "properties": {
-        "aliases": {
-          "description": "Maps aliases to service configuration IDs.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
           }
         }
       }
@@ -2306,6 +2336,20 @@
         "contents": {
           "description": "The contents of the swagger spec file.",
           "type": "string"
+        }
+      }
+    },
+    "OpenApiSpec": {
+      "id": "OpenApiSpec",
+      "description": "A collection of OpenAPI specification files.",
+      "type": "object",
+      "properties": {
+        "openApiFiles": {
+          "description": "Individual files.",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigFile"
+          }
         }
       }
     },
@@ -2768,6 +2812,17 @@
         }
       }
     },
+    "ConfigRef": {
+      "id": "ConfigRef",
+      "description": "Represents a service configuration with its name and id.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of a service config. It must have the following\nformat: \"services\/{service name}\/configs\/{config id}\".",
+          "type": "string"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "The metadata associated with a long running operation resource.",
@@ -2838,6 +2893,24 @@
         "serviceConfig": {
           "description": "The generated service configuration.",
           "$ref": "Service"
+        },
+        "diagnostics": {
+          "description": "Diagnostics occured during config conversion.",
+          "type": "array",
+          "items": {
+            "$ref": "Diagnostic"
+          }
+        }
+      }
+    },
+    "UndeleteServiceResponse": {
+      "id": "UndeleteServiceResponse",
+      "description": "Response message for UndeleteService method.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Revived service resource.",
+          "$ref": "ManagedService"
         }
       }
     }
@@ -2950,7 +3023,7 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "POST",
-          "description": "Creates a new managed service.\n\nOperation<response: ManagedService>",
+          "description": "Creates a new managed service.\nPlease note one producer project can own no more than 20 services.\n\nOperation<response: ManagedService>",
           "parameters": {
           },
           "parameterOrder": [
@@ -2971,10 +3044,10 @@
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "DELETE",
-          "description": "Deletes a managed service. This method will change the serivce in the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall UndeleteService to restore the service.\nAfter 30 days, the service will be completely wiped out.\n\nOperation<response: google.protobuf.Empty>",
+          "description": "Deletes a managed service. This method will change the serivce in the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall UndeleteService to restore the service.\nAfter 30 days, the service will be permanently deleted.\n\nOperation<response: google.protobuf.Empty>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2996,10 +3069,10 @@
           "path": "v1/services/{serviceName}:undelete",
           "flatPath": "v1/services/{serviceName}:undelete",
           "httpMethod": "POST",
-          "description": "Revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and be in the 'soft-deleted' state.\n\nOperation<response: ManagedService>",
+          "description": "Revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation<response: UndeleteServiceResponse>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service. See the `ServiceManager` overview for naming\nrequirements. For example: `example.googleapis.com`.",
+              "description": "The name of the service. See the [overview](\/service-management\/overview)\nfor naming requirements. For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3024,7 +3097,7 @@
           "description": "Gets a service configuration (version) for a managed service.",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3094,7 +3167,7 @@
           "path": "v1/services/{serviceName}:enable",
           "flatPath": "v1/services/{serviceName}:enable",
           "httpMethod": "POST",
-          "description": "Enable a managed service for a project with default setting.\n\nOperation<response: EnableServiceResponse>",
+          "description": "Enable a managed service for a project with default setting.\n\nOperation<response: EnableServiceResponse>\n\ngoogle.rpc.Status errors may contain a\ngoogle.rpc.PreconditionFailure error detail.",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to enable. Specifying an unknown service name will\ncause the request to fail.",
@@ -3153,7 +3226,7 @@
           "description": "Updates the configuration of a service.  If the specified service does not\nalready exist, then it is created.\n\nOperation<response: ManagedService>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3187,7 +3260,7 @@
           "description": "Updates the specified subset of the configuration. If the specified service\ndoes not exist the patch operation fails.\n\nOperation<response: ManagedService>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3221,7 +3294,7 @@
           "description": "Updates the specified subset of the service resource. Equivalent to\ncalling `UpdateService` with only the `service_config` field updated.\n\nOperation<response: google.api.Service>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3255,7 +3328,7 @@
           "description": "Updates the specified subset of the service resource. Equivalent to\ncalling `PatchService` with only the `service_config` field updated.\n\nOperation<response: google.api.Service>",
           "parameters": {
             "serviceName": {
-              "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+              "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3433,7 +3506,7 @@
               "description": "Lists the history of the service configuration for a managed service,\nfrom the newest to the oldest.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3471,7 +3544,7 @@
               "description": "Gets a service configuration (version) for a managed service.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3504,7 +3577,7 @@
               "description": "Creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\nCreateServiceRollout.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3532,7 +3605,7 @@
               "description": "Creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call CreateServiceRollout.\n\nOperation<response: SubmitConfigSourceResponse>",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3564,7 +3637,7 @@
               "description": "Lists the history of the service configuration rollouts for a managed\nservice, from the newest to the oldest.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3602,7 +3675,7 @@
               "description": "Gets a service configuration rollout.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3633,10 +3706,10 @@
               "path": "v1/services/{serviceName}/rollouts",
               "flatPath": "v1/services/{serviceName}/rollouts",
               "httpMethod": "POST",
-              "description": "Creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nOperation<response: Rollout>",
+              "description": "Creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOperation<response: Rollout>",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3704,7 +3777,7 @@
               "description": "Retrieves the settings that control the specified customer's usage of the\nservice.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`. This field is\nrequired.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3752,10 +3825,10 @@
               "path": "v1/services/{serviceName}/customerSettings/{customerId}",
               "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
               "httpMethod": "PATCH",
-              "description": "Updates specified subset of the settings that control the specified\ncustomer's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: CustomerSettings>",
+              "description": "Patches specified subset of the settings that control the specified\ncustomer's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: CustomerSettings>",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`. This field is\nrequired.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3800,7 +3873,7 @@
               "description": "Retrieves the settings that control the specified consumer project's usage\nof the service.",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3851,7 +3924,7 @@
               "description": "NOTE: Currently unsupported.  Use PatchProjectSettings instead.\n\nUpdates the settings that control the specified consumer project's usage\nof the service.  Attempts to update a field not controlled by the caller\nwill result in an access denied error.\n\nOperation<response: ProjectSettings>",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3886,7 +3959,7 @@
               "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>",
               "parameters": {
                 "serviceName": {
-                  "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
+                  "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
                   "location": "path",
                   "required": true,
                   "type": "string"

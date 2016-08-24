@@ -15,6 +15,7 @@
 """Base classes for checks."""
 
 import abc
+import collections
 
 
 class Checker(object):
@@ -30,26 +31,39 @@ class Checker(object):
   def Check(self):
     """Runs a single check and returns the result and an optional fix.
 
-    A tuple in which the first element is expected to behave like a
-    check_base.CheckResult object and the second is a function that can be
-    used to fix any error. The second element may optionally be None, if the
-    check passed or if there is no applicable fix. If there is a fix
-    function it is assumed that it will return True if there are changes
-    made that warrant running a check again.
+    Returns:
+      A tuple of two elements. The first element should have the same attributes
+      as a check_base.Result object. The second element should either be a fixer
+      function that can used to fix an error (indicated by the "passed"
+      attribute being False in the first element), or None if the check passed
+      or if it failed with no applicable fix. If there is a fixer function it is
+      assumed that calling it will return True if it makes changes that warrant
+      running a check again.
     """
 
 
-class CheckResult(object):
-  """Holds information about the result of a single check."""
+class Result(
+    collections.namedtuple('Result', ['passed', 'message', 'failures'])):
+  """Holds information about the result of a single check.
 
-  def __init__(self, passed, message='', failures=None):
-    self.passed = passed
-    self.message = message
-    self.failures = failures or []
+  Attributes:
+    passed: Whether the check passed.
+    message: A summary message about the result of the check.
+    failures: A sequence of checkbase.Failure objects; may be empty if there
+        were no failures.
+  """
+
+  def __new__(cls, passed, message='', failures=None):
+    return super(Result, cls).__new__(cls, passed, message, failures or [])
 
 
-class Failure(object):
+class Failure(collections.namedtuple('Failure', ['message', 'exception'])):
+  """Holds information about the failure of a check.
 
-  def __init__(self, message='', exception=None):
-    self.message = message
-    self.exception = exception
+  Attributes:
+    message: A message detailing the failure; to be shown to the user.
+    exception: An Exception object associated with the failure.
+  """
+
+  def __new__(cls, message='', exception=None):
+    return super(Failure, cls).__new__(cls, message, exception)

@@ -126,7 +126,7 @@ class ArgumentParser(argparse.ArgumentParser):
     # a suggestion based on text distance.  If one is close enough, print a
     # 'did you mean' message along with that argument.
     messages = []
-    suggester = usage_text.CommandChoiceSuggester()
+    suggester = usage_text.TextChoiceSuggester()
     # pylint:disable=protected-access, This is an instance of this class.
     for flag in deepest_parser._calliope_command.GetAllAvailableFlags():
       options = flag.option_strings
@@ -231,7 +231,7 @@ class ArgumentParser(argparse.ArgumentParser):
     # See if the spelling was close to something else that exists here.
     else:
       choices = sorted(action.choices)
-      suggester = usage_text.CommandChoiceSuggester(choices)
+      suggester = usage_text.TextChoiceSuggester(choices)
       suggester.AddSynonyms()
       suggestion = suggester.GetSuggestion(value)
       if suggestion:

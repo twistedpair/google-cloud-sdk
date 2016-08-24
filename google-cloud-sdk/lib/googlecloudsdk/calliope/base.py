@@ -599,6 +599,16 @@ class Command(_Common):
     return None
 
 
+class TopicCommand(Command):
+  """A command that displays its own help on execution."""
+
+  __metaclass__ = abc.ABCMeta
+
+  def Run(self, args):
+    self.cli.Execute(args.command_path[1:] + ['--document=style=topic'])
+    return None
+
+
 class SilentCommand(Command):
   """A command that produces no output."""
 

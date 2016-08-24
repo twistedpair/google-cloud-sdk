@@ -833,7 +833,7 @@ class Resource(_messages.Message):
     properties: [Output Only] The current properties of the resource before
       any references have been filled in. Returned as serialized YAML.
     type: [Output Only] The type of the resource, for example
-      compute.v1.instance, or replicaPools.v1beta2.instanceGroupManager.
+      compute.v1.instance, or cloudfunctions.v1beta1.function.
     update: [Output Only] If Deployment Manager is currently updating or
       previewing an update to this resource, the updated configuration appears
       here.

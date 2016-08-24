@@ -17,6 +17,7 @@ import json
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.app import instances_util
+from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
@@ -356,7 +357,9 @@ class AppengineApiClient(object):
       Version resource object from the API
     """
     request = self.messages.AppengineAppsServicesVersionsGetRequest(
-        name=self._FormatVersion(self.project, service, version))
+        name=self._FormatVersion(self.project, service, version),
+        view=(self.messages.
+              AppengineAppsServicesVersionsGetRequest.ViewValueValuesEnum.FULL))
     return requests.MakeRequest(self.client.apps_services_versions.Get, request)
 
   def ListVersions(self, services):
@@ -379,6 +382,22 @@ class AppengineApiClient(object):
         versions.append(version_util.Version.FromVersionResource(v, service))
 
     return versions
+
+  def ListRegions(self):
+    """List all regions and support for standard and flexible.
+
+    Returns:
+      List of region_util.Region instances.
+    """
+    request = self.messages.AppengineAppsLocationsListRequest(
+        name='apps/-')
+    response = requests.MakeRequest(
+        self.client.apps_locations.List, request)
+
+    regions = [region_util.Region.FromRegionResource(l)
+               for l in response.locations]
+
+    return regions
 
   def DeleteService(self, service_name):
     """Deletes the specified service.

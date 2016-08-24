@@ -1,4 +1,4 @@
-"""Generated message classes for ml version v1alpha3.
+"""Generated message classes for ml version v1beta1.
 
 An API to enable creating and using machine learning models.
 """
@@ -12,6 +12,36 @@ from apitools.base.py import extra_types
 package = 'ml'
 
 
+class GoogleApiHttpBody(_messages.Message):
+  """Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page.   This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response.  It can be used as a
+  top-level request field, which is convenient if one wants to extract
+  parameters from either the URL or HTTP template into the request fields and
+  also want access to the raw HTTP body.  Example:      message
+  GetResourceRequest {       // A unique request id.       string request_id =
+  1;        // The raw HTTP body is bound to this field.
+  google.api.HttpBody http_body = 2;     }      service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty);     }
+  Example with streaming methods:      service CaldavService {       rpc
+  GetCalendar(stream google.api.HttpBody)         returns (stream
+  google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
+  returns (stream google.api.HttpBody);     }  Use of this type only changes
+  how the request and response bodies are handled, all other features will
+  continue to work unchanged.
+
+  Fields:
+    contentType: The HTTP Content-Type string representing the content type of
+      the body.
+    data: HTTP body binary data.
+  """
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+
+
 class GoogleCloudMlV1alpha3CreateVersionRequest(_messages.Message):
   """Uploads the provided trained model version to Cloud Machine Learning.
 
@@ -22,69 +52,6 @@ class GoogleCloudMlV1alpha3CreateVersionRequest(_messages.Message):
 
   parent = _messages.StringField(1)
   version = _messages.MessageField('GoogleCloudMlV1alpha3Version', 2)
-
-
-class GoogleCloudMlV1alpha3GetConfigResponse(_messages.Message):
-  """Returns service configuration associated with a given project.
-
-  Fields:
-    serviceAccount: The service account Cloud ML uses to access resources in
-      the project.
-    serviceAccountProject: Project number associated with 'service_account'.
-  """
-
-  serviceAccount = _messages.StringField(1)
-  serviceAccountProject = _messages.IntegerField(2)
-
-
-class GoogleCloudMlV1alpha3GetHyperparametersRequest(_messages.Message):
-  """Returns the hyperparameters associated with the given run.
-
-  Fields:
-    jobName: The job name. Must be unique within the project.
-    runId: The run id for these results.
-  """
-
-  jobName = _messages.StringField(1)
-  runId = _messages.StringField(2)
-
-
-class GoogleCloudMlV1alpha3GetHyperparametersResponse(_messages.Message):
-  """Returns the hyperparameters associated with the given run.
-
-  Messages:
-    HyperparametersValue: The hyperparameters given to the requested run.
-
-  Fields:
-    hyperparameters: The hyperparameters given to the requested run.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class HyperparametersValue(_messages.Message):
-    """The hyperparameters given to the requested run.
-
-    Messages:
-      AdditionalProperty: An additional property for a HyperparametersValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type HyperparametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a HyperparametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  hyperparameters = _messages.MessageField('HyperparametersValue', 1)
 
 
 class GoogleCloudMlV1alpha3HyperparameterJobResult(_messages.Message):
@@ -260,32 +227,6 @@ class GoogleCloudMlV1alpha3JobMetadata(_messages.Message):
   trainingResult = _messages.MessageField('GoogleCloudMlV1alpha3TrainingJobResult', 12)
 
 
-class GoogleCloudMlV1alpha3ListModelsResponse(_messages.Message):
-  """Response message for the ListModels method.
-
-  Fields:
-    models: The list of models.
-    nextPageToken: Optional pagination token to use for retrieving the next
-      page of results.
-  """
-
-  models = _messages.MessageField('GoogleCloudMlV1alpha3Model', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudMlV1alpha3ListVersionsResponse(_messages.Message):
-  """Response message for the ListVersions method.
-
-  Fields:
-    nextPageToken: Optional pagination token to use for retrieving the next
-      page of results.
-    versions: The list of versions.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  versions = _messages.MessageField('GoogleCloudMlV1alpha3Version', 2, repeated=True)
-
-
 class GoogleCloudMlV1alpha3MasterSpec(_messages.Message):
   """Represents a specification of master worker.
 
@@ -299,19 +240,6 @@ class GoogleCloudMlV1alpha3MasterSpec(_messages.Message):
 
   replicaCount = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
-
-
-class GoogleCloudMlV1alpha3Model(_messages.Message):
-  """Represents a machine learning model resource that can be used to perform
-  prediction.
-
-  Fields:
-    defaultVersion: The default version of the model.
-    name: The user-specified name of the model.
-  """
-
-  defaultVersion = _messages.MessageField('GoogleCloudMlV1alpha3Version', 1)
-  name = _messages.StringField(2)
 
 
 class GoogleCloudMlV1alpha3ParameterConfig(_messages.Message):
@@ -408,27 +336,6 @@ class GoogleCloudMlV1alpha3ParameterServerSpec(_messages.Message):
   resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
 
 
-class GoogleCloudMlV1alpha3PredictRequest(_messages.Message):
-  """Request for predictions to be issued against a trained model.
-
-  Fields:
-    instances: Input data, one string per instance. The type of the input data
-      is stored in model metadata.
-  """
-
-  instances = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudMlV1alpha3PredictResponse(_messages.Message):
-  """Response with prediction tensors produced by a trained model.
-
-  Fields:
-    predictions: Predictions are produced in the same order as the input.
-  """
-
-  predictions = _messages.StringField(1, repeated=True)
-
-
 class GoogleCloudMlV1alpha3PredictionJobResult(_messages.Message):
   """Represents the result of the longrunning.Operation created by the
   SubmitPredictionJob method.
@@ -440,24 +347,6 @@ class GoogleCloudMlV1alpha3PredictionJobResult(_messages.Message):
 
   instancesProcessed = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   outputUri = _messages.StringField(2)
-
-
-class GoogleCloudMlV1alpha3ReportMetricRequest(_messages.Message):
-  """Request Metric for hyperparameter tuning metric reporting.
-
-  Fields:
-    completed: Set to true to mark this run as completed.
-    jobName: The job name. Must be unique within the project.
-    objectiveValue: Required.  The value of the metric being optimized.
-    runId: The run to report metrics for.
-    trainingStep: Optional.  What training step this metric is for.
-  """
-
-  completed = _messages.BooleanField(1)
-  jobName = _messages.StringField(2)
-  objectiveValue = _messages.FloatField(3)
-  runId = _messages.StringField(4)
-  trainingStep = _messages.IntegerField(5)
 
 
 class GoogleCloudMlV1alpha3ResourceSpec(_messages.Message):
@@ -474,10 +363,6 @@ class GoogleCloudMlV1alpha3ResourceSpec(_messages.Message):
   disk = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   gpus = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   ram = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-
-
-class GoogleCloudMlV1alpha3SetDefaultVersionRequest(_messages.Message):
-  """Request message for the SetDefaultVersion request."""
 
 
 class GoogleCloudMlV1alpha3SubmitPredictionJobRequest(_messages.Message):
@@ -647,6 +532,226 @@ class GoogleCloudMlV1alpha3WorkerSpec(_messages.Message):
   resources = _messages.MessageField('GoogleCloudMlV1alpha3ResourceSpec', 2)
 
 
+class GoogleCloudMlV1beta1CancelJobRequest(_messages.Message):
+  """Request message for the CancelJob method."""
+
+
+class GoogleCloudMlV1beta1GetConfigResponse(_messages.Message):
+  """Returns service configuration associated with a given project.
+
+  Fields:
+    serviceAccount: The service account Cloud ML uses to access resources in
+      the project.
+    serviceAccountProject: Project number associated with 'service_account'.
+  """
+
+  serviceAccount = _messages.StringField(1)
+  serviceAccountProject = _messages.IntegerField(2)
+
+
+class GoogleCloudMlV1beta1HyperparameterOutput(_messages.Message):
+  """Represents the result of a hyperparameter tuning trial from a training
+  job.
+
+  Messages:
+    HyperparametersValue: The hyperparameters given to this trial.
+
+  Fields:
+    allMetrics: All recorded object metrics for this trial.
+    finalMetric: The final objective metric seen for this trial.
+    hyperparameters: The hyperparameters given to this trial.
+    trialId: The trial id for these results.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HyperparametersValue(_messages.Message):
+    """The hyperparameters given to this trial.
+
+    Messages:
+      AdditionalProperty: An additional property for a HyperparametersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type HyperparametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a HyperparametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allMetrics = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutputHyperparameterMetric', 1, repeated=True)
+  finalMetric = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutputHyperparameterMetric', 2)
+  hyperparameters = _messages.MessageField('HyperparametersValue', 3)
+  trialId = _messages.StringField(4)
+
+
+class GoogleCloudMlV1beta1HyperparameterOutputHyperparameterMetric(_messages.Message):
+  """An observed value of a metric.
+
+  Fields:
+    objectiveValue: The objective value at this training step.
+    trainingStep: The global training step for this metric.
+  """
+
+  objectiveValue = _messages.FloatField(1)
+  trainingStep = _messages.IntegerField(2)
+
+
+class GoogleCloudMlV1beta1HyperparameterSpec(_messages.Message):
+  """Represents a set of hyperparameters to optimize.
+
+  Enums:
+    GoalValueValuesEnum: Required. Should the evaluation metric be maximized
+      or minimized?
+
+  Fields:
+    goal: Required. Should the evaluation metric be maximized or minimized?
+    maxParallelTrials: Optional. How many training trials should be run in
+      parallel. More parallelization will be faster, but parallel trials only
+      benefit from the information gained by previous trials. Each trial will
+      use the same scale tier and machine types. Defaults to one.
+    maxTrials: Optional. How many training trials should be attempted to
+      optimize. Defaults to one.
+    params: Required. The set of parameters to tune.
+  """
+
+  class GoalValueValuesEnum(_messages.Enum):
+    """Required. Should the evaluation metric be maximized or minimized?
+
+    Values:
+      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
+      MAXIMIZE: Maximize the goal metric.
+      MINIMIZE: Minimize the goal metric.
+    """
+    GOAL_TYPE_UNSPECIFIED = 0
+    MAXIMIZE = 1
+    MINIMIZE = 2
+
+  goal = _messages.EnumField('GoalValueValuesEnum', 1)
+  maxParallelTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxTrials = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  params = _messages.MessageField('GoogleCloudMlV1beta1ParameterSpec', 4, repeated=True)
+
+
+class GoogleCloudMlV1beta1Job(_messages.Message):
+  """Represents a training or prediction job.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of a job.
+
+  Fields:
+    createTime: Output only. When the job was created.
+    endTime: Output only. When the job processing was completed.
+    errorMessage: Output only. The details of a failure or a cancellation.
+    jobId: Required. The user-specified id of the job.
+    predictionInput: Input parameters to create a prediction job.
+    predictionOutput: The current prediction job result.
+    startTime: Output only. When the job processing was started.
+    state: Output only. The detailed state of a job.
+    trainingInput: Input parameters to create a training job.
+    trainingOutput: The current training job result.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Output only. The detailed state of a job.
+
+    Values:
+      STATE_UNSPECIFIED: The job state is unspecified.
+      QUEUED: The job has been just created and is awaiting to be processed.
+      PREPARING: The job is being prepared to run.
+      RUNNING: Training or prediction is in progress.
+      SUCCEEDED: The job completed successfully.
+      FAILED: The job failed. `error_message` should contain the details of
+        the failure.
+      CANCELLING: The job is being cancelled. `error_message` should describe
+        the reason for the cancellation.
+      CANCELLED: The job has been cancelled. `error_message` should describe
+        the reason for the cancellation.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    PREPARING = 2
+    RUNNING = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    CANCELLING = 6
+    CANCELLED = 7
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  errorMessage = _messages.StringField(3)
+  jobId = _messages.StringField(4)
+  predictionInput = _messages.MessageField('GoogleCloudMlV1beta1PredictionInput', 5)
+  predictionOutput = _messages.MessageField('GoogleCloudMlV1beta1PredictionOutput', 6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  trainingInput = _messages.MessageField('GoogleCloudMlV1beta1TrainingInput', 9)
+  trainingOutput = _messages.MessageField('GoogleCloudMlV1beta1TrainingOutput', 10)
+
+
+class GoogleCloudMlV1beta1ListJobsResponse(_messages.Message):
+  """Response message for the ListJobs method.
+
+  Fields:
+    jobs: The list of jobs.
+    nextPageToken: Optional pagination token to use for retrieving the next
+      page of results.
+  """
+
+  jobs = _messages.MessageField('GoogleCloudMlV1beta1Job', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudMlV1beta1ListModelsResponse(_messages.Message):
+  """Response message for the ListModels method.
+
+  Fields:
+    models: The list of models.
+    nextPageToken: Optional pagination token to use for retrieving the next
+      page of results.
+  """
+
+  models = _messages.MessageField('GoogleCloudMlV1beta1Model', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudMlV1beta1ListVersionsResponse(_messages.Message):
+  """Response message for the ListVersions method.
+
+  Fields:
+    nextPageToken: Optional pagination token to use for retrieving the next
+      page of results.
+    versions: The list of versions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  versions = _messages.MessageField('GoogleCloudMlV1beta1Version', 2, repeated=True)
+
+
+class GoogleCloudMlV1beta1Model(_messages.Message):
+  """Represents a machine learning model resource that can be used to perform
+  prediction.
+
+  Fields:
+    defaultVersion: Output only. The default version of the model.
+    description: Optional. The description of the model.
+    name: Required. The user-specified name of the model.
+  """
+
+  defaultVersion = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
   """Represents the metadata of the longrunning.Operation.
 
@@ -662,6 +767,320 @@ class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
   endTime = _messages.StringField(2)
   isCancellationRequested = _messages.BooleanField(3)
   startTime = _messages.StringField(4)
+
+
+class GoogleCloudMlV1beta1ParameterSpec(_messages.Message):
+  """Represents a single hyperparameter to optimize.
+
+  Enums:
+    ScaleTypeValueValuesEnum: Optional. How the parameter should be scaled to
+      the hypercube. Leave unset for categorical parameters. Some kind of
+      scaling is strongly recommended for real or integral parameters (e.g.,
+      `UNIT_LINEAR_SCALE`).
+    TypeValueValuesEnum: Required. The type of the parameter.
+
+  Fields:
+    categoricalValues: Required if type is `CATEGORICAL`. The list of possible
+      categories.
+    discreteValues: Required if type is `DISCRETE`. A list of feasible points.
+      The list should be in strictly increasing order. For instance, this
+      parameter might have possible settings of 1.5, 2.5, and 4.0. This list
+      shouldn't be too large - probably not more than 1,000 points.
+    maxValue: Required if typeis `DOUBLE` or `INTEGER`. This field should be
+      unset if type is `CATEGORICAL`. This value should be integers if type is
+      `INTEGER`.
+    minValue: Required if type is `DOUBLE` or `INTEGER`. This field should be
+      unset if type is `CATEGORICAL`. This value should be integers if type is
+      INTEGER.
+    parameterName: Required. The parameter name must be unique amongst all
+      ParameterConfigs in a HyperparameterSpec message. E.g., "learning_rate".
+    scaleType: Optional. How the parameter should be scaled to the hypercube.
+      Leave unset for categorical parameters. Some kind of scaling is strongly
+      recommended for real or integral parameters (e.g., `UNIT_LINEAR_SCALE`).
+    type: Required. The type of the parameter.
+  """
+
+  class ScaleTypeValueValuesEnum(_messages.Enum):
+    """Optional. How the parameter should be scaled to the hypercube. Leave
+    unset for categorical parameters. Some kind of scaling is strongly
+    recommended for real or integral parameters (e.g., `UNIT_LINEAR_SCALE`).
+
+    Values:
+      NONE: By default, no scaling is applied.
+      UNIT_LINEAR_SCALE: Scales the feasible space to (0, 1) linearly.
+      UNIT_LOG_SCALE: Scales the feasible space logarithmically to (0, 1). The
+        entire feasible space must be strictly positive.
+      UNIT_REVERSE_LOG_SCALE: Scales the feasible space "reverse"
+        logarithmically to (0, 1). The result is that values close to the top
+        of the feasible space are spread out more than points near the bottom.
+        The entire feasible space must be strictly positive.
+    """
+    NONE = 0
+    UNIT_LINEAR_SCALE = 1
+    UNIT_LOG_SCALE = 2
+    UNIT_REVERSE_LOG_SCALE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Required. The type of the parameter.
+
+    Values:
+      PARAMETER_TYPE_UNSPECIFIED: Parameter type must be specified.
+        Unspecified values will be treated as an error.
+      DOUBLE: Type for real-valued parameters.
+      INTEGER: Type for integral parameters.
+      CATEGORICAL: The parameter is categorical, with a value chosen from the
+        categories field.
+      DISCRETE: The parameter is real valued, with a fixed set of feasible
+        points. If `type==DISCRETE`, feasible_points must be provided, and
+        {`min_value`, `max_value`} will be ignored.
+    """
+    PARAMETER_TYPE_UNSPECIFIED = 0
+    DOUBLE = 1
+    INTEGER = 2
+    CATEGORICAL = 3
+    DISCRETE = 4
+
+  categoricalValues = _messages.StringField(1, repeated=True)
+  discreteValues = _messages.FloatField(2, repeated=True)
+  maxValue = _messages.FloatField(3)
+  minValue = _messages.FloatField(4)
+  parameterName = _messages.StringField(5)
+  scaleType = _messages.EnumField('ScaleTypeValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
+class GoogleCloudMlV1beta1PredictRequest(_messages.Message):
+  """Request for predictions to be issued against a trained model.  The body
+  of the request consists of a single JSON object with a single top-level
+  field:   * `instances`: a list of JSON values representing the instances to
+  use for  prediction.  The structure of each element of the instances list is
+  the type of data your model expects to work on. There are two types of
+  instances: those that include named inputs and those that do not.  Most data
+  does not include named inputs. In this case, each instance will be a JSON
+  boolean, number, string, or (possibly deeply nested) list of any of the
+  above. For instance, if your model accepts rows of CSV data, then each
+  element is a string; if each data instance is a vector of ints or floats,
+  use a JSON list of numbers, etc. More examples are as follows:  <pre> # CSV
+  data  {"instances": ["1.0,true,\\"x\\"", "-2.0,false,\\"y\\""]}  # Text
+  {"instances": ["the quick brown fox", "la bruja le dio"]}  # Sentences, each
+  a list of words (vectors of strings).  {"instances":
+  [["the","quick","brown"], ["la","bruja","le"]]}  # Three instances, each a
+  floating point scalar, e.g., to compute f(x).  {"instances": [0.0, 1.1,
+  2.2]}  # 3 instances (integer scalars)  # Two instances, each a 3 element
+  vecor of ints.  {"instances": [[0,1,2], [3,4,5],...]}  # A single instance,
+  which is 2x3 matrix of ints.  {"instances": [[[0,1,2], [3,4,5]], ...]}  # A
+  single image represented as a 3-dimensional list with dimesions:  # height,
+  width, and channels (3).  {"instances": [[[[0,1,2], [3,4,5], \u2026]]]]} </pre>
+  Importantly, if your data is not UTF-8 (the only currently supported
+  character set), you will need to base64 encode the data and mark it as
+  binary. The latter is accomplished by using a JSON object of the form:
+  <pre>{"b": "..."} </pre> in place of any JSON string that is base64 encoded.
+  For example:  <pre> # Two Serialized tf.Examples (fake data, for
+  illustrative purposes only)  {"instances": [{"b": "X5ad6u"}, {"b":
+  "IA9j4nx"}]}  # Two JPEG image byte strings (fake data, for illustrative
+  purposes only)  {"instances": [{"b": "ASa8asdf"}, {"b": "JLK7ljk3"}]} </pre>
+  In the case that your data includes named references, you will send a JSON
+  object with the named references as the keys. For instance, if you used
+  Cloud ML's preprocessing library and used the JSON key-value pair data
+  format, you would send instances as follows:  <pre> # JSON input data to be
+  preprocessed.  {"instances": [{"a": 1.0,  "b": true,  "c": "x"},
+  {"a": -2.0, "b": false, "c": "y"}]} </pre>  Another use case is if your
+  underlying TensorFlow graph contains multiple input tensors, then the keys
+  would be the aliases to the input tensors, e.g.,  <pre> # Graph with input
+  tensor aliases "tag" (string) and "image" (base64  # encoded string).
+  {"instances": [{"tag": "beach", "image": {"b": "ASa8asdf"}},
+  {"tag": "car", "image": {"b": "JLK7ljk3"}}]}  # Graph with input tensor
+  aliases "tag" (string) and "image"  # (3-dimensional array of 8-bit ints).
+  {"instances": [{"tag": "beach", "image": [[[263,1,10], [262,2,11], ...]]},
+  {"tag": "car", "image": [[[10,11,24], [23,10,15], ...]]}]} </pre>  There is
+  a one-to-one correspondence between the predictions and the instances in the
+  request. Each individual prediction takes the same form as an instance in
+  the request, namely JSON strings, numbers, booleans, or lists thereof. If
+  your model has more than one output tensor, each prediction will be a JSON
+  object with the keys being the output aliases in the graph.  Examples:
+  <pre> # Predictions for three input instances, predictions are an integer
+  label,  # e.g., a digit in digit recognition  {"predictions": [5, 4, 3]}  #
+  Predictions for two input instances in a two-class classification  #
+  problem. The labels are strings and scores are the probability of "car"  #
+  and "beach".  {"predictions": [{"label": "beach", "scores": [0.1, 0.9]},
+  {"label": "car", "scores": [0.75, 0.25]}]} </pre>
+
+  Fields:
+    httpBody:  Required. The prediction request body.
+  """
+
+  httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
+
+
+class GoogleCloudMlV1beta1PredictResponse(_messages.Message):
+  """Response with predictions produced by a trained model.
+
+  Fields:
+    httpBody: The prediction response body.  Responses are very similar to
+      requests. There are two top-level fields, each of which are JSON lists:
+      * `predictions`: The list of predictions for each of the inputs in the
+      request.  * `error`: An error message if any instance produced an error.
+      There is a one-to-one correspondence between the predictions and the
+      instances in the request. Each individual prediction takes the same form
+      as an instance in the request, namely JSON strings, numbers, booleans,
+      or lists thereof. If your model has more than one output tensor, each
+      prediction will be a JSON object with the keys being the output aliases
+      in the graph.  If there is an error processing any single instance, no
+      predictions are returned and the `error` field is populated with the
+      error message.  Examples:  <pre> # Predictions for three input
+      instances, predictions are an integer label,  # e.g., a digit in digit
+      recognition  {"predictions": [5, 4, 3]}  # Predictions for two input
+      instances in a two-class classification  # problem. The labels are
+      strings and scores are the probability of  # "car" and "beach".
+      {"predictions": [{"label": "beach", "scores": [0.1, 0.9]},
+      {"label": "car", "scores": [0.75, 0.25]}]}  # An error:   {"error":
+      "Divide by zero"} </pre>  Required. The body of the response.
+  """
+
+  httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
+
+
+class GoogleCloudMlV1beta1PredictionInput(_messages.Message):
+  """Represents input parameters for a prediction job.
+
+  Enums:
+    DataFormatValueValuesEnum: Required. The format of the input data files.
+
+  Fields:
+    dataFormat: Required. The format of the input data files.
+    inputPaths: Required. The GCS location of the input data files. May
+      contain wildcards.
+    modelName: The name of the model. The default version will be used.
+    outputPath: Required. The output GCS location.
+    region: Required. The Google Compute Engine region to run the prediction
+      job in.
+    versionName: The version to be used.
+  """
+
+  class DataFormatValueValuesEnum(_messages.Enum):
+    """Required. The format of the input data files.
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Unspecified format.
+      TEXT: The source file is a text file with instances separated by the
+        new-line character.
+      TF_RECORD: The source file is a TFRecord file.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    TEXT = 1
+    TF_RECORD = 2
+
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  inputPaths = _messages.StringField(2, repeated=True)
+  modelName = _messages.StringField(3)
+  outputPath = _messages.StringField(4)
+  region = _messages.StringField(5)
+  versionName = _messages.StringField(6)
+
+
+class GoogleCloudMlV1beta1PredictionOutput(_messages.Message):
+  """Represents results of a prediction job.
+
+  Fields:
+    errorCount: The number of data instances which resulted in errors.
+    outputPath: The output GCS location provided at the job creation time.
+    predictionCount: The number of generated predictions.
+  """
+
+  errorCount = _messages.IntegerField(1)
+  outputPath = _messages.StringField(2)
+  predictionCount = _messages.IntegerField(3)
+
+
+class GoogleCloudMlV1beta1SetDefaultVersionRequest(_messages.Message):
+  """Request message for the SetDefaultVersion request."""
+
+
+class GoogleCloudMlV1beta1TrainingInput(_messages.Message):
+  """Represents input parameters for a training job.
+
+  Enums:
+    ScaleTierValueValuesEnum: Required. Specifies the machine types, the
+      amounts of replicas for workers and parameter servers.
+
+  Fields:
+    args: Optional. Command line arguments to pass to the program.
+    hyperparameters: Optional. The set of Hyperparameters to tune.
+    masterType: Optional. Specifies the master machine type. The following
+      types are supported:  - `standard` - `large_model` - `complex_model` -
+      `accelerated_s` - `accelerated_m`  Cannot be used in combination with a
+      standard scale tier.
+    packageUris: Required. The Google Cloud Storage location of the packages
+      with the training program and any additional dependencies.
+    parameterServerCount: Optional. Specifies the required amount of parameter
+      server replicas. Cannot be used in combination with a standard scale
+      tier.
+    parameterServerType: Optional. Specifies the parameter server machine
+      type. The following types are supported:  - `standard` - `large_model` -
+      `complex_model`  Cannot be used in combination with a standard scale
+      tier.
+    pythonModule: Required. The Python module name to run after installing the
+      packages.
+    region: Required. The Google Compute Engine region to run the training job
+      in.
+    scaleTier: Required. Specifies the machine types, the amounts of replicas
+      for workers and parameter servers.
+    tensorflowVersion: Optional. The version of TensorFlow to use. For
+      example, "0.10.1" or "latest".
+    workerCount: Optional. Specifies the required amount of worker replicas.
+      Cannot be used in combination with a standard scale tier.
+    workerType: Optional. Specifies the worker machine type. The following
+      types are supported:  - `standard` - `large_model` - `complex_model` -
+      `accelerated_s` - `accelerated_m`  Cannot be used in combination with a
+      standard scale tier.
+  """
+
+  class ScaleTierValueValuesEnum(_messages.Enum):
+    """Required. Specifies the machine types, the amounts of replicas for
+    workers and parameter servers.
+
+    Values:
+      BASIC: A single worker instance and no parameter servers.
+      STANDARD_1: A few workers and one parameter server.
+      STANDARD_2: A medium amount of workers and a few parameter servers.
+      PREMIUM_1: A large amount of worker with more parameter servers.
+      PREMIUM_2: A very large amount of workers with even more parameter
+        servers.
+      CUSTOM: Specify your own amounts of replicas in the `worker_count` and
+        `parameter_server_count` fields, as well as machine types for the
+        master, the workers and the parameter servers.
+    """
+    BASIC = 0
+    STANDARD_1 = 1
+    STANDARD_2 = 2
+    PREMIUM_1 = 3
+    PREMIUM_2 = 4
+    CUSTOM = 5
+
+  args = _messages.StringField(1, repeated=True)
+  hyperparameters = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterSpec', 2)
+  masterType = _messages.StringField(3)
+  packageUris = _messages.StringField(4, repeated=True)
+  parameterServerCount = _messages.IntegerField(5)
+  parameterServerType = _messages.StringField(6)
+  pythonModule = _messages.StringField(7)
+  region = _messages.StringField(8)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 9)
+  tensorflowVersion = _messages.StringField(10)
+  workerCount = _messages.IntegerField(11)
+  workerType = _messages.StringField(12)
+
+
+class GoogleCloudMlV1beta1TrainingOutput(_messages.Message):
+  """Represents results of a training job.
+
+  Fields:
+    completedTrialCount: The number of tuning trials completed successfully.
+    trials: Results for individual Hyperparameter trials.
+  """
+
+  completedTrialCount = _messages.IntegerField(1)
+  trials = _messages.MessageField('GoogleCloudMlV1beta1HyperparameterOutput', 2, repeated=True)
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):
@@ -897,52 +1316,83 @@ class MlProjectsGetConfigRequest(_messages.Message):
   """A MlProjectsGetConfigRequest object.
 
   Fields:
-    projectsId: Part of `name`. The project name.
+    projectsId: Part of `name`. Required. The project name.
   """
 
   projectsId = _messages.StringField(1, required=True)
 
 
-class MlProjectsHyperparametersRequest(_messages.Message):
-  """A MlProjectsHyperparametersRequest object.
+class MlProjectsJobsCancelRequest(_messages.Message):
+  """A MlProjectsJobsCancelRequest object.
 
   Fields:
-    googleCloudMlV1alpha3GetHyperparametersRequest: A
-      GoogleCloudMlV1alpha3GetHyperparametersRequest resource to be passed as
-      the request body.
-    projectsId: Part of `parent`. The project name.
+    googleCloudMlV1beta1CancelJobRequest: A
+      GoogleCloudMlV1beta1CancelJobRequest resource to be passed as the
+      request body.
+    jobsId: Part of `name`. See documentation of `projectsId`.
+    projectsId: Part of `name`. Required. The name of the job.
   """
 
-  googleCloudMlV1alpha3GetHyperparametersRequest = _messages.MessageField('GoogleCloudMlV1alpha3GetHyperparametersRequest', 1)
+  googleCloudMlV1beta1CancelJobRequest = _messages.MessageField('GoogleCloudMlV1beta1CancelJobRequest', 1)
+  jobsId = _messages.StringField(2, required=True)
+  projectsId = _messages.StringField(3, required=True)
+
+
+class MlProjectsJobsCreateRequest(_messages.Message):
+  """A MlProjectsJobsCreateRequest object.
+
+  Fields:
+    googleCloudMlV1beta1Job: A GoogleCloudMlV1beta1Job resource to be passed
+      as the request body.
+    projectsId: Part of `parent`. Required. The project name.
+  """
+
+  googleCloudMlV1beta1Job = _messages.MessageField('GoogleCloudMlV1beta1Job', 1)
   projectsId = _messages.StringField(2, required=True)
+
+
+class MlProjectsJobsGetRequest(_messages.Message):
+  """A MlProjectsJobsGetRequest object.
+
+  Fields:
+    jobsId: Part of `name`. See documentation of `projectsId`.
+    projectsId: Part of `name`. Required. The name of the job.
+  """
+
+  jobsId = _messages.StringField(1, required=True)
+  projectsId = _messages.StringField(2, required=True)
+
+
+class MlProjectsJobsListRequest(_messages.Message):
+  """A MlProjectsJobsListRequest object.
+
+  Fields:
+    filter: Optional. Specifies the subset of jobs to retrieve.
+    orderBy: Optional. Specifies the ordering of the jobs.
+    pageSize: Optional. The page size.
+    pageToken: Optional. A token for continuing the enumeration.
+    projectsId: Part of `parent`. Required. The name of the project whose jobs
+      are to be listed.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectsId = _messages.StringField(5, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):
   """A MlProjectsModelsCreateRequest object.
 
   Fields:
-    googleCloudMlV1alpha3Model: A GoogleCloudMlV1alpha3Model resource to be
+    googleCloudMlV1beta1Model: A GoogleCloudMlV1beta1Model resource to be
       passed as the request body.
-    projectsId: Part of `parent`. The project name.
+    projectsId: Part of `parent`. Required. The project name.
   """
 
-  googleCloudMlV1alpha3Model = _messages.MessageField('GoogleCloudMlV1alpha3Model', 1)
+  googleCloudMlV1beta1Model = _messages.MessageField('GoogleCloudMlV1beta1Model', 1)
   projectsId = _messages.StringField(2, required=True)
-
-
-class MlProjectsModelsCreateVersionRequest(_messages.Message):
-  """A MlProjectsModelsCreateVersionRequest object.
-
-  Fields:
-    googleCloudMlV1alpha3Version: A GoogleCloudMlV1alpha3Version resource to
-      be passed as the request body.
-    modelsId: Part of `parent`. See documentation of `projectsId`.
-    projectsId: Part of `parent`. The name of the model.
-  """
-
-  googleCloudMlV1alpha3Version = _messages.MessageField('GoogleCloudMlV1alpha3Version', 1)
-  modelsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
 
 
 class MlProjectsModelsDeleteRequest(_messages.Message):
@@ -950,7 +1400,7 @@ class MlProjectsModelsDeleteRequest(_messages.Message):
 
   Fields:
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the model.
+    projectsId: Part of `name`. Required. The name of the model.
   """
 
   modelsId = _messages.StringField(1, required=True)
@@ -962,7 +1412,7 @@ class MlProjectsModelsGetRequest(_messages.Message):
 
   Fields:
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the model.
+    projectsId: Part of `name`. Required. The name of the model.
   """
 
   modelsId = _messages.StringField(1, required=True)
@@ -973,13 +1423,12 @@ class MlProjectsModelsListRequest(_messages.Message):
   """A MlProjectsModelsListRequest object.
 
   Fields:
-    filter: Specifies the subset of models to retrieve.
-    orderBy: Specifies the ordering of the models.
-    pageSize: Optional page size. The default is 100.
-    pageToken: An optional pagination token, if available, for continuing the
-      enumeration.
-    projectsId: Part of `parent`. The name of the project whose models are to
-      be listed.
+    filter: Optional. Specifies the subset of models to retrieve.
+    orderBy: Optional. Specifies the ordering of the models.
+    pageSize: Optional. The page size.
+    pageToken: Optional. A token for for continuing the enumeration.
+    projectsId: Part of `parent`. Required. The name of the project whose
+      models are to be listed.
   """
 
   filter = _messages.StringField(1)
@@ -989,12 +1438,27 @@ class MlProjectsModelsListRequest(_messages.Message):
   projectsId = _messages.StringField(5, required=True)
 
 
+class MlProjectsModelsVersionsCreateRequest(_messages.Message):
+  """A MlProjectsModelsVersionsCreateRequest object.
+
+  Fields:
+    googleCloudMlV1beta1Version: A GoogleCloudMlV1beta1Version resource to be
+      passed as the request body.
+    modelsId: Part of `parent`. See documentation of `projectsId`.
+    projectsId: Part of `parent`. Required. The name of the model.
+  """
+
+  googleCloudMlV1beta1Version = _messages.MessageField('GoogleCloudMlV1beta1Version', 1)
+  modelsId = _messages.StringField(2, required=True)
+  projectsId = _messages.StringField(3, required=True)
+
+
 class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
   """A MlProjectsModelsVersionsDeleteRequest object.
 
   Fields:
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the version.
+    projectsId: Part of `name`. Required. The name of the version.
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1008,7 +1472,7 @@ class MlProjectsModelsVersionsGetRequest(_messages.Message):
 
   Fields:
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The name of the version.
+    projectsId: Part of `name`. Required. The name of the version.
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1021,14 +1485,13 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
   """A MlProjectsModelsVersionsListRequest object.
 
   Fields:
-    filter: Specifies the subset of versions to retrieve.
+    filter: Optional. Specifies the subset of versions to retrieve.
     modelsId: Part of `parent`. See documentation of `projectsId`.
-    orderBy: Specifies the ordering of the versions.
-    pageSize: Optional page size. The default is 100.
-    pageToken: An optional pagination token, if available, for continuing the
-      enumeration.
-    projectsId: Part of `parent`. The name of the model whose versions are to
-      be listed.
+    orderBy: Optional. Specifies the ordering of the versions.
+    pageSize: Optional. The page size.
+    pageToken: Optional. A token for continuing the enumeration.
+    projectsId: Part of `parent`. Required. The name of the model whose
+      versions are to be listed.
   """
 
   filter = _messages.StringField(1)
@@ -1043,16 +1506,16 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
   """A MlProjectsModelsVersionsSetDefaultRequest object.
 
   Fields:
-    googleCloudMlV1alpha3SetDefaultVersionRequest: A
-      GoogleCloudMlV1alpha3SetDefaultVersionRequest resource to be passed as
+    googleCloudMlV1beta1SetDefaultVersionRequest: A
+      GoogleCloudMlV1beta1SetDefaultVersionRequest resource to be passed as
       the request body.
     modelsId: Part of `name`. See documentation of `projectsId`.
-    projectsId: Part of `name`. The version name which is being made default
-      within the model.
+    projectsId: Part of `name`. Required. The version name which is being made
+      default within the model.
     versionsId: Part of `name`. See documentation of `projectsId`.
   """
 
-  googleCloudMlV1alpha3SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1alpha3SetDefaultVersionRequest', 1)
+  googleCloudMlV1beta1SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1beta1SetDefaultVersionRequest', 1)
   modelsId = _messages.StringField(2, required=True)
   projectsId = _messages.StringField(3, required=True)
   versionsId = _messages.StringField(4, required=True)
@@ -1116,62 +1579,13 @@ class MlProjectsPredictRequest(_messages.Message):
   """A MlProjectsPredictRequest object.
 
   Fields:
-    googleCloudMlV1alpha3PredictRequest: A GoogleCloudMlV1alpha3PredictRequest
+    googleCloudMlV1beta1PredictRequest: A GoogleCloudMlV1beta1PredictRequest
       resource to be passed as the request body.
-    projectsId: Part of `parent`. The name of the model against which
-      prediction should be performed. It is of the form:
-      /projects/project_id/models/model_name. The version information may be
-      omitted, in which case prediction is performed against the default
+    projectsId: Part of `name`. Required. The resource name of a model or a
       version.
   """
 
-  googleCloudMlV1alpha3PredictRequest = _messages.MessageField('GoogleCloudMlV1alpha3PredictRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class MlProjectsReportMetricRequest(_messages.Message):
-  """A MlProjectsReportMetricRequest object.
-
-  Fields:
-    googleCloudMlV1alpha3ReportMetricRequest: A
-      GoogleCloudMlV1alpha3ReportMetricRequest resource to be passed as the
-      request body.
-    projectsId: Part of `parent`. The project name.
-  """
-
-  googleCloudMlV1alpha3ReportMetricRequest = _messages.MessageField('GoogleCloudMlV1alpha3ReportMetricRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class MlProjectsSubmitPredictionJobRequest(_messages.Message):
-  """A MlProjectsSubmitPredictionJobRequest object.
-
-  Fields:
-    googleCloudMlV1alpha3SubmitPredictionJobRequest: A
-      GoogleCloudMlV1alpha3SubmitPredictionJobRequest resource to be passed as
-      the request body.
-    projectsId: Part of `parent`. The name of the model against which
-      prediction should be performed. It is of the form:
-      /projects/project_id/models/model_name/versions/version_id. The version
-      information may be omitted, in which case prediction is performed
-      against the default version.
-  """
-
-  googleCloudMlV1alpha3SubmitPredictionJobRequest = _messages.MessageField('GoogleCloudMlV1alpha3SubmitPredictionJobRequest', 1)
-  projectsId = _messages.StringField(2, required=True)
-
-
-class MlProjectsSubmitTrainingJobRequest(_messages.Message):
-  """A MlProjectsSubmitTrainingJobRequest object.
-
-  Fields:
-    googleCloudMlV1alpha3SubmitTrainingJobRequest: A
-      GoogleCloudMlV1alpha3SubmitTrainingJobRequest resource to be passed as
-      the request body.
-    projectsId: Part of `parent`. The project name.
-  """
-
-  googleCloudMlV1alpha3SubmitTrainingJobRequest = _messages.MessageField('GoogleCloudMlV1alpha3SubmitTrainingJobRequest', 1)
+  googleCloudMlV1beta1PredictRequest = _messages.MessageField('GoogleCloudMlV1beta1PredictRequest', 1)
   projectsId = _messages.StringField(2, required=True)
 
 

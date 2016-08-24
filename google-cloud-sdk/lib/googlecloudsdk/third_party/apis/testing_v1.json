@@ -394,7 +394,8 @@
             "The test package and app package are the same.",
             "The test apk does not declare an instrumentation.",
             "A main launcher activity could not be found.",
-            "The app declares one or more permissions that are not allowed."
+            "The app declares one or more permissions that are not allowed.",
+            "There is a conflict in the provided robo_directives."
           ],
           "type": "string",
           "enum": [
@@ -407,7 +408,8 @@
             "TEST_SAME_AS_APP",
             "NO_INSTRUMENTATION",
             "NO_LAUNCHER_ACTIVITY",
-            "FORBIDDEN_PERMISSIONS"
+            "FORBIDDEN_PERMISSIONS",
+            "INVALID_ROBO_DIRECTIVES"
           ]
         }
       }
@@ -613,6 +615,28 @@
           "description": "The max number of steps Robo can execute.\nDefault is no limit.\nOptional",
           "type": "integer",
           "format": "int32"
+        },
+        "roboDirectives": {
+          "description": "A set of directives Robo should apply during the crawl.\nThis allows users to customize the crawl. For example, the username and\npassword for a test account can be provided.\nOptional",
+          "type": "array",
+          "items": {
+            "$ref": "RoboDirective"
+          }
+        }
+      }
+    },
+    "RoboDirective": {
+      "id": "RoboDirective",
+      "description": "Directs Robo to interact with a specific UI element if it is encountered\nduring the crawl. Currently, Robo can set text in text fields.",
+      "type": "object",
+      "properties": {
+        "resourceName": {
+          "description": "The android resource name of the target UI element\nFor example,\n   in Java: R.string.foo\n   in xml: @string\/foo\nOnly the \u201Cfoo\u201D part is needed.\nReference doc:\nhttps:\/\/developer.android.com\/guide\/topics\/resources\/accessing-resources.html\nRequired",
+          "type": "string"
+        },
+        "inputText": {
+          "description": "The text that Robo is directed to set.\nRequired",
+          "type": "string"
         }
       }
     },
@@ -983,7 +1007,7 @@
           }
         },
         "supportedAbis": {
-          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\nThe most preferred ABI is the first element in the list.\n@OutputOnly",
+          "description": "The list of supported ABIs for this device.\nThis corresponds to either android.os.Build.SUPPORTED_ABIS (for API level\n21 and above) or android.os.Build.CPU_ABI\/CPU_ABI2.\nThe most preferred ABI is the first element in the list.\n\nElements are optionally prefixed by \"version_id:\" (where version_id is\nthe id of an AndroidVersion), denoting an ABI that is supported only on\na particular version.\n@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"

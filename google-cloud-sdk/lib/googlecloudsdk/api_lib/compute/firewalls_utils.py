@@ -35,13 +35,11 @@ def AddCommonArgs(parser, for_update=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
-  switch = [] if min_length == 0 else None
 
   allow = parser.add_argument(
       '--allow',
       metavar=ALLOWED_METAVAR,
       type=arg_parsers.ArgList(min_length=min_length),
-      action=arg_parsers.FloatingListValuesCatcher(switch_value=switch),
       help='The list of IP protocols and ports which will be allowed.',
       required=not for_update)
   allow.detailed_help = """\
@@ -78,7 +76,6 @@ def AddCommonArgs(parser, for_update=False):
       default=None if for_update else [],
       metavar='CIDR_RANGE',
       type=arg_parsers.ArgList(min_length=min_length),
-      action=arg_parsers.FloatingListValuesCatcher(switch_value=switch),
       help=('A list of IP address blocks that may make inbound connections '
             'in CIDR format.'))
   source_ranges.detailed_help = """\
@@ -106,7 +103,6 @@ def AddCommonArgs(parser, for_update=False):
       default=None if for_update else [],
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=min_length),
-      action=arg_parsers.FloatingListValuesCatcher(switch_value=switch),
       help=('A list of instance tags indicating the set of instances on the '
             'network which may make network connections that match the '
             'firewall rule.'))
@@ -130,7 +126,6 @@ def AddCommonArgs(parser, for_update=False):
       default=None if for_update else [],
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=min_length),
-      action=arg_parsers.FloatingListValuesCatcher(switch_value=switch),
       help=('A list of instance tags indicating the set of instances on the '
             'network which may accept inbound connections that match the '
             'firewall rule.'))

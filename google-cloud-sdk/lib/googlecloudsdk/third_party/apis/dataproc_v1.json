@@ -181,7 +181,7 @@
           "$ref": "SoftwareConfig"
         },
         "initializationActions": {
-          "description": "[Optional] Commands to execute on each node after config is\ncompleted. By default, executables are run on master and all worker nodes.\nYou can test a node's <code>role<\/code> metadata to run an executable on\na master or worker node, as shown below:\n\n    ROLE=$(\/usr\/share\/google\/get_metadata_value attributes\/role)\n    if [[ \"${ROLE}\" == 'Master' ]]; then\n      ... master specific actions ...\n    else\n      ... worker specific actions ...\n    fi",
+          "description": "[Optional] Commands to execute on each node after config is\ncompleted. By default, executables are run on master and all worker nodes.\nYou can test a node's <code>role<\/code> metadata to run an executable on\na master or worker node, as shown below using `curl` (you can also use `wget`):\n\n    ROLE=$(curl -H Metadata-Flavor:Google http:\/\/metadata\/computeMetadata\/v1\/instance\/attributes\/dataproc-role)\n    if [[ \"${ROLE}\" == 'Master' ]]; then\n      ... master specific actions ...\n    else\n      ... worker specific actions ...\n    fi",
           "type": "array",
           "items": {
             "$ref": "NodeInitializationAction"
@@ -199,33 +199,33 @@
           "type": "string"
         },
         "networkUri": {
-          "description": "The Google Compute Engine network to be used for machine communications.\nCannot be specified with subnetwork_uri. If neither network_uri nor\nsubnetwork_uri is specified, the \"default\" network of the project is\nused, if it exists. Cannot be a \"Custom Subnet Network\" (see\n[Using Subnetworks](\/compute\/docs\/subnetworks) for more information).\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default`.",
+          "description": "[Optional] The Google Compute Engine network to be used for machine\ncommunications. Cannot be specified with subnetwork_uri. If neither\n`network_uri` nor `subnetwork_uri` is specified, the \"default\" network of\nthe project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see\n[Using Subnetworks](\/compute\/docs\/subnetworks) for more information).\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default`.",
           "type": "string"
         },
         "subnetworkUri": {
-          "description": "The Google Compute Engine subnetwork to be used for machine communications.\nCannot be specified with network_uri.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0`.",
+          "description": "[Optional] The Google Compute Engine subnetwork to be used for machine\ncommunications. Cannot be specified with network_uri.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0`.",
           "type": "string"
         },
         "internalIpOnly": {
-          "description": "If true, all instances in the cluser will only have internal IP addresses.\nBy default, clusters are not restricted to internal IP addresses, and will\nhave ephemeral external IP addresses assigned to each instance. This\nrestriction can only be enabled for subnetwork enabled networks, and\nall off-cluster dependencies must be configured to be accessible without\nexternal IP addresses.",
+          "description": "[Optional] If true, all instances in the cluster will only have internal IP\naddresses. By default, clusters are not restricted to internal IP addresses,\nand will have ephemeral external IP addresses assigned to each instance.\nThis `internal_ip_only` restriction can only be enabled for subnetwork\nenabled networks, and all off-cluster dependencies must be configured to be\naccessible without external IP addresses.",
           "type": "boolean"
         },
         "serviceAccountScopes": {
-          "description": "The URIs of service account scopes to be included in Google Compute Engine\ninstances. The following base set of scopes is always included:\n\n* https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n* https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n* https:\/\/www.googleapis.com\/auth\/logging.write\n\nIf no scopes are specfied, the following defaults are also provided:\n\n* https:\/\/www.googleapis.com\/auth\/bigquery\n* https:\/\/www.googleapis.com\/auth\/bigtable.admin.table\n* https:\/\/www.googleapis.com\/auth\/bigtable.data\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
+          "description": "[Optional] The URIs of service account scopes to be included in Google\nCompute Engine instances. The following base set of scopes is always\nincluded:\n\n* https:\/\/www.googleapis.com\/auth\/cloud.useraccounts.readonly\n* https:\/\/www.googleapis.com\/auth\/devstorage.read_write\n* https:\/\/www.googleapis.com\/auth\/logging.write\n\nIf no scopes are specified, the following defaults are also provided:\n\n* https:\/\/www.googleapis.com\/auth\/bigquery\n* https:\/\/www.googleapis.com\/auth\/bigtable.admin.table\n* https:\/\/www.googleapis.com\/auth\/bigtable.data\n* https:\/\/www.googleapis.com\/auth\/devstorage.full_control",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "tags": {
-          "description": "The Google Compute Engine tags to add to all instances.",
+          "description": "The Google Compute Engine tags to add to all instances (see\n[Labeling instances](\/compute\/docs\/label-or-tag-resources#labeling_instances)).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "The Google Compute Engine metadata entries to add to all instances.",
+          "description": "The Google Compute Engine metadata entries to add to all instances (see\n[Project and instance metadata](https:\/\/cloud.google.com\/compute\/docs\/storing-retrieving-metadata#project_and_instance_metadata)).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -235,16 +235,16 @@
     },
     "InstanceGroupConfig": {
       "id": "InstanceGroupConfig",
-      "description": "The config settings for Google Compute Engine resources in\nan instance group, such as a master or worker group.",
+      "description": "[Optional] The config settings for Google Compute Engine resources in\nan instance group, such as a master or worker group.",
       "type": "object",
       "properties": {
         "numInstances": {
-          "description": "The number of VM instances in the instance group.\nFor master instance groups, must be set to 1.",
+          "description": "[Required] The number of VM instances in the instance group.\nFor master instance groups, must be set to 1.",
           "type": "integer",
           "format": "int32"
         },
         "instanceNames": {
-          "description": "The list of instance names. Cloud Dataproc derives the names from\n`cluster_name`, `num_instances`, and the instance group if not set by user\n(recommended practice is to let Cloud Dataproc derive the name).",
+          "description": "[Optional] The list of instance names. Cloud Dataproc derives the names from\n`cluster_name`, `num_instances`, and the instance group if not set by user\n(recommended practice is to let Cloud Dataproc derive the name).",
           "type": "array",
           "items": {
             "type": "string"
@@ -255,15 +255,15 @@
           "type": "string"
         },
         "machineTypeUri": {
-          "description": "The Google Compute Engine machine type used for cluster instances.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2`.",
+          "description": "[Required] The Google Compute Engine machine type used for cluster instances.\nExample: `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2`.",
           "type": "string"
         },
         "diskConfig": {
-          "description": "Disk option config settings.",
+          "description": "[Optional] Disk option config settings.",
           "$ref": "DiskConfig"
         },
         "isPreemptible": {
-          "description": "Specifies that this instance group contains Preemptible Instances.",
+          "description": "[Optional] Specifies that this instance group contains preemptible instances.",
           "type": "boolean"
         },
         "managedGroupConfig": {
@@ -283,7 +283,7 @@
           "format": "int32"
         },
         "numLocalSsds": {
-          "description": "[Optional] Number of attached SSDs, from 0 to 4 (default is 0).\nIf SSDs are not attached, the boot disk is used to store runtime logs and\nHDFS data. If one or more SSDs are attached, this runtime bulk\ndata is spread across them, and the boot disk contains only basic\nconfig and installed binaries.",
+          "description": "[Optional] Number of attached SSDs, from 0 to 4 (default is 0).\nIf SSDs are not attached, the boot disk is used to store runtime logs and\n[HDFS](https:\/\/hadoop.apache.org\/docs\/r1.2.1\/hdfs_user_guide.html) data.\nIf one or more SSDs are attached, this runtime bulk\ndata is spread across them, and the boot disk contains only basic\nconfig and installed binaries.",
           "type": "integer",
           "format": "int32"
         }
@@ -344,7 +344,7 @@
       "type": "object",
       "properties": {
         "state": {
-          "description": "The cluster's state.",
+          "description": "[Output-only] The cluster's state.",
           "enumDescriptions": [
             "The cluster state is unknown.",
             "The cluster is being created and set up. It is not ready for use.",
@@ -364,11 +364,11 @@
           ]
         },
         "detail": {
-          "description": "Optional details of cluster's state.",
+          "description": "[Output-only] Optional details of cluster's state.",
           "type": "string"
         },
         "stateStartTime": {
-          "description": "Time when this state was entered.",
+          "description": "[Output-only] Time when this state was entered.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -449,7 +449,7 @@
           }
         },
         "nextPageToken": {
-          "description": "[Optional] This token is included in the response if there are more results\nto fetch. To fetch additional results, provide this value as the\n`page_token` in a subsequent <code>ListClustersRequest<\/code>.",
+          "description": "[Output-only] This token is included in the response if there are more\nresults to fetch. To fetch additional results, provide this value as the\n`page_token` in a subsequent <code>ListClustersRequest<\/code>.",
           "type": "string"
         }
       }
@@ -540,7 +540,7 @@
           "type": "string"
         },
         "jobId": {
-          "description": "[Required] The job ID, which must be unique within the project. The job ID\nis generated by the server upon job submission or provided by the user as a\nmeans to perform retries without creating duplicate jobs. The ID must\ncontain only letters (a-z, A-Z), numbers (0-9), underscores (_), or\nhyphens (-). The maximum length is 512 characters.",
+          "description": "[Optional] The job ID, which must be unique within the project. The job ID\nis generated by the server upon job submission or provided by the user as a\nmeans to perform retries without creating duplicate jobs. The ID must\ncontain only letters (a-z, A-Z), numbers (0-9), underscores (_), or\nhyphens (-). The maximum length is 512 characters.",
           "type": "string"
         }
       }
@@ -555,14 +555,14 @@
           "type": "string"
         },
         "clusterUuid": {
-          "description": "[Output-only] A cluster UUID generated by the Cloud Dataproc service when the job\nis submitted.",
+          "description": "[Output-only] A cluster UUID generated by the Cloud Dataproc service when\nthe job is submitted.",
           "type": "string"
         }
       }
     },
     "HadoopJob": {
       "id": "HadoopJob",
-      "description": "A Cloud Dataproc job for running Hadoop MapReduce jobs on YARN.",
+      "description": "A Cloud Dataproc job for running\n[Apache Hadoop MapReduce](https:\/\/hadoop.apache.org\/docs\/current\/hadoop-mapreduce-client\/hadoop-mapreduce-client-core\/MapReduceTutorial.html)\njobs on [Apache Hadoop YARN](https:\/\/hadoop.apache.org\/docs\/r2.7.1\/hadoop-yarn\/hadoop-yarn-site\/YARN.html).",
       "type": "object",
       "properties": {
         "mainJarFileUri": {
@@ -588,7 +588,7 @@
           }
         },
         "fileUris": {
-          "description": "[Optional] HCFS (Hadoop Compatible Filesystem) URIs of files to be copied to the working\ndirectory of Hadoop drivers and distributed tasks. Useful for\nnaively parallel tasks.",
+          "description": "[Optional] HCFS (Hadoop Compatible Filesystem) URIs of files to be copied\nto the working directory of Hadoop drivers and distributed tasks. Useful\nfor naively parallel tasks.",
           "type": "array",
           "items": {
             "type": "string"
@@ -641,7 +641,7 @@
     },
     "SparkJob": {
       "id": "SparkJob",
-      "description": "A Cloud Dataproc job for running Spark applications on YARN.",
+      "description": "A Cloud Dataproc job for running [Apache Spark](http:\/\/spark.apache.org\/)\napplications on YARN.",
       "type": "object",
       "properties": {
         "mainJarFileUri": {
@@ -674,7 +674,7 @@
           }
         },
         "archiveUris": {
-          "description": "[Optional] HCFS URIs of archives to be extracted in the working directory of\nSpark drivers and tasks. Supported file types:\n.jar, .tar, .tar.gz, .tgz, and .zip.",
+          "description": "[Optional] HCFS URIs of archives to be extracted in the working directory\nof Spark drivers and tasks. Supported file types:\n.jar, .tar, .tar.gz, .tgz, and .zip.",
           "type": "array",
           "items": {
             "type": "string"
@@ -695,11 +695,11 @@
     },
     "PySparkJob": {
       "id": "PySparkJob",
-      "description": "A Cloud Dataproc job for running PySpark applications on YARN.",
+      "description": "A Cloud Dataproc job for running\n[Apache PySpark](https:\/\/spark.apache.org\/docs\/0.9.0\/python-programming-guide.html)\napplications on YARN.",
       "type": "object",
       "properties": {
         "mainPythonFileUri": {
-          "description": "[Required] The HCFS URI of the main Python file to use as the driver. Must be a .py file.",
+          "description": "[Required] The HCFS URI of the main Python file to use as the driver. Must\nbe a .py file.",
           "type": "string"
         },
         "args": {
@@ -752,7 +752,7 @@
     },
     "HiveJob": {
       "id": "HiveJob",
-      "description": "A Cloud Dataproc job for running Hive queries on YARN.",
+      "description": "A Cloud Dataproc job for running [Apache Hive](https:\/\/hive.apache.org\/)\nqueries on YARN.",
       "type": "object",
       "properties": {
         "queryFileUri": {
@@ -806,7 +806,7 @@
     },
     "PigJob": {
       "id": "PigJob",
-      "description": "A Cloud Dataproc job for running Pig queries on YARN.",
+      "description": "A Cloud Dataproc job for running [Apache Pig](https:\/\/pig.apache.org\/)\nqueries on YARN.",
       "type": "object",
       "properties": {
         "queryFileUri": {
@@ -850,7 +850,7 @@
     },
     "SparkSqlJob": {
       "id": "SparkSqlJob",
-      "description": "A Cloud Dataproc job for running Spark SQL queries.",
+      "description": "A Cloud Dataproc job for running [Apache Spark SQL](http:\/\/spark.apache.org\/sql\/)\nqueries.",
       "type": "object",
       "properties": {
         "queryFileUri": {
@@ -894,7 +894,7 @@
       "type": "object",
       "properties": {
         "state": {
-          "description": "[Required] A state message specifying the overall job state.",
+          "description": "[Output-only] A state message specifying the overall job state.",
           "enumDescriptions": [
             "The job state is unknown.",
             "The job is pending; it has been submitted, but is not yet running.",
@@ -920,7 +920,7 @@
           ]
         },
         "details": {
-          "description": "[Optional] Job state details, such as an error\ndescription if the state is <code>ERROR<\/code>.",
+          "description": "[Output-only] Optional job state details, such as an error\ndescription if the state is <code>ERROR<\/code>.",
           "type": "string"
         },
         "stateStartTime": {
@@ -986,7 +986,7 @@
       "type": "object",
       "properties": {
         "outputUri": {
-          "description": "[Output-only] The Google Cloud Storage URI of the diagnostic output.\nThis is a plain text file with a summary of collected diagnostics.",
+          "description": "[Output-only] The Google Cloud Storage URI of the diagnostic output.\nThe output report is a plain text file with a summary of collected\ndiagnostics.",
           "type": "string"
         }
       }
@@ -997,11 +997,11 @@
       "type": "object",
       "properties": {
         "clusterName": {
-          "description": "Name of the cluster for the operation.",
+          "description": "[Output-only] Name of the cluster for the operation.",
           "type": "string"
         },
         "clusterUuid": {
-          "description": "Cluster UUId for the operation.",
+          "description": "[Output-only] Cluster UUID for the operation.",
           "type": "string"
         },
         "status": {
@@ -1031,7 +1031,7 @@
       "type": "object",
       "properties": {
         "state": {
-          "description": "A message containing the operation state.",
+          "description": "[Output-only] A message containing the operation state.",
           "enumDescriptions": [
             "Unused.",
             "The operation has been created.",
@@ -1047,15 +1047,15 @@
           ]
         },
         "innerState": {
-          "description": "A message containing the detailed operation state.",
+          "description": "[Output-only] A message containing the detailed operation state.",
           "type": "string"
         },
         "details": {
-          "description": "A message containing any operation metadata details.",
+          "description": "[Output-only]A message containing any operation metadata details.",
           "type": "string"
         },
         "stateStartTime": {
-          "description": "The time this state was entered.",
+          "description": "[Output-only] The time this state was entered.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1197,7 +1197,7 @@
                   "description": "Creates a cluster in a project.",
                   "parameters": {
                     "projectId": {
-                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster belongs to.",
+                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster\nbelongs to.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1249,7 +1249,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "[Required] Specifies the path, relative to <code>Cluster<\/code>, of\nthe field to update. For example, to change the number of workers\nin a cluster to 5, the <code>update_mask<\/code> parameter would be\nspecified as <code>config.worker_config.num_instances<\/code>,\nand the `PATCH` request body would specify the new value, as follows:\n\n    {\n      \"config\":{\n        \"workerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\nSimilarly, to change the number of preemptible workers in a cluster to 5, the\n<code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>,\nand the `PATCH` request body would be set as follows:\n\n    {\n      \"config\":{\n        \"secondaryWorkerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\n<strong>Note:<\/strong> Currently, <code>config.worker_config.num_instances<\/code>\nand <code>config.secondary_worker_config.num_instances<\/code> are the only fields that can be\nupdated.",
+                      "description": "[Required] Specifies the path, relative to <code>Cluster<\/code>, of\nthe field to update. For example, to change the number of workers\nin a cluster to 5, the <code>update_mask<\/code> parameter would be\nspecified as <code>config.worker_config.num_instances<\/code>,\nand the `PATCH` request body would specify the new value, as follows:\n\n    {\n      \"config\":{\n        \"workerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\nSimilarly, to change the number of preemptible workers in a cluster to 5, the\n<code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>,\nand the `PATCH` request body would be set as follows:\n\n    {\n      \"config\":{\n        \"secondaryWorkerConfig\":{\n          \"numInstances\":\"5\"\n        }\n      }\n    }\n<strong>Note:<\/strong> Currently, <code>config.worker_config.num_instances<\/code>\nand <code>config.secondary_worker_config.num_instances<\/code> are the only\nfields that can be updated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1278,7 +1278,7 @@
                   "description": "Deletes a cluster in a project.",
                   "parameters": {
                     "projectId": {
-                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster belongs to.",
+                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster\nbelongs to.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1316,7 +1316,7 @@
                   "description": "Gets the resource representation for a cluster in a project.",
                   "parameters": {
                     "projectId": {
-                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster belongs to.",
+                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster\nbelongs to.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1354,7 +1354,7 @@
                   "description": "Lists all regions\/{region}\/clusters in a project.",
                   "parameters": {
                     "projectId": {
-                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster belongs to.",
+                      "description": "[Required] The ID of the Google Cloud Platform project that the cluster\nbelongs to.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1366,13 +1366,13 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The standard List page size.",
+                      "description": "[Optional] The standard List page size.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The standard List page token.",
+                      "description": "[Optional] The standard List page token.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1541,7 +1541,7 @@
                       "type": "string"
                     },
                     "jobStateMatcher": {
-                      "description": "[Optional] Specifies enumerated categories of jobs to list.",
+                      "description": "[Optional] Specifies enumerated categories of jobs to list\n(default = match ALL jobs).",
                       "location": "query",
                       "type": "string",
                       "enum": [

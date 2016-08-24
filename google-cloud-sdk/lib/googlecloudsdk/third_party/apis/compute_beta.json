@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160718",
+ "revision": "20160816",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -271,6 +271,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -285,6 +286,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -463,7 +465,7 @@
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
-     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.8 or 80%."
+     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.6 or 60%."
     },
     "creationTimestamp": {
      "type": "string",
@@ -501,13 +503,36 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
     },
+    "status": {
+     "type": "string",
+     "description": "[Output Only] The status of the autoscaler configuration.",
+     "enum": [
+      "ACTIVE",
+      "DELETING",
+      "ERROR",
+      "PENDING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "statusDetails": {
+     "type": "array",
+     "description": "[Output Only] Human-readable details about the current state of the autoscaler. Examples: ?Error when fetching replicas: Replica Pool xxx doesn?t exist.? ?Autoscaling capped at min_num_replicas: 2.?",
+     "items": {
+      "$ref": "AutoscalerStatusDetails"
+     }
+    },
     "target": {
      "type": "string",
      "description": "URL of the managed instance group that this autoscaler will scale."
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] URL of the zone where the instance group resides."
+     "description": "[Output Only] URL of the zone where the instance group resides (for autoscalers living in zonal scope)."
     }
    }
   },
@@ -573,6 +598,48 @@
     }
    }
   },
+  "AutoscalerStatusDetails": {
+   "id": "AutoscalerStatusDetails",
+   "type": "object",
+   "properties": {
+    "message": {
+     "type": "string"
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "ALL_INSTANCES_UNHEALTHY",
+      "BACKEND_SERVICE_DOES_NOT_EXIST",
+      "CAPPED_AT_MAX_NUM_REPLICAS",
+      "CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE",
+      "CUSTOM_METRIC_INVALID",
+      "MIN_EQUALS_MAX",
+      "MISSING_CUSTOM_METRIC_DATA_POINTS",
+      "MISSING_LOAD_BALANCING_DATA_POINTS",
+      "MORE_THAN_ONE_BACKEND_SERVICE",
+      "NOT_ENOUGH_QUOTA_AVAILABLE",
+      "SCALING_TARGET_DOES_NOT_EXIST",
+      "UNKNOWN",
+      "UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "AutoscalersScopedList": {
    "id": "AutoscalersScopedList",
    "type": "object",
@@ -595,6 +662,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -609,6 +677,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -695,7 +764,7 @@
    "properties": {
     "utilizationTarget": {
      "type": "number",
-     "description": "The target CPU utilization that the autoscaler should maintain. Must be a float value in the range (0, 1]. If not specified, the default is 0.8.\n\nIf the CPU level is below the target utilization, the autoscaler scales down the number of instances until it reaches the minimum number of instances you specified or until the average CPU of your instances reaches the target utilization.\n\nIf the average CPU is above the target utilization, the autoscaler scales up until it reaches the maximum number of instances you specified or until the average utilization reaches the target utilization.",
+     "description": "The target CPU utilization that the autoscaler should maintain. Must be a float value in the range (0, 1]. If not specified, the default is 0.6.\n\nIf the CPU level is below the target utilization, the autoscaler scales down the number of instances until it reaches the minimum number of instances you specified or until the average CPU of your instances reaches the target utilization.\n\nIf the average CPU is above the target utilization, the autoscaler scales up until it reaches the maximum number of instances you specified or until the average utilization reaches the target utilization.",
      "format": "double"
     }
    }
@@ -749,7 +818,7 @@
    "properties": {
     "balancingMode": {
      "type": "string",
-     "description": "Specifies the balancing mode for this backend. For global HTTP(S) load balancing, the default is UTILIZATION. Valid values are UTILIZATION and RATE.\n\nThis cannot be used for internal load balancing.",
+     "description": "Specifies the balancing mode for this backend. For global HTTP(S) or TCP/SSL load balancing, the default is UTILIZATION. Valid values are UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).\n\nThis cannot be used for internal load balancing.",
      "enum": [
       "CONNECTION",
       "RATE",
@@ -763,7 +832,7 @@
     },
     "capacityScaler": {
      "type": "number",
-     "description": "A multiplier applied to the group's maximum servicing capacity (either UTILIZATION or RATE). Default value is 1, which means the group will serve up to 100% of its configured CPU or RPS (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].\n\nThis cannot be used for internal load balancing.",
+     "description": "A multiplier applied to the group's maximum servicing capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1, which means the group will serve up to 100% of its configured capacity (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available Capacity. Valid range is [0.0,1.0].\n\nThis cannot be used for internal load balancing.",
      "format": "float"
     },
     "description": {
@@ -1412,6 +1481,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1426,6 +1496,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1501,6 +1572,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1515,6 +1587,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1825,6 +1898,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1839,6 +1913,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1896,6 +1971,25 @@
      "additionalProperties": {
       "type": "string"
      }
+    }
+   }
+  },
+  "GuestOsFeature": {
+   "id": "GuestOsFeature",
+   "type": "object",
+   "description": "Features supported by the guest os.",
+   "properties": {
+    "type": {
+     "type": "string",
+     "description": "The type of supported feature..",
+     "enum": [
+      "FEATURE_TYPE_UNSPECIFIED",
+      "VIRTIO_SCSI_MULTIQUEUE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -2395,7 +2489,7 @@
     },
     "creationTimestamp": {
      "type": "string",
-     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+     "description": "Creation timestamp in RFC3339 text format."
     },
     "deprecated": {
      "$ref": "DeprecationStatus",
@@ -2413,6 +2507,13 @@
     "family": {
      "type": "string",
      "description": "The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035."
+    },
+    "guestOsFeatures": {
+     "type": "array",
+     "description": "Features of the guest os, valid for bootable images only.",
+     "items": {
+      "$ref": "GuestOsFeature"
+     }
     },
     "id": {
      "type": "string",
@@ -2652,7 +2753,7 @@
     },
     "status": {
      "type": "string",
-     "description": "[Output Only] The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and TERMINATED.",
+     "description": "[Output Only] The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, and TERMINATED.",
      "enum": [
       "PROVISIONING",
       "RUNNING",
@@ -2738,7 +2839,7 @@
     },
     "id": {
      "type": "string",
-     "description": "[Output Only] A unique identifier for this resource type. The server generates this identifier.",
+     "description": "[Output Only] A unique identifier for this instance group. The server generates this identifier.",
      "format": "uint64"
     },
     "kind": {
@@ -2769,7 +2870,7 @@
     },
     "region": {
      "type": "string",
-     "description": "The URL of the region where the instance group is located."
+     "description": "The URL of the region where the instance group is located (for regional resources)."
     },
     "selfLink": {
      "type": "string",
@@ -2786,7 +2887,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] The URL of the zone where the instance group is located."
+     "description": "[Output Only] The URL of the zone where the instance group is located (for zonal resources)."
     }
    }
   },
@@ -2940,7 +3041,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] URL of the region where the managed instance group resides."
+     "description": "[Output Only] The URL of the region where the managed instance group resides (for regional resources)."
     },
     "selfLink": {
      "type": "string",
@@ -2965,7 +3066,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "The name of the zone where the managed instance group is located."
+     "description": "[Output Only] The URL of the zone where the managed instance group is located (for zonal resources)."
     }
    }
   },
@@ -3181,6 +3282,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3195,6 +3297,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3373,6 +3476,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3387,6 +3491,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3703,6 +3808,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3717,6 +3823,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3980,6 +4087,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3994,6 +4102,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4465,6 +4574,7 @@
          "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+         "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4479,6 +4589,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -4610,6 +4721,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4624,6 +4736,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4798,6 +4911,7 @@
       "IN_USE_ADDRESSES",
       "LOCAL_SSD_TOTAL_GB",
       "NETWORKS",
+      "PREEMPTIBLE_CPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
       "ROUTERS",
@@ -4811,11 +4925,14 @@
       "TARGET_HTTP_PROXIES",
       "TARGET_INSTANCES",
       "TARGET_POOLS",
+      "TARGET_SSL_PROXIES",
       "TARGET_VPN_GATEWAYS",
       "URL_MAPS",
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -5212,7 +5329,7 @@
    "properties": {
     "group": {
      "type": "string",
-     "description": "A URI referencing one of the resource views listed in the backend service."
+     "description": "A URI referencing one of the instance groups listed in the backend service."
     }
    }
   },
@@ -5326,6 +5443,7 @@
          "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+         "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5340,6 +5458,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -5739,6 +5858,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5753,6 +5873,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6230,6 +6351,16 @@
     }
    }
   },
+  "SubnetworksExpandIpCidrRangeRequest": {
+   "id": "SubnetworksExpandIpCidrRangeRequest",
+   "type": "object",
+   "properties": {
+    "ipCidrRange": {
+     "type": "string",
+     "description": "The IP (in CIDR format or netmask) of internal addresses that are legal on this Subnetwork. This range should be disjoint from other subnetworks within this network. This range can only be larger than (i.e. a superset of) the range previously defined before the update."
+    }
+   }
+  },
   "SubnetworksScopedList": {
    "id": "SubnetworksScopedList",
    "type": "object",
@@ -6252,6 +6383,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6266,6 +6398,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6656,6 +6789,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6670,6 +6804,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6942,6 +7077,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6956,6 +7092,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7302,6 +7439,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7316,6 +7454,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7796,6 +7935,7 @@
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7810,6 +7950,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9148,7 +9289,6 @@
        "type": "string",
        "description": "Name of the persistent disk to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
       },
       "project": {
@@ -14291,6 +14431,39 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "switchToCustomMode": {
+     "id": "compute.networks.switchToCustomMode",
+     "path": "{project}/global/networks/{network}/switchToCustomMode",
+     "httpMethod": "POST",
+     "description": "Switches the network mode from auto subnet mode to custom subnet mode.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network to be updated.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "testIamPermissions": {
      "id": "compute.networks.testIamPermissions",
      "path": "{project}/global/networks/{resource}/testIamPermissions",
@@ -16934,6 +17107,50 @@
       "region",
       "subnetwork"
      ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "expandIpCidrRange": {
+     "id": "compute.subnetworks.expandIpCidrRange",
+     "path": "{project}/regions/{region}/subnetworks/{subnetwork}/expandIpCidrRange",
+     "httpMethod": "POST",
+     "description": "Expands the IP CIDR range of the subnetwork to a specified value.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "subnetwork": {
+       "type": "string",
+       "description": "Name of the Subnetwork resource to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "subnetwork"
+     ],
+     "request": {
+      "$ref": "SubnetworksExpandIpCidrRangeRequest"
+     },
      "response": {
       "$ref": "Operation"
      },

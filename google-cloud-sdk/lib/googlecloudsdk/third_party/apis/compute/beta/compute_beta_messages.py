@@ -228,6 +228,7 @@ class AddressesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -244,18 +245,19 @@ class AddressesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -474,12 +476,16 @@ class Autoscaler(_messages.Message):
   autoscaling policy that you define. For more information, read Autoscaling
   Groups of Instances.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the autoscaler
+      configuration.
+
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
       algorithm. You can define one or more of the policies for an autoscaler:
       cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
       If none of these are specified, the default will be to autoscale based
-      on cpuUtilization to 0.8 or 80%.
+      on cpuUtilization to 0.6 or 60%.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -498,9 +504,29 @@ class Autoscaler(_messages.Message):
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
+    status: [Output Only] The status of the autoscaler configuration.
+    statusDetails: [Output Only] Human-readable details about the current
+      state of the autoscaler. Examples: ?Error when fetching replicas:
+      Replica Pool xxx doesn?t exist.? ?Autoscaling capped at
+      min_num_replicas: 2.?
     target: URL of the managed instance group that this autoscaler will scale.
-    zone: [Output Only] URL of the zone where the instance group resides.
+    zone: [Output Only] URL of the zone where the instance group resides (for
+      autoscalers living in zonal scope).
   """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output Only] The status of the autoscaler configuration.
+
+    Values:
+      ACTIVE: <no description>
+      DELETING: <no description>
+      ERROR: <no description>
+      PENDING: <no description>
+    """
+    ACTIVE = 0
+    DELETING = 1
+    ERROR = 2
+    PENDING = 3
 
   autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
   creationTimestamp = _messages.StringField(2)
@@ -510,8 +536,10 @@ class Autoscaler(_messages.Message):
   name = _messages.StringField(6)
   region = _messages.StringField(7)
   selfLink = _messages.StringField(8)
-  target = _messages.StringField(9)
-  zone = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 10, repeated=True)
+  target = _messages.StringField(11)
+  zone = _messages.StringField(12)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -590,6 +618,53 @@ class AutoscalerList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class AutoscalerStatusDetails(_messages.Message):
+  """A AutoscalerStatusDetails object.
+
+  Enums:
+    TypeValueValuesEnum:
+
+  Fields:
+    message: A string attribute.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """TypeValueValuesEnum enum type.
+
+    Values:
+      ALL_INSTANCES_UNHEALTHY: <no description>
+      BACKEND_SERVICE_DOES_NOT_EXIST: <no description>
+      CAPPED_AT_MAX_NUM_REPLICAS: <no description>
+      CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE: <no description>
+      CUSTOM_METRIC_INVALID: <no description>
+      MIN_EQUALS_MAX: <no description>
+      MISSING_CUSTOM_METRIC_DATA_POINTS: <no description>
+      MISSING_LOAD_BALANCING_DATA_POINTS: <no description>
+      MORE_THAN_ONE_BACKEND_SERVICE: <no description>
+      NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
+      SCALING_TARGET_DOES_NOT_EXIST: <no description>
+      UNKNOWN: <no description>
+      UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION: <no description>
+    """
+    ALL_INSTANCES_UNHEALTHY = 0
+    BACKEND_SERVICE_DOES_NOT_EXIST = 1
+    CAPPED_AT_MAX_NUM_REPLICAS = 2
+    CUSTOM_METRIC_DATA_POINTS_TOO_SPARSE = 3
+    CUSTOM_METRIC_INVALID = 4
+    MIN_EQUALS_MAX = 5
+    MISSING_CUSTOM_METRIC_DATA_POINTS = 6
+    MISSING_LOAD_BALANCING_DATA_POINTS = 7
+    MORE_THAN_ONE_BACKEND_SERVICE = 8
+    NOT_ENOUGH_QUOTA_AVAILABLE = 9
+    SCALING_TARGET_DOES_NOT_EXIST = 10
+    UNKNOWN = 11
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 12
+
+  message = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class AutoscalersScopedList(_messages.Message):
   """A AutoscalersScopedList object.
 
@@ -633,6 +708,7 @@ class AutoscalersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -649,18 +725,19 @@ class AutoscalersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -731,7 +808,7 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
   Fields:
     utilizationTarget: The target CPU utilization that the autoscaler should
       maintain. Must be a float value in the range (0, 1]. If not specified,
-      the default is 0.8.  If the CPU level is below the target utilization,
+      the default is 0.6.  If the CPU level is below the target utilization,
       the autoscaler scales down the number of instances until it reaches the
       minimum number of instances you specified or until the average CPU of
       your instances reaches the target utilization.  If the average CPU is
@@ -806,20 +883,22 @@ class Backend(_messages.Message):
 
   Enums:
     BalancingModeValueValuesEnum: Specifies the balancing mode for this
-      backend. For global HTTP(S) load balancing, the default is UTILIZATION.
-      Valid values are UTILIZATION and RATE.  This cannot be used for internal
-      load balancing.
+      backend. For global HTTP(S) or TCP/SSL load balancing, the default is
+      UTILIZATION. Valid values are UTILIZATION, RATE (for HTTP(S)) and
+      CONNECTION (for TCP/SSL).  This cannot be used for internal load
+      balancing.
 
   Fields:
     balancingMode: Specifies the balancing mode for this backend. For global
-      HTTP(S) load balancing, the default is UTILIZATION. Valid values are
-      UTILIZATION and RATE.  This cannot be used for internal load balancing.
+      HTTP(S) or TCP/SSL load balancing, the default is UTILIZATION. Valid
+      values are UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).
+      This cannot be used for internal load balancing.
     capacityScaler: A multiplier applied to the group's maximum servicing
-      capacity (either UTILIZATION or RATE). Default value is 1, which means
-      the group will serve up to 100% of its configured CPU or RPS (depending
-      on balancingMode). A setting of 0 means the group is completely drained,
-      offering 0% of its available CPU or RPS. Valid range is [0.0,1.0].  This
-      cannot be used for internal load balancing.
+      capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
+      which means the group will serve up to 100% of its configured capacity
+      (depending on balancingMode). A setting of 0 means the group is
+      completely drained, offering 0% of its available Capacity. Valid range
+      is [0.0,1.0].  This cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     group: The fully-qualified URL of a zonal Instance Group resource. This
@@ -856,9 +935,10 @@ class Backend(_messages.Message):
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
-    """Specifies the balancing mode for this backend. For global HTTP(S) load
-    balancing, the default is UTILIZATION. Valid values are UTILIZATION and
-    RATE.  This cannot be used for internal load balancing.
+    """Specifies the balancing mode for this backend. For global HTTP(S) or
+    TCP/SSL load balancing, the default is UTILIZATION. Valid values are
+    UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).  This cannot
+    be used for internal load balancing.
 
     Values:
       CONNECTION: <no description>
@@ -4369,6 +4449,18 @@ class ComputeNetworksListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeNetworksSwitchToCustomModeRequest(_messages.Message):
+  """A ComputeNetworksSwitchToCustomModeRequest object.
+
+  Fields:
+    network: Name of the network to be updated.
+    project: Project ID for this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
   """A ComputeNetworksTestIamPermissionsRequest object.
 
@@ -5728,6 +5820,23 @@ class ComputeSubnetworksDeleteRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   subnetwork = _messages.StringField(3, required=True)
+
+
+class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A ComputeSubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource to update.
+    subnetworksExpandIpCidrRangeRequest: A SubnetworksExpandIpCidrRangeRequest
+      resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 4)
 
 
 class ComputeSubnetworksGetRequest(_messages.Message):
@@ -7806,6 +7915,7 @@ class DiskTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -7822,18 +7932,19 @@ class DiskTypesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -7914,6 +8025,7 @@ class DisksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -7930,18 +8042,19 @@ class DisksScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8285,6 +8398,7 @@ class ForwardingRulesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -8301,18 +8415,19 @@ class ForwardingRulesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -8402,6 +8517,29 @@ class GlobalSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class GuestOsFeature(_messages.Message):
+  """Features supported by the guest os.
+
+  Enums:
+    TypeValueValuesEnum: The type of supported feature..
+
+  Fields:
+    type: The type of supported feature..
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """The type of supported feature..
+
+    Values:
+      FEATURE_TYPE_UNSPECIFIED: <no description>
+      VIRTIO_SCSI_MULTIQUEUE: <no description>
+    """
+    FEATURE_TYPE_UNSPECIFIED = 0
+    VIRTIO_SCSI_MULTIQUEUE = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class HTTP2HealthCheck(_messages.Message):
@@ -8868,8 +9006,7 @@ class Image(_messages.Message):
   Fields:
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
+    creationTimestamp: Creation timestamp in RFC3339 text format.
     deprecated: The deprecation status associated with this image.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -8879,6 +9016,7 @@ class Image(_messages.Message):
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
+    guestOsFeatures: Features of the guest os, valid for bootable images only.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -9021,20 +9159,21 @@ class Image(_messages.Message):
   description = _messages.StringField(4)
   diskSizeGb = _messages.IntegerField(5)
   family = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
-  kind = _messages.StringField(9, default=u'compute#image')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenses = _messages.StringField(12, repeated=True)
-  name = _messages.StringField(13)
-  rawDisk = _messages.MessageField('RawDiskValue', 14)
-  selfLink = _messages.StringField(15)
-  sourceDisk = _messages.StringField(16)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceDiskId = _messages.StringField(18)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 19, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  kind = _messages.StringField(10, default=u'compute#image')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenses = _messages.StringField(13, repeated=True)
+  name = _messages.StringField(14)
+  rawDisk = _messages.MessageField('RawDiskValue', 15)
+  selfLink = _messages.StringField(16)
+  sourceDisk = _messages.StringField(17)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceDiskId = _messages.StringField(19)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 20, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
 
 
 class ImageList(_messages.Message):
@@ -9066,7 +9205,7 @@ class Instance(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
-      SUSPENDED, SUSPENDING, and TERMINATED.
+      SUSPENDING, SUSPENDED, and TERMINATED.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -9131,7 +9270,7 @@ class Instance(_messages.Message):
       authenticate applications on the instance. See Service Accounts for more
       information.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING,
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
       and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
@@ -9144,7 +9283,7 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDED, SUSPENDING, and
+    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, and
     TERMINATED.
 
     Values:
@@ -9278,7 +9417,7 @@ class InstanceGroup(_messages.Message):
     fingerprint: [Output Only] The fingerprint of the named ports. The system
       uses this fingerprint to detect conflicts when multiple users change the
       named ports concurrently.
-    id: [Output Only] A unique identifier for this resource type. The server
+    id: [Output Only] A unique identifier for this instance group. The server
       generates this identifier.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroup for instance groups.
@@ -9291,14 +9430,15 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
-    region: The URL of the region where the instance group is located.
+    region: The URL of the region where the instance group is located (for
+      regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
     subnetwork: The URL of the subnetwork to which all instances in the
       instance group belong.
     zone: [Output Only] The URL of the zone where the instance group is
-      located.
+      located (for zonal resources).
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -9433,8 +9573,8 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
-    region: [Output Only] URL of the region where the managed instance group
-      resides.
+    region: [Output Only] The URL of the region where the managed instance
+      group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -9443,7 +9583,8 @@ class InstanceGroupManager(_messages.Message):
     targetSize: The target number of running instances for this managed
       instance group. Deleting or abandoning instances reduces this number.
       Resizing the group changes this number.
-    zone: The name of the zone where the managed instance group is located.
+    zone: [Output Only] The URL of the zone where the managed instance group
+      is located (for zonal resources).
   """
 
   class FailoverActionValueValuesEnum(_messages.Enum):
@@ -9735,6 +9876,7 @@ class InstanceGroupManagersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -9751,18 +9893,19 @@ class InstanceGroupManagersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -9953,6 +10096,7 @@ class InstanceGroupsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -9969,18 +10113,19 @@ class InstanceGroupsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10301,6 +10446,7 @@ class InstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -10317,18 +10463,19 @@ class InstancesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10626,6 +10773,7 @@ class MachineTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -10642,18 +10790,19 @@ class MachineTypesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11146,6 +11295,7 @@ class Operation(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -11162,18 +11312,19 @@ class Operation(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11341,6 +11492,7 @@ class OperationsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -11357,18 +11509,19 @@ class OperationsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11509,6 +11662,7 @@ class Quota(_messages.Message):
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
+      PREEMPTIBLE_CPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -11522,6 +11676,7 @@ class Quota(_messages.Message):
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
+      TARGET_SSL_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
@@ -11541,22 +11696,24 @@ class Quota(_messages.Message):
     IN_USE_ADDRESSES = 12
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
-    REGIONAL_AUTOSCALERS = 15
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 16
-    ROUTERS = 17
-    ROUTES = 18
-    SNAPSHOTS = 19
-    SSD_TOTAL_GB = 20
-    SSL_CERTIFICATES = 21
-    STATIC_ADDRESSES = 22
-    SUBNETWORKS = 23
-    TARGET_HTTPS_PROXIES = 24
-    TARGET_HTTP_PROXIES = 25
-    TARGET_INSTANCES = 26
-    TARGET_POOLS = 27
-    TARGET_VPN_GATEWAYS = 28
-    URL_MAPS = 29
-    VPN_TUNNELS = 30
+    PREEMPTIBLE_CPUS = 15
+    REGIONAL_AUTOSCALERS = 16
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 17
+    ROUTERS = 18
+    ROUTES = 19
+    SNAPSHOTS = 20
+    SSD_TOTAL_GB = 21
+    SSL_CERTIFICATES = 22
+    STATIC_ADDRESSES = 23
+    SUBNETWORKS = 24
+    TARGET_HTTPS_PROXIES = 25
+    TARGET_HTTP_PROXIES = 26
+    TARGET_INSTANCES = 27
+    TARGET_POOLS = 28
+    TARGET_SSL_PROXIES = 29
+    TARGET_VPN_GATEWAYS = 30
+    URL_MAPS = 31
+    VPN_TUNNELS = 32
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -11853,7 +12010,7 @@ class ResourceGroupReference(_messages.Message):
   """A ResourceGroupReference object.
 
   Fields:
-    group: A URI referencing one of the resource views listed in the backend
+    group: A URI referencing one of the instance groups listed in the backend
       service.
   """
 
@@ -11951,6 +12108,7 @@ class Route(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -11967,18 +12125,19 @@ class Route(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -12338,6 +12497,7 @@ class RoutersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -12354,18 +12514,19 @@ class RoutersScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -12909,6 +13070,19 @@ class SubnetworkList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
+  """A SubnetworksExpandIpCidrRangeRequest object.
+
+  Fields:
+    ipCidrRange: The IP (in CIDR format or netmask) of internal addresses that
+      are legal on this Subnetwork. This range should be disjoint from other
+      subnetworks within this network. This range can only be larger than
+      (i.e. a superset of) the range previously defined before the update.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+
+
 class SubnetworksScopedList(_messages.Message):
   """A SubnetworksScopedList object.
 
@@ -12952,6 +13126,7 @@ class SubnetworksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -12968,18 +13143,19 @@ class SubnetworksScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13375,6 +13551,7 @@ class TargetInstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -13391,18 +13568,19 @@ class TargetInstancesScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13716,6 +13894,7 @@ class TargetPoolsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -13732,18 +13911,19 @@ class TargetPoolsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14091,6 +14271,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -14107,18 +14288,19 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14554,6 +14736,7 @@ class VpnTunnelsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
@@ -14570,18 +14753,19 @@ class VpnTunnelsScopedList(_messages.Message):
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      INJECTED_KERNELS_DEPRECATED = 3
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 4
-      NEXT_HOP_CANNOT_IP_FORWARD = 5
-      NEXT_HOP_INSTANCE_NOT_FOUND = 6
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 7
-      NEXT_HOP_NOT_RUNNING = 8
-      NOT_CRITICAL_ERROR = 9
-      NO_RESULTS_ON_PAGE = 10
-      REQUIRED_TOS_AGREEMENT = 11
-      RESOURCE_NOT_DELETED = 12
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 13
-      UNREACHABLE = 14
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_NOT_DELETED = 13
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 14
+      UNREACHABLE = 15
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.

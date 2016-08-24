@@ -228,7 +228,7 @@
           }
         },
         "insertId": {
-          "description": "A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same log with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
+          "description": "A unique ID for the log entry. If you provide this field, the\nlogging service considers other log entries in the same project with\nthe same ID as duplicates which can be removed.  If omitted,\nStackdriver Logging will generate a unique ID for this log entry.",
           "type": "string"
         },
         "log": {
@@ -321,7 +321,7 @@
     },
     "HttpRequest": {
       "id": "HttpRequest",
-      "description": "A common proto for logging HTTP requests.",
+      "description": "A common proto for logging HTTP requests. Only contains semantics\ndefined by the HTTP specification. Product-specific logging\ninformation MUST be defined in a separate message.",
       "type": "object",
       "properties": {
         "requestMethod": {

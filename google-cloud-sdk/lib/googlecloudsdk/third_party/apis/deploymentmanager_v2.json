@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20160718",
+ "revision": "20160816",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -519,7 +519,7 @@
     },
     "type": {
      "type": "string",
-     "description": "[Output Only] The type of the resource, for example compute.v1.instance, or replicaPools.v1beta2.instanceGroupManager."
+     "description": "[Output Only] The type of the resource, for example compute.v1.instance, or cloudfunctions.v1beta1.function."
     },
     "update": {
      "$ref": "ResourceUpdate",

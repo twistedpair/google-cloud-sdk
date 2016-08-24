@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Debugger",
   "version": "v2",
   "revision": "0",
-  "title": "Google Cloud Debugger API",
+  "title": "Stackdriver Debugger API",
   "description": "Examines the call stack and variables of a running application without stopping or slowing it down.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/tools/cloud-debugger",
+  "documentationLink": "http://cloud.google.com/debugger",
   "protocol": "rest",
   "rootUrl": "https://clouddebugger.googleapis.com/",
   "servicePath": "",

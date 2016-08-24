@@ -36,6 +36,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.operations = self.OperationsService(self)
     self.projects_builds = self.ProjectsBuildsService(self)
+    self.projects_triggers = self.ProjectsTriggersService(self)
     self.projects = self.ProjectsService(self)
 
   class OperationsService(base_api.BaseApiService):
@@ -229,6 +230,156 @@ successfully or unsuccessfully.
         request_field='',
         request_type_name=u'CloudbuildProjectsBuildsListRequest',
         response_type_name=u'ListBuildsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsTriggersService(base_api.BaseApiService):
+    """Service class for the projects_triggers resource."""
+
+    _NAME = u'projects_triggers'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsTriggersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new BuildTrigger.
+
+This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsTriggersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbuild.projects.triggers.create',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers',
+        request_field=u'buildTrigger',
+        request_type_name=u'CloudbuildProjectsTriggersCreateRequest',
+        response_type_name=u'BuildTrigger',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes an BuildTrigger by its project ID and trigger ID.
+
+This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsTriggersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'cloudbuild.projects.triggers.delete',
+        ordered_params=[u'projectId', u'triggerId'],
+        path_params=[u'projectId', u'triggerId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
+        request_field='',
+        request_type_name=u'CloudbuildProjectsTriggersDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets information about a BuildTrigger.
+
+This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsTriggersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudbuild.projects.triggers.get',
+        ordered_params=[u'projectId', u'triggerId'],
+        path_params=[u'projectId', u'triggerId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
+        request_field='',
+        request_type_name=u'CloudbuildProjectsTriggersGetRequest',
+        response_type_name=u'BuildTrigger',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists existing BuildTrigger.
+
+This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsTriggersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBuildTriggersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudbuild.projects.triggers.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers',
+        request_field='',
+        request_type_name=u'CloudbuildProjectsTriggersListRequest',
+        response_type_name=u'ListBuildTriggersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates an BuildTrigger by its project ID and trigger ID.
+
+This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsTriggersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'cloudbuild.projects.triggers.patch',
+        ordered_params=[u'projectId', u'triggerId'],
+        path_params=[u'projectId', u'triggerId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}',
+        request_field=u'buildTrigger',
+        request_type_name=u'CloudbuildProjectsTriggersPatchRequest',
+        response_type_name=u'BuildTrigger',
         supports_download=False,
     )
 

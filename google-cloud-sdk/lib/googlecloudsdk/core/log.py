@@ -364,14 +364,11 @@ class _LogManager(object):
       return
     self.logs_dirs.append(logs_dir)
 
-    # Try to delete old log files in the given directory. Continue normally if
-    # we try to delete log files that do not exist. This can happen when two
-    # gcloud instances are cleaning up logs in parallel.
-    try:
-      self._CleanLogsDir(logs_dir)
-    except OSError as exp:
-      if exp.errno != errno.ENOENT:
-        raise
+    # If logs cleanup has been enabled, try to delete old log files
+    # in the given directory. Continue normally if we try to delete log files
+    # that do not exist. This can happen when two gcloud instances are cleaning
+    # up logs in parallel.
+    self._CleanUpLogs(logs_dir)
 
     # A handler to write DEBUG and above to log files in the given directory
     try:
@@ -387,6 +384,15 @@ class _LogManager(object):
     file_handler.setFormatter(self.file_formatter)
     self.logger.addHandler(file_handler)
     self.file_only_logger.addHandler(file_handler)
+
+  def _CleanUpLogs(self, logs_dir):
+    """Clean up old log files if log cleanup has been enabled."""
+    if self._GetMaxLogDays():
+      try:
+        self._CleanLogsDir(logs_dir)
+      except OSError as exp:
+        if exp.errno != errno.ENOENT:
+          raise
 
   def _CleanLogsDir(self, logs_dir):
     """Cleans up old log files form the given logs directory.

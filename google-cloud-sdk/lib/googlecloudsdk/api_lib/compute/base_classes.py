@@ -348,7 +348,6 @@ class RegionalLister(BaseLister):
         metavar='REGION',
         help='If provided, only resources from the given regions are queried.',
         type=arg_parsers.ArgList(min_length=1),
-        action=arg_parsers.FloatingListValuesCatcher(),
         default=[])
 
   def GetResources(self, args, errors):
@@ -404,7 +403,6 @@ class ZonalLister(BaseLister):
         metavar='ZONE',
         help='If provided, only resources from the given zones are queried.',
         type=arg_parsers.ArgList(min_length=1),
-        action=arg_parsers.FloatingListValuesCatcher(),
         completion_resource='compute.zones',
         default=[])
 
@@ -472,7 +470,6 @@ class MultiScopeLister(BaseLister):
           help=('If provided, only zonal resources are shown. '
                 'If arguments are provided, only resources from the given '
                 'zones are shown.'),
-          action=arg_parsers.FloatingListValuesCatcher(switch_value=[]),
           type=arg_parsers.ArgList())
     if ScopeType.regional_scope in scopes:
       scope.add_argument(
@@ -481,7 +478,6 @@ class MultiScopeLister(BaseLister):
           help=('If provided, only regional resources are shown. '
                 'If arguments are provided, only resources from the given '
                 'regions are shown.'),
-          action=arg_parsers.FloatingListValuesCatcher(switch_value=[]),
           type=arg_parsers.ArgList())
     if ScopeType.global_scope in scopes:
       scope.add_argument(
@@ -1397,7 +1393,6 @@ class BaseMetadataRemover(ReadWriteCommand):
         '--keys',
         type=arg_parsers.ArgList(min_length=1),
         metavar='KEY',
-        action=arg_parsers.FloatingListValuesCatcher(),
         help='The keys of the entries to remove.')
 
   def Modify(self, args, existing):

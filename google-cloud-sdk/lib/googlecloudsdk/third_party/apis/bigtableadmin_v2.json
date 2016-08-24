@@ -482,7 +482,7 @@
       "type": "object",
       "properties": {
         "tables": {
-          "description": "The tables present in the requested cluster.",
+          "description": "The tables present in the requested instance.",
           "type": "array",
           "items": {
             "$ref": "Table"

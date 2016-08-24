@@ -197,7 +197,7 @@ class ProxyInfoFromEnvironmentVars(object):
       return
 
     if proxy_info and not from_gcloud:
-      self.type = http_proxy_types.GetReverseProxyTypeMap().get(
+      self.type = http_proxy_types.REVERSE_PROXY_TYPE_MAP.get(
           proxy_info.proxy_type, 'UNKNOWN PROXY TYPE')
       self.address = proxy_info.proxy_host
       self.port = proxy_info.proxy_port

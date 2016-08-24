@@ -302,6 +302,25 @@ def _ParseAnswer(answer, options, allow_freeform):
   return None
 
 
+def _SuggestFreeformAnswer(suggester, answer, options):
+  """Checks if there is a suitable close choice to suggest.
+
+  Args:
+    suggester: object, An object which has methods AddChoices and
+      GetSuggestion which is used to detect if an answer which is not present
+      in the options list is a likely typo, and to provide a suggestion
+      accordingly.
+    answer: str, The freeform answer input by the user as a choice.
+    options: [object], A list of objects to select.  Their str()
+          method will be used to compare them to answer.
+
+  Returns:
+    str, the closest option in options to answer, or None otherwise.
+  """
+  suggester.AddChoices(map(str, options))
+  return suggester.GetSuggestion(answer)
+
+
 def _PrintOptions(options, limit=None):
   """Prints the options provided to stderr.
 
@@ -324,7 +343,8 @@ PROMPT_OPTIONS_OVERFLOW = 50
 
 
 def PromptChoice(options, default=None, message=None,
-                 prompt_string=None, allow_freeform=False):
+                 prompt_string=None, allow_freeform=False,
+                 freeform_suggester=None):
   """Prompt the user to select a choice from a list of items.
 
   Args:
@@ -338,6 +358,10 @@ def PromptChoice(options, default=None, message=None,
     allow_freeform: bool, A flag which, if defined, will allow the user to input
       the choice as a str, not just as a number. If not set, only numbers will
       be accepted.
+    freeform_suggester: object, An object which has methods AddChoices and
+      GetSuggestion which is used to detect if an answer which is not present
+      in the options list is a likely typo, and to provide a suggestion
+      accordingly.
 
   Raises:
     ValueError: If no options are given or if the default is not in the range of
@@ -402,6 +426,16 @@ def PromptChoice(options, default=None, message=None,
     if num_choice is not None and num_choice >= 1 and num_choice <= maximum:
       sys.stderr.write('\n')
       return num_choice - 1
+
+    # Arriving here means that there is no choice matching the answer that
+    # was given. We now will provide a suggestion, if one exists.
+    if allow_freeform and freeform_suggester:
+      suggestion = _SuggestFreeformAnswer(freeform_suggester, answer, options)
+      if suggestion is not None:
+        sys.stderr.write('[{answer}] not in list. Did you mean [{suggestion}]?'
+                         .format(answer=answer, suggestion=suggestion))
+        sys.stderr.write('\n')
+
     if allow_freeform:
       sys.stderr.write(('Please enter a value between 1 and {maximum}, '
                         'or a value present in the list:  ')

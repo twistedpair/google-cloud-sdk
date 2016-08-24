@@ -315,10 +315,9 @@ run, as VMs will be created and storage will be used.
     )
 
     def SetOperationStatus(self, request, global_params=None):
-      """Sets status of a given operation. All timestamps are sent on each.
-call, and the whole series of events is replaced, in case
-intermediate calls are lost. Should only be called by VMs created
-by the Pipelines Service and not by end users.
+      """Sets status of a given operation. Any new timestamps (as determined by.
+description) are appended to TimestampEvents. Should only be called by VMs
+created by the Pipelines Service and not by end users.
 
       Args:
         request: (SetOperationStatusRequest) input message

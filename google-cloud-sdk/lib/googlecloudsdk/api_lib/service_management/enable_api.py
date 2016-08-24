@@ -26,22 +26,13 @@ def EnableServiceApiCall(project_id, service_name):
   client = services_util.GetClientInstance()
   messages = services_util.GetMessagesModule()
 
-  # Shorten the patch request name for better readability
-  patch_request = messages.ServicemanagementServicesProjectSettingsPatchRequest
-
-  usage_settings = messages.UsageSettings(
-      consumerEnableStatus=(messages.UsageSettings
-                            .ConsumerEnableStatusValueValuesEnum.ENABLED))
-
-  project_settings = messages.ProjectSettings(usageSettings=usage_settings)
-
-  request = patch_request(
+  request = messages.ServicemanagementServicesEnableRequest(
       serviceName=service_name,
-      consumerProjectId=project_id,
-      projectSettings=project_settings,
-      updateMask='usage_settings.consumer_enable_status')
-
-  return client.services_projectSettings.Patch(request)
+      enableServiceRequest=messages.EnableServiceRequest(
+          consumerId='project:' + project_id
+      )
+  )
+  return client.services.Enable(request)
 
 
 @http_error_handler.HandleHttpErrors

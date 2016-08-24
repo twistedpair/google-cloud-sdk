@@ -205,6 +205,10 @@
             "type": "string"
           }
         },
+        "enableKubernetesAlpha": {
+          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted two weeks after creation.",
+          "type": "boolean"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -796,6 +800,10 @@
         "status": {
           "description": "The response for the provided request. (this won't be filled in for an\nAuthenticateRequest, but it is part of the struct, so we need it here to be\nsafe).",
           "$ref": "TokenReviewStatus"
+        },
+        "metadata": {
+          "description": "\"pkg\/api\/types\".ObjectMeta\nTODO (b\/30563544): Remove these unused fields.\nIf cl\/129007035 is rolled out to the prod envelope before b\/28297888 is\nfixed, we can change this to a google.protobuf.Any. Until then, only the\nfields that are acutally populated by the Token Webhook Authenticator",
+          "$ref": "ObjectMeta"
         }
       }
     },
@@ -847,6 +855,18 @@
         }
       }
     },
+    "ObjectMeta": {
+      "id": "ObjectMeta",
+      "description": "The fields from \"pkg\/api\/types\".ObjectMeta that actually get filled in on\nAuthenticate\/Authorize requests.",
+      "type": "object",
+      "properties": {
+        "creationTimestamp": {
+          "description": "Timestamp representing the server time when this object was created.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "AuthenticateResponse": {
       "id": "AuthenticateResponse",
       "description": "A response with the authenticated identity.\nThis should match exactly with the TokenReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/types.go.",
@@ -890,6 +910,10 @@
         "status": {
           "description": "The response for the provided request (this won't be filled in for an\nAuthorizeRequest, but it is part of the struct, so we need it here to be\nsafe).",
           "$ref": "SubjectAccessReviewStatus"
+        },
+        "metadata": {
+          "description": "Fields from \"pkg\/api\/types\".ObjectMeta\nTODO (b\/30563544): Remove these unused fields.\nIf cl\/129007035 is rolled out to the prod envelope before b\/28297888 is\nfixed, we can change this to a google.protobuf.Any. Until then, only the\nfields that are acutally populated by the Token Webhook Authenticator",
+          "$ref": "ObjectMeta"
         }
       }
     },

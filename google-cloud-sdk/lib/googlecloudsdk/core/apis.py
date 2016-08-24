@@ -102,7 +102,7 @@ def ConstructApiDef(api_name,
   return apis_map.APIDef(client_cls_path, messages_mod_path, is_default)
 
 
-def AddToApisMap(api_name, api_version, is_default=None,
+def AddToApisMap(api_name, api_version, default=None,
                  base_pkg='googlecloudsdk.third_party.apis'):
   """Adds the APIDef specified by the given arguments to the APIs map.
 
@@ -113,14 +113,14 @@ def AddToApisMap(api_name, api_version, is_default=None,
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    is_default: bool, Whether this API version is the default. If set to None
+    default: bool, Whether this API version is the default. If set to None
       will be set to True if this is first version of api, otherwise false.
     base_pkg: str, Base package from which generated API files are accessed.
   """
   api_name, _ = _GetApiNameAndAlias(api_name)
-  api_def = ConstructApiDef(api_name, api_version, is_default, base_pkg)
+  api_def = ConstructApiDef(api_name, api_version, default, base_pkg)
   api_versions = apis_map.MAP.get(api_name, {})
-  if is_default is None:
+  if default is None:
     api_def.default_version = not api_versions
   api_versions[api_version] = api_def
   apis_map.MAP[api_name] = api_versions
@@ -138,7 +138,8 @@ def GetDefaultVersion(api_name):
 def SetDefaultVersion(api_name, api_version):
   """Resets default version for given api."""
   api_def = _GetApiDef(api_name, api_version)
-  default_api_def = _GetApiDef(api_name)
+  default_version = GetDefaultVersion(api_name)
+  default_api_def = _GetApiDef(api_name, default_version)
   default_api_def.default_version = False
   api_def.default_version = True
 
@@ -184,7 +185,7 @@ def ResolveVersion(api_name, default_override=None):
   return version_override or default_override or GetDefaultVersion(api_name)
 
 
-def _GetApiDef(api_name, api_version=None):
+def _GetApiDef(api_name, api_version):
   """Returns the APIDef for the specified API and version.
 
   Args:
@@ -208,9 +209,7 @@ def _GetApiDef(api_name, api_version=None):
   api_version = version_override or api_version
 
   api_versions = apis_map.MAP[api_name]
-  if api_version is None:
-    api_def = next(ver for ver in api_versions.values() if ver.default_version)
-  elif api_version not in api_versions:
+  if api_version is None or api_version not in api_versions:
     raise UnknownVersionError(api_name, api_version)
   else:
     api_def = api_versions[api_version]
@@ -218,7 +217,7 @@ def _GetApiDef(api_name, api_version=None):
   return api_def
 
 
-def GetClientClass(api_name, api_version=None):
+def GetClientClass(api_name, api_version):
   """Returns the client class for the API specified in the args.
 
   Args:
@@ -235,7 +234,7 @@ def GetClientClass(api_name, api_version=None):
   return getattr(module_obj, client_class_name)
 
 
-def GetClientInstance(api_name, api_version=None, no_http=False):
+def GetClientInstance(api_name, api_version, no_http=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -262,7 +261,7 @@ def GetClientInstance(api_name, api_version=None, no_http=False):
       http=http_client)
 
 
-def GetEffectiveApiEndpoint(api_name, api_version=None, client_class=None):
+def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   endpoint_override = endpoint_overrides.get(api_name, '')
@@ -272,17 +271,19 @@ def GetEffectiveApiEndpoint(api_name, api_version=None, client_class=None):
   return client_class.BASE_URL
 
 
-def GetDefaultEndpoint(url):
+def GetDefaultEndpointUrl(url):
   """Looks up default endpoint based on overridden endpoint value."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   for api_name, overridden_url in endpoint_overrides.iteritems():
-    if overridden_url == url:
-      return GetClientClass(api_name).BASE_URL
+    if url.startswith(overridden_url):
+      api_version = GetDefaultVersion(api_name)
+      return (GetClientClass(api_name, api_version).BASE_URL +
+              url[len(overridden_url):])
   return url
 
 
-def GetApiFromDefaultEndpoint(url):
-  """Returns api_name, api_version tuple for given default api url.
+def SplitDefaultEndpointUrl(url):
+  """Returns api_name, api_version, resource_path tuple for a default api url.
 
   Supports four formats:
   http(s)://www.googleapis.com/api/version/resource-path,
@@ -297,10 +298,11 @@ def GetApiFromDefaultEndpoint(url):
     url: str, The resource url.
 
   Returns:
-    (str, str): The API name. and version
+    (str, str, str): The API name, version, resource_path
   """
   tokens = _StripUrl(url).split('/')
   domain = tokens[0]
+  resource_path = ''
   if ('googleapis' not in domain
       or domain.startswith('www.') or domain.startswith('www-')):
     api_name = tokens[1]
@@ -308,16 +310,18 @@ def GetApiFromDefaultEndpoint(url):
       version = tokens[2]
     else:
       version = None
+    resource_path = '/'.join(tokens[3:])
   else:
     api_name = tokens[0].split('.')[0]
     if len(tokens) > 1:
       version = tokens[1]
+      resource_path = '/'.join(tokens[2:])
     else:
       version = GetDefaultVersion(api_name)
-  return api_name, version
+  return api_name, version, resource_path
 
 
-def GetMessagesModule(api_name, api_version=None):
+def GetMessagesModule(api_name, api_version):
   """Returns the messages module for the API specified in the args.
 
   Args:

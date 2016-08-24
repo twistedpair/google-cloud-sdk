@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20160718",
+ "revision": "20160816",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -583,6 +583,7 @@
          "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+         "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -597,6 +598,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",

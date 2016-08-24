@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20160718",
+ "revision": "20160816",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -560,6 +560,10 @@
     "nameProperty": {
      "type": "string",
      "description": "The json path to the field in the resource JSON body into which the resource name should be mapped. Leaving this empty indicates that there should be no mapping performed."
+    },
+    "validationOptions": {
+     "$ref": "ValidationOptions",
+     "description": "Options for how to validate and process properties on a resource."
     }
    }
   },
@@ -595,7 +599,7 @@
     },
     "type": {
      "type": "string",
-     "description": "[Output Only] The type of the resource, for example compute.v1.instance, or replicaPools.v1beta2.instanceGroupManager."
+     "description": "[Output Only] The type of the resource, for example compute.v1.instance, or cloudfunctions.v1beta1.function."
     },
     "update": {
      "$ref": "ResourceUpdate",
@@ -839,6 +843,21 @@
      "items": {
       "$ref": "Type"
      }
+    }
+   }
+  },
+  "ValidationOptions": {
+   "id": "ValidationOptions",
+   "type": "object",
+   "description": "Options for how to validate and process properties on a resource.",
+   "properties": {
+    "schemaValidation": {
+     "type": "string",
+     "description": "Customize how deployment manager will validate the resource against schema errors."
+    },
+    "undeclaredProperties": {
+     "type": "string",
+     "description": "Specify what to do with extra properties when executing a request."
     }
    }
   }

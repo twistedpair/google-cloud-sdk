@@ -22,9 +22,9 @@ from googlecloudsdk.core import properties
 
 
 # TODO(b/28318474): move flags common across commands here.
-def AddImageTypeFlag(parser, target, suppressed=False):
+def AddImageTypeFlag(parser, target):
   """Adds a --image-type flag to the given parser."""
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 The image type to use for the {target}. Defaults to server-specified.
 
 Image Type specifies the base OS that the nodes in the {target} will run on.
@@ -152,7 +152,8 @@ def AddClustersWaitAndAsyncFlags(parser):
       default=None,
       # The default value is wait=True but the logic is done in
       # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
-      help='Poll the operation for completion after issuing a create request.')
+      help='DEPRECATED, use --no-async. Poll the operation for completion '
+           'after issuing a create request.')
   parser.add_argument(
       '--async',
       action='store_true',

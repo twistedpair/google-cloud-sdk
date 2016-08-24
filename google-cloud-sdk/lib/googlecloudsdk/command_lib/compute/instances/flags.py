@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
-import argparse
-
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
@@ -100,9 +98,7 @@ def AddLocalSsdArgs(parser):
           'device-name': str,
           'interface': (lambda x: x.upper()),
       }),
-      action=arg_parsers.FloatingListValuesCatcher(
-          argparse._AppendAction,  # pylint:disable=protected-access
-          switch_value={}),
+      action='append',
       help='(BETA) Specifies instances with attached local SSDs.',
       metavar='PROPERTY=VALUE')
   local_ssd.detailed_help = """
@@ -171,7 +167,7 @@ def AddDiskArgs(parser):
           'device-name': str,
           'auto-delete': str,
       }),
-      action=arg_parsers.FloatingListValuesCatcher(argparse._AppendAction),  # pylint:disable=protected-access
+      action='append',
       help='Attaches persistent disks to the instances.',
       metavar='PROPERTY=VALUE')
   disk.detailed_help = """
@@ -505,7 +501,6 @@ def AddScopeArgs(parser):
   scopes = scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='Specifies service accounts and scopes for the instances.',
       metavar='[ACCOUNT=]SCOPE')
   scopes.detailed_help = AddScopesHelp
@@ -521,7 +516,6 @@ def AddTagsArgs(parser):
   tags = parser.add_argument(
       '--tags',
       type=arg_parsers.ArgList(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='A list of tags to apply to the instances.',
       metavar='TAG')
   tags.detailed_help = """\

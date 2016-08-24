@@ -141,7 +141,10 @@ class AndroidModel(_messages.Message):
     supportedAbis: The list of supported ABIs for this device. This
       corresponds to either android.os.Build.SUPPORTED_ABIS (for API level 21
       and above) or android.os.Build.CPU_ABI/CPU_ABI2. The most preferred ABI
-      is the first element in the list. @OutputOnly
+      is the first element in the list.  Elements are optionally prefixed by
+      "version_id:" (where version_id is the id of an AndroidVersion),
+      denoting an ABI that is supported only on a particular version.
+      @OutputOnly
     supportedVersionIds: The set of Android versions this device supports.
       @OutputOnly
     tags: Tags for this dimension. Examples: "default", "preview",
@@ -189,6 +192,9 @@ class AndroidRoboTest(_messages.Message):
       Default is 50. Optional
     maxSteps: The max number of steps Robo can execute. Default is no limit.
       Optional
+    roboDirectives: A set of directives Robo should apply during the crawl.
+      This allows users to customize the crawl. For example, the username and
+      password for a test account can be provided. Optional
   """
 
   appApk = _messages.MessageField('FileReference', 1)
@@ -196,6 +202,7 @@ class AndroidRoboTest(_messages.Message):
   appPackageId = _messages.StringField(3)
   maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  roboDirectives = _messages.MessageField('RoboDirective', 6, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):
@@ -632,6 +639,23 @@ class ResultStorage(_messages.Message):
   toolResultsHistory = _messages.MessageField('ToolResultsHistory', 3)
 
 
+class RoboDirective(_messages.Message):
+  """Directs Robo to interact with a specific UI element if it is encountered
+  during the crawl. Currently, Robo can set text in text fields.
+
+  Fields:
+    inputText: The text that Robo is directed to set. Required
+    resourceName: The android resource name of the target UI element For
+      example,    in Java: R.string.foo    in xml: @string/foo Only the \u201cfoo\u201d
+      part is needed. Reference doc:
+      https://developer.android.com/guide/topics/resources/accessing-
+      resources.html Required
+  """
+
+  inputText = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -848,6 +872,8 @@ class TestMatrix(_messages.Message):
       NO_LAUNCHER_ACTIVITY: A main launcher activity could not be found.
       FORBIDDEN_PERMISSIONS: The app declares one or more permissions that are
         not allowed.
+      INVALID_ROBO_DIRECTIVES: There is a conflict in the provided
+        robo_directives.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -859,6 +885,7 @@ class TestMatrix(_messages.Message):
     NO_INSTRUMENTATION = 7
     NO_LAUNCHER_ACTIVITY = 8
     FORBIDDEN_PERMISSIONS = 9
+    INVALID_ROBO_DIRECTIVES = 10
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

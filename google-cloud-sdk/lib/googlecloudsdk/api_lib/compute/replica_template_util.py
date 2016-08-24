@@ -27,7 +27,6 @@ def AddTemplateParamArgs(parser):
   parser.add_argument(
       '--param',
       type=arg_parsers.ArgDict(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       help=('A list of key=value parameters to substitute in the template '
             'before the template is submitted to the replica pool. This does '
             'not change the actual template file.'),
@@ -35,7 +34,6 @@ def AddTemplateParamArgs(parser):
   parser.add_argument(
       '--param-from-file',
       type=arg_parsers.ArgDict(min_length=1),
-      action=arg_parsers.FloatingListValuesCatcher(),
       help=('A list of files each containing a key=value parameter to '
             'substitute in the template before the template is submitted '
             'to the replica pool. This does not change the actual template '

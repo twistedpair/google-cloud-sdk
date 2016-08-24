@@ -57,10 +57,11 @@ class ClusterConfig(_messages.Message):
     initializationActions: [Optional] Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's <code>role</code> metadata to run an
-      executable on a master or worker node, as shown below:
-      ROLE=$(/usr/share/google/get_metadata_value attributes/role)     if [[
-      "${ROLE}" == 'Master' ]]; then       ... master specific actions ...
-      else       ... worker specific actions ...     fi
+      executable on a master or worker node, as shown below using `curl` (you
+      can also use `wget`):      ROLE=$(curl -H Metadata-Flavor:Google
+      http://metadata/computeMetadata/v1/instance/attributes/dataproc-role)
+      if [[ "${ROLE}" == 'Master' ]]; then       ... master specific actions
+      ...     else       ... worker specific actions ...     fi
     masterConfig: [Optional] The Google Compute Engine config settings for the
       master instance in a cluster.
     secondaryWorkerConfig: [Optional] The Google Compute Engine config
@@ -84,8 +85,8 @@ class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
   Fields:
-    clusterName: Name of the cluster for the operation.
-    clusterUuid: Cluster UUId for the operation.
+    clusterName: [Output-only] Name of the cluster for the operation.
+    clusterUuid: [Output-only] Cluster UUID for the operation.
     description: [Output-only] Short description of operation.
     operationType: [Output-only] The operation type.
     status: [Output-only] Current operation status.
@@ -104,17 +105,19 @@ class ClusterOperationStatus(_messages.Message):
   """The status of the operation.
 
   Enums:
-    StateValueValuesEnum: A message containing the operation state.
+    StateValueValuesEnum: [Output-only] A message containing the operation
+      state.
 
   Fields:
-    details: A message containing any operation metadata details.
-    innerState: A message containing the detailed operation state.
-    state: A message containing the operation state.
-    stateStartTime: The time this state was entered.
+    details: [Output-only]A message containing any operation metadata details.
+    innerState: [Output-only] A message containing the detailed operation
+      state.
+    state: [Output-only] A message containing the operation state.
+    stateStartTime: [Output-only] The time this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """A message containing the operation state.
+    """[Output-only] A message containing the operation state.
 
     Values:
       UNKNOWN: Unused.
@@ -137,16 +140,16 @@ class ClusterStatus(_messages.Message):
   """The status of a cluster and its instances.
 
   Enums:
-    StateValueValuesEnum: The cluster's state.
+    StateValueValuesEnum: [Output-only] The cluster's state.
 
   Fields:
-    detail: Optional details of cluster's state.
-    state: The cluster's state.
-    stateStartTime: Time when this state was entered.
+    detail: [Output-only] Optional details of cluster's state.
+    state: [Output-only] The cluster's state.
+    stateStartTime: [Output-only] Time when this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """The cluster's state.
+    """[Output-only] The cluster's state.
 
     Values:
       UNKNOWN: The cluster state is unknown.
@@ -242,8 +245,8 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersListRequest object.
 
   Fields:
-    pageSize: The standard List page size.
-    pageToken: The standard List page token.
+    pageSize: [Optional] The standard List page size.
+    pageToken: [Optional] The standard List page token.
     projectId: [Required] The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: [Required] The Cloud Dataproc region in which to handle the
@@ -347,13 +350,13 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
 
   Enums:
     JobStateMatcherValueValuesEnum: [Optional] Specifies enumerated categories
-      of jobs to list.
+      of jobs to list (default = match ALL jobs).
 
   Fields:
     clusterName: [Optional] If set, the returned jobs list includes only jobs
       that were submitted to the named cluster.
     jobStateMatcher: [Optional] Specifies enumerated categories of jobs to
-      list.
+      list (default = match ALL jobs).
     pageSize: [Optional] The number of results to return in each response.
     pageToken: [Optional] The page token, returned by a previous call, to
       request the next page of results.
@@ -364,7 +367,8 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
-    """[Optional] Specifies enumerated categories of jobs to list.
+    """[Optional] Specifies enumerated categories of jobs to list (default =
+    match ALL jobs).
 
     Values:
       ALL: <no description>
@@ -467,8 +471,8 @@ class DiagnoseClusterResults(_messages.Message):
 
   Fields:
     outputUri: [Output-only] The Google Cloud Storage URI of the diagnostic
-      output. This is a plain text file with a summary of collected
-      diagnostics.
+      output. The output report is a plain text file with a summary of
+      collected diagnostics.
   """
 
   outputUri = _messages.StringField(1)
@@ -481,9 +485,11 @@ class DiskConfig(_messages.Message):
     bootDiskSizeGb: [Optional] Size in GB of the boot disk (default is 500GB).
     numLocalSsds: [Optional] Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
-      logs and HDFS data. If one or more SSDs are attached, this runtime bulk
-      data is spread across them, and the boot disk contains only basic config
-      and installed binaries.
+      logs and
+      [HDFS](https://hadoop.apache.org/docs/r1.2.1/hdfs_user_guide.html) data.
+      If one or more SSDs are attached, this runtime bulk data is spread
+      across them, and the boot disk contains only basic config and installed
+      binaries.
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -506,40 +512,48 @@ class GceClusterConfig(_messages.Message):
 
   Messages:
     MetadataValue: The Google Compute Engine metadata entries to add to all
-      instances.
+      instances (see [Project and instance
+      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#project_and_instance_metadata)).
 
   Fields:
-    internalIpOnly: If true, all instances in the cluser will only have
-      internal IP addresses. By default, clusters are not restricted to
+    internalIpOnly: [Optional] If true, all instances in the cluster will only
+      have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
-      assigned to each instance. This restriction can only be enabled for
-      subnetwork enabled networks, and all off-cluster dependencies must be
-      configured to be accessible without external IP addresses.
+      assigned to each instance. This `internal_ip_only` restriction can only
+      be enabled for subnetwork enabled networks, and all off-cluster
+      dependencies must be configured to be accessible without external IP
+      addresses.
     metadata: The Google Compute Engine metadata entries to add to all
-      instances.
-    networkUri: The Google Compute Engine network to be used for machine
-      communications. Cannot be specified with subnetwork_uri. If neither
-      network_uri nor subnetwork_uri is specified, the "default" network of
-      the project is used, if it exists. Cannot be a "Custom Subnet Network"
-      (see [Using Subnetworks](/compute/docs/subnetworks) for more
+      instances (see [Project and instance
+      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#project_and_instance_metadata)).
+    networkUri: [Optional] The Google Compute Engine network to be used for
+      machine communications. Cannot be specified with subnetwork_uri. If
+      neither `network_uri` nor `subnetwork_uri` is specified, the "default"
+      network of the project is used, if it exists. Cannot be a "Custom Subnet
+      Network" (see [Using Subnetworks](/compute/docs/subnetworks) for more
       information). Example: `https://www.googleapis.com/compute/v1/projects/[
       project_id]/regions/global/default`.
-    serviceAccountScopes: The URIs of service account scopes to be included in
-      Google Compute Engine instances. The following base set of scopes is
-      always included:  *
+    serviceAccountScopes: [Optional] The URIs of service account scopes to be
+      included in Google Compute Engine instances. The following base set of
+      scopes is always included:  *
       https://www.googleapis.com/auth/cloud.useraccounts.readonly *
       https://www.googleapis.com/auth/devstorage.read_write *
       https://www.googleapis.com/auth/logging.write  If no scopes are
-      specfied, the following defaults are also provided:  *
+      specified, the following defaults are also provided:  *
       https://www.googleapis.com/auth/bigquery *
       https://www.googleapis.com/auth/bigtable.admin.table *
       https://www.googleapis.com/auth/bigtable.data *
       https://www.googleapis.com/auth/devstorage.full_control
-    subnetworkUri: The Google Compute Engine subnetwork to be used for machine
-      communications. Cannot be specified with network_uri. Example:
+    subnetworkUri: [Optional] The Google Compute Engine subnetwork to be used
+      for machine communications. Cannot be specified with network_uri.
+      Example:
       `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
       east1/sub0`.
-    tags: The Google Compute Engine tags to add to all instances.
+    tags: The Google Compute Engine tags to add to all instances (see
+      [Labeling instances](/compute/docs/label-or-tag-
+      resources#labeling_instances)).
     zoneUri: [Required] The zone where the Google Compute Engine cluster will
       be located. Example: `https://www.googleapis.com/compute/v1/projects/[pr
       oject_id]/zones/[zone]`.
@@ -547,7 +561,9 @@ class GceClusterConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The Google Compute Engine metadata entries to add to all instances.
+    """The Google Compute Engine metadata entries to add to all instances (see
+    [Project and instance metadata](https://cloud.google.com/compute/docs
+    /storing-retrieving-metadata#project_and_instance_metadata)).
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -579,7 +595,11 @@ class GceClusterConfig(_messages.Message):
 
 
 class HadoopJob(_messages.Message):
-  """A Cloud Dataproc job for running Hadoop MapReduce jobs on YARN.
+  """A Cloud Dataproc job for running [Apache Hadoop
+  MapReduce](https://hadoop.apache.org/docs/current/hadoop-mapreduce-client
+  /hadoop-mapreduce-client-core/MapReduceTutorial.html) jobs on [Apache Hadoop
+  YARN](https://hadoop.apache.org/docs/r2.7.1/hadoop-yarn/hadoop-yarn-
+  site/YARN.html).
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names to values, used to
@@ -652,7 +672,8 @@ class HadoopJob(_messages.Message):
 
 
 class HiveJob(_messages.Message):
-  """A Cloud Dataproc job for running Hive queries on YARN.
+  """A Cloud Dataproc job for running [Apache Hive](https://hive.apache.org/)
+  queries on YARN.
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names and values, used
@@ -744,28 +765,28 @@ class HiveJob(_messages.Message):
 
 
 class InstanceGroupConfig(_messages.Message):
-  """The config settings for Google Compute Engine resources in an instance
-  group, such as a master or worker group.
+  """[Optional] The config settings for Google Compute Engine resources in an
+  instance group, such as a master or worker group.
 
   Fields:
-    diskConfig: Disk option config settings.
+    diskConfig: [Optional] Disk option config settings.
     imageUri: [Output-only] The Google Compute Engine image resource used for
       cluster instances. Inferred from `SoftwareConfig.image_version`.
-    instanceNames: The list of instance names. Cloud Dataproc derives the
-      names from `cluster_name`, `num_instances`, and the instance group if
-      not set by user (recommended practice is to let Cloud Dataproc derive
-      the name).
-    isPreemptible: Specifies that this instance group contains Preemptible
-      Instances.
-    machineTypeUri: The Google Compute Engine machine type used for cluster
-      instances. Example:
+    instanceNames: [Optional] The list of instance names. Cloud Dataproc
+      derives the names from `cluster_name`, `num_instances`, and the instance
+      group if not set by user (recommended practice is to let Cloud Dataproc
+      derive the name).
+    isPreemptible: [Optional] Specifies that this instance group contains
+      preemptible instances.
+    machineTypeUri: [Required] The Google Compute Engine machine type used for
+      cluster instances. Example:
       `https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2`.
     managedGroupConfig: [Output-only] The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
-    numInstances: The number of VM instances in the instance group. For master
-      instance groups, must be set to 1.
+    numInstances: [Required] The number of VM instances in the instance group.
+      For master instance groups, must be set to 1.
   """
 
   diskConfig = _messages.MessageField('DiskConfig', 1)
@@ -837,7 +858,7 @@ class JobReference(_messages.Message):
   """Encapsulates the full scoping used to reference a job.
 
   Fields:
-    jobId: [Required] The job ID, which must be unique within the project. The
+    jobId: [Optional] The job ID, which must be unique within the project. The
       job ID is generated by the server upon job submission or provided by the
       user as a means to perform retries without creating duplicate jobs. The
       ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
@@ -854,18 +875,18 @@ class JobStatus(_messages.Message):
   """Cloud Dataproc job status.
 
   Enums:
-    StateValueValuesEnum: [Required] A state message specifying the overall
+    StateValueValuesEnum: [Output-only] A state message specifying the overall
       job state.
 
   Fields:
-    details: [Optional] Job state details, such as an error description if the
-      state is <code>ERROR</code>.
-    state: [Required] A state message specifying the overall job state.
+    details: [Output-only] Optional job state details, such as an error
+      description if the state is <code>ERROR</code>.
+    state: [Output-only] A state message specifying the overall job state.
     stateStartTime: [Output-only] The time when this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Required] A state message specifying the overall job state.
+    """[Output-only] A state message specifying the overall job state.
 
     Values:
       STATE_UNSPECIFIED: The job state is unknown.
@@ -901,9 +922,9 @@ class ListClustersResponse(_messages.Message):
 
   Fields:
     clusters: [Output-only] The clusters in the project.
-    nextPageToken: [Optional] This token is included in the response if there
-      are more results to fetch. To fetch additional results, provide this
-      value as the `page_token` in a subsequent
+    nextPageToken: [Output-only] This token is included in the response if
+      there are more results to fetch. To fetch additional results, provide
+      this value as the `page_token` in a subsequent
       <code>ListClustersRequest</code>.
   """
 
@@ -1229,7 +1250,8 @@ class OperationStatus(_messages.Message):
 
 
 class PigJob(_messages.Message):
-  """A Cloud Dataproc job for running Pig queries on YARN.
+  """A Cloud Dataproc job for running [Apache Pig](https://pig.apache.org/)
+  queries on YARN.
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names to values, used to
@@ -1322,7 +1344,9 @@ class PigJob(_messages.Message):
 
 
 class PySparkJob(_messages.Message):
-  """A Cloud Dataproc job for running PySpark applications on YARN.
+  """A Cloud Dataproc job for running [Apache
+  PySpark](https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
+  applications on YARN.
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names to values, used to
@@ -1463,7 +1487,8 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkJob(_messages.Message):
-  """A Cloud Dataproc job for running Spark applications on YARN.
+  """A Cloud Dataproc job for running [Apache Spark](http://spark.apache.org/)
+  applications on YARN.
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names to values, used to
@@ -1532,7 +1557,8 @@ class SparkJob(_messages.Message):
 
 
 class SparkSqlJob(_messages.Message):
-  """A Cloud Dataproc job for running Spark SQL queries.
+  """A Cloud Dataproc job for running [Apache Spark
+  SQL](http://spark.apache.org/sql/) queries.
 
   Messages:
     PropertiesValue: [Optional] A mapping of property names to values, used to

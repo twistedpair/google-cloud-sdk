@@ -35,7 +35,9 @@ class GetLogsUsageResponse(_messages.Message):
 
 
 class HttpRequest(_messages.Message):
-  """A common proto for logging HTTP requests.
+  """A common proto for logging HTTP requests. Only contains semantics defined
+  by the HTTP specification. Product-specific logging information MUST be
+  defined in a separate message.
 
   Fields:
     cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
@@ -133,11 +135,10 @@ class ListLogEntriesRequest(_messages.Message):
   """The parameters to `ListLogEntries`.
 
   Fields:
-    filter: Optional. An [advanced logs
-      filter](/logging/docs/view/advanced_filters). The filter is compared
-      against all log entries in the projects specified by `projectIds`.  Only
-      entries that match the filter are retrieved.  An empty filter matches
-      all log entries.
+    filter: Optional. A filter that chooses which log entries to return.  See
+      [Advanced Logs Filters](/logging/docs/view/advanced_filters).  Only log
+      entries that match the filter are returned.  An empty filter matches all
+      log entries.
     isV1Request: A boolean attribute.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
@@ -146,23 +147,22 @@ class ListLogEntriesRequest(_messages.Message):
       entries in order of decreasing timestamps (newest first).  Entries with
       equal timestamps are returned in order of `LogEntry.insertId`.
     pageSize: Optional. The maximum number of results to return from this
-      request. You must check for presence of `nextPageToken` to determine if
-      additional results are available, which you can retrieve by passing the
-      `nextPageToken` value as the `pageToken` parameter in the next request.
-    pageToken: Optional. If the `pageToken` parameter is supplied, then the
-      next page of results is retrieved.  The `pageToken` parameter must be
-      set to the value of the `nextPageToken` from the previous response. The
-      values of `projectIds`, `filter`, and `orderBy` must be the same as in
-      the previous request.
-    partialSuccess: Optional. If true, read access to all projects is not
-      required and results will be returned for the subset of projects for
-      which read access is permitted (empty subset is permitted).
-    projectIds: Deprecated. One or more project IDs or project numbers from
-      which to retrieve log entries.  Examples of a project ID: `"my-project-
-      1A"`, `"1234567890"`.
-    resourceNames: One or more cloud resources from which to retrieve log
-      entries. These will be combined with the resources from project_ids
-      above. e.g. "projects/my-project-1A"
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    projectIds: Deprecated. One or more project identifiers or project numbers
+      from which to retrieve log entries.  Examples: `"my-project-1A"`,
+      `"1234567890"`. If present, these project identifiers are converted to
+      resource format and added to the list of resources in `resourceNames`.
+      Callers should use `resourceNames` rather than this parameter.
+    resourceNames: Optional. One or more cloud resources from which to
+      retrieve log entries. Example: `"projects/my-project-1A"`,
+      `"projects/1234567890"`.  Projects listed in `projectIds` are added to
+      this list.
   """
 
   filter = _messages.StringField(1)
@@ -170,17 +170,12 @@ class ListLogEntriesRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
-  partialSuccess = _messages.BooleanField(6)
-  projectIds = _messages.StringField(7, repeated=True)
-  resourceNames = _messages.StringField(8, repeated=True)
+  projectIds = _messages.StringField(6, repeated=True)
+  resourceNames = _messages.StringField(7, repeated=True)
 
 
 class ListLogEntriesResponse(_messages.Message):
   """Result returned from `ListLogEntries`.
-
-  Messages:
-    ProjectIdErrorsValue: If partial_success is true, contains the project ids
-      that had errors and the associated errors.
 
   Fields:
     entries: A list of log entries.
@@ -188,50 +183,23 @@ class ListLogEntriesResponse(_messages.Message):
       examined before returning this response. This can be used to observe
       progress between successive queries, in particular when only a page
       token is returned. Deprecated: use searched_through_timestamp.
-    nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is included in the response.  To get the next set of
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
-    projectIdErrors: If partial_success is true, contains the project ids that
-      had errors and the associated errors.
     searchedThroughTimestamp: The furthest point in time through which the
-      search has progressed. All future entries returned using next_page_token
+      search has progressed. All future entries returned using `nextPageToken`
       are guaranteed to have a timestamp at or past this point in time in the
-      direction of the search. This can be used to observe progress between
-      successive queries, in particular when only a page token is returned.
+      direction of the search. This value can be used to observe progress
+      between successive queries, in particular when `nextPageToken` is
+      returned without any log entries. If `nextPageToken` is not present in
+      this response, then this field is left empty.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ProjectIdErrorsValue(_messages.Message):
-    """If partial_success is true, contains the project ids that had errors
-    and the associated errors.
-
-    Messages:
-      AdditionalProperty: An additional property for a ProjectIdErrorsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ProjectIdErrorsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ProjectIdErrorsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Status attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Status', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   entries = _messages.MessageField('LogEntry', 1, repeated=True)
   lastObservedEntryTimestamp = _messages.StringField(2)
   nextPageToken = _messages.StringField(3)
-  projectIdErrors = _messages.MessageField('ProjectIdErrorsValue', 4)
-  searchedThroughTimestamp = _messages.StringField(5)
+  searchedThroughTimestamp = _messages.StringField(4)
 
 
 class ListLogMetricsResponse(_messages.Message):
@@ -239,8 +207,8 @@ class ListLogMetricsResponse(_messages.Message):
 
   Fields:
     metrics: A list of logs-based metrics.
-    nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is included in the response.  To get the next set of
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
   """
@@ -254,10 +222,10 @@ class ListLogsResponse(_messages.Message):
 
   Fields:
     logIds: A list of log ids matching the criteria.
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of logs, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListLogs`. If
-      `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
+      `pageToken`.
   """
 
   logIds = _messages.StringField(1, repeated=True)
@@ -268,8 +236,8 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
   """Result returned from ListMonitoredResourceDescriptors.
 
   Fields:
-    nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is included in the response.  To get the next set of
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
       results, call this method again using the value of `nextPageToken` as
       `pageToken`.
     resourceDescriptors: A list of resource descriptors.
@@ -283,11 +251,10 @@ class ListResourceKeysResponse(_messages.Message):
   """Result returned from `ListResourceKeysRequest`.
 
   Fields:
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of resource types, use the value
-      of `nextPageToken` as `pageToken` in the next call of
-      `ListResourceKeys`. If `nextPageToken` is empty, then there are no more
-      results.
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
+      `pageToken`.
     resourceKeys: A list of log resource keys.
   """
 
@@ -299,10 +266,10 @@ class ListResourceValuesResponse(_messages.Message):
   """Result returned from ListResourceValues.
 
   Fields:
-    nextPageToken: If there are more results, then `nextPageToken` is returned
-      in the response.  To get the next batch of indexes, use the value of
-      `nextPageToken` as `pageToken` in the next call of `ListResourceValues`.
-      If `nextPageToken` is empty, then there are no more results.
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
+      results, call this method again using the value of `nextPageToken` as
+      `pageToken`.
     resourceValuePrefixes: A list of log resource type index values. Each
       index value has the form `"/value1/value2/..."`, where `value1` is a
       value in the primary index, `value2` is a value in the secondary index,
@@ -317,10 +284,10 @@ class ListSinksResponse(_messages.Message):
   """Result returned from `ListSinks`.
 
   Fields:
-    nextPageToken: If there are more results than were returned, then
-      `nextPageToken` is included in the response.  To get the next set of
-      results, call this method again using the value of `nextPageToken` as
-      `pageToken`.
+    nextPageToken: If there might be more results than appear in this
+      response, then `nextPageToken` is included.  To get the next set of
+      results, call the same method again using the value of `nextPageToken`
+      as `pageToken`.
     sinks: A list of sinks.
   """
 
@@ -348,9 +315,10 @@ class LogEntry(_messages.Message):
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
     insertId: Optional. A unique ID for the log entry. If you provide this
-      field, the logging service considers other log entries in the same log
-      with the same ID as duplicates which can be removed.  If omitted,
-      Stackdriver Logging will generate a unique ID for this log entry.
+      field, the logging service considers other log entries in the same
+      project with the same ID as duplicates which can be removed.  If
+      omitted, Stackdriver Logging will generate a unique ID for this log
+      entry.
     internalId: A InternalEntityId attribute.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
@@ -630,38 +598,50 @@ class LogSink(_messages.Message):
   """Describes a sink used to export log entries outside Stackdriver Logging.
 
   Enums:
-    OutputVersionFormatValueValuesEnum: The log entry version to use for this
-      sink's exported log entries. This version does not have to correspond to
-      the version of the log entry when it was written to Stackdriver Logging.
+    OutputVersionFormatValueValuesEnum: Optional. The log entry version to use
+      for this sink's exported log entries.  This version does not have to
+      correspond to the version of the log entry that was written to
+      Stackdriver Logging. If omitted, the v2 format is used.
 
   Fields:
-    destination: The export destination. See [Exporting Logs With
+    destination: Required. The export destination. See [Exporting Logs With
       Sinks](/logging/docs/api/tasks/exporting-logs). Examples:
-      `"storage.googleapis.com/a-bucket"`,
-      `"bigquery.googleapis.com/projects/a-project-id/datasets/a-dataset"`.
+      "storage.googleapis.com/my-gcs-bucket"
+      "bigquery.googleapis.com/projects/my-project-id/datasets/my-dataset"
+      "pubsub.googleapis.com/projects/my-project/topics/my-topic"
     errors: Output only. All active errors found for this sink.
-    filter: An [advanced logs filter](/logging/docs/view/advanced_filters).
-      Only log entries matching that filter are exported. The filter must be
-      consistent with the log entry format specified by the
-      `outputVersionFormat` parameter, regardless of the format of the log
-      entry that was originally written to Stackdriver Logging. Example (V2
-      format): `"logName=projects/my-projectid/logs/syslog AND
-      severity>=ERROR"`.
+    filter: Optional. An [advanced logs
+      filter](/logging/docs/view/advanced_filters). Only log entries matching
+      the filter are exported. The filter must be consistent with the log
+      entry format specified by the `outputVersionFormat` parameter,
+      regardless of the format of the log entry that was originally written to
+      Stackdriver Logging. Example filter (V2 format):      logName=projects
+      /my-projectid/logs/syslog AND severity>=ERROR
     formatChange: When the format was changed.
-    name: Required. The client-assigned sink identifier. Example: `"my-severe-
-      errors-to-pubsub"`. Sink identifiers are limited to 1000 characters and
-      can include only the following characters: `A-Z`, `a-z`, `0-9`, and the
-      special characters `_-.`. The maximum length of this value is 100
-      characters.
-    outputVersionFormat: The log entry version to use for this sink's exported
-      log entries. This version does not have to correspond to the version of
-      the log entry when it was written to Stackdriver Logging.
+    name: Required. The client-assigned sink identifier, unique within the
+      project. Example: `"my-syslog-errors-to-pubsub"`.  Sink identifiers are
+      limited to 1000 characters and can include only the following
+      characters: `A-Z`, `a-z`, `0-9`, and the special characters `_-.`.  The
+      maximum length of the name is 100 characters.
+    outputVersionFormat: Optional. The log entry version to use for this
+      sink's exported log entries.  This version does not have to correspond
+      to the version of the log entry that was written to Stackdriver Logging.
+      If omitted, the v2 format is used.
+    writerIdentity: Output only. The iam identity to which the destination
+      needs to grant write access.  This may be a service account or a group.
+      Examples (Do not assume these specific values):    "serviceAccount
+      :cloud-logs@system.gserviceaccount.com"    "group:cloud-logs@google.com"
+      For GCS destinations, the role "roles/owner" is required on the bucket
+      For Cloud Pubsub destinations, the role "roles/pubsub.publisher" is
+      required on the topic   For BigQuery, the role "roles/editor" is
+      required on the dataset
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    """The log entry version to use for this sink's exported log entries. This
-    version does not have to correspond to the version of the log entry when
-    it was written to Stackdriver Logging.
+    """Optional. The log entry version to use for this sink's exported log
+    entries.  This version does not have to correspond to the version of the
+    log entry that was written to Stackdriver Logging. If omitted, the v2
+    format is used.
 
     Values:
       VERSION_FORMAT_UNSPECIFIED: An unspecified version format will default
@@ -679,6 +659,125 @@ class LogSink(_messages.Message):
   formatChange = _messages.StringField(4)
   name = _messages.StringField(5)
   outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
+  writerIdentity = _messages.StringField(7)
+
+
+class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
+  """A LoggingBillingAccountsLogsDeleteRequest object.
+
+  Fields:
+    billingAccountsId: Part of `logName`. Required. The resource name of the
+      log to delete.  Example: `"projects/my-project/logs/syslog"`.
+    logsId: Part of `logName`. See documentation of `billingAccountsId`.
+  """
+
+  billingAccountsId = _messages.StringField(1, required=True)
+  logsId = _messages.StringField(2, required=True)
+
+
+class LoggingBillingAccountsLogsListRequest(_messages.Message):
+  """A LoggingBillingAccountsLogsListRequest object.
+
+  Fields:
+    billingAccountsId: Part of `parent`. The resource name of the entity whose
+      logs are requested. If both `resource_type` and `resourceIndexPrefix`
+      are empty, then all logs with entries in this entity are listed.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    resourceIndexPrefix: The purpose of this field is to restrict the listed
+      logs to those with entries of a certain kind. If `resource_type` is the
+      name of a resource type, then this field may contain values for the log
+      resource type's indexes. Only logs that have entries whose indexes
+      include the values are listed. The format for this field is
+      `"/val1/val2.../valN"`, where `val1` is a value for the first index,
+      `val2` for the second index, etc. An empty value (a single slash) for an
+      index matches all values, and you can omit values for later indexes
+      entirely. Optional. The maximum number of results to return from this
+      request.
+    resourceType: If not empty, this field must be a resource type such as
+      `"gce_instance`. Only logs associated with that resource type are
+      listed.
+  """
+
+  billingAccountsId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  resourceIndexPrefix = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+
+
+class LoggingBillingAccountsResourceKeysListRequest(_messages.Message):
+  """A LoggingBillingAccountsResourceKeysListRequest object.
+
+  Fields:
+    billingAccountsId: Part of `parent`. The resource name of the entity whose
+      reource keys are to be listed.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+  """
+
+  billingAccountsId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class LoggingBillingAccountsResourceTypesValuesListRequest(_messages.Message):
+  """A LoggingBillingAccountsResourceTypesValuesListRequest object.
+
+  Fields:
+    billingAccountsId: Part of `parent`. The resource name of a resource type
+      whose indexes are requested. Example: `"projects/my-project-
+      id/resourceTypes/gae_app"`.
+    depth: A non-negative integer that limits the number of levels of the
+      index hierarchy that are returned. If `depth` is 1 (default), only the
+      first index key value is returned. If `depth` is 2, both primary and
+      secondary key values are returned. If `depth` is 0, the depth is the
+      number of slash-separators in the `indexPrefix` field, not counting a
+      slash appearing as the last character of the prefix. If the
+      `indexPrefix` field is empty, the default depth is 1. It is an error for
+      `depth` to be any positive value less than the number of components in
+      `indexPrefix`.
+    indexPrefix: Restricts the index values returned to be those with a
+      specified prefix for each index key. This field has the form
+      `"/prefix1/prefix2/..."`, in order corresponding to the `ResourceKeys
+      indexKeys`. Non-empty prefixes must begin with `/`. For example, App
+      Engine's two keys are the module ID and the version ID. Following is the
+      effect of using various values for `indexPrefix`:  +  `"/Mod/"`
+      retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +  `"/Mod`
+      retrieves `/Mod/10`, `/Mod/11` and `/ModA/10` but not `/XXX/33`. +
+      `"/Mod/1"` retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +
+      `"/Mod/10/"` retrieves `/Mod/10` only. +  An empty prefix or `"/"`
+      retrieves all values.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    resourceTypesId: Part of `parent`. See documentation of
+      `billingAccountsId`.
+  """
+
+  billingAccountsId = _messages.StringField(1, required=True)
+  depth = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  indexPrefix = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  resourceTypesId = _messages.StringField(6, required=True)
 
 
 class LoggingGetLogsUsageRequest(_messages.Message):
@@ -724,16 +823,134 @@ class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. You must check for presence of `nextPageToken` to determine if
-      additional results are available, which you can retrieve by passing the
-      `nextPageToken` value as the `pageToken` parameter in the next request.
-    pageToken: Optional. If the `pageToken` parameter is supplied, then the
-      next page of results is retrieved.  The `pageToken` parameter must be
-      set to the value of the `nextPageToken` from the previous response.
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
+
+
+class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
+  """A LoggingOrganizationsLogsDeleteRequest object.
+
+  Fields:
+    logsId: Part of `logName`. See documentation of `organizationsId`.
+    organizationsId: Part of `logName`. Required. The resource name of the log
+      to delete.  Example: `"projects/my-project/logs/syslog"`.
+  """
+
+  logsId = _messages.StringField(1, required=True)
+  organizationsId = _messages.StringField(2, required=True)
+
+
+class LoggingOrganizationsLogsListRequest(_messages.Message):
+  """A LoggingOrganizationsLogsListRequest object.
+
+  Fields:
+    organizationsId: Part of `parent`. The resource name of the entity whose
+      logs are requested. If both `resource_type` and `resourceIndexPrefix`
+      are empty, then all logs with entries in this entity are listed.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    resourceIndexPrefix: The purpose of this field is to restrict the listed
+      logs to those with entries of a certain kind. If `resource_type` is the
+      name of a resource type, then this field may contain values for the log
+      resource type's indexes. Only logs that have entries whose indexes
+      include the values are listed. The format for this field is
+      `"/val1/val2.../valN"`, where `val1` is a value for the first index,
+      `val2` for the second index, etc. An empty value (a single slash) for an
+      index matches all values, and you can omit values for later indexes
+      entirely. Optional. The maximum number of results to return from this
+      request.
+    resourceType: If not empty, this field must be a resource type such as
+      `"gce_instance`. Only logs associated with that resource type are
+      listed.
+  """
+
+  organizationsId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  resourceIndexPrefix = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+
+
+class LoggingOrganizationsResourceKeysListRequest(_messages.Message):
+  """A LoggingOrganizationsResourceKeysListRequest object.
+
+  Fields:
+    organizationsId: Part of `parent`. The resource name of the entity whose
+      reource keys are to be listed.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+  """
+
+  organizationsId = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class LoggingOrganizationsResourceTypesValuesListRequest(_messages.Message):
+  """A LoggingOrganizationsResourceTypesValuesListRequest object.
+
+  Fields:
+    depth: A non-negative integer that limits the number of levels of the
+      index hierarchy that are returned. If `depth` is 1 (default), only the
+      first index key value is returned. If `depth` is 2, both primary and
+      secondary key values are returned. If `depth` is 0, the depth is the
+      number of slash-separators in the `indexPrefix` field, not counting a
+      slash appearing as the last character of the prefix. If the
+      `indexPrefix` field is empty, the default depth is 1. It is an error for
+      `depth` to be any positive value less than the number of components in
+      `indexPrefix`.
+    indexPrefix: Restricts the index values returned to be those with a
+      specified prefix for each index key. This field has the form
+      `"/prefix1/prefix2/..."`, in order corresponding to the `ResourceKeys
+      indexKeys`. Non-empty prefixes must begin with `/`. For example, App
+      Engine's two keys are the module ID and the version ID. Following is the
+      effect of using various values for `indexPrefix`:  +  `"/Mod/"`
+      retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +  `"/Mod`
+      retrieves `/Mod/10`, `/Mod/11` and `/ModA/10` but not `/XXX/33`. +
+      `"/Mod/1"` retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +
+      `"/Mod/10/"` retrieves `/Mod/10` only. +  An empty prefix or `"/"`
+      retrieves all values.
+    organizationsId: Part of `parent`. The resource name of a resource type
+      whose indexes are requested. Example: `"projects/my-project-
+      id/resourceTypes/gae_app"`.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    resourceTypesId: Part of `parent`. See documentation of `organizationsId`.
+  """
+
+  depth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  indexPrefix = _messages.StringField(2)
+  organizationsId = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  resourceTypesId = _messages.StringField(6, required=True)
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):
@@ -753,11 +970,14 @@ class LoggingProjectsLogsListRequest(_messages.Message):
   """A LoggingProjectsLogsListRequest object.
 
   Fields:
-    pageSize: The maximum number of results to return.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListLogs` operation.  If `pageToken` is supplied, then the other fields
-      of this request are ignored, and instead the previous `ListLogs`
-      operation is continued.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
     projectsId: Part of `parent`. The resource name of the entity whose logs
       are requested. If both `resource_type` and `resourceIndexPrefix` are
       empty, then all logs with entries in this entity are listed.
@@ -769,7 +989,8 @@ class LoggingProjectsLogsListRequest(_messages.Message):
       `"/val1/val2.../valN"`, where `val1` is a value for the first index,
       `val2` for the second index, etc. An empty value (a single slash) for an
       index matches all values, and you can omit values for later indexes
-      entirely.
+      entirely. Optional. The maximum number of results to return from this
+      request.
     resourceType: If not empty, this field must be a resource type such as
       `"gce_instance`. Only logs associated with that resource type are
       listed.
@@ -827,13 +1048,13 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. You must check for presence of `nextPageToken` to determine if
-      additional results are available, which you can retrieve by passing the
-      `nextPageToken` value as the `pageToken` parameter in the next request.
-    pageToken: Optional. If the `pageToken` parameter is supplied, then the
-      next page of results is retrieved.  The `pageToken` parameter must be
-      set to the value of the `nextPageToken` from the previous response. The
-      value of `parent` must be the same as in the previous request.
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
     projectsId: Part of `parent`. Required. The resource name containing the
       metrics. Example: `"projects/my-project-id"`.
   """
@@ -865,10 +1086,14 @@ class LoggingProjectsResourceKeysListRequest(_messages.Message):
   """A LoggingProjectsResourceKeysListRequest object.
 
   Fields:
-    pageSize: The maximum number of `ResourceKeys` objects to return in one
-      operation.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListResourceKeys` operation.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
     projectsId: Part of `parent`. The resource name of the entity whose
       reource keys are to be listed.
   """
@@ -902,10 +1127,14 @@ class LoggingProjectsResourceTypesValuesListRequest(_messages.Message):
       `"/Mod/1"` retrieves `/Mod/10` and `/Mod/11` but not `/ModA/10`. +
       `"/Mod/10/"` retrieves `/Mod/10` only. +  An empty prefix or `"/"`
       retrieves all values.
-    pageSize: The maximum number of log resource index resources to return in
-      one operation.
-    pageToken: An opaque token, returned as `nextPageToken` by a prior
-      `ListResourceValues` operation.
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
     projectsId: Part of `parent`. The resource name of a resource type whose
       indexes are requested. Example: `"projects/my-project-
       id/resourceTypes/gae_app"`.
@@ -925,9 +1154,9 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `parent`. The resource in which to create the sink.
-      Example: `"projects/my-project-id"`.  The new sink must be provided in
-      the request.
+    projectsId: Part of `parent`. Required. The resource in which to create
+      the sink. Example: `"projects/my-project-id"`. The new sink must be
+      provided in the request.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -938,8 +1167,10 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
   """A LoggingProjectsSinksDeleteRequest object.
 
   Fields:
-    projectsId: Part of `sinkName`. The resource name of the sink to delete.
-      Example: `"projects/my-project-id/sinks/my-sink-id"`.
+    projectsId: Part of `sinkName`. Required. The resource name of the sink to
+      delete, including the parent resource and the sink identifier.  Example:
+      `"projects/my-project-id/sinks/my-sink-id"`.  It is an error if the sink
+      does not exist.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -951,8 +1182,8 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
   """A LoggingProjectsSinksGetRequest object.
 
   Fields:
-    projectsId: Part of `sinkName`. The resource name of the sink to return.
-      Example: `"projects/my-project-id/sinks/my-sink-id"`.
+    projectsId: Part of `sinkName`. Required. The resource name of the sink to
+      return. Example: `"projects/my-project-id/sinks/my-sink-id"`.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -965,14 +1196,14 @@ class LoggingProjectsSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. You must check for presence of `nextPageToken` to determine if
-      additional results are available, which you can retrieve by passing the
-      `nextPageToken` value as the `pageToken` parameter in the next request.
-    pageToken: Optional. If the `pageToken` parameter is supplied, then the
-      next page of results is retrieved.  The `pageToken` parameter must be
-      set to the value of the `nextPageToken` from the previous response. The
-      value of `parent` must be the same as in the previous request.
-    projectsId: Part of `parent`. Required. The resource name containing the
+      request. Non-positive values are ignored.  The presence of
+      `nextPageToken` in the response indicates that more results might be
+      available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method.  `pageToken` must be the value
+      of `nextPageToken` from the previous response.  The values of other
+      method parameters should be identical to those in the previous call.
+    projectsId: Part of `parent`. Required. The cloud resource containing the
       sinks. Example: `"projects/my-logging-project"`.
   """
 
@@ -986,10 +1217,10 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
-    projectsId: Part of `sinkName`. The resource name of the sink to update.
-      Example: `"projects/my-project-id/sinks/my-sink-id"`.  The updated sink
-      must be provided in the request and have the same name that is specified
-      in `sinkName`.  If the sink does not exist, it is created.
+    projectsId: Part of `sinkName`. Required. The resource name of the sink to
+      update, including the parent resource and the sink identifier.  If the
+      sink does not exist, this method creates the sink.  Example: `"projects
+      /my-project-id/sinks/my-sink-id"`.
     sinksId: Part of `sinkName`. See documentation of `projectsId`.
   """
 
@@ -1068,8 +1299,9 @@ class MonitoredResourceDescriptor(_messages.Message):
     description: Optional. A detailed description of the monitored resource
       type that might be used in documentation.
     displayName: Optional. A concise name for the monitored resource type that
-      might be displayed in user interfaces. For example, `"Google Cloud SQL
-      Database"`.
+      might be displayed in user interfaces. It should be a Title Cased Noun
+      Phrase, without any article or other determiners. For example, `"Google
+      Cloud SQL Database"`.
     labels: Required. A set of labels used to describe instances of this
       monitored resource type. For example, an individual Google Cloud SQL
       database is identified by values for the labels `"database_id"` and
@@ -1100,19 +1332,18 @@ class ReadLogEntriesRequest(_messages.Message):
   completes.  Only the first use case is supported.
 
   Fields:
-    batchSize: Optional. The number of LogEntrys to return in each streamed
-      response. If unspecified, the default will be 10.
+    batchSize: Optional. The maximum number of log entries to return in each
+      streamed response.  Non-positive values are ignored and the default is
+      10.
     filter: Optional. An [advanced logs
       filter](/logging/docs/view/advanced_filters). The response includes only
       entries that match the filter. If `filter` is empty, then all entries in
       all logs are retrieved.
     maxResponseInterval: Optional. The maximum time between successive
-      streamed responses. A response will be sent every max_response_interval
-      even if page_size entries have not yet been accumulated provided that
-      either some entries have been accumulated OR the
-      searched_through_timestamp / resume_token has changed. (i.e. a response
-      containg 0 entries is allowed) If unspecified, the default will be 1
-      second.
+      streamed responses. The default value is `1s`, one second.  A response
+      will be sent at least this often, even if it contains no log entries,
+      provided that there has been some progress as evidenced by a change to
+      the `resumeToken` provided in the response.
     orderBy: Optional. How the results should be sorted.  Presently, the only
       permitted values are `"timestamp asc"` (default) and `"timestamp desc"`.
       The first option returns entries in order of increasing values of
@@ -1122,8 +1353,9 @@ class ReadLogEntriesRequest(_messages.Message):
     projectIds: Required. A list of project ids from which to retrieve log
       entries. Example: `"my-project-id"`.
     resumeToken: Optional. If the `resumeToken` parameter is supplied, then
-      the next batch of results is retrieved. The `resumeToken` parameter must
-      be set to the value from the previous response.
+      read streaming begins at the location represented by this `resumeToken`
+      from a previous response. This value might be useful if streaming is
+      stops prematurely.
   """
 
   batchSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

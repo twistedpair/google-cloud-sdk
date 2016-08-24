@@ -288,7 +288,7 @@ service.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates specified subset of the settings that control the specified.
+      """Patches specified subset of the settings that control the specified.
 customer's usage of the service.  Attempts to update a field not
 controlled by the caller will result in an access denied error.
 
@@ -432,6 +432,10 @@ Google Service Management will roll out the service configurations to
 different backend services. For example, the logging configuration will be
 pushed to Google Cloud Logging.
 
+Please note that any previous pending and running Rollouts and associated
+Operations will be automatically cancelled so that the latest Rollout will
+not be blocked by previous Rollouts.
+
 Operation<response: Rollout>
 
       Args:
@@ -552,6 +556,7 @@ equivalent `google.api.Service`.
 
     def Create(self, request, global_params=None):
       """Creates a new managed service.
+Please note one producer project can own no more than 20 services.
 
 Operation<response: ManagedService>
 
@@ -582,7 +587,7 @@ Operation<response: ManagedService>
       """Deletes a managed service. This method will change the serivce in the.
 `Soft-Delete` state for 30 days. Within this period, service producers may
 call UndeleteService to restore the service.
-After 30 days, the service will be completely wiped out.
+After 30 days, the service will be permanently deleted.
 
 Operation<response: google.protobuf.Empty>
 
@@ -641,6 +646,9 @@ Operation<response: DisableServiceResponse>
       """Enable a managed service for a project with default setting.
 
 Operation<response: EnableServiceResponse>
+
+google.rpc.Status errors may contain a
+google.rpc.PreconditionFailure error detail.
 
       Args:
         request: (ServicemanagementServicesEnableRequest) input message
@@ -947,9 +955,10 @@ existing policy.
     def Undelete(self, request, global_params=None):
       """Revives a previously deleted managed service. The method restores the.
 service using the configuration at the time the service was deleted.
-The target service must exist and be in the 'soft-deleted' state.
+The target service must exist and must have been deleted within the
+last 30 days.
 
-Operation<response: ManagedService>
+Operation<response: UndeleteServiceResponse>
 
       Args:
         request: (ServicemanagementServicesUndeleteRequest) input message

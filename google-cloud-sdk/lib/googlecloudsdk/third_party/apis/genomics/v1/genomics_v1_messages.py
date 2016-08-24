@@ -211,9 +211,18 @@ class BatchCreateAnnotationsRequest(_messages.Message):
   Fields:
     annotations: The annotations to be created. At most 4096 can be specified
       in a single request.
+    requestId: A unique request ID which enables the server to detect
+      duplicated requests. If provided, duplicated requests will result in the
+      same response; if not provided, duplicated requests may result in
+      duplicated data. For a given annotation set, callers should not reuse
+      `request_id`s when writing different batches of annotations - behavior
+      in this case is undefined. A common approach is to use a UUID. For batch
+      jobs where worker crashes are a possibility, consider using some unique
+      variant of a worker or run ID.
   """
 
   annotations = _messages.MessageField('Annotation', 1, repeated=True)
+  requestId = _messages.StringField(2)
 
 
 class BatchCreateAnnotationsResponse(_messages.Message):
@@ -2444,8 +2453,6 @@ class SearchVariantsRequest(_messages.Message):
     callSetIds: Only return variant calls which belong to call sets with these
       ids. Leaving this blank returns all variant calls. If a variant has no
       calls belonging to any of these call sets, it won't be returned at all.
-      Currently, variants with no calls from any call set will never be
-      returned.
     end: The end of the window, 0-based exclusive. If unspecified or 0,
       defaults to the length of the reference.
     maxCalls: The maximum number of calls to return in a single page. Note

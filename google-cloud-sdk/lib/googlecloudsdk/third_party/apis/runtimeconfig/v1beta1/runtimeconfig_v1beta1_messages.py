@@ -680,10 +680,14 @@ class Variable(_messages.Message):
     state: [Ouput only] The current state of the variable. The variable state
       indicates the outcome of the `variables().watch` call and is visible
       through the `get` and `list` calls.
+    text: The textual value of the variable. The length of the value must be
+      less than 4096 bytes. Empty values are also accepted. NB: Only one of
+      value and string_value can be set at the same time.
     updateTime: [Output Only] The time of the last variable update.
-    value: The value of the variable. The length of the value must be less
-      than 4096 bytes. Empty values are also accepted. The value must be
-      Base64 encoded.
+    value: The binary value of the variable. The length of the value must be
+      less than 4096 bytes. Empty values are also accepted. The value must be
+      Base64 encoded. NB: Only one of value and string_value can be set at the
+      same time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -704,8 +708,9 @@ class Variable(_messages.Message):
 
   name = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
-  value = _messages.BytesField(4)
+  text = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  value = _messages.BytesField(5)
 
 
 class Waiter(_messages.Message):

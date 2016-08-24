@@ -65,7 +65,6 @@ def AddCommonTestRunArgs(parser):
       '--obb-files',
       type=arg_parsers.ArgList(min_length=1, max_length=2),
       metavar='OBB_FILE',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='A list of one or two Android OBB file names which will be copied '
       'to each test device before the tests will run (default: None). Each '
       'OBB file name must conform to the format as specified by Android (e.g. '
@@ -116,7 +115,6 @@ def AddMatrixArgs(parser):
       '--device-ids', '-d',
       type=arg_parsers.ArgList(min_length=1),
       metavar='DEVICE_ID',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='The list of DEVICE_IDs to test against (default: one device '
       'determined by Google Cloud Test Lab\'s device catalog; see TAGS listed '
       'by the *$ {parent_command} devices list* command).')
@@ -124,14 +122,12 @@ def AddMatrixArgs(parser):
       '--os-version-ids', '-v',
       type=arg_parsers.ArgList(min_length=1),
       metavar='OS_VERSION_ID',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='The list of OS_VERSION_IDs to test against (default: a version ID '
       'determined by Google Cloud Test Lab\'s device catalog).')
   parser.add_argument(
       '--locales', '-l',
       type=arg_parsers.ArgList(min_length=1),
       metavar='LOCALE',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='The list of LOCALEs to test against (default: a single locale '
       'determined by Google Cloud Test Lab\'s device catalog).')
   orientation = parser.add_argument(
@@ -139,7 +135,6 @@ def AddMatrixArgs(parser):
       type=arg_parsers.ArgList(min_length=1, max_length=2,
                                choices=arg_validate.ORIENTATION_LIST),
       metavar='ORIENTATION',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='The device orientation(s) to test against. '
       'Choices: portrait, landscape (default: portrait).')
   orientation.completer = arg_parsers.GetMultiCompleter(OrientationsCompleter)
@@ -172,7 +167,6 @@ def AddInstrumentationTestArgs(parser):
       '--test-targets',
       type=arg_parsers.ArgList(min_length=1),
       metavar='TEST_TARGET',
-      action=arg_parsers.FloatingListValuesCatcher(),
       help='A list of one or more test targets to be run (default: all '
       'targets). Each target must be fully qualified with the package name or '
       'class name, in one of these formats:\n'

@@ -168,6 +168,26 @@ class BuildStep(_messages.Message):
   waitFor = _messages.StringField(6, repeated=True)
 
 
+class BuildTrigger(_messages.Message):
+  """Configuration for an automated build in response to source repository
+  changes.
+
+  Fields:
+    build: Contents of the build template.
+    createTime: Time when the trigger was created.  @OutputOnly
+    id: Unique identifier of the trigger.  @OutputOnly
+    triggerTemplate: Template describing the types of source changes to
+      trigger a build.  Branch and tag names in trigger templates are
+      interpreted as regular expressions. Any branch or tag change that
+      matches that regular expression will trigger a build.
+  """
+
+  build = _messages.MessageField('Build', 1)
+  createTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  triggerTemplate = _messages.MessageField('RepoSource', 4)
+
+
 class BuiltImage(_messages.Message):
   """BuiltImage describes an image built by the pipeline.
 
@@ -264,6 +284,76 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
+class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersCreateRequest object.
+
+  Fields:
+    buildTrigger: A BuildTrigger resource to be passed as the request body.
+    projectId: ID of the project for which to configure automatic builds.
+  """
+
+  buildTrigger = _messages.MessageField('BuildTrigger', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsTriggersDeleteRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersDeleteRequest object.
+
+  Fields:
+    projectId: ID of the project that owns the trigger.
+    triggerId: ID of the BuildTrigger to delete.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  triggerId = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsTriggersGetRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersGetRequest object.
+
+  Fields:
+    projectId: ID of the project that owns the trigger.
+    triggerId: ID of the BuildTrigger to get.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  triggerId = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsTriggersListRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersListRequest object.
+
+  Fields:
+    projectId: ID of the project for which to list BuildTriggers.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersPatchRequest object.
+
+  Fields:
+    buildTrigger: A BuildTrigger resource to be passed as the request body.
+    projectId: ID of the project that owns the trigger.
+    triggerId: ID of the BuildTrigger to update.
+  """
+
+  buildTrigger = _messages.MessageField('BuildTrigger', 1)
+  projectId = _messages.StringField(2, required=True)
+  triggerId = _messages.StringField(3, required=True)
+
+
+class Empty(_messages.Message):
+  """A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
 class FileHashes(_messages.Message):
   """Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
@@ -298,6 +388,16 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
+
+
+class ListBuildTriggersResponse(_messages.Message):
+  """Response containing existing BuildTriggers.
+
+  Fields:
+    triggers: BuildTriggers for the project, sorted by create_time descending.
+  """
+
+  triggers = _messages.MessageField('BuildTrigger', 1, repeated=True)
 
 
 class ListBuildsResponse(_messages.Message):

@@ -44,7 +44,7 @@ def DefaultUrls():
   """Returns a list of hosts whose reachability is essential for the Cloud SDK.
 
   Returns:
-    list(str): The urls to check reachability for.
+    A list of urls (str) to check reachability for.
   """
   urls = ['http://www.google.com', 'https://www.google.com',
           'https://accounts.google.com',
@@ -53,11 +53,8 @@ def DefaultUrls():
 
   download_urls = (properties.VALUES.component_manager.snapshot_url.Get() or
                    config.INSTALLATION_CONFIG.snapshot_url)
-  if download_urls:
-    for url in download_urls.split(','):
-      url_scheme = urlparse.urlparse(url).scheme
-      if url_scheme in ('http', 'https'):
-        urls.append(url)
+  urls.extend(u for u in download_urls.split(',')
+              if urlparse.urlparse(u).scheme in ('http', 'https'))
   return urls
 
 
@@ -77,30 +74,34 @@ class ReachabilityChecker(check_base.Checker):
       first_run: bool, True if first time this has been run this invocation.
 
     Returns:
-      check_base.CheckResult, Callable:  A tuple in which the first element is
-        the result of the check and the second is a function that can be used to
-        fix the error or None.
+      A tuple of (check_base.Result, fixer) where fixer is a function that can
+        be used to fix a failed check, or  None if the check passed or failed
+        with no applicable fix.
     """
     if urls is None:
       urls = DefaultUrls()
 
-    failures = filter(None, [self._CheckURL(url) for url in urls])
+    failures = []
+    for url in urls:
+      fail = self._CheckURL(url)
+      if fail:
+        failures.append(fail)
     if failures:
       fail_message = self._ConstructMessageFromFailures(failures, first_run)
-      result = check_base.CheckResult(passed=False, message=fail_message,
-                                      failures=failures)
+      result = check_base.Result(passed=False, message=fail_message,
+                                 failures=failures)
       fixer = http_proxy_setup.ChangeGcloudProxySettings
       return result, fixer
 
     pass_message = 'Reachability Check {0}.'.format('passed' if first_run else
                                                     'now passes')
-    result = check_base.CheckResult(passed=True, message='No URLs to check.'
-                                    if not urls else pass_message)
+    result = check_base.Result(passed=True, message='No URLs to check.'
+                               if not urls else pass_message)
     return result, None
 
   def _CheckURL(self, url):
     try:
-      _, _ = http.Http(auth=False).request(url, method='GET')
+      http.Http(auth=False).request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
     except (httplib.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error, socks.HTTPError) as err:

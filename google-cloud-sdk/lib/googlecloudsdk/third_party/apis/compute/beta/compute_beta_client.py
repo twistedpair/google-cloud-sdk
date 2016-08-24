@@ -4217,6 +4217,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def SwitchToCustomMode(self, request, global_params=None):
+      """Switches the network mode from auto subnet mode to custom subnet mode.
+
+      Args:
+        request: (ComputeNetworksSwitchToCustomModeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SwitchToCustomMode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SwitchToCustomMode.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networks.switchToCustomMode',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/networks/{network}/switchToCustomMode',
+        request_field='',
+        request_type_name=u'ComputeNetworksSwitchToCustomModeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -5963,6 +5989,32 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
         request_field='',
         request_type_name=u'ComputeSubnetworksDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ExpandIpCidrRange(self, request, global_params=None):
+      """Expands the IP CIDR range of the subnetwork to a specified value.
+
+      Args:
+        request: (ComputeSubnetworksExpandIpCidrRangeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExpandIpCidrRange')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExpandIpCidrRange.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.subnetworks.expandIpCidrRange',
+        ordered_params=[u'project', u'region', u'subnetwork'],
+        path_params=[u'project', u'region', u'subnetwork'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}/expandIpCidrRange',
+        request_field=u'subnetworksExpandIpCidrRangeRequest',
+        request_type_name=u'ComputeSubnetworksExpandIpCidrRangeRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

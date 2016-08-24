@@ -41,6 +41,11 @@ class AuthenticateRequest(_messages.Message):
     apiVersion: The api version of the TokenReview object.
     kind: Fields from "pkg/apis/authentication.k8s.io/v1beta1".TokenReview:
       The "kind" of the TokenReview object.
+    metadata: "pkg/api/types".ObjectMeta TODO (b/30563544): Remove these
+      unused fields. If cl/129007035 is rolled out to the prod envelope before
+      b/28297888 is fixed, we can change this to a google.protobuf.Any. Until
+      then, only the fields that are acutally populated by the Token Webhook
+      Authenticator
     spec: The information about the request being evaluated. It contains the
       token that the server should authenticate.
     status: The response for the provided request. (this won't be filled in
@@ -50,8 +55,9 @@ class AuthenticateRequest(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  spec = _messages.MessageField('TokenReviewSpec', 3)
-  status = _messages.MessageField('TokenReviewStatus', 4)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('TokenReviewSpec', 4)
+  status = _messages.MessageField('TokenReviewStatus', 5)
 
 
 class AuthenticateResponse(_messages.Message):
@@ -89,6 +95,11 @@ class AuthorizeRequest(_messages.Message):
     apiVersion: The api version of the SubjectAccessReview object.
     kind: Fields from "pkg/apis/authorization/v1beta1".SubjectAccessReview:
       The "kind" of the SubjectAccessReview object.
+    metadata: Fields from "pkg/api/types".ObjectMeta TODO (b/30563544): Remove
+      these unused fields. If cl/129007035 is rolled out to the prod envelope
+      before b/28297888 is fixed, we can change this to a google.protobuf.Any.
+      Until then, only the fields that are acutally populated by the Token
+      Webhook Authenticator
     spec: The information about the user action being evaluated.
     status: The response for the provided request (this won't be filled in for
       an AuthorizeRequest, but it is part of the struct, so we need it here to
@@ -97,8 +108,9 @@ class AuthorizeRequest(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  spec = _messages.MessageField('SubjectAccessReviewSpec', 3)
-  status = _messages.MessageField('SubjectAccessReviewStatus', 4)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('SubjectAccessReviewSpec', 4)
+  status = _messages.MessageField('SubjectAccessReviewStatus', 5)
 
 
 class AuthorizeResponse(_messages.Message):
@@ -146,6 +158,12 @@ class Cluster(_messages.Message):
       in the process of being upgraded, this reflects the minimum version of
       all nodes.
     description: An optional description of this cluster.
+    enableKubernetesAlpha: Kubernetes alpha features are enabled on this
+      cluster. This includes alpha API groups (e.g. v1alpha1) and features
+      that may not be production ready in the kubernetes version of the master
+      and nodes. The cluster has no SLA for uptime and master/node upgrades
+      are disabled. Alpha enabled clusters are automatically deleted two weeks
+      after creation.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
@@ -243,25 +261,26 @@ class Cluster(_messages.Message):
   currentNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(6)
   description = _messages.StringField(7)
-  endpoint = _messages.StringField(8)
-  initialClusterVersion = _messages.StringField(9)
-  initialNodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(11, repeated=True)
-  locations = _messages.StringField(12, repeated=True)
-  loggingService = _messages.StringField(13)
-  masterAuth = _messages.MessageField('MasterAuth', 14)
-  monitoringService = _messages.StringField(15)
-  name = _messages.StringField(16)
-  network = _messages.StringField(17)
-  nodeConfig = _messages.MessageField('NodeConfig', 18)
-  nodeIpv4CidrSize = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 20, repeated=True)
-  selfLink = _messages.StringField(21)
-  servicesIpv4Cidr = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusMessage = _messages.StringField(24)
-  subnetwork = _messages.StringField(25)
-  zone = _messages.StringField(26)
+  enableKubernetesAlpha = _messages.BooleanField(8)
+  endpoint = _messages.StringField(9)
+  initialClusterVersion = _messages.StringField(10)
+  initialNodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(12, repeated=True)
+  locations = _messages.StringField(13, repeated=True)
+  loggingService = _messages.StringField(14)
+  masterAuth = _messages.MessageField('MasterAuth', 15)
+  monitoringService = _messages.StringField(16)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  nodeConfig = _messages.MessageField('NodeConfig', 19)
+  nodeIpv4CidrSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 21, repeated=True)
+  selfLink = _messages.StringField(22)
+  servicesIpv4Cidr = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  subnetwork = _messages.StringField(26)
+  zone = _messages.StringField(27)
 
 
 class ClusterUpdate(_messages.Message):
@@ -983,6 +1002,18 @@ class NonResourceAttributes(_messages.Message):
 
   path = _messages.StringField(1)
   verb = _messages.StringField(2)
+
+
+class ObjectMeta(_messages.Message):
+  """The fields from "pkg/api/types".ObjectMeta that actually get filled in on
+  Authenticate/Authorize requests.
+
+  Fields:
+    creationTimestamp: Timestamp representing the server time when this object
+      was created.
+  """
+
+  creationTimestamp = _messages.BytesField(1)
 
 
 class Operation(_messages.Message):

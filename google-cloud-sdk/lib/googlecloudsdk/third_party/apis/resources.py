@@ -153,6 +153,13 @@ class Collections(enum.Enum):
       'cloudbuild.projects.builds',
       'v1/projects/{projectId}/builds/{id}',
       [u'projectId', u'id'])
+  CLOUDBUILD_PROJECTS_TRIGGERS = (
+      'cloudbuild',
+      'v1',
+      'https://cloudbuild.googleapis.com/',
+      'cloudbuild.projects.triggers',
+      'v1/projects/{projectId}/triggers/{triggerId}',
+      [u'projectId', u'triggerId'])
   CLOUDDEBUGGER_DEBUGGER_DEBUGGEES_BREAKPOINTS = (
       'clouddebugger',
       'v2',
@@ -526,6 +533,13 @@ class Collections(enum.Enum):
       'compute.targetSslProxies',
       '{project}/global/targetSslProxies/{targetSslProxy}',
       [u'project', u'targetSslProxy'])
+  COMPUTE_TARGETTCPPROXIES = (
+      'compute',
+      'alpha',
+      'https://www.googleapis.com/compute/alpha/projects/',
+      'compute.targetTcpProxies',
+      '{project}/global/targetTcpProxies/{targetTcpProxy}',
+      [u'project', u'targetTcpProxy'])
   COMPUTE_TARGETVPNGATEWAYS = (
       'compute',
       'alpha',
@@ -926,6 +940,13 @@ class Collections(enum.Enum):
       'compute.globalOperations',
       '{project}/global/operations/{operation}',
       [u'project', u'operation'])
+  COMPUTE_HEALTHCHECKS = (
+      'compute',
+      'v1',
+      'https://www.googleapis.com/compute/v1/projects/',
+      'compute.healthChecks',
+      '{project}/global/healthChecks/{healthCheck}',
+      [u'project', u'healthCheck'])
   COMPUTE_HTTPHEALTHCHECKS = (
       'compute',
       'v1',
@@ -1080,6 +1101,13 @@ class Collections(enum.Enum):
       'compute.targetPools',
       '{project}/regions/{region}/targetPools/{targetPool}',
       [u'project', u'region', u'targetPool'])
+  COMPUTE_TARGETSSLPROXIES = (
+      'compute',
+      'v1',
+      'https://www.googleapis.com/compute/v1/projects/',
+      'compute.targetSslProxies',
+      '{project}/global/targetSslProxies/{targetSslProxy}',
+      [u'project', u'targetSslProxy'])
   COMPUTE_TARGETVPNGATEWAYS = (
       'compute',
       'v1',
@@ -1389,6 +1417,20 @@ class Collections(enum.Enum):
       'genomics.pipelines',
       'v1alpha2/pipelines/{pipelineId}',
       [u'pipelineId'])
+  IAM_ORGANIZATIONS_ROLES = (
+      'iam',
+      'v1',
+      'https://iam.googleapis.com/',
+      'iam.organizations.roles',
+      'v1/organizations/{organizationsId}/roles/{rolesId}',
+      [u'organizationsId', u'rolesId'])
+  IAM_PROJECTS_ROLES = (
+      'iam',
+      'v1',
+      'https://iam.googleapis.com/',
+      'iam.projects.roles',
+      'v1/projects/{projectsId}/roles/{rolesId}',
+      [u'projectsId', u'rolesId'])
   IAM_PROJECTS_SERVICEACCOUNTS = (
       'iam',
       'v1',
@@ -1404,6 +1446,13 @@ class Collections(enum.Enum):
       'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/'
       '{keysId}',
       [u'projectsId', u'serviceAccountsId', u'keysId'])
+  IAM_ROLES = (
+      'iam',
+      'v1',
+      'https://iam.googleapis.com/',
+      'iam.roles',
+      'v1/roles/{rolesId}',
+      [u'rolesId'])
   LOGGING_PROJECTS_LOGSERVICES_SINKS = (
       'logging',
       'v1beta3',
@@ -1481,6 +1530,34 @@ class Collections(enum.Enum):
       'https://ml.googleapis.com/',
       'ml.projects.operations',
       'v1alpha3/projects/{projectsId}/operations/{operationsId}',
+      [u'projectsId', u'operationsId'])
+  ML_PROJECTS_JOBS = (
+      'ml',
+      'v1beta1',
+      'https://ml.googleapis.com/',
+      'ml.projects.jobs',
+      'v1beta1/projects/{projectsId}/jobs/{jobsId}',
+      [u'projectsId', u'jobsId'])
+  ML_PROJECTS_MODELS = (
+      'ml',
+      'v1beta1',
+      'https://ml.googleapis.com/',
+      'ml.projects.models',
+      'v1beta1/projects/{projectsId}/models/{modelsId}',
+      [u'projectsId', u'modelsId'])
+  ML_PROJECTS_MODELS_VERSIONS = (
+      'ml',
+      'v1beta1',
+      'https://ml.googleapis.com/',
+      'ml.projects.models.versions',
+      'v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+      [u'projectsId', u'modelsId', u'versionsId'])
+  ML_PROJECTS_OPERATIONS = (
+      'ml',
+      'v1beta1',
+      'https://ml.googleapis.com/',
+      'ml.projects.operations',
+      'v1beta1/projects/{projectsId}/operations/{operationsId}',
       [u'projectsId', u'operationsId'])
   PUBSUB_PROJECTS_SUBSCRIPTIONS = (
       'pubsub',

@@ -35,6 +35,10 @@ class IamV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.iamPolicies = self.IamPoliciesService(self)
+    self.organizations_roles = self.OrganizationsRolesService(self)
+    self.organizations = self.OrganizationsService(self)
+    self.permissions = self.PermissionsService(self)
+    self.projects_roles = self.ProjectsRolesService(self)
     self.projects_serviceAccounts_keys = self.ProjectsServiceAccountsKeysService(self)
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
@@ -74,6 +78,289 @@ that the user has access to.
         request_field='<request>',
         request_type_name=u'GetPolicyDetailsRequest',
         response_type_name=u'GetPolicyDetailsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsRolesService(base_api.BaseApiService):
+    """Service class for the organizations_roles resource."""
+
+    _NAME = u'organizations_roles'
+
+    def __init__(self, client):
+      super(IamV1.OrganizationsRolesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new Role.
+
+      Args:
+        request: (IamOrganizationsRolesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/roles',
+        http_method=u'POST',
+        method_id=u'iam.organizations.roles.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/roles',
+        request_field=u'createRoleRequest',
+        request_type_name=u'IamOrganizationsRolesCreateRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a Role definition.
+
+      Args:
+        request: (IamOrganizationsRolesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/roles/{rolesId}',
+        http_method=u'GET',
+        method_id=u'iam.organizations.roles.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamOrganizationsRolesGetRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the Roles defined on a resource.
+
+      Args:
+        request: (IamOrganizationsRolesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/roles',
+        http_method=u'GET',
+        method_id=u'iam.organizations.roles.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1/{+parent}/roles',
+        request_field='',
+        request_type_name=u'IamOrganizationsRolesListRequest',
+        response_type_name=u'ListRolesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a Role definition.
+
+      Args:
+        request: (IamOrganizationsRolesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/organizations/{organizationsId}/roles/{rolesId}',
+        http_method=u'PATCH',
+        method_id=u'iam.organizations.roles.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'role',
+        request_type_name=u'IamOrganizationsRolesPatchRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = u'organizations'
+
+    def __init__(self, client):
+      super(IamV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class PermissionsService(base_api.BaseApiService):
+    """Service class for the permissions resource."""
+
+    _NAME = u'permissions'
+
+    def __init__(self, client):
+      super(IamV1.PermissionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def QueryTestablePermissions(self, request, global_params=None):
+      """Lists the permissions testable on a resource.
+A permission is testable if it can be tested for an identity on a resource.
+
+      Args:
+        request: (QueryTestablePermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryTestablePermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryTestablePermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryTestablePermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'iam.permissions.queryTestablePermissions',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/permissions:queryTestablePermissions',
+        request_field='<request>',
+        request_type_name=u'QueryTestablePermissionsRequest',
+        response_type_name=u'QueryTestablePermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsRolesService(base_api.BaseApiService):
+    """Service class for the projects_roles resource."""
+
+    _NAME = u'projects_roles'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsRolesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new Role.
+
+      Args:
+        request: (IamProjectsRolesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/roles',
+        http_method=u'POST',
+        method_id=u'iam.projects.roles.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/roles',
+        request_field=u'createRoleRequest',
+        request_type_name=u'IamProjectsRolesCreateRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a Role definition.
+
+      Args:
+        request: (IamProjectsRolesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/roles/{rolesId}',
+        http_method=u'GET',
+        method_id=u'iam.projects.roles.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamProjectsRolesGetRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the Roles defined on a resource.
+
+      Args:
+        request: (IamProjectsRolesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/roles',
+        http_method=u'GET',
+        method_id=u'iam.projects.roles.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1/{+parent}/roles',
+        request_field='',
+        request_type_name=u'IamProjectsRolesListRequest',
+        response_type_name=u'ListRolesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a Role definition.
+
+      Args:
+        request: (IamProjectsRolesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/roles/{rolesId}',
+        http_method=u'PATCH',
+        method_id=u'iam.projects.roles.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'role',
+        request_type_name=u'IamProjectsRolesPatchRequest',
+        response_type_name=u'Role',
         supports_download=False,
     )
 
@@ -290,7 +577,8 @@ and returns it.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Returns the IAM access control policy for specified IAM resource.
+      """Returns the IAM access control policy for a.
+ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsGetIamPolicyRequest) input message
@@ -344,7 +632,8 @@ and returns it.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the IAM access control policy for the specified IAM resource.
+      """Sets the IAM access control policy for a.
+ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsSetIamPolicyRequest) input message
@@ -431,7 +720,7 @@ will fail.
 
     def TestIamPermissions(self, request, global_params=None):
       """Tests the specified permissions against the IAM access control policy.
-for the specified IAM resource.
+for a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsTestIamPermissionsRequest) input message
@@ -508,8 +797,63 @@ The `etag` is mandatory.
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      """Gets a Role definition.
+
+      Args:
+        request: (IamRolesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Role) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/roles/{rolesId}',
+        http_method=u'GET',
+        method_id=u'iam.roles.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamRolesGetRequest',
+        response_type_name=u'Role',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the Roles defined on a resource.
+
+      Args:
+        request: (IamRolesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'iam.roles.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'pageSize', u'pageToken', u'parent', u'view'],
+        relative_path=u'v1/roles',
+        request_field='',
+        request_type_name=u'IamRolesListRequest',
+        response_type_name=u'ListRolesResponse',
+        supports_download=False,
+    )
+
     def QueryGrantableRoles(self, request, global_params=None):
       """Queries roles that can be granted on a particular resource.
+A role is grantable if it can be used as the role in a binding for a policy
+for that resource.
 
       Args:
         request: (QueryGrantableRolesRequest) input message

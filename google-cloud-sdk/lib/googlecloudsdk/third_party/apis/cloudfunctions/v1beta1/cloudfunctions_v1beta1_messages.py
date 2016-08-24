@@ -246,7 +246,7 @@ class Location(_messages.Message):
   Fields:
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The cononical id for this location. For example: `"us-east1"`.
+    locationId: The canonical id for this location. For example: `"us-east1"`.
     metadata: Service-specific metadata. For example the available capacity at
       the given location.
     name: Resource name for the location, which may vary between

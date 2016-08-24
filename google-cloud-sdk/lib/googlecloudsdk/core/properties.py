@@ -89,9 +89,6 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     r'(?:/|[/?]\S+/)'
     r'$', re.IGNORECASE)
 
-_NEVER = 'never'
-_PROMPT = 'prompt'
-
 
 def Stringize(value):
   if isinstance(value, basestring):
@@ -737,9 +734,9 @@ class _SectionCore(_Section):
       if max_log_days is None:
         return
       try:
-        if int(max_log_days) < 1:
+        if int(max_log_days) < 0:
           raise InvalidValueError(
-              'Max number of days must be at least 1')
+              'Max number of days must be at least 0')
       except ValueError:
         raise InvalidValueError(
             'Max number of days must be an integer')
@@ -747,16 +744,9 @@ class _SectionCore(_Section):
         'max_log_days',
         validator=MaxLogDaysValidator,
         help_text='Maximum number of days to retain log files before deleting.'
-        'If unset, defaults to 30.',
+        ' If set to 0, turns off log garbage collection and does not delete log'
+        ' files. If unset, defaults to 30.',
         default='30')
-    self.enable_crash_reporting = self._Add(
-        'enable_crash_reporting',
-        choices=(_NEVER, _PROMPT),
-        default=_NEVER,
-        hidden=True,
-        help_text='If set to {0}, prompt to report an error after failed gcloud'
-        ' invocations. If set to {1}, do not ever report errors.'.format(
-            _PROMPT, _NEVER))
 
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
@@ -897,7 +887,7 @@ class _SectionProxy(_Section):
         help_text='If your proxy requires authentication, the password to use '
         'when connecting.')
 
-    valid_proxy_types = sorted(http_proxy_types.GetProxyTypeMap().keys())
+    valid_proxy_types = sorted(http_proxy_types.PROXY_TYPE_MAP.keys())
     def ProxyTypeValidator(proxy_type):
       if proxy_type is not None and proxy_type not in valid_proxy_types:
         raise InvalidValueError(

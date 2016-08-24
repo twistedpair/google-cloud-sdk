@@ -45,17 +45,18 @@ MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     region_explanation=flags.REGION_PROPERTY_EXPLANATION)
 
 
-def AddNamedPortsArgs(parser):
-  """Adds flags for handling named ports."""
+def AddGroupArg(parser):
   parser.add_argument(
       'group',
       help='The name of the instance group.')
 
+
+def AddNamedPortsArgs(parser):
+  """Adds flags for handling named ports."""
   parser.add_argument(
       '--named-ports',
       required=True,
       type=arg_parsers.ArgList(),
-      action=arg_parsers.FloatingListValuesCatcher(),
       metavar='NAME:PORT',
       help="""\
           The comma-separated list of key:value pairs representing

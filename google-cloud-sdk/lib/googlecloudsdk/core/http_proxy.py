@@ -60,7 +60,7 @@ def GetDefaultProxyInfo(method='http'):
 
 def GetProxyProperties():
   """Get proxy information from cloud sdk properties in dictionary form."""
-  proxy_type_map = http_proxy_types.GetProxyTypeMap()
+  proxy_type_map = http_proxy_types.PROXY_TYPE_MAP
   proxy_type = properties.VALUES.proxy.proxy_type.Get()
   proxy_address = properties.VALUES.proxy.address.Get()
   proxy_port = properties.VALUES.proxy.port.GetInt()

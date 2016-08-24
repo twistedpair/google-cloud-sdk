@@ -250,6 +250,11 @@ MAP = {
             messages_modulepath='googlecloudsdk.third_party.apis.ml.v1alpha3.ml_v1alpha3_messages',
             default_version=True
         ),
+        'v1beta1': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.ml.v1beta1.ml_v1beta1_client.MlV1beta1',
+            messages_modulepath='googlecloudsdk.third_party.apis.ml.v1beta1.ml_v1beta1_messages',
+            default_version=False
+        ),
     },
     'pubsub': {
         'v1': APIDef(

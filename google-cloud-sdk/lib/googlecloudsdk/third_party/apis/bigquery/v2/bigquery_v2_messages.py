@@ -466,10 +466,15 @@ class BigtableOptions(_messages.Message):
       column families that are not specified in columnFamilies list are not
       exposed in the table schema. Otherwise, they are read with BYTES type
       values. The default value is false.
+    readRowkeyAsString: [Optional] If field is true, then the rowkey column
+      families will be read and converted to string. Otherwise they are read
+      with BYTES type values and users need to manually cast them with CAST if
+      necessary. The default value is false.
   """
 
   columnFamilies = _messages.MessageField('BigtableColumnFamily', 1, repeated=True)
   ignoreUnspecifiedColumnFamilies = _messages.BooleanField(2)
+  readRowkeyAsString = _messages.BooleanField(3)
 
 
 class CsvOptions(_messages.Message):
@@ -898,6 +903,9 @@ class GetQueryResultsResponse(_messages.Message):
       results, subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type of the response.
+    numDmlAffectedRows: [Output-only, Experimental] The number of rows
+      affected by a DML statement. Present only for DML statements INSERT,
+      UPDATE or DELETE.
     pageToken: A token used for paging results.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
@@ -917,11 +925,12 @@ class GetQueryResultsResponse(_messages.Message):
   jobComplete = _messages.BooleanField(4)
   jobReference = _messages.MessageField('JobReference', 5)
   kind = _messages.StringField(6, default=u'bigquery#getQueryResultsResponse')
-  pageToken = _messages.StringField(7)
-  rows = _messages.MessageField('TableRow', 8, repeated=True)
-  schema = _messages.MessageField('TableSchema', 9)
-  totalBytesProcessed = _messages.IntegerField(10)
-  totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  numDmlAffectedRows = _messages.IntegerField(7)
+  pageToken = _messages.StringField(8)
+  rows = _messages.MessageField('TableRow', 9, repeated=True)
+  schema = _messages.MessageField('TableSchema', 10)
+  totalBytesProcessed = _messages.IntegerField(11)
+  totalRows = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
 
 
 class GoogleSheetsOptions(_messages.Message):
@@ -1104,6 +1113,16 @@ class JobConfigurationLoad(_messages.Message):
       "Field1:Type1[,Field2:Type2]*". For example, "foo:STRING, bar:INTEGER,
       baz:FLOAT".
     schemaInlineFormat: [Deprecated] The format of the schemaInline property.
+    schemaUpdateOptions: [Experimental] Allows the schema of the desitination
+      table to be updated as a side effect of the load job. Schema update
+      options are supported in two cases: when writeDisposition is
+      WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the
+      destination table is a partition of a table, specified by partition
+      decorators. For normal tables, WRITE_TRUNCATE will always overwrite the
+      schema. One or more of the following values are specified:
+      ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema.
+      ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original
+      schema to nullable.
     skipLeadingRows: [Optional] The number of rows at the top of a CSV file
       that BigQuery will skip when loading the data. The default value is 0.
       This property is useful if you have header rows in the file that should
@@ -1140,10 +1159,11 @@ class JobConfigurationLoad(_messages.Message):
   schema = _messages.MessageField('TableSchema', 12)
   schemaInline = _messages.StringField(13)
   schemaInlineFormat = _messages.StringField(14)
-  skipLeadingRows = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(16)
-  sourceUris = _messages.StringField(17, repeated=True)
-  writeDisposition = _messages.StringField(18)
+  schemaUpdateOptions = _messages.StringField(15, repeated=True)
+  skipLeadingRows = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(17)
+  sourceUris = _messages.StringField(18, repeated=True)
+  writeDisposition = _messages.StringField(19)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1186,6 +1206,16 @@ class JobConfigurationQuery(_messages.Message):
     priority: [Optional] Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
     query: [Required] BigQuery SQL query to execute.
+    schemaUpdateOptions: [Experimental] Allows the schema of the desitination
+      table to be updated as a side effect of the query job. Schema update
+      options are supported in two cases: when writeDisposition is
+      WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the
+      destination table is a partition of a table, specified by partition
+      decorators. For normal tables, WRITE_TRUNCATE will always overwrite the
+      schema. One or more of the following values are specified:
+      ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema.
+      ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original
+      schema to nullable.
     tableDefinitions: [Optional] If querying an external data source outside
       of BigQuery, describes the data format, location and other properties of
       the data source. By defining these properties, the data source can then
@@ -1254,11 +1284,12 @@ class JobConfigurationQuery(_messages.Message):
   preserveNulls = _messages.BooleanField(8)
   priority = _messages.StringField(9)
   query = _messages.StringField(10)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 11)
-  useLegacySql = _messages.BooleanField(12)
-  useQueryCache = _messages.BooleanField(13, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 14, repeated=True)
-  writeDisposition = _messages.StringField(15)
+  schemaUpdateOptions = _messages.StringField(11, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 12)
+  useLegacySql = _messages.BooleanField(13)
+  useQueryCache = _messages.BooleanField(14, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 15, repeated=True)
+  writeDisposition = _messages.StringField(16)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -1389,8 +1420,11 @@ class JobStatistics2(_messages.Message):
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
+    numDmlAffectedRows: [Output-only, Experimental] The number of rows
+      affected by a DML statement. Present only for DML statements INSERT,
+      UPDATE or DELETE.
     queryPlan: [Output-only, Experimental] Describes execution plan for the
-      query as a list of stages.
+      query.
     referencedTables: [Output-only, Experimental] Referenced tables for the
       job. Queries that reference more than 50 tables will not have a complete
       list.
@@ -1402,11 +1436,12 @@ class JobStatistics2(_messages.Message):
 
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 3, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 4, repeated=True)
-  schema = _messages.MessageField('TableSchema', 5)
-  totalBytesBilled = _messages.IntegerField(6)
-  totalBytesProcessed = _messages.IntegerField(7)
+  numDmlAffectedRows = _messages.IntegerField(3)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 4, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 5, repeated=True)
+  schema = _messages.MessageField('TableSchema', 6)
+  totalBytesBilled = _messages.IntegerField(7)
+  totalBytesProcessed = _messages.IntegerField(8)
 
 
 class JobStatistics3(_messages.Message):
@@ -1606,6 +1641,9 @@ class QueryResponse(_messages.Message):
       subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type.
+    numDmlAffectedRows: [Output-only, Experimental] The number of rows
+      affected by a DML statement. Present only for DML statements INSERT,
+      UPDATE or DELETE.
     pageToken: A token used for paging results.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
@@ -1625,11 +1663,12 @@ class QueryResponse(_messages.Message):
   jobComplete = _messages.BooleanField(3)
   jobReference = _messages.MessageField('JobReference', 4)
   kind = _messages.StringField(5, default=u'bigquery#queryResponse')
-  pageToken = _messages.StringField(6)
-  rows = _messages.MessageField('TableRow', 7, repeated=True)
-  schema = _messages.MessageField('TableSchema', 8)
-  totalBytesProcessed = _messages.IntegerField(9)
-  totalRows = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  numDmlAffectedRows = _messages.IntegerField(6)
+  pageToken = _messages.StringField(7)
+  rows = _messages.MessageField('TableRow', 8, repeated=True)
+  schema = _messages.MessageField('TableSchema', 9)
+  totalBytesProcessed = _messages.IntegerField(10)
+  totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
 
 
 class StandardQueryParameters(_messages.Message):

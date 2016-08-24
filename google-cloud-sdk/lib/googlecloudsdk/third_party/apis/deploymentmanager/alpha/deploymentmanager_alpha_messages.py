@@ -983,9 +983,12 @@ class Options(_messages.Message):
     nameProperty: The json path to the field in the resource JSON body into
       which the resource name should be mapped. Leaving this empty indicates
       that there should be no mapping performed.
+    validationOptions: Options for how to validate and process properties on a
+      resource.
   """
 
   nameProperty = _messages.StringField(1)
+  validationOptions = _messages.MessageField('ValidationOptions', 2)
 
 
 class Resource(_messages.Message):
@@ -1008,7 +1011,7 @@ class Resource(_messages.Message):
     properties: [Output Only] The current properties of the resource before
       any references have been filled in. Returned as serialized YAML.
     type: [Output Only] The type of the resource, for example
-      compute.v1.instance, or replicaPools.v1beta2.instanceGroupManager.
+      compute.v1.instance, or cloudfunctions.v1beta1.function.
     update: [Output Only] If Deployment Manager is currently updating or
       previewing an update to this resource, the updated configuration appears
       here.
@@ -1292,5 +1295,19 @@ class TypesListResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   types = _messages.MessageField('Type', 2, repeated=True)
+
+
+class ValidationOptions(_messages.Message):
+  """Options for how to validate and process properties on a resource.
+
+  Fields:
+    schemaValidation: Customize how deployment manager will validate the
+      resource against schema errors.
+    undeclaredProperties: Specify what to do with extra properties when
+      executing a request.
+  """
+
+  schemaValidation = _messages.StringField(1)
+  undeclaredProperties = _messages.StringField(2)
 
 

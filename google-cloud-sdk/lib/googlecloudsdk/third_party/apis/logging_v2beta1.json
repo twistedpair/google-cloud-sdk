@@ -256,7 +256,7 @@
           ]
         },
         "insertId": {
-          "description": "Optional. A unique ID for the log entry. If you provide this\nfield, the logging service considers other log entries in the\nsame log with the same ID as duplicates which can be removed.  If\nomitted, Stackdriver Logging will generate a unique ID for this\nlog entry.",
+          "description": "Optional. A unique ID for the log entry. If you provide this\nfield, the logging service considers other log entries in the\nsame project with the same ID as duplicates which can be removed.  If\nomitted, Stackdriver Logging will generate a unique ID for this\nlog entry.",
           "type": "string"
         },
         "httpRequest": {
@@ -286,7 +286,7 @@
     },
     "HttpRequest": {
       "id": "HttpRequest",
-      "description": "A common proto for logging HTTP requests.",
+      "description": "A common proto for logging HTTP requests. Only contains semantics\ndefined by the HTTP specification. Product-specific logging\ninformation MUST be defined in a separate message.",
       "type": "object",
       "properties": {
         "requestMethod": {
@@ -409,21 +409,21 @@
       "type": "object",
       "properties": {
         "projectIds": {
-          "description": "Deprecated. One or more project IDs or project numbers from which to\nretrieve log entries.  Examples of a project ID: `\"my-project-1A\"`,\n`\"1234567890\"`.",
+          "description": "Deprecated. One or more project identifiers or project numbers from which\nto retrieve log entries.  Examples: `\"my-project-1A\"`, `\"1234567890\"`. If\npresent, these project identifiers are converted to resource format and\nadded to the list of resources in `resourceNames`. Callers should use\n`resourceNames` rather than this parameter.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "resourceNames": {
-          "description": "One or more cloud resources from which to retrieve log entries. These will\nbe combined with the resources from project_ids above.\ne.g. \"projects\/my-project-1A\"",
+          "description": "Optional. One or more cloud resources from which to retrieve log entries.\nExample: `\"projects\/my-project-1A\"`, `\"projects\/1234567890\"`.  Projects\nlisted in `projectIds` are added to this list.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "filter": {
-          "description": "Optional. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nThe filter is compared against all log entries in the projects specified by\n`projectIds`.  Only entries that match the filter are retrieved.  An empty\nfilter matches all log entries.",
+          "description": "Optional. A filter that chooses which log entries to return.  See [Advanced\nLogs Filters](\/logging\/docs\/view\/advanced_filters).  Only log entries that\nmatch the filter are returned.  An empty filter matches all log entries.",
           "type": "string"
         },
         "orderBy": {
@@ -431,17 +431,13 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "Optional. The maximum number of results to return from this request.\nYou must check for presence of `nextPageToken` to determine if additional\nresults are available, which you can retrieve by passing the\n`nextPageToken` value as the `pageToken` parameter in the next request.",
+          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
           "type": "integer",
           "format": "int32"
         },
         "pageToken": {
-          "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe values of `projectIds`, `filter`, and `orderBy` must be the same\nas in the previous request.",
+          "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
           "type": "string"
-        },
-        "partialSuccess": {
-          "description": "Optional. If true, read access to all projects is not required and results\nwill be returned for the subset of projects for which read access is\npermitted (empty subset is permitted).",
-          "type": "boolean"
         },
         "isV1Request": {
 
@@ -467,47 +463,13 @@
           "format": "google-datetime"
         },
         "searchedThroughTimestamp": {
-          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using next_page_token are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis can be used to observe progress between successive queries, in\nparticular when only a page token is returned.",
+          "description": "The furthest point in time through which the search has progressed. All\nfuture entries returned using `nextPageToken` are guaranteed to have a\ntimestamp at or past this point in time in the direction of the search.\nThis value can be used to observe progress between successive queries, in\nparticular when `nextPageToken` is returned without any log entries.\nIf `nextPageToken` is not present in this response, then this field\nis left empty.",
           "type": "string",
           "format": "google-datetime"
         },
         "nextPageToken": {
-          "description": "If there are more results than were returned, then `nextPageToken` is\nincluded in the response.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
-        },
-        "projectIdErrors": {
-          "description": "If partial_success is true, contains the project ids that had errors and\nthe associated errors.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "Status"
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
         }
       }
     },
@@ -532,17 +494,17 @@
           "type": "string"
         },
         "batchSize": {
-          "description": "Optional. The number of LogEntrys to return in each streamed response.\nIf unspecified, the default will be 10.",
+          "description": "Optional. The maximum number of log entries to return in each streamed\nresponse.  Non-positive values are ignored and the default is 10.",
           "type": "integer",
           "format": "int32"
         },
         "maxResponseInterval": {
-          "description": "Optional. The maximum time between successive streamed responses.\nA response will be sent every max_response_interval even if page_size\nentries have not yet been accumulated provided that either some entries\nhave been accumulated OR the searched_through_timestamp \/ resume_token\nhas changed. (i.e. a response containg 0 entries is allowed)\nIf unspecified, the default will be 1 second.",
+          "description": "Optional. The maximum time between successive streamed responses.\nThe default value is `1s`, one second.  A response will be sent at\nleast this often, even if it contains no log entries, provided\nthat there has been some progress as evidenced by a change to the\n`resumeToken` provided in the response.",
           "type": "string",
           "format": "google-duration"
         },
         "resumeToken": {
-          "description": "Optional. If the `resumeToken` parameter is supplied, then the next batch of\nresults is retrieved. The `resumeToken` parameter must be set to the value\nfrom the previous response.",
+          "description": "Optional. If the `resumeToken` parameter is supplied, then read streaming\nbegins at the location represented by this `resumeToken` from a previous\nresponse. This value might be useful if streaming is stops prematurely.",
           "type": "string"
         }
       }
@@ -588,7 +550,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results than were returned, then `nextPageToken` is\nincluded in the response.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -607,7 +569,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Optional. A concise name for the monitored resource type that might be\ndisplayed in user interfaces. For example, `\"Google Cloud SQL Database\"`.",
+          "description": "Optional. A concise name for the monitored resource type that might be\ndisplayed in user interfaces. It should be a Title Cased Noun Phrase,\nwithout any article or other determiners. For example,\n`\"Google Cloud SQL Database\"`.",
           "type": "string"
         },
         "description": {
@@ -665,7 +627,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of logs, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListLogs`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -683,7 +645,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of resource types, use the value of\n`nextPageToken` as `pageToken` in the next call of `ListResourceKeys`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -723,7 +685,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results, then `nextPageToken` is returned in the\nresponse.  To get the next batch of indexes, use the value of\n`nextPageToken` as `pageToken` in the next call of\n`ListResourceValues`.\nIf `nextPageToken` is empty, then there are no more results.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -782,7 +744,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results than were returned, then `nextPageToken` is\nincluded in the response.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call the same\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -793,19 +755,19 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned sink identifier. Example:\n`\"my-severe-errors-to-pubsub\"`.\nSink identifiers are limited to 1000 characters\nand can include only the following characters: `A-Z`, `a-z`,\n`0-9`, and the special characters `_-.`.\nThe maximum length of this value is 100 characters.",
+          "description": "Required. The client-assigned sink identifier, unique within the\nproject. Example: `\"my-syslog-errors-to-pubsub\"`.  Sink identifiers are\nlimited to 1000 characters and can include only the following characters:\n`A-Z`, `a-z`, `0-9`, and the special characters `_-.`.  The maximum length\nof the name is 100 characters.",
           "type": "string"
         },
         "destination": {
-          "description": "The export destination. See\n[Exporting Logs With Sinks](\/logging\/docs\/api\/tasks\/exporting-logs).\nExamples: `\"storage.googleapis.com\/a-bucket\"`,\n`\"bigquery.googleapis.com\/projects\/a-project-id\/datasets\/a-dataset\"`.",
+          "description": "Required. The export destination. See\n[Exporting Logs With Sinks](\/logging\/docs\/api\/tasks\/exporting-logs).\nExamples:\n\n    \"storage.googleapis.com\/my-gcs-bucket\"\n    \"bigquery.googleapis.com\/projects\/my-project-id\/datasets\/my-dataset\"\n    \"pubsub.googleapis.com\/projects\/my-project\/topics\/my-topic\"",
           "type": "string"
         },
         "filter": {
-          "description": "An [advanced logs filter](\/logging\/docs\/view\/advanced_filters). Only\nlog entries matching that filter are exported. The filter must be\nconsistent with the log entry format specified by the\n`outputVersionFormat` parameter, regardless of the format of the\nlog entry that was originally written to Stackdriver Logging.\nExample (V2 format):\n`\"logName=projects\/my-projectid\/logs\/syslog AND severity>=ERROR\"`.",
+          "description": "Optional. An [advanced logs filter](\/logging\/docs\/view\/advanced_filters).\nOnly log entries matching the filter are exported. The filter\nmust be consistent with the log entry format specified by the\n`outputVersionFormat` parameter, regardless of the format of the\nlog entry that was originally written to Stackdriver Logging.\nExample filter (V2 format):\n\n    logName=projects\/my-projectid\/logs\/syslog AND severity>=ERROR",
           "type": "string"
         },
         "outputVersionFormat": {
-          "description": "The log entry version to use for this sink's exported log entries.\nThis version does not have to correspond to the version of the log entry\nwhen it was written to Stackdriver Logging.",
+          "description": "Optional. The log entry version to use for this sink's exported log\nentries.  This version does not have to correspond to the version of the\nlog entry that was written to Stackdriver Logging. If omitted, the\nv2 format is used.",
           "enumDescriptions": [
             "An unspecified version format will default to V2.",
             "`LogEntry` version 2 format.",
@@ -829,6 +791,10 @@
           "items": {
             "$ref": "LogError"
           }
+        },
+        "writerIdentity": {
+          "description": "Output only. The iam identity to which the destination needs to grant write\naccess.  This may be a service account or a group.\nExamples (Do not assume these specific values):\n   \"serviceAccount:cloud-logs@system.gserviceaccount.com\"\n   \"group:cloud-logs@google.com\"\n\n  For GCS destinations, the role \"roles\/owner\" is required on the bucket\n  For Cloud Pubsub destinations, the role \"roles\/pubsub.publisher\" is\n    required on the topic\n  For BigQuery, the role \"roles\/editor\" is required on the dataset",
+          "type": "string"
         }
       }
     },
@@ -852,6 +818,33 @@
         }
       }
     },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` which can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting purpose.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
     "ListLogMetricsResponse": {
       "id": "ListLogMetricsResponse",
       "description": "Result returned from ListLogMetrics.",
@@ -865,7 +858,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there are more results than were returned, then `nextPageToken` is\nincluded in the response.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
+          "description": "If there might be more results than appear in this response, then\n`nextPageToken` is included.  To get the next set of results, call this\nmethod again using the value of `nextPageToken` as `pageToken`.",
           "type": "string"
         }
       }
@@ -1189,18 +1182,18 @@
                   "type": "string"
                 },
                 "resourceIndexPrefix": {
-                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `resource_type` is the name of a resource type,\nthen this field may contain values for the log resource type's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.",
+                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `resource_type` is the name of a resource type,\nthen this field may contain values for the log resource type's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.\nOptional. The maximum number of results to return from this request.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return.",
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior `ListLogs`\noperation.  If `pageToken` is supplied, then the other fields of this\nrequest are ignored, and instead the previous `ListLogs` operation is\ncontinued.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1236,13 +1229,13 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of `ResourceKeys` objects to return in one operation.",
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "An opaque token, returned as `nextPageToken` by a prior\n`ListResourceKeys` operation.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1297,13 +1290,13 @@
                       "format": "int32"
                     },
                     "pageSize": {
-                      "description": "The maximum number of log resource index resources to return in one\noperation.",
+                      "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "An opaque token, returned as `nextPageToken` by a prior\n`ListResourceValues` operation.",
+                      "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1336,18 +1329,18 @@
               "description": "Lists sinks.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. Required. The resource name containing the sinks.\nExample: `\"projects\/my-logging-project\"`.",
+                  "description": "Part of `parent`. Required. The cloud resource containing the sinks.\nExample: `\"projects\/my-logging-project\"`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `parent` must be the same as in the previous request.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The maximum number of results to return from this request.\nYou must check for presence of `nextPageToken` to determine if additional\nresults are available, which you can retrieve by passing the\n`nextPageToken` value as the `pageToken` parameter in the next request.",
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1374,7 +1367,7 @@
               "description": "Gets a sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the sink to return.\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Part of `sinkName`. Required. The resource name of the sink to return.\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1408,7 +1401,7 @@
               "description": "Creates a sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. The resource in which to create the sink.\nExample: `\"projects\/my-project-id\"`.\n\nThe new sink must be provided in the request.",
+                  "description": "Part of `parent`. Required. The resource in which to create the sink.\nExample: `\"projects\/my-project-id\"`.\nThe new sink must be provided in the request.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1433,10 +1426,10 @@
               "path": "v2beta1/projects/{projectsId}/sinks/{sinksId}",
               "flatPath": "v2beta1/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Creates or updates a sink.",
+              "description": "Updates or creates a sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the sink to update.\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.\n\nThe updated sink must be provided in the request and have the\nsame name that is specified in `sinkName`.  If the sink does not\nexist, it is created.",
+                  "description": "Part of `sinkName`. Required. The resource name of the sink to update, including the parent\nresource and the sink identifier.  If the sink does not exist, this method\ncreates the sink.  Example: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1471,7 +1464,7 @@
               "description": "Deletes a sink.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `sinkName`. The resource name of the sink to delete.\nExample: `\"projects\/my-project-id\/sinks\/my-sink-id\"`.",
+                  "description": "Part of `sinkName`. Required. The resource name of the sink to delete, including the parent\nresource and the sink identifier.  Example:\n`\"projects\/my-project-id\/sinks\/my-sink-id\"`.  It is an error if the sink\ndoes not exist.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1513,12 +1506,12 @@
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.\nThe value of `parent` must be the same as in the previous request.",
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. The maximum number of results to return from this request.\nYou must check for presence of `nextPageToken` to determine if additional\nresults are available, which you can retrieve by passing the\n`nextPageToken` value as the `pageToken` parameter in the next request.",
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1673,6 +1666,394 @@
         }
       }
     },
+    "organizations": {
+      "resources": {
+        "logs": {
+          "methods": {
+            "delete": {
+              "id": "logging.organizations.logs.delete",
+              "path": "v2beta1/organizations/{organizationsId}/logs/{logsId}",
+              "flatPath": "v2beta1/organizations/{organizationsId}/logs/{logsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.",
+              "parameters": {
+                "organizationsId": {
+                  "description": "Part of `logName`. Required. The resource name of the log to delete.  Example:\n`\"projects\/my-project\/logs\/syslog\"`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "logsId": {
+                  "description": "Part of `logName`. See documentation of `organizationsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "organizationsId",
+                "logsId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
+            "list": {
+              "id": "logging.organizations.logs.list",
+              "path": "v2beta1/organizations/{organizationsId}/logs",
+              "flatPath": "v2beta1/organizations/{organizationsId}/logs",
+              "httpMethod": "GET",
+              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "parameters": {
+                "organizationsId": {
+                  "description": "Part of `parent`. The resource name of the entity whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this entity are listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "resourceType": {
+                  "description": "If not empty, this field must be a resource type such as\n`\"gce_instance`. Only logs associated with that resource type are listed.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceIndexPrefix": {
+                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `resource_type` is the name of a resource type,\nthen this field may contain values for the log resource type's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.\nOptional. The maximum number of results to return from this request.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "organizationsId"
+              ],
+              "response": {
+                "$ref": "ListLogsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
+            }
+          }
+        },
+        "resourceKeys": {
+          "methods": {
+            "list": {
+              "id": "logging.organizations.resourceKeys.list",
+              "path": "v2beta1/organizations/{organizationsId}/resourceKeys",
+              "flatPath": "v2beta1/organizations/{organizationsId}/resourceKeys",
+              "httpMethod": "GET",
+              "description": "Lists the resource keys that have log entries in this project.",
+              "parameters": {
+                "organizationsId": {
+                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "organizationsId"
+              ],
+              "response": {
+                "$ref": "ListResourceKeysResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
+            }
+          }
+        },
+        "resourceTypes": {
+          "resources": {
+            "values": {
+              "methods": {
+                "list": {
+                  "id": "logging.organizations.resourceTypes.values.list",
+                  "path": "v2beta1/organizations/{organizationsId}/resourceTypes/{resourceTypesId}/values",
+                  "flatPath": "v2beta1/organizations/{organizationsId}/resourceTypes/{resourceTypesId}/values",
+                  "httpMethod": "GET",
+                  "description": "Lists the current index values for a log resource type.",
+                  "parameters": {
+                    "organizationsId": {
+                      "description": "Part of `parent`. The resource name of a resource type whose indexes are requested.\nExample:\n`\"projects\/my-project-id\/resourceTypes\/gae_app\"`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "resourceTypesId": {
+                      "description": "Part of `parent`. See documentation of `organizationsId`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "indexPrefix": {
+                      "description": "Restricts the index values returned to be those with a specified prefix\nfor each index key.\nThis field has the form `\"\/prefix1\/prefix2\/...\"`, in order corresponding\nto the `ResourceKeys indexKeys`.\nNon-empty prefixes must begin with `\/`.\nFor example, App Engine's two keys are the module ID and the version ID.\nFollowing is the effect of using various values for `indexPrefix`:\n\n+  `\"\/Mod\/\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod` retrieves `\/Mod\/10`, `\/Mod\/11` and `\/ModA\/10` but not `\/XXX\/33`.\n+  `\"\/Mod\/1\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod\/10\/\"` retrieves `\/Mod\/10` only.\n+  An empty prefix or `\"\/\"` retrieves all values.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "depth": {
+                      "description": "A non-negative integer that limits the number of levels of the index\nhierarchy that are returned.\nIf `depth` is 1 (default), only the first index key value is returned.\nIf `depth` is 2, both primary and secondary key values are returned.\nIf `depth` is 0, the depth is the number of slash-separators in the\n`indexPrefix` field, not counting a slash appearing as the last character\nof the prefix.\nIf the `indexPrefix` field is empty, the default depth is 1.\nIt is an error for `depth` to be any positive value\nless than the number of components in `indexPrefix`.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "organizationsId",
+                    "resourceTypesId"
+                  ],
+                  "response": {
+                    "$ref": "ListResourceValuesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "billingAccounts": {
+      "resources": {
+        "logs": {
+          "methods": {
+            "delete": {
+              "id": "logging.billingAccounts.logs.delete",
+              "path": "v2beta1/billingAccounts/{billingAccountsId}/logs/{logsId}",
+              "flatPath": "v2beta1/billingAccounts/{billingAccountsId}/logs/{logsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a log and all its log entries.\nThe log will reappear if it receives new entries.",
+              "parameters": {
+                "billingAccountsId": {
+                  "description": "Part of `logName`. Required. The resource name of the log to delete.  Example:\n`\"projects\/my-project\/logs\/syslog\"`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "logsId": {
+                  "description": "Part of `logName`. See documentation of `billingAccountsId`.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "billingAccountsId",
+                "logsId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
+            "list": {
+              "id": "logging.billingAccounts.logs.list",
+              "path": "v2beta1/billingAccounts/{billingAccountsId}/logs",
+              "flatPath": "v2beta1/billingAccounts/{billingAccountsId}/logs",
+              "httpMethod": "GET",
+              "description": "Lists the logs in the project.\nOnly logs that have entries are listed.",
+              "parameters": {
+                "billingAccountsId": {
+                  "description": "Part of `parent`. The resource name of the entity whose logs are requested.\nIf both `resource_type` and `resourceIndexPrefix` are empty, then\nall logs with entries in this entity are listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "resourceType": {
+                  "description": "If not empty, this field must be a resource type such as\n`\"gce_instance`. Only logs associated with that resource type are listed.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceIndexPrefix": {
+                  "description": "The purpose of this field is to restrict the listed logs to those\nwith entries of a certain kind.\nIf `resource_type` is the name of a resource type,\nthen this field may contain values for the log resource type's indexes.\nOnly logs that have entries whose indexes include the values are listed.\nThe format for this field is `\"\/val1\/val2...\/valN\"`, where `val1` is a\nvalue for the first index, `val2` for the second index, etc.\nAn empty value (a single slash) for an index matches all values,\nand you can omit values for later indexes entirely.\nOptional. The maximum number of results to return from this request.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "billingAccountsId"
+              ],
+              "response": {
+                "$ref": "ListLogsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
+            }
+          }
+        },
+        "resourceKeys": {
+          "methods": {
+            "list": {
+              "id": "logging.billingAccounts.resourceKeys.list",
+              "path": "v2beta1/billingAccounts/{billingAccountsId}/resourceKeys",
+              "flatPath": "v2beta1/billingAccounts/{billingAccountsId}/resourceKeys",
+              "httpMethod": "GET",
+              "description": "Lists the resource keys that have log entries in this project.",
+              "parameters": {
+                "billingAccountsId": {
+                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "billingAccountsId"
+              ],
+              "response": {
+                "$ref": "ListResourceKeysResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ]
+            }
+          }
+        },
+        "resourceTypes": {
+          "resources": {
+            "values": {
+              "methods": {
+                "list": {
+                  "id": "logging.billingAccounts.resourceTypes.values.list",
+                  "path": "v2beta1/billingAccounts/{billingAccountsId}/resourceTypes/{resourceTypesId}/values",
+                  "flatPath": "v2beta1/billingAccounts/{billingAccountsId}/resourceTypes/{resourceTypesId}/values",
+                  "httpMethod": "GET",
+                  "description": "Lists the current index values for a log resource type.",
+                  "parameters": {
+                    "billingAccountsId": {
+                      "description": "Part of `parent`. The resource name of a resource type whose indexes are requested.\nExample:\n`\"projects\/my-project-id\/resourceTypes\/gae_app\"`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "resourceTypesId": {
+                      "description": "Part of `parent`. See documentation of `billingAccountsId`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "indexPrefix": {
+                      "description": "Restricts the index values returned to be those with a specified prefix\nfor each index key.\nThis field has the form `\"\/prefix1\/prefix2\/...\"`, in order corresponding\nto the `ResourceKeys indexKeys`.\nNon-empty prefixes must begin with `\/`.\nFor example, App Engine's two keys are the module ID and the version ID.\nFollowing is the effect of using various values for `indexPrefix`:\n\n+  `\"\/Mod\/\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod` retrieves `\/Mod\/10`, `\/Mod\/11` and `\/ModA\/10` but not `\/XXX\/33`.\n+  `\"\/Mod\/1\"` retrieves `\/Mod\/10` and `\/Mod\/11` but not `\/ModA\/10`.\n+  `\"\/Mod\/10\/\"` retrieves `\/Mod\/10` only.\n+  An empty prefix or `\"\/\"` retrieves all values.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "depth": {
+                      "description": "A non-negative integer that limits the number of levels of the index\nhierarchy that are returned.\nIf `depth` is 1 (default), only the first index key value is returned.\nIf `depth` is 2, both primary and secondary key values are returned.\nIf `depth` is 0, the depth is the number of slash-separators in the\n`indexPrefix` field, not counting a slash appearing as the last character\nof the prefix.\nIf the `indexPrefix` field is empty, the default depth is 1.\nIt is an error for `depth` to be any positive value\nless than the number of components in `indexPrefix`.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "billingAccountsId",
+                    "resourceTypesId"
+                  ],
+                  "response": {
+                    "$ref": "ListResourceValuesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "entries": {
       "methods": {
         "write": {
@@ -1755,13 +2136,13 @@
           "description": "Lists the monitored resource descriptors used by Stackdriver Logging.",
           "parameters": {
             "pageSize": {
-              "description": "Optional. The maximum number of results to return from this request.\nYou must check for presence of `nextPageToken` to determine if additional\nresults are available, which you can retrieve by passing the\n`nextPageToken` value as the `pageToken` parameter in the next request.",
+              "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored.  The presence of `nextPageToken` in the\nresponse indicates that more results might be available.",
               "location": "query",
               "type": "integer",
               "format": "int32"
             },
             "pageToken": {
-              "description": "Optional. If the `pageToken` parameter is supplied, then the next page of\nresults is retrieved.  The `pageToken` parameter must be set to the value\nof the `nextPageToken` from the previous response.",
+              "description": "Optional. If present, then retrieve the next batch of results from the\npreceding call to this method.  `pageToken` must be the value of\n`nextPageToken` from the previous response.  The values of other method\nparameters should be identical to those in the previous call.",
               "location": "query",
               "type": "string"
             }

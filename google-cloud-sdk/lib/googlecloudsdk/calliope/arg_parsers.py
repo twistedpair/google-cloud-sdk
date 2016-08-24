@@ -27,8 +27,7 @@ Example usage:
 
   parser.add_argument(
       '--metadata',
-      type=arg_parsers.ArgDict(),
-      action=arg_parser.FloatingListValuesCatcher())
+      type=arg_parsers.ArgDict())
   parser.add_argument(
       '--delay',
       default='5s',
@@ -701,107 +700,6 @@ class ArgDict(ArgList):
     return arg_dict
 
 
-# pylint:disable=protected-access
-def FloatingListValuesCatcher(
-    action=argparse._StoreAction, switch_value=None):
-  """Create an action for catching floating list values.
-
-  Args:
-    action: argparse.Action, the superclass of the new action.
-    switch_value: obj, If not none, allow users to specify no value for the
-        flag. If the flag is given and no value is specified, the switch_value
-        will be used instead.
-
-  Returns:
-    argparse.Action, an action that will catch list values separated by spaces.
-  """
-
-  class FloatingListValuesCatcherAction(action):
-    """This is to assist with refactoring argument lists.
-
-    Provides an error for users who type (or have a script) that specifies a
-    list with the elements in different arguments. eg.
-     $ gcloud sql instances create foo --authorized-networks x y
-     usage: gcloud sql instances create  INSTANCE [optional flags]
-     ERROR: (gcloud.sql.instances.create) argument --authorized-networks: lists
-     are separated by commas, try "--authorized-networks=x,y"
-
-    To do this, with flags that used to (but no longer) have nargs set to take
-    multiple values we apply an action designed to catch them by transparently
-    setting nargs to '+', and then making sure only 1 value is provided.
-
-    As a caveat, this means that people still cannot put positional arguments
-    after the flags. So, this is a temporary mechanism designed to inform users,
-    and we'll remove it eventually.
-    """
-
-    # TODO(user): remove this.
-    _NOLINT = True
-
-    def __init__(self, *args, **kwargs):
-      if 'nargs' in kwargs:
-        # Make sure nothing weird is happening, first. This action is intended
-        # only for use with --flags that have the type as ArgList or ArgDict,
-        # and do not set nargs at all.
-        raise ValueError(
-            'trying to catch floating lists for a misspecified flag list')
-      if switch_value is not None:
-        kwargs['nargs'] = '*'
-      else:
-        kwargs['nargs'] = '+'
-      super(FloatingListValuesCatcherAction, self).__init__(*args, **kwargs)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-      class ArgShell(object):
-        """Class designed to trick argparse into displaying a nice error."""
-
-        def __init__(self, name):
-          self.option_strings = [name]
-
-      if not values and switch_value is not None:
-        msg = (
-            'We noticed that you provided no value for flag [{flag}]. This '
-            'behavior is deprecated.\nInstead, please provide an empty string '
-            'as the explicit value (try [{flag} \'\']).').format(
-                flag=option_string)
-        raise argparse.ArgumentError(ArgShell(option_string), msg)
-
-      if len(values) > 1:
-
-        suggestions = []
-        if values and isinstance(values[0], dict):
-          aggregate_value = {}
-          for valdict in values:
-            aggregate_value.update(valdict)
-            suggestions.extend(
-                ['%s=%s' % (k, v) for k, v in valdict.iteritems()])
-        if values and isinstance(values[0], list):
-          aggregate_value = []
-          suggestions.extend(
-              [','.join(map(str, vallist)) for vallist in values])
-          for vallist in values:
-            aggregate_value.extend(vallist)
-        extras = suggestions[1:]
-
-        msg = (
-            'We noticed that you are using space-separated lists, which are '
-            'deprecated. '
-            'Please transition to using comma-separated lists instead '
-            '(try "{flag} {values}"). '
-            'If you intend to use [{extras}] as positional arguments, put the '
-            'flags at the end.').format(
-                flag=option_string,
-                values=','.join(suggestions),
-                extras=', '.join(extras))
-
-        raise argparse.ArgumentError(ArgShell(option_string), msg)
-      else:
-        super(FloatingListValuesCatcherAction, self).__call__(
-            parser, namespace, values[0], option_string=option_string)
-
-  return FloatingListValuesCatcherAction
-
-
 class UpdateAction(argparse.Action):
   r"""Create a single dict value from delimited or repeated flags.
 
@@ -813,8 +711,7 @@ class UpdateAction(argparse.Action):
       parser.add_argument(
         '--inputs',
         type=arg_parsers.ArgDict(),
-        action=arg_parsers.FloatingListValuesCatcher(
-            arg_parsers._AppendAction),
+        action='append')
 
   a caller can specify on the command line flags such as:
 
@@ -886,6 +783,7 @@ class UpdateAction(argparse.Action):
         metavar=metavar)
     self.onduplicatekey_handler = onduplicatekey_handler
 
+  # pylint: disable=protected-access
   def __call__(self, parser, namespace, values, option_string=None):
 
     if isinstance(values, dict):
