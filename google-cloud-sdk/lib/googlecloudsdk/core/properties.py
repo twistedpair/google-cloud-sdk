@@ -665,6 +665,11 @@ class _SectionCore(_Section):
         'activate_on_create',
         help_text='If True, creating a new configuration using `gcloud config '
         'configurations create` will also activate it.')
+    self.default_regional_backend_service = self._AddBool(
+        'default_regional_backend_service',
+        help_text='If True, backend services in `gcloud compute '
+        'backend-services` will be regional by default. The `--global` flag '
+        'will be required for global backend services.')
     self.disable_color = self._AddBool(
         'disable_color',
         help_text='If True, color will not be used when printing messages in '
@@ -932,6 +937,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudbuild = self._Add('cloudbuild')
     self.clouduseraccounts = self._Add('clouduseraccounts')
     self.container = self._Add('container')
+    self.containeranalysis = self._Add('containeranalysis')
     self.dataflow = self._Add('dataflow')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')

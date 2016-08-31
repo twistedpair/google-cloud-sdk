@@ -579,7 +579,6 @@ version [{1}].  To clear your fixed version setting, run:
     """
     attributes = [
         'box',
-        'no-empty-legend',
         'title="These components will be {action}."'.format(action=action),
         ]
     columns = [
@@ -830,7 +829,7 @@ To revert your SDK to the previously installed version, you may run:
     if self.__warn:
       bad_commands = self.FindAllOldToolsOnPath()
       if bad_commands and not os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
-        log.warning("""\
+        log.warning(u"""\
 There are older versions of Google Cloud Platform tools on your system PATH.
 Please remove the following to avoid accidentally invoking these old tools:
 
@@ -1201,9 +1200,10 @@ prompt, or run:
         # will report the failure.
         try:
           ret_val = execution_utils.Exec(args, no_exit=True,
-                                         pipe_output_through_logger=True,
-                                         file_only_logger=True)
-        except OSError:
+                                         out_func=log.file_only_logger.debug,
+                                         err_func=log.file_only_logger.debug)
+        except (OSError, execution_utils.InvalidCommandError,
+                execution_utils.PermissionError):
           log.debug('Failed to execute post-processing command', exc_info=True)
           raise PostProcessingError()
         if ret_val:

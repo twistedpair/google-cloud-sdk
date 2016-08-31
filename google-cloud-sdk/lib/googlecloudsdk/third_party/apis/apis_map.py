@@ -163,6 +163,13 @@ MAP = {
             default_version=True
         ),
     },
+    'containeranalysis': {
+        'v1alpha1': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.containeranalysis.v1alpha1.containeranalysis_v1alpha1_client.ContaineranalysisV1alpha1',
+            messages_modulepath='googlecloudsdk.third_party.apis.containeranalysis.v1alpha1.containeranalysis_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'dataflow': {
         'v1b3': APIDef(
             client_classpath='googlecloudsdk.third_party.apis.dataflow.v1b3.dataflow_v1b3_client.DataflowV1b3',

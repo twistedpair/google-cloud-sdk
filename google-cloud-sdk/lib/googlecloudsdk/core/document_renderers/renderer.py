@@ -24,13 +24,15 @@ BOLD, ITALIC, CODE = range(3)
 
 
 class Renderer(object):
-  """Markdown renderer base class.
+  r"""Markdown renderer base class.
 
   The member functions provide an abstract document model that matches markdown
   entities to output document renderings.
 
   Attributes:
     _font: The font attribute bitmask.
+    _lang: ```lang\n...\n``` code block language. None if not in code block,
+      '' if in code block with no explicit lang specified.
     _out: The output stream.
     _title: The document tile.
     _width: The output width in characters.
@@ -39,6 +41,7 @@ class Renderer(object):
 
   def __init__(self, out=None, title=None, width=80):
     self._font = 0
+    self._lang = None
     self._out = out or log.out
     self._title = title
     self._width = width
@@ -85,6 +88,15 @@ class Renderer(object):
       The font embellishment string.
     """
     return ''
+
+  def SetLang(self, lang):
+    """Sets the ```...``` code block language.
+
+    Args:
+      lang: The language name, None if not in a code block, '' is no explicit
+        language specified.
+    """
+    self._lang = lang
 
   def Link(self, target, text):
     """Renders an anchor.

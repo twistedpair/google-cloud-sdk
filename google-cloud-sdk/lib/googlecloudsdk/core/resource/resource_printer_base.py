@@ -191,45 +191,6 @@ class ResourcePrinter(object):
       self._empty = False
       self._AddRecord(self._process_record(record), delimit)
 
-  # TODO(b/27967563): remove 3Q2016
-  def AddLegend(self):
-    """Prints the table legend if it was specified.
-
-    The legend is one or more lines of text printed after the table data.
-    """
-    writers = {
-        'out': lambda x: self._out.write(x + '\n'),
-        'status': lambda x: log.status.write(x + '\n'),
-        'debug': log.debug,
-        'info': log.info,
-        'warn': log.warn,
-        'error': log.error,
-        }
-
-    log_type = self.attributes.get('legend-log')
-    if not log_type:
-      log_type = self.attributes.get('log')
-      if log_type:
-        log.warn('[log={0}] is deprecated. '
-                 'Use [legend-log={0}] instead.'.format(log_type))
-    if self._empty:
-      if not log_type:
-        log_type = 'status'
-      legend = self.attributes.get('empty-legend')
-      if legend:
-        log.warn('[empty-legend={0}] is deprecated. Use '
-                 '[calliope.base.Command.Epilog()] instead.'.format(log_type))
-    else:
-      legend = self.attributes.get('legend')
-      if legend:
-        log.warn('[legend={0}] is deprecated. Use '
-                 '[calliope.base.Command.Epilog()] instead.'.format(log_type))
-      if legend and not log_type:
-        legend = '\n' + legend
-    if legend is not None:
-      writer = writers.get(log_type or 'out')
-      writer(legend)
-
   def Finish(self):
     """Prints the results for non-streaming formats."""
     pass

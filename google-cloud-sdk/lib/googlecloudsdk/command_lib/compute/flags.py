@@ -424,15 +424,17 @@ class ResourceArgument(object):
 
   def ResolveAsResource(self, args,
                         api_resource_registry,
-                        default_scope=ScopeEnum.GLOBAL,
+                        default_scope=None,
                         scope_lister=None):
     """Resolve this resource against the arguments.
 
     Args:
       args: Namespace, argparse.Namespace.
       api_resource_registry: instance of core.resources.Registry.
-      default_scope: ScopeEnum, ZONE, REGION, or GLOBAL, when resolving name
-          and scope was not specified use this as default.
+      default_scope: ScopeEnum, ZONE, REGION, GLOBAL, or None when resolving
+          name and scope was not specified use this as default. If there is
+          exactly one possible scope it will be used, there is no need to
+          specify default_scope.
       scope_lister: func(scope, underspecified_names), a callback which returns
         list of items (with 'name' attribute) for given scope.
     Returns:

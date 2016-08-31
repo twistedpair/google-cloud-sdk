@@ -10088,17 +10088,22 @@ class GlobalSetLabelsRequest(_messages.Message):
 
 
 class GuestOsFeature(_messages.Message):
-  """Features supported by the guest os.
+  """A list of features to enable on the guest OS. Currently, only one feature
+  is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have
+  its own queue. For Windows images, you can only enable
+  VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher.
+  Linux images with kernel versions 3.17 and higher will support
+  VIRTIO_SCSCI_MULTIQUEUE.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature..
+    TypeValueValuesEnum: The type of supported feature.
 
   Fields:
-    type: The type of supported feature..
+    type: The type of supported feature.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature..
+    """The type of supported feature.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -10170,6 +10175,9 @@ class HTTPHealthCheck(_messages.Message):
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP health check request. The
       default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -10188,6 +10196,7 @@ class HTTPHealthCheck(_messages.Message):
   portName = _messages.StringField(3)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
   requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class HTTPSHealthCheck(_messages.Message):
@@ -10210,6 +10219,9 @@ class HTTPSHealthCheck(_messages.Message):
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTPS health check request. The
       default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -10228,6 +10240,7 @@ class HTTPSHealthCheck(_messages.Message):
   portName = _messages.StringField(3)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
   requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class HealthCheck(_messages.Message):
@@ -11326,10 +11339,16 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
       determines that they are UNHEALTHY. This prevents the managed instance
       group from recreating its instances prematurely. This value must be from
       range [0, 3600].
+    maxUnavailable: Maximum number of instances that can be unavailable when
+      auto-healing. The instance is considered available if all of the
+      following conditions are satisfied: 1. instance's status is RUNNING 2.
+      instance's liveness health check result was observed to be HEALTHY at
+      least once By default, a percent value of 100% is used.
   """
 
   healthCheck = _messages.StringField(1)
   initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
 
 
 class InstanceGroupManagerList(_messages.Message):
@@ -12975,7 +12994,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies.
+      modifies. If creating a persistent disk snapshot, this points to the
+      persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during

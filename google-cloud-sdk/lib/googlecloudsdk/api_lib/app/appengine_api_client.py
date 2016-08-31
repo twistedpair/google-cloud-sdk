@@ -16,13 +16,14 @@
 import json
 
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import operations
 from googlecloudsdk.api_lib.app.api import requests
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -42,22 +43,17 @@ class AppengineApiClient(object):
   def messages(self):
     return self.client.MESSAGES_MODULE
 
-  def GetApplicationCodeBucket(self):
-    """Retrieves the default code bucket associated with the application."""
+  def GetApplication(self):
+    """Retrieves the application resource."""
     request = self.messages.AppengineAppsGetRequest(
         name=self._FormatApp(app_id=self.project),
         ensureResourcesExist=True)
-
     try:
-      application = requests.MakeRequest(self.client.apps.Get, request)
-    except exceptions.HttpException, e:
-      log.error(e)
-      return ''
-
-    if application.codeBucket:
-      return 'gs://{0}/'.format(application.codeBucket)
-    else:
-      return ''
+      return requests.MakeRequest(self.client.apps.Get, request)
+    except calliope_exceptions.HttpException as e:
+      if e.status_code == 404:
+        raise exceptions.AppNotFoundError()
+      raise  # re-raise
 
   def CreateApp(self, location):
     """Creates an App Engine app within the current cloud project.
@@ -430,7 +426,7 @@ class AppengineApiClient(object):
       json_version_resource = yaml_schema_v1beta.SCHEMA.ConvertValue(
           config_dict)
     except ValueError, e:
-      raise exceptions.ToolException.FromCurrent(
+      raise calliope_exceptions.ToolException.FromCurrent(
           ('[{f}] could not be converted to the App Engine configuration '
            'format for the following reason: {msg}').format(
                f=service_config.file, msg=e.message))

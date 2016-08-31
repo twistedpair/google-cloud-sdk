@@ -2,6 +2,91 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 124.0.0 (2016/08/31)
+
+### Breaking Changes
+
+* Creating a Global Backend Service in Compute Engine will warn you if you don't
+  use --global. In the future this will be required.
+* Major changes were made to `gcloud alpha dataflow` commands. See Google Cloud
+  Dataflow section for more information
+
+### Google App Engine
+
+* Added endpointscfg.py to the app-engine-python component.
+* Skipped modules during upload will now be logged at INFO level instead of
+  WARN.
+
+### Google Cloud Dataflow
+
+* Changes to `gcloud alpha dataflow` commands:
+  * Changed the `jobs list` command now has a "status" filter. This change is
+    from the JobsV1B3 API. You can now use the API's filter request as either
+    "all", "terminated", or "active".
+  * Added the `logs list` command. This dumps the log messages created from the
+    workflow. Please see the help docs for more information.
+  * Renamed `metrics tail` to `metrics list`.
+  * Renamed `metrics list` --origin flag to --source. This can be either "user"
+    for custom-made aggregates or "service" otherwise. This defaults to "all".
+  * Added `metrics list` --transform flag. This filters all metrics that prefix
+    regex matches the argument.
+  * Removed `jobs list` --job-name flag.
+  * Added `jobs list` --uri flag.
+
+### Powershell
+
+* Add Google Cloud Sql and Google Cloud Dns powershell cmdlets.
+
+### Google Cloud Deployment Manager
+* `deployment-manager deployments create` with a template file will copy
+  the outputs specified in the schema to the generated config file.
+
+### Google Cloud Functions
+
+* Add alpha  functions logs read command
+
+### Google Container Repository
+
+* docker-credential-gcr (GCR's Docker credential helper) has been added as an
+  optional component for GCR customers running Docker client v1.11 or newer. Run
+  `gcloud components install docker-credential-gcr` followed by
+  `docker-credential-gcr configure-docker` in order to configure Docker. You may
+  then use Docker normally, without any gcloud interaction at all (e.g.
+  `docker pull gcr.io/myproject/myimage`)
+
+### Google Container Engine
+
+* Update kubectl to version 1.3.5.
+
+### Google Compute Engine
+
+* Added `gcloud compute instances stop` --discard-local-ssd flag.
+* Added windows-sql-cloud project to the default public image list.
+
+### Cloud SDK
+
+* `gcloud config get-value` is now available in the BETA release track.
+
+### Emulators
+
+* Cloud Datastore emulator now supports proto-over-HTTP and JSON for the v1 API.
+
+### Cloud SQL
+
+* New commands added to beta:
+  * `gcloud beta sql backups create`
+  * `gcloud beta sql backups create`
+  * `gcloud beta sql instances failover`
+* New flags for `gcloud beta sql instances create`:
+  * --failover-replica-name
+  * --replica-type
+  * --storage-auto-increase
+  * --storage-type
+* New flags for `gcloud beta sql instances patch`:
+  * --storage-auto-increase
+  * --no-storage-auto-increase
+
+
 ## 123.0.0 (2016/08/24)
 
 ### Google App Engine

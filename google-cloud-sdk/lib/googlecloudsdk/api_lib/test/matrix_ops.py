@@ -94,12 +94,20 @@ class MatrixCreator(object):
   def _BuildAndroidRoboTestSpec(self):
     """Build a TestSpecification for an AndroidRoboTest."""
     spec = self._BuildGenericTestSpec()
+
+    robo_directives = []
+    if self._args.robo_directives:
+      for key, value in self._args.robo_directives.iteritems():
+        robo_directives.append(
+            self._messages.RoboDirective(resourceName=key, inputText=value))
+
     spec.androidRoboTest = self._messages.AndroidRoboTest(
         appApk=self._BuildFileReference(self._args.app),
         appPackageId=self._args.app_package,
         maxDepth=self._args.max_depth,
         maxSteps=self._args.max_steps,
-        appInitialActivity=self._args.app_initial_activity)
+        appInitialActivity=self._args.app_initial_activity,
+        roboDirectives=robo_directives)
     return spec
 
   def _BuildGenericTestSpec(self):

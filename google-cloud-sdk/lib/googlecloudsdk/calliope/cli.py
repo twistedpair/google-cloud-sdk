@@ -18,6 +18,7 @@ import argparse
 import os
 import re
 import sys
+import types
 import uuid
 
 import argcomplete
@@ -683,23 +684,24 @@ class CLI(object):
     if args and args[0] == 'help' and '--help' not in args:
       args = args[1:] + ['--document=style=help']
 
-    # Set the command name in case an exception happens before the command name
-    # is finished parsing.
-    command_path_string = self.__name
-
     # Look for a --configuration flag and update property state based on
     # that before proceeding to the main argparse parse step.
     named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(args)
     properties.VALUES.PushInvocationValues()
 
+    # Set the command name in case an exception happens before the command name
+    # is finished parsing.
+    command_path_string = self.__name
+    flag_collection = None
+
     argv = self._ConvertNonAsciiArgsToUnicode(args)
-    flag_names = None
     try:
       args = self.__parser.parse_args(argv)
+      command_path_string = '.'.join(args.command_path)
       if not args.calliope_command.IsUnicodeSupported():
         self._EnforceAsciiArgs(argv)
+      flag_collection = self.__parser.GetFlagCollection()
 
-      flag_names = self.__parser.GetFlagCollection()
       # -h|--help|--document are dispatched by parse_args and never get here.
 
       # Now that we have parsed the args, reload the settings so the flags will
@@ -707,35 +709,38 @@ class CLI(object):
       log.SetUserOutputEnabled(None)
       log.SetVerbosity(None)
 
-      command_path_string = '.'.join(args.command_path)
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
-      metrics.Commands(command_path_string, config.CLOUD_SDK_VERSION,
-                       flag_names)
+      metrics.Commands(
+          command_path_string, config.CLOUD_SDK_VERSION, flag_collection)
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
 
-      result = args.calliope_command.Run(cli=self, args=args)
+      resources = args.calliope_command.Run(cli=self, args=args)
 
       for hook in self.__post_run_hooks:
         hook.Run(command_path_string)
 
-      return result
+      # Preserve generator or static list resources.
 
-    except exceptions.ExitCodeNoError as exc:
-      self._HandleKnownError(command_path_string, exc, flag_names,
-                             print_error=False)
-    except core_exceptions.Error as exc:
-      self._HandleKnownError(command_path_string, exc, flag_names,
-                             print_error=True)
-    except Exception as exc:
-      if not self._MaybeHandleKnownError(command_path_string, exc, flag_names):
-        # Make sure any uncaught exceptions still make it into the log file.
-        exc_printable = self.SafeExceptionToString(exc)
-        log.debug(exc_printable, exc_info=sys.exc_info())
-        metrics.Error(command_path_string, exc.__class__, flag_names)
-        raise
+      if isinstance(resources, types.GeneratorType):
+
+        def _Yield():
+          """Activates generator exceptions."""
+          try:
+            for resource in resources:
+              yield resource
+          except Exception as exc:  # pylint: disable=broad-except
+            self._HandleAllErrors(exc, command_path_string, flag_collection)
+
+        return _Yield()
+
+      return resources
+
+    except Exception as exc:  # pylint: disable=broad-except
+      self._HandleAllErrors(exc, command_path_string, flag_collection)
+
     finally:
       properties.VALUES.PopInvocationValues()
       named_configs.FLAG_OVERRIDE_STACK.Pop()
@@ -744,64 +749,55 @@ class CLI(object):
       log.SetUserOutputEnabled(None)
       log.SetVerbosity(None)
 
-  def SafeExceptionToString(self, exc):
-    """Equivalent to str(exc), but handling cases with unprintable unicode.
+  def _HandleAllErrors(self, exc, command_path_string, flag_collection):
+    """Handle all errors.
 
     Args:
-      exc: an exception to be printed
-
-    Returns:
-      A string form of the exception stripped of unicode BOM if str(exc) fails.
-    """
-    try:
-      return str(exc)
-    except UnicodeError:
-      # Handle errors that have unprintable unicode BOM markers (eg html).
-      # See http://bugs.python.org/issue2517.
-      # See http://stackoverflow.com/questions/3715865/unicodeencodeerror-ascii.
-      return unicode(exc).encode('utf-8', 'replace')
-
-  def _MaybeHandleKnownError(self, command_path_string, exc, flag_names):
-    """Attempt to recognize the given exception as a known type and handle it.
-
-    Args:
-      command_path_string: str, The command that was run.
       exc: Exception, The exception that was raised.
-      flag_names: [str], The names of the flags that were used during this
-        execution.
+      command_path_string: str, The '.' separated command path.
+      flag_collection: str, The flag collection name for metrics.
 
-    Returns:
-      True if it was handled, False otherwise.
+    Raises:
+      exc or a core.exceptions variant that does not produce a stack trace.
     """
-    known_exc = exceptions.ConvertKnownError(exc)
-    if not known_exc:
-      return False
-    self._HandleKnownError(command_path_string, known_exc, flag_names,
-                           print_error=True, orig_exc=exc)
-    return True
+    if isinstance(exc, exceptions.ExitCodeNoError):
+      self._HandleKnownError(exc, command_path_string, flag_collection,
+                             print_error=False)
+    elif isinstance(exc, core_exceptions.Error):
+      self._HandleKnownError(exc, command_path_string, flag_collection,
+                             print_error=True)
+    else:
+      known_exc = exceptions.ConvertKnownError(exc)
+      if known_exc:
+        self._HandleKnownError(known_exc, command_path_string, flag_collection,
+                               print_error=True, orig_exc=exc)
+      else:
+        # Make sure any uncaught exceptions still make it into the log file.
+        log.debug(console_attr.EncodeForOutput(exc), exc_info=sys.exc_info())
+        metrics.Error(exc)
+        raise
 
-  def _HandleKnownError(self, command_path_string, exc, flag_names,
+  def _HandleKnownError(self, exc, command_path_string, flag_collection,
                         print_error=True, orig_exc=None):
     """Print the error and exit for exceptions of known type.
 
     Args:
-      command_path_string: str, The command that was run.
       exc: Exception, The exception that was raised.
-      flag_names: [str], The names of the flags that were used during this
-        execution.
+      command_path_string: str, The '.' separated command path.
+      flag_collection: str, The flag collection name for metrics.
       print_error: bool, True to print an error message, False to just exit with
         the given error code.
       orig_exc: Exception or None, The original exception for metrics purposes
         if the exception was converted to a new type.
     """
-    msg = '({0}) {1}'.format(
-        command_path_string, self.SafeExceptionToString(exc))
+    msg = u'({0}) {1}'.format(console_attr.EncodeForOutput(command_path_string),
+                              console_attr.EncodeForOutput(exc))
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)
     metrics_exc = orig_exc or exc
     metrics_exc_class = metrics_exc.__class__
-    metrics.Error(command_path_string, metrics_exc_class, flag_names)
+    metrics.Error(command_path_string, metrics_exc_class, flag_collection)
     self._Exit(exc)
 
   def _Exit(self, exc):

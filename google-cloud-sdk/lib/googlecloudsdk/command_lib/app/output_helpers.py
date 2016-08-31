@@ -62,12 +62,11 @@ def DisplayProposedDeployment(project, app_config, version, promote):
       deploy_message = DEPLOY_MESSAGE_TEMPLATE.format(
           project=project, service=service, version=version, file=info.file)
 
-      if ':' not in project:
-        url = deploy_command_util.GetAppHostname(
-            project, service=info.module, version=None if promote else version,
-            use_ssl=use_ssl)
-        deployed_urls[service] = url
-        deploy_message += DEPLOYED_URL_TEMPLATE.format(url=url)
+      url = deploy_command_util.GetAppHostname(
+          project, service=info.module, version=None if promote else version,
+          use_ssl=use_ssl)
+      deployed_urls[service] = url
+      deploy_message += DEPLOYED_URL_TEMPLATE.format(url=url)
       if not promote:
         default_url = deploy_command_util.GetAppHostname(
             project, service=info.module, use_ssl=use_ssl)

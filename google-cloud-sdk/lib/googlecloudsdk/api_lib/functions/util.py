@@ -25,6 +25,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
+from googlecloudsdk.core.console import console_attr
 
 _ENTRY_POINT_NAME_RE = re.compile(
     r'^(?=.{1,128}$)[_a-zA-Z0-9]+(?:\.[_a-zA-Z0-9]+)*$')
@@ -79,7 +80,7 @@ def GetHttpErrorMessage(error):
   except (ValueError, TypeError):
     message = error.content
   return u'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
-      status, code, message)
+      status, code, console_attr.DecodeFromInput(message))
 
 
 def GetOperationError(error):
@@ -92,7 +93,7 @@ def GetOperationError(error):
     A human readable string representation of the error.
   """
   return u'OperationError: code={0}, message={1}'.format(
-      error.code, error.message)
+      error.code, console_attr.DecodeFromInput(error.message))
 
 
 def _ValidateArgumentByRegexOrRaise(argument, regex, error_message):

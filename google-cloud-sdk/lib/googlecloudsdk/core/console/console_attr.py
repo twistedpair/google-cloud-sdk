@@ -689,6 +689,15 @@ def DecodeFromInput(string):
     # string is not ASCII encoded.
     pass
 
+  # Try UTF-8 because the other encodings could be extended ascii. It would
+  # be exceptional if a valid extended ascii encoding with extended chars
+  # were also a valid UITF-8 encoding.
+  try:
+    return string.decode('utf8')
+  except UnicodeError:
+    # Not a UTF-8 encoding.
+    pass
+
   # Try the console encoding.
   try:
     return string.decode(GetConsoleAttr().GetEncoding())

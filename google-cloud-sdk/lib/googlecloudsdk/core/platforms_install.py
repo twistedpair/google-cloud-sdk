@@ -110,8 +110,10 @@ def _GetRcData(comment, rc_path, rc_data, pattern=None):
   if not pattern:
     pattern = re.escape(comment)
   subre = re.compile('\n' + pattern + '\n.*\n', re.MULTILINE)
-  line = "{comment}\nsource '{rc_path}'\n".format(
-      comment=comment, rc_path=rc_path)
+  # script checks that the rc_path currently exists before sourcing the file
+  line = ('{comment}\nif [ -f {rc_path} ]; then\n'
+          '  source \'{rc_path}\'\nfi\n').format(
+              comment=comment, rc_path=rc_path)
   filtered_data = subre.sub('', rc_data)
   rc_data = '{filtered_data}\n{line}'.format(
       filtered_data=filtered_data, line=line)

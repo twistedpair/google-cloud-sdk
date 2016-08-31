@@ -31,6 +31,13 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
+DISK_ARG = compute_flags.ResourceArgument(
+    resource_name='disk',
+    completion_resource_id='compute.disks',
+    name='DISK_NAME',
+    zonal_collection='compute.disks',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
 DISKS_ARG = compute_flags.ResourceArgument(
     resource_name='disk',
     completion_resource_id='compute.disks',

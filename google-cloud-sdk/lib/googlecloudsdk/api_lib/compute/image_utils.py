@@ -216,7 +216,7 @@ def HasWindowsLicense(resource, resource_parser):
   for license_uri in resource.licenses:
     license_ref = resource_parser.Parse(
         license_uri, collection='compute.licenses')
-    if license_ref.project == constants.WINDOWS_IMAGE_PROJECT:
+    if license_ref.project in constants.WINDOWS_IMAGE_PROJECTS:
       return True
   return False
 

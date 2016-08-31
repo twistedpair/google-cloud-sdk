@@ -456,7 +456,7 @@
       "type": "object",
       "properties": {
         "data": {
-          "description": "The message payload. For JSON requests, the value of this field must be\nbase64-encoded.",
+          "description": "The message payload. For JSON requests, the value of this field must be\n[base64-encoded](https:\/\/tools.ietf.org\/html\/rfc4648).",
           "type": "string",
           "format": "byte"
         },

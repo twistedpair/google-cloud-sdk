@@ -282,9 +282,10 @@ class InvalidCharacterInArgException(ToolException):
 class HttpException(ToolException):
   """HttpException is raised whenever the Http response status code != 200."""
 
-  def __init__(self, error):
+  def __init__(self, error, status_code=None):
     super(HttpException, self).__init__(error)
     self.error = error
+    self.status_code = status_code
 
 
 class InvalidArgumentException(ToolException):
@@ -292,7 +293,7 @@ class InvalidArgumentException(ToolException):
 
   def __init__(self, parameter_name, message):
     super(InvalidArgumentException, self).__init__(
-        'Invalid value for [{0}]: {1}'.format(parameter_name, message))
+        u'Invalid value for [{0}]: {1}'.format(parameter_name, message))
     self.parameter_name = parameter_name
 
 
@@ -301,7 +302,7 @@ class ConflictingArgumentsException(ToolException):
 
   def __init__(self, *parameter_names):
     super(ConflictingArgumentsException, self).__init__(
-        'arguments not allowed simultaneously: ' + ', '.join(parameter_names))
+        u'arguments not allowed simultaneously: ' + ', '.join(parameter_names))
     self.parameter_names = parameter_names
 
 
@@ -310,7 +311,7 @@ class UnknownArgumentException(ToolException):
 
   def __init__(self, parameter_name, message):
     super(UnknownArgumentException, self).__init__(
-        'Unknown value for [{0}]: {1}'.format(parameter_name, message))
+        u'Unknown value for [{0}]: {1}'.format(parameter_name, message))
     self.parameter_name = parameter_name
 
 
@@ -330,9 +331,9 @@ class BadFileException(ToolException):
 
 # pylint: disable=g-import-not-at-top, Delay the import of this because
 # importing store is relatively expensive.
-def _GetTokenRefreshError():
+def _GetTokenRefreshError(exc):
   from googlecloudsdk.core.credentials import store
-  return store.TokenRefreshError
+  return store.TokenRefreshError(exc)
 
 
 # In general, lower level libraries should be catching exceptions and re-raising
@@ -347,11 +348,21 @@ def _GetTokenRefreshError():
 # errors when they come up.  Only add errors here if there is no other way to
 # handle them.
 _KNOWN_ERRORS = {
-    'googlecloudsdk.core.util.files.Error': lambda: None,
-    'ssl.SSLError': lambda: core_exceptions.NetworkIssueError,
-    'httplib.ResponseNotReady': lambda: core_exceptions.NetworkIssueError,
+    'apitools.base.py.exceptions.HttpError': HttpException,
+    'googlecloudsdk.core.util.files.Error': lambda x: None,
+    'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
+    'ssl.SSLError': core_exceptions.NetworkIssueError,
 }
+
+
+def _GetExceptionName(exc):
+  """Returns the exception name used as index into _KNOWN_ERRORS."""
+  if isinstance(exc, type):
+    name = exc.__module__ + '.' + exc.__name__
+  else:
+    name = exc.__class__.__module__ + '.' + exc.__class__.__name__
+  return name
 
 
 def ConvertKnownError(exc):
@@ -364,13 +375,9 @@ def ConvertKnownError(exc):
     None if this is not a known type, otherwise a new exception that should be
     logged.
   """
-  name = exc.__class__.__module__ + '.' + exc.__class__.__name__
-  if name not in _KNOWN_ERRORS:
+  convert_to_known_err = _KNOWN_ERRORS.get(_GetExceptionName(exc))
+  if not convert_to_known_err:
     # This is not a known error type
     return None
-  alt_exc_class = _KNOWN_ERRORS.get(name)()
-  if not alt_exc_class:
-    # There is no alternate exception, just return the original exception
-    return exc
-  # Convert to the new exception type.
-  return alt_exc_class(exc)
+  # If there is no known exception just return the original exception.
+  return convert_to_known_err(exc) or exc

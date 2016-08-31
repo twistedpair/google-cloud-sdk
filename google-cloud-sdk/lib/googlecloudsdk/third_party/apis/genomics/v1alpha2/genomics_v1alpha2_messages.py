@@ -730,9 +730,16 @@ class PipelineResources(_messages.Message):
     disks: Disks to attach.
     minimumCpuCores: The minimum number of cores to use. Defaults to 1.
     minimumRamGb: The minimum amount of RAM to use. Defaults to 3.75 (GB)
-    preemptible: At create time means that preemptible machines may be used
-      for the run. At run time, means they should be used. Cannot be true at
-      run time if false at create time. Defaults to `false`.
+    noAddress: Whether to assign an external IP to the instance. Defaults to
+      false. Corresponds to `--no_address flag` for [gcloud compute instances
+      create] (https://cloud.google.com/sdk/gcloud/reference/compute/instances
+      /create). In order to use this, must be true for both create time and
+      run time. Cannot be true at run time if false at create time.  ** Note:
+      To use this option, your project must be in Google Access for Private
+      IPs Early Access Program.**
+    preemptible: Whether to use preemptible VMs. Defaults to `false`. In order
+      to use this, must be true for both create time and run time. Cannot be
+      true at run time if false at create time.
     zones: List of Google Compute Engine availability zones to which resource
       creation will restricted. If empty, any zone may be chosen.
   """
@@ -741,8 +748,9 @@ class PipelineResources(_messages.Message):
   disks = _messages.MessageField('Disk', 2, repeated=True)
   minimumCpuCores = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minimumRamGb = _messages.FloatField(4)
-  preemptible = _messages.BooleanField(5)
-  zones = _messages.StringField(6, repeated=True)
+  noAddress = _messages.BooleanField(5)
+  preemptible = _messages.BooleanField(6)
+  zones = _messages.StringField(7, repeated=True)
 
 
 class RepeatedString(_messages.Message):

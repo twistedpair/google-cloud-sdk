@@ -14,7 +14,54 @@
 """Code that's shared between multiple backend-services subcommands."""
 
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+
+
+def IsRegionDefaultModeWarnOtherwise(print_warning=True):
+  """Returns the value of core/default_regional_backend_service."""
+  default_regional = (
+      properties.VALUES.core.default_regional_backend_service.GetBool())
+  if default_regional is None:
+    # Print a warning and use False if it isn't set.
+    if print_warning:
+      log.warn(
+          'In the future, backend services will be regional by default unless '
+          'the --global flag is specified. To use this behavior now, set '
+          'core/default_regional_backend_service to true in the active '
+          'configuration.')
+    return False
+
+  return default_regional
+
+
+def GetDefaultScope(action, args):
+  """Gets the default compute flags scope enum value."""
+  if IsRegionDefaultModeWarnOtherwise(
+      print_warning=(
+          action.ReleaseTrack() == base.ReleaseTrack.ALPHA and
+          getattr(args, 'global', None) is None and
+          getattr(args, 'region', None) is None)):
+    return compute_flags.ScopeEnum.REGION
+  else:
+    return compute_flags.ScopeEnum.GLOBAL
+
+
+def IsRegionalRequest(action, args):
+  """Determines whether the args specify a regional or global request."""
+  if IsRegionDefaultModeWarnOtherwise(
+      print_warning=(
+          action.ReleaseTrack() == base.ReleaseTrack.ALPHA and
+          getattr(args, 'global', None) is None and
+          getattr(args, 'region', None) is None)):
+    # Return True (regional request) unless --global was specified.
+    return getattr(args, 'global', None) is None
+  else:
+    # Return False (global request) unless --region was specified.
+    return getattr(args, 'region', None) is not None
 
 
 def GetHealthChecks(args, resource_parser):
@@ -62,8 +109,7 @@ class BackendServiceMutator(base_classes.BaseAsyncMutator):
     """Override to return a list of one of more regionally-scoped request."""
 
   def CreateRequests(self, args):
-    # Assume global by default.
-    self.global_request = getattr(args, 'region', None) is None
+    self.global_request = not IsRegionalRequest(self, args)
 
     if self.global_request:
       return self.CreateGlobalRequests(args)

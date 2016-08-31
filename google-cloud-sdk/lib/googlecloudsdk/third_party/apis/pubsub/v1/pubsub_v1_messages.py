@@ -352,7 +352,7 @@ class PubsubMessage(_messages.Message):
   Fields:
     attributes: Optional attributes for this message.
     data: The message payload. For JSON requests, the value of this field must
-      be base64-encoded.
+      be [base64-encoded](https://tools.ietf.org/html/rfc4648).
     messageId: ID of this message, assigned by the server when the message is
       published. Guaranteed to be unique within the topic. This value may be
       read by a subscriber that receives a `PubsubMessage` via a `Pull` call

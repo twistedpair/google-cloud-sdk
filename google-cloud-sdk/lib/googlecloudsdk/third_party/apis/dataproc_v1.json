@@ -6,7 +6,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Dataproc API",
-  "description": "Manages Hadoop-based clusters and jobs on Google Cloud Platform.",
+  "description": "An API for managing Hadoop-based clusters and jobs on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

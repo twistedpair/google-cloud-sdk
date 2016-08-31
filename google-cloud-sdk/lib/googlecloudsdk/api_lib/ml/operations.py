@@ -31,12 +31,13 @@ class OperationTimeoutError(exceptions.Error):
   pass
 
 
-def WaitForOperation(operation_service, operation):
+def WaitForOperation(operation_service, operation, registry=None):
   """Wait until the operation is complete or times out.
 
   Args:
     operation_service: The apitools service type for operations
     operation: The operation resource to wait on
+    registry: A resource registry to use for operation get requests.
   Returns:
     The operation resource when it has completed
   Raises:
@@ -45,7 +46,9 @@ def WaitForOperation(operation_service, operation):
   """
   if operation.done:
     return operation
-  request = resources.REGISTRY.Parse(
+  if not registry:
+    registry = resources.REGISTRY
+  request = registry.Parse(
       operation.name.split('/')[-1],
       collection='ml.projects.operations').Request()
   try:

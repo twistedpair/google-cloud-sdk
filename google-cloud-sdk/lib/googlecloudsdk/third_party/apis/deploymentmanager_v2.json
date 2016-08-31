@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20160816",
+ "revision": "20160819",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -423,7 +423,7 @@
     },
     "targetLink": {
      "type": "string",
-     "description": "[Output Only] The URL of the resource that the operation modifies."
+     "description": "[Output Only] The URL of the resource that the operation modifies. If creating a persistent disk snapshot, this points to the persistent disk that the snapshot was created from."
     },
     "user": {
      "type": "string",

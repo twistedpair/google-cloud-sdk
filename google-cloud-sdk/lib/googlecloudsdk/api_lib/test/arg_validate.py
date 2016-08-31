@@ -177,6 +177,18 @@ def _ValidateObbFileList(arg_internal_name, arg_value):
   return arg_value
 
 
+def _ValidateKeyValueStringPairs(arg_internal_name, arg_value):
+  """Validates that an argument is a dict of string-type key-value pairs."""
+  if isinstance(arg_value, dict):
+    new_dict = {}
+    # Cannot use dict comprehension since it's not supported in Python 2.6.
+    for (key, value) in arg_value.items():
+      new_dict[str(key)] = _ValidateString(arg_internal_name, value)
+    return new_dict
+  else:
+    raise InvalidArgException(arg_internal_name, 'Malformed key-value pairs.')
+
+
 # Map of internal arg names to their appropriate validation functions.
 # Any arg not appearing in this map is assumed to be a simple string.
 _FILE_ARG_VALIDATORS = {
@@ -193,6 +205,7 @@ _FILE_ARG_VALIDATORS = {
     'random_seed': _ValidateInteger,
     'max_steps': _ValidateNonNegativeInteger,
     'max_depth': _ValidatePositiveInteger,
+    'robo_directives': _ValidateKeyValueStringPairs,
 }
 
 
@@ -305,3 +318,13 @@ def ValidateObbFileNames(obb_files):
           'obb_files',
           '[{0}] is not a valid OBB file name, which must have the format: '
           '(main|patch).<versionCode>.<package.name>.obb'.format(obb_file))
+
+
+def ValidateRoboDirectivesList(args):
+  """Validates key-value pairs for 'robo_directives' flag."""
+  for key in (args.robo_directives or []):
+    # Check for illegal characters in the key (resource name).
+    if ':' in key:
+      raise InvalidArgException(
+          'robo_directives',
+          'Invalid character ":" in resource name "{0}"'.format(key))

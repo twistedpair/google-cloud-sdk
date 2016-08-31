@@ -61,7 +61,8 @@ def MakeRequest(service_method, request_message):
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
     error_json = _ExtractErrorJsonFromHttpError(error)
-    raise exceptions.HttpException(ExtractErrorMessage(error_json))
+    status_code = int(error.response['status'])
+    raise exceptions.HttpException(ExtractErrorMessage(error_json), status_code)
   except httplib2.HttpLib2Error as error:
     raise exceptions.HttpException('Response error: %s' % error.message)
 

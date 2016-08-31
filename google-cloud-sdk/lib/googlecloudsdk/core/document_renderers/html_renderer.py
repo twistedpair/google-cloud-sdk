@@ -112,7 +112,9 @@ class HTMLRenderer(renderer.Renderer):
     self._paragraph = False
     if self._fill:
       self._section = False
-      self._example = False
+      if self._example:
+        self._example = False
+        self._out.write('</code>\n')
       self._fill = 0
       self._out.write('\n')
       self._blank = False
@@ -181,15 +183,13 @@ class HTMLRenderer(renderer.Renderer):
     return ''.join(self._ESCAPE.get(c, c) for c in buf)
 
   def Example(self, line):
-    """Displays line as and indented example.
+    """Displays line as an indented example.
 
     Args:
       line: The example line.
     """
     self._blank = True
-    if self._example:
-      self._out.write('<br><code>\n')
-    else:
+    if not self._example:
       self._example = True
       self._fill = 2
       self._out.write('<p><code>\n')
@@ -198,7 +198,7 @@ class HTMLRenderer(renderer.Renderer):
     indent -= len(line)
     self._out.write('&nbsp;' * (self._fill + indent))
     self._out.write(line)
-    self._out.write('</code>\n')
+    self._out.write('<br>\n')
 
   def Fill(self, line):
     """Adds a line to the output, splitting to stay within the output width.

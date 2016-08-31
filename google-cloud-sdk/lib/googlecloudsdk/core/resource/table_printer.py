@@ -203,12 +203,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       visible.append(row[index])
     return visible
 
-  def Finish(self, last_page=True):
-    """Prints the table.
-
-    Args:
-      last_page: True if this is the last resource page.
-    """
+  def Finish(self):
+    """Prints the table."""
     if not self._rows:
       # Table is empty.
       return
@@ -225,9 +221,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         subformat.printer.Finish()
         if subformat.printer.ResourcesWerePrinted():
           self._empty = False
-      # TODO(b/27967563): remove 3Q2016
-      if last_page:
-        self.AddLegend()
       return
 
     # Border box decorations.
@@ -463,12 +456,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       self._out.write(b_rule)
       self._out.write('\n')
 
-    # TODO(b/27967563): remove 3Q2016
-    if last_page:
-      self.AddLegend()
-
   def Page(self):
     """Flushes the current resource page output."""
     self._page_count += 1
-    self.Finish(last_page=False)
+    self.Finish()
     self._rows = []

@@ -20,16 +20,30 @@ import multiprocessing
 import os
 import shutil
 
-from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.third_party.appengine.tools import context_util
+
+
+# Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
+_MAX_FILE_SIZE = 32 * 1024 * 1024
+
+
+class LargeFileError(core_exceptions.Error):
+
+  def __init__(self, path, size, max_size):
+    super(LargeFileError, self).__init__(
+        ('Cannot upload file [{path}], which has size [{size}] (greater than '
+         'maximum allowed size of [{max_size}]). Please delete the file or add '
+         'to the skip_files entry in your application .yaml file and try '
+         'again.'.format(path=path, size=size, max_size=max_size)))
 
 
 class MultiError(core_exceptions.Error):
@@ -107,12 +121,16 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
       stored. If a file in the manifest is not found in the source directory,
       it will be retrieved from this directory instead.
 
+  Raises:
+    LargeFileError: if one of the files to upload exceeds the maximum App Engine
+    file size.
+
   Returns:
     A dict mapping hashes to file paths that should be uploaded.
   """
   files_to_upload = {}
-  storage_client = apis.GetClientInstance('storage', 'v1')
-  existing_items = set(cloud_storage.ListBucket(bucket_ref, storage_client))
+  storage_client = storage_api.StorageClient()
+  existing_items = storage_client.ListBucket(bucket_ref)
   for rel_path in manifest:
     full_path = os.path.join(source_dir, rel_path)
     # For generated files, the relative path is based on the tmp_dir rather
@@ -120,6 +138,12 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
     # tmp_dir instead.
     if not os.path.exists(full_path):
       full_path = os.path.join(tmp_dir, rel_path)
+    # Perform this check when creating the upload map, so we catch too-large
+    # files that have already been uploaded
+    size = os.path.getsize(full_path)
+    if size > _MAX_FILE_SIZE:
+      raise LargeFileError(full_path, size, _MAX_FILE_SIZE)
+
     sha1_hash = manifest[rel_path]['sha1Sum']
     if sha1_hash in existing_items:
       log.debug('Skipping upload of [{f}]'.format(f=rel_path))
@@ -146,8 +170,9 @@ def _UploadFile(file_upload_task):
     None if the file was uploaded successfully or a stringified Exception if one
     was raised
   """
-  storage_client = apis.GetClientInstance('storage', 'v1')
-  bucket_ref = cloud_storage.BucketReference(file_upload_task.bucket_url)
+  storage_client = storage_api.StorageClient()
+  bucket_ref = storage_util.BucketReference.FromBucketUrl(
+      file_upload_task.bucket_url)
   retryer = retry.Retryer(max_retrials=3)
 
   path = file_upload_task.path
@@ -155,8 +180,8 @@ def _UploadFile(file_upload_task):
   log.debug('Uploading [{f}] to [{gcs}]'.format(f=path, gcs=sha1_hash))
   try:
     retryer.RetryOnException(
-        cloud_storage.CopyFileToGCS,
-        args=(bucket_ref, path, sha1_hash, storage_client)
+        storage_client.CopyFileToGCS,
+        args=(bucket_ref, path, sha1_hash)
     )
   except Exception as err:  # pylint: disable=broad-except
     # pass all errors through as strings (not all exceptions can be serialized)
@@ -274,7 +299,7 @@ def CopyFilesToCodeBucket(service, bucket_ref):
         dest_dir = bucket_ref.ToBucketUrl()
         try:
           retryer.RetryOnResult(
-              cloud_storage.Rsync,
+              storage_api.Rsync,
               (staging_directory, dest_dir),
               should_retry_if=_ShouldRetry)
         except retry.RetryException as e:
@@ -330,6 +355,11 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
     bucket_ref: A reference to the GCS bucket where the files will be uploaded.
     excluded_regexes: List of file patterns to skip while building the staging
       directory.
+
+  Raises:
+    LargeFileError: if one of the files to upload exceeds the maximum App Engine
+    file size.
+
   Returns:
     A dictionary which represents the file manifest.
   """
@@ -365,6 +395,9 @@ def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
 
   for relative_path in util.FileIterator(source_dir, excluded_regexes):
     local_path = os.path.join(source_dir, relative_path)
+    size = os.path.getsize(local_path)
+    if size > _MAX_FILE_SIZE:
+      raise LargeFileError(local_path, size, _MAX_FILE_SIZE)
     target_path = AddFileToManifest(relative_path, local_path)
     # target_path should not be None because FileIterator should never visit the
     # same file twice and if it did, the file would be identical and we'd get a

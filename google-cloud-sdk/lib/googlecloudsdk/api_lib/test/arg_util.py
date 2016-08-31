@@ -194,6 +194,17 @@ def AddRoboTestArgs(parser):
   parser.add_argument(
       '--app-initial-activity',
       help='The initial activity used to start the app during a robo test.')
+  # TODO(user): Add link for example doc once b/30894775 is resolved.
+  parser.add_argument(
+      '--robo-directives',
+      type=arg_parsers.ArgDict(),
+      help='A comma-separated, key=value, map of robo_directives for use by '
+      'Robo test. Each key should be the Android resource name of a target '
+      'UI element, and each value should be the text input for that element. '
+      'For example, specify "--robo-directives username_resource=username,'
+      'password_resource=password" to provide custom login credentials for '
+      'your app. Caution: You should only use credentials for test accounts '
+      'that are not associated with real users.')
 
 
 def Prepare(args, catalog):
@@ -228,6 +239,7 @@ def Prepare(args, catalog):
   arg_validate.ValidateOsVersions(args, catalog)
   arg_validate.ValidateResultsBucket(args)
   arg_validate.ValidateObbFileNames(args.obb_files)
+  arg_validate.ValidateRoboDirectivesList(args)
 
 
 # These nested dictionaries define which test args are required, optional, or
@@ -242,7 +254,8 @@ _TEST_TYPE_ARG_RULES = {
     },
     'robo': {
         'required': [],
-        'optional': ['app_initial_activity', 'max_depth', 'max_steps'],
+        'optional': ['app_initial_activity', 'max_depth', 'max_steps',
+                     'robo_directives'],
         'defaults': {
             'max_depth': 50,
             'max_steps': -1,  # interpreted as 'no limit'

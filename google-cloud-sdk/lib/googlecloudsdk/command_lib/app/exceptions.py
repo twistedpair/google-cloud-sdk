@@ -75,3 +75,17 @@ class InvalidVersionIdError(exceptions.Error):
         'Invalid version id [{version}].  May only contain lowercase letters, '
         'digits, and hyphens. Must begin and end with a letter or digit. Must '
         'not exceed 63 characters.').format(version=self.version)
+
+
+class MissingApplicationError(exceptions.Error):
+  """If an app does not exist within the current project."""
+
+  def __init__(self, project):
+    self.project = project
+
+  def __str__(self):
+    return (
+        'The current Google Cloud project [{0}] does not contain an App Engine '
+        'application. Use `gcloud beta app create` to initialize an App Engine '
+        'application within the project.').format(self.project)
+

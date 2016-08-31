@@ -19,1876 +19,1877 @@ import enum
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  APIKEYS_PROJECTS_APIKEYS = (
+  APIKEYS_V1_PROJECTS_APIKEYS = (
       'apikeys',
       'v1',
-      'https://apikeys.googleapis.com/',
-      'apikeys.projects.apiKeys',
-      'v1/projects/{projectId}/apiKeys/{keyId}',
+      'https://apikeys.googleapis.com/v1/',
+      'projects.apiKeys',
+      'projects/{projectId}/apiKeys/{keyId}',
       [u'projectId', u'keyId'])
-  APPENGINE_APPS = (
+  APPENGINE_V1BETA5_APPS = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps',
-      'v1beta5/apps/{appsId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps',
+      'apps/{appsId}',
       [u'appsId'])
-  APPENGINE_APPS_LOCATIONS = (
+  APPENGINE_V1BETA5_APPS_LOCATIONS = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps.locations',
-      'v1beta5/apps/{appsId}/locations/{locationsId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps.locations',
+      'apps/{appsId}/locations/{locationsId}',
       [u'appsId', u'locationsId'])
-  APPENGINE_APPS_OPERATIONS = (
+  APPENGINE_V1BETA5_APPS_OPERATIONS = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps.operations',
-      'v1beta5/apps/{appsId}/operations/{operationsId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps.operations',
+      'apps/{appsId}/operations/{operationsId}',
       [u'appsId', u'operationsId'])
-  APPENGINE_APPS_SERVICES = (
+  APPENGINE_V1BETA5_APPS_SERVICES = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps.services',
-      'v1beta5/apps/{appsId}/services/{servicesId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps.services',
+      'apps/{appsId}/services/{servicesId}',
       [u'appsId', u'servicesId'])
-  APPENGINE_APPS_SERVICES_VERSIONS = (
+  APPENGINE_V1BETA5_APPS_SERVICES_VERSIONS = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps.services.versions',
-      'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps.services.versions',
+      'apps/{appsId}/services/{servicesId}/versions/{versionsId}',
       [u'appsId', u'servicesId', u'versionsId'])
-  APPENGINE_APPS_SERVICES_VERSIONS_INSTANCES = (
+  APPENGINE_V1BETA5_APPS_SERVICES_VERSIONS_INSTANCES = (
       'appengine',
       'v1beta5',
-      'https://appengine.googleapis.com/',
-      'appengine.apps.services.versions.instances',
-      'v1beta5/apps/{appsId}/services/{servicesId}/versions/{versionsId}/'
-      'instances/{instancesId}',
+      'https://appengine.googleapis.com/v1beta5/',
+      'apps.services.versions.instances',
+      'apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/'
+      '{instancesId}',
       [u'appsId', u'servicesId', u'versionsId', u'instancesId'])
-  BIGQUERY_DATASETS = (
+  BIGQUERY_V2_DATASETS = (
       'bigquery',
       'v2',
       'https://www.googleapis.com/bigquery/v2/',
-      'bigquery.datasets',
+      'datasets',
       'projects/{projectId}/datasets/{datasetId}',
       [u'projectId', u'datasetId'])
-  BIGQUERY_JOBS = (
+  BIGQUERY_V2_JOBS = (
       'bigquery',
       'v2',
       'https://www.googleapis.com/bigquery/v2/',
-      'bigquery.jobs',
+      'jobs',
       'projects/{projectId}/jobs/{jobId}',
       [u'projectId', u'jobId'])
-  BIGQUERY_TABLES = (
+  BIGQUERY_V2_TABLES = (
       'bigquery',
       'v2',
       'https://www.googleapis.com/bigquery/v2/',
-      'bigquery.tables',
+      'tables',
       'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
       [u'projectId', u'datasetId', u'tableId'])
-  BIGTABLEADMIN_OPERATIONS = (
+  BIGTABLEADMIN_V2_OPERATIONS = (
       'bigtableadmin',
       'v2',
-      'https://bigtableadmin.googleapis.com/',
-      'bigtableadmin.operations',
-      'v2/operations/{operationsId}',
+      'https://bigtableadmin.googleapis.com/v2/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  BIGTABLEADMIN_PROJECTS_INSTANCES = (
+  BIGTABLEADMIN_V2_PROJECTS_INSTANCES = (
       'bigtableadmin',
       'v2',
-      'https://bigtableadmin.googleapis.com/',
-      'bigtableadmin.projects.instances',
-      'v2/projects/{projectsId}/instances/{instancesId}',
+      'https://bigtableadmin.googleapis.com/v2/',
+      'projects.instances',
+      'projects/{projectsId}/instances/{instancesId}',
       [u'projectsId', u'instancesId'])
-  BIGTABLEADMIN_PROJECTS_INSTANCES_CLUSTERS = (
+  BIGTABLEADMIN_V2_PROJECTS_INSTANCES_CLUSTERS = (
       'bigtableadmin',
       'v2',
-      'https://bigtableadmin.googleapis.com/',
-      'bigtableadmin.projects.instances.clusters',
-      'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
+      'https://bigtableadmin.googleapis.com/v2/',
+      'projects.instances.clusters',
+      'projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
       [u'projectsId', u'instancesId', u'clustersId'])
-  BIGTABLEADMIN_PROJECTS_INSTANCES_TABLES = (
+  BIGTABLEADMIN_V2_PROJECTS_INSTANCES_TABLES = (
       'bigtableadmin',
       'v2',
-      'https://bigtableadmin.googleapis.com/',
-      'bigtableadmin.projects.instances.tables',
-      'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
+      'https://bigtableadmin.googleapis.com/v2/',
+      'projects.instances.tables',
+      'projects/{projectsId}/instances/{instancesId}/tables/{tablesId}',
       [u'projectsId', u'instancesId', u'tablesId'])
-  BIGTABLECLUSTERADMIN_OPERATIONS = (
+  BIGTABLECLUSTERADMIN_V1_OPERATIONS = (
       'bigtableclusteradmin',
       'v1',
       'https://bigtableclusteradmin.googleapis.com/v1/',
-      'bigtableclusteradmin.operations',
+      'operations',
       '{+name}',
       [u'name'])
-  BIGTABLECLUSTERADMIN_PROJECTS_ZONES_CLUSTERS = (
+  BIGTABLECLUSTERADMIN_V1_PROJECTS_ZONES_CLUSTERS = (
       'bigtableclusteradmin',
       'v1',
       'https://bigtableclusteradmin.googleapis.com/v1/',
-      'bigtableclusteradmin.projects.zones.clusters',
+      'projects.zones.clusters',
       '{+name}',
       [u'name'])
-  CLOUDBILLING_BILLINGACCOUNTS = (
+  CLOUDBILLING_V1_BILLINGACCOUNTS = (
       'cloudbilling',
       'v1',
-      'https://cloudbilling.googleapis.com/',
-      'cloudbilling.billingAccounts',
-      'v1/billingAccounts/{billingAccountsId}',
+      'https://cloudbilling.googleapis.com/v1/',
+      'billingAccounts',
+      'billingAccounts/{billingAccountsId}',
       [u'billingAccountsId'])
-  CLOUDBUILD_OPERATIONS = (
+  CLOUDBUILD_V1_OPERATIONS = (
       'cloudbuild',
       'v1',
-      'https://cloudbuild.googleapis.com/',
-      'cloudbuild.operations',
-      'v1/operations/{operationsId}',
+      'https://cloudbuild.googleapis.com/v1/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  CLOUDBUILD_PROJECTS_BUILDS = (
+  CLOUDBUILD_V1_PROJECTS_BUILDS = (
       'cloudbuild',
       'v1',
-      'https://cloudbuild.googleapis.com/',
-      'cloudbuild.projects.builds',
-      'v1/projects/{projectId}/builds/{id}',
+      'https://cloudbuild.googleapis.com/v1/',
+      'projects.builds',
+      'projects/{projectId}/builds/{id}',
       [u'projectId', u'id'])
-  CLOUDBUILD_PROJECTS_TRIGGERS = (
+  CLOUDBUILD_V1_PROJECTS_TRIGGERS = (
       'cloudbuild',
       'v1',
-      'https://cloudbuild.googleapis.com/',
-      'cloudbuild.projects.triggers',
-      'v1/projects/{projectId}/triggers/{triggerId}',
+      'https://cloudbuild.googleapis.com/v1/',
+      'projects.triggers',
+      'projects/{projectId}/triggers/{triggerId}',
       [u'projectId', u'triggerId'])
-  CLOUDDEBUGGER_DEBUGGER_DEBUGGEES_BREAKPOINTS = (
+  CLOUDDEBUGGER_V2_DEBUGGER_DEBUGGEES_BREAKPOINTS = (
       'clouddebugger',
       'v2',
-      'https://clouddebugger.googleapis.com/',
-      'clouddebugger.debugger.debuggees.breakpoints',
-      'v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
+      'https://clouddebugger.googleapis.com/v2/',
+      'debugger.debuggees.breakpoints',
+      'debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
       [u'debuggeeId', u'breakpointId'])
-  CLOUDERRORREPORTING_PROJECTS_GROUPS = (
+  CLOUDERRORREPORTING_V1BETA1_PROJECTS_GROUPS = (
       'clouderrorreporting',
       'v1beta1',
-      'https://clouderrorreporting.googleapis.com/',
-      'clouderrorreporting.projects.groups',
-      'v1beta1/projects/{projectsId}/groups/{groupsId}',
+      'https://clouderrorreporting.googleapis.com/v1beta1/',
+      'projects.groups',
+      'projects/{projectsId}/groups/{groupsId}',
       [u'projectsId', u'groupsId'])
-  CLOUDFUNCTIONS_OPERATIONS = (
+  CLOUDFUNCTIONS_V1BETA1_OPERATIONS = (
       'cloudfunctions',
       'v1beta1',
-      'https://cloudfunctions.googleapis.com/',
-      'cloudfunctions.operations',
-      'v1beta1/operations/{operationsId}',
+      'https://cloudfunctions.googleapis.com/v1beta1/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  CLOUDFUNCTIONS_PROJECTS_REGIONS_FUNCTIONS = (
+  CLOUDFUNCTIONS_V1BETA1_PROJECTS_REGIONS_FUNCTIONS = (
       'cloudfunctions',
       'v1beta1',
-      'https://cloudfunctions.googleapis.com/',
-      'cloudfunctions.projects.regions.functions',
-      'v1beta1/projects/{projectsId}/regions/{regionsId}/functions/'
-      '{functionsId}',
+      'https://cloudfunctions.googleapis.com/v1beta1/',
+      'projects.regions.functions',
+      'projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
       [u'projectsId', u'regionsId', u'functionsId'])
-  CLOUDRESOURCEMANAGER_ORGANIZATIONS = (
+  CLOUDRESOURCEMANAGER_V1BETA1_ORGANIZATIONS = (
       'cloudresourcemanager',
       'v1beta1',
-      'https://cloudresourcemanager.googleapis.com/',
-      'cloudresourcemanager.organizations',
-      'v1beta1/organizations/{organizationsId}',
+      'https://cloudresourcemanager.googleapis.com/v1beta1/',
+      'organizations',
+      'organizations/{organizationsId}',
       [u'organizationsId'])
-  CLOUDRESOURCEMANAGER_PROJECTS = (
+  CLOUDRESOURCEMANAGER_V1BETA1_PROJECTS = (
       'cloudresourcemanager',
       'v1beta1',
-      'https://cloudresourcemanager.googleapis.com/',
-      'cloudresourcemanager.projects',
-      'v1beta1/projects/{projectId}',
+      'https://cloudresourcemanager.googleapis.com/v1beta1/',
+      'projects',
+      'projects/{projectId}',
       [u'projectId'])
-  CLOUDUSERACCOUNTS_GLOBALACCOUNTSOPERATIONS = (
+  CLOUDUSERACCOUNTS_ALPHA_GLOBALACCOUNTSOPERATIONS = (
       'clouduseraccounts',
       'alpha',
-      'https://www.googleapis.com/clouduseraccounts/alpha/projects/',
-      'clouduseraccounts.globalAccountsOperations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/clouduseraccounts/alpha/',
+      'globalAccountsOperations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  CLOUDUSERACCOUNTS_GROUPS = (
+  CLOUDUSERACCOUNTS_ALPHA_GROUPS = (
       'clouduseraccounts',
       'alpha',
-      'https://www.googleapis.com/clouduseraccounts/alpha/projects/',
-      'clouduseraccounts.groups',
-      '{project}/global/groups/{groupName}',
+      'https://www.googleapis.com/clouduseraccounts/alpha/',
+      'groups',
+      'projects/{project}/global/groups/{groupName}',
       [u'project', u'groupName'])
-  CLOUDUSERACCOUNTS_USERS = (
+  CLOUDUSERACCOUNTS_ALPHA_USERS = (
       'clouduseraccounts',
       'alpha',
-      'https://www.googleapis.com/clouduseraccounts/alpha/projects/',
-      'clouduseraccounts.users',
-      '{project}/global/users/{user}',
+      'https://www.googleapis.com/clouduseraccounts/alpha/',
+      'users',
+      'projects/{project}/global/users/{user}',
       [u'project', u'user'])
-  CLOUDUSERACCOUNTS_GLOBALACCOUNTSOPERATIONS = (
+  CLOUDUSERACCOUNTS_BETA_GLOBALACCOUNTSOPERATIONS = (
       'clouduseraccounts',
       'beta',
-      'https://www.googleapis.com/clouduseraccounts/beta/projects/',
-      'clouduseraccounts.globalAccountsOperations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/clouduseraccounts/beta/',
+      'globalAccountsOperations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  CLOUDUSERACCOUNTS_GROUPS = (
+  CLOUDUSERACCOUNTS_BETA_GROUPS = (
       'clouduseraccounts',
       'beta',
-      'https://www.googleapis.com/clouduseraccounts/beta/projects/',
-      'clouduseraccounts.groups',
-      '{project}/global/groups/{groupName}',
+      'https://www.googleapis.com/clouduseraccounts/beta/',
+      'groups',
+      'projects/{project}/global/groups/{groupName}',
       [u'project', u'groupName'])
-  CLOUDUSERACCOUNTS_USERS = (
+  CLOUDUSERACCOUNTS_BETA_USERS = (
       'clouduseraccounts',
       'beta',
-      'https://www.googleapis.com/clouduseraccounts/beta/projects/',
-      'clouduseraccounts.users',
-      '{project}/global/users/{user}',
+      'https://www.googleapis.com/clouduseraccounts/beta/',
+      'users',
+      'projects/{project}/global/users/{user}',
       [u'project', u'user'])
-  COMPUTE_ADDRESSES = (
+  COMPUTE_ALPHA_ADDRESSES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.addresses',
-      '{project}/regions/{region}/addresses/{address}',
+      'https://www.googleapis.com/compute/alpha/',
+      'addresses',
+      'projects/{project}/regions/{region}/addresses/{address}',
       [u'project', u'region', u'address'])
-  COMPUTE_AUTOSCALERS = (
+  COMPUTE_ALPHA_AUTOSCALERS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.autoscalers',
-      '{project}/zones/{zone}/autoscalers/{autoscaler}',
+      'https://www.googleapis.com/compute/alpha/',
+      'autoscalers',
+      'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
       [u'project', u'zone', u'autoscaler'])
-  COMPUTE_BACKENDBUCKETS = (
+  COMPUTE_ALPHA_BACKENDBUCKETS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.backendBuckets',
-      '{project}/global/backendBuckets/{backendBucket}',
+      'https://www.googleapis.com/compute/alpha/',
+      'backendBuckets',
+      'projects/{project}/global/backendBuckets/{backendBucket}',
       [u'project', u'backendBucket'])
-  COMPUTE_BACKENDSERVICES = (
+  COMPUTE_ALPHA_BACKENDSERVICES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.backendServices',
-      '{project}/global/backendServices/{backendService}',
+      'https://www.googleapis.com/compute/alpha/',
+      'backendServices',
+      'projects/{project}/global/backendServices/{backendService}',
       [u'project', u'backendService'])
-  COMPUTE_DISKTYPES = (
+  COMPUTE_ALPHA_DISKTYPES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.diskTypes',
-      '{project}/zones/{zone}/diskTypes/{diskType}',
+      'https://www.googleapis.com/compute/alpha/',
+      'diskTypes',
+      'projects/{project}/zones/{zone}/diskTypes/{diskType}',
       [u'project', u'zone', u'diskType'])
-  COMPUTE_DISKS = (
+  COMPUTE_ALPHA_DISKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.disks',
-      '{project}/zones/{zone}/disks/{disk}',
+      'https://www.googleapis.com/compute/alpha/',
+      'disks',
+      'projects/{project}/zones/{zone}/disks/{disk}',
       [u'project', u'zone', u'disk'])
-  COMPUTE_FIREWALLS = (
+  COMPUTE_ALPHA_FIREWALLS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.firewalls',
-      '{project}/global/firewalls/{firewall}',
+      'https://www.googleapis.com/compute/alpha/',
+      'firewalls',
+      'projects/{project}/global/firewalls/{firewall}',
       [u'project', u'firewall'])
-  COMPUTE_FORWARDINGRULES = (
+  COMPUTE_ALPHA_FORWARDINGRULES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.forwardingRules',
-      '{project}/regions/{region}/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/alpha/',
+      'forwardingRules',
+      'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
       [u'project', u'region', u'forwardingRule'])
-  COMPUTE_GLOBALADDRESSES = (
+  COMPUTE_ALPHA_GLOBALADDRESSES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.globalAddresses',
-      '{project}/global/addresses/{address}',
+      'https://www.googleapis.com/compute/alpha/',
+      'globalAddresses',
+      'projects/{project}/global/addresses/{address}',
       [u'project', u'address'])
-  COMPUTE_GLOBALFORWARDINGRULES = (
+  COMPUTE_ALPHA_GLOBALFORWARDINGRULES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.globalForwardingRules',
-      '{project}/global/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/alpha/',
+      'globalForwardingRules',
+      'projects/{project}/global/forwardingRules/{forwardingRule}',
       [u'project', u'forwardingRule'])
-  COMPUTE_GLOBALOPERATIONS = (
+  COMPUTE_ALPHA_GLOBALOPERATIONS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.globalOperations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/compute/alpha/',
+      'globalOperations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  COMPUTE_HEALTHCHECKS = (
+  COMPUTE_ALPHA_HEALTHCHECKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.healthChecks',
-      '{project}/global/healthChecks/{healthCheck}',
+      'https://www.googleapis.com/compute/alpha/',
+      'healthChecks',
+      'projects/{project}/global/healthChecks/{healthCheck}',
       [u'project', u'healthCheck'])
-  COMPUTE_HTTPHEALTHCHECKS = (
+  COMPUTE_ALPHA_HTTPHEALTHCHECKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.httpHealthChecks',
-      '{project}/global/httpHealthChecks/{httpHealthCheck}',
+      'https://www.googleapis.com/compute/alpha/',
+      'httpHealthChecks',
+      'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
       [u'project', u'httpHealthCheck'])
-  COMPUTE_HTTPSHEALTHCHECKS = (
+  COMPUTE_ALPHA_HTTPSHEALTHCHECKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.httpsHealthChecks',
-      '{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+      'https://www.googleapis.com/compute/alpha/',
+      'httpsHealthChecks',
+      'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
       [u'project', u'httpsHealthCheck'])
-  COMPUTE_IMAGES = (
+  COMPUTE_ALPHA_IMAGES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.images',
-      '{project}/global/images/{image}',
+      'https://www.googleapis.com/compute/alpha/',
+      'images',
+      'projects/{project}/global/images/{image}',
       [u'project', u'image'])
-  COMPUTE_INSTANCEGROUPMANAGERS = (
+  COMPUTE_ALPHA_INSTANCEGROUPMANAGERS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.instanceGroupManagers',
-      '{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+      'https://www.googleapis.com/compute/alpha/',
+      'instanceGroupManagers',
+      'projects/{project}/zones/{zone}/instanceGroupManagers/'
+      '{instanceGroupManager}',
       [u'project', u'zone', u'instanceGroupManager'])
-  COMPUTE_INSTANCEGROUPS = (
+  COMPUTE_ALPHA_INSTANCEGROUPS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.instanceGroups',
-      '{project}/zones/{zone}/instanceGroups/{instanceGroup}',
+      'https://www.googleapis.com/compute/alpha/',
+      'instanceGroups',
+      'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
       [u'project', u'zone', u'instanceGroup'])
-  COMPUTE_INSTANCETEMPLATES = (
+  COMPUTE_ALPHA_INSTANCETEMPLATES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.instanceTemplates',
-      '{project}/global/instanceTemplates/{instanceTemplate}',
+      'https://www.googleapis.com/compute/alpha/',
+      'instanceTemplates',
+      'projects/{project}/global/instanceTemplates/{instanceTemplate}',
       [u'project', u'instanceTemplate'])
-  COMPUTE_INSTANCES = (
+  COMPUTE_ALPHA_INSTANCES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.instances',
-      '{project}/zones/{zone}/instances/{instance}',
+      'https://www.googleapis.com/compute/alpha/',
+      'instances',
+      'projects/{project}/zones/{zone}/instances/{instance}',
       [u'project', u'zone', u'instance'])
-  COMPUTE_LICENSES = (
+  COMPUTE_ALPHA_LICENSES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.licenses',
-      '{project}/global/licenses/{license}',
+      'https://www.googleapis.com/compute/alpha/',
+      'licenses',
+      'projects/{project}/global/licenses/{license}',
       [u'project', u'license'])
-  COMPUTE_MACHINETYPES = (
+  COMPUTE_ALPHA_MACHINETYPES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.machineTypes',
-      '{project}/zones/{zone}/machineTypes/{machineType}',
+      'https://www.googleapis.com/compute/alpha/',
+      'machineTypes',
+      'projects/{project}/zones/{zone}/machineTypes/{machineType}',
       [u'project', u'zone', u'machineType'])
-  COMPUTE_NETWORKS = (
+  COMPUTE_ALPHA_NETWORKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.networks',
-      '{project}/global/networks/{network}',
+      'https://www.googleapis.com/compute/alpha/',
+      'networks',
+      'projects/{project}/global/networks/{network}',
       [u'project', u'network'])
-  COMPUTE_PROJECTS = (
+  COMPUTE_ALPHA_PROJECTS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.projects',
-      '{project}',
+      'https://www.googleapis.com/compute/alpha/',
+      'projects',
+      'projects/{project}',
       [u'project'])
-  COMPUTE_REGIONAUTOSCALERS = (
+  COMPUTE_ALPHA_REGIONAUTOSCALERS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionAutoscalers',
-      '{project}/regions/{region}/autoscalers/{autoscaler}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionAutoscalers',
+      'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
       [u'project', u'region', u'autoscaler'])
-  COMPUTE_REGIONBACKENDSERVICES = (
+  COMPUTE_ALPHA_REGIONBACKENDSERVICES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionBackendServices',
-      '{project}/regions/{region}/backendServices/{backendService}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionBackendServices',
+      'projects/{project}/regions/{region}/backendServices/{backendService}',
       [u'project', u'region', u'backendService'])
-  COMPUTE_REGIONDISKTYPES = (
+  COMPUTE_ALPHA_REGIONDISKTYPES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionDiskTypes',
-      '{project}/regions/{region}/diskTypes/{diskType}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionDiskTypes',
+      'projects/{project}/regions/{region}/diskTypes/{diskType}',
       [u'project', u'region', u'diskType'])
-  COMPUTE_REGIONDISKS = (
+  COMPUTE_ALPHA_REGIONDISKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionDisks',
-      '{project}/regions/{region}/disks/{disk}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionDisks',
+      'projects/{project}/regions/{region}/disks/{disk}',
       [u'project', u'region', u'disk'])
-  COMPUTE_REGIONINSTANCEGROUPMANAGERS = (
+  COMPUTE_ALPHA_REGIONINSTANCEGROUPMANAGERS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionInstanceGroupManagers',
-      '{project}/regions/{region}/instanceGroupManagers/'
+      'https://www.googleapis.com/compute/alpha/',
+      'regionInstanceGroupManagers',
+      'projects/{project}/regions/{region}/instanceGroupManagers/'
       '{instanceGroupManager}',
       [u'project', u'region', u'instanceGroupManager'])
-  COMPUTE_REGIONINSTANCEGROUPS = (
+  COMPUTE_ALPHA_REGIONINSTANCEGROUPS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionInstanceGroups',
-      '{project}/regions/{region}/instanceGroups/{instanceGroup}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionInstanceGroups',
+      'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
       [u'project', u'region', u'instanceGroup'])
-  COMPUTE_REGIONOPERATIONS = (
+  COMPUTE_ALPHA_REGIONOPERATIONS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regionOperations',
-      '{project}/regions/{region}/operations/{operation}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regionOperations',
+      'projects/{project}/regions/{region}/operations/{operation}',
       [u'project', u'region', u'operation'])
-  COMPUTE_REGIONS = (
+  COMPUTE_ALPHA_REGIONS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.regions',
-      '{project}/regions/{region}',
+      'https://www.googleapis.com/compute/alpha/',
+      'regions',
+      'projects/{project}/regions/{region}',
       [u'project', u'region'])
-  COMPUTE_ROUTERS = (
+  COMPUTE_ALPHA_ROUTERS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.routers',
-      '{project}/regions/{region}/routers/{router}',
+      'https://www.googleapis.com/compute/alpha/',
+      'routers',
+      'projects/{project}/regions/{region}/routers/{router}',
       [u'project', u'region', u'router'])
-  COMPUTE_ROUTES = (
+  COMPUTE_ALPHA_ROUTES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.routes',
-      '{project}/global/routes/{route}',
+      'https://www.googleapis.com/compute/alpha/',
+      'routes',
+      'projects/{project}/global/routes/{route}',
       [u'project', u'route'])
-  COMPUTE_SNAPSHOTS = (
+  COMPUTE_ALPHA_SNAPSHOTS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.snapshots',
-      '{project}/global/snapshots/{snapshot}',
+      'https://www.googleapis.com/compute/alpha/',
+      'snapshots',
+      'projects/{project}/global/snapshots/{snapshot}',
       [u'project', u'snapshot'])
-  COMPUTE_SSLCERTIFICATES = (
+  COMPUTE_ALPHA_SSLCERTIFICATES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.sslCertificates',
-      '{project}/global/sslCertificates/{sslCertificate}',
+      'https://www.googleapis.com/compute/alpha/',
+      'sslCertificates',
+      'projects/{project}/global/sslCertificates/{sslCertificate}',
       [u'project', u'sslCertificate'])
-  COMPUTE_SUBNETWORKS = (
+  COMPUTE_ALPHA_SUBNETWORKS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.subnetworks',
-      '{project}/regions/{region}/subnetworks/{subnetwork}',
+      'https://www.googleapis.com/compute/alpha/',
+      'subnetworks',
+      'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
       [u'project', u'region', u'subnetwork'])
-  COMPUTE_TARGETHTTPPROXIES = (
+  COMPUTE_ALPHA_TARGETHTTPPROXIES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetHttpProxies',
-      '{project}/global/targetHttpProxies/{targetHttpProxy}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetHttpProxies',
+      'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
       [u'project', u'targetHttpProxy'])
-  COMPUTE_TARGETHTTPSPROXIES = (
+  COMPUTE_ALPHA_TARGETHTTPSPROXIES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetHttpsProxies',
-      '{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetHttpsProxies',
+      'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
       [u'project', u'targetHttpsProxy'])
-  COMPUTE_TARGETINSTANCES = (
+  COMPUTE_ALPHA_TARGETINSTANCES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetInstances',
-      '{project}/zones/{zone}/targetInstances/{targetInstance}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetInstances',
+      'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
       [u'project', u'zone', u'targetInstance'])
-  COMPUTE_TARGETPOOLS = (
+  COMPUTE_ALPHA_TARGETPOOLS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetPools',
-      '{project}/regions/{region}/targetPools/{targetPool}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetPools',
+      'projects/{project}/regions/{region}/targetPools/{targetPool}',
       [u'project', u'region', u'targetPool'])
-  COMPUTE_TARGETSSLPROXIES = (
+  COMPUTE_ALPHA_TARGETSSLPROXIES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetSslProxies',
-      '{project}/global/targetSslProxies/{targetSslProxy}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetSslProxies',
+      'projects/{project}/global/targetSslProxies/{targetSslProxy}',
       [u'project', u'targetSslProxy'])
-  COMPUTE_TARGETTCPPROXIES = (
+  COMPUTE_ALPHA_TARGETTCPPROXIES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetTcpProxies',
-      '{project}/global/targetTcpProxies/{targetTcpProxy}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetTcpProxies',
+      'projects/{project}/global/targetTcpProxies/{targetTcpProxy}',
       [u'project', u'targetTcpProxy'])
-  COMPUTE_TARGETVPNGATEWAYS = (
+  COMPUTE_ALPHA_TARGETVPNGATEWAYS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.targetVpnGateways',
-      '{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
+      'https://www.googleapis.com/compute/alpha/',
+      'targetVpnGateways',
+      'projects/{project}/regions/{region}/targetVpnGateways/'
+      '{targetVpnGateway}',
       [u'project', u'region', u'targetVpnGateway'])
-  COMPUTE_URLMAPS = (
+  COMPUTE_ALPHA_URLMAPS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.urlMaps',
-      '{project}/global/urlMaps/{urlMap}',
+      'https://www.googleapis.com/compute/alpha/',
+      'urlMaps',
+      'projects/{project}/global/urlMaps/{urlMap}',
       [u'project', u'urlMap'])
-  COMPUTE_VPNTUNNELS = (
+  COMPUTE_ALPHA_VPNTUNNELS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.vpnTunnels',
-      '{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
+      'https://www.googleapis.com/compute/alpha/',
+      'vpnTunnels',
+      'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       [u'project', u'region', u'vpnTunnel'])
-  COMPUTE_ZONEOPERATIONS = (
+  COMPUTE_ALPHA_ZONEOPERATIONS = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.zoneOperations',
-      '{project}/zones/{zone}/operations/{operation}',
+      'https://www.googleapis.com/compute/alpha/',
+      'zoneOperations',
+      'projects/{project}/zones/{zone}/operations/{operation}',
       [u'project', u'zone', u'operation'])
-  COMPUTE_ZONES = (
+  COMPUTE_ALPHA_ZONES = (
       'compute',
       'alpha',
-      'https://www.googleapis.com/compute/alpha/projects/',
-      'compute.zones',
-      '{project}/zones/{zone}',
+      'https://www.googleapis.com/compute/alpha/',
+      'zones',
+      'projects/{project}/zones/{zone}',
       [u'project', u'zone'])
-  COMPUTE_ADDRESSES = (
+  COMPUTE_BETA_ADDRESSES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.addresses',
-      '{project}/regions/{region}/addresses/{address}',
+      'https://www.googleapis.com/compute/beta/',
+      'addresses',
+      'projects/{project}/regions/{region}/addresses/{address}',
       [u'project', u'region', u'address'])
-  COMPUTE_AUTOSCALERS = (
+  COMPUTE_BETA_AUTOSCALERS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.autoscalers',
-      '{project}/zones/{zone}/autoscalers/{autoscaler}',
+      'https://www.googleapis.com/compute/beta/',
+      'autoscalers',
+      'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
       [u'project', u'zone', u'autoscaler'])
-  COMPUTE_BACKENDSERVICES = (
+  COMPUTE_BETA_BACKENDSERVICES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.backendServices',
-      '{project}/global/backendServices/{backendService}',
+      'https://www.googleapis.com/compute/beta/',
+      'backendServices',
+      'projects/{project}/global/backendServices/{backendService}',
       [u'project', u'backendService'])
-  COMPUTE_DISKTYPES = (
+  COMPUTE_BETA_DISKTYPES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.diskTypes',
-      '{project}/zones/{zone}/diskTypes/{diskType}',
+      'https://www.googleapis.com/compute/beta/',
+      'diskTypes',
+      'projects/{project}/zones/{zone}/diskTypes/{diskType}',
       [u'project', u'zone', u'diskType'])
-  COMPUTE_DISKS = (
+  COMPUTE_BETA_DISKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.disks',
-      '{project}/zones/{zone}/disks/{disk}',
+      'https://www.googleapis.com/compute/beta/',
+      'disks',
+      'projects/{project}/zones/{zone}/disks/{disk}',
       [u'project', u'zone', u'disk'])
-  COMPUTE_FIREWALLS = (
+  COMPUTE_BETA_FIREWALLS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.firewalls',
-      '{project}/global/firewalls/{firewall}',
+      'https://www.googleapis.com/compute/beta/',
+      'firewalls',
+      'projects/{project}/global/firewalls/{firewall}',
       [u'project', u'firewall'])
-  COMPUTE_FORWARDINGRULES = (
+  COMPUTE_BETA_FORWARDINGRULES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.forwardingRules',
-      '{project}/regions/{region}/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/beta/',
+      'forwardingRules',
+      'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
       [u'project', u'region', u'forwardingRule'])
-  COMPUTE_GLOBALADDRESSES = (
+  COMPUTE_BETA_GLOBALADDRESSES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.globalAddresses',
-      '{project}/global/addresses/{address}',
+      'https://www.googleapis.com/compute/beta/',
+      'globalAddresses',
+      'projects/{project}/global/addresses/{address}',
       [u'project', u'address'])
-  COMPUTE_GLOBALFORWARDINGRULES = (
+  COMPUTE_BETA_GLOBALFORWARDINGRULES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.globalForwardingRules',
-      '{project}/global/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/beta/',
+      'globalForwardingRules',
+      'projects/{project}/global/forwardingRules/{forwardingRule}',
       [u'project', u'forwardingRule'])
-  COMPUTE_GLOBALOPERATIONS = (
+  COMPUTE_BETA_GLOBALOPERATIONS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.globalOperations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/compute/beta/',
+      'globalOperations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  COMPUTE_HEALTHCHECKS = (
+  COMPUTE_BETA_HEALTHCHECKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.healthChecks',
-      '{project}/global/healthChecks/{healthCheck}',
+      'https://www.googleapis.com/compute/beta/',
+      'healthChecks',
+      'projects/{project}/global/healthChecks/{healthCheck}',
       [u'project', u'healthCheck'])
-  COMPUTE_HTTPHEALTHCHECKS = (
+  COMPUTE_BETA_HTTPHEALTHCHECKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.httpHealthChecks',
-      '{project}/global/httpHealthChecks/{httpHealthCheck}',
+      'https://www.googleapis.com/compute/beta/',
+      'httpHealthChecks',
+      'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
       [u'project', u'httpHealthCheck'])
-  COMPUTE_HTTPSHEALTHCHECKS = (
+  COMPUTE_BETA_HTTPSHEALTHCHECKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.httpsHealthChecks',
-      '{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+      'https://www.googleapis.com/compute/beta/',
+      'httpsHealthChecks',
+      'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
       [u'project', u'httpsHealthCheck'])
-  COMPUTE_IMAGES = (
+  COMPUTE_BETA_IMAGES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.images',
-      '{project}/global/images/{image}',
+      'https://www.googleapis.com/compute/beta/',
+      'images',
+      'projects/{project}/global/images/{image}',
       [u'project', u'image'])
-  COMPUTE_INSTANCEGROUPMANAGERS = (
+  COMPUTE_BETA_INSTANCEGROUPMANAGERS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.instanceGroupManagers',
-      '{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+      'https://www.googleapis.com/compute/beta/',
+      'instanceGroupManagers',
+      'projects/{project}/zones/{zone}/instanceGroupManagers/'
+      '{instanceGroupManager}',
       [u'project', u'zone', u'instanceGroupManager'])
-  COMPUTE_INSTANCEGROUPS = (
+  COMPUTE_BETA_INSTANCEGROUPS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.instanceGroups',
-      '{project}/zones/{zone}/instanceGroups/{instanceGroup}',
+      'https://www.googleapis.com/compute/beta/',
+      'instanceGroups',
+      'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
       [u'project', u'zone', u'instanceGroup'])
-  COMPUTE_INSTANCETEMPLATES = (
+  COMPUTE_BETA_INSTANCETEMPLATES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.instanceTemplates',
-      '{project}/global/instanceTemplates/{instanceTemplate}',
+      'https://www.googleapis.com/compute/beta/',
+      'instanceTemplates',
+      'projects/{project}/global/instanceTemplates/{instanceTemplate}',
       [u'project', u'instanceTemplate'])
-  COMPUTE_INSTANCES = (
+  COMPUTE_BETA_INSTANCES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.instances',
-      '{project}/zones/{zone}/instances/{instance}',
+      'https://www.googleapis.com/compute/beta/',
+      'instances',
+      'projects/{project}/zones/{zone}/instances/{instance}',
       [u'project', u'zone', u'instance'])
-  COMPUTE_LICENSES = (
+  COMPUTE_BETA_LICENSES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.licenses',
-      '{project}/global/licenses/{license}',
+      'https://www.googleapis.com/compute/beta/',
+      'licenses',
+      'projects/{project}/global/licenses/{license}',
       [u'project', u'license'])
-  COMPUTE_MACHINETYPES = (
+  COMPUTE_BETA_MACHINETYPES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.machineTypes',
-      '{project}/zones/{zone}/machineTypes/{machineType}',
+      'https://www.googleapis.com/compute/beta/',
+      'machineTypes',
+      'projects/{project}/zones/{zone}/machineTypes/{machineType}',
       [u'project', u'zone', u'machineType'])
-  COMPUTE_NETWORKS = (
+  COMPUTE_BETA_NETWORKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.networks',
-      '{project}/global/networks/{network}',
+      'https://www.googleapis.com/compute/beta/',
+      'networks',
+      'projects/{project}/global/networks/{network}',
       [u'project', u'network'])
-  COMPUTE_PROJECTS = (
+  COMPUTE_BETA_PROJECTS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.projects',
-      '{project}',
+      'https://www.googleapis.com/compute/beta/',
+      'projects',
+      'projects/{project}',
       [u'project'])
-  COMPUTE_REGIONAUTOSCALERS = (
+  COMPUTE_BETA_REGIONAUTOSCALERS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.regionAutoscalers',
-      '{project}/regions/{region}/autoscalers/{autoscaler}',
+      'https://www.googleapis.com/compute/beta/',
+      'regionAutoscalers',
+      'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
       [u'project', u'region', u'autoscaler'])
-  COMPUTE_REGIONINSTANCEGROUPMANAGERS = (
+  COMPUTE_BETA_REGIONINSTANCEGROUPMANAGERS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.regionInstanceGroupManagers',
-      '{project}/regions/{region}/instanceGroupManagers/'
+      'https://www.googleapis.com/compute/beta/',
+      'regionInstanceGroupManagers',
+      'projects/{project}/regions/{region}/instanceGroupManagers/'
       '{instanceGroupManager}',
       [u'project', u'region', u'instanceGroupManager'])
-  COMPUTE_REGIONINSTANCEGROUPS = (
+  COMPUTE_BETA_REGIONINSTANCEGROUPS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.regionInstanceGroups',
-      '{project}/regions/{region}/instanceGroups/{instanceGroup}',
+      'https://www.googleapis.com/compute/beta/',
+      'regionInstanceGroups',
+      'projects/{project}/regions/{region}/instanceGroups/{instanceGroup}',
       [u'project', u'region', u'instanceGroup'])
-  COMPUTE_REGIONOPERATIONS = (
+  COMPUTE_BETA_REGIONOPERATIONS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.regionOperations',
-      '{project}/regions/{region}/operations/{operation}',
+      'https://www.googleapis.com/compute/beta/',
+      'regionOperations',
+      'projects/{project}/regions/{region}/operations/{operation}',
       [u'project', u'region', u'operation'])
-  COMPUTE_REGIONS = (
+  COMPUTE_BETA_REGIONS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.regions',
-      '{project}/regions/{region}',
+      'https://www.googleapis.com/compute/beta/',
+      'regions',
+      'projects/{project}/regions/{region}',
       [u'project', u'region'])
-  COMPUTE_ROUTERS = (
+  COMPUTE_BETA_ROUTERS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.routers',
-      '{project}/regions/{region}/routers/{router}',
+      'https://www.googleapis.com/compute/beta/',
+      'routers',
+      'projects/{project}/regions/{region}/routers/{router}',
       [u'project', u'region', u'router'])
-  COMPUTE_ROUTES = (
+  COMPUTE_BETA_ROUTES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.routes',
-      '{project}/global/routes/{route}',
+      'https://www.googleapis.com/compute/beta/',
+      'routes',
+      'projects/{project}/global/routes/{route}',
       [u'project', u'route'])
-  COMPUTE_SNAPSHOTS = (
+  COMPUTE_BETA_SNAPSHOTS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.snapshots',
-      '{project}/global/snapshots/{snapshot}',
+      'https://www.googleapis.com/compute/beta/',
+      'snapshots',
+      'projects/{project}/global/snapshots/{snapshot}',
       [u'project', u'snapshot'])
-  COMPUTE_SSLCERTIFICATES = (
+  COMPUTE_BETA_SSLCERTIFICATES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.sslCertificates',
-      '{project}/global/sslCertificates/{sslCertificate}',
+      'https://www.googleapis.com/compute/beta/',
+      'sslCertificates',
+      'projects/{project}/global/sslCertificates/{sslCertificate}',
       [u'project', u'sslCertificate'])
-  COMPUTE_SUBNETWORKS = (
+  COMPUTE_BETA_SUBNETWORKS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.subnetworks',
-      '{project}/regions/{region}/subnetworks/{subnetwork}',
+      'https://www.googleapis.com/compute/beta/',
+      'subnetworks',
+      'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
       [u'project', u'region', u'subnetwork'])
-  COMPUTE_TARGETHTTPPROXIES = (
+  COMPUTE_BETA_TARGETHTTPPROXIES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetHttpProxies',
-      '{project}/global/targetHttpProxies/{targetHttpProxy}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetHttpProxies',
+      'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
       [u'project', u'targetHttpProxy'])
-  COMPUTE_TARGETHTTPSPROXIES = (
+  COMPUTE_BETA_TARGETHTTPSPROXIES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetHttpsProxies',
-      '{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetHttpsProxies',
+      'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
       [u'project', u'targetHttpsProxy'])
-  COMPUTE_TARGETINSTANCES = (
+  COMPUTE_BETA_TARGETINSTANCES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetInstances',
-      '{project}/zones/{zone}/targetInstances/{targetInstance}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetInstances',
+      'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
       [u'project', u'zone', u'targetInstance'])
-  COMPUTE_TARGETPOOLS = (
+  COMPUTE_BETA_TARGETPOOLS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetPools',
-      '{project}/regions/{region}/targetPools/{targetPool}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetPools',
+      'projects/{project}/regions/{region}/targetPools/{targetPool}',
       [u'project', u'region', u'targetPool'])
-  COMPUTE_TARGETSSLPROXIES = (
+  COMPUTE_BETA_TARGETSSLPROXIES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetSslProxies',
-      '{project}/global/targetSslProxies/{targetSslProxy}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetSslProxies',
+      'projects/{project}/global/targetSslProxies/{targetSslProxy}',
       [u'project', u'targetSslProxy'])
-  COMPUTE_TARGETVPNGATEWAYS = (
+  COMPUTE_BETA_TARGETVPNGATEWAYS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.targetVpnGateways',
-      '{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
+      'https://www.googleapis.com/compute/beta/',
+      'targetVpnGateways',
+      'projects/{project}/regions/{region}/targetVpnGateways/'
+      '{targetVpnGateway}',
       [u'project', u'region', u'targetVpnGateway'])
-  COMPUTE_URLMAPS = (
+  COMPUTE_BETA_URLMAPS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.urlMaps',
-      '{project}/global/urlMaps/{urlMap}',
+      'https://www.googleapis.com/compute/beta/',
+      'urlMaps',
+      'projects/{project}/global/urlMaps/{urlMap}',
       [u'project', u'urlMap'])
-  COMPUTE_VPNTUNNELS = (
+  COMPUTE_BETA_VPNTUNNELS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.vpnTunnels',
-      '{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
+      'https://www.googleapis.com/compute/beta/',
+      'vpnTunnels',
+      'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       [u'project', u'region', u'vpnTunnel'])
-  COMPUTE_ZONEOPERATIONS = (
+  COMPUTE_BETA_ZONEOPERATIONS = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.zoneOperations',
-      '{project}/zones/{zone}/operations/{operation}',
+      'https://www.googleapis.com/compute/beta/',
+      'zoneOperations',
+      'projects/{project}/zones/{zone}/operations/{operation}',
       [u'project', u'zone', u'operation'])
-  COMPUTE_ZONES = (
+  COMPUTE_BETA_ZONES = (
       'compute',
       'beta',
-      'https://www.googleapis.com/compute/beta/projects/',
-      'compute.zones',
-      '{project}/zones/{zone}',
+      'https://www.googleapis.com/compute/beta/',
+      'zones',
+      'projects/{project}/zones/{zone}',
       [u'project', u'zone'])
-  COMPUTE_ADDRESSES = (
+  COMPUTE_V1_ADDRESSES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.addresses',
-      '{project}/regions/{region}/addresses/{address}',
+      'https://www.googleapis.com/compute/v1/',
+      'addresses',
+      'projects/{project}/regions/{region}/addresses/{address}',
       [u'project', u'region', u'address'])
-  COMPUTE_AUTOSCALERS = (
+  COMPUTE_V1_AUTOSCALERS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.autoscalers',
-      '{project}/zones/{zone}/autoscalers/{autoscaler}',
+      'https://www.googleapis.com/compute/v1/',
+      'autoscalers',
+      'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',
       [u'project', u'zone', u'autoscaler'])
-  COMPUTE_BACKENDSERVICES = (
+  COMPUTE_V1_BACKENDSERVICES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.backendServices',
-      '{project}/global/backendServices/{backendService}',
+      'https://www.googleapis.com/compute/v1/',
+      'backendServices',
+      'projects/{project}/global/backendServices/{backendService}',
       [u'project', u'backendService'])
-  COMPUTE_DISKTYPES = (
+  COMPUTE_V1_DISKTYPES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.diskTypes',
-      '{project}/zones/{zone}/diskTypes/{diskType}',
+      'https://www.googleapis.com/compute/v1/',
+      'diskTypes',
+      'projects/{project}/zones/{zone}/diskTypes/{diskType}',
       [u'project', u'zone', u'diskType'])
-  COMPUTE_DISKS = (
+  COMPUTE_V1_DISKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.disks',
-      '{project}/zones/{zone}/disks/{disk}',
+      'https://www.googleapis.com/compute/v1/',
+      'disks',
+      'projects/{project}/zones/{zone}/disks/{disk}',
       [u'project', u'zone', u'disk'])
-  COMPUTE_FIREWALLS = (
+  COMPUTE_V1_FIREWALLS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.firewalls',
-      '{project}/global/firewalls/{firewall}',
+      'https://www.googleapis.com/compute/v1/',
+      'firewalls',
+      'projects/{project}/global/firewalls/{firewall}',
       [u'project', u'firewall'])
-  COMPUTE_FORWARDINGRULES = (
+  COMPUTE_V1_FORWARDINGRULES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.forwardingRules',
-      '{project}/regions/{region}/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/v1/',
+      'forwardingRules',
+      'projects/{project}/regions/{region}/forwardingRules/{forwardingRule}',
       [u'project', u'region', u'forwardingRule'])
-  COMPUTE_GLOBALADDRESSES = (
+  COMPUTE_V1_GLOBALADDRESSES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.globalAddresses',
-      '{project}/global/addresses/{address}',
+      'https://www.googleapis.com/compute/v1/',
+      'globalAddresses',
+      'projects/{project}/global/addresses/{address}',
       [u'project', u'address'])
-  COMPUTE_GLOBALFORWARDINGRULES = (
+  COMPUTE_V1_GLOBALFORWARDINGRULES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.globalForwardingRules',
-      '{project}/global/forwardingRules/{forwardingRule}',
+      'https://www.googleapis.com/compute/v1/',
+      'globalForwardingRules',
+      'projects/{project}/global/forwardingRules/{forwardingRule}',
       [u'project', u'forwardingRule'])
-  COMPUTE_GLOBALOPERATIONS = (
+  COMPUTE_V1_GLOBALOPERATIONS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.globalOperations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/compute/v1/',
+      'globalOperations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  COMPUTE_HEALTHCHECKS = (
+  COMPUTE_V1_HEALTHCHECKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.healthChecks',
-      '{project}/global/healthChecks/{healthCheck}',
+      'https://www.googleapis.com/compute/v1/',
+      'healthChecks',
+      'projects/{project}/global/healthChecks/{healthCheck}',
       [u'project', u'healthCheck'])
-  COMPUTE_HTTPHEALTHCHECKS = (
+  COMPUTE_V1_HTTPHEALTHCHECKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.httpHealthChecks',
-      '{project}/global/httpHealthChecks/{httpHealthCheck}',
+      'https://www.googleapis.com/compute/v1/',
+      'httpHealthChecks',
+      'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',
       [u'project', u'httpHealthCheck'])
-  COMPUTE_HTTPSHEALTHCHECKS = (
+  COMPUTE_V1_HTTPSHEALTHCHECKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.httpsHealthChecks',
-      '{project}/global/httpsHealthChecks/{httpsHealthCheck}',
+      'https://www.googleapis.com/compute/v1/',
+      'httpsHealthChecks',
+      'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
       [u'project', u'httpsHealthCheck'])
-  COMPUTE_IMAGES = (
+  COMPUTE_V1_IMAGES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.images',
-      '{project}/global/images/{image}',
+      'https://www.googleapis.com/compute/v1/',
+      'images',
+      'projects/{project}/global/images/{image}',
       [u'project', u'image'])
-  COMPUTE_INSTANCEGROUPMANAGERS = (
+  COMPUTE_V1_INSTANCEGROUPMANAGERS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.instanceGroupManagers',
-      '{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+      'https://www.googleapis.com/compute/v1/',
+      'instanceGroupManagers',
+      'projects/{project}/zones/{zone}/instanceGroupManagers/'
+      '{instanceGroupManager}',
       [u'project', u'zone', u'instanceGroupManager'])
-  COMPUTE_INSTANCEGROUPS = (
+  COMPUTE_V1_INSTANCEGROUPS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.instanceGroups',
-      '{project}/zones/{zone}/instanceGroups/{instanceGroup}',
+      'https://www.googleapis.com/compute/v1/',
+      'instanceGroups',
+      'projects/{project}/zones/{zone}/instanceGroups/{instanceGroup}',
       [u'project', u'zone', u'instanceGroup'])
-  COMPUTE_INSTANCETEMPLATES = (
+  COMPUTE_V1_INSTANCETEMPLATES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.instanceTemplates',
-      '{project}/global/instanceTemplates/{instanceTemplate}',
+      'https://www.googleapis.com/compute/v1/',
+      'instanceTemplates',
+      'projects/{project}/global/instanceTemplates/{instanceTemplate}',
       [u'project', u'instanceTemplate'])
-  COMPUTE_INSTANCES = (
+  COMPUTE_V1_INSTANCES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.instances',
-      '{project}/zones/{zone}/instances/{instance}',
+      'https://www.googleapis.com/compute/v1/',
+      'instances',
+      'projects/{project}/zones/{zone}/instances/{instance}',
       [u'project', u'zone', u'instance'])
-  COMPUTE_LICENSES = (
+  COMPUTE_V1_LICENSES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.licenses',
-      '{project}/global/licenses/{license}',
+      'https://www.googleapis.com/compute/v1/',
+      'licenses',
+      'projects/{project}/global/licenses/{license}',
       [u'project', u'license'])
-  COMPUTE_MACHINETYPES = (
+  COMPUTE_V1_MACHINETYPES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.machineTypes',
-      '{project}/zones/{zone}/machineTypes/{machineType}',
+      'https://www.googleapis.com/compute/v1/',
+      'machineTypes',
+      'projects/{project}/zones/{zone}/machineTypes/{machineType}',
       [u'project', u'zone', u'machineType'])
-  COMPUTE_NETWORKS = (
+  COMPUTE_V1_NETWORKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.networks',
-      '{project}/global/networks/{network}',
+      'https://www.googleapis.com/compute/v1/',
+      'networks',
+      'projects/{project}/global/networks/{network}',
       [u'project', u'network'])
-  COMPUTE_PROJECTS = (
+  COMPUTE_V1_PROJECTS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.projects',
-      '{project}',
+      'https://www.googleapis.com/compute/v1/',
+      'projects',
+      'projects/{project}',
       [u'project'])
-  COMPUTE_REGIONOPERATIONS = (
+  COMPUTE_V1_REGIONOPERATIONS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.regionOperations',
-      '{project}/regions/{region}/operations/{operation}',
+      'https://www.googleapis.com/compute/v1/',
+      'regionOperations',
+      'projects/{project}/regions/{region}/operations/{operation}',
       [u'project', u'region', u'operation'])
-  COMPUTE_REGIONS = (
+  COMPUTE_V1_REGIONS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.regions',
-      '{project}/regions/{region}',
+      'https://www.googleapis.com/compute/v1/',
+      'regions',
+      'projects/{project}/regions/{region}',
       [u'project', u'region'])
-  COMPUTE_ROUTERS = (
+  COMPUTE_V1_ROUTERS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.routers',
-      '{project}/regions/{region}/routers/{router}',
+      'https://www.googleapis.com/compute/v1/',
+      'routers',
+      'projects/{project}/regions/{region}/routers/{router}',
       [u'project', u'region', u'router'])
-  COMPUTE_ROUTES = (
+  COMPUTE_V1_ROUTES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.routes',
-      '{project}/global/routes/{route}',
+      'https://www.googleapis.com/compute/v1/',
+      'routes',
+      'projects/{project}/global/routes/{route}',
       [u'project', u'route'])
-  COMPUTE_SNAPSHOTS = (
+  COMPUTE_V1_SNAPSHOTS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.snapshots',
-      '{project}/global/snapshots/{snapshot}',
+      'https://www.googleapis.com/compute/v1/',
+      'snapshots',
+      'projects/{project}/global/snapshots/{snapshot}',
       [u'project', u'snapshot'])
-  COMPUTE_SSLCERTIFICATES = (
+  COMPUTE_V1_SSLCERTIFICATES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.sslCertificates',
-      '{project}/global/sslCertificates/{sslCertificate}',
+      'https://www.googleapis.com/compute/v1/',
+      'sslCertificates',
+      'projects/{project}/global/sslCertificates/{sslCertificate}',
       [u'project', u'sslCertificate'])
-  COMPUTE_SUBNETWORKS = (
+  COMPUTE_V1_SUBNETWORKS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.subnetworks',
-      '{project}/regions/{region}/subnetworks/{subnetwork}',
+      'https://www.googleapis.com/compute/v1/',
+      'subnetworks',
+      'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
       [u'project', u'region', u'subnetwork'])
-  COMPUTE_TARGETHTTPPROXIES = (
+  COMPUTE_V1_TARGETHTTPPROXIES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetHttpProxies',
-      '{project}/global/targetHttpProxies/{targetHttpProxy}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetHttpProxies',
+      'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
       [u'project', u'targetHttpProxy'])
-  COMPUTE_TARGETHTTPSPROXIES = (
+  COMPUTE_V1_TARGETHTTPSPROXIES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetHttpsProxies',
-      '{project}/global/targetHttpsProxies/{targetHttpsProxy}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetHttpsProxies',
+      'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
       [u'project', u'targetHttpsProxy'])
-  COMPUTE_TARGETINSTANCES = (
+  COMPUTE_V1_TARGETINSTANCES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetInstances',
-      '{project}/zones/{zone}/targetInstances/{targetInstance}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetInstances',
+      'projects/{project}/zones/{zone}/targetInstances/{targetInstance}',
       [u'project', u'zone', u'targetInstance'])
-  COMPUTE_TARGETPOOLS = (
+  COMPUTE_V1_TARGETPOOLS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetPools',
-      '{project}/regions/{region}/targetPools/{targetPool}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetPools',
+      'projects/{project}/regions/{region}/targetPools/{targetPool}',
       [u'project', u'region', u'targetPool'])
-  COMPUTE_TARGETSSLPROXIES = (
+  COMPUTE_V1_TARGETSSLPROXIES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetSslProxies',
-      '{project}/global/targetSslProxies/{targetSslProxy}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetSslProxies',
+      'projects/{project}/global/targetSslProxies/{targetSslProxy}',
       [u'project', u'targetSslProxy'])
-  COMPUTE_TARGETVPNGATEWAYS = (
+  COMPUTE_V1_TARGETVPNGATEWAYS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.targetVpnGateways',
-      '{project}/regions/{region}/targetVpnGateways/{targetVpnGateway}',
+      'https://www.googleapis.com/compute/v1/',
+      'targetVpnGateways',
+      'projects/{project}/regions/{region}/targetVpnGateways/'
+      '{targetVpnGateway}',
       [u'project', u'region', u'targetVpnGateway'])
-  COMPUTE_URLMAPS = (
+  COMPUTE_V1_URLMAPS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.urlMaps',
-      '{project}/global/urlMaps/{urlMap}',
+      'https://www.googleapis.com/compute/v1/',
+      'urlMaps',
+      'projects/{project}/global/urlMaps/{urlMap}',
       [u'project', u'urlMap'])
-  COMPUTE_VPNTUNNELS = (
+  COMPUTE_V1_VPNTUNNELS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.vpnTunnels',
-      '{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
+      'https://www.googleapis.com/compute/v1/',
+      'vpnTunnels',
+      'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       [u'project', u'region', u'vpnTunnel'])
-  COMPUTE_ZONEOPERATIONS = (
+  COMPUTE_V1_ZONEOPERATIONS = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.zoneOperations',
-      '{project}/zones/{zone}/operations/{operation}',
+      'https://www.googleapis.com/compute/v1/',
+      'zoneOperations',
+      'projects/{project}/zones/{zone}/operations/{operation}',
       [u'project', u'zone', u'operation'])
-  COMPUTE_ZONES = (
+  COMPUTE_V1_ZONES = (
       'compute',
       'v1',
-      'https://www.googleapis.com/compute/v1/projects/',
-      'compute.zones',
-      '{project}/zones/{zone}',
+      'https://www.googleapis.com/compute/v1/',
+      'zones',
+      'projects/{project}/zones/{zone}',
       [u'project', u'zone'])
-  CONTAINER_PROJECTS_ZONES_CLUSTERS = (
+  CONTAINER_V1_PROJECTS_ZONES_CLUSTERS = (
       'container',
       'v1',
-      'https://container.googleapis.com/',
-      'container.projects.zones.clusters',
-      'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
+      'https://container.googleapis.com/v1/',
+      'projects.zones.clusters',
+      'projects/{projectId}/zones/{zone}/clusters/{clusterId}',
       [u'projectId', u'zone', u'clusterId'])
-  CONTAINER_PROJECTS_ZONES_CLUSTERS_NODEPOOLS = (
+  CONTAINER_V1_PROJECTS_ZONES_CLUSTERS_NODEPOOLS = (
       'container',
       'v1',
-      'https://container.googleapis.com/',
-      'container.projects.zones.clusters.nodePools',
-      'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/'
+      'https://container.googleapis.com/v1/',
+      'projects.zones.clusters.nodePools',
+      'projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/'
       '{nodePoolId}',
       [u'projectId', u'zone', u'clusterId', u'nodePoolId'])
-  CONTAINER_PROJECTS_ZONES_OPERATIONS = (
+  CONTAINER_V1_PROJECTS_ZONES_OPERATIONS = (
       'container',
       'v1',
-      'https://container.googleapis.com/',
-      'container.projects.zones.operations',
-      'v1/projects/{projectId}/zones/{zone}/operations/{operationId}',
+      'https://container.googleapis.com/v1/',
+      'projects.zones.operations',
+      'projects/{projectId}/zones/{zone}/operations/{operationId}',
       [u'projectId', u'zone', u'operationId'])
-  DATAFLOW_PROJECTS_JOBS = (
+  CONTAINERANALYSIS_V1ALPHA1_PROJECTS_OCCURRENCES = (
+      'containeranalysis',
+      'v1alpha1',
+      'https://containeranalysis.googleapis.com/v1alpha1/',
+      'projects.occurrences',
+      'projects/{projectsId}/occurrences/{occurrencesId}',
+      [u'projectsId', u'occurrencesId'])
+  CONTAINERANALYSIS_V1ALPHA1_PROVIDERS_NOTES = (
+      'containeranalysis',
+      'v1alpha1',
+      'https://containeranalysis.googleapis.com/v1alpha1/',
+      'providers.notes',
+      'providers/{providersId}/notes/{notesId}',
+      [u'providersId', u'notesId'])
+  DATAFLOW_V1B3_PROJECTS_JOBS = (
       'dataflow',
       'v1b3',
-      'https://dataflow.googleapis.com/',
-      'dataflow.projects.jobs',
-      'v1b3/projects/{projectId}/jobs/{jobId}',
+      'https://dataflow.googleapis.com/v1b3/',
+      'projects.jobs',
+      'projects/{projectId}/jobs/{jobId}',
       [u'projectId', u'jobId'])
-  DATAPROC_PROJECTS_REGIONS_CLUSTERS = (
+  DATAPROC_V1_PROJECTS_REGIONS_CLUSTERS = (
       'dataproc',
       'v1',
-      'https://dataproc.googleapis.com/',
-      'dataproc.projects.regions.clusters',
-      'v1/projects/{projectId}/regions/{region}/clusters/{clusterName}',
+      'https://dataproc.googleapis.com/v1/',
+      'projects.regions.clusters',
+      'projects/{projectId}/regions/{region}/clusters/{clusterName}',
       [u'projectId', u'region', u'clusterName'])
-  DATAPROC_PROJECTS_REGIONS_JOBS = (
+  DATAPROC_V1_PROJECTS_REGIONS_JOBS = (
       'dataproc',
       'v1',
-      'https://dataproc.googleapis.com/',
-      'dataproc.projects.regions.jobs',
-      'v1/projects/{projectId}/regions/{region}/jobs/{jobId}',
+      'https://dataproc.googleapis.com/v1/',
+      'projects.regions.jobs',
+      'projects/{projectId}/regions/{region}/jobs/{jobId}',
       [u'projectId', u'region', u'jobId'])
-  DATAPROC_PROJECTS_REGIONS_OPERATIONS = (
+  DATAPROC_V1_PROJECTS_REGIONS_OPERATIONS = (
       'dataproc',
       'v1',
-      'https://dataproc.googleapis.com/',
-      'dataproc.projects.regions.operations',
-      'v1/projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
+      'https://dataproc.googleapis.com/v1/',
+      'projects.regions.operations',
+      'projects/{projectsId}/regions/{regionsId}/operations/{operationsId}',
       [u'projectsId', u'regionsId', u'operationsId'])
-  DEPLOYMENTMANAGER_DEPLOYMENTS = (
+  DEPLOYMENTMANAGER_ALPHA_DEPLOYMENTS = (
       'deploymentmanager',
       'alpha',
-      'https://www.googleapis.com/deploymentmanager/alpha/projects/',
-      'deploymentmanager.deployments',
-      '{project}/global/deployments/{deployment}',
+      'https://www.googleapis.com/deploymentmanager/alpha/',
+      'deployments',
+      'projects/{project}/global/deployments/{deployment}',
       [u'project', u'deployment'])
-  DEPLOYMENTMANAGER_MANIFESTS = (
+  DEPLOYMENTMANAGER_ALPHA_MANIFESTS = (
       'deploymentmanager',
       'alpha',
-      'https://www.googleapis.com/deploymentmanager/alpha/projects/',
-      'deploymentmanager.manifests',
-      '{project}/global/deployments/{deployment}/manifests/{manifest}',
+      'https://www.googleapis.com/deploymentmanager/alpha/',
+      'manifests',
+      'projects/{project}/global/deployments/{deployment}/manifests/'
+      '{manifest}',
       [u'project', u'deployment', u'manifest'])
-  DEPLOYMENTMANAGER_OPERATIONS = (
+  DEPLOYMENTMANAGER_ALPHA_OPERATIONS = (
       'deploymentmanager',
       'alpha',
-      'https://www.googleapis.com/deploymentmanager/alpha/projects/',
-      'deploymentmanager.operations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/deploymentmanager/alpha/',
+      'operations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  DEPLOYMENTMANAGER_RESOURCES = (
+  DEPLOYMENTMANAGER_ALPHA_RESOURCES = (
       'deploymentmanager',
       'alpha',
-      'https://www.googleapis.com/deploymentmanager/alpha/projects/',
-      'deploymentmanager.resources',
-      '{project}/global/deployments/{deployment}/resources/{resource}',
+      'https://www.googleapis.com/deploymentmanager/alpha/',
+      'resources',
+      'projects/{project}/global/deployments/{deployment}/resources/'
+      '{resource}',
       [u'project', u'deployment', u'resource'])
-  DEPLOYMENTMANAGER_TYPES = (
+  DEPLOYMENTMANAGER_ALPHA_TYPES = (
       'deploymentmanager',
       'alpha',
-      'https://www.googleapis.com/deploymentmanager/alpha/projects/',
-      'deploymentmanager.types',
-      '{project}/global/types/{type}',
+      'https://www.googleapis.com/deploymentmanager/alpha/',
+      'types',
+      'projects/{project}/global/types/{type}',
       [u'project', u'type'])
-  DEPLOYMENTMANAGER_DEPLOYMENTS = (
+  DEPLOYMENTMANAGER_V2_DEPLOYMENTS = (
       'deploymentmanager',
       'v2',
-      'https://www.googleapis.com/deploymentmanager/v2/projects/',
-      'deploymentmanager.deployments',
-      '{project}/global/deployments/{deployment}',
+      'https://www.googleapis.com/deploymentmanager/v2/',
+      'deployments',
+      'projects/{project}/global/deployments/{deployment}',
       [u'project', u'deployment'])
-  DEPLOYMENTMANAGER_MANIFESTS = (
+  DEPLOYMENTMANAGER_V2_MANIFESTS = (
       'deploymentmanager',
       'v2',
-      'https://www.googleapis.com/deploymentmanager/v2/projects/',
-      'deploymentmanager.manifests',
-      '{project}/global/deployments/{deployment}/manifests/{manifest}',
+      'https://www.googleapis.com/deploymentmanager/v2/',
+      'manifests',
+      'projects/{project}/global/deployments/{deployment}/manifests/'
+      '{manifest}',
       [u'project', u'deployment', u'manifest'])
-  DEPLOYMENTMANAGER_OPERATIONS = (
+  DEPLOYMENTMANAGER_V2_OPERATIONS = (
       'deploymentmanager',
       'v2',
-      'https://www.googleapis.com/deploymentmanager/v2/projects/',
-      'deploymentmanager.operations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/deploymentmanager/v2/',
+      'operations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  DEPLOYMENTMANAGER_RESOURCES = (
+  DEPLOYMENTMANAGER_V2_RESOURCES = (
       'deploymentmanager',
       'v2',
-      'https://www.googleapis.com/deploymentmanager/v2/projects/',
-      'deploymentmanager.resources',
-      '{project}/global/deployments/{deployment}/resources/{resource}',
+      'https://www.googleapis.com/deploymentmanager/v2/',
+      'resources',
+      'projects/{project}/global/deployments/{deployment}/resources/'
+      '{resource}',
       [u'project', u'deployment', u'resource'])
-  DEPLOYMENTMANAGER_DEPLOYMENTS = (
+  DEPLOYMENTMANAGER_V2BETA_DEPLOYMENTS = (
       'deploymentmanager',
       'v2beta',
-      'https://www.googleapis.com/deploymentmanager/v2beta/projects/',
-      'deploymentmanager.deployments',
-      '{project}/global/deployments/{deployment}',
+      'https://www.googleapis.com/deploymentmanager/v2beta/',
+      'deployments',
+      'projects/{project}/global/deployments/{deployment}',
       [u'project', u'deployment'])
-  DEPLOYMENTMANAGER_MANIFESTS = (
+  DEPLOYMENTMANAGER_V2BETA_MANIFESTS = (
       'deploymentmanager',
       'v2beta',
-      'https://www.googleapis.com/deploymentmanager/v2beta/projects/',
-      'deploymentmanager.manifests',
-      '{project}/global/deployments/{deployment}/manifests/{manifest}',
+      'https://www.googleapis.com/deploymentmanager/v2beta/',
+      'manifests',
+      'projects/{project}/global/deployments/{deployment}/manifests/'
+      '{manifest}',
       [u'project', u'deployment', u'manifest'])
-  DEPLOYMENTMANAGER_OPERATIONS = (
+  DEPLOYMENTMANAGER_V2BETA_OPERATIONS = (
       'deploymentmanager',
       'v2beta',
-      'https://www.googleapis.com/deploymentmanager/v2beta/projects/',
-      'deploymentmanager.operations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/deploymentmanager/v2beta/',
+      'operations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  DEPLOYMENTMANAGER_RESOURCES = (
+  DEPLOYMENTMANAGER_V2BETA_RESOURCES = (
       'deploymentmanager',
       'v2beta',
-      'https://www.googleapis.com/deploymentmanager/v2beta/projects/',
-      'deploymentmanager.resources',
-      '{project}/global/deployments/{deployment}/resources/{resource}',
+      'https://www.googleapis.com/deploymentmanager/v2beta/',
+      'resources',
+      'projects/{project}/global/deployments/{deployment}/resources/'
+      '{resource}',
       [u'project', u'deployment', u'resource'])
-  DEPLOYMENTMANAGER_TYPES = (
+  DEPLOYMENTMANAGER_V2BETA_TYPES = (
       'deploymentmanager',
       'v2beta',
-      'https://www.googleapis.com/deploymentmanager/v2beta/projects/',
-      'deploymentmanager.types',
-      '{project}/global/types/{type}',
+      'https://www.googleapis.com/deploymentmanager/v2beta/',
+      'types',
+      'projects/{project}/global/types/{type}',
       [u'project', u'type'])
-  DNS_CHANGES = (
+  DNS_V1_CHANGES = (
       'dns',
       'v1',
-      'https://www.googleapis.com/dns/v1/projects/',
-      'dns.changes',
-      '{project}/managedZones/{managedZone}/changes/{changeId}',
+      'https://www.googleapis.com/dns/v1/',
+      'changes',
+      'projects/{project}/managedZones/{managedZone}/changes/{changeId}',
       [u'project', u'managedZone', u'changeId'])
-  DNS_MANAGEDZONES = (
+  DNS_V1_MANAGEDZONES = (
       'dns',
       'v1',
-      'https://www.googleapis.com/dns/v1/projects/',
-      'dns.managedZones',
-      '{project}/managedZones/{managedZone}',
+      'https://www.googleapis.com/dns/v1/',
+      'managedZones',
+      'projects/{project}/managedZones/{managedZone}',
       [u'project', u'managedZone'])
-  DNS_PROJECTS = (
+  DNS_V1_PROJECTS = (
       'dns',
       'v1',
-      'https://www.googleapis.com/dns/v1/projects/',
-      'dns.projects',
-      '{project}',
+      'https://www.googleapis.com/dns/v1/',
+      'projects',
+      'projects/{project}',
       [u'project'])
-  DNS_CHANGES = (
+  DNS_V1BETA1_CHANGES = (
       'dns',
       'v1beta1',
-      'https://www.googleapis.com/dns/v1beta1/projects/',
-      'dns.changes',
-      '{project}/managedZones/{managedZone}/changes/{changeId}',
+      'https://www.googleapis.com/dns/v1beta1/',
+      'changes',
+      'projects/{project}/managedZones/{managedZone}/changes/{changeId}',
       [u'project', u'managedZone', u'changeId'])
-  DNS_MANAGEDZONES = (
+  DNS_V1BETA1_MANAGEDZONES = (
       'dns',
       'v1beta1',
-      'https://www.googleapis.com/dns/v1beta1/projects/',
-      'dns.managedZones',
-      '{project}/managedZones/{managedZone}',
+      'https://www.googleapis.com/dns/v1beta1/',
+      'managedZones',
+      'projects/{project}/managedZones/{managedZone}',
       [u'project', u'managedZone'])
-  DNS_PROJECTS = (
+  DNS_V1BETA1_PROJECTS = (
       'dns',
       'v1beta1',
-      'https://www.googleapis.com/dns/v1beta1/projects/',
-      'dns.projects',
-      '{project}',
+      'https://www.googleapis.com/dns/v1beta1/',
+      'projects',
+      'projects/{project}',
       [u'project'])
-  GENOMICS_ANNOTATIONS = (
+  GENOMICS_V1_ANNOTATIONS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.annotations',
-      'v1/annotations/{annotationId}',
+      'https://genomics.googleapis.com/v1/',
+      'annotations',
+      'annotations/{annotationId}',
       [u'annotationId'])
-  GENOMICS_ANNOTATIONSETS = (
+  GENOMICS_V1_ANNOTATIONSETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.annotationsets',
-      'v1/annotationsets/{annotationSetId}',
+      'https://genomics.googleapis.com/v1/',
+      'annotationsets',
+      'annotationsets/{annotationSetId}',
       [u'annotationSetId'])
-  GENOMICS_CALLSETS = (
+  GENOMICS_V1_CALLSETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.callsets',
-      'v1/callsets/{callSetId}',
+      'https://genomics.googleapis.com/v1/',
+      'callsets',
+      'callsets/{callSetId}',
       [u'callSetId'])
-  GENOMICS_DATASETS = (
+  GENOMICS_V1_DATASETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.datasets',
-      'v1/datasets/{datasetId}',
+      'https://genomics.googleapis.com/v1/',
+      'datasets',
+      'datasets/{datasetId}',
       [u'datasetId'])
-  GENOMICS_OPERATIONS = (
+  GENOMICS_V1_OPERATIONS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.operations',
-      'v1/operations/{operationsId}',
+      'https://genomics.googleapis.com/v1/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  GENOMICS_READGROUPSETS = (
+  GENOMICS_V1_READGROUPSETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.readgroupsets',
-      'v1/readgroupsets/{readGroupSetId}',
+      'https://genomics.googleapis.com/v1/',
+      'readgroupsets',
+      'readgroupsets/{readGroupSetId}',
       [u'readGroupSetId'])
-  GENOMICS_REFERENCES = (
+  GENOMICS_V1_REFERENCES = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.references',
-      'v1/references/{referenceId}',
+      'https://genomics.googleapis.com/v1/',
+      'references',
+      'references/{referenceId}',
       [u'referenceId'])
-  GENOMICS_REFERENCESETS = (
+  GENOMICS_V1_REFERENCESETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.referencesets',
-      'v1/referencesets/{referenceSetId}',
+      'https://genomics.googleapis.com/v1/',
+      'referencesets',
+      'referencesets/{referenceSetId}',
       [u'referenceSetId'])
-  GENOMICS_VARIANTS = (
+  GENOMICS_V1_VARIANTS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.variants',
-      'v1/variants/{variantId}',
+      'https://genomics.googleapis.com/v1/',
+      'variants',
+      'variants/{variantId}',
       [u'variantId'])
-  GENOMICS_VARIANTSETS = (
+  GENOMICS_V1_VARIANTSETS = (
       'genomics',
       'v1',
-      'https://genomics.googleapis.com/',
-      'genomics.variantsets',
-      'v1/variantsets/{variantSetId}',
+      'https://genomics.googleapis.com/v1/',
+      'variantsets',
+      'variantsets/{variantSetId}',
       [u'variantSetId'])
-  GENOMICS_OPERATIONS = (
+  GENOMICS_V1ALPHA2_OPERATIONS = (
       'genomics',
       'v1alpha2',
-      'https://genomics.googleapis.com/',
-      'genomics.operations',
-      'v1alpha2/operations/{operationsId}',
+      'https://genomics.googleapis.com/v1alpha2/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  GENOMICS_PIPELINES = (
+  GENOMICS_V1ALPHA2_PIPELINES = (
       'genomics',
       'v1alpha2',
-      'https://genomics.googleapis.com/',
-      'genomics.pipelines',
-      'v1alpha2/pipelines/{pipelineId}',
+      'https://genomics.googleapis.com/v1alpha2/',
+      'pipelines',
+      'pipelines/{pipelineId}',
       [u'pipelineId'])
-  IAM_ORGANIZATIONS_ROLES = (
+  IAM_V1_PROJECTS_SERVICEACCOUNTS = (
       'iam',
       'v1',
-      'https://iam.googleapis.com/',
-      'iam.organizations.roles',
-      'v1/organizations/{organizationsId}/roles/{rolesId}',
-      [u'organizationsId', u'rolesId'])
-  IAM_PROJECTS_ROLES = (
-      'iam',
-      'v1',
-      'https://iam.googleapis.com/',
-      'iam.projects.roles',
-      'v1/projects/{projectsId}/roles/{rolesId}',
-      [u'projectsId', u'rolesId'])
-  IAM_PROJECTS_SERVICEACCOUNTS = (
-      'iam',
-      'v1',
-      'https://iam.googleapis.com/',
-      'iam.projects.serviceAccounts',
-      'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
+      'https://iam.googleapis.com/v1/',
+      'projects.serviceAccounts',
+      'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
       [u'projectsId', u'serviceAccountsId'])
-  IAM_PROJECTS_SERVICEACCOUNTS_KEYS = (
+  IAM_V1_PROJECTS_SERVICEACCOUNTS_KEYS = (
       'iam',
       'v1',
-      'https://iam.googleapis.com/',
-      'iam.projects.serviceAccounts.keys',
-      'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/'
+      'https://iam.googleapis.com/v1/',
+      'projects.serviceAccounts.keys',
+      'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/'
       '{keysId}',
       [u'projectsId', u'serviceAccountsId', u'keysId'])
-  IAM_ROLES = (
-      'iam',
-      'v1',
-      'https://iam.googleapis.com/',
-      'iam.roles',
-      'v1/roles/{rolesId}',
-      [u'rolesId'])
-  LOGGING_PROJECTS_LOGSERVICES_SINKS = (
+  LOGGING_V1BETA3_PROJECTS_LOGSERVICES_SINKS = (
       'logging',
       'v1beta3',
-      'https://logging.googleapis.com/',
-      'logging.projects.logServices.sinks',
-      'v1beta3/projects/{projectsId}/logServices/{logServicesId}/sinks/'
-      '{sinksId}',
+      'https://logging.googleapis.com/v1beta3/',
+      'projects.logServices.sinks',
+      'projects/{projectsId}/logServices/{logServicesId}/sinks/{sinksId}',
       [u'projectsId', u'logServicesId', u'sinksId'])
-  LOGGING_PROJECTS_LOGS_SINKS = (
+  LOGGING_V1BETA3_PROJECTS_LOGS_SINKS = (
       'logging',
       'v1beta3',
-      'https://logging.googleapis.com/',
-      'logging.projects.logs.sinks',
-      'v1beta3/projects/{projectsId}/logs/{logsId}/sinks/{sinksId}',
+      'https://logging.googleapis.com/v1beta3/',
+      'projects.logs.sinks',
+      'projects/{projectsId}/logs/{logsId}/sinks/{sinksId}',
       [u'projectsId', u'logsId', u'sinksId'])
-  LOGGING_PROJECTS_METRICS = (
+  LOGGING_V1BETA3_PROJECTS_METRICS = (
       'logging',
       'v1beta3',
-      'https://logging.googleapis.com/',
-      'logging.projects.metrics',
-      'v1beta3/projects/{projectsId}/metrics/{metricsId}',
+      'https://logging.googleapis.com/v1beta3/',
+      'projects.metrics',
+      'projects/{projectsId}/metrics/{metricsId}',
       [u'projectsId', u'metricsId'])
-  LOGGING_PROJECTS_SINKS = (
+  LOGGING_V1BETA3_PROJECTS_SINKS = (
       'logging',
       'v1beta3',
-      'https://logging.googleapis.com/',
-      'logging.projects.sinks',
-      'v1beta3/projects/{projectsId}/sinks/{sinksId}',
+      'https://logging.googleapis.com/v1beta3/',
+      'projects.sinks',
+      'projects/{projectsId}/sinks/{sinksId}',
       [u'projectsId', u'sinksId'])
-  LOGGING_PROJECTS_METRICS = (
+  LOGGING_V2BETA1_PROJECTS_METRICS = (
       'logging',
       'v2beta1',
-      'https://logging.googleapis.com/',
-      'logging.projects.metrics',
-      'v2beta1/projects/{projectsId}/metrics/{metricsId}',
+      'https://logging.googleapis.com/v2beta1/',
+      'projects.metrics',
+      'projects/{projectsId}/metrics/{metricsId}',
       [u'projectsId', u'metricsId'])
-  LOGGING_PROJECTS_SINKS = (
+  LOGGING_V2BETA1_PROJECTS_SINKS = (
       'logging',
       'v2beta1',
-      'https://logging.googleapis.com/',
-      'logging.projects.sinks',
-      'v2beta1/projects/{projectsId}/sinks/{sinksId}',
+      'https://logging.googleapis.com/v2beta1/',
+      'projects.sinks',
+      'projects/{projectsId}/sinks/{sinksId}',
       [u'projectsId', u'sinksId'])
-  MANAGER_DEPLOYMENTS = (
+  MANAGER_V1BETA2_DEPLOYMENTS = (
       'manager',
       'v1beta2',
-      'https://www.googleapis.com/manager/v1beta2/projects/',
-      'manager.deployments',
-      '{projectId}/regions/{region}/deployments/{deploymentName}',
+      'https://www.googleapis.com/manager/v1beta2/',
+      'deployments',
+      'projects/{projectId}/regions/{region}/deployments/{deploymentName}',
       [u'projectId', u'region', u'deploymentName'])
-  MANAGER_TEMPLATES = (
+  MANAGER_V1BETA2_TEMPLATES = (
       'manager',
       'v1beta2',
-      'https://www.googleapis.com/manager/v1beta2/projects/',
-      'manager.templates',
-      '{projectId}/templates/{templateName}',
+      'https://www.googleapis.com/manager/v1beta2/',
+      'templates',
+      'projects/{projectId}/templates/{templateName}',
       [u'projectId', u'templateName'])
-  ML_PROJECTS_MODELS = (
+  ML_V1ALPHA3_PROJECTS_MODELS = (
       'ml',
       'v1alpha3',
-      'https://ml.googleapis.com/',
-      'ml.projects.models',
-      'v1alpha3/projects/{projectsId}/models/{modelsId}',
+      'https://ml.googleapis.com/v1alpha3/',
+      'projects.models',
+      'projects/{projectsId}/models/{modelsId}',
       [u'projectsId', u'modelsId'])
-  ML_PROJECTS_MODELS_VERSIONS = (
+  ML_V1ALPHA3_PROJECTS_MODELS_VERSIONS = (
       'ml',
       'v1alpha3',
-      'https://ml.googleapis.com/',
-      'ml.projects.models.versions',
-      'v1alpha3/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+      'https://ml.googleapis.com/v1alpha3/',
+      'projects.models.versions',
+      'projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
       [u'projectsId', u'modelsId', u'versionsId'])
-  ML_PROJECTS_OPERATIONS = (
+  ML_V1ALPHA3_PROJECTS_OPERATIONS = (
       'ml',
       'v1alpha3',
-      'https://ml.googleapis.com/',
-      'ml.projects.operations',
-      'v1alpha3/projects/{projectsId}/operations/{operationsId}',
+      'https://ml.googleapis.com/v1alpha3/',
+      'projects.operations',
+      'projects/{projectsId}/operations/{operationsId}',
       [u'projectsId', u'operationsId'])
-  ML_PROJECTS_JOBS = (
+  ML_V1BETA1_PROJECTS_JOBS = (
       'ml',
       'v1beta1',
-      'https://ml.googleapis.com/',
-      'ml.projects.jobs',
-      'v1beta1/projects/{projectsId}/jobs/{jobsId}',
+      'https://ml.googleapis.com/v1beta1/',
+      'projects.jobs',
+      'projects/{projectsId}/jobs/{jobsId}',
       [u'projectsId', u'jobsId'])
-  ML_PROJECTS_MODELS = (
+  ML_V1BETA1_PROJECTS_MODELS = (
       'ml',
       'v1beta1',
-      'https://ml.googleapis.com/',
-      'ml.projects.models',
-      'v1beta1/projects/{projectsId}/models/{modelsId}',
+      'https://ml.googleapis.com/v1beta1/',
+      'projects.models',
+      'projects/{projectsId}/models/{modelsId}',
       [u'projectsId', u'modelsId'])
-  ML_PROJECTS_MODELS_VERSIONS = (
+  ML_V1BETA1_PROJECTS_MODELS_VERSIONS = (
       'ml',
       'v1beta1',
-      'https://ml.googleapis.com/',
-      'ml.projects.models.versions',
-      'v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+      'https://ml.googleapis.com/v1beta1/',
+      'projects.models.versions',
+      'projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
       [u'projectsId', u'modelsId', u'versionsId'])
-  ML_PROJECTS_OPERATIONS = (
+  ML_V1BETA1_PROJECTS_OPERATIONS = (
       'ml',
       'v1beta1',
-      'https://ml.googleapis.com/',
-      'ml.projects.operations',
-      'v1beta1/projects/{projectsId}/operations/{operationsId}',
+      'https://ml.googleapis.com/v1beta1/',
+      'projects.operations',
+      'projects/{projectsId}/operations/{operationsId}',
       [u'projectsId', u'operationsId'])
-  PUBSUB_PROJECTS_SUBSCRIPTIONS = (
+  PUBSUB_V1_PROJECTS_SUBSCRIPTIONS = (
       'pubsub',
       'v1',
-      'https://pubsub.googleapis.com/',
-      'pubsub.projects.subscriptions',
-      'v1/projects/{projectsId}/subscriptions/{subscriptionsId}',
+      'https://pubsub.googleapis.com/v1/',
+      'projects.subscriptions',
+      'projects/{projectsId}/subscriptions/{subscriptionsId}',
       [u'projectsId', u'subscriptionsId'])
-  PUBSUB_PROJECTS_TOPICS = (
+  PUBSUB_V1_PROJECTS_TOPICS = (
       'pubsub',
       'v1',
-      'https://pubsub.googleapis.com/',
-      'pubsub.projects.topics',
-      'v1/projects/{projectsId}/topics/{topicsId}',
+      'https://pubsub.googleapis.com/v1/',
+      'projects.topics',
+      'projects/{projectsId}/topics/{topicsId}',
       [u'projectsId', u'topicsId'])
-  REPLICAPOOLUPDATER_ROLLINGUPDATES = (
+  REPLICAPOOLUPDATER_V1BETA1_ROLLINGUPDATES = (
       'replicapoolupdater',
       'v1beta1',
-      'https://www.googleapis.com/replicapoolupdater/v1beta1/projects/',
-      'replicapoolupdater.rollingUpdates',
-      '{project}/zones/{zone}/rollingUpdates/{rollingUpdate}',
+      'https://www.googleapis.com/replicapoolupdater/v1beta1/',
+      'rollingUpdates',
+      'projects/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}',
       [u'project', u'zone', u'rollingUpdate'])
-  REPLICAPOOLUPDATER_ZONEOPERATIONS = (
+  REPLICAPOOLUPDATER_V1BETA1_ZONEOPERATIONS = (
       'replicapoolupdater',
       'v1beta1',
-      'https://www.googleapis.com/replicapoolupdater/v1beta1/projects/',
-      'replicapoolupdater.zoneOperations',
-      '{project}/zones/{zone}/operations/{operation}',
+      'https://www.googleapis.com/replicapoolupdater/v1beta1/',
+      'zoneOperations',
+      'projects/{project}/zones/{zone}/operations/{operation}',
       [u'project', u'zone', u'operation'])
-  RUNTIMECONFIG_PROJECTS_CONFIGS = (
+  RUNTIMECONFIG_V1BETA1_PROJECTS_CONFIGS = (
       'runtimeconfig',
       'v1beta1',
-      'https://runtimeconfig.googleapis.com/',
-      'runtimeconfig.projects.configs',
-      'v1beta1/projects/{projectsId}/configs/{configsId}',
+      'https://runtimeconfig.googleapis.com/v1beta1/',
+      'projects.configs',
+      'projects/{projectsId}/configs/{configsId}',
       [u'projectsId', u'configsId'])
-  RUNTIMECONFIG_PROJECTS_CONFIGS_OPERATIONS = (
+  RUNTIMECONFIG_V1BETA1_PROJECTS_CONFIGS_OPERATIONS = (
       'runtimeconfig',
       'v1beta1',
-      'https://runtimeconfig.googleapis.com/',
-      'runtimeconfig.projects.configs.operations',
-      'v1beta1/projects/{projectsId}/configs/{configsId}/operations/'
-      '{operationsId}',
+      'https://runtimeconfig.googleapis.com/v1beta1/',
+      'projects.configs.operations',
+      'projects/{projectsId}/configs/{configsId}/operations/{operationsId}',
       [u'projectsId', u'configsId', u'operationsId'])
-  RUNTIMECONFIG_PROJECTS_CONFIGS_VARIABLES = (
+  RUNTIMECONFIG_V1BETA1_PROJECTS_CONFIGS_VARIABLES = (
       'runtimeconfig',
       'v1beta1',
-      'https://runtimeconfig.googleapis.com/',
-      'runtimeconfig.projects.configs.variables',
-      'v1beta1/projects/{projectsId}/configs/{configsId}/variables/'
-      '{variablesId}',
+      'https://runtimeconfig.googleapis.com/v1beta1/',
+      'projects.configs.variables',
+      'projects/{projectsId}/configs/{configsId}/variables/{variablesId}',
       [u'projectsId', u'configsId', u'variablesId'])
-  RUNTIMECONFIG_PROJECTS_CONFIGS_WAITERS = (
+  RUNTIMECONFIG_V1BETA1_PROJECTS_CONFIGS_WAITERS = (
       'runtimeconfig',
       'v1beta1',
-      'https://runtimeconfig.googleapis.com/',
-      'runtimeconfig.projects.configs.waiters',
-      'v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
+      'https://runtimeconfig.googleapis.com/v1beta1/',
+      'projects.configs.waiters',
+      'projects/{projectsId}/configs/{configsId}/waiters/{waitersId}',
       [u'projectsId', u'configsId', u'waitersId'])
-  SERVICEMANAGEMENT_OPERATIONS = (
+  SERVICEMANAGEMENT_V1_OPERATIONS = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.operations',
-      'v1/operations/{operationsId}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'operations',
+      'operations/{operationsId}',
       [u'operationsId'])
-  SERVICEMANAGEMENT_SERVICES = (
+  SERVICEMANAGEMENT_V1_SERVICES = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.services',
-      'v1/services/{serviceName}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'services',
+      'services/{serviceName}',
       [u'serviceName'])
-  SERVICEMANAGEMENT_SERVICES_CONFIGS = (
+  SERVICEMANAGEMENT_V1_SERVICES_CONFIGS = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.services.configs',
-      'v1/services/{serviceName}/configs/{configId}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'services.configs',
+      'services/{serviceName}/configs/{configId}',
       [u'serviceName', u'configId'])
-  SERVICEMANAGEMENT_SERVICES_CUSTOMERSETTINGS = (
+  SERVICEMANAGEMENT_V1_SERVICES_CUSTOMERSETTINGS = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.services.customerSettings',
-      'v1/services/{serviceName}/customerSettings/{customerId}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'services.customerSettings',
+      'services/{serviceName}/customerSettings/{customerId}',
       [u'serviceName', u'customerId'])
-  SERVICEMANAGEMENT_SERVICES_PROJECTSETTINGS = (
+  SERVICEMANAGEMENT_V1_SERVICES_PROJECTSETTINGS = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.services.projectSettings',
-      'v1/services/{serviceName}/projectSettings/{consumerProjectId}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'services.projectSettings',
+      'services/{serviceName}/projectSettings/{consumerProjectId}',
       [u'serviceName', u'consumerProjectId'])
-  SERVICEMANAGEMENT_SERVICES_ROLLOUTS = (
+  SERVICEMANAGEMENT_V1_SERVICES_ROLLOUTS = (
       'servicemanagement',
       'v1',
-      'https://servicemanagement.googleapis.com/',
-      'servicemanagement.services.rollouts',
-      'v1/services/{serviceName}/rollouts/{rolloutId}',
+      'https://servicemanagement.googleapis.com/v1/',
+      'services.rollouts',
+      'services/{serviceName}/rollouts/{rolloutId}',
       [u'serviceName', u'rolloutId'])
-  SERVICEREGISTRY_ENDPOINTS = (
+  SERVICEREGISTRY_V1ALPHA_ENDPOINTS = (
       'serviceregistry',
       'v1alpha',
-      'https://www.googleapis.com/serviceregistry/v1alpha/projects/',
-      'serviceregistry.endpoints',
-      '{project}/global/endpoints/{endpoint}',
+      'https://www.googleapis.com/serviceregistry/v1alpha/',
+      'endpoints',
+      'projects/{project}/global/endpoints/{endpoint}',
       [u'project', u'endpoint'])
-  SERVICEREGISTRY_OPERATIONS = (
+  SERVICEREGISTRY_V1ALPHA_OPERATIONS = (
       'serviceregistry',
       'v1alpha',
-      'https://www.googleapis.com/serviceregistry/v1alpha/projects/',
-      'serviceregistry.operations',
-      '{project}/global/operations/{operation}',
+      'https://www.googleapis.com/serviceregistry/v1alpha/',
+      'operations',
+      'projects/{project}/global/operations/{operation}',
       [u'project', u'operation'])
-  SOURCE_PROJECTS_REPOS = (
+  SOURCE_V1_PROJECTS_REPOS = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos',
-      'v1/projects/{projectId}/repos/{repoName}',
+      'https://source.googleapis.com/v1/',
+      'projects.repos',
+      'projects/{projectId}/repos/{repoName}',
       [u'projectId', u'repoName'])
-  SOURCE_PROJECTS_REPOS_ALIASES = (
+  SOURCE_V1_PROJECTS_REPOS_ALIASES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.aliases',
-      'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
+      'https://source.googleapis.com/v1/',
+      'projects.repos.aliases',
+      'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}',
       [u'projectId', u'repoName', u'kind', u'name'])
-  SOURCE_PROJECTS_REPOS_ALIASES_FILES = (
+  SOURCE_V1_PROJECTS_REPOS_ALIASES_FILES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.aliases.files',
-      'v1/projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/'
+      'https://source.googleapis.com/v1/',
+      'projects.repos.aliases.files',
+      'projects/{projectId}/repos/{repoName}/aliases/{kind}/{name}/files/'
       '{filesId}',
       [u'projectId', u'repoName', u'kind', u'name', u'filesId'])
-  SOURCE_PROJECTS_REPOS_REVISIONS = (
+  SOURCE_V1_PROJECTS_REPOS_REVISIONS = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.revisions',
-      'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
+      'https://source.googleapis.com/v1/',
+      'projects.repos.revisions',
+      'projects/{projectId}/repos/{repoName}/revisions/{revisionId}',
       [u'projectId', u'repoName', u'revisionId'])
-  SOURCE_PROJECTS_REPOS_REVISIONS_FILES = (
+  SOURCE_V1_PROJECTS_REPOS_REVISIONS_FILES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.revisions.files',
-      'v1/projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/'
+      'https://source.googleapis.com/v1/',
+      'projects.repos.revisions.files',
+      'projects/{projectId}/repos/{repoName}/revisions/{revisionId}/files/'
       '{filesId}',
       [u'projectId', u'repoName', u'revisionId', u'filesId'])
-  SOURCE_PROJECTS_REPOS_WORKSPACES = (
+  SOURCE_V1_PROJECTS_REPOS_WORKSPACES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.workspaces',
-      'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}',
+      'https://source.googleapis.com/v1/',
+      'projects.repos.workspaces',
+      'projects/{projectId}/repos/{repoName}/workspaces/{name}',
       [u'projectId', u'repoName', u'name'])
-  SOURCE_PROJECTS_REPOS_WORKSPACES_FILES = (
+  SOURCE_V1_PROJECTS_REPOS_WORKSPACES_FILES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.workspaces.files',
-      'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
+      'https://source.googleapis.com/v1/',
+      'projects.repos.workspaces.files',
+      'projects/{projectId}/repos/{repoName}/workspaces/{name}/files/'
       '{filesId}',
       [u'projectId', u'repoName', u'name', u'filesId'])
-  SOURCE_PROJECTS_REPOS_WORKSPACES_SNAPSHOTS = (
+  SOURCE_V1_PROJECTS_REPOS_WORKSPACES_SNAPSHOTS = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.workspaces.snapshots',
-      'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
+      'https://source.googleapis.com/v1/',
+      'projects.repos.workspaces.snapshots',
+      'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}',
       [u'projectId', u'repoName', u'name', u'snapshotId'])
-  SOURCE_PROJECTS_REPOS_WORKSPACES_SNAPSHOTS_FILES = (
+  SOURCE_V1_PROJECTS_REPOS_WORKSPACES_SNAPSHOTS_FILES = (
       'source',
       'v1',
-      'https://source.googleapis.com/',
-      'source.projects.repos.workspaces.snapshots.files',
-      'v1/projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
+      'https://source.googleapis.com/v1/',
+      'projects.repos.workspaces.snapshots.files',
+      'projects/{projectId}/repos/{repoName}/workspaces/{name}/snapshots/'
       '{snapshotId}/files/{filesId}',
       [u'projectId', u'repoName', u'name', u'snapshotId', u'filesId'])
-  SQL_BACKUPRUNS = (
-      'sqladmin',
+  SQL_V1BETA3_BACKUPRUNS = (
+      'sql',
       'v1beta3',
       'https://www.googleapis.com/sql/v1beta3/',
-      'sql.backupRuns',
+      'backupRuns',
       'projects/{project}/instances/{instance}/backupRuns/'
       '{backupConfiguration}',
       [u'project', u'instance', u'backupConfiguration'])
-  SQL_INSTANCES = (
-      'sqladmin',
+  SQL_V1BETA3_INSTANCES = (
+      'sql',
       'v1beta3',
       'https://www.googleapis.com/sql/v1beta3/',
-      'sql.instances',
+      'instances',
       'projects/{project}/instances/{instance}',
       [u'project', u'instance'])
-  SQL_OPERATIONS = (
-      'sqladmin',
+  SQL_V1BETA3_OPERATIONS = (
+      'sql',
       'v1beta3',
       'https://www.googleapis.com/sql/v1beta3/',
-      'sql.operations',
+      'operations',
       'projects/{project}/instances/{instance}/operations/{operation}',
       [u'project', u'instance', u'operation'])
-  SQL_SSLCERTS = (
-      'sqladmin',
+  SQL_V1BETA3_SSLCERTS = (
+      'sql',
       'v1beta3',
       'https://www.googleapis.com/sql/v1beta3/',
-      'sql.sslCerts',
+      'sslCerts',
       'projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
       [u'project', u'instance', u'sha1Fingerprint'])
-  SQL_BACKUPRUNS = (
-      'sqladmin',
+  SQL_V1BETA4_BACKUPRUNS = (
+      'sql',
       'v1beta4',
       'https://www.googleapis.com/sql/v1beta4/',
-      'sql.backupRuns',
+      'backupRuns',
       'projects/{project}/instances/{instance}/backupRuns/{id}',
       [u'project', u'instance', u'id'])
-  SQL_DATABASES = (
-      'sqladmin',
+  SQL_V1BETA4_DATABASES = (
+      'sql',
       'v1beta4',
       'https://www.googleapis.com/sql/v1beta4/',
-      'sql.databases',
+      'databases',
       'projects/{project}/instances/{instance}/databases/{database}',
       [u'project', u'instance', u'database'])
-  SQL_INSTANCES = (
-      'sqladmin',
+  SQL_V1BETA4_INSTANCES = (
+      'sql',
       'v1beta4',
       'https://www.googleapis.com/sql/v1beta4/',
-      'sql.instances',
+      'instances',
       'projects/{project}/instances/{instance}',
       [u'project', u'instance'])
-  SQL_OPERATIONS = (
-      'sqladmin',
+  SQL_V1BETA4_OPERATIONS = (
+      'sql',
       'v1beta4',
       'https://www.googleapis.com/sql/v1beta4/',
-      'sql.operations',
+      'operations',
       'projects/{project}/operations/{operation}',
       [u'project', u'operation'])
-  SQL_SSLCERTS = (
-      'sqladmin',
+  SQL_V1BETA4_SSLCERTS = (
+      'sql',
       'v1beta4',
       'https://www.googleapis.com/sql/v1beta4/',
-      'sql.sslCerts',
+      'sslCerts',
       'projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
       [u'project', u'instance', u'sha1Fingerprint'])
-  STORAGE_BUCKETACCESSCONTROLS = (
+  STORAGE_V1_BUCKETACCESSCONTROLS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.bucketAccessControls',
+      'bucketAccessControls',
       'b/{bucket}/acl/{entity}',
       [u'bucket', u'entity'])
-  STORAGE_BUCKETS = (
+  STORAGE_V1_BUCKETS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.buckets',
+      'buckets',
       'b/{bucket}',
       [u'bucket'])
-  STORAGE_DEFAULTOBJECTACCESSCONTROLS = (
+  STORAGE_V1_DEFAULTOBJECTACCESSCONTROLS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.defaultObjectAccessControls',
+      'defaultObjectAccessControls',
       'b/{bucket}/defaultObjectAcl/{entity}',
       [u'bucket', u'entity'])
-  STORAGE_NOTIFICATIONS = (
+  STORAGE_V1_NOTIFICATIONS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.notifications',
+      'notifications',
       'notifications/{notification}',
       [u'notification'])
-  STORAGE_OBJECTACCESSCONTROLS = (
+  STORAGE_V1_OBJECTACCESSCONTROLS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.objectAccessControls',
+      'objectAccessControls',
       'b/{bucket}/o/{object}/acl/{entity}',
       [u'bucket', u'object', u'entity'])
-  STORAGE_OBJECTS = (
+  STORAGE_V1_OBJECTS = (
       'storage',
       'v1',
       'https://www.googleapis.com/storage/v1/',
-      'storage.objects',
+      'objects',
       'b/{bucket}/o/{object}',
       [u'bucket', u'object'])
-  TESTING_PROJECTS_DEVICES = (
+  TESTING_V1_PROJECTS_DEVICES = (
       'testing',
       'v1',
-      'https://testing.googleapis.com/',
-      'testing.projects.devices',
-      'v1/projects/{projectId}/devices/{deviceId}',
+      'https://testing.googleapis.com/v1/',
+      'projects.devices',
+      'projects/{projectId}/devices/{deviceId}',
       [u'projectId', u'deviceId'])
-  TESTING_PROJECTS_TESTMATRICES = (
+  TESTING_V1_PROJECTS_TESTMATRICES = (
       'testing',
       'v1',
-      'https://testing.googleapis.com/',
-      'testing.projects.testMatrices',
-      'v1/projects/{projectId}/testMatrices/{testMatrixId}',
+      'https://testing.googleapis.com/v1/',
+      'projects.testMatrices',
+      'projects/{projectId}/testMatrices/{testMatrixId}',
       [u'projectId', u'testMatrixId'])
-  TESTING_TESTENVIRONMENTCATALOG = (
+  TESTING_V1_TESTENVIRONMENTCATALOG = (
       'testing',
       'v1',
-      'https://testing.googleapis.com/',
-      'testing.testEnvironmentCatalog',
-      'v1/testEnvironmentCatalog/{environmentType}',
+      'https://testing.googleapis.com/v1/',
+      'testEnvironmentCatalog',
+      'testEnvironmentCatalog/{environmentType}',
       [u'environmentType'])
-  TOOLRESULTS_PROJECTS_HISTORIES = (
+  TOOLRESULTS_V1BETA3_PROJECTS_HISTORIES = (
       'toolresults',
       'v1beta3',
-      'https://www.googleapis.com/toolresults/v1beta3/projects/',
-      'toolresults.projects.histories',
-      '{projectId}/histories/{historyId}',
+      'https://www.googleapis.com/toolresults/v1beta3/',
+      'projects.histories',
+      'projects/{projectId}/histories/{historyId}',
       [u'projectId', u'historyId'])
-  TOOLRESULTS_PROJECTS_HISTORIES_EXECUTIONS = (
+  TOOLRESULTS_V1BETA3_PROJECTS_HISTORIES_EXECUTIONS = (
       'toolresults',
       'v1beta3',
-      'https://www.googleapis.com/toolresults/v1beta3/projects/',
-      'toolresults.projects.histories.executions',
-      '{projectId}/histories/{historyId}/executions/{executionId}',
+      'https://www.googleapis.com/toolresults/v1beta3/',
+      'projects.histories.executions',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}',
       [u'projectId', u'historyId', u'executionId'])
-  TOOLRESULTS_PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
+  TOOLRESULTS_V1BETA3_PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
       'toolresults',
       'v1beta3',
-      'https://www.googleapis.com/toolresults/v1beta3/projects/',
-      'toolresults.projects.histories.executions.steps',
-      '{projectId}/histories/{historyId}/executions/{executionId}/steps/'
-      '{stepId}',
+      'https://www.googleapis.com/toolresults/v1beta3/',
+      'projects.histories.executions.steps',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
+      'steps/{stepId}',
       [u'projectId', u'historyId', u'executionId', u'stepId'])
 
   def __init__(self, api_name, api_version, base_url,

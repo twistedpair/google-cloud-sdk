@@ -20,8 +20,9 @@ import os
 import tempfile
 
 from docker import docker
-from googlecloudsdk.api_lib.app import cloud_storage
 from googlecloudsdk.api_lib.app.api import operations
+from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
+from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -92,8 +93,8 @@ def UploadSource(source_dir, bucket, obj):
     with _GzipFileIgnoreSeek(mode='wb', fileobj=f) as gz:
       docker.utils.tar(source_dir, exclude, fileobj=gz)
     f.close()
-    storage_client = core_apis.GetClientInstance('storage', 'v1')
-    cloud_storage.CopyFileToGCS(bucket, f.name, obj, storage_client)
+    storage_client = storage_api.StorageClient()
+    storage_client.CopyFileToGCS(bucket, f.name, obj)
   finally:
     try:
       files.RmTree(temp_dir)
@@ -169,7 +170,7 @@ def ExecuteCloudBuild(project, bucket_ref, object_name, output_image):
   log.status.Print(
       'Started cloud build [{build_id}].'.format(build_id=build_id))
   log_object = CLOUDBUILD_LOGFILE_FMT_STRING.format(build_id=build_id)
-  log_tailer = cloud_storage.LogTailer(
+  log_tailer = cloudbuild_logs.LogTailer(
       bucket=logs_bucket,
       obj=log_object)
   log_loc = None

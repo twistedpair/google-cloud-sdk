@@ -124,6 +124,11 @@ class OperatingSystem(object):
     # 'java' os name?
     return None
 
+  @staticmethod
+  def IsWindows():
+    """Returns True if the current operating system is Windows."""
+    return OperatingSystem.Current() is OperatingSystem.WINDOWS
+
 
 class Architecture(object):
   """An enum representing the system architecture you are running on."""

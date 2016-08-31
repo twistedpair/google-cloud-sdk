@@ -27,6 +27,7 @@ import urllib
 
 from apitools.base.py import base_api
 
+from googlecloudsdk.api_lib.util import resource
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -151,42 +152,6 @@ class InvalidCollectionException(UserError):
         'unknown collection [{collection}]'.format(collection=collection))
 
 
-class CollectionInfo(object):
-  """Holds information about a resource collection.
-
-  Attributes:
-      api_name: str, name of the api of resources parsed by this parser.
-      api_version: str, version id for this api.
-      path: str, URI template for this resource.
-      params: list(str), description of parameters in the path.
-      request_type:  apitools.base.protorpclite.messages.Message, Message type
-        for Get request.
-      name: str, collection name for this resource.
-      base_url: str, URL for service providing these resources.
-  """
-
-  def __init__(self, api_name, api_version, base_url, name,
-               request_type, path, params):
-    self.api_name = api_name
-    self.api_version = api_version
-    self.base_url = base_url
-    self.name = name
-    self.request_type = request_type
-    self.path = path
-    self.params = params
-
-  @property
-  def full_name(self):
-    return self.api_name + '.'  + self.name
-
-  def __cmp__(self, other):
-    return cmp((self.api_name, self.api_version, self.name),
-               (other.api_name, other.api_version, other.name))
-
-  def __str__(self):
-    return self.full_name
-
-
 class _ResourceParser(object):
   """Class that turns command-line arguments into a cloud resource message."""
 
@@ -195,7 +160,7 @@ class _ResourceParser(object):
 
     Args:
       params_defaults_func: func(param)->value.
-      collection_info: CollectionInfo, description for collection.
+      collection_info: resource.CollectionInfo, description for collection.
     """
     self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
@@ -241,16 +206,16 @@ class _ResourceParser(object):
     for param, field in zip(self.collection_info.params, fields):
       setattr(request, param, field)
 
-    resource = Resource(
+    ref = Resource(
         self.collection_info.full_name, self.collection_info.path, request,
         self.collection_info.params, kwargs,
         collection_path, base_url or self.collection_info.base_url,
         self.params_defaults_func)
 
     if resolve:
-      resource.Resolve()
+      ref.Resolve()
 
-    return resource
+    return ref
 
   def _GetFieldsForKnownCollection(self, collection_path):
     """Get the ordered fields for the provided collection-path.
@@ -568,49 +533,28 @@ class Registry(object):
     """
     for service in _GetApiServices(api_client):
       try:
-        self._RegisterService(api_name, api_version, api_client, service)
+        collection = _GetServiceCollection(
+            api_name, api_version, api_client, service)
       except _ResourceWithoutGetException:
         pass
+      else:
+        self._RegisterCollection(collection)
     self.registered_apis[api_name].add(api_version)
 
-  def _RegisterService(self, api_name, api_version, api_client, service):
-    """Register one service for an API with this registry.
+  def _RegisterCollection(self, collection_info):
+    """Registers given collection with registry.
 
     Args:
-      api_name: str, name of api to register under.
-      api_version: str, Use this api version to registerr resources.
-      api_client: base_api.BaseApiClient, The client for a Google Cloud API.
-      service: base_api.BaseApiService, the service to be registered.
-
+      collection_info: CollectionInfo, description of resource collection.
     Raises:
       AmbiguousAPIException: If the API defines a collection that has already
           been added.
-      _ResourceWithoutGetException: If given service does not have Get method.
       AmbiguousResourcePath: If api uses same path for multiple resources.
     """
-    try:
-      method_config = service.GetMethodConfig('Get')
-    except KeyError:
-      raise _ResourceWithoutGetException()
-    match = _METHOD_ID_RE.match(method_config.method_id)
-    if not match:
-      raise _ResourceWithoutGetException()
-
-    collection = match.group('collection')
-    collection = collection.split('.', 1)[1]  # drop api name
-    request_type = getattr(api_client.MESSAGES_MODULE,
-                           method_config.request_type_name)
-
-    url = api_client.BASE_URL + method_config.relative_path
-    _, _, path = _APINameAndVersionFromURL(url)
-    base_url = url[:-len(path)]
-
-    collection_info = CollectionInfo(
-        api_name, api_version,
-        base_url, collection, request_type,
-        path, method_config.ordered_params)
+    api_name = collection_info.api_name
+    api_version = collection_info.api_version
     parser = _ResourceParser(
-        functools.partial(self.GetParamDefault, api_name, collection),
+        functools.partial(self.GetParamDefault, api_name, collection_info.name),
         collection_info)
 
     collection_parsers = (self.parsers_by_collection.setdefault(api_name, {})
@@ -926,7 +870,7 @@ class Registry(object):
     if line:
       if line.startswith('https://') or line.startswith('http://'):
         try:
-          resource = self.ParseURL(line)
+          ref = self.ParseURL(line)
         except InvalidResourceException:
           # TODO(b/29573201): Make sure ParseURL handles this logic by default.
           bucket = None
@@ -953,12 +897,12 @@ class Registry(object):
         # TODO(user): consider not doing this here.
         # Validation of the argument is a distict concern.
         if (enforce_collection and collection and
-            resource.Collection() != collection):
+            ref.Collection() != collection):
           raise WrongResourceCollectionException(
               expected=collection,
-              got=resource.Collection(),
-              path=resource.SelfLink())
-        return resource
+              got=ref.Collection(),
+              path=ref.SelfLink())
+        return ref
       elif line.startswith('gs://'):
         return self.ParseStorageURL(line)
 
@@ -1014,3 +958,40 @@ def _GetApiServices(api_client):
   return [potential_service
           for potential_service in api_client.__dict__.itervalues()
           if isinstance(potential_service, base_api.BaseApiService)]
+
+
+def _GetServiceCollection(api_name, api_version, api_client, service):
+  """Extract collection info from given service for an API.
+
+  Args:
+    api_name: str, name of api to register under.
+    api_version: str, Use this api version to registerr resources.
+    api_client: base_api.BaseApiClient, The client for a Google Cloud API.
+    service: base_api.BaseApiService, the service with collection.
+
+  Returns:
+    CollectionInfo for this service.
+  Raises:
+    _ResourceWithoutGetException: If given service does not have Get method.
+  """
+  try:
+    method_config = service.GetMethodConfig('Get')
+  except KeyError:
+    raise _ResourceWithoutGetException()
+  match = _METHOD_ID_RE.match(method_config.method_id)
+  if not match:
+    raise _ResourceWithoutGetException()
+
+  collection = match.group('collection')
+  collection = collection.split('.', 1)[1]  # drop api name
+  request_type = getattr(api_client.MESSAGES_MODULE,
+                         method_config.request_type_name)
+
+  url = api_client.BASE_URL + method_config.relative_path
+  _, _, path = _APINameAndVersionFromURL(url)
+  base_url = url[:-len(path)]
+
+  return resource.CollectionInfo(
+      api_name, api_version,
+      base_url, collection, request_type,
+      path, method_config.ordered_params)

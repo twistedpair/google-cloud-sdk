@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utility library for configuring access to the Google Container Registry.
 
 Sets docker up to authenticate with the Google Container Registry using the
@@ -199,6 +198,7 @@ def UpdateDockerCredentials(server):
   Raises:
     store.Error: There was an error loading the credentials.
   """
+
   # Loading credentials will ensure that we're logged in.
   # And prompt/abort to 'run gcloud auth login' otherwise.
   cred = store.Load()
@@ -210,12 +210,17 @@ def UpdateDockerCredentials(server):
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')
 
-  if _CredentialHelperConfigured():
+  url = _GetNormalizedURL(server)
+  # Strip the port, if it exists. It's OK to butcher IPv6, this is only an
+  # optimization for hostnames in constants.ALL_SUPPORTED_REGISTRIES.
+  hostname = url.hostname.split(':')[0]
+  if (_CredentialHelperConfigured() or
+      hostname not in constants.ALL_SUPPORTED_REGISTRIES):
     try:
       # Update the credentials stored by docker, passing the access token
       # as a password, and benign values as the email and username.
       _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
-    except exceptions.Error as e:
+    except DockerError as e:
       # Only catch docker-not-found error
       if str(e) != _DOCKER_NOT_FOUND_ERROR:
         raise
@@ -239,16 +244,7 @@ def _DockerLogin(server, email, username, access_token):
   """Register the username / token for the given server on Docker's keyring."""
 
   # Sanitize and normalize the server input.
-  parsed_url = urlparse.urlparse(server)
-  # Work around the fact that Python 2.6 does not properly
-  # look for :// and simply splits on colon, so something
-  # like 'gcr.io:1234' returns the scheme 'gcr.io'.
-  if '://' not in server:
-    # Server doesn't have a scheme, set it to HTTPS.
-    parsed_url = urlparse.urlparse('https://' + server)
-    if parsed_url.hostname == 'localhost':
-      # Now that it parses, if the hostname is localhost switch to HTTP.
-      parsed_url = urlparse.urlparse('http://' + server)
+  parsed_url = _GetNormalizedURL(server)
 
   server = parsed_url.geturl()
 
@@ -263,10 +259,11 @@ def _DockerLogin(server, email, username, access_token):
   docker_args.append('--password=' + access_token)
   docker_args.append(server)  # The auth endpoint must be the last argument.
 
-  docker_p = _GetProcess(docker_args,
-                         stdin_file=sys.stdin,
-                         stdout_file=subprocess.PIPE,
-                         stderr_file=subprocess.PIPE)
+  docker_p = _GetProcess(
+      docker_args,
+      stdin_file=sys.stdin,
+      stdout_file=subprocess.PIPE,
+      stderr_file=subprocess.PIPE)
 
   # Wait for docker to finished executing and retrieve its stdout/stderr.
   stdoutdata, stderrdata = docker_p.communicate()
@@ -279,7 +276,7 @@ def _DockerLogin(server, email, username, access_token):
     log.error('Docker CLI operation failed:')
     log.out.Print(stdoutdata)
     log.status.Print(stderrdata)
-    raise exceptions.Error('Docker login failed.')
+    raise DockerError('Docker login failed.')
 
 
 def _EmailFlagDeprecatedForDockerVersion():
@@ -318,10 +315,11 @@ def _GetDockerVersionString():
   """
   docker_args = "version --format '{{.Client.Version}}'".split()
 
-  docker_p = _GetProcess(docker_args,
-                         stdin_file=sys.stdin,
-                         stdout_file=subprocess.PIPE,
-                         stderr_file=subprocess.PIPE)
+  docker_p = _GetProcess(
+      docker_args,
+      stdin_file=sys.stdin,
+      stdout_file=subprocess.PIPE,
+      stderr_file=subprocess.PIPE)
 
   # Wait for docker to finished executing and retrieve its stdout/stderr.
   stdoutdata, _ = docker_p.communicate()
@@ -377,16 +375,7 @@ def _UpdateDockerConfig(server, username, access_token):
   auth = base64.b64encode(username + ':' + access_token)
 
   # Sanitize and normalize the server input.
-  parsed_url = urlparse.urlparse(server)
-  # Work around the fact that Python 2.6 does not properly
-  # look for :// and simply splits on colon, so something
-  # like 'gcr.io:1234' returns the scheme 'gcr.io'.
-  if '://' not in server:
-    # Server doesn't have a scheme, set it to HTTPS.
-    parsed_url = urlparse.urlparse('https://' + server)
-    if parsed_url.hostname == 'localhost':
-      # Now that it parses, if the hostname is localhost switch to HTTP.
-      parsed_url = urlparse.urlparse('http://' + server)
+  parsed_url = _GetNormalizedURL(server)
 
   server = parsed_url.geturl()
   server_unqualified = parsed_url.hostname
@@ -398,6 +387,22 @@ def _UpdateDockerConfig(server, username, access_token):
   dockercfg_contents[server] = {'auth': auth, 'email': _EMAIL}
 
   WriteDockerConfig(dockercfg_contents)
+
+
+def _GetNormalizedURL(server):
+  """Sanitize and normalize the server input."""
+  parsed_url = urlparse.urlparse(server)
+  # Work around the fact that Python 2.6 does not properly
+  # look for :// and simply splits on colon, so something
+  # like 'gcr.io:1234' returns the scheme 'gcr.io'.
+  if '://' not in server:
+    # Server doesn't have a scheme, set it to HTTPS.
+    parsed_url = urlparse.urlparse('https://' + server)
+    if parsed_url.hostname == 'localhost':
+      # Now that it parses, if the hostname is localhost switch to HTTP.
+      parsed_url = urlparse.urlparse('http://' + server)
+
+  return parsed_url
 
 
 def EnsureDocker(func):
@@ -414,14 +419,16 @@ def EnsureDocker(func):
   Raises:
     Error: Docker cannot be run.
   """
+
   def DockerFunc(*args, **kwargs):
     try:
       return func(*args, **kwargs)
     except OSError as e:
       if e.errno == errno.ENOENT:
-        raise exceptions.Error(_DOCKER_NOT_FOUND_ERROR)
+        raise DockerError(_DOCKER_NOT_FOUND_ERROR)
       else:
         raise
+
   return DockerFunc
 
 
@@ -435,17 +442,16 @@ def Execute(args):
   Returns:
     The exit code from Docker.
   """
-  return subprocess.call(['docker'] + args,
-                         stdin=sys.stdin,
-                         stdout=sys.stdout,
-                         stderr=sys.stderr)
+  return subprocess.call(
+      ['docker'] + args, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
 
 
 @EnsureDocker
 def _GetProcess(docker_args, stdin_file, stdout_file, stderr_file):
   # Wraps the construction of a docker subprocess object with the specified
   # arguments and I/O files.
-  return subprocess.Popen(['docker'] + docker_args,
-                          stdin=stdin_file,
-                          stdout=stdout_file,
-                          stderr=stderr_file)
+  return subprocess.Popen(
+      ['docker'] + docker_args,
+      stdin=stdin_file,
+      stdout=stdout_file,
+      stderr=stderr_file)

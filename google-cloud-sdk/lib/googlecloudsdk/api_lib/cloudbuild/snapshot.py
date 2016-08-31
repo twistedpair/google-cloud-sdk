@@ -19,6 +19,7 @@ import os
 import os.path
 import tarfile
 
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
@@ -98,6 +99,7 @@ class Snapshot(object):
                 object=gcs_object.object,
             ),
         )
-        return storage_client.Upload(
-            archive_path, gcs_object, 'application/x-tar')
-
+        return storage_client.CopyFileToGCS(
+            storage_util.BucketReference.FromBucketUrl(gcs_object.bucket),
+            archive_path,
+            gcs_object.object)

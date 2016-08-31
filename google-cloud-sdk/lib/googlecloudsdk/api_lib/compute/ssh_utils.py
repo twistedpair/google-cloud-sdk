@@ -141,7 +141,7 @@ def _IsPublicKeyCorrupt95Through97(key):
     True if the encoded public key has the release 95.0.0 corruption.
   """
   # The corruption only happened on Windows.
-  if not IsRunningOnWindows():
+  if not platforms.OperatingSystem.IsWindows():
     return False
 
   # All corrupt encodings have the same encoded prefix (up to the second to
@@ -176,8 +176,8 @@ def _KeyFilesAreValid(private=None, public=None):
     return False
 
   # The PuTTY PPK key file must be readable and non-empty.
-  if IsRunningOnWindows() and not _WarnOrReadFirstKeyLine(private + '.ppk',
-                                                          'PuTTY PPK'):
+  if (platforms.OperatingSystem.IsWindows() and
+      not _WarnOrReadFirstKeyLine(private + '.ppk', 'PuTTY PPK')):
     return False
 
   # The public key file must be readable and non-empty.
@@ -293,7 +293,8 @@ def _RunExecutable(cmd_args, strict_error_checking=True):
       stdout, stderr = None, None
     else:
       stdout, stderr = output_file, output_file
-    if IsRunningOnWindows() and not cmd_args[0].endswith('winkeygen.exe'):
+    if (platforms.OperatingSystem.IsWindows() and
+        not cmd_args[0].endswith('winkeygen.exe')):
       # TODO(user): b/25126583 will drop StrictHostKeyChecking=no and 'y'.
       # PuTTY and friends always prompt on fingerprint mismatch. A 'y' response
       # adds/updates the fingerprint registry entry and proceeds. The prompt
@@ -408,12 +409,6 @@ def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
         metadata={
             _GetMetadataKey(iam_keys): _PrepareSSHKeysValue(ssh_keys)},
         existing_metadata=metadata)
-
-
-def IsRunningOnWindows():
-  """Returns True if the current os is Windows."""
-  current_os = platforms.OperatingSystem.Current()
-  return current_os is platforms.OperatingSystem.WINDOWS
 
 
 def ReadFile(file_path):
@@ -680,7 +675,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
         pass
 
       keygen_args = [self.ssh_keygen_executable]
-      if IsRunningOnWindows():
+      if platforms.OperatingSystem.IsWindows():
         # No passphrase in the current implementation.
         keygen_args.append(self.ssh_key_file)
       else:
@@ -706,7 +701,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
 
   def Run(self, args):
     """Subclasses must call this in their Run() before continuing."""
-    if IsRunningOnWindows():
+    if platforms.OperatingSystem.IsWindows():
       scp_command = 'pscp'
       ssh_command = 'plink'
       ssh_keygen_command = 'winkeygen'
@@ -839,7 +834,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
     Returns:
       Returns new_cmd_args, the localized command line.
     """
-    if not IsRunningOnWindows():
+    if not platforms.OperatingSystem.IsWindows():
       return cmd_args
     args = [cmd_args[0]]
     i = 1
@@ -899,7 +894,7 @@ class BaseSSHCLICommand(BaseSSHCommand):
     Returns:
       list, list of arguments to add to the ssh command line.
     """
-    if args.plain or IsRunningOnWindows():
+    if args.plain or platforms.OperatingSystem.IsWindows():
       return []
     host_key_alias = 'compute.{0}'.format(instance.id)
 

@@ -72,6 +72,33 @@ def ProcessEndpointsService(service, project):
           apis.GetMessagesModule('servicemanagement', 'v1'))
 
 
+def WriteServiceConfigToFile(file_path, contents):
+  """Writes Service Config contents to a file on disk.
+
+  Args:
+    file_path: path to the file that is to be written to.
+    contents: the contents to write to the file.
+
+  Raises:
+    SwaggerUploadException: if errors occur in creating the destination
+        directory or writing to the file.
+  """
+  dir_path = os.path.dirname(file_path)
+  if not os.path.isdir(dir_path):
+    try:
+      os.makedirs(dir_path)
+    except (IOError, OSError) as e:
+      raise SwaggerUploadException(
+          'Failed to create directory {0} {1}'.format(dir_path, str(e)))
+  try:
+    with open(file_path, 'w') as out:
+      out.write(contents)
+  except (IOError, OSError) as e:
+    raise SwaggerUploadException(
+        'Failed to write Google Service Configuration '
+        'file {0} to disk {1}'.format(file_path, str(e)))
+
+
 def PushServiceConfig(swagger_file, project, client, messages):
   """Pushes Service Configuration to Google Service Management.
 
@@ -149,15 +176,10 @@ def PushServiceConfig(swagger_file, project, client, messages):
   # TODO(b/28090287): Remove this when ESP is able to pull this configuration
   # directly from Service Management API.
   swagger_path = os.path.dirname(swagger_file)
-  endpoints_dir = os.path.join(swagger_path, 'endpoints')
-  if not os.path.exists(endpoints_dir):
-    try:
-      os.makedirs(endpoints_dir)
-      with open(endpoints_dir + '/service.json', 'w') as out:
-        out.write(apitools_base.encoding.MessageToJson(response.serviceConfig))
-    except (IOError, OSError) as e:
-      raise SwaggerUploadException(
-          'Failed to write Google Service Configuration to disk: ' + str(e))
+  service_json_file = os.path.join(swagger_path, 'endpoints', 'service.json')
+  WriteServiceConfigToFile(
+      service_json_file,
+      apitools_base.encoding.MessageToJson(response.serviceConfig))
 
   service_name = service_config_dict.get('host', None)
   # Create the Service resource if it does not already exist.

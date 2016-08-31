@@ -29,13 +29,13 @@ class ErrorReporting(object):
     self.api_messages = core_apis.GetMessagesModule(
         self._API_NAME, self._API_VERSION)
 
-  def ReportEvent(self, error_message, service, version, project=None):
+  def ReportEvent(self, error_message, service, version=None, project=None):
     """Creates a new error event and sends to StackDriver Reporting API.
 
     Args:
       error_message: str, Crash details including stacktrace
       service: str, Name of service
-      version: str, Service version
+      version: str, Service version, defaults to None
       project: str, Project to report errors to, defaults to current
     """
     if project is None:

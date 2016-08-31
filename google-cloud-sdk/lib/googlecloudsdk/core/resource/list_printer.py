@@ -76,8 +76,3 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       self._out.write(self._title + u'\n')
       self._title = None
     self._out.write(u' - ' + self._separator.join(record) + u'\n')
-
-  # TODO(b/27967563): remove 3Q2016
-  def Finish(self):
-    """Prints the legend if any."""
-    self.AddLegend()

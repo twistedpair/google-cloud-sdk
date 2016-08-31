@@ -882,11 +882,11 @@ RESOURCE_REGISTRY = {
     'dataflow.jobs': ResourceInfo(
         list_format="""
           table(
-            job_id:label=ID,
-            job_name:label=NAME,
-            job_type:label=TYPE,
-            creation_time.yesno(no="-"),
-            status
+            id:label=ID,
+            name:label=NAME,
+            type:label=TYPE,
+            creationTime.yesno(no="-"),
+            state
           )
         """,
     ),
@@ -1275,6 +1275,26 @@ RESOURCE_REGISTRY = {
 
     # ml
 
+    'ml.beta.jobs': ResourceInfo(
+        list_format="""
+          table(
+            jobId.basename(),
+            state:label=STATUS,
+            createTime.date():label=CREATED
+          )
+        """,
+    ),
+
+    'ml.beta.models.versions': ResourceInfo(
+        list_format="""
+          table(
+            name.basename(),
+            deploymentUri
+          )
+        """,
+    ),
+
+    # TODO(b/31062835): remove any resources no longer used
     'ml.jobs': ResourceInfo(
         list_format="""
           table(

@@ -30,6 +30,7 @@ import yaml
 IMPORTS = 'imports'
 PATH = 'path'
 NAME = 'name'
+OUTPUTS = 'outputs'
 
 
 class _BaseImport(object):
@@ -385,6 +386,31 @@ def _BuildConfig(full_path, properties):
   # Add the import and single resource together into a config file.
   custom_dict = {'imports': [{'path': base_name},],
                  'resources': [custom_resource,]}
+
+  custom_outputs = []
+
+  # Import the schema file and attach the outputs to config if there is any
+  schema_path = config_obj.GetFullPath() + '.schema'
+  schema_name = config_obj.GetName() + '.schema'
+
+  schema_object = _BuildImportObject(schema_path, schema_name)
+
+  if schema_object.Exists():
+    schema_content = schema_object.GetContent()
+    config_name = custom_resource['name']
+    try:
+      yaml_schema = yaml.safe_load(schema_content)
+      if yaml_schema and OUTPUTS in yaml_schema:
+        for output_name in yaml_schema[OUTPUTS].keys():
+          custom_outputs.append(
+              {'name': output_name,
+               'value': '$(ref.' + config_name + '.' + output_name + ')'})
+    except yaml.YAMLError as e:
+      raise exceptions.BadFileException('Invalid schema file %s. %s' %
+                                        (schema_path, str(e)))
+
+  if custom_outputs:
+    custom_dict['outputs'] = custom_outputs
 
   # Dump using default_flow_style=False to use spacing instead of '{ }'
   custom_content = yaml.dump(custom_dict, default_flow_style=False)

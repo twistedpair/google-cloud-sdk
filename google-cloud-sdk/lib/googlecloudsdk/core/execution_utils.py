@@ -14,7 +14,7 @@
 
 """Functions to help with shelling out to other commands."""
 
-import cStringIO
+import contextlib
 import errno
 import os
 import re
@@ -39,6 +39,14 @@ class PermissionError(exceptions.Error):
     super(PermissionError, self).__init__(
         '{err}\nPlease verify that you have execute permission for all'
         'files in your CLOUD SDK bin folder'.format(err=error))
+
+
+class InvalidCommandError(exceptions.Error):
+  """Command entered cannot be found."""
+
+  def __init__(self, cmd):
+    super(InvalidCommandError, self).__init__(
+        '{cmd}: command not found'.format(cmd=cmd))
 
 
 def GetPythonExecutable():
@@ -207,8 +215,16 @@ class _ProcessHolder(object):
       sys.exit(ret_val)
 
 
-def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
-         file_only_logger=False):
+@contextlib.contextmanager
+def _ReplaceSignal(signo, handler):
+  old_handler = signal.signal(signo, handler)
+  try:
+    yield
+  finally:
+    signal.signal(signo, old_handler)
+
+
+def Exec(args, env=None, no_exit=False, out_func=None, err_func=None):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
   This executes the given command, waits for it to finish, and then exits this
@@ -219,18 +235,19 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
     env: {str: str}, An optional environment for the child process.
     no_exit: bool, True to just return the exit code of the child instead of
       exiting.
-    pipe_output_through_logger: bool, True to feed output from the called
-      command through the standard logger instead of raw stdout/stderr.
-    file_only_logger: bool, If piping through the logger, log to the file only
-      instead of log.out and log.err.
+    out_func: str->None, a function to call with the stdout of the executed
+      process. This can be e.g. log.file_only_logger.debug or log.out.write.
+    err_func: str->None, a function to call with the stderr of the executed
+      process. This can be e.g. log.file_only_logger.debug or log.err.write.
 
   Returns:
     int, The exit code of the child if no_exit is True, else this method does
     not return.
 
   Raises:
-    PermissionError: if user that not have execute permission for cloud sdk bin
+    PermissionError: if user does not have execute permission for cloud sdk bin
     files.
+    InvalidCommandError: if the command entered cannot be found.
   """
   log.debug('Executing command: %s', args)
   # We use subprocess instead of execv because windows does not support process
@@ -239,78 +256,54 @@ def Exec(args, env=None, no_exit=False, pipe_output_through_logger=False,
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
   env = _GetToolEnv(env=env)
+
   process_holder = _ProcessHolder()
-
-  old_handler = signal.signal(signal.SIGTERM, process_holder.Handler)
-
-  try:
+  with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
     extra_popen_kwargs = {}
-    if pipe_output_through_logger:
-      extra_popen_kwargs['stderr'] = subprocess.PIPE
+    if out_func:
       extra_popen_kwargs['stdout'] = subprocess.PIPE
+    if err_func:
+      extra_popen_kwargs['stderr'] = subprocess.PIPE
     try:
       p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
-      process_holder.process = p
     except OSError as err:
       if err.errno == errno.EACCES:
         raise PermissionError(err.strerror)
-      else:
-        # Raise stack trace.
-        raise
-    if pipe_output_through_logger:
-      if file_only_logger:
-        out = cStringIO.StringIO()
-        err = cStringIO.StringIO()
-      else:
-        out = log.out
-        err = log.err
+      elif err.errno == errno.ENOENT:
+        raise InvalidCommandError(args[0])
+      raise
+    process_holder.process = p
 
-      ret_val = None
-      while ret_val is None:
-        stdout, stderr = p.communicate()
-        out.write(stdout)
-        err.write(stderr)
-        ret_val = p.returncode
-
-      if file_only_logger:
-        log.file_only_logger.debug(out.getvalue())
-        log.file_only_logger.debug(err.getvalue())
-
-    else:
-      ret_val = p.wait()
-
-  finally:
-    # Restore the original signal handler.
-    signal.signal(signal.SIGTERM, old_handler)
+    stdout, stderr = p.communicate()
+    if out_func:
+      out_func(stdout)
+    if err_func:
+      err_func(stderr)
+    ret_val = p.returncode
 
   if no_exit:
     return ret_val
   sys.exit(ret_val)
 
 
-class UninterruptibleSection(object):
+def UninterruptibleSection(stream, message=None):
   """Run a section of code with CTRL-C disabled.
 
   When in this context manager, the ctrl-c signal is caught and a message is
   printed saying that the action cannot be cancelled.
+
+  Args:
+    stream: the stream to write to if SIGINT is received
+    message: str, optional: the message to write
+
+  Returns:
+    Context manager that is uninterruptible during its lifetime.
   """
-
-  def __init__(self, stream, message=None):
-    self.__old_handler = None
-    self.__message = '\n\n{message}\n\n'.format(
-        message=(message or 'This operation cannot be cancelled.'))
-    self.__stream = stream
-
-  def __enter__(self):
-    self.__old_handler = signal.getsignal(signal.SIGINT)
-    signal.signal(signal.SIGINT, self._Handler)
-    return self
-
-  def __exit__(self, typ, value, traceback):
-    signal.signal(signal.SIGINT, self.__old_handler)
-
-  def _Handler(self, unused_signal, unused_frame):
-    self.__stream.write(self.__message)
+  message = '\n\n{message}\n\n'.format(
+      message=(message or 'This operation cannot be cancelled.'))
+  def _Handler(unused_signal, unused_frame):
+    stream.write(message)
+  return _ReplaceSignal(signal.SIGINT, _Handler)
 
 
 def KillSubprocess(p):

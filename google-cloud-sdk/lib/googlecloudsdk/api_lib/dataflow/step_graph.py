@@ -14,6 +14,8 @@
 """Code to transform the (cleaned-up) description of a dataflow into Graphviz.
 """
 
+from googlecloudsdk.calliope import exceptions
+
 
 class _Cluster(object):
   """Encapsulation of a single cluster in the final Step-Graph.
@@ -180,10 +182,10 @@ def _EscapeGraphvizId(name):
     The `name', with double-quotes escaped, and quotes around it.
 
   Raises:
-    ValueError: If the name is incompatible with Graphviz ID escaping.
+    ToolException: If the name is incompatible with Graphviz ID escaping.
   """
   if name.endswith('\\'):
-    raise ValueError(
+    raise exceptions.ToolException(
         'Unsupported name for Graphviz ID escaping: {0!r}'.format(name))
   return '"{0}"'.format(name.replace('"', '\\"'))
 

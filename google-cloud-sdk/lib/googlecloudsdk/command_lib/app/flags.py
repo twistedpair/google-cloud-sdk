@@ -15,10 +15,12 @@
 """This module holds common flags used by the gcloud app commands."""
 import argparse
 
-from googlecloudsdk.api_lib.app import cloud_storage
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.docker import constants
+from googlecloudsdk.core.docker import docker
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import validation
 
@@ -51,30 +53,47 @@ IGNORE_CERTS_FLAG = base.Argument(
     default=False,
     help=argparse.SUPPRESS)
 
+
+def ValidateDockerBuildFlag(unused_value):
+  raise argparse.ArgumentTypeError("""\
+The --docker-build flag no longer exists.
+
+Docker images are now built remotely using Google Container Builder. To run a
+Docker build on your own host, you can run:
+  docker build -t gcr.io/<project>/<service.version> .
+  gcloud docker push gcr.io/<project>/<service.version>
+  gcloud app deploy --image-url=gcr.io/<project>/<service.version>
+If you don't already have a Dockerfile, you must run:
+  gcloud beta app gen-config
+first to get one.
+  """)
+
+
+DOCKER_BUILD_FLAG = base.Argument(
+    '--docker-build',
+    help=argparse.SUPPRESS,
+    type=ValidateDockerBuildFlag)
+
+
 LOG_SEVERITIES = ['debug', 'info', 'warning', 'error', 'critical']
 
 
-def GetCodeBucket(api_client, project, bucket):
+def GetCodeBucket(app, project):
   """Gets a bucket reference for a Cloud Build.
 
   Args:
-    api_client: appengine_api_client.AppengineApiClient to get the bucket.
+    app: App resource for this project
     project: str, The name of the current project.
-    bucket: str, The name of the bucket to use if specified explicitly.
 
   Returns:
-    cloud_storage.BucketReference, The bucket to use.
+    storage_util.BucketReference, The bucket to use.
   """
-  if bucket:
-    bucket_with_gs = bucket
-  else:
-    # Attempt to retrieve the default appspot bucket, if one can be created.
-    log.debug('No bucket specified, retrieving default bucket.')
-    bucket_with_gs = api_client.GetApplicationCodeBucket()
-    if not bucket_with_gs:
-      raise exceptions.DefaultBucketAccessError(project)
-
-  return cloud_storage.BucketReference(bucket_with_gs)
+  # Attempt to retrieve the default appspot bucket, if one can be created.
+  log.debug('No bucket specified, retrieving default bucket.')
+  if not app.codeBucket:
+    raise exceptions.DefaultBucketAccessError(project)
+  bucket_with_gs = 'gs://{0}/'.format(app.codeBucket)
+  return storage_util.BucketReference.FromBucketUrl(bucket_with_gs)
 
 
 def ValidateVersion(version):
@@ -91,3 +110,33 @@ def ValidateVersion(version):
     validator.Validate(version, 'version')
   except validation.ValidationError:
     raise exceptions.InvalidVersionIdError(version)
+
+
+def ValidateImageUrl(image_url, services):
+  """Check the user-provided image URL.
+
+  Ensures that:
+  - it is consistent with the services being deployed (there must be exactly
+    one)
+  - it is an image in a supported Docker registry
+
+  Args:
+    image_url: str, the URL of the image to deploy provided by the user
+    services: list, the services to deploy
+
+  Raises:
+    MultiDeployError: if image_url is provided and more than one service is
+      being deployed
+    docker.UnsupportedRegistryError: if image_url is provided and does not point
+      to one of the supported registries
+  """
+  # Validate the image url if provided, and ensure there is a single service
+  # being deployed.
+  if image_url is None:
+    return
+  if len(services) != 1:
+    raise exceptions.MultiDeployError()
+  for registry in constants.ALL_SUPPORTED_REGISTRIES:
+    if image_url.startswith(registry):
+      return
+  raise docker.UnsupportedRegistryError(image_url)

@@ -54,6 +54,45 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
                         document_id=self.GetDocumentID(heading),
                         heading=heading))
 
+  def _Flush(self):
+    """Flushes the current collection of Fill() lines."""
+    if self._example and self._lang is not None:
+      self._out.write('\n')
+      return
+    self._paragraph = False
+    if self._fill:
+      self._section = False
+      if self._example:
+        self._example = False
+        self._out.write('</pre>\n')
+      self._fill = 0
+      self._out.write('\n')
+      self._blank = False
+
+  def Example(self, line):
+    """Displays line as an indented example.
+
+    Args:
+      line: The example line.
+    """
+    self._blank = True
+    if not self._example:
+      self._example = True
+      self._fill = 2
+      if not self._lang:
+        self._out.write('<pre>\n')
+      elif self._lang in ('pretty', 'yaml'):
+        self._out.write('<pre class="prettyprint">\n')
+      else:
+        self._out.write('<pre class="prettyprint lang-{lang}">\n'.format(
+            lang=self._lang))
+    indent = len(line)
+    line = line.lstrip()
+    indent -= len(line)
+    self._out.write(' ' * (self._fill + indent))
+    self._out.write(line)
+    self._out.write('\n')
+
   def Link(self, target, text):
     """Renders an anchor.
 
@@ -64,7 +103,8 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     Returns:
       The rendered link anchor and text.
     """
-    if ('/' not in target or ':' in target or '#' in target or
+    if target != 'gcloud' and (
+        '/' not in target or ':' in target or '#' in target or
         target.startswith('www.') or target.endswith('/..')):
       return '<a href="{target}">{text}</a>'.format(target=target,
                                                     text=text or target)
@@ -73,6 +113,6 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     target_parts = target.split('/')
     if target_parts[-1] == 'help':
       target_parts.pop()
-    return '<a href="/sdk/{head}/reference/{tail}">{text}</a>'.format(
-        head=target_parts[0], tail='/'.join(target_parts[1:]),
+    return '<a href="/sdk/{head}/{tail}">{text}</a>'.format(
+        head=target_parts[0], tail='/'.join(['reference'] + target_parts[1:]),
         text=text or target)

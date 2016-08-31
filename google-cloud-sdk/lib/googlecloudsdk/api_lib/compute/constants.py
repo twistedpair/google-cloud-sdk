@@ -113,7 +113,10 @@ HIDDEN_IMAGE_ALIASES = {
         family=None),
 }
 
-WINDOWS_IMAGE_PROJECT = 'windows-cloud'
+WINDOWS_IMAGE_PROJECTS = [
+    'windows-cloud',
+    'windows-sql-cloud'
+]
 PUBLIC_IMAGE_PROJECTS = [
     'centos-cloud',
     'coreos-cloud',
@@ -122,8 +125,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'rhel-cloud',
     'suse-cloud',
     'ubuntu-os-cloud',
-    WINDOWS_IMAGE_PROJECT,
-]
+] + WINDOWS_IMAGE_PROJECTS
 PREVIEW_IMAGE_PROJECTS = []
 
 # SSH-related constants.

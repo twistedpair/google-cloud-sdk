@@ -326,7 +326,7 @@
           "format": "int32"
         },
         "preemptible": {
-          "description": "At create time means that preemptible machines may be\nused for the run. At run time, means they should be used. Cannot\nbe true at run time if false at create time.\nDefaults to `false`.",
+          "description": "Whether to use preemptible VMs. Defaults to `false`. In order to use this,\nmust be true for both create time and run time. Cannot be true at run time\nif false at create time.",
           "type": "boolean"
         },
         "minimumRamGb": {
@@ -352,6 +352,10 @@
           "description": "The size of the boot disk. Defaults to 10 (GB).",
           "type": "integer",
           "format": "int32"
+        },
+        "noAddress": {
+          "description": "Whether to assign an external IP to the instance. Defaults to false.\nCorresponds to `--no_address flag` for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time.  ** Note: To use this\noption, your project must be in Google Access for Private IPs Early Access\nProgram.**",
+          "type": "boolean"
         }
       }
     },

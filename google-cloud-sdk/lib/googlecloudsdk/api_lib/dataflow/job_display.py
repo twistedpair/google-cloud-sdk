@@ -22,21 +22,32 @@ class DisplayInfo(object):
   """Information about a job displayed in command output.
 
   Fields:
-    job_id: the job ID
-    job_name: the job name
-    job_type: one of 'batch', 'streaming'
-    status: string representing the current job status
-    creation_time: in the form yyyy-mm-dd hh:mm:ss
-    status_time: in the form yyyy-mm-dd hh:mm:ss
+    id: the job ID
+    name: the job name
+    type: one of 'batch', 'streaming'
+    state: string representing the current job status
+    creationTime: in the form yyyy-mm-dd hh:mm:ss
+    stateTime: in the form yyyy-mm-dd hh:mm:ss
   """
 
   def __init__(self, job, dataflow_messages):
-    self.job_id = job.id
-    self.job_name = job.name
-    self.job_type = DisplayInfo._JobTypeForJob(job.type, dataflow_messages)
-    self.status = DisplayInfo._StatusForJob(job.currentState, dataflow_messages)
-    self.status_time = time_util.FormatTimestamp(job.currentStateTime)
-    self.creation_time = time_util.FormatTimestamp(job.createTime)
+    self.id = job.id
+    self.name = job.name
+    self.type = DisplayInfo._JobTypeForJob(job.type, dataflow_messages)
+    self.state = DisplayInfo._StatusForJob(job.currentState, dataflow_messages)
+
+    # We ignore these errors to make the field names more consistent across
+    # commands using the --filter argument. This is because most commands are
+    # more or less a straight dump of the API response which has camel-case
+    # naming conventions. This class is only used for formmating jobs for
+    # display purposes.
+    #
+    # Don't worry, be happy.
+    #
+    # pylint: disable=invalid-name
+    self.stateTime = time_util.FormatTimestamp(job.currentStateTime)
+    self.creationTime = time_util.FormatTimestamp(job.createTime)
+    # pylint: enable=invalid-name
 
   @staticmethod
   def _JobTypeForJob(job_type, dataflow_messages):

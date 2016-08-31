@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -174,6 +174,9 @@ class _BaseInstances(object):
       if args.master_instance_name:
         replication = 'ASYNCHRONOUS'
         activation_policy = 'ALWAYS'
+        if hasattr(args, 'replica_type') and args.replica_type == 'FAILOVER':
+          instance_resource.replicaConfiguration = (
+              sql_messages.ReplicaConfiguration(failoverTarget=True))
       else:
         replication = 'SYNCHRONOUS'
         activation_policy = 'ON_DEMAND'
@@ -184,6 +187,18 @@ class _BaseInstances(object):
 
     if instance_ref:
       cls.SetProjectAndInstanceFromRef(instance_resource, instance_ref)
+
+    if hasattr(args, 'storage_type') and args.storage_type:
+      instance_resource.settings.dataDiskType = 'PD_' + args.storage_type
+
+    if hasattr(args, 'failover_replica_name') and args.failover_replica_name:
+      instance_resource.failoverReplica = (
+          sql_messages.DatabaseInstance.FailoverReplicaValue(
+              name=args.failover_replica_name))
+
+    if (hasattr(args, 'storage_auto_increase') and
+        args.storage_auto_increase is not None):
+      instance_resource.settings.storageAutoResize = args.storage_auto_increase
 
     return instance_resource
 

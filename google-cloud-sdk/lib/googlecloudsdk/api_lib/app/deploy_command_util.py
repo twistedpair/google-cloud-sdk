@@ -20,6 +20,7 @@ import re
 
 from gae_ext_runtime import ext_runtime
 
+from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
@@ -241,7 +242,9 @@ def GetAppHostname(app_id, service=None, version=None,
 
   domain = DEFAULT_DOMAIN
   if ':' in app_id:
-    domain, app_id = app_id.split(':')
+    api_client = appengine_api_client.GetApiClient()
+    app = api_client.GetApplication()
+    app_id, domain = app.defaultHostname.split('.', 1)
 
   if service == DEFAULT_SERVICE:
     service = ''
@@ -285,13 +288,12 @@ def GetAppHostname(app_id, service=None, version=None,
 DEFAULT_DEPLOYABLE = 'app.yaml'
 
 
-def EnsureAppYamlForAppDirectory(directory):
+def CreateAppYamlForAppDirectory(directory):
   """Ensures that an app.yaml exists or creates it if necessary.
 
-  If the app.yaml exists, just use it.  If it does not exist, attempt to
-  fingerprint the directory and create one.  This is an interactive process.
-  If this does not raise an error, the app.yaml is guaranteed to exist once this
-  is done.
+  Attempt to fingerprint the directory and create one. This is an interactive
+  process. If this does not raise an error, the app.yaml is guaranteed to exist
+  once this is done.
 
   Args:
     directory: str, The path to the directory to create the app.yaml in.
@@ -301,11 +303,8 @@ def EnsureAppYamlForAppDirectory(directory):
         if a yaml file could not be generated based on the state of the source.
 
   Returns:
-    str, The path to the created or existing app.yaml file.
+    str, The path to the created app.yaml file.
   """
-  yaml_path = os.path.join(directory, DEFAULT_DEPLOYABLE)
-  if os.path.exists(yaml_path):
-    return yaml_path
   console_io.PromptContinue(
       'Deployment to Google App Engine requires an app.yaml file. '
       'This command will run `gcloud beta app gen-config` to generate an '
@@ -323,6 +322,7 @@ def EnsureAppYamlForAppDirectory(directory):
         'Please prepare an app.yaml file for your application manually '
         'and deploy again.')
   configurator.MaybeWriteAppYaml()
+  yaml_path = os.path.join(directory, DEFAULT_DEPLOYABLE)
   if not os.path.exists(yaml_path):
     raise app_exc.NoAppIdentifiedError(
         'Failed to create an app.yaml for your app.\n\n'

@@ -101,5 +101,8 @@ def Wait(operation, messages, client):
     FunctionsError: If the operation takes more than 360s.
   """
   request = messages.CloudfunctionsOperationsGetRequest()
-  request.name = 'operations/{0}'.format(operation.name)
+  if operation.name.startswith('operations/'):
+    request.name = operation.name
+  else:
+    request.name = 'operations/{0}'.format(operation.name)
   _WaitForOperation(client, request, 'Waiting for operation to finish')

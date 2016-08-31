@@ -16,15 +16,8 @@
 
 
 from googlecloudsdk.api_lib.app import deploy_command_util
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
-
-
-# Currently this is thrown for domain specific apps only
-class UnsupportedAppIdError(exceptions.Error):
-  """Indicates app config is not (yet) compatible with browser dispatcher."""
-  pass
 
 
 def OpenURL(url):
@@ -48,14 +41,7 @@ def BrowseApp(project, service=None, version=None):
     project: str, project ID.
     service: str, (optional) specific service, defaults to 'default'
     version: str, (optional) specific version, defaults to latest
-
-  Raises:
-    UnsupportedAppIdError: If the app is domain scoped.
   """
-  if ':' in project:
-    raise UnsupportedAppIdError(
-        '`browse` command is currently unsupported for app IDs with custom '
-        'domains.')
   url = deploy_command_util.GetAppHostname(
       project, service, version, use_ssl=appinfo.SECURE_HTTPS)
   OpenURL(url)

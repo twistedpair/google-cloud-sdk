@@ -8520,17 +8520,22 @@ class GlobalSetLabelsRequest(_messages.Message):
 
 
 class GuestOsFeature(_messages.Message):
-  """Features supported by the guest os.
+  """A list of features to enable on the guest OS. Currently, only one feature
+  is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have
+  its own queue. For Windows images, you can only enable
+  VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher.
+  Linux images with kernel versions 3.17 and higher will support
+  VIRTIO_SCSCI_MULTIQUEUE.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature..
+    TypeValueValuesEnum: The type of supported feature.
 
   Fields:
-    type: The type of supported feature..
+    type: The type of supported feature.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature..
+    """The type of supported feature.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -11216,7 +11221,8 @@ class Operation(_messages.Message):
     targetId: [Output Only] The unique target ID, which identifies a specific
       incarnation of the target resource.
     targetLink: [Output Only] The URL of the resource that the operation
-      modifies.
+      modifies. If creating a persistent disk snapshot, this points to the
+      persistent disk that the snapshot was created from.
     user: [Output Only] User who requested the operation, for example:
       user@example.com.
     warnings: [Output Only] If warning messages are generated during

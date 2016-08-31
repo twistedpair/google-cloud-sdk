@@ -21,7 +21,7 @@ import textwrap
 
 JAVA_APP_YAML = textwrap.dedent("""\
     runtime: {runtime}
-    env: flex
+    vm: true
     """)
 DOCKERIGNORE = textwrap.dedent("""\
     .dockerignore

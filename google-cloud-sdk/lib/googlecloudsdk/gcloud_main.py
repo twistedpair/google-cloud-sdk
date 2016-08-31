@@ -33,6 +33,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import platforms
@@ -180,7 +181,7 @@ def main(gcloud_cli=None):
     # We want this to be parsable by `gcloud feedback`, so we print the
     # stacktrace with a nice recognizable string
     log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
-    _PrintSuggestedAction(err, gcloud_cli.SafeExceptionToString(err))
+    _PrintSuggestedAction(err, console_attr.EncodeForOutput(err))
 
     if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
       # We want to see the traceback as normally handled by Python

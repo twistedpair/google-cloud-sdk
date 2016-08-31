@@ -497,9 +497,16 @@ class _MarkdownConverter(object):
     """
     if not i:
       return i
-    if self._line[i:] == '```':
-      self._code_block = not self._code_block
-      return -1
+    if self._line[i:].startswith('```'):
+      lang = self._line[i+3:]
+      if not lang:
+        self._code_block = not self._code_block
+        self._renderer.SetLang('' if self._code_block else None)
+        return -1
+      if not self._code_block and lang.isalnum():
+        self._renderer.SetLang(lang)
+        self._code_block = True
+        return -1
     if not self._code_block:
       return i
     self._Example(i)

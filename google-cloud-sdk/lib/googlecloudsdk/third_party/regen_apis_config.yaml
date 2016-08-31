@@ -97,6 +97,9 @@ apis:
   container:
     v1:
       discovery_doc: container_v1.json
+  containeranalysis:
+    v1alpha1:
+      discovery_doc: containeranalysis_v1alpha1.json
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json

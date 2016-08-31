@@ -19,6 +19,9 @@ from googlecloudsdk.calliope import base
 CONFIG = base.Argument('--config', help='Path to yaml configuration file.')
 JOB_NAME = base.Argument('job', help='Name of the job.')
 MODULE_NAME = base.Argument('--module', help='Name of Python module to run.')
+REGION = base.Argument(
+    '--region',
+    help='The Google Compute Engine region to run the training job in.')
 TRAINER_URI = base.Argument(
     '--trainer-uri',
     help='Google Cloud Storage location of the training program.',

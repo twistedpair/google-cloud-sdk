@@ -139,8 +139,3 @@ class ValuePrinter(CsvPrinter):
     self._quote = '"' if self.attributes.get('quote', 0) else None
     self._separator = self.attributes.get('separator', '\t')
     self._terminator = self.attributes.get('terminator', '\n')
-
-  # TODO(b/27967563): remove 3Q2016
-  def Finish(self):
-    """Prints the legend if any."""
-    self.AddLegend()

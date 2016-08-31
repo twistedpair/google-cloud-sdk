@@ -11,16 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Default value constants exposed by core utilities."""
 
 DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 BUCKET_REGISTRIES = ['b.gcr.io', 'bucket.gcr.io']
 APPENGINE_REGISTRY = 'appengine.gcr.io'
+KUBERNETES_REGISTRY = 'gcr.kubernetes.io'
 SPECIALTY_REGISTRIES = BUCKET_REGISTRIES + [APPENGINE_REGISTRY]
-ALL_SUPPORTED_REGISTRIES = ([DEFAULT_REGISTRY] + REGIONAL_REGISTRIES
-                            + SPECIALTY_REGISTRIES)
-DEFAULT_DEVSHELL_IMAGE = (DEFAULT_REGISTRY +
-                          '/dev_con/cloud-dev-common:prod')
+ALL_SUPPORTED_REGISTRIES = ([DEFAULT_REGISTRY] + REGIONAL_REGISTRIES +
+                            SPECIALTY_REGISTRIES + [KUBERNETES_REGISTRY])
+DEFAULT_DEVSHELL_IMAGE = (DEFAULT_REGISTRY + '/dev_con/cloud-dev-common:prod')
 METADATA_IMAGE = DEFAULT_REGISTRY + '/google_appengine/faux-metadata:latest'
