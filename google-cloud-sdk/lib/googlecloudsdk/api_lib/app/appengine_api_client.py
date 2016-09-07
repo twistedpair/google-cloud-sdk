@@ -16,7 +16,6 @@
 import json
 
 from apitools.base.py import encoding
-from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
@@ -44,16 +43,18 @@ class AppengineApiClient(object):
     return self.client.MESSAGES_MODULE
 
   def GetApplication(self):
-    """Retrieves the application resource."""
+    """Retrieves the application resource.
+
+    Returns:
+      An app resource representing the project's app.
+
+    Raises:
+      googlecloudsdk.api_lib.app.exceptions.NotFoundError if app doens't exist
+    """
     request = self.messages.AppengineAppsGetRequest(
         name=self._FormatApp(app_id=self.project),
         ensureResourcesExist=True)
-    try:
-      return requests.MakeRequest(self.client.apps.Get, request)
-    except calliope_exceptions.HttpException as e:
-      if e.status_code == 404:
-        raise exceptions.AppNotFoundError()
-      raise  # re-raise
+    return requests.MakeRequest(self.client.apps.Get, request)
 
   def CreateApp(self, location):
     """Creates an App Engine app within the current cloud project.
@@ -63,6 +64,10 @@ class AppengineApiClient(object):
 
     Args:
       location: str, The location (region) of the app, i.e. "us-central"
+
+    Raises:
+      googlecloudsdk.api_lib.app.exceptions.ConflictError if app already exists
+
     Returns:
       A long running operation.
     """
@@ -79,7 +84,8 @@ class AppengineApiClient(object):
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
   def DeployService(
-      self, service_name, version_id, service_config, manifest, image):
+      self, service_name, version_id, service_config, manifest, image,
+      endpoints_info=None):
     """Updates and deploys new app versions based on given config.
 
     Args:
@@ -90,11 +96,14 @@ class AppengineApiClient(object):
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
       image: The name of the container image.
+      endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
+        to the AppInfoExternal configuration. Only provided when Endpoints API
+        Management feature is enabled.
     Returns:
       A Version resource representing the deployed version.
     """
-    version_resource = self._CreateVersionResource(service_config, manifest,
-                                                   version_id, image)
+    version_resource = self._CreateVersionResource(
+        service_config, manifest, version_id, image, endpoints_info)
     create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
         name=self._FormatService(app_id=self.project,
                                  service_name=service_name),
@@ -412,9 +421,11 @@ class AppengineApiClient(object):
         delete_request)
     return operations.WaitForOperation(self.client.apps_operations, operation)
 
-  def _CreateVersionResource(self, service_config, manifest, version_id, image):
+  def _CreateVersionResource(
+      self, service_config, manifest, version_id, image, endpoints_info):
     """Constructs a Version resource for deployment."""
     appinfo = service_config.parsed
+
     # TODO(b/29453752): Remove when we want to stop supporting module
     if appinfo.module:
       appinfo.service = appinfo.module
@@ -440,6 +451,25 @@ class AppengineApiClient(object):
       json_version_resource['deployment']['container'] = {'image': image}
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
+
+    # In the JSON representation, BetaSettings are a dict of key-value pairs.
+    # In the Message representation, BetaSettings are an ordered array of
+    # key-value pairs. Sort the key-value pairs here, so that unit testing is
+    # possible.
+    if 'betaSettings' in json_version_resource:
+      json_dict = json_version_resource.get('betaSettings')
+      # TODO(b/29993301): Move Endpoints settings up from beta_settings into a
+      # top level configuration section of messages.Version
+      if json_dict and endpoints_info:
+        json_dict['endpoints_service_name'] = endpoints_info.service_name
+        json_dict['endpoints_service_version'] = endpoints_info.service_version
+      attributes = []
+      for key, value in sorted(json_dict.iteritems()):
+        attributes.append(
+            self.messages.Version.BetaSettingsValue.AdditionalProperty(
+                key=key, value=value))
+      version_resource.betaSettings = self.messages.Version.BetaSettingsValue(
+          additionalProperties=attributes)
 
     # Add an ID for the version which is to be created.
     version_resource.id = version_id

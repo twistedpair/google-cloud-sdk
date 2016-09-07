@@ -36,3 +36,10 @@ class Region(object):
         standard = True
 
     return cls(region_id, standard, flex)
+
+  def __str__(self):
+    envs = (x[1] for x in
+            [(self.standard, 'standard'), (self.flexible, 'flexible')] if x[0])
+    return '{region: <13} (supports {envs})'.format(region=self.region,
+                                                    envs=' and '.join(envs))
+

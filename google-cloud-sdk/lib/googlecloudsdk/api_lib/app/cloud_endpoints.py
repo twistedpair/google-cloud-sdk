@@ -26,6 +26,14 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 
 
+class EndpointsServiceInfo(object):
+  """Container class for holding Endpoints service information."""
+
+  def __init__(self, service_name, service_version):
+    self.service_name = service_name
+    self.service_version = service_version
+
+
 class SwaggerOpenException(exceptions.Error):
 
   def __init__(self, message):
@@ -45,7 +53,7 @@ def _GetErrorMessage(error):
   return content_obj.get('error', {}).get('message', '')
 
 
-def ProcessEndpointsService(service, project):
+def ProcessEndpointsService(service, project, client=None, messages=None):
   """Pushes service configs to the Endpoints handler.
 
   First, this method checks each service in the list of services to see
@@ -54,7 +62,19 @@ def ProcessEndpointsService(service, project):
   Args:
     service: ServiceYamlInfo, The service being deployed.
     project: The name of the GCP project.
+    client: The Service Management API client to use.
+    messages: The Service Management API messages module to use.
+
+  Returns:
+    EndpointsServiceInfo: an instance of EndpointsServiceInfo that contains the
+      Endpoints service name and service version that is processed.
   """
+  # lazy load the API library and client to make unit testing feasible.
+  if not client:
+    client = apis.GetClientInstance('servicemanagement', 'v1')
+  if not messages:
+    messages = apis.GetMessagesModule('servicemanagement', 'v1')
+
   if service and service.parsed and service.parsed.beta_settings:
     bs = service.parsed.beta_settings
     use_endpoints = bs.get('use_endpoints_api_management', '').lower()
@@ -65,11 +85,9 @@ def ProcessEndpointsService(service, project):
       else:
         swagger_abs_path = os.path.normpath(os.path.join(
             os.path.dirname(service.file), swagger_file))
-      PushServiceConfig(
-          swagger_abs_path,
-          project,
-          apis.GetClientInstance('servicemanagement', 'v1'),
-          apis.GetMessagesModule('servicemanagement', 'v1'))
+      return PushServiceConfig(swagger_abs_path, project, client, messages)
+
+  return None
 
 
 def WriteServiceConfigToFile(file_path, contents):
@@ -115,7 +133,8 @@ def PushServiceConfig(swagger_file, project, client, messages):
     ValueError: if the required inputs are not provided.
 
   Returns:
-    Operation: a long running asynchronous Operation
+    EndpointsServiceInfo: an instance of EndpointsServiceInfo that contains the
+      Endpoints service name and service version that is pushed.
   """
   if not swagger_file:
     raise ValueError(
@@ -218,3 +237,6 @@ def PushServiceConfig(swagger_file, project, client, messages):
 
   # Enable the service for the producer project if it is not already enabled
   enable_api.EnableServiceIfDisabled(project, service_name, async=False)
+
+  return EndpointsServiceInfo(
+      service_name=service_name, service_version=config_id)

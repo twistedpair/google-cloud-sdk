@@ -930,7 +930,6 @@ class _SectionApiEndpointOverrides(_Section):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
     self.appengine = self._Add('appengine')
-    self.bigquery = self._Add('bigquery')
     self.bigtable = self._Add('bigtable')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.compute = self._Add('compute')

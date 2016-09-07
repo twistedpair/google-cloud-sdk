@@ -19,10 +19,16 @@ import re
 
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import times
 
 
 def _Equals(value, operand):
   """Applies string equality check to operand."""
+  # Downcase value for case insensitive match. operand is already downcased.
+  try:
+    value = value.lower()
+  except AttributeError:
+    pass
   if value == operand:
     return True
   try:
@@ -35,7 +41,17 @@ def _Equals(value, operand):
       return True
   except ValueError:
     pass
+  if value is None:
+    try:
+      return operand in ['nil', 'none', 'null']
+    except TypeError:
+      pass
   return False
+
+
+def _StripTrailingDotZeroes(number):
+  """Returns the string representation of number with trailing .0* deleted."""
+  return re.sub(r'\.0*$', '', str(float(number)))
 
 
 def _Has(value, pattern):
@@ -43,54 +59,64 @@ def _Has(value, pattern):
 
   Args:
     value: The value to be matched by pattern.
-    pattern: A (prefix, suffix) string tuple. prefix and/or suffix can be
-      omitted. String comparisons are case insensitive.
+    pattern: A list of strings of length 1 or 2. The length 1 list specifies a
+      string that must be contained by value. A length 2 list specifies a
+      [prefix, suffix] pair. prefix and/or suffix may be the empty string:
         prefix,suffix   value must start with prefix and end with suffix
-        prefix,None     value must start with prefix
-        None,suffix     value must end with suffix
-        None,None       special case to match non-empty string
+        prefix,''       value must start with prefix
+        '',suffix       value must end with suffix
+        '',''           special case to match non-empty values
 
   Returns:
     True if pattern matches value.
 
   Examples:
-    PATTERN   VALUE       MATCHES
-    abc*xyz   abcpdqxyz   True
-    abc*      abcpdqxyz   True
-    abc       abcpdqxyz   True
-    *         abcpdqxyz   True
-    *                     False (where value is empty string or None)
-    *xyz      abcpdqxyz   True
-    xyz       abcpdqxyz   False
+    EXPRESSION  PATTERN         VALUE       MATCHES
+    abc*xyz     ['abc', 'xyz']  abcpdqxyz   True
+    abc*        ['abc', '']     abcpdqxyz   True
+    abc         ['abc']         abcpdqxyz   True
+    *abc        ['', 'abc']     abcpdqxyz   False
+    pdq*        ['pdq', '']     abcpdqxyz   False
+    pdq         ['pdq']         abcpdqxyz   True
+    *pdq        ['', 'pdq']     abcpdqxyz   False
+    xyz*        ['xyz', '']     abcpdqxyz   False
+    xyz         ['xyz']         abcpdqxyz   True
+    *xyz        ['', 'xyz']     abcpdqxyz   True
+    *           ['', '']        abcpdqxyz   True
+    *           ['', '']        <''>        False
+    *           ['', '']        <None>      False
+    *           ['', '']        <non-empty> True
   """
+  # Downcase value for case insensitive match. pattern is already downcased.
   try:
     value = value.lower()
   except AttributeError:
     pass
+
+  prefix = pattern[0]
   if len(pattern) == 1:
+    # Test if value contains prefix.
     try:
-      if int(pattern[0]) == value:
-        return True
-    except ValueError:
+      return prefix in value
+    except TypeError:
       pass
     try:
-      if float(pattern[0]) == value:
-        return True
-      if str(float(pattern[0])) == str(value):
-        # Formatting gets rid of epsilon diffs, close enough for filteirng.
-        return True
-    except ValueError:
+      return _StripTrailingDotZeroes(prefix) in _StripTrailingDotZeroes(value)
+    except (TypeError, ValueError):
       pass
-    return pattern[0] == value
-  if pattern[0]:
-    if not value.startswith(pattern[0]):
-      return False
-    if not pattern[1]:
-      return True
-  if pattern[1]:
-    return value.endswith(pattern[1])
-  # key:* (empty prefix and suffix) special-cased for non-empty string match.
-  return bool(value)
+    return False
+
+  suffix = pattern[1]
+  if not prefix and not suffix:
+    # key:* (empty prefix and suffix) special-cased for non-empty string match.
+    return bool(value)
+
+  # prefix*suffix match
+  if prefix and not value.startswith(prefix):
+    return False
+  if suffix and not value.endswith(suffix):
+    return False
+  return True
 
 
 def _IsIn(matcher, value, operand):
@@ -324,15 +350,27 @@ class _ExprOperand(object):
       'true': 1,
   }
 
-  def __init__(self, backend, value):
+  def __init__(self, backend, value, normalize=None):
     self.backend = backend
     self.list_value = None
     self.numeric_value = None
     self.string_value = None
+    self.Initialize(value, normalize=normalize)
+
+  def Initialize(self, value, normalize=None):
+    """Initializes an operand string_value and numeric_value from value.
+
+    Args:
+      value: The operand expression string value.
+      normalize: Optional normalization function.
+    """
     if isinstance(value, list):
       self.list_value = []
       for val in value:
-        self.list_value.append(_ExprOperand(backend, val))
+        self.list_value.append(
+            _ExprOperand(self.backend, val, normalize=normalize))
+    elif value and normalize:
+      self.string_value = normalize(value)
     elif isinstance(value, basestring):
       self.string_value = value
       try:
@@ -358,6 +396,7 @@ class _ExprOperator(_Expr):
 
   Attributes:
     _key: Resource object key (list of str, int and/or None values).
+    _normalize: The resource value normalization function.
     _operand: The term ExprOperand operand.
     _transform: Optional key value transform calls.
   """
@@ -369,6 +408,44 @@ class _ExprOperator(_Expr):
     self._key = key
     self._operand = operand
     self._transform = transform
+    if transform:
+      self._normalize = lambda x: x
+    else:
+      self._normalize = self.InitializeNormalization
+
+  def InitializeNormalization(self, value):
+    """Checks the first non-empty resource value to see if it can be normalized.
+
+    This method is called at most once on the first non-empty resource value.
+    After that a new normalization method is set for the remainder of the
+    resource values.
+
+    Resource values are most likely well defined protobuf string encodings. The
+    RE patterns match against those.
+
+    Args:
+      value: A resource value to normalize.
+
+    Returns:
+      The normalized value.
+    """
+    self._normalize = lambda x: x
+
+    # Check for datetime. Dates may have trailing timzone indicators. We don't
+    # match them but ParseDateTime will handle them.
+    if re.match(r'\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', value):
+      try:
+        value = times.ParseDateTime(value)
+        self._operand.Initialize(
+            self._operand.list_value or self._operand.string_value,
+            normalize=times.ParseDateTime)
+        self._normalize = times.ParseDateTime
+      except ValueError:
+        pass
+
+    # More type checks go here.
+
+    return value
 
   def Evaluate(self, obj):
     """Evaluate a term node.
@@ -379,35 +456,54 @@ class _ExprOperator(_Expr):
       The value of the operator applied to the key value and operand.
     """
     value = resource_property.Get(obj, self._key)
-    if self._transform:
-      try:
-        value = self._transform.Evaluate(value)
-      except (AttributeError, TypeError, ValueError):
-        value = None
+    # Arbitrary choice: value == []  =>  values = [[]]
+    resource_values = value if value and isinstance(value, list) else [value]
+    values = []
+    for value in resource_values:
+      if value:
+        try:
+          value = self._normalize(value)
+        except (TypeError, ValueError):
+          pass
+      if self._transform:
+        try:
+          value = self._transform.Evaluate(value)
+        except (AttributeError, TypeError, ValueError):
+          value = None
+      values.append(value)
+
     if self._operand.list_value:
       operands = self._operand.list_value
     else:
       operands = [self._operand]
-    for operand in operands:
-      # Each try/except attempts a different combination of value/operand
-      # numeric and string conversions.
-      if operand.numeric_value is not None:
-        try:
-          return self.Apply(float(value), operand.numeric_value)
-        except (TypeError, ValueError):
-          pass
-      try:
-        if self.Apply(value, operand.string_value):
-          return True
-      except (AttributeError, ValueError):
-        pass
-      except TypeError:
-        if not isinstance(value, (basestring, dict, list)):
+
+    # Check for any match in all value X operand combinations.
+    for value in values:
+      for operand in operands:
+        # Each try/except attempts a different combination of value/operand
+        # numeric and string conversions.
+
+        if operand.numeric_value is not None:
           try:
-            if self.Apply(unicode(value), operand.string_value):
+            if self.Apply(float(value), operand.numeric_value):
               return True
-          except TypeError:
+            # Both value and operand are numbers - don't try as strings below.
+            continue
+          except (TypeError, ValueError):
             pass
+
+        try:
+          if self.Apply(value, operand.string_value):
+            return True
+        except (AttributeError, ValueError):
+          pass
+        except TypeError:
+          if not isinstance(value, (basestring, dict, list)):
+            try:
+              if self.Apply(unicode(value), operand.string_value):
+                return True
+            except TypeError:
+              pass
 
     return False
 
@@ -448,17 +544,17 @@ class _ExprHAS(_ExprOperator):
     if self._operand.list_value is not None:
       for operand in self._operand.list_value:
         if operand.string_value:
-          self._AddPattern(operand.string_value)
           operand.string_value = unicode(operand.string_value).lower()
+          self._AddPattern(operand.string_value)
     elif self._operand.string_value:
-      self._AddPattern(self._operand.string_value)
+      self._AddPattern(unicode(self._operand.string_value).lower())
 
   def _AddPattern(self, pattern):
     """Adds a HAS match pattern to self._patterns.
 
     The pattern is a list of strings of length 1 or 2:
-      [string]: The subject string must be equal to string ignoring case.
-      [prefix, suffix]: The subject string must start with prefix and and with
+      [string]: The subject string must contain string ignoring case.
+      [prefix, suffix]: The subject string must start with prefix and end with
         suffix ignoring case.
 
     Args:
@@ -468,11 +564,14 @@ class _ExprHAS(_ExprOperator):
       resource_exceptions.ExpressionSyntaxError if the pattern contains more
         than one * glob character.
     """
-    parts = unicode(pattern).lower().split('*')
-    if len(parts) > 2:
-      raise resource_exceptions.ExpressionSyntaxError(
-          'Zero or one * expected in : patterns.')
-    self._patterns.append(parts)
+    if '*' in pattern:
+      parts = unicode(pattern).lower().split('*')
+      if len(parts) > 2:
+        raise resource_exceptions.ExpressionSyntaxError(
+            'Zero or one * expected in : patterns.')
+      self._patterns.append(parts)
+    else:
+      self._patterns.append([pattern])
 
   def Apply(self, value, operand):
     """Checks if value HAS matches operand ignoring case differences.
@@ -494,6 +593,15 @@ class _ExprHAS(_ExprOperator):
 
 class _ExprEQ(_ExprOperator):
   """Membership equality match node."""
+
+  def __init__(self, backend, key, operand, transform):
+    super(_ExprEQ, self).__init__(backend, key, operand, transform)
+    if self._operand.list_value is not None:
+      for operand in self._operand.list_value:
+        if operand.string_value:
+          operand.string_value = unicode(operand.string_value).lower()
+    elif self._operand.string_value:
+      self._operand.string_value = unicode(self._operand.string_value).lower()
 
   def Apply(self, value, operand):
     """Checks if value is equal to operand.

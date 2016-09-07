@@ -14,29 +14,51 @@
 
 """config format resource printer."""
 
+import pipes
 import StringIO
 
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.util import platforms
 
 
 class ConfigPrinter(resource_printer_base.ResourcePrinter):
   """Prints a dictionary of dictionaries in config style.
 
   A dictionary of dictionaries in config style.
+
+  Printer attributes:
+    export: Display the dictionary as a list of system specific
+      environment export commands.
+    unset: Display the dictionary as a list of system specific
+      environment unset commands.
   """
 
   def __init__(self, *args, **kwargs):
     super(ConfigPrinter, self).__init__(*args, retain_none_values=True,
                                         **kwargs)
+    if 'export' in self.attributes:
+      self._add_items = self._PrintEnvExport
+      if platforms.OperatingSystem.IsWindows():
+        self._env_command_format = u'set {name}={value}\n'
+      else:
+        self._env_command_format = u'export {name}={value}\n'
+    elif 'unset' in self.attributes:
+      self._add_items = self._PrintEnvUnset
+      if platforms.OperatingSystem.IsWindows():
+        self._env_command_format = u'set {name}=\n'
+      else:
+        self._env_command_format = u'unset {name}\n'
+    else:
+      self._add_items = self._PrintConfig
     # Print the title if specified.
     if 'title' in self.attributes:
       self._out.write(self.attributes['title'] + u'\n')
 
-  def _AddCategory(self, out, label, items):
-    """Prints items in the label category to out.
+  def _PrintCategory(self, out, label, items):
+    """Prints config items in the label category.
 
     Args:
-      out: The output stream.
+      out: The output stream for this category.
       label: A list of label strings.
       items: The items to list for label, either dict iteritems, an enumerated
         list, or a scalar value.
@@ -47,14 +69,14 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       name = unicode(name)
       try:
         values = value.iteritems()
-        self._AddCategory(sub, label + [name], values)
+        self._PrintCategory(sub, label + [name], values)
         continue
       except AttributeError:
         pass
       if value is None:
         top.write(u'{name} (unset)\n'.format(name=name))
       elif isinstance(value, list):
-        self._AddCategory(sub, label + [name], enumerate(value))
+        self._PrintCategory(sub, label + [name], enumerate(value))
       else:
         top.write(u'{name} = {value}\n'.format(name=name, value=value))
     top_content = top.getvalue()
@@ -67,8 +89,35 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
     if sub_content:
       out.write(sub_content)
 
+  def _PrintConfig(self, items):
+    """Prints config items in the root category.
+
+    Args:
+      items: The current record dict iteritems from _AddRecord().
+    """
+    self._PrintCategory(self._out, [], items)
+
+  def _PrintEnvExport(self, items):
+    """Prints the environment export commands for items.
+
+    Args:
+      items: The current record dict iteritems from _AddRecord().
+    """
+    for name, value in sorted(items):
+      self._out.write(self._env_command_format.format(
+          name=name, value=pipes.quote(value)))
+
+  def _PrintEnvUnset(self, items):
+    """Prints the environment unset commands for items.
+
+    Args:
+      items: The current record dict iteritems from _AddRecord().
+    """
+    for name, _ in sorted(items):
+      self._out.write(self._env_command_format.format(name=name))
+
   def _AddRecord(self, record, delimit=False):
-    """Prints the given record to self._out in config style.
+    """Dispatches to the specific config printer.
 
     Nothing is printed if the record is not a JSON-serializable dict.
 
@@ -77,7 +126,6 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       delimit: Ignored.
     """
     try:
-      values = record.iteritems()
-      self._AddCategory(self._out, [], values)
+      self._add_items(record.iteritems())
     except AttributeError:
       pass

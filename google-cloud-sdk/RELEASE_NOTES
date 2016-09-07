@@ -2,6 +2,53 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 125.0.0 (2016/09/07)
+
+### Google BigQuery
+
+* `gcloud alpha bigquery` is no longer available.  To use BigQuery, use the `bq`
+  tool shipped with the Cloud SDK.
+
+### Google Compute Engine
+
+* Add support to change the default service account on a Compute Engine project
+  (alpha release) via the following command:
+  `gcloud alpha compute project-info set-default-service-account`
+
+* Support multiple network interface cards in
+  `gcloud alpha compute instances create` command.
+
+* Add `gcloud alpha compute instances set-scopes` command.
+
+### Google Container Engine
+
+* Update kubectl to version 1.3.6.
+
+### Google Container Repository
+
+* Released bug fixes for docker-credential-gcr as v1.0.1, please rerun
+  `docker-credential-gcr configure-docker` after updating.
+
+### Google Cloud Logging
+
+* `gcloud logging create` and `gcloud logging update` echo back the writer
+  identity associated with the sink.
+
+### Google Cloud Dataflow
+
+* The Dataflow CLI is now in Beta.
+
+### Google Cloud Deployment Manager
+
+* `gcloud deployment-manager manifests describe` with no manifest specified will
+  show the latest manifest of the given deployment.
+
+### Emulators
+
+* `gcloud beta emulators datastore start` now defaults to the new version of the
+  emulator which supports Cloud Datastore API v1 and v1beta3 over gRPC,
+  proto-over-HTTP, and JSON-over-HTTP.
+
 ## 124.0.0 (2016/08/31)
 
 ### Breaking Changes
@@ -2318,7 +2365,7 @@ command surface.
 
 ## 0.9.28 (2014/07/18)
 
-*   Updated gcutil to 1.16.3 and various AppEngine runtimes to 1.9.7 binaries.
+*   Updated gcutil to 1.16.3 and various App Engine runtimes to 1.9.7 binaries.
 *   Support running several modules by gcloud app run and fixed output errors.
 *   Limit gcloud upgrade nags to once per day.
 *   Bring help files up to date (for example improved the documentation for DM

@@ -81,6 +81,8 @@ class Pager(object):
 
   Hit any key to continue:"""
 
+  PREV_POS_NXT_REPRINT = -1, -1
+
   def __init__(self, contents, out=None, prompt=None):
     """Constructor.
 
@@ -94,6 +96,8 @@ class Pager(object):
     self._search_pattern = None
     self._search_direction = None
 
+    # prev_pos, prev_next values to force reprint
+    self.prev_pos, self.prev_nxt = self.PREV_POS_NXT_REPRINT
     # Initialize the console attributes.
     self._attr = console_attr.GetConsoleAttr(out=out)
     self._width, self._height = self._attr.GetTermSize()
@@ -160,6 +164,8 @@ class Pager(object):
       self._out.write(self._contents)
       return
 
+    # We will not always reset previous values.
+    reset_prev_values = True
     # Save room for the prompt at the bottom of the page.
     self._height -= 1
 
@@ -171,12 +177,22 @@ class Pager(object):
       if nxt > len(self._lines):
         nxt = len(self._lines)
         pos = nxt - self._height
-      self._out.write('\n'.join(self._lines[pos:nxt]) + '\n')
+      # Checks if the starting position is in between the current printed lines
+      # so we don't need to reprint all the lines.
+      if self.prev_pos < pos < self.prev_nxt:
+        # we start where the previous page ended.
+        self._out.write('\n'.join(self._lines[self.prev_nxt:nxt]) + '\n')
+      elif pos != self.prev_pos and nxt != self.prev_nxt:
+        self._out.write('\n'.join(self._lines[pos:nxt]) + '\n')
 
       # Handle the prompt response.
       percent = self._prompt.format(percent=100 * nxt / len(self._lines))
       digits = ''
       while True:
+        # We want to reset prev values if we just exited out of the while loop
+        if reset_prev_values:
+          self.prev_pos, self.prev_nxt = pos, nxt
+          reset_prev_values = False
         self._out.write(percent)
         c = self._attr.GetRawKey()
         self._out.write(self._clear)
@@ -233,6 +249,8 @@ class Pager(object):
             nxt = 0
         elif c == 'h':
           self._Help()
+          # Special case when we want to reprint the previous display.
+          self.prev_pos, self.prev_nxt = self.PREV_POS_NXT_REPRINT
           nxt = pos
           break
         elif c in ('<DOWN-ARROW>', 'j', '+', '\n', '\r'):
@@ -265,5 +283,8 @@ class Pager(object):
           # Silently ignore everything else.
           continue
         if nxt != pos:
+          # We will exit the while loop because position changed so we can reset
+          # prev values.
+          reset_prev_values = True
           break
       pos = nxt

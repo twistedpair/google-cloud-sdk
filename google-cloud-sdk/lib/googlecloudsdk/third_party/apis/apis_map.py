@@ -117,6 +117,11 @@ MAP = {
         'v1beta1': APIDef(
             client_classpath='googlecloudsdk.third_party.apis.cloudfunctions.v1beta1.cloudfunctions_v1beta1_client.CloudfunctionsV1beta1',
             messages_modulepath='googlecloudsdk.third_party.apis.cloudfunctions.v1beta1.cloudfunctions_v1beta1_messages',
+            default_version=False
+        ),
+        'v1beta2': APIDef(
+            client_classpath='googlecloudsdk.third_party.apis.cloudfunctions.v1beta2.cloudfunctions_v1beta2_client.CloudfunctionsV1beta2',
+            messages_modulepath='googlecloudsdk.third_party.apis.cloudfunctions.v1beta2.cloudfunctions_v1beta2_messages',
             default_version=True
         ),
     },

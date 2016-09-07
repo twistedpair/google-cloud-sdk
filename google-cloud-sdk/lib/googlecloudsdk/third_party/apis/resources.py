@@ -188,6 +188,20 @@ class Collections(enum.Enum):
       'projects.regions.functions',
       'projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
       [u'projectsId', u'regionsId', u'functionsId'])
+  CLOUDFUNCTIONS_V1BETA2_OPERATIONS = (
+      'cloudfunctions',
+      'v1beta2',
+      'https://cloudfunctions.googleapis.com/v1beta2/',
+      'operations',
+      'operations/{operationsId}',
+      [u'operationsId'])
+  CLOUDFUNCTIONS_V1BETA2_PROJECTS_LOCATIONS_FUNCTIONS = (
+      'cloudfunctions',
+      'v1beta2',
+      'https://cloudfunctions.googleapis.com/v1beta2/',
+      'projects.locations.functions',
+      'projects/{projectsId}/locations/{locationsId}/functions/{functionsId}',
+      [u'projectsId', u'locationsId', u'functionsId'])
   CLOUDRESOURCEMANAGER_V1BETA1_ORGANIZATIONS = (
       'cloudresourcemanager',
       'v1beta1',

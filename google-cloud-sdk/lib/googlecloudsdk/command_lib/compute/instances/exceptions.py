@@ -11,23 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-"""This module holds exceptions raised by api lib."""
-
-from googlecloudsdk.core import exceptions
+"""Flags and helpers for the compute VM instances commands."""
+from googlecloudsdk.calliope import exceptions
 
 
-class NotFoundError(exceptions.Error):
-  """Raised when the requested resource does not exist."""
+class ScopesWithoutServiceAccountException(exceptions.ToolException):
   pass
 
 
-class ConflictError(exceptions.Error):
-  """Raised when a new resource already exists."""
+class ResourceMissingException(exceptions.ToolException):
   pass
-
-
-STATUS_CODE_TO_ERROR = {
-    404: NotFoundError,
-    409: ConflictError
-}

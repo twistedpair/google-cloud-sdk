@@ -218,32 +218,36 @@ def UseSsl(handlers):
   return appinfo.SECURE_HTTP
 
 
-def GetAppHostname(app_id, service=None, version=None,
+def GetAppHostname(app=None, app_id=None, service=None, version=None,
                    use_ssl=appinfo.SECURE_HTTP):
   """Returns the hostname of the given version of the deployed app.
 
   Args:
-    app_id: str, project ID.
+    app: Application resource. One of {app, app_id} must be given.
+    app_id: str, project ID. One of {app, app_id} must be given. If both are
+      provided, the hostname from app is preferred.
     service: str, the (optional) service being deployed
     version: str, the deployed version ID (omit to get the default version URL).
     use_ssl: bool, whether to construct an HTTPS URL.
+
   Returns:
     str. Constructed URL.
+
   Raises:
-    googlecloudsdk.core.exceptions.Error: if an invalid app_id is supplied.
+    TypeError: if neither an app nor an app_id is provided
   """
-  if not app_id:
-    msg = 'Must provide a valid app ID to construct a hostname.'
-    raise exceptions.Error(msg)
+  if not app and not app_id:
+    raise TypeError('Must provide an application resource or application ID.')
   version = version or ''
   service = service or ''
   if service == DEFAULT_SERVICE:
     service = ''
 
   domain = DEFAULT_DOMAIN
-  if ':' in app_id:
+  if not app and ':' in app_id:
     api_client = appengine_api_client.GetApiClient()
     app = api_client.GetApplication()
+  if app:
     app_id, domain = app.defaultHostname.split('.', 1)
 
   if service == DEFAULT_SERVICE:

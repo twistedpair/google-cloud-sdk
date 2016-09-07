@@ -64,7 +64,7 @@ Left-factorized BNF Grammar:
   function  := < name in symbol table >
   name      := < resource identifier name >
   operand   := < token terminated by <space> |
-               '(' operand ... ')' |        # for the :, = operators only
+               '(' operand ... ')' |        # for the : and = operators only
                <EndOfInput> >
   integer   := < positive or negative integer >
 
@@ -292,7 +292,8 @@ class _Parser(object):
     if (operator in (self._backend.ExprEQ, self._backend.ExprHAS) and
         self._lex.IsCharacter('(')):
       # List valued operand.
-      operand = self._lex.Args(separators=' \t\n,')
+      operand = [arg for arg in self._lex.Args(separators=' \t\n,')
+                 if arg not in self._LOGICAL]
     else:
       operand = self._lex.Token('()')
     if operand is None:

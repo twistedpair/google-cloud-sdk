@@ -20,6 +20,8 @@ import sys
 import time
 import urllib2
 
+import enum
+
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -259,6 +261,17 @@ def GetUserAgent():
   product_tokens.append('Python/%s' % python_version)
 
   return ' '.join(product_tokens)
+
+
+class Environment(enum.Enum):
+  """Enum for different application environments.
+
+  FLEXIBLE corresponds to any App Engine Flexible Environment applications;
+  STANDARD corresponds to App Engine Standard applications.
+  """
+
+  FLEXIBLE = 1
+  STANDARD = 2
 
 
 def IsFlex(env):

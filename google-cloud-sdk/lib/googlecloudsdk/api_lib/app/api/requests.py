@@ -19,10 +19,9 @@ import io
 import json
 
 from apitools.base.py import exceptions as apitools_exceptions
-
+from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.resource import resource_printer
-
 import httplib2
 
 
@@ -60,8 +59,11 @@ def MakeRequest(service_method, request_message):
   try:
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
-    error_json = _ExtractErrorJsonFromHttpError(error)
     status_code = int(error.response['status'])
+    err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(status_code)
+    if err:
+      raise err()
+    error_json = _ExtractErrorJsonFromHttpError(error)
     raise exceptions.HttpException(ExtractErrorMessage(error_json), status_code)
   except httplib2.HttpLib2Error as error:
     raise exceptions.HttpException('Response error: %s' % error.message)

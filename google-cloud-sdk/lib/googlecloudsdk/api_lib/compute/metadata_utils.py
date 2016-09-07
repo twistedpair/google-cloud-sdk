@@ -118,7 +118,7 @@ def RemoveEntries(message_classes, existing_metadata,
   return new_metadata_message
 
 
-def AddMetadataArgs(parser):
+def AddMetadataArgs(parser, required=False):
   """Adds --metadata and --metadata-from-file flags."""
   metadata = parser.add_argument(
       '--metadata',
@@ -150,6 +150,10 @@ def AddMetadataArgs(parser):
       the script contents are pulled from a publicly-accessible
       location on the web.
       """
+  if required:
+    metadata.detailed_help += """\n
+      At least one of [--metadata] or [--metadata-from-file] is required.
+      """
 
   metadata_from_file = parser.add_argument(
       '--metadata-from-file',
@@ -162,4 +166,8 @@ def AddMetadataArgs(parser):
       Same as ``--metadata'' except that the value for the entry will
       be read from a local file. This is useful for values that are
       too large such as ``startup-script'' contents.
+      """
+  if required:
+    metadata_from_file.detailed_help += """\n
+      At least one of [--metadata] or [--metadata-from-file] is required.
       """

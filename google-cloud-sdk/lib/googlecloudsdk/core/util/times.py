@@ -307,7 +307,7 @@ def ParseDateTime(string, tzinfo=None):
   except ValueError as e:
     try:
       # Check if its an iso_duration string.
-      dt = ParseDuration(string).RelativeDatetime(Now(tzinfo=tzinfo))
+      dt = ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
     except ValueError:
       # Raise the datetime parse error.
       raise e

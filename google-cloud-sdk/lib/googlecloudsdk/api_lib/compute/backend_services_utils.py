@@ -30,9 +30,7 @@ def IsRegionDefaultModeWarnOtherwise(print_warning=True):
     if print_warning:
       log.warn(
           'In the future, backend services will be regional by default unless '
-          'the --global flag is specified. To use this behavior now, set '
-          'core/default_regional_backend_service to true in the active '
-          'configuration.')
+          'the --global flag is specified.')
     return False
 
   return default_regional

@@ -1348,7 +1348,7 @@ class BaseMetadataAdder(ReadWriteCommand):
 
   @staticmethod
   def Args(parser):
-    metadata_utils.AddMetadataArgs(parser)
+    metadata_utils.AddMetadataArgs(parser, required=True)
 
   def Modify(self, args, existing):
     new_object = copy.deepcopy(existing)

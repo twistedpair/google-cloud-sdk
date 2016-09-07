@@ -36,6 +36,7 @@ Example:
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import config_printer
 from googlecloudsdk.core.resource import csv_printer
+from googlecloudsdk.core.resource import diff_printer
 from googlecloudsdk.core.resource import flattened_printer
 from googlecloudsdk.core.resource import json_printer
 from googlecloudsdk.core.resource import list_printer
@@ -126,6 +127,7 @@ _FORMATTERS = {
     'config': config_printer.ConfigPrinter,
     'csv': csv_printer.CsvPrinter,
     'default': DefaultPrinter,
+    'diff': diff_printer.DiffPrinter,
     'flattened': flattened_printer.FlattenedPrinter,
     'json': json_printer.JsonPrinter,
     'list': list_printer.ListPrinter,

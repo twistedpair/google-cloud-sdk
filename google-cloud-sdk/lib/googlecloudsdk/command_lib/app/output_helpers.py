@@ -37,10 +37,12 @@ RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
                         'the runtime field in [{0}] must be set to custom.')
 
 
-def DisplayProposedDeployment(project, app_config, version, promote):
+def DisplayProposedDeployment(app, project, app_config, version, promote):
   """Prints the details of the proposed deployment.
 
   Args:
+    app: Application resource for the current application (required if any
+      services are deployed, otherwise ignored).
     project: The name of the current project.
     app_config: yaml_parsing.AppConfigSet, The configurations being deployed.
     version: The version identifier of the application to be deployed.
@@ -56,6 +58,8 @@ def DisplayProposedDeployment(project, app_config, version, promote):
   deployed_urls = {}
 
   if app_config.Services():
+    if app is None:
+      raise TypeError('If services are deployed, must provide `app` parameter.')
     deploy_messages = []
     for service, info in app_config.Services().iteritems():
       use_ssl = deploy_command_util.UseSsl(info.parsed.handlers)
@@ -63,13 +67,13 @@ def DisplayProposedDeployment(project, app_config, version, promote):
           project=project, service=service, version=version, file=info.file)
 
       url = deploy_command_util.GetAppHostname(
-          project, service=info.module, version=None if promote else version,
+          app=app, service=info.module, version=None if promote else version,
           use_ssl=use_ssl)
       deployed_urls[service] = url
       deploy_message += DEPLOYED_URL_TEMPLATE.format(url=url)
       if not promote:
         default_url = deploy_command_util.GetAppHostname(
-            project, service=info.module, use_ssl=use_ssl)
+            app=app, service=info.module, use_ssl=use_ssl)
         deploy_message += PROMOTE_MESSAGE_TEMPLATE.format(
             default_url=default_url)
       deploy_messages.append(deploy_message)

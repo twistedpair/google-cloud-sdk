@@ -497,7 +497,8 @@ class ProgressTracker(object):
     self._done = False
     self._lock = threading.Lock()
     self._detail_message_callback = detail_message_callback
-    self._last_message_size = 0
+    self._multi_line = False
+    self._last_display_message = ''
     self._tick_delay = tick_delay
     self._is_tty = IsInteractive(output=True, error=True)
 
@@ -538,19 +539,62 @@ class ProgressTracker(object):
     return self._done
 
   def _Print(self, message=''):
-    """Reprints the prefix followed by an optional message."""
+    """Reprints the prefix followed by an optional message.
+
+    If there is a multiline message, we print the full message and every
+    time the Prefix Message is the same, we only reprint the last line to
+    account for a different 'message'. If there is a new message, we print
+    on a new line.
+
+    Args:
+      message: str, suffix of message
+    """
     display_message = self._GetPrefix()
-    if message:
+    console_width = console_attr.ConsoleAttr().GetTermSize()[0]
+    # The whole message will fit in the current console width and the previous
+    # line was not a multiline display so we can overwrite.
+    # If the previous and current messages are same we have multiline display
+    # so we only need the portion of text to rewrite on current line.
+    if ((len(display_message + message) <= console_width and not
+         self._multi_line) or display_message == self._last_display_message):
+      self._last_display_message = display_message
+      start_place = len(display_message) - (len(display_message)
+                                            % console_width)
+      if display_message:
+        display_message += message
+      # If size of the message is a multiple of the console_width, this will
+      # cause start place to begin at len(display_message) so we index the
+      # message from the end.
+      if start_place == 0:
+        start_place = -(console_width + len(message))
+      current_message = display_message[start_place:]
+      # We clear the current display and reprint the last line.
+      sys.stderr.write('\r' + console_width * ' ')
+      sys.stderr.write('\r' + current_message)
+    # If we have to do multiline display or a new message.
+    else:
+      # If we have written something to the console before the new message,
+      # cursor will be at the end of the line so we need to go to the next line.
+      # If we are printing for the first time, the cursor will already be at
+      # a new line.
+      sys.stderr.write('\n' if self._last_display_message else '')
+      self._last_display_message = display_message
       display_message += message
-
-    # This is to clear the display buffer, otherwise it would display the
-    # trailing parts of the previous line
-    if self._last_message_size > 0:
-      sys.stderr.write('\r' + self._last_message_size * ' ')
-    self._last_message_size = len(display_message)
-
-    sys.stderr.write('\r' + display_message)
-    sys.stderr.flush()
+      # We may or may not use multiline display
+      while display_message:
+        current_printing_message = display_message[:console_width]
+        display_message = display_message[console_width:]
+        # We print a new line if there is more to print in display_message.
+        sys.stderr.write(current_printing_message + ('\n' if display_message
+                                                     else ''))
+        # If there is still more to print, we will be using multiline display
+        # for future printing. We will not  want to erase the last line
+        # if a new line is able to fit in the whole console (first if).
+        # If self.multi_line was already True, we do not want to make it
+        # False
+        self._multi_line = (True if display_message or
+                            self._multi_line else False)
+        sys.stderr.flush()
 
   def __exit__(self, ex_type, unused_value, unused_traceback):
     with self._lock:

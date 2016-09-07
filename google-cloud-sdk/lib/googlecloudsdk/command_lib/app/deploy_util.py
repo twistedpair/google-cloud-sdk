@@ -143,8 +143,10 @@ class ServiceDeployer(object):
     # The cloud_endpoints handler calls the Service Management APIs and
     # creates an endpoints/service.json file on disk which will need to
     # be bundled into the app Docker image.
+    endpoints_info = None
     if self.deploy_options.enable_endpoints:
-      cloud_endpoints.ProcessEndpointsService(service, new_version.project)
+      endpoints_info = cloud_endpoints.ProcessEndpointsService(
+          service, new_version.project)
 
     # Build and Push the Docker image if necessary for this service.
     if service.RequiresImage():
@@ -162,7 +164,7 @@ class ServiceDeployer(object):
     message = 'Updating service [{service}]'.format(service=new_version.service)
     with console_io.ProgressTracker(message):
       self.api_client.DeployService(new_version.service, new_version.id,
-                                    service, manifest, image)
+                                    service, manifest, image, endpoints_info)
       metrics.CustomTimedEvent(metric_names.DEPLOY_API)
       if self.deploy_options.promote:
         try:
@@ -263,19 +265,19 @@ def RunDeploy(unused_self, args, enable_endpoints=False):
   ac_client = appengine_client.AppengineClient(
       args.server, args.ignore_bad_certs)
 
-  # Tell the user what is going to happen, and ask them to confirm.
-  deployed_urls = output_helpers.DisplayProposedDeployment(
-      project, app_config, version_id, deploy_options.promote)
-  console_io.PromptContinue(cancel_on_no=True)
-
-  # Do generic app setup if deploying any services.
+  app = None
   if services:
     try:
-      # TODO(b/31064052): Do this before displaying the proposed deployment and
-      # reuse the default hostname from the app
       app = api_client.GetApplication()
-    except api_lib_exceptions.AppNotFoundError:
+    except api_lib_exceptions.NotFoundError:
       raise exceptions.MissingApplicationError(project)
+
+  # Tell the user what is going to happen, and ask them to confirm.
+  deployed_urls = output_helpers.DisplayProposedDeployment(
+      app, project, app_config, version_id, deploy_options.promote)
+  console_io.PromptContinue(cancel_on_no=True)
+  if services:
+    # Do generic app setup if deploying any services.
     # All deployment paths for a service involve uploading source to GCS.
     code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
     metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
@@ -306,19 +308,41 @@ def RunDeploy(unused_self, args, enable_endpoints=False):
     with console_io.ProgressTracker(message):
       ac_client.UpdateConfig(name, config.parsed)
 
-  PrintPostDeployHints(new_versions)
+  updated_configs = app_config.Configs().keys()
+
+  PrintPostDeployHints(new_versions, updated_configs)
 
   # Return all the things that were deployed.
   return {
       'versions': new_versions,
-      'configs': app_config.Configs().keys()
+      'configs': updated_configs
   }
 
 
 # TODO(b/30632016): Move to Epilog() when we have a good way to pass
 # information about the deployed versions
-def PrintPostDeployHints(new_versions):
+def PrintPostDeployHints(new_versions, updated_configs):
   """Print hints for user at the end of a deployment."""
+  if yaml_parsing.ConfigYamlInfo.CRON in updated_configs:
+    log.status.Print('\nCron jobs have been updated.')
+    if yaml_parsing.ConfigYamlInfo.QUEUE not in updated_configs:
+      log.status.Print('\nThe Cloud Platform Console Task Queues page has a '
+                       'tab that shows the tasks that are running cron jobs.')
+  if yaml_parsing.ConfigYamlInfo.DISPATCH in updated_configs:
+    log.status.Print('\nCustom routings have been updated.')
+  if yaml_parsing.ConfigYamlInfo.DOS in updated_configs:
+    log.status.Print('\nDoS protection has been updated.'
+                     '\n\nTo delete all blacklist entries, change the dos.yaml '
+                     'file to just contain:'
+                     '\n    blacklist:'
+                     'and redeploy it.')
+  if yaml_parsing.ConfigYamlInfo.QUEUE in updated_configs:
+    log.status.Print('\nTask queues have been updated.')
+    log.status.Print('\nThe Cloud Platform Console Task Queues page has a tab '
+                     'that shows the tasks that are running cron jobs.')
+  if yaml_parsing.ConfigYamlInfo.INDEX in updated_configs:
+    log.status.Print('\nIndexes are being rebuilt. This may take a moment.')
+
   if not new_versions:
     return
   elif len(new_versions) > 1:
@@ -332,7 +356,5 @@ def PrintPostDeployHints(new_versions):
       '\nYou can read logs from the command line by running:\n'
       '  $ gcloud app logs read')
   log.status.Print(
-      'To view your application in the web browser run:\n'
+      '\nTo view your application in the web browser run:\n'
       '  $ gcloud app browse' + service_hint)
-
-

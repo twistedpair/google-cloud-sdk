@@ -282,16 +282,16 @@ class Duration(object):
         amount = [sign]
         if c == 'Y':
           self.years += number
+        elif c == 'W':
+          self.days += number * 7
+        elif c == 'D':
+          self.days += number
         elif c == 'M' and not t_implied:
           t_implied = True
           self.months += number
         else:
           t_implied = True
-          if c == 'W':
-            self.days += number * 7
-          elif c == 'D':
-            self.days += number
-          elif c == 'H':
+          if c == 'H':
             self.hours += number
           elif c == 'M':
             self.minutes += number
@@ -452,13 +452,13 @@ class Duration(object):
       minute += _MINUTES_PER_HOUR
       hour -= 1
 
-    hour += self.hours
-    if hour >= _HOURS_PER_DAY:
-      hour -= _HOURS_PER_DAY
-      day += 1
-    elif hour < 0:
+    # Non-calendar hours can be > 23 so we normalize here.
+    carry = int((hour + self.hours) / float(_HOURS_PER_DAY))
+    hour += self.hours - carry * _HOURS_PER_DAY
+    if hour < 0:
       hour += _HOURS_PER_DAY
-      day -= 1
+      carry -= 1
+    day += carry
 
     # Adjust the year before days and months because of irregular months.
     month += self.months

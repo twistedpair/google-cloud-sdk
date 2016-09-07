@@ -462,6 +462,120 @@ def AddPrivateNetworkIpArgs(parser):
       """
 
 
+def AddServiceAccountAndScopeArgs(parser):
+  """Add args for configuring service account and scopes.
+
+  This should replace AddScopeArgs (b/30802231).
+
+  Args:
+    parser: ArgumentParser, parser to which flags will be added.
+  """
+  service_account_group = parser.add_mutually_exclusive_group()
+  service_account_group.add_argument(
+      '--no-service-account', action='store_true',
+      help='Remove service account from the instance')
+
+  service_account = service_account_group.add_argument(
+      '--service-account',
+      help='Service account and scopes for the instances')
+  service_account.detailed_help = """\
+  A service account is an identity attached to the instance. Its access tokens
+  can be accessed through the instance metadata server and are used to
+  authenticate applications on the instance. The account can be either an email
+  address or an alias corresponding to a service account. If account is omitted,
+  the project's default service account is used. The default service account can
+  be specified explicitly by using the alias default.
+
+  If not provided instance will keep the service account it currently has.
+  """
+
+  scopes_group = parser.add_mutually_exclusive_group()
+  scopes_group.add_argument(
+      '--no-scopes', action='store_true',
+      help='Remove all scopes from the instance')
+  scopes = scopes_group.add_argument(
+      '--scopes', nargs='*', help='Scopes for the instance')
+  scopes.detailed_help = """\
+  If not provided instance will keep the scopes it currently has.
+
+  SCOPE can be either the full URI of the scope or an alias. Available
+  aliases are:
+
+    default
+      Scopes assigned to instances by default:
+      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+      - https://www.googleapis.com/auth/service.management.readonly
+      - https://www.googleapis.com/auth/servicecontrol
+
+    bigquery
+      - https://www.googleapis.com/auth/bigquery
+
+    cloud-platform
+      - https://www.googleapis.com/auth/cloud-platform
+
+    compute-ro
+      - https://www.googleapis.com/auth/compute.readonly
+
+    compute-rw
+      - https://www.googleapis.com/auth/compute
+
+    datastore
+      - https://www.googleapis.com/auth/datastore
+
+    logging-write
+      - https://www.googleapis.com/auth/logging.write
+
+    monitoring
+      - https://www.googleapis.com/auth/monitoring
+
+    monitoring-write
+      - https://www.googleapis.com/auth/monitoring.write
+
+    service-control
+      - https://www.googleapis.com/auth/servicecontrol
+
+    service-management
+      - https://www.googleapis.com/auth/service.management.readonly
+
+    sql
+      - https://www.googleapis.com/auth/sqlservice
+
+    sql-admin
+      - https://www.googleapis.com/auth/sqlservice.admin
+
+    storage-full
+      - https://www.googleapis.com/auth/devstorage.full_control
+
+    storage-ro
+      - https://www.googleapis.com/auth/devstorage.read_only
+
+    storage-rw
+      - https://www.googleapis.com/auth/devstorage.read_write
+
+    taskqueue
+      - https://www.googleapis.com/auth/taskqueue
+
+    useraccounts-ro
+      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+
+    useraccounts-rw
+      - https://www.googleapis.com/auth/cloud.useraccounts
+
+    userinfo-email
+      - https://www.googleapis.com/auth/userinfo.email
+    """
+
+
+def ValidateServiceAccountAndScopeArgs(args):
+  if args.no_service_account and not args.no_scopes:
+    raise exceptions.InvalidArgumentException(
+        '--no-scopes', 'argument --no-scopes: required with argument '
+        '--no-service-account')
+
+
 def AddScopeArgs(parser):
   """Adds scope arguments for instances and instance-templates."""
   scopes_group = parser.add_mutually_exclusive_group()

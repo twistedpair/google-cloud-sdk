@@ -163,9 +163,17 @@ def Get(resource, key, default=None):
             isinstance(resource, list) and
             len(resource) and
             isinstance(resource[0], dict)):
-          # Let the next iteration check for a meta dict.
-          meta = index
-          continue
+          if i + 1 < len(key):
+            # There will be at least one more loop iteration.
+            # Let the next iteration check for a meta dict.
+            meta = index
+            continue
+          # This is the last loop iteration. If we fell through the index would
+          # be ignored and the resource would be returned (incorrect). Instead
+          # we return the list of non-None index values from the list of dicts.
+          # See resource_property_test.PropertyGetTest.testGetLastDictSlice for
+          # an example.
+          return filter(None, [d.get(index) for d in resource]) or default
         # Index mismatch.
         return default
       elif index in xrange(-len(resource), len(resource)):

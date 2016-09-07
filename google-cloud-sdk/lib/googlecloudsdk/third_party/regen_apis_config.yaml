@@ -75,6 +75,9 @@ apis:
   cloudfunctions:
     v1beta1:
       discovery_doc: cloudfunctions_v1beta1.json
+    v1beta2:
+      discovery_doc: cloudfunctions_v1beta2.json
+      default: true
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json

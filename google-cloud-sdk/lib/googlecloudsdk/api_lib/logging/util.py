@@ -33,6 +33,8 @@ class TypedLogSink(object):
     filter: present in both versions.
     format: format of exported entries, only present in V2 sinks.
     type: one-of log/service/project.
+    writer_identity: identity that needs to be granted write access
+        to the destination, only present in V2 sinks.
   """
 
   def __init__(self, sink, log_name=None, service_name=None):
@@ -59,6 +61,11 @@ class TypedLogSink(object):
       self.format = sink.outputVersionFormat.name
     else:
       self.format = 'V1'
+    # Get sink writer identity
+    if hasattr(sink, 'writerIdentity'):
+      self.writer_identity = sink.writerIdentity
+    else:
+      self.writer_identity = ''
 
 
 def CheckSinksCommandArguments(args):
@@ -181,20 +188,26 @@ def ExtractLogId(log_resource):
   return log_id.replace('%2F', '/')
 
 
-def PrintPermissionInstructions(destination):
+def PrintPermissionInstructions(destination, writer_identity):
   """Prints a message to remind the user to set up permissions for a sink.
 
   Args:
     destination: the sink destination (either bigquery or cloud storage).
+    writer_identity: identity to which to grant write access.
   """
+  if writer_identity:
+    grantee = '`{0}`'.format(writer_identity)
+  else:
+    grantee = 'the group `cloud-logs@google.com`'
+
   if destination.startswith('bigquery'):
-    sdk_log.Print('Please remember to grant the group `cloud-logs@google.com` '
-                  'the WRITER role on the dataset.')
+    sdk_log.Print('Please remember to grant {0} '
+                  'the WRITER role on the dataset.'.format(grantee))
   elif destination.startswith('storage'):
-    sdk_log.Print('Please remember to grant the group `cloud-logs@google.com` '
-                  'full-control access to the bucket.')
+    sdk_log.Print('Please remember to grant {0} '
+                  'full-control access to the bucket.'.format(grantee))
   elif destination.startswith('pubsub'):
-    sdk_log.Print('Please remember to grant the group `cloud-logs@google.com` '
-                  'EDIT permission to the project.')
+    sdk_log.Print('Please remember to grant {0} '
+                  'EDIT permission to the project.'.format(grantee))
   sdk_log.Print('More information about sinks can be found at '
                 'https://cloud.google.com/logging/docs/export/configure_export')

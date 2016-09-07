@@ -285,6 +285,28 @@ class RemoteCompletion(object):
     return self._GetAllMatchesFromCache(prefix, fpath, options,
                                         increment_counters)
 
+  def _SetFlagsIfNotDefaultValue(self, flagname, value):
+    """Sets the flags attribute if the given flag value is not the default.
+
+    The value of the flags attribute should be a string that represents a valid
+    command fragment that contains a flag and optionally its value. For example:
+    ' --zone my-zone' or ' --region my-region' or ' --global'. This fragment is
+    suffixed to completion options returned by _GetAllMatchesFromCache.
+
+    Args:
+      flagname: Name of the flag (one of the values in _RESOURCE_FLAGS).
+      value: The value for the specified flag.
+    """
+    if (flagname is _RESOURCE_FLAGS['compute.zones'] and
+        value == properties.VALUES.compute.zone.Get(required=False)):
+      return
+
+    if (flagname is _RESOURCE_FLAGS['compute.regions'] and
+        value == properties.VALUES.compute.region.Get(required=False)):
+      return
+
+    self.flags = flagname + value
+
   def _GetAllMatchesFromCache(self, prefix, fpath, options, increment_counters):
     """Return a list of names matching fpath.
 
@@ -309,7 +331,7 @@ class RemoteCompletion(object):
         return options
       flagname = _RESOURCE_FLAGS[items[index+2] + '.' + items[-2]]
       for name in os.listdir(lst[0]):
-        self.flags = flagname + name
+        self._SetFlagsIfNotDefaultValue(flagname, name)
         fpath = lst[0] + name + lst[1]
         # make sure that the data in this path is still valid
         if os.path.isfile(fpath) and os.path.getmtime(fpath) > time.time():

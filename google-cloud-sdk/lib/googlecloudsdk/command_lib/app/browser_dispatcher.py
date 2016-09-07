@@ -43,6 +43,7 @@ def BrowseApp(project, service=None, version=None):
     version: str, (optional) specific version, defaults to latest
   """
   url = deploy_command_util.GetAppHostname(
-      project, service, version, use_ssl=appinfo.SECURE_HTTPS)
+      app_id=project, service=service, version=version,
+      use_ssl=appinfo.SECURE_HTTPS)
   OpenURL(url)
 

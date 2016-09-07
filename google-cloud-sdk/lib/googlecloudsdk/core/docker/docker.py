@@ -114,7 +114,14 @@ def _ReadFullDockerConfiguration():
   """
   path, new_format = GetDockerConfig()
   with open(path, 'r') as reader:
-    return json.loads(reader.read()), new_format
+    contents = reader.read()
+    # If the file is empty, return empty JSON.
+    # This helps if someone 'touched' the file or manually deleted the contents.
+    if not contents or contents.isspace():
+      return {}, new_format
+
+    # If there is some content, try to decode and return JSON
+    return json.loads(contents), new_format
 
 
 def _CredentialHelperConfigured():

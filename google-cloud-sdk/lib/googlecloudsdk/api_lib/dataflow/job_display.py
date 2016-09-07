@@ -15,7 +15,8 @@
 """Facility for displaying information about a Job message to a user.
 """
 
-from googlecloudsdk.api_lib.dataflow import time_util
+from googlecloudsdk.api_lib.dataflow import apis
+from googlecloudsdk.command_lib.dataflow import time_util
 
 
 class DisplayInfo(object):
@@ -30,11 +31,11 @@ class DisplayInfo(object):
     stateTime: in the form yyyy-mm-dd hh:mm:ss
   """
 
-  def __init__(self, job, dataflow_messages):
+  def __init__(self, job):
     self.id = job.id
     self.name = job.name
-    self.type = DisplayInfo._JobTypeForJob(job.type, dataflow_messages)
-    self.state = DisplayInfo._StatusForJob(job.currentState, dataflow_messages)
+    self.type = DisplayInfo._JobTypeForJob(job.type)
+    self.state = DisplayInfo._StatusForJob(job.currentState)
 
     # We ignore these errors to make the field names more consistent across
     # commands using the --filter argument. This is because most commands are
@@ -50,16 +51,15 @@ class DisplayInfo(object):
     # pylint: enable=invalid-name
 
   @staticmethod
-  def _JobTypeForJob(job_type, dataflow_messages):
+  def _JobTypeForJob(job_type):
     """Return a string describing the job type.
 
     Args:
       job_type: The job type enum
-      dataflow_messages: dataflow_messages package
     Returns:
       string describing the job type
     """
-    type_value_enum = dataflow_messages.Job.TypeValueValuesEnum
+    type_value_enum = apis.GetMessagesModule().Job.TypeValueValuesEnum
     value_map = {
         type_value_enum.JOB_TYPE_BATCH: 'Batch',
         type_value_enum.JOB_TYPE_STREAMING: 'Streaming',
@@ -67,16 +67,15 @@ class DisplayInfo(object):
     return value_map.get(job_type, 'Unknown')
 
   @staticmethod
-  def _StatusForJob(job_state, dataflow_messages):
+  def _StatusForJob(job_state):
     """Return a string describing the job state.
 
     Args:
       job_state: The job state enum
-      dataflow_messages: dataflow_messages package
     Returns:
       string describing the job state
     """
-    state_value_enum = dataflow_messages.Job.CurrentStateValueValuesEnum
+    state_value_enum = apis.GetMessagesModule().Job.CurrentStateValueValuesEnum
     value_map = {
         state_value_enum.JOB_STATE_CANCELLED: 'Cancelled',
         state_value_enum.JOB_STATE_DONE: 'Done',
