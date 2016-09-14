@@ -194,6 +194,37 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
         supports_download=False,
     )
 
+    def Imagereview(self, request, global_params=None):
+      """Processes a request to verify the container image. If unverified, a reason.
+is also provided. The ImageReviewResponse also contains fields from the
+ImageReviewRequest. The server is expected to only fill in the
+ImageReviewResponse.Status. This is due to how the ImageReview types are
+defined for the Kubernetes webhook image review:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsZonesImagereviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImageReviewResponse) The response message.
+      """
+      config = self.GetMethodConfig('Imagereview')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Imagereview.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.zones.imagereview',
+        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview',
+        request_field=u'imageReviewRequest',
+        request_type_name=u'ContainerMasterProjectsZonesImagereviewRequest',
+        response_type_name=u'ImageReviewResponse',
+        supports_download=False,
+    )
+
   class MasterProjectsService(base_api.BaseApiService):
     """Service class for the masterProjects resource."""
 

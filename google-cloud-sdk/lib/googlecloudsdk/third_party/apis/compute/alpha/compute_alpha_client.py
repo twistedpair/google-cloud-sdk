@@ -5200,7 +5200,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -5252,7 +5252,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a autoscaler in the specified project using the data included in the request.
+      """Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersUpdateRequest) input message
@@ -5864,7 +5864,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Get(self, request, global_params=None):
-      """Returns all of the details for the specified managed instance group.
+      """Returns all of the details about the specified managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersGetRequest) input message
@@ -6072,7 +6072,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      """Sets the instance template to use when creating new instances in this group. Existing instances are not affected.
+      """Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest) input message

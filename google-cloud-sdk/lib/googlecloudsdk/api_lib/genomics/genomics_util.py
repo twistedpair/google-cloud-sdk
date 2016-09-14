@@ -14,8 +14,6 @@
 
 """Common helper methods for Genomics commands."""
 
-import json
-import sys
 import tempfile
 
 from apitools.base.protorpclite.messages import DecodeError
@@ -67,29 +65,6 @@ def PrettyPrint(resource, print_format='json'):
       out=log.out)
 
 
-def GetError(error, verbose=False):
-  """Returns a ready-to-print string representation from the http response.
-
-  Args:
-    error: A string representing the raw json of the Http error response.
-    verbose: Whether or not to print verbose messages [default false]
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  data = json.loads(error.content)
-  if verbose:
-    PrettyPrint(data)
-  code = data['error']['code']
-  message = data['error']['message']
-  return 'ResponseError: code={0}, message={1}'.format(code, message)
-
-
-def GetErrorMessage(error):
-  content_obj = json.loads(error.content)
-  return content_obj.get('error', {}).get('message', '')
-
-
 def GetGenomicsClient(version='v1'):
   return core_apis.GetClientInstance('genomics', version)
 
@@ -98,41 +73,6 @@ def GetGenomicsMessages(version='v1'):
   return core_apis.GetMessagesModule('genomics', version)
 
 
-def ReraiseHttpExceptionPager(pager, rewrite_fn=None):
-  """Wraps an HTTP paginator and converts errors to be gcloud-friendly.
-
-  Args:
-    pager: A list or generator of a response type.
-    rewrite_fn: A function that rewrites the returned message.
-        If 'None', no rewriting will occur.
-
-  Yields:
-    A generator which raises gcloud-friendly errors, if any.
-  """
-
-  try:
-    for result in pager:
-      yield result
-  except apitools_exceptions.HttpError as error:
-    msg = GetErrorMessage(error)
-    if rewrite_fn:
-      msg = rewrite_fn(msg)
-    unused_type, unused_value, traceback = sys.exc_info()
-    raise calliope_exceptions.HttpException, msg, traceback
-
-
-def ReraiseHttpException(foo):
-  def Func(*args, **kwargs):
-    try:
-      return foo(*args, **kwargs)
-    except apitools_exceptions.HttpError as error:
-      msg = GetErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise calliope_exceptions.HttpException, msg, traceback
-  return Func
-
-
-@ReraiseHttpException
 def GetDataset(dataset_id):
   apitools_client = GetGenomicsClient()
   genomics_messages = GetGenomicsMessages()
@@ -144,7 +84,6 @@ def GetDataset(dataset_id):
   return apitools_client.datasets.Get(request)
 
 
-@ReraiseHttpException
 def GetCallSet(call_set_id):
   apitools_client = GetGenomicsClient()
   genomics_messages = GetGenomicsMessages()

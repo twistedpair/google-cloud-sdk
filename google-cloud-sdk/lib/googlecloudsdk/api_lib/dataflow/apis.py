@@ -14,7 +14,9 @@
 """Helpers for interacting with the Cloud Dataflow API.
 """
 
-from googlecloudsdk.api_lib.util import http_error_handler
+from apitools.base.py import exceptions as apitools_exceptions
+
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import properties
 
@@ -46,7 +48,6 @@ class Jobs(object):
     return GetClientInstance().projects_jobs
 
   @staticmethod
-  @http_error_handler.HandleHttpErrors
   def Get(job_id, project_id=None, view=None):
     """Calls the Dataflow Jobs.Get method.
 
@@ -61,10 +62,12 @@ class Jobs(object):
     project_id = project_id or GetProject()
     request = GetMessagesModule().DataflowProjectsJobsGetRequest(
         jobId=job_id, projectId=project_id, view=view)
-    return Jobs.GetService().Get(request)
+    try:
+      return Jobs.GetService().Get(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
 
   @staticmethod
-  @http_error_handler.HandleHttpErrors
   def Cancel(job_id, project_id=None):
     """Cancels a job by calling the Jobs.Update method.
 
@@ -79,10 +82,12 @@ class Jobs(object):
     ).Job.RequestedStateValueValuesEnum.JOB_STATE_CANCELLED))
     request = GetMessagesModule().DataflowProjectsJobsUpdateRequest(
         jobId=job_id, projectId=project_id, job=job)
-    return Jobs.GetService().Update(request)
+    try:
+      return Jobs.GetService().Update(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
 
   @staticmethod
-  @http_error_handler.HandleHttpErrors
   def Drain(job_id, project_id=None):
     """Drains a job by calling the Jobs.Update method.
 
@@ -98,7 +103,10 @@ class Jobs(object):
     ))
     request = GetMessagesModule().DataflowProjectsJobsUpdateRequest(
         jobId=job_id, projectId=project_id, job=job)
-    return Jobs.GetService().Update(request)
+    try:
+      return Jobs.GetService().Update(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
 
 
 class Metrics(object):
@@ -111,7 +119,6 @@ class Metrics(object):
     return GetClientInstance().projects_jobs
 
   @staticmethod
-  @http_error_handler.HandleHttpErrors
   def Get(job_id, project_id=None, start_time=None):
     """Calls the Dataflow Metrics.Get method.
 
@@ -126,7 +133,10 @@ class Metrics(object):
     project_id = project_id or GetProject()
     request = GetMessagesModule().DataflowProjectsJobsGetMetricsRequest(
         jobId=job_id, projectId=project_id, startTime=start_time)
-    return Metrics.GetService().GetMetrics(request)
+    try:
+      return Metrics.GetService().GetMetrics(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
 
 
 class Messages(object):
@@ -139,7 +149,6 @@ class Messages(object):
     return GetClientInstance().projects_jobs_messages
 
   @staticmethod
-  @http_error_handler.HandleHttpErrors
   def List(job_id,
            project_id=None,
            minimum_importance=None,
@@ -176,4 +185,7 @@ class Messages(object):
         minimumImportance=minimum_importance,
         pageSize=page_size,
         pageToken=page_token)
-    return Messages.GetService().List(request)
+    try:
+      return Messages.GetService().List(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)

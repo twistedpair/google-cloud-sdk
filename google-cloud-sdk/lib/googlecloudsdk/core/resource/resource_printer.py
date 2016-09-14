@@ -40,6 +40,7 @@ from googlecloudsdk.core.resource import diff_printer
 from googlecloudsdk.core.resource import flattened_printer
 from googlecloudsdk.core.resource import json_printer
 from googlecloudsdk.core.resource import list_printer
+from googlecloudsdk.core.resource import object_printer
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_spec
@@ -133,6 +134,7 @@ _FORMATTERS = {
     'list': list_printer.ListPrinter,
     'multi': MultiPrinter,
     'none': NonePrinter,
+    'object': object_printer.ObjectPrinter,
     'table': table_printer.TablePrinter,
     'text': TextPrinter,  # TODO(user): Drop this in the cleanup.
     'value': csv_printer.ValuePrinter,
@@ -186,7 +188,6 @@ Format must be one of {0}; received [{1}].
 For information on output formats:
   $ gcloud topic formats
 """.format(', '.join(SupportedFormats()), printer_name))
-  # TODO(user): move to top-level gcloud exception handler
   printer = printer_class(out=out,
                           name=printer_name,
                           printer=Printer,

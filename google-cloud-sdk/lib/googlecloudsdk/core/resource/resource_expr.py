@@ -436,9 +436,12 @@ class _ExprOperator(_Expr):
     if re.match(r'\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', value):
       try:
         value = times.ParseDateTime(value)
+        # Make sure the value and operand times are both tz aware or tz naive.
+        # Otherwise datetime comparisons will fail.
+        tzinfo = times.LOCAL if value.tzinfo else None
         self._operand.Initialize(
             self._operand.list_value or self._operand.string_value,
-            normalize=times.ParseDateTime)
+            normalize=lambda x: times.ParseDateTime(x, tzinfo))
         self._normalize = times.ParseDateTime
       except ValueError:
         pass

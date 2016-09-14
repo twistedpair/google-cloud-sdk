@@ -14,10 +14,6 @@
 
 """A library that is used to support logging commands."""
 
-import functools
-import json
-
-from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 
 from googlecloudsdk.calliope import exceptions
@@ -98,54 +94,6 @@ def FormatTimestamp(timestamp):
     A timestamp string in format, which is accepted by Cloud Logging.
   """
   return timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-
-
-def GetError(error):
-  """Returns a ready-to-print string representation from the http response.
-
-  Args:
-    error: A string representing the raw json of the Http error response.
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  status = error.response.status
-  code = error.response.reason
-  try:
-    data = json.loads(error.content)
-    message = data['error']['message']
-  except ValueError:
-    message = error.content
-  return ('ResponseError: status=%s, code=%s, message=%s'
-          % (status, code, message))
-
-
-# TODO(user): Switch to using gcloud provided methods when they are ready.
-def HandleHttpError(func):
-  """Decorator that handles http errors from methods."""
-
-  @functools.wraps(func)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
-    try:
-      return func(*args, **kwargs)
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(GetError(error))
-
-  return CatchHTTPErrorRaiseHTTPException
-
-
-def HandlePagerHttpError(func):
-  """Decorator that handles http errors, for methods that return a generator."""
-
-  @functools.wraps(func)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
-    try:
-      for result in func(*args, **kwargs):
-        yield result
-    except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(GetError(error))
-
-  return CatchHTTPErrorRaiseHTTPException
 
 
 def ConvertToJsonObject(json_string):

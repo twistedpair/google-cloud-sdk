@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-services backend commands."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log
 
@@ -63,63 +64,68 @@ def WarnOnDeprecatedFlags(args):
              ' instead. It will be removed in a future release.')
 
 
-def AddBalancingMode(parser, with_connection=False):
+def _GetBalancingModes():
+  """Returns the --balancing-modes flag value choices name:description dict."""
+  balancing_modes = {
+      'RATE': """\
+          Spreads load based on how many requests per second (RPS) the group
+          can handle. There are two ways to specify max RPS: *--max-rate* which
+          defines the max RPS for the whole group or *--max-rate-per-instance*,
+          which defines the max RPS on a per-instance basis.
+          """,
+      'UTILIZATION': """\
+          Relies on the CPU utilization of the instances in the group when
+          balancing load. Use *--max-utilization* to set a maximum target CPU
+          utilization for each instance. Use *--max-rate-per-instance* or
+          *--max-rate* to optionally limit based on RPS in addition to CPU.
+          You can optionally also limit based on connections (for TCP/SSL) in
+          addition to CPU by setting *--max-connections* or
+          *--max-connections-per-instance*.
+          """,
+      'CONNECTION': """\
+          Spreads load based on how many concurrent connections the group
+          can handle. There are two ways to specify max connections:
+          *--max-connections* which defines the max number of connections
+          for the whole group or *--max-connections-per-instance*, which
+          defines the max number of connections on a per-instance basis.
+          """,
+  }
+  return balancing_modes
+
+
+def AddBalancingMode(parser):
   """Add balancing mode arguments."""
   balancing_mode = parser.add_argument(
       '--balancing-mode',
-      choices=(['RATE', 'UTILIZATION', 'CONNECTION'] if with_connection
-               else ['RATE', 'UTILIZATION']),
+      choices=_GetBalancingModes(),
       type=lambda x: x.upper(),
       help='Defines the strategy for balancing load.')
   balancing_mode.detailed_help = """\
-      Defines the strategy for balancing load. ``UTILIZATION'' will
-      rely on the CPU utilization of the instances in the group when
-      balancing load. When using ``UTILIZATION'',
-      ``--max-utilization'' can be used to set a maximum target CPU
-      utilization for each instance. ``RATE'' will spread load based on
-      how many requests per second (RPS) the group can handle. There
-      are two ways to specify max RPS: ``--max-rate'' which defines
-      the max RPS for the whole group or ``--max-rate-per-instance'',
-      which defines the max RPS on a per-instance basis.
+    Defines the strategy for balancing load.
 
-      In ``UTILIZATION'', you can optionally limit based on RPS in
-      addition to CPU by setting either ``--max-rate-per-instance'' or
-      ``--max-rate''.
-      """
-  if with_connection:
-    balancing_mode.detailed_help += """\
+    *RATE* and the max rate arguments are available only
+    in backend services with HTTP based protocols.
 
-      (BETA) ``RATE'' and the max rate arguments are availbale only
-      in backend services with HTTP based protocols.
+    For backend services with TCP/SSL protocol either *UTILIZATION* or
+    *CONNECTION* are available.
 
-      For backend services with TCP/SSL protocol either ``UTILIZATION'' or
-      ``CONNECTION'' are available. ``CONNECTION'' will spread load based
-      on how many concurrent connections the group can handle. There are two
-      ways to specify max connections: ``--max-connections'' which defines
-      the max number of connections for the whole group or
-      ``--max-connections-per-instance'', which defines the max number of
-      connections on a per-instance basis.
-
-      In ``UTILIZATION'', you can optionally also limit based on connections
-      (for TCP/SSL) in addition to CPU by setting ``--max-connections'' or
-      ``--max-connections-per-instance''.
       """
 
 
 def AddMaxUtilization(parser):
   max_utilization = parser.add_argument(
       '--max-utilization',
-      type=float,
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help=('The target CPU utilization of the group as a '
             'float in the range [0.0, 1.0].'))
   max_utilization.detailed_help = """\
       The target CPU utilization for the group as a float in the range
       [0.0, 1.0]. This flag can only be provided when the balancing
-      mode is ``UTILIZATION''.
+      mode is *UTILIZATION*.
       """
 
 
-def AddCapacityLimits(parser, with_connection=False):
+def AddCapacityLimits(parser):
   """Add capacity thresholds arguments."""
   AddMaxUtilization(parser)
   capacity_group = parser.add_mutually_exclusive_group()
@@ -134,27 +140,26 @@ def AddCapacityLimits(parser, with_connection=False):
       type=float,
       help='The maximum per-instance requests per second (RPS).')
 
-  if with_connection:
-    capacity_group.add_argument(
-        '--max-connections',
-        type=int,
-        help='Maximum concurrent connections that the group can handle.')
+  capacity_group.add_argument(
+      '--max-connections',
+      type=int,
+      help='Maximum concurrent connections that the group can handle.')
 
-    capacity_group.add_argument(
-        '--max-connections-per-instance',
-        type=int,
-        help='The maximum concurrent connections per-instance.')
+  capacity_group.add_argument(
+      '--max-connections-per-instance',
+      type=int,
+      help='The maximum concurrent connections per-instance.')
 
 
 def AddCapacityScalar(parser):
   capacity_scaler = parser.add_argument(
       '--capacity-scaler',
-      type=float,
-      help=('A float in the range [0, 1.0] that scales the maximum '
-            'parameters for the group (e.g., max rate).'))
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help=('A float in the range [0.0, 1.0] that scales the maximum '
+            'parameters for the group (e.g., max rate). The default is 1.0.'))
   capacity_scaler.detailed_help = """\
-      A float in the range [0, 1.0] that scales the maximum
+      A float in the range [0.0, 1.0] that scales the maximum
       parameters for the group (e.g., max rate). A value of 0.0 will
       cause no requests to be sent to the group (i.e., it adds the
-      group in a ``drained'' state). The default is 1.0.
+      group in a ``drained'' state).
       """

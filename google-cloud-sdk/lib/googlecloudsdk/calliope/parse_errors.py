@@ -36,6 +36,26 @@ class ParsingCommandException(ArgparseException):
   pass
 
 
-class ParsingArgumentException(ArgparseException):
-  """ParsingArgumentException is for parsing problems with the arguments."""
+class TooFewArgumentsException(ArgparseException):
+  """Argparse didn't use all the Positional objects."""
+  pass
+
+
+class RequiredArgumentException(ArgparseException):
+  """Arparse required actions were not all present."""
+  pass
+
+
+class RequiredArgumentGroupException(ArgparseException):
+  """Command has a group of arguments with none of the options present."""
+  pass
+
+
+class UnrecognizedArguments(ArgparseException):
+  """User entered arguments that were not recognized by argparse."""
+  pass
+
+
+class OtherParsingError(ArgparseException):
+  """Some other parsing error that is not any of the above."""
   pass

@@ -16,6 +16,10 @@ class AccessConfig(_messages.Message):
   one access config per instance is supported.
 
   Enums:
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this access configuration and can only take the following
+      values: PREMIUM , STANDARD. If this field is not specified, it is
+      assumed to be PREMIUM.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -28,9 +32,24 @@ class AccessConfig(_messages.Message):
       field undefined to use an IP from a shared ephemeral IP address pool. If
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
+    networkTier: This signifies the networking tier used for configuring this
+      access configuration and can only take the following values: PREMIUM ,
+      STANDARD. If this field is not specified, it is assumed to be PREMIUM.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this access
+    configuration and can only take the following values: PREMIUM , STANDARD.
+    If this field is not specified, it is assumed to be PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -44,13 +63,17 @@ class AccessConfig(_messages.Message):
   kind = _messages.StringField(1, default=u'compute#accessConfig')
   name = _messages.StringField(2)
   natIP = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4, default=u'ONE_TO_ONE_NAT')
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5, default=u'ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this Address and can only take the following values: PREMIUM
+      , STANDARD. If this field is not specified, it is assumed to be PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
       reserved and available to use. An IN_USE address is currently being used
@@ -73,6 +96,9 @@ class Address(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    networkTier: This signifies the networking tier used for configuring this
+      Address and can only take the following values: PREMIUM , STANDARD. If
+      this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -83,6 +109,18 @@ class Address(_messages.Message):
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this Address
+    and can only take the following values: PREMIUM , STANDARD. If this field
+    is not specified, it is assumed to be PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be either IN_USE or
@@ -103,10 +141,11 @@ class Address(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#address')
   name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  users = _messages.StringField(10, repeated=True)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  users = _messages.StringField(11, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -283,6 +322,25 @@ class AddressesScopedList(_messages.Message):
 
   addresses = _messages.MessageField('Address', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class AliasIpRange(_messages.Message):
+  """An alias IP range attached to an instance's network interface.
+
+  Fields:
+    ipCidrRange: The IP CIDR range represented by this alias IP range. This IP
+      CIDR range must belong to the specified subnetwork and cannot contain IP
+      addresses reserved by system or used by other network interfaces. This
+      range may be a single IP address (e.g. 10.2.3.4), a netmask (e.g. /24)
+      or a CIDR format string (e.g. 10.1.2.0/24).
+    subnetworkRangeName: Optional subnetwork secondary range name specifying
+      the secondary range from which to allocate the IP CIDR range for this
+      alias IP range. If left unspecified, the primary range of the subnetwork
+      will be used.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  subnetworkRangeName = _messages.StringField(2)
 
 
 class AttachedDisk(_messages.Message):
@@ -523,9 +581,8 @@ class Autoscaler(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the autoscaler configuration.
     statusDetails: [Output Only] Human-readable details about the current
-      state of the autoscaler. Examples: ?Error when fetching replicas:
-      Replica Pool xxx doesn?t exist.? ?Autoscaling capped at
-      min_num_replicas: 2.?
+      state of the autoscaler. Read the documentation for Commonly returned
+      status messages for examples of status messages you might encounter.
     target: URL of the managed instance group that this autoscaler will scale.
     zone: [Output Only] URL of the zone where the instance group resides (for
       autoscalers living in zonal scope).
@@ -639,15 +696,15 @@ class AutoscalerStatusDetails(_messages.Message):
   """A AutoscalerStatusDetails object.
 
   Enums:
-    TypeValueValuesEnum:
+    TypeValueValuesEnum: The type of error returned.
 
   Fields:
-    message: A string attribute.
-    type: A TypeValueValuesEnum attribute.
+    message: The status message.
+    type: The type of error returned.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """TypeValueValuesEnum enum type.
+    """The type of error returned.
 
     Values:
       ALL_INSTANCES_UNHEALTHY: <no description>
@@ -845,30 +902,30 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
 
   Enums:
     UtilizationTargetTypeValueValuesEnum: Defines how target utilization value
-      is expressed for a Cloud Monitoring metric. Either GAUGE,
+      is expressed for a Stackdriver Monitoring metric. Either GAUGE,
       DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is
       GAUGE.
 
   Fields:
-    metric: The identifier of the Cloud Monitoring metric. The metric cannot
-      have negative values and should be a utilization metric, which means
-      that the number of virtual machines handling requests should increase or
-      decrease proportionally to the metric. The metric must also have a label
-      of compute.googleapis.com/resource_id with the value of the instance's
-      unique ID, although this alone does not guarantee that the metric is
-      valid.  For example, the following is a valid metric:
-      compute.googleapis.com/instance/network/received_bytes_count   The
+    metric: The identifier of the Stackdriver Monitoring metric. The metric
+      cannot have negative values and should be a utilization metric, which
+      means that the number of virtual machines handling requests should
+      increase or decrease proportionally to the metric. The metric must also
+      have a label of compute.googleapis.com/resource_id with the value of the
+      instance's unique ID, although this alone does not guarantee that the
+      metric is valid.  For example, the following is a valid metric:
+      compute.googleapis.com/instance/network/received_bytes_count The
       following is not a valid metric because it does not increase or decrease
       based on usage: compute.googleapis.com/instance/cpu/reserved_cores
     utilizationTarget: Target value of the metric which autoscaler should
       maintain. Must be a positive value.
     utilizationTargetType: Defines how target utilization value is expressed
-      for a Cloud Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
+      for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
       DELTA_PER_MINUTE. If not specified, the default is GAUGE.
   """
 
   class UtilizationTargetTypeValueValuesEnum(_messages.Enum):
-    """Defines how target utilization value is expressed for a Cloud
+    """Defines how target utilization value is expressed for a Stackdriver
     Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If
     not specified, the default is GAUGE.
 
@@ -1108,6 +1165,7 @@ class BackendService(_messages.Message):
       INTERNAL, this field is not used.
     backendSslPolicy: Backend SSL policies to enforce.
     backends: The list of backends that serve this BackendService.
+    cdnPolicy: A BackendServiceCdnPolicy attribute.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -1214,24 +1272,25 @@ class BackendService(_messages.Message):
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backendSslPolicy = _messages.MessageField('BackendSSLPolicy', 2)
   backends = _messages.MessageField('Backend', 3, repeated=True)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  enableCDN = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  healthChecks = _messages.StringField(9, repeated=True)
-  iaap = _messages.MessageField('BackendServiceIAAP', 10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(16)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
-  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 4)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 5)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  enableCDN = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  healthChecks = _messages.StringField(10, repeated=True)
+  iaap = _messages.MessageField('BackendServiceIAAP', 11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
+  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -1280,6 +1339,16 @@ class BackendServiceAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#backendServiceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class BackendServiceCdnPolicy(_messages.Message):
+  """Message containing Cloud CDN configuration for a backend service.
+
+  Fields:
+    cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+  """
+
+  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -1468,6 +1537,36 @@ class CacheInvalidationRule(_messages.Message):
 
   host = _messages.StringField(1)
   path = _messages.StringField(2)
+
+
+class CacheKeyPolicy(_messages.Message):
+  """Message containing what to include in the cache key for a request for
+  Cloud CDN.
+
+  Fields:
+    includeHost: If true, requests to different hosts will be cached
+      separately.
+    includeProtocol: If true, http and https requests will be cached
+      separately.
+    includeQueryString: If true, include query string parameters in the cache
+      key according to query_string_whitelist and query_string_blacklist. If
+      neither is set, the entire query string will be included. If false, the
+      query string will be excluded from the cache key entirely.
+    queryStringBlacklist: Names of query string parameters to exclude in cache
+      keys. All other parameters will be included. Either specify
+      query_string_whitelist or query_string_blacklist, not both. ?&? and ?=?
+      will be percent encoded and not treated as delimiters.
+    queryStringWhitelist: Names of query string parameters to include in cache
+      keys. All other parameters will be excluded. Either specify
+      query_string_whitelist or query_string_blacklist, not both. ?&? and ?=?
+      will be percent encoded and not treated as delimiters.
+  """
+
+  includeHost = _messages.BooleanField(1)
+  includeProtocol = _messages.BooleanField(2)
+  includeQueryString = _messages.BooleanField(3)
+  queryStringBlacklist = _messages.StringField(4, repeated=True)
+  queryStringWhitelist = _messages.StringField(5, repeated=True)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -9514,15 +9613,8 @@ class DisksScopedList(_messages.Message):
 class Firewall(_messages.Message):
   """Represents a Firewall resource.
 
-  Enums:
-    DirectionValueValuesEnum: Direction of traffic to which this firewall
-      applies; default is INGRESS. Note: For INGRESS traffic, it is NOT
-      supported to specify destinationRanges; For EGRESS traffic, it is NOT
-      supported to specify sourceRanges OR sourceTags.
-
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
-    DeniedValueListEntry: A DeniedValueListEntry object.
 
   Fields:
     allowed: The list of ALLOW rules specified by this firewall. Each rule
@@ -9530,18 +9622,8 @@ class Firewall(_messages.Message):
       connection.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    denied: The list of DENY rules specified by this firewall. Each rule
-      specifies a protocol and port-range tuple that describes a permitted
-      connection.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    destinationRanges: If destination ranges are specified, the firewall will
-      apply only to traffic that has destination IP address in these ranges.
-      These ranges must be expressed in CIDR format.
-    direction: Direction of traffic to which this firewall applies; default is
-      INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
-      destinationRanges; For EGRESS traffic, it is NOT supported to specify
-      sourceRanges OR sourceTags.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Ony] Type of the resource. Always compute#firewall for
@@ -9561,12 +9643,6 @@ class Firewall(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/myproject/global/networks
       /my-network  - projects/myproject/global/networks/my-network  -
       global/networks/default
-    priority: Priority for this rule. This is an integer between 0 and 65535,
-      both inclusive. When not specified, the value assumed is 1000. Relative
-      priorities determine precedence of conflicting rules. Lower value of
-      priority implies higher precedence (eg, a rule with priority 0 has
-      higher precedence than a rule with priority 1). DENY rules take
-      precedence over ALLOW rules having equal priority.
     selfLink: [Output Only] Server-defined URL for the resource.
     sourceRanges: If source ranges are specified, the firewall will apply only
       to traffic that has source IP address in these ranges. These ranges must
@@ -9590,19 +9666,6 @@ class Firewall(_messages.Message):
       all instances on the specified network.
   """
 
-  class DirectionValueValuesEnum(_messages.Enum):
-    """Direction of traffic to which this firewall applies; default is
-    INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
-    destinationRanges; For EGRESS traffic, it is NOT supported to specify
-    sourceRanges OR sourceTags.
-
-    Values:
-      EGRESS: <no description>
-      INGRESS: <no description>
-    """
-    EGRESS = 0
-    INGRESS = 1
-
   class AllowedValueListEntry(_messages.Message):
     """A AllowedValueListEntry object.
 
@@ -9621,39 +9684,17 @@ class Firewall(_messages.Message):
     IPProtocol = _messages.StringField(1)
     ports = _messages.StringField(2, repeated=True)
 
-  class DeniedValueListEntry(_messages.Message):
-    """A DeniedValueListEntry object.
-
-    Fields:
-      IPProtocol: The IP protocol to which this rule applies. The protocol
-        type is required when creating a firewall rule. This value can either
-        be one of the following well known protocol strings (tcp, udp, icmp,
-        esp, ah, sctp), or the IP protocol number.
-      ports: An optional list of ports to which this rule applies. This field
-        is only applicable for UDP or TCP protocol. Each entry must be either
-        an integer or a range. If not specified, this rule applies to
-        connections through any port.  Example inputs include: ["22"],
-        ["80","443"], and ["12345-12349"].
-    """
-
-    IPProtocol = _messages.StringField(1)
-    ports = _messages.StringField(2, repeated=True)
-
   allowed = _messages.MessageField('AllowedValueListEntry', 1, repeated=True)
   creationTimestamp = _messages.StringField(2)
-  denied = _messages.MessageField('DeniedValueListEntry', 3, repeated=True)
-  description = _messages.StringField(4)
-  destinationRanges = _messages.StringField(5, repeated=True)
-  direction = _messages.EnumField('DirectionValueValuesEnum', 6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#firewall')
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(12)
-  sourceRanges = _messages.StringField(13, repeated=True)
-  sourceTags = _messages.StringField(14, repeated=True)
-  targetTags = _messages.StringField(15, repeated=True)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#firewall')
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  sourceRanges = _messages.StringField(9, repeated=True)
+  sourceTags = _messages.StringField(10, repeated=True)
+  targetTags = _messages.StringField(11, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -9711,6 +9752,10 @@ class ForwardingRule(_messages.Message):
       Network Load Balancing (TCP, UDP). The value of EXTERNAL means that this
       will be used for External Load Balancing (HTTP(S) LB, External TCP/UDP
       LB, SSL Proxy)
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this load balancer and can only take the following values:
+      PREMIUM , STANDARD. If this field is not specified, it is assumed to be
+      PREMIUM.
 
   Fields:
     IPAddress: The IP address that this forwarding rule is serving on behalf
@@ -9764,6 +9809,9 @@ class ForwardingRule(_messages.Message):
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
+    networkTier: This signifies the networking tier used for configuring this
+      load balancer and can only take the following values: PREMIUM ,
+      STANDARD. If this field is not specified, it is assumed to be PREMIUM.
     portRange: Applicable only when IPProtocol is TCP, UDP, or SCTP, only
       packets addressed to ports in the specified range will be forwarded to
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
@@ -9829,6 +9877,18 @@ class ForwardingRule(_messages.Message):
     INTERNAL = 1
     INVALID = 2
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this load
+    balancer and can only take the following values: PREMIUM , STANDARD. If
+    this field is not specified, it is assumed to be PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   backendService = _messages.StringField(3)
@@ -9841,12 +9901,13 @@ class ForwardingRule(_messages.Message):
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 10)
   name = _messages.StringField(11)
   network = _messages.StringField(12)
-  portRange = _messages.StringField(13)
-  ports = _messages.StringField(14, repeated=True)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  subnetwork = _messages.StringField(17)
-  target = _messages.StringField(18)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 13)
+  portRange = _messages.StringField(14)
+  ports = _messages.StringField(15, repeated=True)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  subnetwork = _messages.StringField(18)
+  target = _messages.StringField(19)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -10108,9 +10169,11 @@ class GuestOsFeature(_messages.Message):
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
+      WINDOWS: <no description>
     """
     FEATURE_TYPE_UNSPECIFIED = 0
     VIRTIO_SCSI_MULTIQUEUE = 1
+    WINDOWS = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -10285,6 +10348,7 @@ class HealthCheck(_messages.Message):
       HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
+    udpHealthCheck: A UDPHealthCheck attribute.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
   """
@@ -10302,6 +10366,7 @@ class HealthCheck(_messages.Message):
       INVALID: <no description>
       SSL: <no description>
       TCP: <no description>
+      UDP: <no description>
     """
     HTTP = 0
     HTTP2 = 1
@@ -10309,6 +10374,7 @@ class HealthCheck(_messages.Message):
     INVALID = 3
     SSL = 4
     TCP = 5
+    UDP = 6
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
@@ -10325,7 +10391,8 @@ class HealthCheck(_messages.Message):
   tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
   timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   type = _messages.EnumField('TypeValueValuesEnum', 15)
-  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 16)
+  unhealthyThreshold = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -11011,8 +11078,8 @@ class InstanceGroup(_messages.Message):
     fingerprint: [Output Only] The fingerprint of the named ports. The system
       uses this fingerprint to detect conflicts when multiple users change the
       named ports concurrently.
-    id: [Output Only] A unique identifier for this instance group. The server
-      generates this identifier.
+    id: [Output Only] A unique identifier for this instance group, generated
+      by the server.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroup for instance groups.
     name: The name of the instance group. The name must be 1-63 characters
@@ -12887,6 +12954,8 @@ class NetworkInterface(_messages.Message):
       only one access config, ONE_TO_ONE_NAT, is supported. If there are no
       accessConfigs specified, then this instance will have no external
       internet access.
+    aliasIpRanges: An array of alias IP ranges for this network interface. Can
+      only be specified for network interfaces on subnet-mode networks.
     name: [Output Only] The name of the network interface, generated by the
       server. For network devices, these are eth0, eth1, etc.
     network: URL of the network resource for this instance. This is required
@@ -12911,10 +12980,11 @@ class NetworkInterface(_messages.Message):
   """
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
-  name = _messages.StringField(2)
-  network = _messages.StringField(3)
-  networkIP = _messages.StringField(4)
-  subnetwork = _messages.StringField(5)
+  aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
+  name = _messages.StringField(3)
+  network = _messages.StringField(4)
+  networkIP = _messages.StringField(5)
+  subnetwork = _messages.StringField(6)
 
 
 class NetworkList(_messages.Message):
@@ -15039,6 +15109,10 @@ class Subnetwork(_messages.Message):
     privateIpGoogleAccess: Whether the VMs in this subnet can access Google
       services without assigned external IP addresses.
     region: URL of the region where the Subnetwork resides.
+    secondaryIpRanges: An array of configurations for secondary IP ranges for
+      VM instances contained in this subnetwork. The primary IP of such VM
+      must belong to the primary ipCidrRange of the subnetwork. The alias IPs
+      may belong to either primary or secondary ranges.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -15052,7 +15126,8 @@ class Subnetwork(_messages.Message):
   network = _messages.StringField(8)
   privateIpGoogleAccess = _messages.BooleanField(9)
   region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 11, repeated=True)
+  selfLink = _messages.StringField(12)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -15129,6 +15204,24 @@ class SubnetworkList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#subnetworkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class SubnetworkSecondaryRange(_messages.Message):
+  """Represents a secondary IP range of a subnetwork.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range. Provide this property when you create the subnetwork.
+      Ranges must be unique and non-overlapping with all primary and secondary
+      IP ranges within a network.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance. The name must be 1-63
+      characters long, and comply with RFC1035. The name must be unique within
+      the subnetwork.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
 
 
 class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
@@ -16544,6 +16637,25 @@ class TestPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UDPHealthCheck(_messages.Message):
+  """A UDPHealthCheck object.
+
+  Fields:
+    port: The UDP port number for the health check request.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    request: Raw data of request to send in payload of UDP packet. It is an
+      error if this is empty. The request data can only be ASCII.
+    response: The bytes to match against the beginning of the response data.
+      It is an error if this is empty. The response data can only be ASCII.
+  """
+
+  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(2)
+  request = _messages.StringField(3)
+  response = _messages.StringField(4)
 
 
 class UrlMap(_messages.Message):

@@ -24,6 +24,7 @@ from functools import wraps
 import os
 import sys
 
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
@@ -279,13 +280,15 @@ class InvalidCharacterInArgException(ToolException):
             _FormatNonAsciiMarkerString(args)))
 
 
-class HttpException(ToolException):
-  """HttpException is raised whenever the Http response status code != 200."""
+# TODO(user): Eventually use api_exceptions.HttpException exclusively.
+class HttpException(api_exceptions.HttpException):
+  """HttpException is raised whenever the Http response status code != 200.
 
-  def __init__(self, error, status_code=None):
-    super(HttpException, self).__init__(error)
-    self.error = error
-    self.status_code = status_code
+  See api_lib.util.exceptions.HttpException for full documentation.
+  """
+
+  def __init__(self, error, error_format='{message}'):
+    super(HttpException, self).__init__(error, error_format)
 
 
 class InvalidArgumentException(ToolException):

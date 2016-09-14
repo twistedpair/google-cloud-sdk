@@ -13,12 +13,14 @@
 # limitations under the License.
 """Common utility functions for Updater."""
 
-import json
-
 from googlecloudsdk.api_lib.compute import time_utils
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
+
+
+HTTP_ERROR_FORMAT = (
+    'ResponseError: code={status_code}, message={status_message}')
 
 
 def GetApiClientInstance():
@@ -51,24 +53,6 @@ def WaitForOperation(client, operation_ref, message):
         return True
       pt.Tick()
       time_utils.Sleep(2)
-
-
-def GetError(error, verbose=False):
-  """Returns a ready-to-print string representation from the http response.
-
-  Args:
-    error: A string representing the raw json of the Http error response.
-    verbose: Whether or not to print verbose messages [default false]
-
-  Returns:
-    A ready-to-print string representation of the error.
-  """
-  data = json.loads(error.content)
-  if verbose:
-    PrettyPrint(data)
-  code = data['error']['code']
-  message = data['error']['message']
-  return 'ResponseError: code={0}, message={1}'.format(code, message)
 
 
 def PrettyPrint(resource, print_format='json'):

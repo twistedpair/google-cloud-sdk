@@ -14,12 +14,9 @@
 """A library that is used to support Cloud Pub/Sub commands."""
 
 import abc
-import json
 import re
 
-from apitools.base.py import exceptions as api_ex
-
-from googlecloudsdk.calliope import exceptions as sdk_ex
+from googlecloudsdk.api_lib.util import exceptions as sdk_ex
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_projector
 
@@ -209,15 +206,6 @@ def SubscriptionFormat(subscription_name, project_name=''):
     form project/foo/subscriptions/subscription_name.
   """
   return SubscriptionIdentifier(subscription_name, project_name).GetFullPath()
-
-
-def MapHttpError(f):
-  def Func(*args, **kwargs):
-    try:
-      return f(*args, **kwargs)
-    except api_ex.HttpError as e:
-      raise sdk_ex.HttpException(json.loads(e.content)['error']['message'])
-  return Func
 
 
 def TopicDisplayDict(topic, error_msg=''):

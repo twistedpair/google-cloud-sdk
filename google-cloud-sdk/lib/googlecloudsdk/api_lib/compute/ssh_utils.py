@@ -518,7 +518,7 @@ class BaseSSHCommand(base_classes.BaseCommand,
           error_message='Could not fetch project resource:')
     return objects[0]
 
-  def SetProjectMetadata(self, new_metadata):
+  def _SetProjectMetadata(self, new_metadata):
     """Sets the project metadata to the new metadata."""
     compute = self.compute
 
@@ -542,7 +542,12 @@ class BaseSSHCommand(base_classes.BaseCommand,
           SetProjectMetadataError,
           error_message='Could not add SSH key to project metadata:')
 
-  def SetInstanceMetadata(self, instance, new_metadata):
+  def SetProjectMetadata(self, new_metadata):
+    """Sets the project metadata to the new metadata with progress tracker."""
+    with console_io.ProgressTracker('Updating project ssh metadata'):
+      self._SetProjectMetadata(new_metadata)
+
+  def _SetInstanceMetadata(self, instance, new_metadata):
     """Sets the project metadata to the new metadata."""
     compute = self.compute
 
@@ -568,6 +573,11 @@ class BaseSSHCommand(base_classes.BaseCommand,
       utils.RaiseToolException(
           errors,
           error_message='Could not add SSH key to instance metadata:')
+
+  def SetInstanceMetadata(self, instance, new_metadata):
+    """Sets the instance metadata to the new metadata with progress tracker."""
+    with console_io.ProgressTracker('Updating instance ssh metadata'):
+      self._SetInstanceMetadata(instance, new_metadata)
 
   def EnsureSSHKeyIsInInstance(self, user, instance, iam_keys=False):
     """Ensures that the user's public SSH key is in the instance metadata.

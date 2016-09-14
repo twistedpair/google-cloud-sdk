@@ -15,11 +15,9 @@
 """service-management enable helper functions."""
 
 from googlecloudsdk.api_lib.service_management import services_util
-from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.core import log
 
 
-@http_error_handler.HandleHttpErrors
 def EnableServiceApiCall(project_id, service_name):
   """Make API call to enable a specific API."""
 
@@ -35,7 +33,6 @@ def EnableServiceApiCall(project_id, service_name):
   return client.services.Enable(request)
 
 
-@http_error_handler.HandleHttpErrors
 def EnableServiceIfDisabled(project_id, service_name, async=False):
   """Check to see if the service is enabled, and if it is not, do so."""
 

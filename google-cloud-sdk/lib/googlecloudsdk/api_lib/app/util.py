@@ -154,8 +154,12 @@ def FileIterator(base, skip_files, separator=os.path.sep):
           dirs.append(name)
 
   if contains_skipped_modules:
-    log.warn('Some files were skipped. Check the gcloud log file or pass '
-             '`--verbosity=info` to see which ones.')
+    log.status.Print(
+        'Some files were skipped. Pass `--verbosity=info` to see which ones.')
+    log_path = log.GetLogFilePath()
+    if log_path:
+      log.status.Print(('You may also view the gcloud log file, found at\n'
+                        '[{0}].').format(log_path))
 
 
 def RetryWithBackoff(func, retry_notify_func,

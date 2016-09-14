@@ -45,9 +45,6 @@ apis:
         - appengine.apps.emailSenders.create
         - appengine.apps.services.patch
         - appengine.apps.services.versions.create
-  bigquery:
-    v2:
-      discovery_doc: bigquery_v2.json
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -73,11 +70,8 @@ apis:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
   cloudfunctions:
-    v1beta1:
-      discovery_doc: cloudfunctions_v1beta1.json
     v1beta2:
       discovery_doc: cloudfunctions_v1beta2.json
-      default: true
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json

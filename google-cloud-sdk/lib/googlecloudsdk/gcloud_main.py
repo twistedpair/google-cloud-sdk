@@ -26,14 +26,13 @@ import os
 import signal
 import sys
 
-from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
+from googlecloudsdk.command_lib import crash_handling
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import platforms
@@ -118,41 +117,6 @@ def CreateCLI(surfaces):
   return generated_cli
 
 
-def _PrintSuggestedAction(err, err_string):
-  """Print the best action for the user to take, given the error."""
-  if (isinstance(err, backend.CommandLoadFailure) and
-      type(err.root_exception) is ImportError):
-    # This usually indicates installation corruption.
-    # We do want to suggest `gcloud components reinstall` here (ex. as opposed
-    # to the similar message in gcloud.py), because there's a good chance it'll
-    # work (rather than a manual reinstall).
-    # Don't suggest `gcloud feedback`, because this is probably an
-    # installation problem.
-    log.error(
-        ('gcloud failed to load ({0}): {1}\n\n'
-         'This usually indicates corruption in your gcloud installation or '
-         'problems with your Python interpreter.\n\n'
-         'Please verify that the following is the path to a working Python 2.7 '
-         'executable:\n'
-         '    {2}\n'
-         'If it is not, please set the CLOUDSDK_PYTHON environment variable to '
-         'point to a working Python 2.7 executable.\n\n'
-         'If you are still experiencing problems, please run the following '
-         'command to reinstall:\n'
-         '    $ gcloud components reinstall\n\n'
-         'If that command fails, please reinstall the Cloud SDK using the '
-         'instructions here:\n'
-         '    https://cloud.google.com/sdk/'
-        ).format(err.command, err_string, sys.executable))
-  else:
-    log.error('gcloud crashed ({0}): {1}'.format(
-        getattr(err, 'error_name', type(err).__name__),
-        err_string))
-    log.err.Print('\nIf you would like to report this issue, please run the '
-                  'following command:')
-    log.err.Print('  gcloud feedback')
-
-
 def main(gcloud_cli=None):
   metrics.Started(START_TIME)
   # TODO(user): Put a real version number here
@@ -178,11 +142,7 @@ def main(gcloud_cli=None):
       if err.errno != errno.EPIPE:
         raise
   except Exception as err:  # pylint:disable=broad-except
-    # We want this to be parsable by `gcloud feedback`, so we print the
-    # stacktrace with a nice recognizable string
-    log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
-    _PrintSuggestedAction(err, console_attr.EncodeForOutput(err))
-
+    crash_handling.HandleGcloudCrash(err)
     if properties.VALUES.core.print_unhandled_tracebacks.GetBool():
       # We want to see the traceback as normally handled by Python
       raise

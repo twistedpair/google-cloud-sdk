@@ -21,7 +21,12 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 import ipaddr
 
-MIGRATION_OPTIONS = ['MIGRATE', 'TERMINATE']
+MIGRATION_OPTIONS = {
+    'MIGRATE': (
+        'The instances should be migrated to a new host. This will temporarily '
+        'impact the performance of instances during a migration event.'),
+    'TERMINATE': 'The instances should be terminated.',
+}
 
 LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
 
@@ -653,20 +658,12 @@ def AddNoRestartOnFailureArgs(parser):
 
 
 def AddMaintenancePolicyArgs(parser):
-  maintenance_policy = parser.add_argument(
+  parser.add_argument(
       '--maintenance-policy',
       choices=MIGRATION_OPTIONS,
       type=lambda x: x.upper(),
       help=('Specifies the behavior of the instances when their host '
-            'machines undergo maintenance.'))
-  maintenance_policy.detailed_help = """\
-      Specifies the behavior of the instances when their host machines
-      undergo maintenance. ``TERMINATE'' indicates that the instances
-      should be terminated. ``MIGRATE'' indicates that the instances
-      should be migrated to a new host. Choosing ``MIGRATE'' will
-      temporarily impact the performance of instances during a
-      migration event. If omitted, ``MIGRATE'' is assumed.
-      """
+            'machines undergo maintenance. The default is MIGRATE.'))
 
 
 def AddDockerArgs(parser):

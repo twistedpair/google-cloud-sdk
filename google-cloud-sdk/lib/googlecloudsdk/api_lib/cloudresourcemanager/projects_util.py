@@ -29,7 +29,7 @@ class DeletedResource(object):
 
 def GetMessages():
   """Import and return the appropriate projects messages module."""
-  return apis.GetMessagesModule('projects', 'v1beta1')
+  return apis.GetMessagesModule('cloudresourcemanager', 'v1beta1')
 
 
 def GetClient():
@@ -38,7 +38,7 @@ def GetClient():
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  return apis.GetClientInstance('projects', 'v1beta1')
+  return apis.GetClientInstance('cloudresourcemanager', 'v1beta1')
 
 
 def IsActive(project):

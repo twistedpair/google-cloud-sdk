@@ -16,7 +16,7 @@
 import json
 import os
 
-from googlecloudsdk.calliope import exceptions as c_exc
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.credentials import store as c_store
@@ -25,6 +25,7 @@ from googlecloudsdk.core.util import platforms
 from oauth2client import client
 from oauth2client import clientsecrets
 
+
 # Client ID from project "usable-auth-library", configured for
 # general purpose API testing
 # pylint: disable=g-line-too-long
@@ -32,6 +33,7 @@ DEFAULT_CREDENTIALS_DEFAULT_CLIENT_ID = '764086051850-6qr4p6gpi6hn506pt8ejuq83di
 DEFAULT_CREDENTIALS_DEFAULT_CLIENT_SECRET = 'd-FL95Q19q7MQmFpd7hHD0Ty'
 CLOUD_PLATFORM_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
+
 
 # A list of results for webbrowser.get().name that indicate we should not
 # attempt to open a web browser for the user.
@@ -42,6 +44,21 @@ _WEBBROWSER_NAMES_BLACKLIST = [
 # These are environment variables that can indicate a running compositor on
 # Linux.
 _DISPLAY_VARIABLES = ['DISPLAY', 'WAYLAND_DISPLAY', 'MIR_SOCKET']
+
+
+class Error(exceptions.Error):
+  """A base exception for this class."""
+  pass
+
+
+class CredentialFileSaveError(Error):
+  """An error for when we fail to save a credential file."""
+  pass
+
+
+class InvalidClientSecretsError(Error):
+  """An error for when we fail to load the client secrets file."""
+  pass
 
 
 def ShouldLaunchBrowser(launch_browser):
@@ -68,25 +85,42 @@ def ShouldLaunchBrowser(launch_browser):
   return launch_browser
 
 
-def DoInstalledAppBrowserFlow(client_id_file, scopes, launch_browser):
-  """Launches a browser to get credentials."""
+def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
+                              client_id=None, client_secret=None):
+  """Launches a browser to get credentials.
+
+  Args:
+    launch_browser: bool, True to do a browser flow, false to allow the user to
+      type in a token from a different browser.
+    scopes: [str], The list of scopes to authorize.
+    client_id_file: str, The path to a file containing the client id and secret
+      to use for the flow.  If None, the default client id for the Cloud SDK is
+      used.
+    client_id: str, An alternate client id to use.  This is ignored if you give
+      a client id file.  If None, the default client id for the Cloud SDK is
+      used.
+    client_secret: str, The secret to go along with client_id if specified.
+
+  Returns:
+    The clients obtained from the web flow.
+  """
   try:
-    if client_id_file is not None:
+    if client_id_file:
       client_type = GetClientSecretsType(client_id_file)
       if client_type != clientsecrets.TYPE_INSTALLED:
-        raise c_exc.ToolException(
+        raise InvalidClientSecretsError(
             'Only client IDs of type \'%s\' are allowed, but encountered '
             'type \'%s\'' % (clientsecrets.TYPE_INSTALLED, client_type))
-      return c_store.AcquireFromWebFlowAndClientIdFile(
-          client_id_file=client_id_file,
-          scopes=scopes,
-          launch_browser=launch_browser)
+      webflow = client.flow_from_clientsecrets(
+          filename=client_id_file,
+          scope=scopes)
+      return c_store.RunWebFlow(webflow, launch_browser=launch_browser)
     else:
       return c_store.AcquireFromWebFlow(
           launch_browser=launch_browser,
           scopes=scopes,
-          client_id=DEFAULT_CREDENTIALS_DEFAULT_CLIENT_ID,
-          client_secret=DEFAULT_CREDENTIALS_DEFAULT_CLIENT_SECRET)
+          client_id=client_id,
+          client_secret=client_secret)
   except c_store.FlowError:
     msg = 'There was a problem with web authentication.'
     if launch_browser:
@@ -108,66 +142,57 @@ def GetClientSecretsType(client_id_file):
     with open(client_id_file, 'r') as fp:
       obj = json.load(fp)
   except IOError:
-    raise clientsecrets.InvalidClientSecretsError(
+    raise InvalidClientSecretsError(
         'Cannot read file: "%s"' % client_id_file)
   if obj is None:
-    raise clientsecrets.InvalidClientSecretsError(invalid_file_format_msg)
+    raise InvalidClientSecretsError(invalid_file_format_msg)
   if len(obj) != 1:
-    raise clientsecrets.InvalidClientSecretsError(
+    raise InvalidClientSecretsError(
         invalid_file_format_msg + ' '
         'Expected a JSON object with a single property for a "web" or '
         '"installed" application')
   return tuple(obj)[0]
 
 
-# TODO(b/29157057) refactor so that access to private functions in
-# oauth2client is not necessary
-def RevokeCredsInWellKnownFile(brief):
-  """Revoke the credentials in ADC's well-known file."""
-  # pylint:disable=protected-access, refactor as per TODO above
-  credentials_filename = client._get_well_known_file()
-  if not os.path.isfile(credentials_filename):
-    if not brief:
-      log.status.write(
-          '\nApplication Default Credentials have not been\n'
-          'set up by a tool, so nothing was revoked.\n')
-    return
+def ADCFilePath():
+  """Gets the ADC default file path.
 
-  # We only want to get the credentials from the well-known file, because
-  # no other credentials can be revoked.
-  # pylint:disable=protected-access, refactor as per TODO above
-  creds = client._get_application_default_credential_from_file(
-      credentials_filename)
-  if creds.serialization_data['type'] != 'authorized_user':
-    if not brief:
-      log.status.write(
-          '\nThe credentials set up for Application Default Credentials\n'
-          'through the Google Cloud SDK are service account credentials,\n'
-          'so they were not revoked.\n')
-  else:
-    c_store.RevokeCredentials(creds)
-    if not brief:
-      log.status.write(
-          '\nThe credentials set up for Application Default Credentials\n'
-          'through the Google Cloud SDK have been revoked.\n')
-
-  os.remove(credentials_filename)
-
-  if not brief:
-    log.status.write(
-        '\nThe file storing the Application Default Credentials\n'
-        'has been removed.\n')
+  Returns:
+    str, The path to the default ADC file.
+  """
+  # pylint:disable=protected-access
+  return client._get_well_known_file()
 
 
-def AdcEnvVariableIsSet():
-  adc_filename = os.environ.get(client.GOOGLE_APPLICATION_CREDENTIALS, None)
-  return adc_filename is not None
+def AdcEnvVariable():
+  """Gets the value of the ADC environment variable.
+
+  Returns:
+    str, The value of the env var or None if unset.
+  """
+  return os.environ.get(client.GOOGLE_APPLICATION_CREDENTIALS, None)
 
 
-# TODO(b/29157057) refactor so that access to private functions in
-# oauth2client is not necessary
-def CreateWellKnownFileDir():
-  """Create the directory for ADC's well-known file."""
-  # pylint:disable=protected-access, refactor as per TODO above
-  credentials_filename = client._get_well_known_file()
-  files.MakeDir(os.path.dirname(credentials_filename))
+def SaveCredentialsAsADC(creds):
+  """Saves the credentials to the given file.
+
+  Args:
+    creds: The credentials obtained from a web flow.
+
+  Returns:
+    str, The full path to the ADC file that was written.
+  """
+  google_creds = client.GoogleCredentials(
+      creds.access_token, creds.client_id, creds.client_secret,
+      creds.refresh_token, creds.token_expiry, creds.token_uri,
+      creds.user_agent, creds.revoke_uri)
+  adc_file = ADCFilePath()
+  try:
+    with files.OpenForWritingPrivate(adc_file) as f:
+      json.dump(google_creds.serialization_data, f, sort_keys=True,
+                indent=2, separators=(',', ': '))
+  except IOError as e:
+    log.debug(e, exc_info=True)
+    raise CredentialFileSaveError(
+        'Error saving Application Default Credentials: ' + str(e))
+  return os.path.abspath(adc_file)

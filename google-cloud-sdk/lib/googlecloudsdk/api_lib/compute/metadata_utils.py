@@ -136,10 +136,10 @@ def AddMetadataArgs(parser, required=False):
       passed to this flag, e.g.,
       ``--metadata key-1=value-1,key-2=value-2,key-3=value-3''.
 
-      In images that have
-      link:https://cloud.google.com/compute/docs/images[Compute
-      Engine tools installed] on them, the following metadata keys
-      have special meanings:
+      In images that have Compute Engine tools installed on them,
+      such as the
+      link:https://cloud.google.com/compute/docs/images[official images],
+      the following metadata keys have special meanings:
 
       *startup-script*::: Specifies a script that will be executed
       by the instances once they start running. For convenience,

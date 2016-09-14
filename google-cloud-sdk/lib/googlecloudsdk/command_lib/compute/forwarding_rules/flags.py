@@ -89,23 +89,25 @@ def AddUpdateArgs(parser, include_alpha_targets, include_beta_targets):
       '--target-https-proxy',
       help='The target HTTPS proxy that will receive the traffic.')
 
+  target.add_argument(
+      '--target-ssl-proxy',
+      help='The target SSL proxy that will receive the traffic.')
+
+  # There are no beta target right now. Move alpha targets to here when they
+  # turn to beta.
   if include_beta_targets:
-    target.add_argument(
-        '--target-ssl-proxy',
-        help='The target SSL proxy that will receive the traffic.')
+    pass
 
   if include_alpha_targets:
     parser.add_argument(
         '--load-balancing-scheme',
-        choices=['INTERNAL', 'EXTERNAL'],
+        choices={
+            'EXTERNAL': 'Used for HTTP or HTTPS for External Load Balancing.',
+            'INTERNAL': 'Used for Internal Network Load Balancing.',
+        },
         type=lambda x: x.upper(),
         default='EXTERNAL',
-        help='This signifies what the forwarding rule will be used for and '
-             'can only take the following values: "INTERNAL", "EXTERNAL". '
-             'The value of "INTERNAL" means that this will be used for '
-             'Internal Network Load Balancing. The value of "EXTERNAL" '
-             'signifies that this will be used for HTTP or HTTPS for '
-             'External Load Balancing.')
+        help='This signifies what the forwarding rule will be used for.')
 
     target.add_argument(
         '--backend-service',

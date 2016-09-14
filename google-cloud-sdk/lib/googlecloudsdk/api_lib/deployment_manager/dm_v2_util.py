@@ -14,7 +14,7 @@
 
 """Common helper methods for DeploymentManager V2 Deployments."""
 
-import json
+import StringIO
 import time
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -22,13 +22,15 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager.exceptions import DeploymentManagerError
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.calliope.exceptions import HttpException
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
 import yaml
 
+
+HTTP_ERROR_FORMAT = (
+    'ResponseError: code={status_code}, message={status_message}')
 
 SIMPLE_LIST_FLAG = base.Argument(
     '--simple-list',
@@ -47,22 +49,18 @@ def PrettyPrint(resource, print_format='json'):
       out=log.out)
 
 
-def GetError(error, verbose=False):
-  """Returns a ready-to-print string representation from the http response.
+def GetOperationError(error):
+  """Returns a ready-to-print string representation from the operation error.
 
   Args:
-    error: A string representing the raw json of the Http error response.
-    verbose: Whether or not to print verbose messages [default false]
+    error: operation error object
 
   Returns:
     A ready-to-print string representation of the error.
   """
-  data = json.loads(error.content)
-  if verbose:
-    PrettyPrint(data)
-  code = data['error']['code']
-  message = data['error']['message']
-  return 'ResponseError: code={0}, message={1}'.format(code, message)
+  error_message = StringIO.StringIO()
+  resource_printer.Print(error, 'yaml', out=error_message)
+  return error_message.getvalue()
 
 
 def WaitForOperation(client, messages, operation_name, project,
@@ -106,14 +104,14 @@ def WaitForOperation(client, messages, operation_name, project,
             )
         )
       except apitools_exceptions.HttpError as error:
-        raise HttpException(GetError(error))
+        raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
       ticker.Tick()
       # Operation status will be one of PENDING, RUNNING, DONE
       if operation.status == 'DONE':
         if operation.error:
           raise DeploymentManagerError(
-              'Error in Operation ' + operation_name + ': '
-              + str(operation.error))
+              'Error in Operation ' + operation_name +
+              ':\n' + GetOperationError(operation.error))
         else:  # Operation succeeded
           return
       time.sleep(1)  # wait one second and try again
@@ -171,7 +169,7 @@ def _GetNextPage(list_method, request, resource_field, page_token=None,
                else [])
     return (results, return_token)
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(GetError(error))
+    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
 def ExtractManifestName(deployment_response):
@@ -247,7 +245,7 @@ def YieldWithHttpExceptions(generator):
     for y in generator:
       yield y
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(GetError(error))
+    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
 def FetchResourcesAndOutputs(client, messages, project, deployment_name):
@@ -285,4 +283,4 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
     # TODO(user): Pagination b/28298504
     return ResourcesAndOutputs(resources, outputs)
   except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(GetError(error))
+    raise exceptions.HttpException(error, HTTP_ERROR_FORMAT)

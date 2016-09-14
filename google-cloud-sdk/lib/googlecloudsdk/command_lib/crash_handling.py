@@ -25,9 +25,7 @@ from googlecloudsdk.command_lib import error_reporting_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-
-
-ENABLE_ERROR_REPORTING = False
+from googlecloudsdk.core.console import console_attr
 
 
 def _IsInstallationCorruption(err):
@@ -84,7 +82,6 @@ def _ReportError(err):
   stacktrace = traceback.format_exc(err)
   stacktrace = error_reporting_util.RemovePrivateInformationFromTraceback(
       stacktrace)
-  log.err.Print(stacktrace)
   try:
     util.ErrorReporting().ReportEvent(error_message=stacktrace,
                                       service=command,
@@ -93,23 +90,21 @@ def _ReportError(err):
     pass
 
 
-def HandleGcloudCrash(err, err_string):
+def HandleGcloudCrash(err):
   """Checks if installation error occurred, then proceeds with Error Reporting.
 
   Args:
     err: Exception err.
-    err_string: Exception err string.
   """
+  err_string = console_attr.EncodeForOutput(err)
   log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
   if _IsInstallationCorruption(err):
     _PrintInstallationAction(err, err_string)
   else:
     log.error('gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
-    if (not properties.VALUES.core.disable_usage_reporting.GetBool()
-        and ENABLE_ERROR_REPORTING):
+    if not properties.VALUES.core.disable_usage_reporting.GetBool():
       _ReportError(err)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')
-

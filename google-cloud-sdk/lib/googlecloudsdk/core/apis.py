@@ -45,18 +45,18 @@ class InvalidEndpointException(exceptions.Error):
 
 
 # This is the map of API name aliases to actual API names.
-# The apis_map uses the actual API names. The rest of the Cloud SDK, including
-# property sections, and command surfaces use the API name alias.
+# Do not add to this map unless the api definition uses different names for api
+# name, endpoint and/or collection names.
+# The apis_map keys are aliases and values are actual API names.
+# The rest of the Cloud SDK, including
+# property sections, and command surfaces should use the API name alias.
 
 # The general rule for this module is: all apis_map lookups should use the real
 # API name, and all property lookups should use the alias. Any api_name argument
 # expects to receive the name alias (if one exists). The _GetApiNameAndAlias
 # helper method can be used to convert it into a (name, alias) tuple.
+# TODO(b/31163851): remove the need for this alias map.
 _API_NAME_ALIASES = {
-    'bigtable': 'bigtableclusteradmin',
-    'debug': 'clouddebugger',
-    'functions': 'cloudfunctions',
-    'projects': 'cloudresourcemanager',
     'sql': 'sqladmin',
 }
 
@@ -305,7 +305,10 @@ def SplitDefaultEndpointUrl(url):
   resource_path = ''
   if ('googleapis' not in domain
       or domain.startswith('www.') or domain.startswith('www-')):
-    api_name = tokens[1]
+    if len(tokens) > 1:
+      api_name = tokens[1]
+    else:
+      api_name = None
     if len(tokens) > 2:
       version = tokens[2]
     else:
@@ -317,7 +320,7 @@ def SplitDefaultEndpointUrl(url):
       version = tokens[1]
       resource_path = '/'.join(tokens[2:])
     else:
-      version = GetDefaultVersion(api_name)
+      version = None
   return api_name, version, resource_path
 
 

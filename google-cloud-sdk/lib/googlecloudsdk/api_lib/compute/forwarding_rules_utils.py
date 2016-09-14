@@ -82,6 +82,10 @@ class ForwardingRulesTargetMutator(ForwardingRulesMutator):
       return self.CreateGlobalReference(
           args.target_https_proxy, resource_type='targetHttpsProxies')
 
+    if args.target_ssl_proxy:
+      return self.CreateGlobalReference(
+          args.target_ssl_proxy, resource_type='targetSslProxies')
+
     if getattr(args, 'target_vpn_gateway', None):
       raise exceptions.ToolException(
           'You cannot specify [--target-vpn-gateway] for a global '

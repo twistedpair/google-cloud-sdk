@@ -449,14 +449,9 @@ class CLILoader(object):
     top_element.ai.add_argument(
         '--verbosity',
         choices=log.OrderedVerbosityNames(),
-        default=None,
+        default=log.DEFAULT_VERBOSITY_STRING,
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help=(
-            'Override the default verbosity for this command.  This must be '
-            'a standard logging verbosity level: [{values}] (Default: '
-            '[{default}]).').format(
-                values=', '.join(log.OrderedVerbosityNames()),
-                default=log.DEFAULT_VERBOSITY_STRING),
+        help='Override the default verbosity for this command.',
         action=actions.StoreProperty(properties.VALUES.core.verbosity))
 
     # This should be a pure Boolean flag, but the alternate true/false explicit

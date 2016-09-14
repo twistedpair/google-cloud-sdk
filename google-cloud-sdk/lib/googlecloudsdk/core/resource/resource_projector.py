@@ -149,7 +149,10 @@ class Projector(object):
       if attr in exclude:
         # Omit excluded attributes.
         continue
-      value = getattr(obj, attr)
+      try:
+        value = getattr(obj, attr)
+      except:  # pylint: disable=bare-except, forgive property method errors.
+        continue
       if hasattr(value, '__call__'):
         # Omit callable attributes.
         continue

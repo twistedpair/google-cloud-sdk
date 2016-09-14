@@ -14,7 +14,6 @@
 
 """A shared library for processing and validating test arguments."""
 
-import argparse
 import types
 
 from googlecloudsdk.api_lib.test import arg_file
@@ -42,8 +41,7 @@ def AddCommonTestRunArgs(parser):
 
   parser.add_argument(
       '--type', choices=['instrumentation', 'robo'],
-      help='The type of test to run '
-      '(_TYPE_ may be one of: instrumentation, robo).')
+      help='The type of test to run.')
   parser.add_argument(
       '--app',
       help='The path to the application binary file. The path may be in the '
@@ -57,10 +55,9 @@ def AddCommonTestRunArgs(parser):
       help='Invoke a test asynchronously without waiting for test results.')
   parser.add_argument(
       '--auto-google-login', action='store_true',
-      help=argparse.SUPPRESS)
-      # TODO(user): add this help text when ready for this to be exposed:
-      # help='Automatically log into the test device using a preconfigured '
-      # 'Google account before beginning the test.')
+      hidden=True,
+      help='Automatically log into the test device using a preconfigured '
+      'Google account before beginning the test.')
   parser.add_argument(
       '--obb-files',
       type=arg_parsers.ArgList(min_length=1, max_length=2),
@@ -132,11 +129,11 @@ def AddMatrixArgs(parser):
       'determined by Google Cloud Test Lab\'s device catalog).')
   orientation = parser.add_argument(
       '--orientations', '-o',
+      metavar='ORIENTATION',
       type=arg_parsers.ArgList(min_length=1, max_length=2,
                                choices=arg_validate.ORIENTATION_LIST),
-      metavar='ORIENTATION',
-      help='The device orientation(s) to test against. '
-      'Choices: portrait, landscape (default: portrait).')
+      default='portrait',
+      help='The device orientation(s) to test against.')
   orientation.completer = arg_parsers.GetMultiCompleter(OrientationsCompleter)
 
 

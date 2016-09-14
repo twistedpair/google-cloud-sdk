@@ -44,9 +44,6 @@ GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
     'https://accounts.google.com/o/oauth2/token')
 
 
-REDIRECT_URI_AUTH_CODE_IN_TITLE_BAR = 'urn:ietf:wg:oauth:2.0:oob'
-
-
 class Error(exceptions.Error):
   """Exceptions for the credentials module."""
 
@@ -452,27 +449,14 @@ def AcquireFromWebFlow(launch_browser=True,
       auth_uri=auth_uri,
       token_uri=token_uri,
       prompt='select_account')
-
-  # pylint:disable=g-import-not-at-top, This is imported on demand for
-  # performance reasons.
-  from googlecloudsdk.core.credentials import flow
-
-  try:
-    cred = flow.Run(webflow, launch_browser=launch_browser, http=http.Http())
-  except flow.Error as e:
-    raise FlowError(e)
-  return cred
+  return RunWebFlow(webflow, launch_browser=launch_browser)
 
 
-def AcquireFromWebFlowAndClientIdFile(client_id_file,
-                                      scopes,
-                                      launch_browser=True):
-  """Get credentials via a web flow.
+def RunWebFlow(webflow, launch_browser=True):
+  """Runs a preconfigured webflow to get an auth token.
 
   Args:
-    client_id_file: str, file path with client id information
-    scopes: string or iterable of strings, scope(s) of the credentials being
-      requested.
+    webflow: client.OAuth2WebServerFlow, The configured flow to run.
     launch_browser: bool, Open a new web browser window for authorization.
 
   Returns:
@@ -481,11 +465,6 @@ def AcquireFromWebFlowAndClientIdFile(client_id_file,
   Raises:
     FlowError: If there is a problem with the web flow.
   """
-  webflow = client.flow_from_clientsecrets(
-      filename=client_id_file,
-      scope=scopes,
-      redirect_uri=REDIRECT_URI_AUTH_CODE_IN_TITLE_BAR)
-
   # pylint:disable=g-import-not-at-top, This is imported on demand for
   # performance reasons.
   from googlecloudsdk.core.credentials import flow

@@ -51,7 +51,7 @@ _VALID_PROJECT_REGEX = re.compile(
     # google.com:
     r'(?:(?:[-a-z0-9]{1,63}\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?'
     # Followed by a required identifier-like component, for example:
-    #   waffleHouse    match
+    #   waffle-house    match
     #   -foozle        no match
     #   Foozle         no match
     # We specifically disallow project number, even though some GCP backends
@@ -753,6 +753,19 @@ class _SectionCore(_Section):
         ' files. If unset, defaults to 30.',
         default='30')
 
+    def ExistingAbsoluteFilepathValidator(file_path):
+      """Checks to see if the file path exists and is an absolute path."""
+      if file_path is None:
+        return
+      if not os.path.isfile(file_path):
+        raise InvalidValueError('The provided path must exist.')
+      if not os.path.isabs(file_path):
+        raise InvalidValueError('The provided path must be absolute.')
+    self.custom_ca_certs_file = self._Add(
+        'custom_ca_certs_file',
+        validator=ExistingAbsoluteFilepathValidator,
+        help_text='Absolute path to a custom CA cert file.')
+
     def ProjectValidator(project):
       """Checks to see if the project string is valid."""
       if project is None:
@@ -930,7 +943,7 @@ class _SectionApiEndpointOverrides(_Section):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
     self.appengine = self._Add('appengine')
-    self.bigtable = self._Add('bigtable')
+    self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.compute = self._Add('compute')
     self.cloudbuild = self._Add('cloudbuild')
@@ -940,15 +953,15 @@ class _SectionApiEndpointOverrides(_Section):
     self.dataflow = self._Add('dataflow')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
-    self.debug = self._Add('debug')
+    self.clouddebugger = self._Add('clouddebugger')
     self.deploymentmanager = self._Add('deploymentmanager')
     self.dns = self._Add('dns')
-    self.functions = self._Add('functions')
+    self.cloudfunctions = self._Add('cloudfunctions')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
     self.logging = self._Add('logging')
     self.ml = self._Add('ml')
-    self.projects = self._Add('projects')
+    self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
@@ -1206,6 +1219,9 @@ class _Property(object):
         section=self.__section.upper(),
         name=self.__name.upper(),
     )
+
+  def __str__(self):
+    return '{section}/{name}'.format(section=self.__section, name=self.__name)
 
 
 VALUES = _Sections()

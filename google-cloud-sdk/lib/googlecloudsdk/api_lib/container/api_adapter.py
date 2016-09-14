@@ -202,15 +202,15 @@ class APIAdapter(object):
     try:
       return self.client.projects_zones_clusters.Get(cluster_ref.Request())
     except apitools_exceptions.HttpError as error:
-      api_error = util.GetError(error)
-      if api_error.code != 404:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
         raise api_error
 
     # Cluster couldn't be found, maybe user got zone wrong?
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
     except apitools_exceptions.HttpError as error:
-      raise exceptions.HttpException(util.GetError(error))
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
     for cluster in clusters:
       if cluster.name == cluster_ref.clusterId:
         # User likely got zone wrong.
@@ -417,7 +417,8 @@ class CreateClusterOptions(object):
                min_nodes=None,
                max_nodes=None,
                image_type=None,
-               max_nodes_per_pool=None):
+               max_nodes_per_pool=None,
+               enable_kubernetes_alpha=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -441,6 +442,7 @@ class CreateClusterOptions(object):
     self.max_nodes = max_nodes
     self.image_type = image_type
     self.max_nodes_per_pool = max_nodes_per_pool
+    self.enable_kubernetes_alpha = enable_kubernetes_alpha
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -584,6 +586,9 @@ class V1Adapter(APIAdapter):
           disable_ingress=INGRESS in options.disable_addons or None,
           disable_hpa=HPA in options.disable_addons or None)
       cluster.addonsConfig = addons
+
+    if options.enable_kubernetes_alpha:
+      cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
 
     create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
 

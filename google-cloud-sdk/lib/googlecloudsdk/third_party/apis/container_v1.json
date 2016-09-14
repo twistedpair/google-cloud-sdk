@@ -206,7 +206,7 @@
           }
         },
         "enableKubernetesAlpha": {
-          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted two weeks after creation.",
+          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after creation.",
           "type": "boolean"
         },
         "selfLink": {
@@ -281,6 +281,10 @@
           "description": "[Output only] The number of nodes currently in the cluster.",
           "type": "integer",
           "format": "int32"
+        },
+        "expireTime": {
+          "description": "[Output only] The time the cluster will be automatically\ndeleted in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
         }
       }
     },
@@ -1030,6 +1034,107 @@
           "$ref": "SubjectAccessReviewStatus"
         }
       }
+    },
+    "ImageReviewRequest": {
+      "id": "ImageReviewRequest",
+      "description": "A request to verify an image. The request contains the attributes of the\ncontainer to create. These are passed to BCID for verification.\n\nThis should look very close to the ImageReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match ImageReview.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Fields from \"pkg\/apis\/authorization\/v1beta1\".SubjectAccessReview:\n\nThe \"kind\" of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the SubjectAccessReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the user action being evaluated.",
+          "$ref": "ImageReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request (this won't be filled in for an\nAuthorizeRequest, but it is part of the struct, so we need it here to be\nsafe).",
+          "$ref": "ImageReviewStatus"
+        },
+        "metadata": {
+          "description": "Fields from \"pkg\/api\/types\".ObjectMeta\nTODO (b\/30563544): Remove these unused fields.\nIf cl\/129007035 is rolled out to the prod envelope before b\/28297888 is\nfixed, we can change this to a google.protobuf.Any. Until then, only the\nfields that are acutally populated by the Token Webhook Authenticator",
+          "$ref": "ObjectMeta"
+        }
+      }
+    },
+    "ImageReviewSpec": {
+      "id": "ImageReviewSpec",
+      "description": "ImageReviewSpec is a description of the pod creation request.",
+      "type": "object",
+      "properties": {
+        "containers": {
+          "description": "Container is a subset of the information in the container being created.",
+          "type": "array",
+          "items": {
+            "$ref": "ImageReviewContainerSpec"
+          }
+        },
+        "annotations": {
+          "description": "Annotations is a list of key-value pairs extracted from the Pod's annotations.\nIt only includes keys which match the pattern `*.image-policy.k8s.io\/*`.\nIt is up to each webhook backend to determine how to interpret these annotations, if at all.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "namespace": {
+          "description": "Namespace is the namespace the pod is being created in.",
+          "type": "string"
+        }
+      }
+    },
+    "ImageReviewContainerSpec": {
+      "id": "ImageReviewContainerSpec",
+      "description": "ImageReviewContainerSpec is a description of a container within the creation request.",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "This can be in the form image:tag or image@SHA:012345679abcdef.",
+          "type": "string"
+        }
+      }
+    },
+    "ImageReviewStatus": {
+      "id": "ImageReviewStatus",
+      "description": "ImageReviewStatus is the result of the token authentication request.",
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "description": "Allowed indicates that the image is allowed to run.",
+          "type": "boolean"
+        },
+        "reason": {
+          "description": "Reason should be empty unless Allowed is false in which case it\nmay contain a short description of what is wrong.  Kubernetes\nmay truncate excessively long errors when displaying to the user.",
+          "type": "string"
+        }
+      }
+    },
+    "ImageReviewResponse": {
+      "id": "ImageReviewResponse",
+      "description": "A response to a request for image verification.\nThis should match exactly with the ImageReview struct from\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/v1beta1\/authorization\/types.go.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "The \"kind\" of the ImageReview object.",
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The api version of the ImageReview object.",
+          "type": "string"
+        },
+        "spec": {
+          "description": "The information about the request that was evaluated.\nThis field (along with kind & api_version) are returned unchanged from the\nImageReviewRequest. The caller probably doesn't care, but it would allow the\ncaller to verify the question the server thought it was answering.",
+          "$ref": "ImageReviewSpec"
+        },
+        "status": {
+          "description": "The response for the provided request.",
+          "$ref": "ImageReviewStatus"
+        }
+      }
     }
   },
   "resources": {
@@ -1607,6 +1712,55 @@
               },
               "response": {
                 "$ref": "AuthorizeResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "imagereview": {
+              "id": "container.masterProjects.zones.imagereview",
+              "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview",
+              "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview",
+              "httpMethod": "POST",
+              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "zone": {
+                  "description": "The zone of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "zone",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "ImageReviewRequest"
+              },
+              "response": {
+                "$ref": "ImageReviewResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"

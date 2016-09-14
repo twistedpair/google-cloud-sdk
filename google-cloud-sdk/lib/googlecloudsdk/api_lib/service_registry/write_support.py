@@ -17,7 +17,6 @@
 import time
 
 from googlecloudsdk.api_lib.service_registry import constants
-from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -36,7 +35,6 @@ class ServiceRegistryClient(object):
     self.client = client
     self.resources = resources
 
-  @http_error_handler.HandleHttpErrors
   def call_service_registry(self, call, request, async, success_message):
     """Calls Service Registry, managing asynchronous or otherwise behavior.
 
@@ -66,7 +64,6 @@ class ServiceRegistryClient(object):
                               operation.operationType)
       log.status.Print(success_message)
 
-  @http_error_handler.HandleHttpErrors
   def wait_for_operation(self, operation_ref, operation_description=None):
     """Wait for an operation to complete.
 

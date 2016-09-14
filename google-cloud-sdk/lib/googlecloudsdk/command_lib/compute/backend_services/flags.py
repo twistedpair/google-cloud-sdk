@@ -60,7 +60,6 @@ def AddConnectionDrainingTimeout(parser):
   connection_draining_timeout = parser.add_argument(
       '--connection-draining-timeout',
       type=arg_parsers.Duration(upper_bound='1h'),
-      default=None,  # None => use default 'backend' value.
       help='Connection draining timeout.')
   connection_draining_timeout.detailed_help = """\
       Connection draining timeout to be used during removal of VMs from
@@ -68,7 +67,7 @@ def AddConnectionDrainingTimeout(parser):
       connections to a VM will remain untouched, but no new connections will be
       accepted. Set timeout to zero to disable connection draining. Enable
       feature by specifying a timeout of up to one hour.
-      If the flag is omitted API default value will be used.
+      If the flag is omitted API default value (0s) will be used.
       Valid units for this flag are `s` for seconds, `m` for minutes, and
       `h` for hours.
       """
@@ -126,42 +125,43 @@ def AddHttpsHealthChecks(parser):
       """
 
 
-def AddSessionAffinity(parser, internal_lb=False, hidden=False):
+def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
+                       hidden=False):
   """Adds session affinity flag to the argparse."""
-  choices = ['CLIENT_IP', 'GENERATED_COOKIE', 'NONE']
+  choices = {
+      'CLIENT_IP': (
+          "Route requests to instances based on the hash of the client's IP "
+          'address.'),
+      'GENERATED_COOKIE': (
+          'Route requests to instances based on the contents of the "GCLB" '
+          'cookie set by the load balancer.'),
+      'NONE': 'Session affinity is disabled.',
+  }
+  if internal_lb or target_pools:
+    choices.update({
+        'CLIENT_IP_PROTO': (
+            'Connections from the same client IP with the same IP protocol will'
+            'go to the same VM in the pool while that VM remains healthy. This '
+            'option cannot be used for HTTP(s) load balancing.'),
+    })
   if internal_lb:
-    choices.extend(['CLIENT_IP_PROTO', 'CLIENT_IP_PORT_PROTO'])
+    choices.update({
+        'CLIENT_IP_PORT_PROTO': (
+            'Connections from the same client IP with the same IP protocol and '
+            'port will go to the same VM in the backend while that VM remains '
+            'healthy. This option cannot be used for HTTP(S) load balancing.'),
+    })
   if hidden:
     help_str = argparse.SUPPRESS
   else:
-    help_str = 'The type of session affinity to use.'
-  session_affinity = parser.add_argument(
+    help_str = 'The type of session affinity to use for this backend service.'
+  parser.add_argument(
       '--session-affinity',
-      choices=sorted(choices),
-      default=None,  # Tri-valued, None => don't include property.
+      choices=choices,
+      # Tri-valued, None => don't include property.
+      default='NONE' if target_pools else None,
       type=lambda x: x.upper(),
       help=help_str)
-  if not hidden:
-    session_affinity.detailed_help = """\
-      The type of session affinity to use for this backend service.  Possible
-      values are:
-
-        * none: Session affinity is disabled.
-        * client_ip: Route requests to instances based on the hash of the
-          client's IP address."""
-    if internal_lb:
-      session_affinity.detailed_help += """
-        * client_ip_proto: Connections from the same client IP with the same IP
-          protocol will go to the same VM in the pool while that VM remains
-          healthy. This option cannot be used for HTTP(s) load balancing.
-        * client_ip_port_proto: Connections from the same client IP with the
-          same IP protocol and port will go to the same VM in the backend while
-          that VM remains healthy. This option cannot be used for HTTP(S) load
-          balancing."""
-    session_affinity.detailed_help += """
-        * generated_cookie: Route requests to instances based on the contents
-          of the "GCLB" cookie set by the load balancer.
-      """
 
 
 def AddAffinityCookieTtl(parser, hidden=False):

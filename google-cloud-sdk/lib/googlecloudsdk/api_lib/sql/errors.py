@@ -14,33 +14,8 @@
 
 """Common utility functions for sql errors and exceptions."""
 
-import json
-import sys
-
-from apitools.base.py import exceptions
-
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
 class OperationError(core_exceptions.Error):
   pass
-
-
-def GetErrorMessage(error):
-  error_obj = json.loads(error.content).get('error', {})
-  errors = error_obj.get('errors', [])
-  debug_info = errors[0].get('debugInfo', '') if len(errors) else ''
-  return (error_obj.get('message', '') +
-          ('\n' + debug_info if debug_info is not '' else ''))
-
-
-def ReraiseHttpException(foo):
-  def Func(*args, **kwargs):
-    try:
-      return foo(*args, **kwargs)
-    except exceptions.HttpError as error:
-      msg = GetErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise calliope_exceptions.HttpException, msg, traceback
-  return Func

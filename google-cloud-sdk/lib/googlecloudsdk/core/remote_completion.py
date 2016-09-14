@@ -539,7 +539,8 @@ class RemoteCompletion(object):
     """Returns a completer function for the given resource.
 
     Args:
-      resource: The resource as subcommand.resource.
+      resource: str, The id for resource registry describing resource
+          being auto-completed.
       cli: The calliope instance.
       command_line: str, The gcloud list command to run.
       list_command_callback_fn: function, Callback function to be run to produce
@@ -580,7 +581,6 @@ class RemoteCompletion(object):
             if c == ' ' or c == '\t':
               break
             prefix = c + prefix
-        project = properties.VALUES.core.project.Get(required=True)
         parms = {}
         if command[0] in _OPTIONAL_PARMS:
           for arg in _OPTIONAL_PARMS[command[0]]:
@@ -592,12 +592,11 @@ class RemoteCompletion(object):
                   parms[attrib] = value
                   command.append('--' + attrib)
                   command.append(value)
-        parms['project'] = project
-        resource_link = resources.REGISTRY.Parse(
+        parms['project'] = properties.VALUES.core.project.Get(required=True)
+        resource_ref = resources.REGISTRY.Parse(
             '+', parms, resource, resolve=False)
-        resource_link = resource_link.WeakSelfLink()
-        lst = resource_link.split('*')
-        resource_missing = len(lst) > 1
+        # TODO(b/30309781): remove resource weak resolve usage.
+        resource_link = resource_ref.WeakSelfLink()
         ccache = RemoteCompletion()
         options = ccache.GetFromCache(resource_link, prefix)
         if options is not None:
@@ -627,13 +626,12 @@ class RemoteCompletion(object):
                                             instance=item.instance)
             selflink = instance_ref.SelfLink()
           self_links.append(selflink)
-          lst = selflink.split('/')
-          name = lst[-1]
+          _, name = selflink.rsplit('/', 1)
           if not prefix or name.startswith(prefix):
             options.append(name)
         if self_links:
           ccache.StoreInCache(self_links)
-          if resource_missing:
+          if resource_link.count('*') > 0:  # There are unknown parts.
             options = ccache.GetFromCache(resource_link, prefix,
                                           increment_counters=False) or []
       except Exception:  # pylint:disable=broad-except

@@ -161,3 +161,24 @@ def AddClustersWaitAndAsyncFlags(parser):
       # The default value is async=False but the logic is done in
       # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
       help='Don\'t wait for the operation to complete.')
+
+
+def AddEnableKubernetesAlphaFlag(parser, suppressed=True):
+  """Adds a --enable-kubernetes-alpha flag to parser."""
+  help_text = argparse.SUPPRESS if suppressed else """\
+Enable Kubernetes alpha features on this cluster. Selecting this
+option will result in the cluster having all Kubernetes alpha API groups and
+features turned on. Cluster upgrades (both manual and automatic) will be
+disabled and the cluster will be automatically deleted after 30 days.
+
+Alpha clusters are not covered by the Container Engine SLA and should not be
+used for production workloads."""
+  parser.add_argument(
+      '--enable-kubernetes-alpha',
+      action='store_true',
+      help=help_text)
+
+
+
+
+

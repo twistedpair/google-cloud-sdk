@@ -779,7 +779,7 @@ RESOURCE_REGISTRY = {
           table(
             name,
             zone,
-            currentMasterVersion:label=MASTER_VERSION,
+            master_version():label=MASTER_VERSION,
             endpoint:label=MASTER_IP,
             nodePools[0].config.machineType,
             currentNodeVersion:label=NODE_VERSION,
@@ -946,7 +946,7 @@ RESOURCE_REGISTRY = {
             operation.status,
             description,
             manifest.basename(),
-            operation.error.errors.group(code, message)
+            operation.error.errors.group(code)
           )
         """,
     ),
@@ -958,7 +958,7 @@ RESOURCE_REGISTRY = {
             operationType:label=TYPE,
             status,
             targetLink.basename():label=TARGET,
-            error.errors.group(code, message)
+            error.errors.group(code)
           )
         """,
     ),
@@ -970,7 +970,7 @@ RESOURCE_REGISTRY = {
             name,
             type,
             update.state.yesno(no="COMPLETED"),
-            update.error.errors.group(code, message),
+            update.error.errors.group(code),
             update.intent
           )
         """,
@@ -984,7 +984,7 @@ RESOURCE_REGISTRY = {
               name,
               type,
               update.state.yesno(no="COMPLETED"),
-              update.error.errors.group(code, message),
+              update.error.errors.group(code),
               update.intent)',
             outputs:format='table(
               name:label=OUTPUTS,
@@ -1048,7 +1048,7 @@ RESOURCE_REGISTRY = {
 
     # functions
 
-    'functions.projects.regions.functions': ResourceInfo(
+    'functions.projects.locations.functions': ResourceInfo(
         list_format="""
           table(
             name.basename(),

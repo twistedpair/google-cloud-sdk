@@ -60,6 +60,23 @@ class CommandLoadFailure(Exception):
             command=command, issue=str(root_exception)))
 
 
+class ArgumentParserError(object):
+  """Object to store the ArgumentParser error and extra information.
+
+    Args:
+      dotted_command_path: str, as much as we could parse from the path to the
+          command, separating elements by dots.
+      error: class, the class to the error we want to report
+      error_extra_info: str, json string for extra information that we want
+          recorded with the error.
+  """
+
+  def __init__(self, dotted_command_path, error, error_extra_info):
+    self.dotted_command_path = dotted_command_path
+    self.error = error
+    self.error_extra_info = error_extra_info
+
+
 class ArgumentParser(argparse.ArgumentParser):
   """A custom subclass for arg parsing behavior.
 
@@ -72,6 +89,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._flag_collection = kwargs.pop('flag_collection')
     self._abbreviated_flags = kwargs.pop('abbreviated_flags')
     self._is_group = isinstance(self._calliope_command, CommandGroup)
+    self._error_to_report = None
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   # Assume we will never have a flag called ----calliope-internal...
@@ -138,13 +156,22 @@ class ArgumentParser(argparse.ArgumentParser):
         if aliases:
           suggester.AddAliases(aliases, options[0])
 
+    suggestions = {}
     for arg in argv:
       # Only do this for flag names.
       suggestion = suggester.GetSuggestion(arg) if arg.startswith('-') else None
+      suggestions[arg] = suggestion
       if suggestion:
         messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
       else:
         messages.append(arg)
+
+    # pylint:disable=g-import-not-at-top, Only import if we have a parse error.
+    import json
+    deepest_parser._error_to_report = ArgumentParserError(
+        '.'.join(self._calliope_command.GetPath()),
+        parse_errors.UnrecognizedArguments,
+        json.dumps(suggestions))
 
     # If there is a single arg, put it on the same line.  If there are multiple
     # add each on it's own line for better clarity.
@@ -219,15 +246,11 @@ class ArgumentParser(argparse.ArgumentParser):
       # Log to analytics the attempt to execute a command.
       # We know the user entered 'value' is a valid command in a different
       # release track. It's safe to include it.
-      dotted_command_path = '.'.join(self._calliope_command.GetPath() + [value])
-      metrics.Commands(
-          dotted_command_path, config.CLOUD_SDK_VERSION, self._flag_collection,
-          error=parse_errors.WrongTrackException,
-          error_extra_info=','.join(existing_alternatives))
-      metrics.Error(
-          dotted_command_path,
+      self._error_to_report = ArgumentParserError(
+          '.'.join(self._calliope_command.GetPath() + [value]),
           parse_errors.WrongTrackException,
-          self._flag_collection)
+          ','.join(existing_alternatives))
+
     # See if the spelling was close to something else that exists here.
     else:
       choices = sorted(action.choices)
@@ -243,15 +266,10 @@ class ArgumentParser(argparse.ArgumentParser):
       # We don't know if the user entered 'value' is a mistyped command or
       # some resource name that the user entered and we incorrectly thought it's
       # a command. We can't include it since it might be PII.
-      dotted_command_path = '.'.join(self._calliope_command.GetPath())
-      metrics.Commands(
-          dotted_command_path, config.CLOUD_SDK_VERSION, self._flag_collection,
-          error=parse_errors.ParsingCommandException,
-          error_extra_info=(suggestion if suggestion else ','.join(choices)))
-      metrics.Error(
-          dotted_command_path,
+      self._error_to_report = ArgumentParserError(
+          '.'.join(self._calliope_command.GetPath()),
           parse_errors.ParsingCommandException,
-          self._flag_collection)
+          (suggestion if suggestion else ','.join(choices)))
 
     raise argparse.ArgumentError(action, message)
 
@@ -280,6 +298,62 @@ class ArgumentParser(argparse.ArgumentParser):
           existing_alternatives.append(' '.join(command_path))
     return existing_alternatives
 
+  def _ReportErrorMetricsHelper(self, dotted_command_path, error,
+                                error_extra_info=None):
+    metrics.Commands(
+        dotted_command_path,
+        config.CLOUD_SDK_VERSION,
+        self._flag_collection,
+        error=error,
+        error_extra_info=error_extra_info)
+    metrics.Error(
+        dotted_command_path,
+        error,
+        self._flag_collection)
+
+  def ReportErrorMetrics(self, message):
+    """Report Command and Error metrics in case of argparse errors."""
+
+    if self._error_to_report:
+      self._ReportErrorMetricsHelper(
+          self._error_to_report.dotted_command_path,
+          self._error_to_report.error,
+          self._error_to_report.error_extra_info)
+      return
+
+    # No recorded error from upstream, try to detect error from message.
+
+    dotted_command_path = '.'.join(self._calliope_command.GetPath())
+
+    if 'too few arguments' in message:
+      self._ReportErrorMetricsHelper(
+          dotted_command_path,
+          parse_errors.TooFewArgumentsException)
+      return
+
+    re_result = re.search('argument (.+?) is required', message)
+    if re_result:
+      req_argument = re_result.group(1)
+      self._ReportErrorMetricsHelper(
+          dotted_command_path,
+          parse_errors.RequiredArgumentException,
+          req_argument)
+      return
+
+    re_result = re.search('one of the arguments (.+?) is required', message)
+    if re_result:
+      req_argument = re_result.group(1)
+      self._ReportErrorMetricsHelper(
+          dotted_command_path,
+          parse_errors.RequiredArgumentGroupException,
+          req_argument)
+      return
+
+    # Catch all for any error we didn't explicitly detect
+    self._ReportErrorMetricsHelper(
+        dotted_command_path,
+        parse_errors.OtherParsingError)
+
   def error(self, message):
     """Overrides argparse.ArgumentParser's .error(message) method.
 
@@ -288,6 +362,9 @@ class ArgumentParser(argparse.ArgumentParser):
     Args:
       message: str, The error message to print.
     """
+
+    self.ReportErrorMetrics(message)
+
     # No need to output help/usage text if we are in completion mode. However,
     # we do need to populate group/command level choices. These choices are not
     # loaded when there is a parser error since we do lazy loading.
@@ -633,6 +710,12 @@ class ArgumentInterceptor(object):
       added_argument.is_replicated = is_replicated
       added_argument.is_global = is_global
       added_argument.suggestion_aliases = suggestion_aliases
+      if isinstance(added_argument.choices, dict):
+        # choices is a name: description dict. Set the choices attribute to the
+        # keys for argparse and the choices_help attribute to the dict for
+        # the markdown generator.
+        setattr(added_argument, 'choices_help', added_argument.choices)
+        added_argument.choices = sorted(added_argument.choices.keys())
       self.flag_args.append(added_argument)
 
       inverted_flag = self._AddInvertedBooleanFlagIfNecessary(

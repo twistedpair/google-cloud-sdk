@@ -15,7 +15,6 @@
 """Shared base classes for runtimeconfig commands."""
 
 from googlecloudsdk.api_lib.deployment_manager.runtime_configs import util
-from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.deployment_manager.runtime_configs import flags
 
@@ -44,7 +43,6 @@ class VariableRetrieverCommand(base.DescribeCommand):
     """
     return 'runtimeconfig.variables'
 
-  @http_error_handler.HandleHttpErrors
   def Run(self, args):
     """Run a command that retrieves a variable.
 

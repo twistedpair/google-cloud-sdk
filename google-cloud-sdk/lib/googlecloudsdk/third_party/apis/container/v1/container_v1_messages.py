@@ -162,12 +162,14 @@ class Cluster(_messages.Message):
       cluster. This includes alpha API groups (e.g. v1alpha1) and features
       that may not be production ready in the kubernetes version of the master
       and nodes. The cluster has no SLA for uptime and master/node upgrades
-      are disabled. Alpha enabled clusters are automatically deleted two weeks
-      after creation.
+      are disabled. Alpha enabled clusters are automatically deleted thirty
+      days after creation.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
       this resource for username and password information.
+    expireTime: [Output only] The time the cluster will be automatically
+      deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     initialClusterVersion: [Output only] The software version of the master
       endpoint and kubelets used in the cluster when it was first created. The
       version can be upgraded over time.
@@ -263,24 +265,25 @@ class Cluster(_messages.Message):
   description = _messages.StringField(7)
   enableKubernetesAlpha = _messages.BooleanField(8)
   endpoint = _messages.StringField(9)
-  initialClusterVersion = _messages.StringField(10)
-  initialNodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(12, repeated=True)
-  locations = _messages.StringField(13, repeated=True)
-  loggingService = _messages.StringField(14)
-  masterAuth = _messages.MessageField('MasterAuth', 15)
-  monitoringService = _messages.StringField(16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  nodeConfig = _messages.MessageField('NodeConfig', 19)
-  nodeIpv4CidrSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 21, repeated=True)
-  selfLink = _messages.StringField(22)
-  servicesIpv4Cidr = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  statusMessage = _messages.StringField(25)
-  subnetwork = _messages.StringField(26)
-  zone = _messages.StringField(27)
+  expireTime = _messages.StringField(10)
+  initialClusterVersion = _messages.StringField(11)
+  initialNodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(13, repeated=True)
+  locations = _messages.StringField(14, repeated=True)
+  loggingService = _messages.StringField(15)
+  masterAuth = _messages.MessageField('MasterAuth', 16)
+  monitoringService = _messages.StringField(17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  nodeConfig = _messages.MessageField('NodeConfig', 20)
+  nodeIpv4CidrSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 22, repeated=True)
+  selfLink = _messages.StringField(23)
+  servicesIpv4Cidr = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  statusMessage = _messages.StringField(26)
+  subnetwork = _messages.StringField(27)
+  zone = _messages.StringField(28)
 
 
 class ClusterUpdate(_messages.Message):
@@ -375,6 +378,29 @@ class ContainerMasterProjectsZonesAuthorizeRequest(_messages.Message):
 
   authorizeRequest = _messages.MessageField('AuthorizeRequest', 1)
   clusterId = _messages.StringField(2, required=True)
+  masterProjectId = _messages.StringField(3, required=True)
+  projectNumber = _messages.IntegerField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
+class ContainerMasterProjectsZonesImagereviewRequest(_messages.Message):
+  """A ContainerMasterProjectsZonesImagereviewRequest object.
+
+  Fields:
+    clusterId: The name of this master's cluster.
+    imageReviewRequest: A ImageReviewRequest resource to be passed as the
+      request body.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    projectNumber: The project number for which the request is being
+      authorized.  This is the project in which this master's cluster resides.
+      This is an int64, so it must be a project number, not a project ID.
+    zone: The zone of this master's cluster.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  imageReviewRequest = _messages.MessageField('ImageReviewRequest', 2)
   masterProjectId = _messages.StringField(3, required=True)
   projectNumber = _messages.IntegerField(4, required=True)
   zone = _messages.StringField(5, required=True)
@@ -694,6 +720,134 @@ class HttpLoadBalancing(_messages.Message):
   """
 
   disabled = _messages.BooleanField(1)
+
+
+class ImageReviewContainerSpec(_messages.Message):
+  """ImageReviewContainerSpec is a description of a container within the
+  creation request.
+
+  Fields:
+    image: This can be in the form image:tag or image@SHA:012345679abcdef.
+  """
+
+  image = _messages.StringField(1)
+
+
+class ImageReviewRequest(_messages.Message):
+  """A request to verify an image. The request contains the attributes of the
+  container to create. These are passed to BCID for verification.  This should
+  look very close to the ImageReview struct in http://github.com/kubernetes/ku
+  bernetes/blob/master/pkg/apis/imagepolicy/v1beta1/types.go. This message has
+  4 GKE-specific fields that get mapped from the path, but the other fields
+  (the expected JSON payload) must match ImageReview.
+
+  Fields:
+    apiVersion: The api version of the SubjectAccessReview object.
+    kind: Fields from "pkg/apis/authorization/v1beta1".SubjectAccessReview:
+      The "kind" of the SubjectAccessReview object.
+    metadata: Fields from "pkg/api/types".ObjectMeta TODO (b/30563544): Remove
+      these unused fields. If cl/129007035 is rolled out to the prod envelope
+      before b/28297888 is fixed, we can change this to a google.protobuf.Any.
+      Until then, only the fields that are acutally populated by the Token
+      Webhook Authenticator
+    spec: The information about the user action being evaluated.
+    status: The response for the provided request (this won't be filled in for
+      an AuthorizeRequest, but it is part of the struct, so we need it here to
+      be safe).
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('ImageReviewSpec', 4)
+  status = _messages.MessageField('ImageReviewStatus', 5)
+
+
+class ImageReviewResponse(_messages.Message):
+  """A response to a request for image verification. This should match exactly
+  with the ImageReview struct from http://github.com/kubernetes/kubernetes/blo
+  b/master/pkg/apis/v1beta1/authorization/types.go.
+
+  Fields:
+    apiVersion: The api version of the ImageReview object.
+    kind: The "kind" of the ImageReview object.
+    spec: The information about the request that was evaluated. This field
+      (along with kind & api_version) are returned unchanged from the
+      ImageReviewRequest. The caller probably doesn't care, but it would allow
+      the caller to verify the question the server thought it was answering.
+    status: The response for the provided request.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  spec = _messages.MessageField('ImageReviewSpec', 3)
+  status = _messages.MessageField('ImageReviewStatus', 4)
+
+
+class ImageReviewSpec(_messages.Message):
+  """ImageReviewSpec is a description of the pod creation request.
+
+  Messages:
+    AnnotationsValue: Annotations is a list of key-value pairs extracted from
+      the Pod's annotations. It only includes keys which match the pattern
+      `*.image-policy.k8s.io/*`. It is up to each webhook backend to determine
+      how to interpret these annotations, if at all.
+
+  Fields:
+    annotations: Annotations is a list of key-value pairs extracted from the
+      Pod's annotations. It only includes keys which match the pattern
+      `*.image-policy.k8s.io/*`. It is up to each webhook backend to determine
+      how to interpret these annotations, if at all.
+    containers: Container is a subset of the information in the container
+      being created.
+    namespace: Namespace is the namespace the pod is being created in.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    """Annotations is a list of key-value pairs extracted from the Pod's
+    annotations. It only includes keys which match the pattern `*.image-
+    policy.k8s.io/*`. It is up to each webhook backend to determine how to
+    interpret these annotations, if at all.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  containers = _messages.MessageField('ImageReviewContainerSpec', 2, repeated=True)
+  namespace = _messages.StringField(3)
+
+
+class ImageReviewStatus(_messages.Message):
+  """ImageReviewStatus is the result of the token authentication request.
+
+  Fields:
+    allowed: Allowed indicates that the image is allowed to run.
+    reason: Reason should be empty unless Allowed is false in which case it
+      may contain a short description of what is wrong.  Kubernetes may
+      truncate excessively long errors when displaying to the user.
+  """
+
+  allowed = _messages.BooleanField(1)
+  reason = _messages.StringField(2)
 
 
 class ListClustersResponse(_messages.Message):

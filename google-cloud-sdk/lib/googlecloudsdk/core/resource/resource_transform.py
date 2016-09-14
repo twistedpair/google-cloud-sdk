@@ -1097,6 +1097,8 @@ _BUILTIN_TRANSFORMS = {
 #   method_name: A method name in the module that returns the transform dict.
 _API_TO_TRANSFORMS = {
     'compute': ('googlecloudsdk.api_lib.compute.transforms', 'GetTransforms'),
+    'container': ('googlecloudsdk.api_lib.container.transforms',
+                  'GetTransforms'),
     'debug': ('googlecloudsdk.api_lib.debug.transforms', 'GetTransforms'),
     'runtimeconfig': (
         'googlecloudsdk.api_lib.deployment_manager.runtime_configs.transforms',

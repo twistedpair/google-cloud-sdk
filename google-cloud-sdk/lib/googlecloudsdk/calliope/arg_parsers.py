@@ -497,6 +497,26 @@ class Datetime(object):
             user_input=s))
 
 
+class DayOfWeek(object):
+  """A class for parsing a day of the week."""
+
+  DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+
+  @staticmethod
+  def Parse(s):
+    """Validates and normalizes a string as a day of the week."""
+    if not s:
+      return None
+    fixed = s.upper()[:3]
+    if fixed not in DayOfWeek.DAYS:
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'Failed to parse day of week. Value should be one of {0}'.format(
+                  ', '.join(DayOfWeek.DAYS)),
+              user_input=s))
+    return fixed
+
+
 def _BoundedType(type_builder, type_description,
                  lower_bound=None, upper_bound=None, unlimited=False):
   """Returns a function that can parse given type within some bound.
@@ -619,6 +639,7 @@ class ArgList(ArgType):
       ArgumentTypeError: If the list is malformed.
     """
     self.element_type = element_type
+    self.choices = choices
 
     if choices:
       def ChoiceType(raw_value):
@@ -797,6 +818,9 @@ class UpdateAction(argparse.Action):
                        'the append const action may be more appropriate')
     if const is not None and nargs != argparse.OPTIONAL:
       raise ValueError('nargs must be %r to supply const' % argparse.OPTIONAL)
+    self.choices = choices
+    if isinstance(choices, dict):
+      choices = sorted(choices.keys())
     super(UpdateAction, self).__init__(
         option_strings=option_strings,
         dest=dest,

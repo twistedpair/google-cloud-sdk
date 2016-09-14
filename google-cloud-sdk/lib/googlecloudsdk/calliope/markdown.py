@@ -463,21 +463,58 @@ class MarkdownGenerator(object):
     """Returns the detailed help message for the given arg."""
     help_stuff = getattr(arg, 'detailed_help', (arg.help or '') + '\n')
     help_message = help_stuff() if callable(help_stuff) else help_stuff
-    # calliope.backend.ArgumentInterceptor.add_argument() sets arg.inverted_help
-    # for Boolean flags with auto-generated --no-FLAG inverted counterparts.
     help_message = textwrap.dedent(help_message)
-    inverted_help = getattr(arg, 'inverted_help', None)
-    if inverted_help:
+    if (not arg.option_strings or
+        not arg.option_strings[0].startswith('-') or
+        arg.metavar == ' '):
+      choices = None
+    elif arg.choices:
+      choices = arg.choices
+    else:
+      try:
+        choices = arg.type.choices
+      except AttributeError:
+        choices = None
+    if choices:
+      metavar = arg.metavar or arg.dest.upper()
+      choices = getattr(arg, 'choices_help', choices)
+      if len(choices) > 1:
+        one_of = 'one of'
+      else:
+        # TBD I guess?
+        one_of = '(currenly only one value is supported)'
+      if isinstance(choices, dict):
+        extra_help = ' _{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
+            metavar=metavar,
+            one_of=one_of,
+            choices='\n'.join(
+                ['*{name}*::: {desc}'.format(name=name, desc=desc)
+                 for name, desc in sorted(choices.iteritems())]))
+      else:
+        extra_help = ' _{metavar}_ must be {one_of}: {choices}.'.format(
+            metavar=metavar,
+            one_of=one_of,
+            choices=', '.join(['*{0}*'.format(x) for x in choices]))
+    else:
+      # calliope.backend.ArgumentInterceptor.add_argument() sets
+      # arg.inverted_help for Boolean flags with auto-generated --no-FLAG
+      # inverted counterparts.
+      extra_help = getattr(arg, 'inverted_help', None)
+    if extra_help:
       help_message = help_message.rstrip()
       if help_message:
-        i = help_message.rfind('\n')
-        if i >= 0 and help_message[i + 1] == ' ':
+        newline_index = help_message.rfind('\n')
+        if newline_index >= 0 and help_message[newline_index + 1] == ' ':
           # Preserve example markdown at end of help_message.
-          help_message += '\n\n' + inverted_help.strip() + '\n'
+          help_message += '\n\n' + extra_help.strip() + '\n'
         else:
           if not help_message.endswith('.'):
             help_message += '.'
-          help_message += inverted_help + '\n'
+          if help_message.rfind('\n\n') > 0:
+            # help_message has multiple paragraphs. Put extra_help in a new
+            # paragraph.
+            help_message += '\n\n\n'
+          help_message += extra_help + '\n'
     return help_message.replace('\n\n', '\n+\n').strip()
 
   def _ExpandFormatReferences(self, doc):

@@ -17,6 +17,7 @@
 import urllib2
 
 from googlecloudsdk.core import http_proxy
+from googlecloudsdk.core import properties
 import httplib2
 
 
@@ -44,9 +45,11 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
       proxy_info = http_proxy.GetHttpProxyInfo()
       if callable(proxy_info):
         proxy_info = proxy_info('https')
+      ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
       return httplib2.HTTPSConnectionWithTimeout(
           host,
           proxy_info=proxy_info,
+          ca_certs=ca_certs,
           **kwargs)
     return self.do_open(build, req)
 

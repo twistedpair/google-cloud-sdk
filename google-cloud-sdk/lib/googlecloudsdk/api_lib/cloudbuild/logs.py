@@ -18,9 +18,17 @@ import time
 from apitools.base.py import exceptions as api_exceptions
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
+
+
+class NoLogsBucketException(exceptions.Error):
+
+  def __init__(self):
+    msg = 'Build does not specify logsBucket, unable to stream logs'
+    super(NoLogsBucketException, self).__init__(msg)
 
 
 class LogTailer(object):
@@ -137,11 +145,17 @@ class CloudBuildClient(object):
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
 
+    Raises:
+      NoLogsBucketException: If the build does not specify a logsBucket.
+
     Returns:
       Build message, The completed or terminated build as read for the final
       poll.
     """
     build = self.GetBuild(build_ref)
+
+    if not build.logsBucket:
+      raise NoLogsBucketException()
 
     log_stripped = build.logsBucket.lstrip('gs://')
     if '/' not in log_stripped:

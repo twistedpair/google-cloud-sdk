@@ -250,10 +250,13 @@ class DebugObject(object):
 
   @classmethod
   def InitializeApiClients(cls):
-    cls._debug_client = apis.GetClientInstance('debug', 'v2')
-    cls._debug_messages = apis.GetMessagesModule('debug', 'v2')
-    cls._resource_client = apis.GetClientInstance('projects', 'v1beta1')
-    cls._resource_messages = apis.GetMessagesModule('projects', 'v1beta1')
+    """Sets up class with instantiated api client."""
+    cls._debug_client = apis.GetClientInstance('clouddebugger', 'v2')
+    cls._debug_messages = apis.GetMessagesModule('clouddebugger', 'v2')
+    cls._resource_client = apis.GetClientInstance(
+        'cloudresourcemanager', 'v1beta1')
+    cls._resource_messages = apis.GetMessagesModule(
+        'cloudresourcemanager', 'v1beta1')
     cls.SNAPSHOT_TYPE = (
         cls._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE)
     cls.LOGPOINT_TYPE = cls._debug_messages.Breakpoint.ActionValueValuesEnum.LOG

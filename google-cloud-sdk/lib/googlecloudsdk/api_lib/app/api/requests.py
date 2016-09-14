@@ -16,13 +16,16 @@
 """
 
 import io
-import json
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.resource import resource_printer
 import httplib2
+
+
+ERROR_FORMAT = ('Error Response: [{status_code}] {status_message}{url.line}'
+                '{details.content.line.json}')
 
 
 def ExtractErrorMessage(error_details):
@@ -59,19 +62,8 @@ def MakeRequest(service_method, request_message):
   try:
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
-    status_code = int(error.response['status'])
-    err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(status_code)
-    if err:
-      raise err()
-    error_json = _ExtractErrorJsonFromHttpError(error)
-    raise exceptions.HttpException(ExtractErrorMessage(error_json), status_code)
+    exc = exceptions.HttpException(error)
+    err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(exc.payload.status_code)
+    raise err() if err else exc
   except httplib2.HttpLib2Error as error:
     raise exceptions.HttpException('Response error: %s' % error.message)
-
-
-def _ExtractErrorJsonFromHttpError(error):
-  try:
-    return json.loads(error.content)['error']
-  except (ValueError, KeyError):
-    return {'code': error.response['status'], 'message': error.content,
-            'url': error.url}

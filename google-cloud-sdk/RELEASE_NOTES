@@ -2,6 +2,50 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+
+## 126.0.0 (2016/09/14)
+
+### Breaking changes
+
+* The HTTP error messages for these command groups have changed to a common
+  format:
+
+  * `gcloud dns`
+  * `gcloud genomics`
+  * `gcloud logging`
+
+  Some command groups have not changed yet. That should happen in the next
+  release. You can use `--log-http` to see the details of all HTTP requests and
+  responses on the standard error.
+
+### Google Compute Engine
+
+* Add `--connection-draining-timeout` flag to `gcloud compute backend-services
+  {create,update}` commands.
+* Added `gcloud alpha compute instance-groups managed update-instances` and
+  `stop-proactive-update-instances` commands.
+
+### Google Cloud Debugger
+
+* The `gcloud beta debug source gen-repo-info-file` command, which generates
+  repository information files for the Stackdriver Debugger, is now available.
+
+### Google Container Registry
+
+* The `gcloud container images` command group is now available in the beta
+  release track.
+
+### Cloud SDK
+
+* Added `core/custom_ca_certs_file` property to allow use of a custom CA
+  certificate file.
+
+### Emulators
+
+* Cloud Datastore emulator now supports proto-over-HTTP and JSON for the v1 API.
+  This version of the emulator resolves the deserialization issues in 123.0.0.
+
+
 ## 125.0.0 (2016/09/07)
 
 ### Google BigQuery

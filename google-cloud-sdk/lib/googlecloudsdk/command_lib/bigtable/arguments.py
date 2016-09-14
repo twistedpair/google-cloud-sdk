@@ -49,7 +49,7 @@ class ArgAdder(object):
         choices=['HDD', 'SSD'],
         default='SSD',
         type=str.upper,
-        help='Storage class for the cluster. Valid options are HDD or SSD.')
+        help='Storage class for the cluster.')
     return self
 
   def AddClusterZone(self, in_instance=False):

@@ -23,7 +23,6 @@ from apitools.base.py import exceptions as apitools_exceptions
 from dateutil import parser
 from dateutil import tz
 
-from googlecloudsdk.api_lib.util import http_error_handler
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
 from googlecloudsdk.core import log
@@ -164,7 +163,6 @@ def PrettyPrint(resource, print_format='json'):
       out=log.out)
 
 
-@http_error_handler.HandleHttpErrors
 def PushGoogleServiceConfig(service_name, project, config_contents):
   """Pushes a given Google service configuration.
 
@@ -190,7 +188,6 @@ def PushGoogleServiceConfig(service_name, project, config_contents):
   return service_resource.id
 
 
-@http_error_handler.HandleHttpErrors
 def PushOpenApiServiceConfig(
     service_name, spec_file_contents, spec_file_path, async):
   """Pushes a given Open API service configuration.
@@ -240,7 +237,6 @@ def PushOpenApiServiceConfig(
   return None
 
 
-@http_error_handler.HandleHttpErrors
 def CreateServiceIfNew(service_name, project):
   """Creates a Service resource if it does not already exist.
 

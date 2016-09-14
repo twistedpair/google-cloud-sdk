@@ -454,6 +454,16 @@ _SPECS_V1 = {
         editables=[],
     ),
 
+    'healthChecks': _InternalSpec(
+        message_class_name='HealthCheck',
+        table_cols=[
+            ('NAME', 'name'),
+            ('PROTOCOL', 'type'),
+        ],
+        transformations=[],
+        editables=None,
+    ),
+
     'httpHealthChecks': _InternalSpec(
         message_class_name='HttpHealthCheck',
         table_cols=[
@@ -726,6 +736,21 @@ _SPECS_V1 = {
         editables=None,
     ),
 
+    'targetSslProxies': _InternalSpec(
+        message_class_name='TargetSslProxy',
+        table_cols=[
+            ('NAME', 'name'),
+            ('PROXY_HEADER', 'proxyHeader'),
+            ('SERVICE', 'service'),
+            ('SSL_CERTIFICATES', _TargetProxySslCertificatesToCell)
+        ],
+        transformations=[
+            ('sslCertificates[]', path_simplifier.Name),
+            ('service', path_simplifier.Name),
+        ],
+        editables=None,
+    ),
+
     'targetInstances': _InternalSpec(
         message_class_name='TargetInstance',
         table_cols=[
@@ -859,29 +884,6 @@ _SPECS_V1 = {
 
 
 _SPECS_BETA = _SPECS_V1.copy()
-_SPECS_BETA['healthChecks'] = _InternalSpec(
-    message_class_name='HealthCheck',
-    table_cols=[
-        ('NAME', 'name'),
-        ('PROTOCOL', 'type'),
-    ],
-    transformations=[],
-    editables=None,
-)
-_SPECS_BETA['targetSslProxies'] = _InternalSpec(
-    message_class_name='TargetSslProxy',
-    table_cols=[
-        ('NAME', 'name'),
-        ('PROXY_HEADER', 'proxyHeader'),
-        ('SERVICE', 'service'),
-        ('SSL_CERTIFICATES', _TargetProxySslCertificatesToCell)
-    ],
-    transformations=[
-        ('sslCertificates[]', path_simplifier.Name),
-        ('service', path_simplifier.Name),
-    ],
-    editables=None,
-    )
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
 _SPECS_ALPHA['backendBuckets'] = _InternalSpec(

@@ -57,6 +57,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.networks = self.NetworksService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
+    self.regionBackendServices = self.RegionBackendServicesService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
@@ -470,6 +471,32 @@ class ComputeBeta(base_api.BaseApiClient):
       super(ComputeBeta.BackendServicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of all BackendService resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeBackendServicesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.backendServices.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/backendServices',
+        request_field='',
+        request_type_name=u'ComputeBackendServicesAggregatedListRequest',
+        response_type_name=u'BackendServiceAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes the specified BackendService resource.
@@ -4524,7 +4551,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a autoscaler in the specified project using the data included in the request. This method supports patch semantics.
+      """Updates an autoscaler in the specified project using the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -4576,7 +4603,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates a autoscaler in the specified project using the data included in the request.
+      """Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersUpdateRequest) input message
@@ -4597,6 +4624,224 @@ If you increase the size of the instance group, the group creates new instances 
         relative_path=u'projects/{project}/regions/{region}/autoscalers',
         request_field=u'autoscalerResource',
         request_type_name=u'ComputeRegionAutoscalersUpdateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class RegionBackendServicesService(base_api.BaseApiService):
+    """Service class for the regionBackendServices resource."""
+
+    _NAME = u'regionBackendServices'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionBackendServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionBackendServices.delete',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified regional BackendService resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionBackendServices.get',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesGetRequest',
+        response_type_name=u'BackendService',
+        supports_download=False,
+    )
+
+    def GetHealth(self, request, global_params=None):
+      """Gets the most recent health check results for this regional BackendService.
+
+      Args:
+        request: (ComputeRegionBackendServicesGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceGroupHealth) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHealth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionBackendServices.getHealth',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}/getHealth',
+        request_field=u'resourceGroupReference',
+        request_type_name=u'ComputeRegionBackendServicesGetHealthRequest',
+        response_type_name=u'BackendServiceGroupHealth',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionBackendServices.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices',
+        request_field=u'backendService',
+        request_type_name=u'ComputeRegionBackendServicesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of regional BackendService resources available to the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionBackendServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionBackendServices.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/backendServices',
+        request_field='',
+        request_type_name=u'ComputeRegionBackendServicesListRequest',
+        response_type_name=u'BackendServiceList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionBackendServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionBackendServices.patch',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field=u'backendServiceResource',
+        request_type_name=u'ComputeRegionBackendServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionBackendServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionBackendServices.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeRegionBackendServicesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+
+      Args:
+        request: (ComputeRegionBackendServicesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'compute.regionBackendServices.update',
+        ordered_params=[u'project', u'region', u'backendService'],
+        path_params=[u'backendService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/backendServices/{backendService}',
+        request_field=u'backendServiceResource',
+        request_type_name=u'ComputeRegionBackendServicesUpdateRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -4690,7 +4935,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Get(self, request, global_params=None):
-      """Returns all of the details for the specified managed instance group.
+      """Returns all of the details about the specified managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersGetRequest) input message
@@ -4793,6 +5038,32 @@ If you increase the size of the instance group, the group creates new instances 
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports patch semantics.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionInstanceGroupManagers.patch',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeRegionInstanceGroupManagersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def RecreateInstances(self, request, global_params=None):
       """Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
@@ -4872,7 +5143,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      """Sets the instance template to use when creating new instances in this group. Existing instances are not affected.
+      """Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest) input message
@@ -4946,6 +5217,32 @@ If you increase the size of the instance group, the group creates new instances 
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeRegionInstanceGroupManagersTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'compute.regionInstanceGroupManagers.update',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeRegionInstanceGroupManagersUpdateRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

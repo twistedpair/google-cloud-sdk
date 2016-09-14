@@ -481,8 +481,9 @@ class Registry(object):
         value is a function that can be called to find values for params that
         aren't specified already. If the collection key is None, it matches
         all collections.
-    registered_apis: {str: set}, All the api versions that have been registered.
-        For instance, {'compute': {'v1', 'beta', 'alpha'}}.
+    registered_apis: {str: list}, All the api versions that have been
+        registered, in order of registration.
+        For instance, {'compute': ['v1', 'beta', 'alpha']}.
   """
 
   def __init__(self, parsers_by_collection=None, parsers_by_url=None,
@@ -490,7 +491,7 @@ class Registry(object):
     self.parsers_by_collection = parsers_by_collection or {}
     self.parsers_by_url = parsers_by_url or {}
     self.default_param_funcs = default_param_funcs or {}
-    self.registered_apis = registered_apis or collections.defaultdict(set)
+    self.registered_apis = registered_apis or collections.defaultdict(list)
 
   def _Clone(self):
     return Registry(
@@ -508,15 +509,17 @@ class Registry(object):
     Returns:
       api version which was registered.
     """
-    registered_versions = self.registered_apis.get(api_name, set([]))
-    if not api_version:
-      if len(registered_versions) == 1:
-        api_version = next(iter(registered_versions))
-      else:
-        api_version = core_apis.GetDefaultVersion(api_name)
-    if api_version and api_version in registered_versions:
+    registered_versions = self.registered_apis.get(api_name, [])
+    if api_version in registered_versions:
       # This API version has been registered.
+      registered_versions.remove(api_version)
+      registered_versions.append(api_version)
       return api_version
+    if api_version is None:
+      if registered_versions:
+        # Use last registered api version as default.
+        return registered_versions[-1]
+      api_version = core_apis.GetDefaultVersion(api_name)
 
     api_client = core_apis.GetClientInstance(api_name, api_version,
                                              no_http=True)
@@ -539,7 +542,7 @@ class Registry(object):
         pass
       else:
         self._RegisterCollection(collection)
-    self.registered_apis[api_name].add(api_version)
+    self.registered_apis[api_name].append(api_version)
 
   def _RegisterCollection(self, collection_info):
     """Registers given collection with registry.
@@ -604,7 +607,7 @@ class Registry(object):
     if api_name in self.parsers_by_url:
       del self.parsers_by_url[api_name]
 
-    self.registered_apis[api_name].clear()
+    self.registered_apis[api_name] = []
 
     self._RegisterAPI(api_name, api_version, api)
 
@@ -770,6 +773,13 @@ class Registry(object):
       raise InvalidResourceException('unknown API host: [{0}]'.format(url))
 
     api_name, api_version, resource_path = _APINameAndVersionFromURL(url)
+    try:
+      versions = core_apis.GetVersions(api_name)
+    except core_apis.UnknownAPIError:
+      raise InvalidResourceException(url)
+    if api_version not in versions:
+      raise InvalidResourceException(url)
+
     tokens = [api_name, api_version] + resource_path.split('/')
     endpoint = url[:-len(resource_path)]
     params = {}
@@ -871,12 +881,15 @@ class Registry(object):
       if line.startswith('https://') or line.startswith('http://'):
         try:
           ref = self.ParseURL(line)
-        except InvalidResourceException:
+        except InvalidResourceException as e:
           # TODO(b/29573201): Make sure ParseURL handles this logic by default.
           bucket = None
           if line.startswith(_GCS_URL):
-            bucket_prefix, bucket, object_prefix, objectpath = (
-                line[len(_GCS_URL):].split('/', 3))
+            try:
+              bucket_prefix, bucket, object_prefix, objectpath = (
+                  line[len(_GCS_URL):].split('/', 3))
+            except ValueError:
+              raise e
             if (bucket_prefix, object_prefix) != ('b', 'o'):
               raise
           elif line.startswith(_GCS_ALT_URL):
@@ -941,17 +954,15 @@ class Registry(object):
     """
     return self.Parse(None, collection=collection, params=params)
 
+  def Clear(self):
+    self.parsers_by_collection = {}
+    self.parsers_by_url = {}
+    self.default_param_funcs = {}
+    self.registered_apis = collections.defaultdict(list)
+
 
 # TODO(user): Deglobalize this object, force gcloud to manage it on its own.
 REGISTRY = Registry()
-
-
-def _ClearAPIs():
-  """For testing, clear out any APIs to start with a clean slate.
-
-  """
-  global REGISTRY
-  REGISTRY = Registry()
 
 
 def _GetApiServices(api_client):

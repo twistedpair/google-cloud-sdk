@@ -23,6 +23,16 @@ _SOURCE_DISK_DETAILED_HELP = """\
 
         This flag is mutually exclusive with ``--source-uri''.
 """
+_REPLACEMENT_DISK_DETAILED_HELP = """\
+       Specifies a Compute Engine image as a replacement for the image
+       being phased out. Users of the deprecated image will be advised to switch
+       to this replacement. For example, *--replacement example-image* or
+       *--replacement projects/google/global/images/example-image*. This
+       flag is required when setting the image state to anything other than
+       ``ACTIVE'' or when *--delete-in*, *--delete-on*, *--obsolete-in*, or
+       *--obsolete-on* is provided.
+       """
+
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION
 
 DISK_IMAGE_ARG = compute_flags.ResourceArgument(
@@ -30,11 +40,21 @@ DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     completion_resource_id='compute.images',
     global_collection='compute.images')
 
+REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
+    resource_name='disk image',
+    name='--replacement',
+    completion_resource_id='compute.images',
+    global_collection='compute.images',
+    required=False,
+    short_help='Specifies a Compute Engine image as a replacement.',
+    detailed_help=_REPLACEMENT_DISK_DETAILED_HELP)
+
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
     name='--source-disk',
     completion_resource_id='compute.disks',
     zonal_collection='compute.disks',
+    short_help='The deprecation state to set on the image.',
     detailed_help=_SOURCE_DISK_DETAILED_HELP,
     zone_explanation=_SOURCE_DISK_ZONE_EXPLANATION,
     required=False)

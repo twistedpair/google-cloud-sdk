@@ -50,9 +50,10 @@ def Http(timeout='unset'):
   # GetDefaultTimeout.
   effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
   no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool()
-
+  ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
   http_client = httplib2.Http(timeout=effective_timeout,
                               proxy_info=http_proxy.GetHttpProxyInfo(),
+                              ca_certs=ca_certs,
                               disable_ssl_certificate_validation=no_validate)
 
   # Wrap first to dump any data added by other wrappers.

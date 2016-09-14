@@ -69,27 +69,6 @@ class Collections(enum.Enum):
       'apps/{appsId}/services/{servicesId}/versions/{versionsId}/instances/'
       '{instancesId}',
       [u'appsId', u'servicesId', u'versionsId', u'instancesId'])
-  BIGQUERY_V2_DATASETS = (
-      'bigquery',
-      'v2',
-      'https://www.googleapis.com/bigquery/v2/',
-      'datasets',
-      'projects/{projectId}/datasets/{datasetId}',
-      [u'projectId', u'datasetId'])
-  BIGQUERY_V2_JOBS = (
-      'bigquery',
-      'v2',
-      'https://www.googleapis.com/bigquery/v2/',
-      'jobs',
-      'projects/{projectId}/jobs/{jobId}',
-      [u'projectId', u'jobId'])
-  BIGQUERY_V2_TABLES = (
-      'bigquery',
-      'v2',
-      'https://www.googleapis.com/bigquery/v2/',
-      'tables',
-      'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
-      [u'projectId', u'datasetId', u'tableId'])
   BIGTABLEADMIN_V2_OPERATIONS = (
       'bigtableadmin',
       'v2',
@@ -174,20 +153,6 @@ class Collections(enum.Enum):
       'projects.groups',
       'projects/{projectsId}/groups/{groupsId}',
       [u'projectsId', u'groupsId'])
-  CLOUDFUNCTIONS_V1BETA1_OPERATIONS = (
-      'cloudfunctions',
-      'v1beta1',
-      'https://cloudfunctions.googleapis.com/v1beta1/',
-      'operations',
-      'operations/{operationsId}',
-      [u'operationsId'])
-  CLOUDFUNCTIONS_V1BETA1_PROJECTS_REGIONS_FUNCTIONS = (
-      'cloudfunctions',
-      'v1beta1',
-      'https://cloudfunctions.googleapis.com/v1beta1/',
-      'projects.regions.functions',
-      'projects/{projectsId}/regions/{regionsId}/functions/{functionsId}',
-      [u'projectsId', u'regionsId', u'functionsId'])
   CLOUDFUNCTIONS_V1BETA2_OPERATIONS = (
       'cloudfunctions',
       'v1beta2',
@@ -752,6 +717,13 @@ class Collections(enum.Enum):
       'regionAutoscalers',
       'projects/{project}/regions/{region}/autoscalers/{autoscaler}',
       [u'project', u'region', u'autoscaler'])
+  COMPUTE_BETA_REGIONBACKENDSERVICES = (
+      'compute',
+      'beta',
+      'https://www.googleapis.com/compute/beta/',
+      'regionBackendServices',
+      'projects/{project}/regions/{region}/backendServices/{backendService}',
+      [u'project', u'region', u'backendService'])
   COMPUTE_BETA_REGIONINSTANCEGROUPMANAGERS = (
       'compute',
       'beta',

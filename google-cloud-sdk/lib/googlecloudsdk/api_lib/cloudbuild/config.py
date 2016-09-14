@@ -51,7 +51,9 @@ class FileReadException(exceptions.Error):
     msg = '{path} could not be read'.format(
         path=path,
     )
-    super(NotFoundException, self).__init__(msg)
+    # TODO(user): Add a test to confirm that we get this exception when
+    # expected.
+    super(FileReadException, self).__init__(msg)
 
 
 class ParserError(exceptions.Error):

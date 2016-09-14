@@ -13,14 +13,12 @@
 # limitations under the License.
 
 """Common utilities for the containers tool."""
-import cStringIO
-import json
 import os
-
+import StringIO
 import distutils.version as dist_version
 
+
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -31,39 +29,16 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
 
+HTTP_ERROR_FORMAT = (
+    'ResponseError: code={status_code}, message={status_message}')
+
+
 class Error(core_exceptions.Error):
   """Class for errors raised by container commands."""
 
 
-class APIHttpError(Error, exceptions.HttpException):
-  """Class for Http errors returned from Google API."""
-
-  def __init__(self, code, message):
-    super(APIHttpError, self).__init__(message)
-    self.code = code
-    self.message = message
-
-  def __str__(self):
-    return 'ResponseError: code={0}, message={1}'.format(
-        self.code, self.message)
-
-
-def GetError(error):
-  """Parse HttpError returned from Google API into printable APIHttpError.
-
-  Args:
-    error: apitools_exceptions.HttpError.
-  Returns:
-    APIHttpError containing http error code and error message.
-  """
-  data = json.loads(error.content)
-  code = int(data['error']['code'])
-  message = data['error']['message']
-  return APIHttpError(code, message)
-
-
 def ConstructList(title, items):
-  buf = cStringIO.StringIO()
+  buf = StringIO.StringIO()
   resource_printer.Print(items, 'list[title="{0}"]'.format(title), out=buf)
   return buf.getvalue()
 
