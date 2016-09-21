@@ -38,6 +38,7 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
     self.manifests = self.ManifestsService(self)
     self.operations = self.OperationsService(self)
     self.resources = self.ResourcesService(self)
+    self.typeProviders = self.TypeProvidersService(self)
     self.types = self.TypesService(self)
 
   class DeploymentsService(base_api.BaseApiService):
@@ -128,6 +129,32 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (DeploymentmanagerDeploymentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.deployments.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'DeploymentmanagerDeploymentsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a deployment and all of the resources described by the deployment manifest.
 
@@ -206,6 +233,32 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (DeploymentmanagerDeploymentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.deployments.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'DeploymentmanagerDeploymentsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Stop(self, request, global_params=None):
       """Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
 
@@ -229,6 +282,32 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         request_field=u'deploymentsStopRequest',
         request_type_name=u'DeploymentmanagerDeploymentsStopRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (DeploymentmanagerDeploymentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.deployments.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/deployments/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'DeploymentmanagerDeploymentsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -441,6 +520,172 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DeploymentmanagerResourcesListRequest',
         response_type_name=u'ResourcesListResponse',
+        supports_download=False,
+    )
+
+  class TypeProvidersService(base_api.BaseApiService):
+    """Service class for the typeProviders resource."""
+
+    _NAME = u'typeProviders'
+
+    def __init__(self, client):
+      super(DeploymentmanagerV2beta.TypeProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes a type provider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'deploymentmanager.typeProviders.delete',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets information about a specific type provider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeProvider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.get',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersGetRequest',
+        response_type_name=u'TypeProvider',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a type provider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'deploymentmanager.typeProviders.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders',
+        request_field=u'typeProvider',
+        request_type_name=u'DeploymentmanagerTypeProvidersInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all resource type providers for Deployment Manager.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TypeProvidersListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'deploymentmanager.typeProviders.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/global/typeProviders',
+        request_field='',
+        request_type_name=u'DeploymentmanagerTypeProvidersListRequest',
+        response_type_name=u'TypeProvidersListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a type provider. This method supports patch semantics.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'deploymentmanager.typeProviders.patch',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        request_field=u'typeProviderResource',
+        request_type_name=u'DeploymentmanagerTypeProvidersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates a type provider.
+
+      Args:
+        request: (DeploymentmanagerTypeProvidersUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'deploymentmanager.typeProviders.update',
+        ordered_params=[u'project', u'typeProvider'],
+        path_params=[u'project', u'typeProvider'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/typeProviders/{typeProvider}',
+        request_field=u'typeProviderResource',
+        request_type_name=u'DeploymentmanagerTypeProvidersUpdateRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

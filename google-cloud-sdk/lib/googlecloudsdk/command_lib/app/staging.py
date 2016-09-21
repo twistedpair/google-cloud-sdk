@@ -88,12 +88,14 @@ class _Command(object):
       str, the path to the command
 
     Raises:
-       NoSdkRootError, if no Cloud SDK root could be found (and therefore the
+       NoSdkRootError: if no Cloud SDK root could be found (and therefore the
        command is not installed).
     """
     try:
       sdk_bin_path = config.Paths().sdk_bin_path
     except AttributeError:
+      raise NoSdkRootError()
+    if not sdk_bin_path:
       raise NoSdkRootError()
     return os.path.join(sdk_bin_path, self.name)
 
@@ -193,3 +195,7 @@ class Stager(object):
 
 def GetStager():
   return Stager(_STAGING_REGISTRY)
+
+
+def GetNoopStager():
+  return Stager({})

@@ -75,8 +75,8 @@ class ComputeApiHolder(object):
     """Specifies the resources parser for compute resources."""
     if self._resources is None:
       _SetResourceParamDefaults()
-      self._resources = resources.REGISTRY.CloneAndSwitchAPIs(
-          self.client.apitools_client)
+      self._resources = resources.REGISTRY.Clone()
+      self._resources.RegisterApiByName('compute', self._api_version)
     return self._resources
 
 
@@ -108,7 +108,8 @@ class ComputeUserAccountsApiHolder(object):
           collection=None,
           param='project',
           resolver=resolvers.FromProperty(properties.VALUES.core.project))
-      self._resources = resources.REGISTRY.CloneAndSwitchAPIs(self.client)
+      self._resources = resources.REGISTRY.Clone()
+      self._resources.RegisterApiByName('clouduseraccounts', self._api_version)
     return self._resources
 
 

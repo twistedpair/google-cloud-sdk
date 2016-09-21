@@ -36,14 +36,6 @@ class UnknownVersionError(exceptions.Error):
             api_name, api_version))
 
 
-class InvalidEndpointException(exceptions.Error):
-  """Exception for when an API endpoint is malformed."""
-
-  def __init__(self, url):
-    super(InvalidEndpointException, self).__init__(
-        "URL does not start with 'http://' or 'https://' [{0}]".format(url))
-
-
 # This is the map of API name aliases to actual API names.
 # Do not add to this map unless the api definition uses different names for api
 # name, endpoint and/or collection names.
@@ -87,19 +79,20 @@ def ConstructApiDef(api_name,
   """
   api_name, _ = _GetApiNameAndAlias(api_name)
   client_cls_name = _CamelCase(api_name) + _CamelCase(api_version)
-  common_fmt = '{base}.{api_name}.{api_version}.{api_name}_{api_version}_'
+  class_path = '{base}.{api_name}.{api_version}'.format(
+      base=base_pkg, api_name=api_name, api_version=api_version,)
 
+  common_fmt = '{api_name}_{api_version}_'
   client_cls_path_fmt = common_fmt + 'client.{api_client_class}'
-  client_cls_path = client_cls_path_fmt.format(base=base_pkg,
-                                               api_name=api_name,
+  client_cls_path = client_cls_path_fmt.format(api_name=api_name,
                                                api_version=api_version,
                                                api_client_class=client_cls_name)
 
   messages_mod_path_fmt = common_fmt + 'messages'
-  messages_mod_path = messages_mod_path_fmt.format(base=base_pkg,
-                                                   api_name=api_name,
+  messages_mod_path = messages_mod_path_fmt.format(api_name=api_name,
                                                    api_version=api_version)
-  return apis_map.APIDef(client_cls_path, messages_mod_path, is_default)
+  return apis_map.APIDef(class_path, client_cls_path,
+                         messages_mod_path, is_default)
 
 
 def AddToApisMap(api_name, api_version, default=None,
@@ -142,6 +135,11 @@ def SetDefaultVersion(api_name, api_version):
   default_api_def = _GetApiDef(api_name, default_version)
   default_api_def.default_version = False
   api_def.default_version = True
+
+
+def GetApiNames():
+  """Returns list of avaibleable apis, ignoring the version."""
+  return sorted(apis_map.MAP.keys())
 
 
 def GetVersions(api_name):
@@ -229,7 +227,7 @@ def GetClientClass(api_name, api_version):
   """
   api_def = _GetApiDef(api_name, api_version)
 
-  [module_path, client_class_name] = api_def.client_classpath.rsplit('.', 1)
+  module_path, client_class_name = api_def.client_full_classpath.rsplit('.', 1)
   module_obj = __import__(module_path, fromlist=[client_class_name])
   return getattr(module_obj, client_class_name)
 
@@ -282,48 +280,6 @@ def GetDefaultEndpointUrl(url):
   return url
 
 
-def SplitDefaultEndpointUrl(url):
-  """Returns api_name, api_version, resource_path tuple for a default api url.
-
-  Supports four formats:
-  http(s)://www.googleapis.com/api/version/resource-path,
-  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path,
-  http(s)://api.googleapis.com/version/resource-path, and
-  http(s)://someotherdoman/api/version/resource-path.
-
-  If there is an api endpoint override defined that maches the url,
-  that api name will be returned.
-
-  Args:
-    url: str, The resource url.
-
-  Returns:
-    (str, str, str): The API name, version, resource_path
-  """
-  tokens = _StripUrl(url).split('/')
-  domain = tokens[0]
-  resource_path = ''
-  if ('googleapis' not in domain
-      or domain.startswith('www.') or domain.startswith('www-')):
-    if len(tokens) > 1:
-      api_name = tokens[1]
-    else:
-      api_name = None
-    if len(tokens) > 2:
-      version = tokens[2]
-    else:
-      version = None
-    resource_path = '/'.join(tokens[3:])
-  else:
-    api_name = tokens[0].split('.')[0]
-    if len(tokens) > 1:
-      version = tokens[1]
-      resource_path = '/'.join(tokens[2:])
-    else:
-      version = None
-  return api_name, version, resource_path
-
-
 def GetMessagesModule(api_name, api_version):
   """Returns the messages module for the API specified in the args.
 
@@ -335,12 +291,16 @@ def GetMessagesModule(api_name, api_version):
     Module containing the definitions of messages for the specified API.
   """
   api_def = _GetApiDef(api_name, api_version)
-  return __import__(api_def.messages_modulepath, fromlist=['something'])
+  # fromlist below must not be empty, see:
+  # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
+  return __import__(api_def.messages_full_modulepath, fromlist=['something'])
 
 
-def _StripUrl(url):
-  """Strip a http: or https: prefix, then strip leading and trailing slashes."""
-  if url.startswith('https://') or url.startswith('http://'):
-    return url[url.index(':') + 1:].strip('/')
-  raise InvalidEndpointException(url)
+def GetResourceModule(api_name, api_version):
+  """Imports and returns given api resources module."""
 
+  api_def = _GetApiDef(api_name, api_version)
+  # fromlist below must not be empty, see:
+  # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
+  return __import__(api_def.class_path + '.' + 'resources',
+                    fromlist=['something'])

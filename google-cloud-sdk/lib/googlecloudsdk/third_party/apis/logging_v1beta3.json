@@ -3,9 +3,10 @@
   "discoveryVersion": "v1",
   "id": "logging:v1beta3",
   "name": "logging",
+  "canonicalName": "Logging",
   "version": "v1beta3",
   "revision": "0",
-  "title": "Google Cloud Logging API",
+  "title": "Stackdriver Logging API",
   "description": "Writes log entries and manages your Stackdriver Logging configuration.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -262,15 +263,15 @@
         "severity": {
           "description": "The severity of the log entry. If omitted, `LogSeverity.DEFAULT`\nis used.",
           "enumDescriptions": [
-            "The log entry has no assigned severity level.",
-            "Debug or trace information.",
-            "Routine information, such as ongoing status or performance.",
-            "Normal but significant events, such as start up, shut down, or\nconfiguration.",
-            "Warning events might cause problems.",
-            "Error events are likely to cause problems.",
-            "Critical events cause more severe problems or brief outages.",
-            "A person must take an action immediately.",
-            "One or more systems are unusable."
+            "(0) The log entry has no assigned severity level.",
+            "(100) Debug or trace information.",
+            "(200) Routine information, such as ongoing status or performance.",
+            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(400) Warning events might cause problems.",
+            "(500) Error events are likely to cause problems.",
+            "(600) Critical events cause more severe problems or outages.",
+            "(700) A person must take an action immediately.",
+            "(800) One or more systems are unusable."
           ],
           "type": "string",
           "enum": [
@@ -557,6 +558,16 @@
           "items": {
             "$ref": "LogError"
           }
+        },
+        "startTime": {
+          "description": "Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Time at which this sink expires",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -835,15 +846,15 @@
         "severity": {
           "description": "Severity of this log entry.",
           "enumDescriptions": [
-            "The log entry has no assigned severity level.",
-            "Debug or trace information.",
-            "Routine information, such as ongoing status or performance.",
-            "Normal but significant events, such as start up, shut down, or\nconfiguration.",
-            "Warning events might cause problems.",
-            "Error events are likely to cause problems.",
-            "Critical events cause more severe problems or brief outages.",
-            "A person must take an action immediately.",
-            "One or more systems are unusable."
+            "(0) The log entry has no assigned severity level.",
+            "(100) Debug or trace information.",
+            "(200) Routine information, such as ongoing status or performance.",
+            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(400) Warning events might cause problems.",
+            "(500) Error events are likely to cause problems.",
+            "(600) Critical events cause more severe problems or outages.",
+            "(700) A person must take an action immediately.",
+            "(800) One or more systems are unusable."
           ],
           "type": "string",
           "enum": [

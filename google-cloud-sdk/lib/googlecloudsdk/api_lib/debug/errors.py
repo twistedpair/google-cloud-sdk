@@ -14,11 +14,7 @@
 
 """Error support for Cloud Debugger libraries."""
 
-import functools
-import json
-
-from apitools.base.py import exceptions as api_exceptions
-
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions
 
 
@@ -42,13 +38,11 @@ class BreakpointNotFoundError(DebugError):
                                        ', '.join(breakpoint_ids)))
 
 
-class UnknownHttpError(DebugError):
+class UnknownHttpError(api_exceptions.HttpException, DebugError):
   """An unknown error occurred during a remote API call."""
 
   def __init__(self, error):
-    error_content = json.loads(error.content)['error']
-    message = '%s %s\n' % (error_content['code'], error_content['message'])
-    super(UnknownHttpError, self).__init__(message)
+    super(UnknownHttpError, self).__init__(error)
 
 
 class MultipleDebuggeesError(DebugError):
@@ -92,38 +86,3 @@ class NoDebuggeeError(DebugError):
           'targets:\n    {0}\n'.format(
               '\n    '.join([d.name for d in debuggees])))
     super(NoDebuggeeError, self).__init__(msg)
-
-
-def ErrorFromHttpError(error):
-  """Returns a more specific error from an HttpError.
-
-  Args:
-    error: HttpError resulting from unsuccessful call to API.
-
-  Returns:
-    Specific error based on error reason in HttpError.
-  """
-  # Handle individual errors based error.status_code here as new API calls
-  # are added.
-  return UnknownHttpError(error)
-
-
-def HandleHttpError(method=None, error_handler=ErrorFromHttpError):
-  """Decorator that catches HttpError and raises corresponding error.
-
-  Args:
-    method: The function to decorate.
-    error_handler: A function which maps an HttpError to a more meaningful
-      app-specific error.
-  Returns:
-    The decorator function
-  """
-  if method is None:
-    return functools.partial(HandleHttpError, error_handler=error_handler)
-  @functools.wraps(method)
-  def CatchHTTPErrorRaiseHTTPException(*args, **kwargs):
-    try:
-      return method(*args, **kwargs)
-    except api_exceptions.HttpError as error:
-      raise error_handler(error)
-  return CatchHTTPErrorRaiseHTTPException

@@ -3,9 +3,10 @@
   "discoveryVersion": "v1",
   "id": "logging:v2beta1",
   "name": "logging",
+  "canonicalName": "Logging",
   "version": "v2beta1",
   "revision": "0",
-  "title": "Google Cloud Logging API",
+  "title": "Stackdriver Logging API",
   "description": "Writes log entries and manages your Stackdriver Logging configuration.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -146,22 +147,22 @@
       "type": "object",
       "properties": {
         "logName": {
-          "description": "Optional. A default log resource name for those log entries in `entries`\nthat do not specify their own `logName`.  Example:\n`\"projects\/my-project\/logs\/syslog\"`.  See\nLogEntry.",
+          "description": "Optional. A default log resource name that is assigned to all log entries\nin `entries` that do not specify a value for `log_name`.  Example:\n`\"projects\/my-project\/logs\/syslog\"`.  See\nLogEntry.",
           "type": "string"
         },
         "resource": {
-          "description": "Optional. A default monitored resource for those log entries in `entries`\nthat do not specify their own `resource`.",
+          "description": "Optional. A default monitored resource object that is assigned to all log\nentries in `entries` that do not specify a value for `resource`. Example:\n\n    { \"type\": \"gce_instance\",\n      \"labels\": {\n        \"zone\": \"us-central1-a\", \"instance_id\": \"00000000000000000000\" }}\n\nSee LogEntry.",
           "$ref": "MonitoredResource"
         },
         "labels": {
-          "description": "Optional. User-defined `key:value` items that are added to\nthe `labels` field of each log entry in `entries`, except when a log\nentry specifies its own `key:value` item with the same key.\nExample: `{ \"size\": \"large\", \"color\":\"red\" }`",
+          "description": "Optional. Default labels that are added to the `labels` field of all log\nentries in `entries`. If a log entry already has a label with the same key\nas a label in this parameter, then the log entry's label is not changed.\nSee LogEntry.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "entries": {
-          "description": "Required. The log entries to write. The log entries must have values for\nall required fields.\n\nTo improve throughput and to avoid exceeding the\n[quota limit](\/logging\/quota-policy) for calls to `entries.write`,\nuse this field to write multiple log entries at once rather than\ncalling this method for each log entry.",
+          "description": "Required. The log entries to write. Values supplied for the fields\n`log_name`, `resource`, and `labels` in this `entries.write` request are\nadded to those log entries that do not provide their own values for the\nfields.\n\nTo improve throughput and to avoid exceeding the\n[quota limit](\/logging\/quota-policy) for calls to `entries.write`,\nyou should write multiple log entries at once rather than\ncalling this method for each individual log entry.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
@@ -232,15 +233,15 @@
         "severity": {
           "description": "Optional. The severity of the log entry. The default value is\n`LogSeverity.DEFAULT`.",
           "enumDescriptions": [
-            "The log entry has no assigned severity level.",
-            "Debug or trace information.",
-            "Routine information, such as ongoing status or performance.",
-            "Normal but significant events, such as start up, shut down, or\nconfiguration.",
-            "Warning events might cause problems.",
-            "Error events are likely to cause problems.",
-            "Critical events cause more severe problems or brief outages.",
-            "A person must take an action immediately.",
-            "One or more systems are unusable."
+            "(0) The log entry has no assigned severity level.",
+            "(100) Debug or trace information.",
+            "(200) Routine information, such as ongoing status or performance.",
+            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(400) Warning events might cause problems.",
+            "(500) Error events are likely to cause problems.",
+            "(600) Critical events cause more severe problems or outages.",
+            "(700) A person must take an action immediately.",
+            "(800) One or more systems are unusable."
           ],
           "type": "string",
           "enum": [
@@ -275,11 +276,11 @@
           "$ref": "LogEntryOperation"
         },
         "internalId": {
-
+          "description": "Internal ID of the owner of this log entry.",
           "$ref": "InternalEntityId"
         },
         "writerEmailAddress": {
-
+          "description": "The email address of the role that wrote the entry on behalf of a\nuser. Not populated for entries written by a user.",
           "type": "string"
         }
       }
@@ -372,7 +373,7 @@
     },
     "InternalEntityId": {
       "id": "InternalEntityId",
-
+      "description": "Internal ID of a Cloud Entity.",
       "type": "object",
       "properties": {
         "projectNumber": {
@@ -795,6 +796,20 @@
         "writerIdentity": {
           "description": "Output only. The iam identity to which the destination needs to grant write\naccess.  This may be a service account or a group.\nExamples (Do not assume these specific values):\n   \"serviceAccount:cloud-logs@system.gserviceaccount.com\"\n   \"group:cloud-logs@google.com\"\n\n  For GCS destinations, the role \"roles\/owner\" is required on the bucket\n  For Cloud Pubsub destinations, the role \"roles\/pubsub.publisher\" is\n    required on the topic\n  For BigQuery, the role \"roles\/editor\" is required on the dataset",
           "type": "string"
+        },
+        "includeChildren": {
+          "description": "If true, then logs from children of this entity will also be sent to this\nsink. e.g. If this sink is associated with an organization, then logs from\nall projects in the organization as well as the organization itself will be\nsent to this sink. This only applies to sinks in organizations and folders.\nThis field is ignored for sinks in projects and billing_accounts.",
+          "type": "boolean"
+        },
+        "startTime": {
+          "description": "Time range for which this sink is active.\nLogs are exported only if start_time <= entry.timestamp < end_time\nBoth start_time and end_time may be omitted to specify\n(half) infinite ranges.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Time at which this sink expires",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -845,6 +860,32 @@
         }
       }
     },
+    "TranslateFilterRequest": {
+      "id": "TranslateFilterRequest",
+      "description": "The parameters to `TranslateFilter`.",
+      "type": "object",
+      "properties": {
+        "v1Filter": {
+          "description": "Required. The V1 filter to translate.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Optional. The project-id associated with this filter. This is required only\nto translate the log_name filter, which has a project-id in it.",
+          "type": "string"
+        }
+      }
+    },
+    "TranslateFilterResponse": {
+      "id": "TranslateFilterResponse",
+      "description": "The response from `TranslateFilter`.",
+      "type": "object",
+      "properties": {
+        "v2Filter": {
+          "description": "The translated v2 filter.",
+          "type": "string"
+        }
+      }
+    },
     "ListLogMetricsResponse": {
       "id": "ListLogMetricsResponse",
       "description": "Result returned from ListLogMetrics.",
@@ -883,8 +924,8 @@
         "version": {
           "description": "The API version that created or updated this metric.",
           "enumDescriptions": [
-            "Cloud Logging API V2.",
-            "Cloud Logging API V1."
+            "Stackdriver Logging API v2.",
+            "Stackdriver Logging API v1."
           ],
           "type": "string",
           "enum": [
@@ -1057,15 +1098,15 @@
         "severity": {
           "description": "Severity of this log entry.",
           "enumDescriptions": [
-            "The log entry has no assigned severity level.",
-            "Debug or trace information.",
-            "Routine information, such as ongoing status or performance.",
-            "Normal but significant events, such as start up, shut down, or\nconfiguration.",
-            "Warning events might cause problems.",
-            "Error events are likely to cause problems.",
-            "Critical events cause more severe problems or brief outages.",
-            "A person must take an action immediately.",
-            "One or more systems are unusable."
+            "(0) The log entry has no assigned severity level.",
+            "(100) Debug or trace information.",
+            "(200) Routine information, such as ongoing status or performance.",
+            "(300) Normal but significant events, such as start up, shut down, or\na configuration change.",
+            "(400) Warning events might cause problems.",
+            "(500) Error events are likely to cause problems.",
+            "(600) Critical events cause more severe problems or outages.",
+            "(700) A person must take an action immediately.",
+            "(800) One or more systems are unusable."
           ],
           "type": "string",
           "enum": [
@@ -1223,7 +1264,7 @@
               "description": "Lists the resource keys that have log entries in this project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
+                  "description": "Part of `parent`. The resource name of the entity whose resource keys are to be listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1762,7 +1803,7 @@
               "description": "Lists the resource keys that have log entries in this project.",
               "parameters": {
                 "organizationsId": {
-                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
+                  "description": "Part of `parent`. The resource name of the entity whose resource keys are to be listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1956,7 +1997,7 @@
               "description": "Lists the resource keys that have log entries in this project.",
               "parameters": {
                 "billingAccountsId": {
-                  "description": "Part of `parent`. The resource name of the entity whose reource keys are to be listed.",
+                  "description": "Part of `parent`. The resource name of the entity whose resource keys are to be listed.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -2163,10 +2204,10 @@
     },
     "v2beta1": {
       "methods": {
-        "getLogs_usage": {
-          "id": "logging.getLogs_usage",
-          "path": "v2beta1/logs_usage",
-          "flatPath": "v2beta1/logs_usage",
+        "getLogsUsage": {
+          "id": "logging.getLogsUsage",
+          "path": "v2beta1/logsUsage",
+          "flatPath": "v2beta1/logsUsage",
           "httpMethod": "GET",
           "description": "Gets logs usage.",
           "parameters": {
@@ -2206,6 +2247,29 @@
           "scopes": [
             "https://www.googleapis.com/auth/logging.read",
             "https://www.googleapis.com/auth/monitoring"
+          ]
+        },
+        "translateFilter": {
+          "id": "logging.translateFilter",
+          "path": "v2beta1/translateFilter",
+          "flatPath": "v2beta1/translateFilter",
+          "httpMethod": "POST",
+          "description": "Translates a v1 filter to its v2 equivalent.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "TranslateFilterRequest"
+          },
+          "response": {
+            "$ref": "TranslateFilterResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
           ]
         }
       }

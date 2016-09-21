@@ -225,7 +225,7 @@ successfully or unsuccessfully.
         method_id=u'cloudbuild.projects.builds.list',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/projects/{projectId}/builds',
         request_field='',
         request_type_name=u'CloudbuildProjectsBuildsListRequest',

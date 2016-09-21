@@ -14,11 +14,8 @@
 
 """A library that is used to support our commands."""
 
-import json
 import re
 import time
-
-from apitools.base.py import exceptions as api_ex
 
 from googlecloudsdk.calliope import exceptions as sdk_ex
 from googlecloudsdk.core import apis
@@ -94,21 +91,11 @@ def MakeCluster(args):
   return cluster
 
 
-def MapHttpError(f):
-  def Func(*args, **kwargs):
-    try:
-      return f(*args, **kwargs)
-    except api_ex.HttpError as e:
-      raise sdk_ex.HttpException(json.loads(e.content)['error']['message'])
-  return Func
-
-
 def ExtractZoneAndCluster(cluster_id):
   m = re.match('projects/[^/]+/zones/([^/]+)/clusters/(.*)', cluster_id)
   return m.group(1), m.group(2)
 
 
-@MapHttpError
 def WaitForOp(context, op_id, text):
   cli = context['clusteradmin']
   msg = context['clusteradmin-msgs'].BigtableclusteradminOperationsGetRequest(
@@ -125,7 +112,6 @@ def WaitForOp(context, op_id, text):
       time.sleep(0.5)
 
 
-@MapHttpError
 def WaitForOpV2(operation, spinner_text):
   """Wait for a longrunning.Operation to complete, using the V2 API.
 

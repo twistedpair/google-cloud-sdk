@@ -905,6 +905,28 @@
         "isCancellationRequested": {
           "description": "Whether the cancellation of this operation has been requested.",
           "type": "boolean"
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "enumDescriptions": [
+            "Unspecified operation type.",
+            "An operation to create a new version.",
+            "An operation to delete an existing version."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "CREATE_VERSION",
+            "DELETE_VERSION"
+          ]
+        },
+        "modelName": {
+          "description": "Contains the name of the model associated with the operation.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Contains the version associated with the operation.",
+          "$ref": "GoogleCloudMlV1beta1__Version"
         }
       }
     },

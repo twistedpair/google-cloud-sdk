@@ -27,7 +27,7 @@ import urllib
 
 from apitools.base.py import base_api
 
-from googlecloudsdk.api_lib.util import resource
+from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -160,7 +160,7 @@ class _ResourceParser(object):
 
     Args:
       params_defaults_func: func(param)->value.
-      collection_info: resource.CollectionInfo, description for collection.
+      collection_info: resource_util.CollectionInfo, description for collection.
     """
     self.params_defaults_func = params_defaults_func
     self.collection_info = collection_info
@@ -200,17 +200,8 @@ class _ResourceParser(object):
     else:
       fields = [None] * len(self.collection_info.params)
 
-    # Build up the resource params from kwargs or the fields in the
-    # collection-path.
-    request = self.collection_info.request_type()
-    for param, field in zip(self.collection_info.params, fields):
-      setattr(request, param, field)
-
-    ref = Resource(
-        self.collection_info.full_name, self.collection_info.path, request,
-        self.collection_info.params, kwargs,
-        collection_path, base_url or self.collection_info.base_url,
-        self.params_defaults_func)
+    ref = Resource(self.collection_info, fields, kwargs,
+                   collection_path, base_url, self.params_defaults_func)
 
     if resolve:
       ref.Resolve()
@@ -302,9 +293,8 @@ class _ResourceParser(object):
 class Resource(object):
   """Information about a Cloud resource."""
 
-  def __init__(self, collection, relative_path, request,
-               ordered_params, resolvers,
-               collection_path, endpoint_url, param_defaults):
+  def __init__(self, collection_info, param_values,
+               resolvers, collection_path, endpoint_url, param_defaults):
     """Create a Resource object that may be partially resolved.
 
     To allow resolving of unknown params to happen after parse-time, the
@@ -312,35 +302,31 @@ class Resource(object):
     class.
 
     Args:
-      collection: str, The collection name for this resource.
-      relative_path: str, relative path uri template.
-      request: protorpc.messages.Message (not imported) subclass, An instance
-          of a request that can be used to fetch the actual entity in the
-          collection.
-      ordered_params: [str], The list of parameters that define this resource.
+      collection_info: resource_util.CollectionInfo, The collection description
+          for this resource.
+      param_values: list, A list of values for parameters, which can be None in
+        which case resolvers and param_defaults will be used.
       resolvers: {str:(str or func()->str)}, The resolution functions that can
           be used to fill in values that were not specified in the command line.
       collection_path: str, The original command-line argument used to create
           this Resource.
-      endpoint_url: str, service endpoint url for this resource.
+      endpoint_url: str, override service endpoint url for this resource. If
+           None default base url of collection api will be used.
       param_defaults: func(param) -> default value for given parameter
-          in ordered_params.
+          in collection_info.params.
     """
-    self.__collection = collection
-    self._relative_path = relative_path
-    self.__request = request
+    self._collection_info = collection_info
     self.__name = None
     self.__self_link = None
-    self.__ordered_params = ordered_params
     self.__resolvers = resolvers
     self.__collection_path = collection_path
-    self._endpoint_url = endpoint_url
+    self._endpoint_url = endpoint_url or collection_info.base_url
     self._param_defaults = param_defaults
-    for param in ordered_params:
-      setattr(self, param, getattr(request, param))
+    for param, value in zip(collection_info.params, param_values):
+      setattr(self, param, value)
 
   def Collection(self):
-    return self.__collection
+    return self._collection_info.full_name
 
   def Name(self):
     self.Resolve()
@@ -356,9 +342,15 @@ class Resource(object):
     return self.__self_link
 
   def Request(self):
-    for param in self.__ordered_params:
-      setattr(self.__request, param, getattr(self, param))
-    return self.__request
+    """Creates apitools Get request for this resource."""
+    messages_module = core_apis.GetMessagesModule(
+        self._collection_info.api_name, self._collection_info.api_version)
+    request_type_cls = getattr(messages_module,
+                               self._collection_info.request_type)
+    request = request_type_cls()
+    for param_name in self._collection_info.params:
+      setattr(request, param_name, getattr(self, param_name))
+    return request
 
   def Resolve(self):
     """Resolve unknown parameters for this resource.
@@ -368,7 +360,7 @@ class Resource(object):
           unknown.
     """
     self.WeakResolve()
-    for param in self.__ordered_params:
+    for param in self._collection_info.params:
       if not getattr(self, param, None):
         raise UnknownFieldException(self.__collection_path, param)
 
@@ -377,7 +369,7 @@ class Resource(object):
 
        Unknown parameters are left as None.
     """
-    for param in self.__ordered_params:
+    for param in self._collection_info.params:
       if getattr(self, param, None):
         continue
 
@@ -398,11 +390,11 @@ class Resource(object):
         pass
 
     effective_params = dict(
-        [(k, getattr(self, k) or '*') for k in self.__ordered_params])
+        [(k, getattr(self, k) or '*') for k in self._collection_info.params])
 
     self.__self_link = '%s%s' % (
         self._endpoint_url,
-        uritemplate.expand(self._relative_path, effective_params))
+        uritemplate.expand(self._collection_info.path, effective_params))
 
     if (self.Collection().startswith('compute.') or
         self.Collection().startswith('clouduseraccounts.') or
@@ -411,11 +403,11 @@ class Resource(object):
       # storage pending b/15425944.
       self.__self_link = urllib.unquote(self.__self_link)
 
-    if self.__ordered_params:
+    if self._collection_info.params:
       # The last param is defined to be the resource's "name", and is the only
       # part of the resource that cannot be inferred by a resolver or other
       # context, and MUST be provided in the argument.
-      self.__name = getattr(self, self.__ordered_params[-1])
+      self.__name = getattr(self, self._collection_info.params[-1])
 
   def __str__(self):
     return self.SelfLink()
@@ -450,7 +442,7 @@ def _APINameAndVersionFromURL(url):
     (str, str): The API name. and version
   """
   default_enpoint_url = core_apis.GetDefaultEndpointUrl(url)
-  return core_apis.SplitDefaultEndpointUrl(default_enpoint_url)
+  return resource_util.SplitDefaultEndpointUrl(default_enpoint_url)
 
 
 def _APINameFromCollection(collection):
@@ -493,14 +485,34 @@ class Registry(object):
     self.default_param_funcs = default_param_funcs or {}
     self.registered_apis = registered_apis or collections.defaultdict(list)
 
-  def _Clone(self):
-    return Registry(
+  def Clone(self):
+    """Fully clones this registry."""
+    reg = Registry(
         parsers_by_collection=_CopyNestedDictSpine(self.parsers_by_collection),
         parsers_by_url=_CopyNestedDictSpine(self.parsers_by_url),
         default_param_funcs=_CopyNestedDictSpine(self.default_param_funcs),
         registered_apis=copy.deepcopy(self.registered_apis))
+    for _, version_collections in reg.parsers_by_collection.iteritems():
+      for _, collection_parsers in version_collections.iteritems():
+        for _, parser in collection_parsers.iteritems():
+          parser.params_defaults_func = functools.partial(
+              reg.GetParamDefault,
+              parser.collection_info.api_name,
+              parser.collection_info.name)
 
-  def _RegisterAPIByName(self, api_name, api_version=None):
+    def _UpdateParser(dict_or_parser):
+      if type(dict_or_parser) is types.DictType:
+        for _, val in dict_or_parser.iteritems():
+          _UpdateParser(val)
+      else:
+        dict_or_parser.params_defaults_func = functools.partial(
+            reg.GetParamDefault,
+            dict_or_parser.collection_info.api_name,
+            dict_or_parser.collection_info.name)
+    _UpdateParser(reg.parsers_by_url)
+    return reg
+
+  def RegisterApiByName(self, api_name, api_version=None):
     """Register the given API if it has not been registered already.
 
     Args:
@@ -521,28 +533,11 @@ class Registry(object):
         return registered_versions[-1]
       api_version = core_apis.GetDefaultVersion(api_name)
 
-    api_client = core_apis.GetClientInstance(api_name, api_version,
-                                             no_http=True)
-    self._RegisterAPI(api_name, api_version, api_client)
-    return api_version
+    for collection in _GetApiCollections(api_name, api_version):
+      self._RegisterCollection(collection)
 
-  def _RegisterAPI(self, api_name, api_version, api_client):
-    """Register a generated API with this registry.
-
-    Args:
-      api_name: str, The API name under which register resources of api_client.
-      api_version: str, Use this api version to registerr resources.
-      api_client: base_api.BaseApiClient, The client for a Google Cloud API.
-    """
-    for service in _GetApiServices(api_client):
-      try:
-        collection = _GetServiceCollection(
-            api_name, api_version, api_client, service)
-      except _ResourceWithoutGetException:
-        pass
-      else:
-        self._RegisterCollection(collection)
     self.registered_apis[api_name].append(api_version)
+    return api_version
 
   def _RegisterCollection(self, collection_info):
     """Registers given collection with registry.
@@ -587,54 +582,6 @@ class Registry(object):
       raise AmbiguousResourcePath(cur_level[None], parser)
 
     cur_level[None] = parser
-
-  def _SwitchAPI(self, api):
-    """Replace the registration of one version of an API with another.
-
-    This method will remove references to the previous version of the provided
-    API from self.parsers_by_collection, but leave self.parsers_by_url intact.
-
-    Args:
-      api: base_api.BaseApiClient, The client for a Google Cloud API.
-    """
-    api_name, api_version, _ = _APINameAndVersionFromURL(api.url)
-    if api_version is None:
-      # For some apis url does not contain api version, and
-      # is part of collection path.
-      api_version = api._VERSION  # pylint:disable=protected-access
-    if api_name in self.parsers_by_collection:
-      del self.parsers_by_collection[api_name]
-    if api_name in self.parsers_by_url:
-      del self.parsers_by_url[api_name]
-
-    self.registered_apis[api_name] = []
-
-    self._RegisterAPI(api_name, api_version, api)
-
-  def CloneAndSwitchAPIs(self, *apis):
-    """Clone registry and replace any given apis."""
-    reg = self._Clone()
-    for _, version_collections in reg.parsers_by_collection.iteritems():
-      for _, collection_parsers in version_collections.iteritems():
-        for _, parser in collection_parsers.iteritems():
-          parser.param_defaults_func = functools.partial(
-              reg.GetParamDefault,
-              parser.collection_info.api_name,
-              parser.collection_info.name)
-
-    def _UpdateParser(dict_or_parser):
-      if type(dict_or_parser) is types.DictType:
-        for _, val in dict_or_parser.iteritems():
-          _UpdateParser(val)
-      else:
-        dict_or_parser.param_default_func = functools.partial(
-            reg.GetParamDefault,
-            dict_or_parser.collection_info.api_name,
-            dict_or_parser.collection_info.name)
-    _UpdateParser(reg.parsers_by_url)
-    for api in apis:
-      reg._SwitchAPI(api)  # pylint:disable=protected-access
-    return reg
 
   def SetParamDefault(self, api, collection, param, resolver):
     """Provide a function that will be used to fill in missing values.
@@ -722,7 +669,7 @@ class Registry(object):
     """
     # Register relevant API if necessary and possible
     api_name = _APINameFromCollection(collection)
-    api_version = self._RegisterAPIByName(api_name)
+    api_version = self.RegisterApiByName(api_name)
 
     parser = (self.parsers_by_collection
               .get(api_name, {}).get(api_version, {}).get(collection, None))
@@ -772,7 +719,13 @@ class Registry(object):
     if not match:
       raise InvalidResourceException('unknown API host: [{0}]'.format(url))
 
-    api_name, api_version, resource_path = _APINameAndVersionFromURL(url)
+    default_enpoint_url = core_apis.GetDefaultEndpointUrl(url)
+    api_name, api_version, resource_path = (
+        resource_util.SplitDefaultEndpointUrl(default_enpoint_url))
+    if not url.startswith(default_enpoint_url):
+      # Use last registered api version in case of override.
+      api_version = self.registered_apis.get(api_name, [api_version])[-1]
+
     try:
       versions = core_apis.GetVersions(api_name)
     except core_apis.UnknownAPIError:
@@ -786,7 +739,7 @@ class Registry(object):
 
     # Register relevant API if necessary and possible
     try:
-      self._RegisterAPIByName(api_name, api_version=api_version)
+      self.RegisterApiByName(api_name, api_version=api_version)
     except (core_apis.UnknownAPIError, core_apis.UnknownVersionError):
       # The caught InvalidResourceException has a less detailed message.
       raise InvalidResourceException(url)
@@ -965,29 +918,47 @@ class Registry(object):
 REGISTRY = Registry()
 
 
-def _GetApiServices(api_client):
-  return [potential_service
-          for potential_service in api_client.__dict__.itervalues()
-          if isinstance(potential_service, base_api.BaseApiService)]
+def _GetApiCollections(api_name, api_version):
+  """Returns all collections for given api.
+
+  Args:
+    api_name: str, The API name for which to fetch collections.
+    api_version: str, Use this api version for which to fetch collections.
+  Yields:
+    CollectionInfo for each detected collection.
+  """
+  client_class = core_apis.GetClientClass(api_name, api_version)
+  for service_class in client_class.__dict__.itervalues():
+    try:
+      collection = _GetServiceCollection(
+          api_name, api_version, client_class, service_class)
+    except _ResourceWithoutGetException:
+      pass
+    else:
+      yield collection
 
 
-def _GetServiceCollection(api_name, api_version, api_client, service):
+def _GetServiceCollection(api_name, api_version, client_class, service_class):
   """Extract collection info from given service for an API.
 
   Args:
     api_name: str, name of api to register under.
     api_version: str, Use this api version to registerr resources.
-    api_client: base_api.BaseApiClient, The client for a Google Cloud API.
-    service: base_api.BaseApiService, the service with collection.
+    client_class: base_api.BaseApiClient, The client class for a
+        Google Cloud API.
+    service_class: base_api.BaseApiService, the service class with collection.
 
   Returns:
     CollectionInfo for this service.
   Raises:
     _ResourceWithoutGetException: If given service does not have Get method.
   """
+  if (not isinstance(service_class, type) or
+      not issubclass(service_class, base_api.BaseApiService)):
+    raise _ResourceWithoutGetException()
   try:
-    method_config = service.GetMethodConfig('Get')
-  except KeyError:
+    method_config = getattr(service_class, 'Get').method_config()
+  except (AttributeError, KeyError):
     raise _ResourceWithoutGetException()
   match = _METHOD_ID_RE.match(method_config.method_id)
   if not match:
@@ -995,14 +966,14 @@ def _GetServiceCollection(api_name, api_version, api_client, service):
 
   collection = match.group('collection')
   collection = collection.split('.', 1)[1]  # drop api name
-  request_type = getattr(api_client.MESSAGES_MODULE,
-                         method_config.request_type_name)
 
-  url = api_client.BASE_URL + method_config.relative_path
+  url = client_class.BASE_URL + method_config.relative_path
   _, _, path = _APINameAndVersionFromURL(url)
   base_url = url[:-len(path)]
 
-  return resource.CollectionInfo(
+  return resource_util.CollectionInfo(
       api_name, api_version,
-      base_url, collection, request_type,
-      path, method_config.ordered_params)
+      base_url, collection, method_config.request_type_name,
+      path,
+      [method_config.flat_path] if method_config.flat_path else [],
+      method_config.ordered_params)

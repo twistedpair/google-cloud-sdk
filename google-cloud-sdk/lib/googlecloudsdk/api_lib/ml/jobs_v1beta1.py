@@ -25,11 +25,13 @@ import yaml
 
 
 def Cancel(job):
+  """Cancels given job."""
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
   # TODO(b/31062835): remove CloneAndSwitchAPI here and below
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
-      job, collection='ml.projects.jobs')
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(job, collection='ml.projects.jobs')
   req = msgs.MlProjectsJobsCancelRequest(
       projectsId=res.projectsId, jobsId=res.Name())
   resp = client.projects_jobs.Cancel(req)
@@ -38,8 +40,10 @@ def Cancel(job):
 
 def Get(job):
   client = apis.GetClientInstance('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
-      job, collection='ml.projects.jobs')
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+
+  res = registry.Parse(job, collection='ml.projects.jobs')
   req = res.Request()
   resp = client.projects_jobs.Get(req)
   return resp
@@ -51,10 +55,7 @@ def List():
   req = msgs.MlProjectsJobsListRequest(
       projectsId=properties.VALUES.core.project.Get())
   return list_pager.YieldFromList(
-      client.projects_jobs,
-      req,
-      field='jobs',
-      batch_size_attribute='pageSize')
+      client.projects_jobs, req, field='jobs', batch_size_attribute='pageSize')
 
 
 def Create(job):
@@ -102,4 +103,50 @@ def BuildTrainingJob(path=None,
     obj.trainingInput.packageUris = trainer_uri
   if region:
     obj.trainingInput.region = region
+  return obj
+
+
+def BuildBatchPredictionJob(job_name=None,
+                            model_name=None,
+                            version_name=None,
+                            input_paths=None,
+                            data_format=None,
+                            output_path=None,
+                            region=None):
+  """Builds a GoogleCloudMlV1beta1Job for batch prediction from flag values.
+
+  Args:
+      job_name: value to set for jobName field
+      model_name: value to set for modelName field
+      version_name: value to set for versionName field
+      input_paths: list of input files
+      data_format: format of the input files
+      output_path: single value for the output location
+      region: compute region in which to run the job
+  Returns:
+      A constructed GoogleCloudMlV1beta1Job object.
+  """
+  msgs = apis.GetMessagesModule('ml', 'v1beta1')
+  request_class = msgs.GoogleCloudMlV1beta1Job
+  obj = request_class()
+  obj.predictionInput = msgs.GoogleCloudMlV1beta1PredictionInput()
+
+  obj.jobId = job_name
+  project_id = properties.VALUES.core.project.Get()
+  if version_name:
+    # pylint: disable=g-backslash-continuation
+    obj.predictionInput.versionName = 'projects/{0}/models/{1}/versions/{2}'. \
+        format(project_id, model_name, version_name)
+  else:
+    # pylint: disable=g-backslash-continuation
+    obj.predictionInput.modelName = \
+        'projects/{0}/models/{1}'.format(project_id, model_name)
+  obj.predictionInput.inputPaths = input_paths
+  data_format_dict = {'TEXT': msgs.GoogleCloudMlV1beta1PredictionInput.
+                              DataFormatValueValuesEnum.TEXT,
+                      'TF_RECORD': msgs.GoogleCloudMlV1beta1PredictionInput.
+                                   DataFormatValueValuesEnum.TF_RECORD}
+  obj.predictionInput.dataFormat = data_format_dict[data_format]
+  obj.predictionInput.outputPath = output_path
+  obj.predictionInput.region = region
   return obj

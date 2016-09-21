@@ -302,15 +302,15 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the master machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model`\n- `accelerated_s`\n- `accelerated_m`\n\nCannot be used in combination with a standard scale tier.",
+          "description": "Optional. Specifies the master machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model_s`\n- `complex_model_m`\n- `complex_model_l`\n\nCannot be used in combination with a standard scale tier.",
           "type": "string"
         },
         "workerType": {
-          "description": "Optional. Specifies the worker machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model`\n- `accelerated_s`\n- `accelerated_m`\n\nCannot be used in combination with a standard scale tier.",
+          "description": "Optional. Specifies the worker machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model_s`\n- `complex_model_m`\n- `complex_model_l`\n\nCannot be used in combination with a standard scale tier.",
           "type": "string"
         },
         "parameterServerType": {
-          "description": "Optional. Specifies the parameter server machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model`\n\nCannot be used in combination with a standard scale tier.",
+          "description": "Optional. Specifies the parameter server machine type.\nThe following types are supported:\n\n- `standard`\n- `large_model`\n- `complex_model_s`\n- `complex_model_m`\n- `complex_model_l`\n\nCannot be used in combination with a standard scale tier.",
           "type": "string"
         },
         "workerCount": {
@@ -332,10 +332,6 @@
         },
         "pythonModule": {
           "description": "Required. The Python module name to run after installing the packages.",
-          "type": "string"
-        },
-        "tensorflowVersion": {
-          "description": "Optional. The version of TensorFlow to use. For example,\n\"0.10.1\" or \"latest\".",
           "type": "string"
         },
         "args": {
@@ -469,11 +465,11 @@
       "type": "object",
       "properties": {
         "modelName": {
-          "description": "The name of the model. The default version will be used.",
+          "description": "The name of the model. The default version will be used.\nE.g \"project\/your_project\/models\/your_model\"",
           "type": "string"
         },
         "versionName": {
-          "description": "The version to be used.",
+          "description": "The version to be used.\nE.g \"project\/your_project\/models\/your_model\/versions\/your_version\"",
           "type": "string"
         },
         "dataFormat": {
@@ -491,15 +487,20 @@
           ]
         },
         "inputPaths": {
-          "description": "Required. The GCS location of the input data files. May contain wildcards.",
+          "description": "Required. The Google Cloud Storage location of the input data files.\nMay contain wildcards.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "outputPath": {
-          "description": "Required. The output GCS location.",
+          "description": "Required. The output Google Cloud Storage location.",
           "type": "string"
+        },
+        "maxWorkerCount": {
+          "description": "Optional. The maximum amount of workers to be used for parallel processing.\nDefaults to 10.",
+          "type": "string",
+          "format": "int64"
         },
         "region": {
           "description": "Required. The Google Compute Engine region to run the prediction job in.",
@@ -578,7 +579,7 @@
       "type": "object",
       "properties": {
         "outputPath": {
-          "description": "The output GCS location provided at the job creation time.",
+          "description": "The output Google Cloud Storage location provided at the job creation time.",
           "type": "string"
         },
         "predictionCount": {
@@ -737,17 +738,6 @@
           "description": "HTTP body binary data.",
           "type": "string",
           "format": "byte"
-        }
-      }
-    },
-    "GoogleCloudMlV1beta1__PredictResponse": {
-      "id": "GoogleCloudMlV1beta1__PredictResponse",
-      "description": "Response with predictions produced by a trained model.",
-      "type": "object",
-      "properties": {
-        "httpBody": {
-          "description": "The prediction response body.\n\nResponses are very similar to requests. There are two top-level fields,\neach of which are JSON lists:\n\n * `predictions`: The list of predictions for each of the inputs\nin the request.\n * `error`: An error message if any instance produced an error.\n\nThere is a one-to-one correspondence between the predictions and the\ninstances in the request. Each individual prediction takes the same form\nas an instance in the request, namely JSON strings, numbers, booleans,\nor lists thereof. If your model has more than one output tensor, each\nprediction will be a JSON object with the keys being the output aliases\nin the graph.\n\nIf there is an error processing any single instance, no predictions\nare returned and the `error` field is populated with the error message.\n\nExamples:\n\n<pre>\n# Predictions for three input instances, predictions are an integer label,\n\n# e.g., a digit in digit recognition\n\n{\"predictions\": [5, 4, 3]}\n\n# Predictions for two input instances in a two-class classification\n\n# problem. The labels are strings and scores are the probability of\n\n# \"car\" and \"beach\".\n\n{\"predictions\": [{\"label\": \"beach\", \"scores\": [0.1, 0.9]},\n                 {\"label\": \"car\", \"scores\": [0.75, 0.25]}]}\n\n# An error:\n\n {\"error\": \"Divide by zero\"}\n<\/pre>\n\nRequired. The body of the response.",
-          "$ref": "GoogleApi__HttpBody"
         }
       }
     },
@@ -1306,6 +1296,28 @@
         "isCancellationRequested": {
           "description": "Whether the cancellation of this operation has been requested.",
           "type": "boolean"
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "enumDescriptions": [
+            "Unspecified operation type.",
+            "An operation to create a new version.",
+            "An operation to delete an existing version."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "CREATE_VERSION",
+            "DELETE_VERSION"
+          ]
+        },
+        "modelName": {
+          "description": "Contains the name of the model associated with the operation.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Contains the version associated with the operation.",
+          "$ref": "GoogleCloudMlV1beta1__Version"
         }
       }
     }
@@ -1318,10 +1330,10 @@
           "path": "v1beta1/projects/{projectsId}:predict",
           "flatPath": "v1beta1/projects/{projectsId}:predict",
           "httpMethod": "POST",
-          "description": "Performs prediction on the data in the request.",
+          "description": "Performs prediction on the data in the request.\n\nResponses are very similar to requests. There are two top-level fields,\neach of which are JSON lists:\n\n * `predictions`: The list of predictions for each of the inputs\nin the request.\n * `error`: An error message if any instance produced an error.\n\nThere is a one-to-one correspondence between the predictions and the\ninstances in the request. Each individual prediction takes the same form\nas an instance in the request, namely JSON strings, numbers, booleans,\nor lists thereof. If your model has more than one output tensor, each\nprediction will be a JSON object with the keys being the output aliases\nin the graph.\n\nIf there is an error processing any single instance, no predictions\nare returned and the `error` field is populated with the error message.\n\nExamples:\n\n<pre>\n# Predictions for three input instances, predictions are an integer label,\n\n# e.g., a digit in digit recognition\n\n{\"predictions\": [5, 4, 3]}\n\n# Predictions for two input instances in a two-class classification\n\n# problem. The labels are strings and scores are the probability of\n\n# \"car\" and \"beach\".\n\n{\"predictions\": [{\"label\": \"beach\", \"scores\": [0.1, 0.9]},\n                 {\"label\": \"car\", \"scores\": [0.75, 0.25]}]}\n\n# An error:\n\n {\"error\": \"Divide by zero\"}\n<\/pre>",
           "parameters": {
             "projectsId": {
-              "description": "Part of `name`. Required. The resource name of a model or a version.",
+              "description": "Part of `name`. Required. The resource name of a model or a version.\nAuthorization: requires `Viewer` role on the parent project.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1334,7 +1346,7 @@
             "$ref": "GoogleCloudMlV1beta1__PredictRequest"
           },
           "response": {
-            "$ref": "GoogleCloudMlV1beta1__PredictResponse"
+            "$ref": "GoogleApi__HttpBody"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
@@ -1348,7 +1360,7 @@
           "description": "Get the service config associated with a given project.",
           "parameters": {
             "projectsId": {
-              "description": "Part of `name`. Required. The project name.",
+              "description": "Part of `name`. Required. The project name.\nAuthorization: requires `Viewer` role on the specified project.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1514,7 +1526,7 @@
               "description": "Create a training or a prediction job.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. Required. The project name.",
+                  "description": "Part of `parent`. Required. The project name.\nAuthorization: requires `Editor` role on the specified project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1541,7 +1553,7 @@
               "description": "List jobs in the project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. Required. The name of the project whose jobs are to be listed.",
+                  "description": "Part of `parent`. Required. The name of the project whose jobs are to be listed.\nAuthorization: requires `Viewer` role on the specified project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1586,7 +1598,7 @@
               "description": "Describe a job.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Required. The name of the job.",
+                  "description": "Part of `name`. Required. The name of the job.\nAuthorization: requires `Viewer` role on the parent project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1617,7 +1629,7 @@
               "description": "Cancel a running job.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Required. The name of the job.",
+                  "description": "Part of `name`. Required. The name of the job.\nAuthorization: requires `Editor` role on the parent project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1655,7 +1667,7 @@
               "description": "Create a model which will later contain a set of model versions.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. Required. The project name.",
+                  "description": "Part of `parent`. Required. The project name.\nAuthorization: requires `Editor` role on the specified project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1682,7 +1694,7 @@
               "description": "List models in the project.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `parent`. Required. The name of the project whose models are to be listed.",
+                  "description": "Part of `parent`. Required. The name of the project whose models are to be listed.\nAuthorization: requires `Viewer` role on the specified project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1727,7 +1739,7 @@
               "description": "Describe a model and versions in it.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Required. The name of the model.",
+                  "description": "Part of `name`. Required. The name of the model.\nAuthorization: requires `Viewer` role on the parent project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1758,7 +1770,7 @@
               "description": "Delete the model and all versions in it.",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Required. The name of the model.",
+                  "description": "Part of `name`. Required. The name of the model.\nAuthorization: requires `Editor` role on the parent project.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1794,7 +1806,7 @@
                   "description": "Upload a trained TensorFlow model version. The result of the operation\nis a Version.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. Required. The name of the model.",
+                      "description": "Part of `parent`. Required. The name of the model.\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1828,7 +1840,7 @@
                   "description": "List versions in the model.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `parent`. Required. The name of the model whose versions are to be listed.",
+                      "description": "Part of `parent`. Required. The name of the model whose versions are to be listed.\nAuthorization: requires `Viewer` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1880,7 +1892,7 @@
                   "description": "Get version metadata.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. Required. The name of the version.",
+                      "description": "Part of `name`. Required. The name of the version.\nAuthorization: requires `Viewer` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1942,7 +1954,7 @@
                     "versionsId"
                   ],
                   "response": {
-                    "$ref": "GoogleProtobuf__Empty"
+                    "$ref": "GoogleLongrunning__Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1956,7 +1968,7 @@
                   "description": "Mark the version as default within the model.",
                   "parameters": {
                     "projectsId": {
-                      "description": "Part of `name`. Required. The version name which is being made default within the model.",
+                      "description": "Part of `name`. Required. The version name which is being made default within the model.\nAuthorization: requires `Editor` role on the parent project.",
                       "location": "path",
                       "required": true,
                       "type": "string"

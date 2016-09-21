@@ -10,6 +10,70 @@ from apitools.base.protorpclite import messages as _messages
 package = 'deploymentmanager'
 
 
+class AuditConfig(_messages.Message):
+  """Enables "data access" audit logging for a service and specifies a list of
+  members that are log-exempted.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services.
+  """
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@gmail.com` or
+      `joe@example.com`.  * `serviceAccount:{emailid}`: An email address that
+      represents a service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group. For example, `admins@example.com`.  *
+      `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
+class Condition(_messages.Message):
+  """A condition to be met.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
+  """
+
+  iam = _messages.StringField(1)
+  op = _messages.StringField(2)
+  svc = _messages.StringField(3)
+  sys = _messages.StringField(4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
+
+
 class ConfigFile(_messages.Message):
   """ConfigFile message type.
 
@@ -144,6 +208,18 @@ class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsGetRequest object.
 
@@ -273,6 +349,20 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
   project = _messages.StringField(6, required=True)
 
 
+class DeploymentmanagerDeploymentsSetIamPolicyRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class DeploymentmanagerDeploymentsStopRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsStopRequest object.
 
@@ -286,6 +376,21 @@ class DeploymentmanagerDeploymentsStopRequest(_messages.Message):
   deployment = _messages.StringField(1, required=True)
   deploymentsStopRequest = _messages.MessageField('DeploymentsStopRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class DeploymentmanagerDeploymentsTestIamPermissionsRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
@@ -610,6 +715,28 @@ class ImportFile(_messages.Message):
   name = _messages.StringField(2)
 
 
+class LogConfig(_messages.Message):
+  """Specifies what kind of log the caller must write
+
+  Fields:
+    counter: Counter options.
+  """
+
+  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+
+
+class LogConfigCounterOptions(_messages.Message):
+  """Options for counters
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
 class Manifest(_messages.Message):
   """Manifest message type.
 
@@ -814,6 +941,55 @@ class OperationsListResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.    A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**  { "bindings": [ { "role": "roles/owner",
+  "members": [ "user:mike@example.com", "group:admins@example.com",
+  "domain:google.com", "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
+  ["user:sean@example.com"] } ] }  For a description of IAM and its features,
+  see the [IAM developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
+    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
+      must not be specified for the same `role`. `bindings` with no members
+      will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned:
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class Resource(_messages.Message):
   """Resource message type.
 
@@ -1006,6 +1182,33 @@ class ResourcesListResponse(_messages.Message):
   resources = _messages.MessageField('Resource', 2, repeated=True)
 
 
+class Rule(_messages.Message):
+  """A rule to be applied in a Policy.
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met
+    description: Human-readable description of the rule.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  action = _messages.StringField(1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  ins = _messages.StringField(4, repeated=True)
+  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIns = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -1059,6 +1262,28 @@ class TargetConfiguration(_messages.Message):
 
   config = _messages.MessageField('ConfigFile', 1)
   imports = _messages.MessageField('ImportFile', 2, repeated=True)
+
+
+class TestPermissionsRequest(_messages.Message):
+  """A TestPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the 'resource'.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestPermissionsResponse(_messages.Message):
+  """A TestPermissionsResponse object.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class Type(_messages.Message):

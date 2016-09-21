@@ -24,6 +24,7 @@ class AccessConfig(_messages.Message):
       option is ONE_TO_ONE_NAT.
 
   Fields:
+    dnsName: [Output Only] The public DNS domain name for the instance.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: Name of this access configuration.
@@ -35,6 +36,12 @@ class AccessConfig(_messages.Message):
     networkTier: This signifies the networking tier used for configuring this
       access configuration and can only take the following values: PREMIUM ,
       STANDARD. If this field is not specified, it is assumed to be PREMIUM.
+    ptrDomainName: The DNS domain name for the public PTR record. This field
+      can only be set when the set_ptr field is enabled.
+    setPtr: Specifies whether a public DNS ?PTR? record should be created to
+      map the external IP address of the instance to a DNS domain name.
+    setPublicDns: Specifies whether a public DNS ?A? record should be created
+      for the external IP address of this access configuration.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -60,11 +67,15 @@ class AccessConfig(_messages.Message):
     """
     ONE_TO_ONE_NAT = 0
 
-  kind = _messages.StringField(1, default=u'compute#accessConfig')
-  name = _messages.StringField(2)
-  natIP = _messages.StringField(3)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5, default=u'ONE_TO_ONE_NAT')
+  dnsName = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'compute#accessConfig')
+  name = _messages.StringField(3)
+  natIP = _messages.StringField(4)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 5)
+  ptrDomainName = _messages.StringField(6)
+  setPtr = _messages.BooleanField(7)
+  setPublicDns = _messages.BooleanField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9, default=u'ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -1165,7 +1176,7 @@ class BackendService(_messages.Message):
       INTERNAL, this field is not used.
     backendSslPolicy: Backend SSL policies to enforce.
     backends: The list of backends that serve this BackendService.
-    cdnPolicy: A BackendServiceCdnPolicy attribute.
+    cdnPolicy: Cloud CDN Coniguration for this BackendService.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -7230,6 +7241,24 @@ class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(4, required=True)
 
 
+class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A ComputeSubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    subnetwork: Name of the Subnetwork resource.
+    subnetworksSetPrivateIpGoogleAccessRequest: A
+      SubnetworksSetPrivateIpGoogleAccessRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  subnetwork = _messages.StringField(3, required=True)
+  subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 4)
+
+
 class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
   """A ComputeSubnetworksTestIamPermissionsRequest object.
 
@@ -10149,22 +10178,20 @@ class GlobalSetLabelsRequest(_messages.Message):
 
 
 class GuestOsFeature(_messages.Message):
-  """A list of features to enable on the guest OS. Currently, only one feature
-  is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have
-  its own queue. For Windows images, you can only enable
-  VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher.
-  Linux images with kernel versions 3.17 and higher will support
-  VIRTIO_SCSCI_MULTIQUEUE.
+  """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature.
+    TypeValueValuesEnum: The type of supported feature. Currenty only
+      VIRTIO_SCSI_MULTIQUEUE is supported.
 
   Fields:
-    type: The type of supported feature.
+    type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
+      is supported.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature.
+    """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
+    supported.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -10198,6 +10225,9 @@ class HTTP2HealthCheck(_messages.Message):
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP/2 health check request. The
       default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -10216,6 +10246,7 @@ class HTTP2HealthCheck(_messages.Message):
   portName = _messages.StringField(3)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
   requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class HTTPHealthCheck(_messages.Message):
@@ -10654,7 +10685,8 @@ class Image(_messages.Message):
   Fields:
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
-    creationTimestamp: Creation timestamp in RFC3339 text format.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
     deprecated: The deprecation status associated with this image.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -10664,7 +10696,12 @@ class Image(_messages.Message):
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
-    guestOsFeatures: Features of the guest os, valid for bootable images only.
+    guestOsFeatures: A list of features to enable on the guest OS. Applicable
+      for bootable images only. Currently, only one feature is supported,
+      VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own
+      queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE
+      on images with driver version 1.2.0.1621 or higher. Linux images with
+      kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -11201,7 +11238,8 @@ class InstanceGroupManager(_messages.Message):
 
   Enums:
     FailoverActionValueValuesEnum: The action to perform in case of zone
-      failure (set only for Regional instance group managers).
+      failure. Only one value is supported, NO_FAILOVER. The default is
+      NO_FAILOVER.
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -11217,8 +11255,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    failoverAction: The action to perform in case of zone failure (set only
-      for Regional instance group managers).
+    failoverAction: The action to perform in case of zone failure. Only one
+      value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: [Output Only] The fingerprint of the resource data. You can
       use this optional field for optimistic locking when you update the
       resource.
@@ -11262,8 +11300,8 @@ class InstanceGroupManager(_messages.Message):
   """
 
   class FailoverActionValueValuesEnum(_messages.Enum):
-    """The action to perform in case of zone failure (set only for Regional
-    instance group managers).
+    """The action to perform in case of zone failure. Only one value is
+    supported, NO_FAILOVER. The default is NO_FAILOVER.
 
     Values:
       NO_FAILOVER: <no description>
@@ -11311,7 +11349,7 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     creatingWithoutRetries: [Output Only] The number of instances that the
       managed instance group will attempt to create. The group attempts to
       create each instance only once. If the group fails to create any of
-      these instances, it decreases the group's target_size value accordingly.
+      these instances, it decreases the group's targetSize value accordingly.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group
@@ -15335,6 +15373,16 @@ class SubnetworksScopedList(_messages.Message):
 
   subnetworks = _messages.MessageField('Subnetwork', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class SubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
+  """A SubnetworksSetPrivateIpGoogleAccessRequest object.
+
+  Fields:
+    privateIpGoogleAccess: A boolean attribute.
+  """
+
+  privateIpGoogleAccess = _messages.BooleanField(1)
 
 
 class TCPHealthCheck(_messages.Message):

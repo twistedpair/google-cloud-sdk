@@ -735,30 +735,30 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
 
   Enums:
     UtilizationTargetTypeValueValuesEnum: Defines how target utilization value
-      is expressed for a Cloud Monitoring metric. Either GAUGE,
+      is expressed for a Stackdriver Monitoring metric. Either GAUGE,
       DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is
       GAUGE.
 
   Fields:
-    metric: The identifier of the Cloud Monitoring metric. The metric cannot
-      have negative values and should be a utilization metric, which means
-      that the number of virtual machines handling requests should increase or
-      decrease proportionally to the metric. The metric must also have a label
-      of compute.googleapis.com/resource_id with the value of the instance's
-      unique ID, although this alone does not guarantee that the metric is
-      valid.  For example, the following is a valid metric:
-      compute.googleapis.com/instance/network/received_bytes_count   The
+    metric: The identifier of the Stackdriver Monitoring metric. The metric
+      cannot have negative values and should be a utilization metric, which
+      means that the number of virtual machines handling requests should
+      increase or decrease proportionally to the metric. The metric must also
+      have a label of compute.googleapis.com/resource_id with the value of the
+      instance's unique ID, although this alone does not guarantee that the
+      metric is valid.  For example, the following is a valid metric:
+      compute.googleapis.com/instance/network/received_bytes_count The
       following is not a valid metric because it does not increase or decrease
       based on usage: compute.googleapis.com/instance/cpu/reserved_cores
     utilizationTarget: Target value of the metric which autoscaler should
       maintain. Must be a positive value.
     utilizationTargetType: Defines how target utilization value is expressed
-      for a Cloud Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
+      for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
       DELTA_PER_MINUTE. If not specified, the default is GAUGE.
   """
 
   class UtilizationTargetTypeValueValuesEnum(_messages.Enum):
-    """Defines how target utilization value is expressed for a Cloud
+    """Defines how target utilization value is expressed for a Stackdriver
     Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If
     not specified, the default is GAUGE.
 
@@ -7112,7 +7112,8 @@ class Image(_messages.Message):
   Fields:
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
-    creationTimestamp: Creation timestamp in RFC3339 text format.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
     deprecated: The deprecation status associated with this image.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -7441,8 +7442,8 @@ class InstanceGroup(_messages.Message):
     fingerprint: [Output Only] The fingerprint of the named ports. The system
       uses this fingerprint to detect conflicts when multiple users change the
       named ports concurrently.
-    id: [Output Only] A unique identifier for this instance group. The server
-      generates this identifier.
+    id: [Output Only] A unique identifier for this instance group, generated
+      by the server.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroup for instance groups.
     name: The name of the instance group. The name must be 1-63 characters
@@ -7631,7 +7632,7 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     creatingWithoutRetries: [Output Only] The number of instances that the
       managed instance group will attempt to create. The group attempts to
       create each instance only once. If the group fails to create any of
-      these instances, it decreases the group's target_size value accordingly.
+      these instances, it decreases the group's targetSize value accordingly.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group
@@ -9525,6 +9526,8 @@ class Quota(_messages.Message):
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       PREEMPTIBLE_CPUS: <no description>
+      REGIONAL_AUTOSCALERS: <no description>
+      REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
       SNAPSHOTS: <no description>
@@ -9557,21 +9560,23 @@ class Quota(_messages.Message):
     LOCAL_SSD_TOTAL_GB = 13
     NETWORKS = 14
     PREEMPTIBLE_CPUS = 15
-    ROUTERS = 16
-    ROUTES = 17
-    SNAPSHOTS = 18
-    SSD_TOTAL_GB = 19
-    SSL_CERTIFICATES = 20
-    STATIC_ADDRESSES = 21
-    SUBNETWORKS = 22
-    TARGET_HTTPS_PROXIES = 23
-    TARGET_HTTP_PROXIES = 24
-    TARGET_INSTANCES = 25
-    TARGET_POOLS = 26
-    TARGET_SSL_PROXIES = 27
-    TARGET_VPN_GATEWAYS = 28
-    URL_MAPS = 29
-    VPN_TUNNELS = 30
+    REGIONAL_AUTOSCALERS = 16
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 17
+    ROUTERS = 18
+    ROUTES = 19
+    SNAPSHOTS = 20
+    SSD_TOTAL_GB = 21
+    SSL_CERTIFICATES = 22
+    STATIC_ADDRESSES = 23
+    SUBNETWORKS = 24
+    TARGET_HTTPS_PROXIES = 25
+    TARGET_HTTP_PROXIES = 26
+    TARGET_INSTANCES = 27
+    TARGET_POOLS = 28
+    TARGET_SSL_PROXIES = 29
+    TARGET_VPN_GATEWAYS = 30
+    URL_MAPS = 31
+    VPN_TUNNELS = 32
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

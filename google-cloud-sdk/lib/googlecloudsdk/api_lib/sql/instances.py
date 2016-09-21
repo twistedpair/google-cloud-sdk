@@ -14,6 +14,8 @@
 
 """Common utility functions for sql instances."""
 
+import argparse
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 
 
@@ -69,6 +71,41 @@ class _BaseInstances(object):
             value=value))
     elif getattr(args, 'clear_database_flags', False):
       settings.databaseFlags = []
+
+  @staticmethod
+  def _SetMaintenanceWindow(sql_messages, settings, args, original):
+    """Sets the maintenance window for the instance."""
+    channel = getattr(args, 'maintenance_release_channel', None)
+    day = getattr(args, 'maintenance_window_day', None)
+    hour = getattr(args, 'maintenance_window_hour', None)
+    if not any([channel, day, hour]):
+      return
+    maintenance_window = sql_messages.MaintenanceWindow()
+
+    # If there's no existing maintenance window,
+    # both or neither of day and hour must be set.
+    if (not original or not original.settings or
+        not original.settings.maintenanceWindow):
+      if ((day is None and hour is not None) or
+          (hour is None and day is not None)):
+        raise argparse.ArgumentError(
+            None,
+            'There is currently no maintenance window on the instance. '
+            'To add one, specify values for both day, and hour.')
+
+    if channel:
+      # Map UI name to API name.
+      names = {'production': 'stable', 'preview': 'canary'}
+      maintenance_window.updateTrack = names[channel]
+    if day:
+      # Map day name to number.
+      day_num = arg_parsers.DayOfWeek.DAYS.index(day)
+      if day_num == 0:
+        day_num = 7
+      maintenance_window.day = day_num
+    if hour is not None:  # must execute on hour = 0
+      maintenance_window.hour = hour
+    settings.maintenanceWindow = maintenance_window
 
   @staticmethod
   def _ConstructSettingsFromArgs(sql_messages, args):
@@ -151,6 +188,7 @@ class _BaseInstances(object):
     settings = cls._ConstructSettingsFromArgs(sql_messages, args)
     cls._SetBackupConfiguration(sql_messages, settings, args, original)
     cls._SetDatabaseFlags(sql_messages, settings, args)
+    cls._SetMaintenanceWindow(sql_messages, settings, args, original)
 
     on_premises_host_port = getattr(args, 'on_premises_host_port', None)
     if on_premises_host_port:
@@ -159,6 +197,10 @@ class _BaseInstances(object):
                                        'allowed with --require_ssl')
       settings.onPremisesConfiguration = sql_messages.OnPremisesConfiguration(
           hostPort=on_premises_host_port)
+
+    storage_size = getattr(args, 'storage_size', None)
+    if storage_size:
+      settings.dataDiskSizeGb = int(storage_size / (1 << 30))
 
     # these flags are only present for the create command
     region = getattr(args, 'region', None)

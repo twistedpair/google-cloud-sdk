@@ -23,8 +23,9 @@ def Create(model, version, origin):
   # TODO(b/31062835): remove CloneAndSwitchAPI here and below
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  reg = resources.REGISTRY.CloneAndSwitchAPIs(client)
-  res = reg.Parse(
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(
       version,
       params={'modelsId': model},
       collection='ml.projects.models.versions')
@@ -41,7 +42,9 @@ def Delete(model, version):
   """Delete a version from a model."""
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(
       version,
       params={'modelsId': model},
       collection='ml.projects.models.versions')
@@ -54,7 +57,9 @@ def Delete(model, version):
 def Get(model, version):
   """Get details about an existing model version."""
   client = apis.GetClientInstance('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(
       version,
       params={'modelsId': model},
       collection='ml.projects.models.versions')
@@ -67,7 +72,9 @@ def List(model):
   """List the versions for a model."""
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(
       model, collection='ml.projects.models')
   req = msgs.MlProjectsModelsVersionsListRequest(
       projectsId=res.projectsId, modelsId=res.Name())
@@ -81,7 +88,10 @@ def SetDefault(model, version):
   """Set a model's default version."""
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+
+  res = registry.Parse(
       version,
       params={'modelsId': model},
       collection='ml.projects.models.versions')

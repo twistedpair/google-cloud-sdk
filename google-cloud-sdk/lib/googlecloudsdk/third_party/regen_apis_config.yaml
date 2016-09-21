@@ -37,6 +37,14 @@ apis:
     v1:
       discovery_doc: apikeys_v1.json
   appengine:
+    v1:
+      discovery_doc: appengine_v1.json
+      unelidable_request_methods:
+        - appengine.apps.create
+        - appengine.apps.patch
+        - appengine.apps.emailSenders.create
+        - appengine.apps.services.patch
+        - appengine.apps.services.versions.create
     v1beta5:
       discovery_doc: appengine_v1beta5.json
       unelidable_request_methods:
@@ -45,12 +53,18 @@ apis:
         - appengine.apps.emailSenders.create
         - appengine.apps.services.patch
         - appengine.apps.services.versions.create
+      default: true
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
   bigtableclusteradmin:
     v1:
       discovery_doc: bigtableclusteradmin_v1.json
+      resources:
+         operations:
+             - "operations/{+operationId}"
+         projects.zones.clusters:
+             - "projects/{projectId}/zones/{zoneId}/clusters/{clusterId}"
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json

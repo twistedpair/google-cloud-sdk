@@ -229,7 +229,7 @@ class DockerExecutor(_messages.Message):
       `localCopy` specified should be used as environment variables, while
       those that do can be accessed at the defined paths.
     imageName: Required. Image name from either Docker Hub or Google Container
-      Repository. Users that run pipelines must have READ access to the image.
+      Registry. Users that run pipelines must have READ access to the image.
   """
 
   cmd = _messages.StringField(1)
@@ -731,7 +731,7 @@ class PipelineResources(_messages.Message):
     minimumCpuCores: The minimum number of cores to use. Defaults to 1.
     minimumRamGb: The minimum amount of RAM to use. Defaults to 3.75 (GB)
     noAddress: Whether to assign an external IP to the instance. Defaults to
-      false. Corresponds to `--no_address flag` for [gcloud compute instances
+      false. Corresponds to `--no_address` flag for [gcloud compute instances
       create] (https://cloud.google.com/sdk/gcloud/reference/compute/instances
       /create). In order to use this, must be true for both create time and
       run time. Cannot be true at run time if false at create time.  ** Note:

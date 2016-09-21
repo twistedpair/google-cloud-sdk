@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20160907",
+ "revision": "20160914",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1953,6 +1953,13 @@
      "type": "string",
      "description": "Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nThis field is not used for internal load balancing."
     },
+    "ports": {
+     "type": "array",
+     "description": "This field is not used for external load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule. If the port list is not provided then all ports are allowed to pass through.\n\nYou may specify a maximum of up to 5 ports.",
+     "items": {
+      "type": "string"
+     }
+    },
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the regional forwarding rule resides. This field is not applicable to global forwarding rules."
@@ -2134,11 +2141,11 @@
   "GuestOsFeature": {
    "id": "GuestOsFeature",
    "type": "object",
-   "description": "A list of features to enable on the guest OS. Currently, only one feature is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher. Linux images with kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.",
+   "description": "Guest OS features.",
    "properties": {
     "type": {
      "type": "string",
-     "description": "The type of supported feature.",
+     "description": "The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is supported.",
      "enum": [
       "FEATURE_TYPE_UNSPECIFIED",
       "VIRTIO_SCSI_MULTIQUEUE",
@@ -2648,7 +2655,7 @@
     },
     "creationTimestamp": {
      "type": "string",
-     "description": "Creation timestamp in RFC3339 text format."
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
     "deprecated": {
      "$ref": "DeprecationStatus",
@@ -2669,7 +2676,7 @@
     },
     "guestOsFeatures": {
      "type": "array",
-     "description": "Features of the guest os, valid for bootable images only.",
+     "description": "A list of features to enable on the guest OS. Applicable for bootable images only. Currently, only one feature is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher. Linux images with kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.",
      "items": {
       "$ref": "GuestOsFeature"
      }
@@ -3148,7 +3155,7 @@
     },
     "failoverAction": {
      "type": "string",
-     "description": "The action to perform in case of zone failure (set only for Regional instance group managers).",
+     "description": "The action to perform in case of zone failure. Only one value is supported, NO_FAILOVER. The default is NO_FAILOVER.",
      "enum": [
       "NO_FAILOVER",
       "UNKNOWN"
@@ -3245,7 +3252,7 @@
     },
     "creatingWithoutRetries": {
      "type": "integer",
-     "description": "[Output Only] The number of instances that the managed instance group will attempt to create. The group attempts to create each instance only once. If the group fails to create any of these instances, it decreases the group's target_size value accordingly.",
+     "description": "[Output Only] The number of instances that the managed instance group will attempt to create. The group attempts to create each instance only once. If the group fails to create any of these instances, it decreases the group's targetSize value accordingly.",
      "format": "int32"
     },
     "deleting": {
@@ -9145,7 +9152,7 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
+     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -9218,7 +9225,7 @@
      "id": "compute.backendServices.update",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -15410,7 +15417,7 @@
      "id": "compute.regionBackendServices.patch",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -15499,7 +15506,7 @@
      "id": "compute.regionBackendServices.update",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -16945,7 +16952,7 @@
      "id": "compute.routers.patch",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PATCH",
-     "description": "Updates the entire content of the Router resource. This method supports patch semantics.",
+     "description": "Updates the specified Router resource with the data included in the request. This method supports patch semantics.",
      "parameters": {
       "project": {
        "type": "string",
@@ -17079,7 +17086,7 @@
      "id": "compute.routers.update",
      "path": "{project}/regions/{region}/routers/{router}",
      "httpMethod": "PUT",
-     "description": "Updates the entire content of the Router resource.",
+     "description": "Updates the specified Router resource with the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",
@@ -20067,7 +20074,7 @@
      "id": "compute.urlMaps.patch",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "PATCH",
-     "description": "Updates the entire content of the UrlMap resource. This method supports patch semantics.",
+     "description": "Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.",
      "parameters": {
       "project": {
        "type": "string",
@@ -20140,7 +20147,7 @@
      "id": "compute.urlMaps.update",
      "path": "{project}/global/urlMaps/{urlMap}",
      "httpMethod": "PUT",
-     "description": "Updates the entire content of the UrlMap resource.",
+     "description": "Updates the specified UrlMap resource with the data included in the request.",
      "parameters": {
       "project": {
        "type": "string",

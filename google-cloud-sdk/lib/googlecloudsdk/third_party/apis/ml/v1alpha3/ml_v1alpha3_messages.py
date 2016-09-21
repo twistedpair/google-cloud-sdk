@@ -650,18 +650,39 @@ class GoogleCloudMlV1alpha3WorkerSpec(_messages.Message):
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
   """Represents the metadata of the longrunning.Operation.
 
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
   Fields:
     createTime: When the operation was submitted.
     endTime: When the operation processing was completed.
     isCancellationRequested: Whether the cancellation of this operation has
       been requested.
+    modelName: Contains the name of the model associated with the operation.
+    operationType: The operation type.
     startTime: When the operation processing was started.
+    version: Contains the version associated with the operation.
   """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    """The operation type.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
+      CREATE_VERSION: An operation to create a new version.
+      DELETE_VERSION: An operation to delete an existing version.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE_VERSION = 1
+    DELETE_VERSION = 2
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
   isCancellationRequested = _messages.BooleanField(3)
-  startTime = _messages.StringField(4)
+  modelName = _messages.StringField(4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  startTime = _messages.StringField(6)
+  version = _messages.MessageField('GoogleCloudMlV1beta1Version', 7)
 
 
 class GoogleCloudMlV1beta1Version(_messages.Message):

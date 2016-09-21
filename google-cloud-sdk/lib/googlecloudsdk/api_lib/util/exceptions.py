@@ -19,7 +19,7 @@ import logging
 import string
 import StringIO
 
-from googlecloudsdk.core import apis
+from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -169,8 +169,9 @@ class HttpErrorPayload(string.Formatter):
       return
 
     try:
-      (name, version, resource_path) = apis.SplitDefaultEndpointUrl(self.url)
-    except apis.InvalidEndpointException:
+      name, version, resource_path = resource_util.SplitDefaultEndpointUrl(
+          self.url)
+    except resource_util.InvalidEndpointException:
       return
 
     if name:
@@ -179,8 +180,8 @@ class HttpErrorPayload(string.Formatter):
       self.api_version = version
 
     try:
-      resource = resources.REGISTRY.Parse(self.url)
-      instance_name = resource.Name()
+      ref = resources.REGISTRY.Parse(self.url)
+      instance_name = ref.Name()
       # resource_name is the component just before the last occurrence of
       # instance_name in the URL. Using string instead of list ops here because
       # instance_name could contain '/'s.

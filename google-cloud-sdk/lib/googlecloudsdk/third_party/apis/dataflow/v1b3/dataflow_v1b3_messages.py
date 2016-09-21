@@ -776,6 +776,8 @@ class Environment(_messages.Message):
       user. These options are passed through the service and are used to
       recreate the SDK pipeline options on the worker in a language agnostic
       and platform independent way.
+    serviceAccountEmail: Identity to run virtual machines as. Defaults to the
+      default account.
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage.  The system will append the suffix "/temp-{JOBNAME}
       to this resource prefix, where {JOBNAME} is the value of the job_name
@@ -899,10 +901,11 @@ class Environment(_messages.Message):
   experiments = _messages.StringField(3, repeated=True)
   internalExperiments = _messages.MessageField('InternalExperimentsValue', 4)
   sdkPipelineOptions = _messages.MessageField('SdkPipelineOptionsValue', 5)
-  tempStoragePrefix = _messages.StringField(6)
-  userAgent = _messages.MessageField('UserAgentValue', 7)
-  version = _messages.MessageField('VersionValue', 8)
-  workerPools = _messages.MessageField('WorkerPool', 9, repeated=True)
+  serviceAccountEmail = _messages.StringField(6)
+  tempStoragePrefix = _messages.StringField(7)
+  userAgent = _messages.MessageField('UserAgentValue', 8)
+  version = _messages.MessageField('VersionValue', 9)
+  workerPools = _messages.MessageField('WorkerPool', 10, repeated=True)
 
 
 class FlattenInstruction(_messages.Message):

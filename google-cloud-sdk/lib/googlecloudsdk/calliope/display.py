@@ -36,6 +36,7 @@ from googlecloudsdk.core.resource import resource_keys_expr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_projection_parser
+from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
 
@@ -301,7 +302,11 @@ class Displayer(object):
     if not log.IsUserOutputEnabled():
       log.info('Display disabled.')
       # NOTICE: Do not consume resources here. Some commands use this case to
-      # access the results of Run() via the return value of Execute().
+      # access the results of Run() via the return value of Execute(). However,
+      # to satisfy callers who are only interetsted in silent side effects,
+      # generators/iterators must be converted to a list here.
+      if resource_property.IsListLike(self._resources):
+        return list(self._resources)
       return self._resources
 
     # Initialize the printer.

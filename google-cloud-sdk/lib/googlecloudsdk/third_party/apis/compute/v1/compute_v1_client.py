@@ -547,7 +547,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -573,7 +573,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -4123,7 +4123,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the Router resource. This method supports patch semantics.
+      """Updates the specified Router resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -4175,7 +4175,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the Router resource.
+      """Updates the specified Router resource with the data included in the request.
 
       Args:
         request: (ComputeRoutersUpdateRequest) input message
@@ -5873,7 +5873,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the UrlMap resource. This method supports patch semantics.
+      """Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -5899,7 +5899,7 @@ For more information, see Deleting snaphots.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the UrlMap resource.
+      """Updates the specified UrlMap resource with the data included in the request.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message

@@ -472,8 +472,7 @@ class Dataset(_messages.Message):
     createTime: The time this dataset was created, in seconds from the epoch.
     id: The server-generated dataset ID, unique across all datasets.
     name: The dataset name.
-    projectId: The Google Developers Console project ID that this dataset
-      belongs to.
+    projectId: The Google Cloud project ID that this dataset belongs to.
   """
 
   createTime = _messages.StringField(1)
@@ -559,8 +558,8 @@ class ExportReadGroupSetRequest(_messages.Message):
     exportUri: Required. A Google Cloud Storage URI for the exported BAM file.
       The currently authenticated user must have write access to the new file.
       An error will be returned if the URI already contains data.
-    projectId: Required. The Google Developers Console project ID that owns
-      this export. The caller must have WRITE access to this project.
+    projectId: Required. The Google Cloud project ID that owns this export.
+      The caller must have WRITE access to this project.
     referenceNames: The reference names to export. If this is not specified,
       all reference sequences, including unmapped reads, are exported. Use `*`
       to export only unmapped reads.
@@ -772,7 +771,7 @@ class GenomicsDatasetsListRequest(_messages.Message):
     pageToken: The continuation token, which is used to page through large
       result sets. To get the next page of results, set this parameter to the
       value of `nextPageToken` from the previous response.
-    projectId: Required. The project to list datasets for.
+    projectId: Required. The Google Cloud project ID to list datasets for.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1208,10 +1207,10 @@ class ImportVariantsRequest(_messages.Message):
 
     Values:
       FORMAT_UNSPECIFIED: <no description>
-      FORMAT_VCF: VCF (Variant Call Format). The VCF files should be
-        uncompressed. gVCF is also supported.
+      FORMAT_VCF: VCF (Variant Call Format). The VCF files may be gzip
+        compressed. gVCF is also supported.
       FORMAT_COMPLETE_GENOMICS: Complete Genomics masterVarBeta format. The
-        masterVarBeta files should be bzip2 compressed.
+        masterVarBeta files may be bzip2 compressed.
     """
     FORMAT_UNSPECIFIED = 0
     FORMAT_VCF = 1
@@ -2663,9 +2662,8 @@ class StreamReadsRequest(_messages.Message):
   Fields:
     end: The end position of the range on the reference, 0-based exclusive. If
       specified, `referenceName` must also be specified.
-    projectId: The Google Developers Console project ID or number which will
-      be billed for this access. The caller must have WRITE access to this
-      project. Required.
+    projectId: The Google Cloud project ID which will be billed for this
+      access. The caller must have WRITE access to this project. Required.
     readGroupSetId: The ID of the read group set from which to stream reads.
     referenceName: The reference sequence name, for example `chr1`, `1`, or
       `chrX`. If set to *, only unmapped reads are returned.
@@ -2718,9 +2716,8 @@ class StreamVariantsRequest(_messages.Message):
       IDs. Leaving this blank returns all variant calls.
     end: The end of the window (0-based, exclusive) for which overlapping
       variants should be returned.
-    projectId: The Google Developers Console project ID or number which will
-      be billed for this access. The caller must have WRITE access to this
-      project. Required.
+    projectId: The Google Cloud project ID which will be billed for this
+      access. The caller must have WRITE access to this project. Required.
     referenceName: Required. Only return variants in this reference sequence.
     start: The beginning of the window (0-based, inclusive) for which
       overlapping variants should be returned.

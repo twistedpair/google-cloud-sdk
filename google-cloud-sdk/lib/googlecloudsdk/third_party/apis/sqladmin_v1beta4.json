@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20160819",
+ "revision": "20160914",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -1505,7 +1505,11 @@
      },
      "response": {
       "$ref": "Operation"
-     }
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/sqlservice.admin"
+     ]
     },
     "list": {
      "id": "sql.backupRuns.list",

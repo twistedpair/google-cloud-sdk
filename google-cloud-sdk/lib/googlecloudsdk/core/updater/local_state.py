@@ -23,7 +23,6 @@ import compileall
 import errno
 import logging
 import os
-import re
 import shutil
 import sys
 
@@ -600,13 +599,9 @@ class InstallationState(object):
           'lib',
           'platform',
       ]
-      gsutil_path = os.path.join('platform', 'gsutil')
-      # Windows paths need extra escape chars for use with regexes.
-      gsutil_path = re.sub(r'\\', r'\\\\', gsutil_path)
-      skip_gsutil_re = re.compile(r'^{0}'.format(gsutil_path))
       for d in to_compile:
         d = console_attr.DecodeFromInput(d)
-        compileall.compile_dir(d, rx=skip_gsutil_re, quiet=True)
+        compileall.compile_dir(d, quiet=True)
 
 
 class InstallationManifest(object):

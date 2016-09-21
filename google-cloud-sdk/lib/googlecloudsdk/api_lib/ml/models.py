@@ -24,8 +24,9 @@ def Create(model):
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
   # TODO(b/31062835): remove CloneAndSwitchAPI here and below
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
-      model, collection='ml.projects.models')
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+  res = registry.Parse(model, collection='ml.projects.models')
   req = msgs.MlProjectsModelsCreateRequest(
       projectsId=res.projectsId,
       googleCloudMlV1beta1Model=msgs.GoogleCloudMlV1beta1Model(
@@ -38,8 +39,10 @@ def Delete(model):
   """Delete an existing model."""
   client = apis.GetClientInstance('ml', 'v1beta1')
   msgs = apis.GetMessagesModule('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
-      model, collection='ml.projects.models')
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+
+  res = registry.Parse(model, collection='ml.projects.models')
   req = msgs.MlProjectsModelsDeleteRequest(
       projectsId=res.projectsId, modelsId=res.Name())
   resp = client.projects_models.Delete(req)
@@ -49,8 +52,10 @@ def Delete(model):
 def Get(model):
   """Get details about a model."""
   client = apis.GetClientInstance('ml', 'v1beta1')
-  res = resources.REGISTRY.CloneAndSwitchAPIs(client).Parse(
-      model, collection='ml.projects.models')
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName('ml', 'v1beta1')
+
+  res = registry.Parse(model, collection='ml.projects.models')
   req = res.Request()
   resp = client.projects_models.Get(req)
   return resp

@@ -377,6 +377,10 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
+        },
+        "serviceAccountEmail": {
+          "description": "Identity to run virtual machines as. Defaults to the default account.",
+          "type": "string"
         }
       }
     },

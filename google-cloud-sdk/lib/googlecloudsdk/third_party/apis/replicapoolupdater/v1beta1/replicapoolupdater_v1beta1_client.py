@@ -35,6 +35,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.rollingUpdates = self.RollingUpdatesService(self)
+    self.rollout = self.RolloutService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
 
   class RollingUpdatesService(base_api.BaseApiService):
@@ -252,6 +253,198 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'ReplicapoolupdaterRollingUpdatesRollbackRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class RolloutService(base_api.BaseApiService):
+    """Service class for the rollout resource."""
+
+    _NAME = u'rollout'
+
+    def __init__(self, client):
+      super(ReplicapoolupdaterV1beta1.RolloutService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Abandon(self, request, global_params=None):
+      """Abandon a rollout, leaving the IGM in the state it is already configured. This allows you to apply a new rollout to the IGM.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutAbandonRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Abandon')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Abandon.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.abandon',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/abandon',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutAbandonRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Commit(self, request, global_params=None):
+      """Commits a rollout, so that it is final and can not be rolled back.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutCommitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.commit',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/commit',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutCommitRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Inserts and starts a new rollout.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.insert',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'updatePolicyInitialisationMethod'],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts',
+        request_field=u'rollout',
+        request_type_name=u'ReplicapoolupdaterRolloutInsertRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      """Pause the application of a rollout. This stops the update, and the instances managed by the instance group manager do not change their instance templates.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.pause',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/pause',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutPauseRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Rampup(self, request, global_params=None):
+      """Change the amount of instances within an IGM that should be updated to the new instance template.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutRampupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Rampup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rampup.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.rampup',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/rampup',
+        request_field=u'rampUpRolloutRequest',
+        request_type_name=u'ReplicapoolupdaterRolloutRampupRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      """Resume a rollout. This lets the rollout continue updating instances after a pause.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.resume',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/resume',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutResumeRequest',
+        response_type_name=u'Rollout',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      """Rollback a rollout, cancelling the update and changing all instances with the updated version to have the instanceTemplateToRollback template.
+
+      Args:
+        request: (ReplicapoolupdaterRolloutRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'replicapoolupdater.rollout.rollback',
+        ordered_params=[u'project', u'zone', u'rollout'],
+        path_params=[u'project', u'rollout', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/rollouts/{rollout}/rollback',
+        request_field='',
+        request_type_name=u'ReplicapoolupdaterRolloutRollbackRequest',
+        response_type_name=u'Rollout',
         supports_download=False,
     )
 

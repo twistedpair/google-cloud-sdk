@@ -36,6 +36,10 @@ RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
                         'for your application.  To use this Dockerfile, '
                         'the runtime field in [{0}] must be set to custom.')
 
+CREATE_APP_PROMPT = ('The current Google Cloud project [{project}] does not '
+                     'contain an App Engine application. Do you want to create '
+                     'an app now?')
+
 
 def DisplayProposedDeployment(app, project, app_config, version, promote):
   """Prints the details of the proposed deployment.

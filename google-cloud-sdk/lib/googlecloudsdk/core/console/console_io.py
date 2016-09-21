@@ -571,8 +571,11 @@ class ProgressTracker(object):
       # We clear the current display and reprint the last line.
       sys.stderr.write('\r' + console_width * ' ')
       sys.stderr.write('\r' + current_message)
-    # If we have to do multiline display or a new message.
-    else:
+    elif not console_width:
+      # This can happen if we're on a pseudo-TTY; ignore this to prevent
+      # hanging.
+      pass
+    else:  # If we have to do multiline display or a new message.
       # If we have written something to the console before the new message,
       # cursor will be at the end of the line so we need to go to the next line.
       # If we are printing for the first time, the cursor will already be at

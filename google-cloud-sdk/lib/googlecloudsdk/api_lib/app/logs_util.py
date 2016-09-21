@@ -113,13 +113,13 @@ class LogPrinter(object):
   See https://cloud.google.com/logging/docs/api/introduction_v2
 
   Attributes:
-    time_format: See datetime.strftime()
+    api_time_format: See datetime.strftime()
     max_length: The maximum length of a formatted log entry after truncation.
   """
 
-  def __init__(self, time_format='%Y-%m-%d %H:%M:%S', max_length=None):
+  def __init__(self, api_time_format='%Y-%m-%d %H:%M:%S', max_length=None):
     self.formatters = []
-    self.time_format = time_format
+    self.api_time_format = api_time_format
     self.max_length = max_length
 
   def Format(self, entry):
@@ -135,13 +135,19 @@ class LogPrinter(object):
     text = text.strip().replace('\n', '  ')
 
     # Timestamp format from the Logging API (RFC 3339)
-    # Regex in order to truncate precision to 6 digits because datetime.strptime
-    # only handles microsecond precision
-    timestamp = re.sub(r'(?P<micro>\d{6})\d*Z$', r'\g<micro>Z', entry.timestamp)
-    time = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
+    # Strip fractions of a second, if present.
+    timestamp = re.sub(r'\.\d*Z$', r'Z', entry.timestamp)
+    output_time_format = '%Y-%m-%dT%H:%M:%SZ'
+    try:
+      time = datetime.datetime.strptime(
+          timestamp, output_time_format).strftime(self.api_time_format)
+    except ValueError:
+      log.warn('Received timestamp [{0}] does not match expected'
+               ' format [{1}]'.format(timestamp, output_time_format))
+      time = '????-??-?? ??:??:??'
 
     out = u'{timestamp} {log_text}'.format(
-        timestamp=time.strftime(self.time_format),
+        timestamp=time,
         log_text=text)
     if self.max_length and len(out) > self.max_length:
       out = out[:self.max_length - 3] + '...'

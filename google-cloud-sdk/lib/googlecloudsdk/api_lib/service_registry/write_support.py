@@ -18,7 +18,6 @@ import time
 
 from googlecloudsdk.api_lib.service_registry import constants
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
 
@@ -35,34 +34,37 @@ class ServiceRegistryClient(object):
     self.client = client
     self.resources = resources
 
-  def call_service_registry(self, call, request, async, success_message):
+  def call_service_registry(self, call, request, async, log_resource_op):
     """Calls Service Registry, managing asynchronous or otherwise behavior.
 
     Args:
       call: The function for calling Service Registry.
       request: The request to pass call.
       async: False if this call should poll for the Operation's success.
-      success_message: A message to print on success of Operation.
+      log_resource_op: One of log.CreatedResource, log.DeletedResource,
+        log.RestoredResource, log.Updatedresource.
 
     Returns:
       If async=True, returns Operation to poll.
-      Else, returns boolean indicating whether call succeeded.
+      Else, returns {'name': endpoint_name}.
 
     Raises:
       HttpException: An http error response was received while executing api
           request.
       ToolException: Call encountered an error.
     """
-    operation = call(request)
-    if async:
-      log.Print('Operation {0} is running...'.format(operation.name))
-      return operation
+    result = call(request)
+    if isinstance(request.endpoint, basestring):
+      endpoint_name = request.endpoint
     else:
+      endpoint_name = request.endpoint.name
+    if not async:
       operation_ref = self.resources.Parse(
-          operation.name, collection=constants.OPERATIONS_COLLECTION)
-      self.wait_for_operation(operation_ref,
-                              operation.operationType)
-      log.status.Print(success_message)
+          result.name, collection=constants.OPERATIONS_COLLECTION)
+      self.wait_for_operation(operation_ref, result.operationType)
+      result = {'name': endpoint_name}
+    log_resource_op(endpoint_name, kind='endpoint', async=async)
+    return result
 
   def wait_for_operation(self, operation_ref, operation_description=None):
     """Wait for an operation to complete.

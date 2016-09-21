@@ -677,7 +677,7 @@ class ListCommand(CacheCommand):
     return remote_completion.ReplaceCacheOp
 
 
-class CreateCommand(CacheCommand):
+class CreateCommand(CacheCommand, SilentCommand):
   """A command that creates resources."""
 
   __metaclass__ = abc.ABCMeta
@@ -695,6 +695,22 @@ class DeleteCommand(CacheCommand, SilentCommand):
   @staticmethod
   def GetUriCacheUpdateOp():
     return remote_completion.DeleteFromCacheOp
+
+
+class RestoreCommand(CacheCommand, SilentCommand):
+  """A command that restores resources."""
+
+  __metaclass__ = abc.ABCMeta
+
+  @staticmethod
+  def GetUriCacheUpdateOp():
+    return remote_completion.AddToCacheOp
+
+
+class UpdateCommand(SilentCommand):
+  """A command that updates resources."""
+
+  pass
 
 
 def Hidden(cmd_class):

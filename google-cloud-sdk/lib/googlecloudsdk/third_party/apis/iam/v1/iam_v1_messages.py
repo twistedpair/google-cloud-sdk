@@ -177,7 +177,7 @@ class CreateServiceAccountRequest(_messages.Message):
   Fields:
     accountId: Required. The account id that is used to generate the service
       account email address and a stable unique id. It is unique within a
-      project, must be 1-63 characters long, and match the regular expression
+      project, must be 6-30 characters long, and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.
     serviceAccount: The ServiceAccount resource to create. Currently, only the
       following values are user assignable: `display_name` .
@@ -517,8 +517,11 @@ class Role(_messages.Message):
 
   Fields:
     description: Optional.  A human-readable description for the role.
-    name: The name of the role.  Examples of roles names are: `roles/editor`,
-      `roles/viewer` and `roles/logging.viewer`.
+    name: The name of the role.  When Role is used in CreateRole, the role
+      name must not be set.  When Role is used in output and other input such
+      as UpdateRole, the role name is the complete path, e.g.,
+      roles/logging.viewer for curated roles and organizations/{organization-
+      id}/roles/logging.viewer for custom roles.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """

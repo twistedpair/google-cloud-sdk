@@ -720,19 +720,98 @@ def GetLogFilePath():
   return _log_manager.current_log_file
 
 
-def CreatedResource(r):
-  """Print a status message indicating that a resource was created."""
-  status.write('Created [{r}].\n'.format(r=str(r)))
+def _PrintResourceChange(operation, resource, kind, async, details, failed):
+  """Prints a status message for operation on resource.
+
+  The non-failure status messages are disabled when user output is disabled.
+
+  Args:
+    operation: str, The completed operation name.
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message. For commands that operate on multiple
+      resources and report all successes and failures before exiting. Failure
+      messages use log.error. This will display the message on the standard
+      error even when user output is disabled.
+  """
+  msg = []
+  if failed:
+    msg.append('Failed to')
+    msg.append(operation)
+  elif async:
+    msg.append(operation.capitalize())
+    msg.append('in progress for')
+  else:
+    msg.append('{0}d'.format(operation.capitalize()))
+  if kind:
+    msg.append(kind)
+  msg.append(u'[{0}]'.format(unicode(resource)))
+  if details:
+    msg.append(details)
+  if failed:
+    msg[-1] = '{0}:'.format(msg[-1])
+    msg.append(failed)
+  period = '' if msg[-1].endswith('.') else '.'
+  writer = error if failed else status.Print
+  writer('{0}{1}'.format(' '.join(msg), period))
 
 
-def DeletedResource(r):
-  """Print a status message indicating that a resource was deleted."""
-  status.write('Deleted [{r}].\n'.format(r=str(r)))
+def CreatedResource(resource, kind=None, async=False, details=None,
+                    failed=None):
+  """Prints a status message indicating that a resource was created.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('create', resource, kind, async, details, failed)
 
 
-def UpdatedResource(r):
-  """Print a status message indicating that a resource was updated."""
-  status.write('Updated [{r}].\n'.format(r=str(r)))
+def DeletedResource(resource, kind=None, async=False, details=None,
+                    failed=None):
+  """Prints a status message indicating that a resource was deleted.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('delete', resource, kind, async, details, failed)
+
+
+def RestoredResource(resource, kind=None, async=False, details=None,
+                     failed=None):
+  """Prints a status message indicating that a resource was restored.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('restore', resource, kind, async, details, failed)
+
+
+def UpdatedResource(resource, kind=None, async=False, details=None,
+                    failed=None):
+  """Prints a status message indicating that a resource was updated.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('update', resource, kind, async, details, failed)
 
 
 # pylint: disable=invalid-name

@@ -148,14 +148,15 @@ def PrintPermissionInstructions(destination, writer_identity):
   else:
     grantee = 'the group `cloud-logs@google.com`'
 
+  # TODO(b/31449674): if ladder needs test coverage
   if destination.startswith('bigquery'):
-    sdk_log.Print('Please remember to grant {0} '
-                  'the WRITER role on the dataset.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} '
+                         'the WRITER role on the dataset.'.format(grantee))
   elif destination.startswith('storage'):
-    sdk_log.Print('Please remember to grant {0} '
-                  'full-control access to the bucket.'.format(grantee))
+    sdk_log.status.Print('Please remember to grant {0} '
+                         'full-control access to the bucket.'.format(grantee))
   elif destination.startswith('pubsub'):
-    sdk_log.Print('Please remember to grant {0} '
-                  'EDIT permission to the project.'.format(grantee))
-  sdk_log.Print('More information about sinks can be found at '
-                'https://cloud.google.com/logging/docs/export/configure_export')
+    sdk_log.status.Print('Please remember to grant {0} '
+                         'EDIT permission to the project.'.format(grantee))
+  sdk_log.status.Print('More information about sinks can be found at https://'
+                       'cloud.google.com/logging/docs/export/configure_export')

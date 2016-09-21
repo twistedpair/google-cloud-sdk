@@ -289,6 +289,79 @@ class Empty(_messages.Message):
 
 
 
+class FolderOperation(_messages.Message):
+  """Metadata describing a long running folder operation
+
+  Enums:
+    OperationTypeValueValuesEnum: The type of folder operation.
+
+  Fields:
+    displayName: The display name of the folder.
+    operationType: The type of folder operation.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    """The type of folder operation.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Operation type was unspecified.
+      CREATE: Operation was create folder.
+      MOVE: Operation was move folder.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    MOVE = 2
+
+  displayName = _messages.StringField(1)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 2)
+
+
+class FolderOperationError(_messages.Message):
+  """Information about a failed folder operation. If a long running folder
+  operations fails, then we will return this message in the
+  Operation.error.details field.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The type of operation error experienced.
+
+  Fields:
+    errorType: The type of operation error experienced.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    """The type of operation error experienced.
+
+    Values:
+      UNDEFINED_ERROR: An undefined error type.
+      FOLDER_HEIGHT_VIOLATION: The attempted action would violate the max
+        folder depth constraint.
+      MAX_CHILD_FOLDERS_VIOLATION: The attempted action would violate the max
+        child folders constraint.
+      FOLDER_NAME_UNIQUENESS_VIOLATION: The attempted action would violate the
+        folder name locally-unique constraint.
+      RESOURCE_DELETED: The resource being moved has been deleted.
+      PARENT_DELETED: The folder or organization a resource was being added to
+        has been deleted.
+      CYCLE_INTRODUCED_ERROR: The attempted action would introduce cycle in
+        resource path.
+      FOLDER_ALREADY_BEING_MOVED: The attempted action would move a folder
+        that is already being moved.
+      FOLDER_TO_DELETE_NON_EMPTY: The folder the caller is trying to delete
+        contains active resources.
+    """
+    UNDEFINED_ERROR = 0
+    FOLDER_HEIGHT_VIOLATION = 1
+    MAX_CHILD_FOLDERS_VIOLATION = 2
+    FOLDER_NAME_UNIQUENESS_VIOLATION = 3
+    RESOURCE_DELETED = 4
+    PARENT_DELETED = 5
+    CYCLE_INTRODUCED_ERROR = 6
+    FOLDER_ALREADY_BEING_MOVED = 7
+    FOLDER_TO_DELETE_NON_EMPTY = 8
+
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 1)
+
+
 class GetAncestryRequest(_messages.Message):
   """The request sent to the
 GetAncestry
@@ -553,6 +626,24 @@ class Project(_messages.Message):
   parent = _messages.MessageField('ResourceId', 5)
   projectId = _messages.StringField(6)
   projectNumber = _messages.IntegerField(7)
+
+
+class ProjectCreationStatus(_messages.Message):
+  """A status object which is used as the `metadata` field for the Operation
+  returned by CreateProject. It provides insight for when significant phases
+  of Project creation have completed.
+
+  Fields:
+    createTime: Creation time of the project creation workflow.
+    gettable: True if the project can be retrieved using GetProject. No other
+      operations on the project are guaranteed to work until the project
+      creation is complete.
+    ready: True if the project creation process is complete.
+  """
+
+  createTime = _messages.StringField(1)
+  gettable = _messages.BooleanField(2)
+  ready = _messages.BooleanField(3)
 
 
 class ResourceId(_messages.Message):

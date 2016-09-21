@@ -404,16 +404,16 @@ class LogEntryMetadata(_messages.Message):
     used.
 
     Values:
-      DEFAULT: The log entry has no assigned severity level.
-      DEBUG: Debug or trace information.
-      INFO: Routine information, such as ongoing status or performance.
-      NOTICE: Normal but significant events, such as start up, shut down, or
-        configuration.
-      WARNING: Warning events might cause problems.
-      ERROR: Error events are likely to cause problems.
-      CRITICAL: Critical events cause more severe problems or brief outages.
-      ALERT: A person must take an action immediately.
-      EMERGENCY: One or more systems are unusable.
+      DEFAULT: (0) The log entry has no assigned severity level.
+      DEBUG: (100) Debug or trace information.
+      INFO: (200) Routine information, such as ongoing status or performance.
+      NOTICE: (300) Normal but significant events, such as start up, shut
+        down, or a configuration change.
+      WARNING: (400) Warning events might cause problems.
+      ERROR: (500) Error events are likely to cause problems.
+      CRITICAL: (600) Critical events cause more severe problems or outages.
+      ALERT: (700) A person must take an action immediately.
+      EMERGENCY: (800) One or more systems are unusable.
     """
     DEFAULT = 0
     DEBUG = 1
@@ -526,16 +526,16 @@ class LogLine(_messages.Message):
     """Severity of this log entry.
 
     Values:
-      DEFAULT: The log entry has no assigned severity level.
-      DEBUG: Debug or trace information.
-      INFO: Routine information, such as ongoing status or performance.
-      NOTICE: Normal but significant events, such as start up, shut down, or
-        configuration.
-      WARNING: Warning events might cause problems.
-      ERROR: Error events are likely to cause problems.
-      CRITICAL: Critical events cause more severe problems or brief outages.
-      ALERT: A person must take an action immediately.
-      EMERGENCY: One or more systems are unusable.
+      DEFAULT: (0) The log entry has no assigned severity level.
+      DEBUG: (100) Debug or trace information.
+      INFO: (200) Routine information, such as ongoing status or performance.
+      NOTICE: (300) Normal but significant events, such as start up, shut
+        down, or a configuration change.
+      WARNING: (400) Warning events might cause problems.
+      ERROR: (500) Error events are likely to cause problems.
+      CRITICAL: (600) Critical events cause more severe problems or outages.
+      ALERT: (700) A person must take an action immediately.
+      EMERGENCY: (800) One or more systems are unusable.
     """
     DEFAULT = 0
     DEBUG = 1
@@ -601,6 +601,7 @@ class LogSink(_messages.Message):
     destination: The resource name of the destination. Stackdriver Logging
       writes designated log entries to this destination. For example,
       `"storage.googleapis.com/my-output-bucket"`.
+    endTime: Time at which this sink expires
     errors: _Output only._ If any errors occur when invoking a sink method,
       then this field contains descriptions of the errors.
     filter: An advanced logs filter. If present, only log entries matching the
@@ -609,12 +610,17 @@ class LogSink(_messages.Message):
     name: The client-assigned name of this sink. For example, `"my-syslog-
       sink"`.  The name must be unique among the sinks of a similar kind in
       the project.
+    startTime: Time range for which this sink is active. Logs are exported
+      only if start_time <= entry.timestamp < end_time Both start_time and
+      end_time may be omitted to specify (half) infinite ranges.
   """
 
   destination = _messages.StringField(1)
-  errors = _messages.MessageField('LogError', 2, repeated=True)
-  filter = _messages.StringField(3)
-  name = _messages.StringField(4)
+  endTime = _messages.StringField(2)
+  errors = _messages.MessageField('LogError', 3, repeated=True)
+  filter = _messages.StringField(4)
+  name = _messages.StringField(5)
+  startTime = _messages.StringField(6)
 
 
 class LoggingProjectsEntriesListRequest(_messages.Message):

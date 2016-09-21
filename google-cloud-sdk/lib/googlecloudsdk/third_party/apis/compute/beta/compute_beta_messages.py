@@ -8668,6 +8668,12 @@ class ForwardingRule(_messages.Message):
       target. Forwarding rules with the same [IPAddress, IPProtocol] pair must
       have disjoint port ranges.  This field is not used for internal load
       balancing.
+    ports: This field is not used for external load balancing.  When the load
+      balancing scheme is INTERNAL, a single port or a comma separated list of
+      ports can be configured. Only packets addressed to these ports will be
+      forwarded to the backends configured with this forwarding rule. If the
+      port list is not provided then all ports are allowed to pass through.
+      You may specify a maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -8731,10 +8737,11 @@ class ForwardingRule(_messages.Message):
   name = _messages.StringField(9)
   network = _messages.StringField(10)
   portRange = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  subnetwork = _messages.StringField(14)
-  target = _messages.StringField(15)
+  ports = _messages.StringField(12, repeated=True)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  subnetwork = _messages.StringField(15)
+  target = _messages.StringField(16)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -8976,22 +8983,20 @@ class GlobalSetLabelsRequest(_messages.Message):
 
 
 class GuestOsFeature(_messages.Message):
-  """A list of features to enable on the guest OS. Currently, only one feature
-  is supported, VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have
-  its own queue. For Windows images, you can only enable
-  VIRTIO_SCSCI_MULTIQUEUE on images with driver version 1.2.0.1621 or higher.
-  Linux images with kernel versions 3.17 and higher will support
-  VIRTIO_SCSCI_MULTIQUEUE.
+  """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature.
+    TypeValueValuesEnum: The type of supported feature. Currenty only
+      VIRTIO_SCSI_MULTIQUEUE is supported.
 
   Fields:
-    type: The type of supported feature.
+    type: The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE
+      is supported.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature.
+    """The type of supported feature. Currenty only VIRTIO_SCSI_MULTIQUEUE is
+    supported.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -9469,7 +9474,8 @@ class Image(_messages.Message):
   Fields:
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
-    creationTimestamp: Creation timestamp in RFC3339 text format.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
     deprecated: The deprecation status associated with this image.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -9479,7 +9485,12 @@ class Image(_messages.Message):
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
-    guestOsFeatures: Features of the guest os, valid for bootable images only.
+    guestOsFeatures: A list of features to enable on the guest OS. Applicable
+      for bootable images only. Currently, only one feature is supported,
+      VIRTIO_SCSCI_MULTIQUEUE, which allows each virtual CPU to have its own
+      queue. For Windows images, you can only enable VIRTIO_SCSCI_MULTIQUEUE
+      on images with driver version 1.2.0.1621 or higher. Linux images with
+      kernel versions 3.17 and higher will support VIRTIO_SCSCI_MULTIQUEUE.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -10003,7 +10014,8 @@ class InstanceGroupManager(_messages.Message):
 
   Enums:
     FailoverActionValueValuesEnum: The action to perform in case of zone
-      failure (set only for Regional instance group managers).
+      failure. Only one value is supported, NO_FAILOVER. The default is
+      NO_FAILOVER.
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -10019,8 +10031,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    failoverAction: The action to perform in case of zone failure (set only
-      for Regional instance group managers).
+    failoverAction: The action to perform in case of zone failure. Only one
+      value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: [Output Only] The fingerprint of the resource data. You can
       use this optional field for optimistic locking when you update the
       resource.
@@ -10051,8 +10063,8 @@ class InstanceGroupManager(_messages.Message):
   """
 
   class FailoverActionValueValuesEnum(_messages.Enum):
-    """The action to perform in case of zone failure (set only for Regional
-    instance group managers).
+    """The action to perform in case of zone failure. Only one value is
+    supported, NO_FAILOVER. The default is NO_FAILOVER.
 
     Values:
       NO_FAILOVER: <no description>
@@ -10097,7 +10109,7 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     creatingWithoutRetries: [Output Only] The number of instances that the
       managed instance group will attempt to create. The group attempts to
       create each instance only once. If the group fails to create any of
-      these instances, it decreases the group's target_size value accordingly.
+      these instances, it decreases the group's targetSize value accordingly.
     deleting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group

@@ -11,6 +11,23 @@ from apitools.base.protorpclite import messages as _messages
 package = 'deploymentmanager'
 
 
+class AuditConfig(_messages.Message):
+  """Enables "data access" audit logging for a service and specifies a list of
+  members that are log-exempted.
+
+  Fields:
+    exemptedMembers: Specifies the identities that are exempted from "data
+      access" audit logging for the `service` specified above. Follows the
+      same format of Binding.members.
+    service: Specifies a service that will be enabled for "data access" audit
+      logging. For example, `resourcemanager`, `storage`, `compute`.
+      `allServices` is a special value that covers all services.
+  """
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  service = _messages.StringField(2)
+
+
 class BaseType(_messages.Message):
   """BaseType that describes a service-backed Type.
 
@@ -40,6 +57,31 @@ class BasicAuth(_messages.Message):
   user = _messages.StringField(2)
 
 
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@gmail.com` or
+      `joe@example.com`.  * `serviceAccount:{emailid}`: An email address that
+      represents a service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group. For example, `admins@example.com`.  *
+      `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class CollectionOverride(_messages.Message):
   """CollectionOverride allows resource handling overrides for specific
   resources within a BaseType
@@ -54,14 +96,26 @@ class CollectionOverride(_messages.Message):
   options = _messages.MessageField('Options', 2)
 
 
-class CompositeType(_messages.Message):
-  """Contents of a composite type.
+class Condition(_messages.Message):
+  """A condition to be met.
 
   Fields:
-    files: Files for the template type.
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
   """
 
-  files = _messages.MessageField('TemplateContents', 1)
+  iam = _messages.StringField(1)
+  op = _messages.StringField(2)
+  svc = _messages.StringField(3)
+  sys = _messages.StringField(4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
 
 
 class ConfigFile(_messages.Message):
@@ -208,6 +262,18 @@ class DeploymentmanagerDeploymentsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsGetRequest object.
 
@@ -337,6 +403,20 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
   project = _messages.StringField(6, required=True)
 
 
+class DeploymentmanagerDeploymentsSetIamPolicyRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class DeploymentmanagerDeploymentsStopRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsStopRequest object.
 
@@ -350,6 +430,21 @@ class DeploymentmanagerDeploymentsStopRequest(_messages.Message):
   deployment = _messages.StringField(1, required=True)
   deploymentsStopRequest = _messages.MessageField('DeploymentsStopRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class DeploymentmanagerDeploymentsTestIamPermissionsRequest(_messages.Message):
+  """A DeploymentmanagerDeploymentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
@@ -572,6 +667,112 @@ class DeploymentmanagerResourcesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class DeploymentmanagerTypeProvidersDeleteRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersDeleteRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerTypeProvidersGetRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersGetRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+
+
+class DeploymentmanagerTypeProvidersInsertRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersInsertRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: A TypeProvider resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.MessageField('TypeProvider', 2)
+
+
+class DeploymentmanagerTypeProvidersListRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersListRequest object.
+
+  Fields:
+    filter: Sets a filter expression for filtering listed resources, in the
+      form filter={expression}. Your {expression} must be in the format:
+      field_name comparison_string literal_string.  The field_name is the name
+      of the field you want to compare. Only atomic field types are supported
+      (string, number, boolean). The comparison_string must be either eq
+      (equals) or ne (not equals). The literal_string is the string value to
+      filter to. The literal value must be valid for the type of field you are
+      filtering by (string, number, boolean). For string fields, the literal
+      value is interpreted as a regular expression using RE2 syntax. The
+      literal value must match the entire field.  For example, to filter for
+      instances that do not have a name of example-instance, you would use
+      filter=name ne example-instance.  You can filter on nested fields. For
+      example, you could filter on instances that have set the
+      scheduling.automaticRestart field to true. Use filtering on nested
+      fields to take advantage of labels to organize and search for results
+      based on label values.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example,
+      (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple
+      expressions are treated as AND expressions, meaning that resources must
+      match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: The project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4, required=True)
+
+
+class DeploymentmanagerTypeProvidersPatchRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersPatchRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+    typeProviderResource: A TypeProvider resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+  typeProviderResource = _messages.MessageField('TypeProvider', 3)
+
+
+class DeploymentmanagerTypeProvidersUpdateRequest(_messages.Message):
+  """A DeploymentmanagerTypeProvidersUpdateRequest object.
+
+  Fields:
+    project: The project ID for this request.
+    typeProvider: The name of the type provider for this request.
+    typeProviderResource: A TypeProvider resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  typeProvider = _messages.StringField(2, required=True)
+  typeProviderResource = _messages.MessageField('TypeProvider', 3)
+
+
 class DeploymentmanagerTypesDeleteRequest(_messages.Message):
   """A DeploymentmanagerTypesDeleteRequest object.
 
@@ -755,6 +956,28 @@ class InputMapping(_messages.Message):
   value = _messages.StringField(4)
 
 
+class LogConfig(_messages.Message):
+  """Specifies what kind of log the caller must write
+
+  Fields:
+    counter: Counter options.
+  """
+
+  counter = _messages.MessageField('LogConfigCounterOptions', 1)
+
+
+class LogConfigCounterOptions(_messages.Message):
+  """Options for counters
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
 class Manifest(_messages.Message):
   """Manifest message type.
 
@@ -794,6 +1017,16 @@ class ManifestsListResponse(_messages.Message):
 
   manifests = _messages.MessageField('Manifest', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class OldCompositeType(_messages.Message):
+  """Contents of a composite type.
+
+  Fields:
+    files: Files for the template type.
+  """
+
+  files = _messages.MessageField('TemplateContents', 1)
 
 
 class Operation(_messages.Message):
@@ -980,6 +1213,55 @@ class Options(_messages.Message):
   virtualProperties = _messages.StringField(3)
 
 
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.    A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**  { "bindings": [ { "role": "roles/owner",
+  "members": [ "user:mike@example.com", "group:admins@example.com",
+  "domain:google.com", "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
+  ["user:sean@example.com"] } ] }  For a description of IAM and its features,
+  see the [IAM developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    auditConfigs: Specifies audit logging configs for "data access". "data
+      access": generally refers to data reads/writes and admin reads. "admin
+      activity": generally refers to admin writes.  Note: `AuditConfig`
+      doesn't apply to "admin activity", which always enables audit logging.
+    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
+      must not be specified for the same `role`. `bindings` with no members
+      will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned:
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class Resource(_messages.Message):
   """Resource message type.
 
@@ -987,6 +1269,7 @@ class Resource(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    accessControl: The Access Control Policy set on this resource.
     finalProperties: [Output Only] The evaluated properties of the resource
       with references expanded. Returned as serialized YAML.
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1048,17 +1331,28 @@ class Resource(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  finalProperties = _messages.StringField(1)
-  id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(3)
-  manifest = _messages.StringField(4)
-  name = _messages.StringField(5)
-  properties = _messages.StringField(6)
-  type = _messages.StringField(7)
-  update = _messages.MessageField('ResourceUpdate', 8)
-  updateTime = _messages.StringField(9)
-  url = _messages.StringField(10)
-  warnings = _messages.MessageField('WarningsValueListEntry', 11, repeated=True)
+  accessControl = _messages.MessageField('ResourceAccessControl', 1)
+  finalProperties = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(4)
+  manifest = _messages.StringField(5)
+  name = _messages.StringField(6)
+  properties = _messages.StringField(7)
+  type = _messages.StringField(8)
+  update = _messages.MessageField('ResourceUpdate', 9)
+  updateTime = _messages.StringField(10)
+  url = _messages.StringField(11)
+  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+
+
+class ResourceAccessControl(_messages.Message):
+  """The access controls set on the resource.
+
+  Fields:
+    gcpIamPolicy: The GCP IAM Policy to set on the resource.
+  """
+
+  gcpIamPolicy = _messages.StringField(1)
 
 
 class ResourceUpdate(_messages.Message):
@@ -1070,6 +1364,8 @@ class ResourceUpdate(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    accessControl: The Access Control Policy to set on this resource after
+      updating the resource itself.
     error: [Output Only] If errors are generated during update of the
       resource, this field will be populated.
     finalProperties: [Output Only] The expanded properties of the resource
@@ -1150,13 +1446,14 @@ class ResourceUpdate(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  error = _messages.MessageField('ErrorValue', 1)
-  finalProperties = _messages.StringField(2)
-  intent = _messages.StringField(3)
-  manifest = _messages.StringField(4)
-  properties = _messages.StringField(5)
-  state = _messages.StringField(6)
-  warnings = _messages.MessageField('WarningsValueListEntry', 7, repeated=True)
+  accessControl = _messages.MessageField('ResourceAccessControl', 1)
+  error = _messages.MessageField('ErrorValue', 2)
+  finalProperties = _messages.StringField(3)
+  intent = _messages.StringField(4)
+  manifest = _messages.StringField(5)
+  properties = _messages.StringField(6)
+  state = _messages.StringField(7)
+  warnings = _messages.MessageField('WarningsValueListEntry', 8, repeated=True)
 
 
 class ResourcesListResponse(_messages.Message):
@@ -1170,6 +1467,33 @@ class ResourcesListResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Resource', 2, repeated=True)
+
+
+class Rule(_messages.Message):
+  """A rule to be applied in a Policy.
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met
+    description: Human-readable description of the rule.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  action = _messages.StringField(1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  ins = _messages.StringField(4, repeated=True)
+  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIns = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1244,6 +1568,28 @@ class TemplateContents(_messages.Message):
   templateFileType = _messages.StringField(4)
 
 
+class TestPermissionsRequest(_messages.Message):
+  """A TestPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the 'resource'.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestPermissionsResponse(_messages.Message):
+  """A TestPermissionsResponse object.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class Type(_messages.Message):
   """A resource type supported by Deployment Manager.
 
@@ -1270,7 +1616,7 @@ class Type(_messages.Message):
   """
 
   base = _messages.MessageField('BaseType', 1)
-  composite = _messages.MessageField('CompositeType', 2)
+  composite = _messages.MessageField('OldCompositeType', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(5)
@@ -1290,6 +1636,72 @@ class TypeLabelEntry(_messages.Message):
 
   key = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class TypeProvider(_messages.Message):
+  """A type provider that describes a service-backed Type.
+
+  Fields:
+    collectionOverrides: Allows resource handling overrides for specific
+      collections
+    credential: Credential used when interacting with this type.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    descriptorUrl: Descriptor Url for the this type provider.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    insertTime: [Output Only] Timestamp when the type provider was created, in
+      RFC3339 text format.
+    labels: Map of labels; provided by the client when the resource is created
+      or updated. Specifically: Label keys must be between 1 and 63 characters
+      long and must conform to the following regular expression:
+      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      ([a-z]([-a-z0-9]*[a-z0-9])?)?
+    name: Name of the type provider.
+    operation: [Output Only] The Operation that most recently ran, or is
+      currently running, on this type provider.
+    options: Options to apply when handling any resources in this service.
+    selfLink: [Output Only] Self link for the type provider.
+  """
+
+  collectionOverrides = _messages.MessageField('CollectionOverride', 1, repeated=True)
+  credential = _messages.MessageField('Credential', 2)
+  description = _messages.StringField(3)
+  descriptorUrl = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(6)
+  labels = _messages.MessageField('TypeProviderLabelEntry', 7, repeated=True)
+  name = _messages.StringField(8)
+  operation = _messages.MessageField('Operation', 9)
+  options = _messages.MessageField('Options', 10)
+  selfLink = _messages.StringField(11)
+
+
+class TypeProviderLabelEntry(_messages.Message):
+  """A TypeProviderLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class TypeProvidersListResponse(_messages.Message):
+  """A response that returns all Type Providers supported by Deployment
+  Manager
+
+  Fields:
+    nextPageToken: A token used to continue a truncated list request.
+    typeProviders: [Output Only] A list of resource type providers supported
+      by Deployment Manager.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  typeProviders = _messages.MessageField('TypeProvider', 2, repeated=True)
 
 
 class TypesListResponse(_messages.Message):

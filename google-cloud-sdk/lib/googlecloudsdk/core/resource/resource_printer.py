@@ -70,6 +70,17 @@ class DefaultPrinter(yaml_printer.YamlPrinter):
   """
 
 
+class DisablePrinter(resource_printer_base.ResourcePrinter):
+  """Disables formatted output and does not consume the resources.
+
+  Disables formatted output and does not consume the resources.
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(DisablePrinter, self).__init__(*args, **kwargs)
+    self.attributes = {'disable': 1}
+
+
 class NonePrinter(resource_printer_base.ResourcePrinter):
   """Disables formatted output and consumes the resources.
 
@@ -129,6 +140,7 @@ _FORMATTERS = {
     'csv': csv_printer.CsvPrinter,
     'default': DefaultPrinter,
     'diff': diff_printer.DiffPrinter,
+    'disable': DisablePrinter,
     'flattened': flattened_printer.FlattenedPrinter,
     'json': json_printer.JsonPrinter,
     'list': list_printer.ListPrinter,
@@ -178,6 +190,7 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
           defaults=defaults, symbols=resource_transform.GetTransforms()))
   printer_name = projector.Projection().Name()
   if not printer_name:
+    # Do not print, do not consume resources.
     return None
   try:
     printer_class = _FORMATTERS[printer_name]

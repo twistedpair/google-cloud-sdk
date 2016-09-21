@@ -10,6 +10,20 @@ from apitools.base.protorpclite import messages as _messages
 package = 'replicapoolupdater'
 
 
+class FixedOrPercent(_messages.Message):
+  """Used to specify an amount of instances within an instance group. Only one
+  of fixed and percentage can be specified.
+
+  Fields:
+    fixed: Specify a fixed amount of instances
+    percent: Specify a percentage of the total amount of instances within an
+      instance group manager
+  """
+
+  fixed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class InstanceUpdate(_messages.Message):
   """Update of a single instance.
 
@@ -219,6 +233,16 @@ class OperationList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class RampUpRolloutRequest(_messages.Message):
+  """A RampUpRolloutRequest object.
+
+  Fields:
+    canarySize: The new amount of instances in the IGM to update instances to.
+  """
+
+  canarySize = _messages.MessageField('FixedOrPercent', 1)
+
+
 class ReplicapoolupdaterRollingUpdatesCancelRequest(_messages.Message):
   """A ReplicapoolupdaterRollingUpdatesCancelRequest object.
 
@@ -342,6 +366,124 @@ class ReplicapoolupdaterRollingUpdatesRollbackRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   rollingUpdate = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ReplicapoolupdaterRolloutAbandonRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutAbandonRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ReplicapoolupdaterRolloutCommitRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutCommitRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutInsertRequest object.
+
+  Enums:
+    UpdatePolicyInitialisationMethodValueValuesEnum: How the update policy
+      should be initialised.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: A Rollout resource to be passed as the request body.
+    updatePolicyInitialisationMethod: How the update policy should be
+      initialised.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  class UpdatePolicyInitialisationMethodValueValuesEnum(_messages.Enum):
+    """How the update policy should be initialised.
+
+    Values:
+      FROM_IGM: <no description>
+      FROM_PARENT: <no description>
+    """
+    FROM_IGM = 0
+    FROM_PARENT = 1
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.MessageField('Rollout', 2)
+  updatePolicyInitialisationMethod = _messages.EnumField('UpdatePolicyInitialisationMethodValueValuesEnum', 3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ReplicapoolupdaterRolloutPauseRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutPauseRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ReplicapoolupdaterRolloutRampupRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutRampupRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rampUpRolloutRequest: A RampUpRolloutRequest resource to be passed as the
+      request body.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rampUpRolloutRequest = _messages.MessageField('RampUpRolloutRequest', 2)
+  rollout = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ReplicapoolupdaterRolloutResumeRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutResumeRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ReplicapoolupdaterRolloutRollbackRequest(_messages.Message):
+  """A ReplicapoolupdaterRolloutRollbackRequest object.
+
+  Fields:
+    project: The Google Developers Console project name.
+    rollout: The ID of the update.
+    zone: The name of the zone in which the update's target resides.
+  """
+
+  project = _messages.StringField(1, required=True)
+  rollout = _messages.StringField(2, required=True)
   zone = _messages.StringField(3, required=True)
 
 
@@ -524,6 +666,48 @@ class RollingUpdateList(_messages.Message):
   selfLink = _messages.StringField(4)
 
 
+class Rollout(_messages.Message):
+  """A Rollout object.
+
+  Fields:
+    canarySize: The amount of instances within the instance group manager to
+      be updated to the new instance template.
+    canarySizeStages: A list of the amount of instances within the instance
+      group manager to be updated to the new instance template. Each target
+      size is updated sequentially, in the order supplied.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    healthCheckDeadlineSec: How long to wait for the health checks to return
+      positive before assuming the update has failed or succeeded.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    instanceGroupManager: Fully-qualified URL of an instance group manager
+      being updated.
+    instanceTemplate: Fully-qualified URL of an instance template to apply.
+    instanceTemplateToRollback: Fully-qualified URL of the instance template
+      to rollback to if the rollout is cancelled.
+    kind: [Output Only] Type of the resource.
+    parentRollout: The parent rollout to inherit unspecified fields from.
+    selfLink: [Output Only] The fully qualified URL for the resource.
+    state: [Output Only] The current state of the rollout.
+    updatePolicy: Parameters of the update process.
+  """
+
+  canarySize = _messages.MessageField('FixedOrPercent', 1)
+  canarySizeStages = _messages.MessageField('FixedOrPercent', 2, repeated=True)
+  creationTimestamp = _messages.StringField(3)
+  healthCheckDeadlineSec = _messages.IntegerField(4)
+  id = _messages.StringField(5)
+  instanceGroupManager = _messages.StringField(6)
+  instanceTemplate = _messages.StringField(7)
+  instanceTemplateToRollback = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'replicapoolupdater#rollout')
+  parentRollout = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  state = _messages.StringField(12)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 13)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -563,5 +747,36 @@ class StandardQueryParameters(_messages.Message):
   quotaUser = _messages.StringField(6)
   trace = _messages.StringField(7)
   userIp = _messages.StringField(8)
+
+
+class UpdatePolicy(_messages.Message):
+  """A UpdatePolicy object.
+
+  Fields:
+    maxSurge: Maximum number of instances that can be created above the
+      InstanceGroupManager.targetSize during the update process. By default, a
+      fixed value of 1 is used. Using maxSurge > 0 will cause instance names
+      to change during the update process. At least one of { maxSurge,
+      maxUnavailable } must be greater than 0.
+    maxUnavailable: Maximum number of instances that can be unavailable during
+      the update process. The instance is considered available if all of the
+      following conditions are satisfied: 1. instance's status is RUNNING 2.
+      instance's liveness health check result was observed to be HEALTHY at
+      least once By default, a fixed value of 1 is used. At least one of {
+      maxSurge, maxUnavailable } must be greater than 0.
+    minReadySec: Minimum number of seconds to wait for after a newly created
+      instance becomes available. This value must be from range [0, 3600].
+    minimalAction: Minimal action to be taken on an instance. The order of
+      action types is: RESTART < REPLACE.
+    type: A string attribute.
+    updateType: The type of update
+  """
+
+  maxSurge = _messages.MessageField('FixedOrPercent', 1)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 2)
+  minReadySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimalAction = _messages.StringField(4)
+  type = _messages.StringField(5)
+  updateType = _messages.StringField(6)
 
 

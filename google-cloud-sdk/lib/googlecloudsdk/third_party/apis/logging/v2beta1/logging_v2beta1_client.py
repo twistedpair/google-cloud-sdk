@@ -956,13 +956,39 @@ Only logs that have entries are listed.
 
     GetLogsUsage.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'GET',
-        method_id=u'logging.getLogs_usage',
+        method_id=u'logging.getLogsUsage',
         ordered_params=[],
         path_params=[],
         query_params=[u'endTime', u'resourceName', u'resourceTier', u'startTime'],
-        relative_path=u'v2beta1/logs_usage',
+        relative_path=u'v2beta1/logsUsage',
         request_field='',
         request_type_name=u'LoggingGetLogsUsageRequest',
         response_type_name=u'GetLogsUsageResponse',
+        supports_download=False,
+    )
+
+    def TranslateFilter(self, request, global_params=None):
+      """Translates a v1 filter to its v2 equivalent.
+
+      Args:
+        request: (TranslateFilterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TranslateFilterResponse) The response message.
+      """
+      config = self.GetMethodConfig('TranslateFilter')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TranslateFilter.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'logging.translateFilter',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v2beta1/translateFilter',
+        request_field='<request>',
+        request_type_name=u'TranslateFilterRequest',
+        response_type_name=u'TranslateFilterResponse',
         supports_download=False,
     )

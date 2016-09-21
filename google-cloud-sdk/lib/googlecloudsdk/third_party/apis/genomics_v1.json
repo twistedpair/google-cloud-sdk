@@ -719,7 +719,7 @@
           "type": "string"
         },
         "projectId": {
-          "description": "The Google Developers Console project ID that this dataset belongs to.",
+          "description": "The Google Cloud project ID that this dataset belongs to.",
           "type": "string"
         },
         "name": {
@@ -930,7 +930,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Required. The Google Developers Console project ID that owns this\nexport. The caller must have WRITE access to this project.",
+          "description": "Required. The Google Cloud project ID that owns this\nexport. The caller must have WRITE access to this project.",
           "type": "string"
         },
         "exportUri": {
@@ -1445,7 +1445,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console project ID or number which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
+          "description": "The Google Cloud project ID which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
           "type": "string"
         },
         "readGroupSetId": {
@@ -1722,8 +1722,8 @@
           "description": "The format of the variant data being imported. If unspecified, defaults to\nto `VCF`.",
           "enumDescriptions": [
             "",
-            "VCF (Variant Call Format). The VCF files should be uncompressed. gVCF is\nalso supported.",
-            "Complete Genomics masterVarBeta format. The masterVarBeta files should\nbe bzip2 compressed."
+            "VCF (Variant Call Format). The VCF files may be gzip compressed. gVCF is\nalso supported.",
+            "Complete Genomics masterVarBeta format. The masterVarBeta files may\nbe bzip2 compressed."
           ],
           "type": "string",
           "enum": [
@@ -2262,7 +2262,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console project ID or number which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
+          "description": "The Google Cloud project ID which will be billed\nfor this access. The caller must have WRITE access to this project.\nRequired.",
           "type": "string"
         },
         "variantSetId": {
@@ -2742,7 +2742,7 @@
           "description": "Lists datasets within a project.\n\nFor the definitions of datasets and other genomics resources, see\n[Fundamentals of Google\nGenomics](https:\/\/cloud.google.com\/genomics\/fundamentals-of-google-genomics)",
           "parameters": {
             "projectId": {
-              "description": "Required. The project to list datasets for.",
+              "description": "Required. The Google Cloud project ID to list datasets for.",
               "location": "query",
               "type": "string"
             },

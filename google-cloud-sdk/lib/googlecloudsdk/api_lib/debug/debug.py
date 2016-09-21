@@ -18,6 +18,8 @@ import re
 import threading
 import urllib
 
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.debug import errors
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import apis
@@ -260,8 +262,8 @@ class DebugObject(object):
     cls.SNAPSHOT_TYPE = (
         cls._debug_messages.Breakpoint.ActionValueValuesEnum.CAPTURE)
     cls.LOGPOINT_TYPE = cls._debug_messages.Breakpoint.ActionValueValuesEnum.LOG
-    cls._resource_parser = resources.REGISTRY.CloneAndSwitchAPIs(
-        cls._debug_client)
+    cls._resource_parser = resources.REGISTRY.Clone()
+    cls._resource_parser.RegisterApiByName('clouddebugger', 'v2')
 
   @classmethod
   def TryParse(cls, *args, **kwargs):
@@ -280,7 +282,6 @@ class Debugger(DebugObject):
     self._CheckClient()
     self._project = project
 
-  @errors.HandleHttpError
   def ListDebuggees(self, include_inactive=False, include_stale=False):
     """Lists all debug targets registered with the debug service.
 
@@ -303,7 +304,11 @@ class Debugger(DebugObject):
     request = self._debug_messages.ClouddebuggerDebuggerDebuggeesListRequest(
         project=self._project, includeInactive=include_inactive,
         clientVersion=self.CLIENT_VERSION)
-    response = self._debug_client.debugger_debuggees.List(request)
+    try:
+      response = self._debug_client.debugger_debuggees.List(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
+
     result = [Debuggee(debuggee) for debuggee in response.debuggees]
 
     if not include_stale:
@@ -406,7 +411,10 @@ class Debugger(DebugObject):
         debuggee=self._debug_messages.Debuggee(
             project=self._project, description=description,
             uniquifier=uniquifier, agentVersion=agent_version))
-    response = self._debug_client.controller_debuggees.Register(request)
+    try:
+      response = self._debug_client.controller_debuggees.Register(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     return Debuggee(response.debuggee)
 
 
@@ -469,7 +477,6 @@ class Debuggee(DebugObject):
     else:
       return 'logpoint'
 
-  @errors.HandleHttpError
   def GetBreakpoint(self, breakpoint_id):
     """Gets the details for a breakpoint.
 
@@ -482,10 +489,12 @@ class Debuggee(DebugObject):
                ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest(
                    breakpointId=breakpoint_id, debuggeeId=self.target_id,
                    clientVersion=self.CLIENT_VERSION))
-    response = self._debug_client.debugger_debuggees_breakpoints.Get(request)
+    try:
+      response = self._debug_client.debugger_debuggees_breakpoints.Get(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     return self.AddTargetInfo(response.breakpoint)
 
-  @errors.HandleHttpError
   def DeleteBreakpoint(self, breakpoint_id):
     """Deletes a breakpoint.
 
@@ -496,9 +505,11 @@ class Debuggee(DebugObject):
                ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest(
                    breakpointId=breakpoint_id, debuggeeId=self.target_id,
                    clientVersion=self.CLIENT_VERSION))
-    self._debug_client.debugger_debuggees_breakpoints.Delete(request)
+    try:
+      self._debug_client.debugger_debuggees_breakpoints.Delete(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
 
-  @errors.HandleHttpError
   def ListBreakpoints(self, location_regexp_or_ids=None,
                       include_all_users=False, include_inactive=False,
                       restrict_to_type=None):
@@ -558,7 +569,10 @@ class Debuggee(DebugObject):
                    includeAllUsers=include_all_users,
                    includeInactive=include_inactive or bool(ids),
                    clientVersion=self.CLIENT_VERSION))
-    response = self._debug_client.debugger_debuggees_breakpoints.List(request)
+    try:
+      response = self._debug_client.debugger_debuggees_breakpoints.List(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     if not location_regexp_or_ids:
       return self._FilteredDictListWithInfo(response.breakpoints,
                                             restrict_to_type)
@@ -594,7 +608,6 @@ class Debuggee(DebugObject):
                                   p.pattern)
     return self._FilteredDictListWithInfo(result, restrict_to_type)
 
-  @errors.HandleHttpError
   def CreateSnapshot(self, location, condition=None, expressions=None,
                      user_email=None, labels=None):
     """Creates a "snapshot" breakpoint.
@@ -634,10 +647,12 @@ class Debuggee(DebugObject):
                 action=(self._debug_messages.Breakpoint.
                         ActionValueValuesEnum.CAPTURE)),
             clientVersion=self.CLIENT_VERSION))
-    response = self._debug_client.debugger_debuggees_breakpoints.Set(request)
+    try:
+      response = self._debug_client.debugger_debuggees_breakpoints.Set(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     return self.AddTargetInfo(response.breakpoint)
 
-  @errors.HandleHttpError
   def CreateLogpoint(self, location, log_format_string, log_level=None,
                      condition=None, user_email=None, labels=None):
     """Creates a logpoint in the debuggee.
@@ -692,14 +707,16 @@ class Debuggee(DebugObject):
                 action=(self._debug_messages.Breakpoint.
                         ActionValueValuesEnum.LOG)),
             clientVersion=self.CLIENT_VERSION))
-    response = self._debug_client.debugger_debuggees_breakpoints.Set(request)
+    try:
+      response = self._debug_client.debugger_debuggees_breakpoints.Set(request)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     return self.AddTargetInfo(response.breakpoint)
 
   def _CallGet(self, request):
     with self._client_lock:
       return self._debug_client.debugger_debuggees_breakpoints.Get(request)
 
-  @errors.HandleHttpError
   def WaitForBreakpointSet(self, breakpoint_id, original_location, timeout=None,
                            retry_ms=500):
     """Waits for a breakpoint to be set by at least one agent.
@@ -724,11 +741,13 @@ class Debuggee(DebugObject):
           r.breakpoint.isFinalState or
           (original_location and
            original_location != _FormatLocation(r.breakpoint.location)))
-    return self.WaitForBreakpoint(
-        breakpoint_id=breakpoint_id, timeout=timeout, retry_ms=retry_ms,
-        completion_test=MovedOrFinal)
+    try:
+      return self.WaitForBreakpoint(
+          breakpoint_id=breakpoint_id, timeout=timeout, retry_ms=retry_ms,
+          completion_test=MovedOrFinal)
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
 
-  @errors.HandleHttpError
   def WaitForBreakpoint(self, breakpoint_id, timeout=None, retry_ms=500,
                         completion_test=None):
     """Waits for a breakpoint to be completed.
@@ -761,6 +780,8 @@ class Debuggee(DebugObject):
     except retry.RetryException:
       # Timeout before the beakpoint was finalized.
       return None
+    except apitools_exceptions.HttpError as error:
+      raise errors.UnknownHttpError(error)
     if not completion_test(result):
       # Termination condition was not met
       return None

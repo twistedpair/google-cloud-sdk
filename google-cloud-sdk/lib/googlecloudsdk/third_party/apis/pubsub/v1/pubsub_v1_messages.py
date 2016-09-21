@@ -393,6 +393,48 @@ class PubsubMessage(_messages.Message):
   publishTime = _messages.StringField(4)
 
 
+class PubsubProjectsSnapshotsGetIamPolicyRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSnapshotsSetIamPolicyRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      `resource` is usually specified as a path. For example, a Project
+      resource is specified as `projects/{project}`.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class PubsubProjectsSnapshotsTestIamPermissionsRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. `resource` is usually specified as a path. For example, a
+      Project resource is specified as `projects/{project}`.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class PubsubProjectsSubscriptionsAcknowledgeRequest(_messages.Message):
   """A PubsubProjectsSubscriptionsAcknowledgeRequest object.
 

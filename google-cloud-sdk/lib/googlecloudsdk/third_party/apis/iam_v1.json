@@ -179,7 +179,7 @@
       "type": "object",
       "properties": {
         "accountId": {
-          "description": "Required. The account id that is used to generate the service account\nemail address and a stable unique id. It is unique within a project,\nmust be 1-63 characters long, and match the regular expression\n`[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.",
+          "description": "Required. The account id that is used to generate the service account\nemail address and a stable unique id. It is unique within a project,\nmust be 6-30 characters long, and match the regular expression\n`[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.",
           "type": "string"
         },
         "serviceAccount": {
@@ -443,7 +443,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the role.\n\nExamples of roles names are:\n`roles\/editor`, `roles\/viewer` and `roles\/logging.viewer`.",
+          "description": "The name of the role.\n\nWhen Role is used in CreateRole, the role name must not be set.\n\nWhen Role is used in output and other input such as UpdateRole, the role\nname is the complete path, e.g., roles\/logging.viewer for curated roles\nand organizations\/{organization-id}\/roles\/logging.viewer for custom roles.",
           "type": "string"
         },
         "title": {

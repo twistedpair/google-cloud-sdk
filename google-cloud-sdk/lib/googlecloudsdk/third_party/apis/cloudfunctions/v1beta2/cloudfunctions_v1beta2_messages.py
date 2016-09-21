@@ -114,6 +114,16 @@ class CloudfunctionsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudfunctionsOperationsOperationsGetRequest(_messages.Message):
+  """A CloudfunctionsOperationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsCallRequest(_messages.Message):
   """A CloudfunctionsProjectsLocationsFunctionsCallRequest object.
 
@@ -427,6 +437,66 @@ class OperationMetadata(_messages.Message):
     request: The original request that started the operation.
     target: Target of the operation - for example
       projects/project-1/regions/region-1/functions/function-1
+    type: Type of operation.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type of operation.
+
+    Values:
+      OPERATION_UNSPECIFIED: Unknown operation type.
+      CREATE_FUNCTION: Triggered by CreateFunction call
+      UPDATE_FUNCTION: Triggered by UpdateFunction call
+      DELETE_FUNCTION: Triggered by DeleteFunction call.
+    """
+    OPERATION_UNSPECIFIED = 0
+    CREATE_FUNCTION = 1
+    UPDATE_FUNCTION = 2
+    DELETE_FUNCTION = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestValue(_messages.Message):
+    """The original request that started the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a RequestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  request = _messages.MessageField('RequestValue', 1)
+  target = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class OperationMetadataV1Beta2(_messages.Message):
+  """Metadata describing an Operation
+
+  Enums:
+    TypeValueValuesEnum: Type of operation.
+
+  Messages:
+    RequestValue: The original request that started the operation.
+
+  Fields:
+    request: The original request that started the operation.
+    target: Target of the operation - for example
+      projects/project-1/locations/region-1/functions/function-1
     type: Type of operation.
   """
 

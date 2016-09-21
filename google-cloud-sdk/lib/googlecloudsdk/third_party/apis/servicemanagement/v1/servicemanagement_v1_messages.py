@@ -1714,9 +1714,11 @@ class MetricDescriptor(_messages.Message):
 
   Enums:
     MetricKindValueValuesEnum: Whether the metric records instantaneous
-      values, changes to a value, etc.
+      values, changes to a value, etc. Some combinations of `metric_kind` and
+      `value_type` might not be supported.
     ValueTypeValueValuesEnum: Whether the measurement is an integer, a
-      floating-point number, etc.
+      floating-point number, etc. Some combinations of `metric_kind` and
+      `value_type` might not be supported.
 
   Fields:
     description: A detailed description of the metric, which can be used in
@@ -1730,7 +1732,8 @@ class MetricDescriptor(_messages.Message):
       type has a label, `loadbalanced`, that specifies whether the traffic was
       received through a load balanced IP address.
     metricKind: Whether the metric records instantaneous values, changes to a
-      value, etc.
+      value, etc. Some combinations of `metric_kind` and `value_type` might
+      not be supported.
     name: Resource name. The format of the name may vary between different
       implementations. For examples:
       projects/{project_id}/metricDescriptors/{type=**}
@@ -1771,12 +1774,14 @@ class MetricDescriptor(_messages.Message):
       sequence of non-blank printable ASCII characters not    containing '{'
       or '}'.
     valueType: Whether the measurement is an integer, a floating-point number,
-      etc.
+      etc. Some combinations of `metric_kind` and `value_type` might not be
+      supported.
   """
 
   class MetricKindValueValuesEnum(_messages.Enum):
     """Whether the metric records instantaneous values, changes to a value,
-    etc.
+    etc. Some combinations of `metric_kind` and `value_type` might not be
+    supported.
 
     Values:
       METRIC_KIND_UNSPECIFIED: Do not use this default value.
@@ -1794,6 +1799,8 @@ class MetricDescriptor(_messages.Message):
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     """Whether the measurement is an integer, a floating-point number, etc.
+    Some combinations of `metric_kind` and `value_type` might not be
+    supported.
 
     Values:
       VALUE_TYPE_UNSPECIFIED: Do not use this default value.
@@ -2509,12 +2516,19 @@ class QuotaSettings(_messages.Message):
       overrides will only have an effect up to the max_limit specified in the
       service config, or the the producer override, if one exists.  The key
       for this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
-      quotas defined within quota groups, where GROUP_NAME is the
-      google.api.QuotaGroup.name field and LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
-      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
-      from the service config. For example: 'borrowedCountPerOrganization'.
+      group-based quotas, where GROUP_NAME is the google.api.QuotaGroup.name
+      field and LIMIT_NAME is the google.api.QuotaLimit.name field from the
+      service config.  For example: 'ReadGroup/ProjectDaily'.  -
+      '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config. For example:
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
+      per-region quota overrides, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config and
+      <REGION_OR_ZONE> is the name of the region or zone for which the
+      override is defined. For example: 'borrowedCountPerOrganization:us-
+      central1'. Only metric-based quotas can have per-region overrides. Per-
+      region override takes effect if both per-region override and global
+      override are defined.
     EffectiveQuotasValue: The effective quota limits for each group, derived
       from the service defaults together with any producer or consumer
       overrides. For each limit, the effective value is the minimum of the
@@ -2525,33 +2539,46 @@ class QuotaSettings(_messages.Message):
       a consumer override is also specified, then the minimum of the two will
       be used. This allows consumers to cap their usage voluntarily.  The key
       for this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
-      quotas defined within quota groups, where GROUP_NAME is the
-      google.api.QuotaGroup.name field and LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
-      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
-      from the service config. For example: 'borrowedCountPerOrganization'.
+      group-based quotas, where GROUP_NAME is the google.api.QuotaGroup.name
+      field and LIMIT_NAME is the google.api.QuotaLimit.name field from the
+      service config.  For example: 'ReadGroup/ProjectDaily'.  -
+      '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config. For example:
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
+      per-region quota overrides, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config and
+      <REGION_OR_ZONE> is the name of the region or zone for which the
+      override is defined. For example: 'borrowedCountPerOrganization:us-
+      central1'. Only metric-based quotas can have per-region overrides. Per-
+      region override takes effect if both per-region override and global
+      override are defined.
 
   Fields:
     consumerOverrides: Quota overrides set by the consumer. Consumer overrides
       will only have an effect up to the max_limit specified in the service
       config, or the the producer override, if one exists.  The key for this
-      map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas
-      defined within quota groups, where GROUP_NAME is the
-      google.api.QuotaGroup.name field and LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
-      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
-      from the service config. For example: 'borrowedCountPerOrganization'.
-    effectiveQuotaForMetrics: Use this field for quota limits defined without
-      quota groups, i.e., new style quota configuration. Combines service
-      quota configuration and project-specific settings, as a map from metric
-      name to the effective quota information for quota limits on that metric.
-      Output-only
-    effectiveQuotaGroups: Use this field for quota limits defined under quota
-      groups. Combines service quota configuration and project-specific
-      settings, as a map from quota group name to the effective quota
-      information for that group. Output-only.
+      map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for group-
+      based quotas, where GROUP_NAME is the google.api.QuotaGroup.name field
+      and LIMIT_NAME is the google.api.QuotaLimit.name field from the service
+      config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
+      metric-based quotas, where LIMIT_NAME is the google.api.QuotaLimit.name
+      field from the service config. For example:
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
+      per-region quota overrides, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config and
+      <REGION_OR_ZONE> is the name of the region or zone for which the
+      override is defined. For example: 'borrowedCountPerOrganization:us-
+      central1'. Only metric-based quotas can have per-region overrides. Per-
+      region override takes effect if both per-region override and global
+      override are defined.
+    effectiveQuotaForMetrics: Use this field for metric-based quota limits.
+      Combines service quota configuration and project-specific settings, as a
+      map from metric name to the effective quota information for quota limits
+      on that metric. Output-only
+    effectiveQuotaGroups: Use this field for group-based quota limits.
+      Combines service quota configuration and project-specific settings, as a
+      map from quota group name to the effective quota information for that
+      group. Output-only.
     effectiveQuotas: The effective quota limits for each group, derived from
       the service defaults together with any producer or consumer overrides.
       For each limit, the effective value is the minimum of the producer and
@@ -2561,12 +2588,19 @@ class QuotaSettings(_messages.Message):
       consumer override is also specified, then the minimum of the two will be
       used. This allows consumers to cap their usage voluntarily.  The key for
       this map is one of the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for
-      quotas defined within quota groups, where GROUP_NAME is the
-      google.api.QuotaGroup.name field and LIMIT_NAME is the
-      google.api.QuotaLimit.name field from the service config.  For example:
-      'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for quotas defined without
-      quota groups, where LIMIT_NAME is the google.api.QuotaLimit.name field
-      from the service config. For example: 'borrowedCountPerOrganization'.
+      group-based quotas, where GROUP_NAME is the google.api.QuotaGroup.name
+      field and LIMIT_NAME is the google.api.QuotaLimit.name field from the
+      service config.  For example: 'ReadGroup/ProjectDaily'.  -
+      '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config. For example:
+      'borrowedCountPerOrganization'.  - '<LIMIT_NAME>:<REGION_OR_ZONE>' for
+      per-region quota overrides, where LIMIT_NAME is the
+      google.api.QuotaLimit.name field from the service config and
+      <REGION_OR_ZONE> is the name of the region or zone for which the
+      override is defined. For example: 'borrowedCountPerOrganization:us-
+      central1'. Only metric-based quotas can have per-region overrides. Per-
+      region override takes effect if both per-region override and global
+      override are defined.
     variableTermQuotas: Quotas that are active over a specified time period.
       Only writeable by the producer.
   """
@@ -2576,13 +2610,19 @@ class QuotaSettings(_messages.Message):
     """Quota overrides set by the consumer. Consumer overrides will only have
     an effect up to the max_limit specified in the service config, or the the
     producer override, if one exists.  The key for this map is one of the
-    following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas defined within quota
-    groups, where GROUP_NAME is the google.api.QuotaGroup.name field and
+    following:  - '<GROUP_NAME>/<LIMIT_NAME>' for group-based quotas, where
+    GROUP_NAME is the google.api.QuotaGroup.name field and LIMIT_NAME is the
+    google.api.QuotaLimit.name field from the service config.  For example:
+    'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for metric-based quotas, where
     LIMIT_NAME is the google.api.QuotaLimit.name field from the service
-    config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
-    quotas defined without quota groups, where LIMIT_NAME is the
-    google.api.QuotaLimit.name field from the service config. For example:
-    'borrowedCountPerOrganization'.
+    config. For example: 'borrowedCountPerOrganization'.  -
+    '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where
+    LIMIT_NAME is the google.api.QuotaLimit.name field from the service config
+    and <REGION_OR_ZONE> is the name of the region or zone for which the
+    override is defined. For example: 'borrowedCountPerOrganization:us-
+    central1'. Only metric-based quotas can have per-region overrides. Per-
+    region override takes effect if both per-region override and global
+    override are defined.
 
     Messages:
       AdditionalProperty: An additional property for a ConsumerOverridesValue
@@ -2640,13 +2680,19 @@ class QuotaSettings(_messages.Message):
     """Quota overrides set by the producer. Note that if a consumer override
     is also specified, then the minimum of the two will be used. This allows
     consumers to cap their usage voluntarily.  The key for this map is one of
-    the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for quotas defined within
-    quota groups, where GROUP_NAME is the google.api.QuotaGroup.name field and
-    LIMIT_NAME is the google.api.QuotaLimit.name field from the service
-    config.  For example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for
-    quotas defined without quota groups, where LIMIT_NAME is the
-    google.api.QuotaLimit.name field from the service config. For example:
-    'borrowedCountPerOrganization'.
+    the following:  - '<GROUP_NAME>/<LIMIT_NAME>' for group-based quotas,
+    where GROUP_NAME is the google.api.QuotaGroup.name field and LIMIT_NAME is
+    the google.api.QuotaLimit.name field from the service config.  For
+    example: 'ReadGroup/ProjectDaily'.  - '<LIMIT_NAME>' for metric-based
+    quotas, where LIMIT_NAME is the google.api.QuotaLimit.name field from the
+    service config. For example: 'borrowedCountPerOrganization'.  -
+    '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where
+    LIMIT_NAME is the google.api.QuotaLimit.name field from the service config
+    and <REGION_OR_ZONE> is the name of the region or zone for which the
+    override is defined. For example: 'borrowedCountPerOrganization:us-
+    central1'. Only metric-based quotas can have per-region overrides. Per-
+    region override takes effect if both per-region override and global
+    override are defined.
 
     Messages:
       AdditionalProperty: An additional property for a ProducerOverridesValue
@@ -2809,13 +2855,15 @@ class Rule(_messages.Message):
 
 
 class Service(_messages.Message):
-  """`Service` is the root object of the configuration schema. It describes
-  basic information like the name of the service and the exposed API
-  interfaces, and delegates other aspects to configuration sub-sections.
-  Example:      type: google.api.Service     config_version: 1     name:
+  """`Service` is the root object of Google service configuration schema. It
+  describes basic information about a service, such as the name and the title,
+  and delegates other aspects to sub-sections. Each sub-section is either a
+  proto message or a repeated proto message that configures a specific aspect,
+  such as auth. See each proto message definition for details.  Example:
+  type: google.api.Service     config_version: 3     name:
   calendar.googleapis.com     title: Google Calendar API     apis:     - name:
-  google.calendar.Calendar     backend:       rules:       - selector: "*"
-  address: calendar.example.com
+  google.calendar.v3.Calendar     backend:       rules:       - selector:
+  "google.calendar.v3.*"         address: calendar.example.com
 
   Fields:
     apis: A list of API interfaces exported by this service. Only the `name`
@@ -2846,19 +2894,19 @@ class Service(_messages.Message):
     id: A unique ID for a specific instance of this message, typically
       assigned by the client for tracking purpose. If empty, the server may
       choose to generate one instead.
-    logging: Logging configuration of the service.
+    logging: Logging configuration.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
     monitoredResources: Defines the monitored resources used by this service.
       This is required by the Service.monitoring and Service.logging
       configurations.
-    monitoring: Monitoring configuration of the service.
+    monitoring: Monitoring configuration.
     name: The DNS address at which this service is available, e.g.
       `calendar.googleapis.com`.
     producerProjectId: The id of the Google developer project that owns the
       service. Members of this project can manage the service configuration,
       manage consumption of the service, etc.
-    systemParameters: Configuration for system parameters.
+    systemParameters: System parameter configuration.
     systemTypes: A list of all proto message types included in this API
       service. It serves similar purpose as [google.api.Service.types], except
       that these types are not needed by user-defined APIs. Therefore, they

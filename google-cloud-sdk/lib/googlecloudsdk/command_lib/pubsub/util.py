@@ -219,14 +219,42 @@ def TopicDisplayDict(topic, error_msg=''):
     A serialized object representing a Cloud Pub/Sub Topic
     operation (create, delete).
   """
-  success = True
-  if error_msg:
-    success = False
-
   topic_display_dict = resource_projector.MakeSerializable(topic)
   topic_display_dict['topicId'] = topic.name
-  topic_display_dict['success'] = success
-  topic_display_dict['reason'] = error_msg
+  topic_display_dict['success'] = not error_msg
+  topic_display_dict['reason'] = error_msg or ''
   del topic_display_dict['name']
 
   return topic_display_dict
+
+
+def SubscriptionDisplayDict(subscription, error_msg=''):
+  """Creates a serializable from a Cloud Pub/Sub Subscription op for display.
+
+  Args:
+    subscription: (Cloud Pub/Sub Subscription) Subscription to be serialized.
+    error_msg: (string) An error message to be added to the serialized
+               result, if any.
+  Returns:
+    A serialized object representing a Cloud Pub/Sub Subscription
+    operation (create, delete).
+  """
+  subscription_display_dict = resource_projector.MakeSerializable(subscription)
+
+  if getattr(subscription, 'pushConfig', None):
+    push_endpoint = subscription.pushConfig.pushEndpoint
+    subscription_type = 'push'
+    del subscription_display_dict['pushConfig']
+  else:
+    push_endpoint = ''
+    subscription_type = 'pull'
+
+  subscription_display_dict['subscriptionId'] = subscription.name
+  subscription_display_dict['type'] = subscription_type
+  subscription_display_dict['topic'] = subscription.topic
+  subscription_display_dict['pushEndpoint'] = push_endpoint
+  subscription_display_dict['success'] = not error_msg
+  subscription_display_dict['reason'] = error_msg or ''
+  del subscription_display_dict['name']
+
+  return subscription_display_dict

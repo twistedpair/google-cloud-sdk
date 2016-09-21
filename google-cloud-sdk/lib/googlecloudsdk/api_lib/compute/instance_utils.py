@@ -250,7 +250,7 @@ def CreateNetworkInterfaceMessage(
         subnetwork=subnet_ref.SelfLink())
   else:
     network_ref = scope_prompter.CreateGlobalReference(
-        network, resource_type='networks')
+        network or constants.DEFAULT_NETWORK, resource_type='networks')
     network_interface = messages.NetworkInterface(
         network=network_ref.SelfLink())
 
@@ -274,6 +274,33 @@ def CreateNetworkInterfaceMessage(
     network_interface.accessConfigs = [access_config]
 
   return network_interface
+
+
+def CreateNetworkInterfaceMessages(
+    scope_prompter, compute_client, network_interface_arg, instance_refs):
+  """Create network interface messages.
+
+  Args:
+    scope_prompter: generates resource references.
+    compute_client: creates resources.
+    network_interface_arg: CLI argument specyfying network interfaces.
+    instance_refs: reference to instances that will own the generated
+                   interfaces.
+  Returns:
+    list, items are NetworkInterfaceMessages.
+  """
+  result = []
+  if network_interface_arg:
+    for interface in network_interface_arg:
+      address = interface.get('address', None)
+      no_address = address is None
+
+      result.append(CreateNetworkInterfaceMessage(
+          scope_prompter, compute_client, interface.get('network', None),
+          interface.get('subnet', None),
+          interface.get('private_network_ip', None), no_address,
+          address, instance_refs))
+  return result
 
 
 def CreatePersistentAttachedDiskMessages(

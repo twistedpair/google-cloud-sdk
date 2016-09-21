@@ -306,7 +306,7 @@
       "type": "object",
       "properties": {
         "imageName": {
-          "description": "Required. Image name from either Docker Hub or Google Container Repository.\nUsers that run pipelines must have READ access to the image.",
+          "description": "Required. Image name from either Docker Hub or Google Container Registry.\nUsers that run pipelines must have READ access to the image.",
           "type": "string"
         },
         "cmd": {
@@ -354,7 +354,7 @@
           "format": "int32"
         },
         "noAddress": {
-          "description": "Whether to assign an external IP to the instance. Defaults to false.\nCorresponds to `--no_address flag` for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time.  ** Note: To use this\noption, your project must be in Google Access for Private IPs Early Access\nProgram.**",
+          "description": "Whether to assign an external IP to the instance. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time.  ** Note: To use this\noption, your project must be in Google Access for Private IPs Early Access\nProgram.**",
           "type": "boolean"
         }
       }

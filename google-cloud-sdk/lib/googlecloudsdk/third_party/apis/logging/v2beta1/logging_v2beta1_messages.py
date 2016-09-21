@@ -86,7 +86,7 @@ class HttpRequest(_messages.Message):
 
 
 class InternalEntityId(_messages.Message):
-  """A InternalEntityId object.
+  """Internal ID of a Cloud Entity.
 
   Fields:
     billingAccountId: Unique identifier of a billing account
@@ -319,7 +319,7 @@ class LogEntry(_messages.Message):
       project with the same ID as duplicates which can be removed.  If
       omitted, Stackdriver Logging will generate a unique ID for this log
       entry.
-    internalId: A InternalEntityId attribute.
+    internalId: Internal ID of the owner of this log entry.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
     labels: Optional. A set of user-defined (key, value) data that provides
@@ -349,7 +349,8 @@ class LogEntry(_messages.Message):
     timestamp: Optional. The time the event described by the log entry
       occurred.  If omitted, Stackdriver Logging will use the time the log
       entry is received.
-    writerEmailAddress: A string attribute.
+    writerEmailAddress: The email address of the role that wrote the entry on
+      behalf of a user. Not populated for entries written by a user.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -357,16 +358,16 @@ class LogEntry(_messages.Message):
     `LogSeverity.DEFAULT`.
 
     Values:
-      DEFAULT: The log entry has no assigned severity level.
-      DEBUG: Debug or trace information.
-      INFO: Routine information, such as ongoing status or performance.
-      NOTICE: Normal but significant events, such as start up, shut down, or
-        configuration.
-      WARNING: Warning events might cause problems.
-      ERROR: Error events are likely to cause problems.
-      CRITICAL: Critical events cause more severe problems or brief outages.
-      ALERT: A person must take an action immediately.
-      EMERGENCY: One or more systems are unusable.
+      DEFAULT: (0) The log entry has no assigned severity level.
+      DEBUG: (100) Debug or trace information.
+      INFO: (200) Routine information, such as ongoing status or performance.
+      NOTICE: (300) Normal but significant events, such as start up, shut
+        down, or a configuration change.
+      WARNING: (400) Warning events might cause problems.
+      ERROR: (500) Error events are likely to cause problems.
+      CRITICAL: (600) Critical events cause more severe problems or outages.
+      ALERT: (700) A person must take an action immediately.
+      EMERGENCY: (800) One or more systems are unusable.
     """
     DEFAULT = 0
     DEBUG = 1
@@ -528,16 +529,16 @@ class LogLine(_messages.Message):
     """Severity of this log entry.
 
     Values:
-      DEFAULT: The log entry has no assigned severity level.
-      DEBUG: Debug or trace information.
-      INFO: Routine information, such as ongoing status or performance.
-      NOTICE: Normal but significant events, such as start up, shut down, or
-        configuration.
-      WARNING: Warning events might cause problems.
-      ERROR: Error events are likely to cause problems.
-      CRITICAL: Critical events cause more severe problems or brief outages.
-      ALERT: A person must take an action immediately.
-      EMERGENCY: One or more systems are unusable.
+      DEFAULT: (0) The log entry has no assigned severity level.
+      DEBUG: (100) Debug or trace information.
+      INFO: (200) Routine information, such as ongoing status or performance.
+      NOTICE: (300) Normal but significant events, such as start up, shut
+        down, or a configuration change.
+      WARNING: (400) Warning events might cause problems.
+      ERROR: (500) Error events are likely to cause problems.
+      CRITICAL: (600) Critical events cause more severe problems or outages.
+      ALERT: (700) A person must take an action immediately.
+      EMERGENCY: (800) One or more systems are unusable.
     """
     DEFAULT = 0
     DEBUG = 1
@@ -582,8 +583,8 @@ class LogMetric(_messages.Message):
     """The API version that created or updated this metric.
 
     Values:
-      V2: Cloud Logging API V2.
-      V1: Cloud Logging API V1.
+      V2: Stackdriver Logging API v2.
+      V1: Stackdriver Logging API v1.
     """
     V2 = 0
     V1 = 1
@@ -609,6 +610,7 @@ class LogSink(_messages.Message):
       "storage.googleapis.com/my-gcs-bucket"
       "bigquery.googleapis.com/projects/my-project-id/datasets/my-dataset"
       "pubsub.googleapis.com/projects/my-project/topics/my-topic"
+    endTime: Time at which this sink expires
     errors: Output only. All active errors found for this sink.
     filter: Optional. An [advanced logs
       filter](/logging/docs/view/advanced_filters). Only log entries matching
@@ -618,6 +620,12 @@ class LogSink(_messages.Message):
       Stackdriver Logging. Example filter (V2 format):      logName=projects
       /my-projectid/logs/syslog AND severity>=ERROR
     formatChange: When the format was changed.
+    includeChildren: If true, then logs from children of this entity will also
+      be sent to this sink. e.g. If this sink is associated with an
+      organization, then logs from all projects in the organization as well as
+      the organization itself will be sent to this sink. This only applies to
+      sinks in organizations and folders. This field is ignored for sinks in
+      projects and billing_accounts.
     name: Required. The client-assigned sink identifier, unique within the
       project. Example: `"my-syslog-errors-to-pubsub"`.  Sink identifiers are
       limited to 1000 characters and can include only the following
@@ -627,6 +635,9 @@ class LogSink(_messages.Message):
       sink's exported log entries.  This version does not have to correspond
       to the version of the log entry that was written to Stackdriver Logging.
       If omitted, the v2 format is used.
+    startTime: Time range for which this sink is active. Logs are exported
+      only if start_time <= entry.timestamp < end_time Both start_time and
+      end_time may be omitted to specify (half) infinite ranges.
     writerIdentity: Output only. The iam identity to which the destination
       needs to grant write access.  This may be a service account or a group.
       Examples (Do not assume these specific values):    "serviceAccount
@@ -654,12 +665,15 @@ class LogSink(_messages.Message):
     V1 = 2
 
   destination = _messages.StringField(1)
-  errors = _messages.MessageField('LogError', 2, repeated=True)
-  filter = _messages.StringField(3)
-  formatChange = _messages.StringField(4)
-  name = _messages.StringField(5)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
-  writerIdentity = _messages.StringField(7)
+  endTime = _messages.StringField(2)
+  errors = _messages.MessageField('LogError', 3, repeated=True)
+  filter = _messages.StringField(4)
+  formatChange = _messages.StringField(5)
+  includeChildren = _messages.BooleanField(6)
+  name = _messages.StringField(7)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 8)
+  startTime = _messages.StringField(9)
+  writerIdentity = _messages.StringField(10)
 
 
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
@@ -717,7 +731,7 @@ class LoggingBillingAccountsResourceKeysListRequest(_messages.Message):
 
   Fields:
     billingAccountsId: Part of `parent`. The resource name of the entity whose
-      reource keys are to be listed.
+      resource keys are to be listed.
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored.  The presence of
       `nextPageToken` in the response indicates that more results might be
@@ -891,7 +905,7 @@ class LoggingOrganizationsResourceKeysListRequest(_messages.Message):
 
   Fields:
     organizationsId: Part of `parent`. The resource name of the entity whose
-      reource keys are to be listed.
+      resource keys are to be listed.
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored.  The presence of
       `nextPageToken` in the response indicates that more results might be
@@ -1095,7 +1109,7 @@ class LoggingProjectsResourceKeysListRequest(_messages.Message):
       of `nextPageToken` from the previous response.  The values of other
       method parameters should be identical to those in the previous call.
     projectsId: Part of `parent`. The resource name of the entity whose
-      reource keys are to be listed.
+      resource keys are to be listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1682,6 +1696,30 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TranslateFilterRequest(_messages.Message):
+  """The parameters to `TranslateFilter`.
+
+  Fields:
+    projectId: Optional. The project-id associated with this filter. This is
+      required only to translate the log_name filter, which has a project-id
+      in it.
+    v1Filter: Required. The V1 filter to translate.
+  """
+
+  projectId = _messages.StringField(1)
+  v1Filter = _messages.StringField(2)
+
+
+class TranslateFilterResponse(_messages.Message):
+  """The response from `TranslateFilter`.
+
+  Fields:
+    v2Filter: The translated v2 filter.
+  """
+
+  v2Filter = _messages.StringField(1)
+
+
 class Usage(_messages.Message):
   """Describes logs usage over a period of time.
 
@@ -1703,39 +1741,44 @@ class WriteLogEntriesRequest(_messages.Message):
   """The parameters to WriteLogEntries.
 
   Messages:
-    LabelsValue: Optional. User-defined `key:value` items that are added to
-      the `labels` field of each log entry in `entries`, except when a log
-      entry specifies its own `key:value` item with the same key. Example: `{
-      "size": "large", "color":"red" }`
+    LabelsValue: Optional. Default labels that are added to the `labels` field
+      of all log entries in `entries`. If a log entry already has a label with
+      the same key as a label in this parameter, then the log entry's label is
+      not changed. See LogEntry.
 
   Fields:
-    entries: Required. The log entries to write. The log entries must have
-      values for all required fields.  To improve throughput and to avoid
-      exceeding the [quota limit](/logging/quota-policy) for calls to
-      `entries.write`, use this field to write multiple log entries at once
-      rather than calling this method for each log entry.
-    labels: Optional. User-defined `key:value` items that are added to the
-      `labels` field of each log entry in `entries`, except when a log entry
-      specifies its own `key:value` item with the same key. Example: `{
-      "size": "large", "color":"red" }`
-    logName: Optional. A default log resource name for those log entries in
-      `entries` that do not specify their own `logName`.  Example: `"projects
-      /my-project/logs/syslog"`.  See LogEntry.
+    entries: Required. The log entries to write. Values supplied for the
+      fields `log_name`, `resource`, and `labels` in this `entries.write`
+      request are added to those log entries that do not provide their own
+      values for the fields.  To improve throughput and to avoid exceeding the
+      [quota limit](/logging/quota-policy) for calls to `entries.write`, you
+      should write multiple log entries at once rather than calling this
+      method for each individual log entry.
+    labels: Optional. Default labels that are added to the `labels` field of
+      all log entries in `entries`. If a log entry already has a label with
+      the same key as a label in this parameter, then the log entry's label is
+      not changed. See LogEntry.
+    logName: Optional. A default log resource name that is assigned to all log
+      entries in `entries` that do not specify a value for `log_name`.
+      Example: `"projects/my-project/logs/syslog"`.  See LogEntry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, the response status will be the
       error associated with one of the failed entries and include error
       details in the form of WriteLogEntriesPartialErrors.
-    resource: Optional. A default monitored resource for those log entries in
-      `entries` that do not specify their own `resource`.
+    resource: Optional. A default monitored resource object that is assigned
+      to all log entries in `entries` that do not specify a value for
+      `resource`. Example:      { "type": "gce_instance",       "labels": {
+      "zone": "us-central1-a", "instance_id": "00000000000000000000" }}  See
+      LogEntry.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. User-defined `key:value` items that are added to the `labels`
-    field of each log entry in `entries`, except when a log entry specifies
-    its own `key:value` item with the same key. Example: `{ "size": "large",
-    "color":"red" }`
+    """Optional. Default labels that are added to the `labels` field of all
+    log entries in `entries`. If a log entry already has a label with the same
+    key as a label in this parameter, then the log entry's label is not
+    changed. See LogEntry.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

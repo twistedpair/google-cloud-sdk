@@ -196,11 +196,13 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.is_hermetic = False
 
-    self.is_vm = parsed.runtime == 'vm' or self.is_hermetic
-    self.runtime = (parsed.GetEffectiveRuntime()
-                    if self.is_vm else parsed.runtime)
-    if self.is_vm:
+    if parsed.runtime == 'vm' or self.is_hermetic:
+      self.env = util.Environment.FLEXIBLE
+      self.runtime = parsed.GetEffectiveRuntime()
       self._UpdateManagedVMConfig()
+    else:
+      self.env = util.Environment.STANDARD
+      self.runtime = parsed.runtime
 
   @staticmethod
   def FromFile(file_path):
@@ -263,7 +265,7 @@ class ServiceYamlInfo(_YamlInfo):
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""
-    return self.is_vm
+    return self.env is util.Environment.FLEXIBLE
 
   def _UpdateManagedVMConfig(self):
     """Overwrites vm_settings for App Engine Flexible services.
@@ -278,7 +280,7 @@ class ServiceYamlInfo(_YamlInfo):
       AppConfigError: if the function was called for the service which is not an
         App Engine Flexible service.
     """
-    if not self.is_vm:
+    if self.env is not util.Environment.FLEXIBLE:
       raise AppConfigError('This is not an App Engine Flexible service. '
                            'The `vm` field is not set to `true`.')
     if not self.parsed.vm_settings:

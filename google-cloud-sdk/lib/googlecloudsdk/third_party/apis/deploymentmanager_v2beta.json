@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20160819",
+ "revision": "20160914",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -85,6 +85,24 @@
   }
  },
  "schemas": {
+  "AuditConfig": {
+   "id": "AuditConfig",
+   "type": "object",
+   "description": "Enables \"data access\" audit logging for a service and specifies a list of members that are log-exempted.",
+   "properties": {
+    "exemptedMembers": {
+     "type": "array",
+     "description": "Specifies the identities that are exempted from \"data access\" audit logging for the `service` specified above. Follows the same format of Binding.members.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "service": {
+     "type": "string",
+     "description": "Specifies a service that will be enabled for \"data access\" audit logging. For example, `resourcemanager`, `storage`, `compute`. `allServices` is a special value that covers all services."
+    }
+   }
+  },
   "BaseType": {
    "id": "BaseType",
    "type": "object",
@@ -124,6 +142,24 @@
     }
    }
   },
+  "Binding": {
+   "id": "Binding",
+   "type": "object",
+   "description": "Associates `members` with a `role`.",
+   "properties": {
+    "members": {
+     "type": "array",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "role": {
+     "type": "string",
+     "description": "Role that is assigned to `members`. For example, `roles/viewer`, `roles/editor`, or `roles/owner`."
+    }
+   }
+  },
   "CollectionOverride": {
    "id": "CollectionOverride",
    "type": "object",
@@ -139,14 +175,37 @@
     }
    }
   },
-  "CompositeType": {
-   "id": "CompositeType",
+  "Condition": {
+   "id": "Condition",
    "type": "object",
-   "description": "Contents of a composite type.",
+   "description": "A condition to be met.",
    "properties": {
-    "files": {
-     "$ref": "TemplateContents",
-     "description": "Files for the template type."
+    "iam": {
+     "type": "string",
+     "description": "Trusted attributes supplied by the IAM system."
+    },
+    "op": {
+     "type": "string",
+     "description": "An operator to apply the subject with."
+    },
+    "svc": {
+     "type": "string",
+     "description": "Trusted attributes discharged by the service."
+    },
+    "sys": {
+     "type": "string",
+     "description": "Trusted attributes supplied by any service that owns resources and uses the IAM system for access control."
+    },
+    "value": {
+     "type": "string",
+     "description": "DEPRECATED. Use 'values' instead."
+    },
+    "values": {
+     "type": "array",
+     "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -350,6 +409,32 @@
     }
    }
   },
+  "LogConfig": {
+   "id": "LogConfig",
+   "type": "object",
+   "description": "Specifies what kind of log the caller must write",
+   "properties": {
+    "counter": {
+     "$ref": "LogConfigCounterOptions",
+     "description": "Counter options."
+    }
+   }
+  },
+  "LogConfigCounterOptions": {
+   "id": "LogConfigCounterOptions",
+   "type": "object",
+   "description": "Options for counters",
+   "properties": {
+    "field": {
+     "type": "string",
+     "description": "The field value to attribute."
+    },
+    "metric": {
+     "type": "string",
+     "description": "The metric to update."
+    }
+   }
+  },
   "Manifest": {
    "id": "Manifest",
    "type": "object",
@@ -408,6 +493,17 @@
     "nextPageToken": {
      "type": "string",
      "description": "[Output Only] A token used to continue a truncated list request."
+    }
+   }
+  },
+  "OldCompositeType": {
+   "id": "OldCompositeType",
+   "type": "object",
+   "description": "Contents of a composite type.",
+   "properties": {
+    "files": {
+     "$ref": "TemplateContents",
+     "description": "Files for the template type."
     }
    }
   },
@@ -608,11 +704,57 @@
     }
    }
   },
+  "Policy": {
+   "id": "Policy",
+   "type": "object",
+   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\", ] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam).",
+   "properties": {
+    "auditConfigs": {
+     "type": "array",
+     "description": "Specifies audit logging configs for \"data access\". \"data access\": generally refers to data reads/writes and admin reads. \"admin activity\": generally refers to admin writes.\n\nNote: `AuditConfig` doesn't apply to \"admin activity\", which always enables audit logging.",
+     "items": {
+      "$ref": "AuditConfig"
+     }
+    },
+    "bindings": {
+     "type": "array",
+     "description": "Associates a list of `members` to a `role`. Multiple `bindings` must not be specified for the same `role`. `bindings` with no members will result in an error.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing policy is overwritten blindly.",
+     "format": "byte"
+    },
+    "iamOwned": {
+     "type": "boolean",
+     "description": ""
+    },
+    "rules": {
+     "type": "array",
+     "description": "If more than one rule is specified, the rules are applied in the following manner: - All matching LOG rules are always applied. - If any DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be applied if one or more matching rule requires logging. - Otherwise, if any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging will be applied if one or more matching rule requires logging. - Otherwise, if no rule applies, permission is denied.",
+     "items": {
+      "$ref": "Rule"
+     }
+    },
+    "version": {
+     "type": "integer",
+     "description": "Version of the `Policy`. The default version is 0.",
+     "format": "int32"
+    }
+   }
+  },
   "Resource": {
    "id": "Resource",
    "type": "object",
    "description": "",
    "properties": {
+    "accessControl": {
+     "$ref": "ResourceAccessControl",
+     "description": "The Access Control Policy set on this resource."
+    },
     "finalProperties": {
      "type": "string",
      "description": "[Output Only] The evaluated properties of the resource with references expanded. Returned as serialized YAML."
@@ -690,11 +832,26 @@
     }
    }
   },
+  "ResourceAccessControl": {
+   "id": "ResourceAccessControl",
+   "type": "object",
+   "description": "The access controls set on the resource.",
+   "properties": {
+    "gcpIamPolicy": {
+     "type": "string",
+     "description": "The GCP IAM Policy to set on the resource."
+    }
+   }
+  },
   "ResourceUpdate": {
    "id": "ResourceUpdate",
    "type": "object",
    "description": "",
    "properties": {
+    "accessControl": {
+     "$ref": "ResourceAccessControl",
+     "description": "The Access Control Policy to set on this resource after updating the resource itself."
+    },
     "error": {
      "type": "object",
      "description": "[Output Only] If errors are generated during update of the resource, this field will be populated.",
@@ -796,6 +953,56 @@
     }
    }
   },
+  "Rule": {
+   "id": "Rule",
+   "type": "object",
+   "description": "A rule to be applied in a Policy.",
+   "properties": {
+    "action": {
+     "type": "string",
+     "description": "Required"
+    },
+    "conditions": {
+     "type": "array",
+     "description": "Additional restrictions that must be met",
+     "items": {
+      "$ref": "Condition"
+     }
+    },
+    "description": {
+     "type": "string",
+     "description": "Human-readable description of the rule."
+    },
+    "ins": {
+     "type": "array",
+     "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "logConfigs": {
+     "type": "array",
+     "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+     "items": {
+      "$ref": "LogConfig"
+     }
+    },
+    "notIns": {
+     "type": "array",
+     "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "permissions": {
+     "type": "array",
+     "description": "A permission is a string of form '..' (e.g., 'storage.buckets.list'). A value of '*' matches all permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "TargetConfiguration": {
    "id": "TargetConfiguration",
    "type": "object",
@@ -840,6 +1047,32 @@
     }
    }
   },
+  "TestPermissionsRequest": {
+   "id": "TestPermissionsRequest",
+   "type": "object",
+   "properties": {
+    "permissions": {
+     "type": "array",
+     "description": "The set of permissions to check for the 'resource'. Permissions with wildcards (such as '*' or 'storage.*') are not allowed.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "TestPermissionsResponse": {
+   "id": "TestPermissionsResponse",
+   "type": "object",
+   "properties": {
+    "permissions": {
+     "type": "array",
+     "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "Type": {
    "id": "Type",
    "type": "object",
@@ -850,7 +1083,7 @@
      "description": "Base Type (configurable service) that backs this Type."
     },
     "composite": {
-     "$ref": "CompositeType",
+     "$ref": "OldCompositeType",
      "description": "If this is set, then the type is a composite type instead of a base type. Only one of the base and composite fields should be set."
     },
     "description": {
@@ -896,6 +1129,94 @@
     },
     "value": {
      "type": "string"
+    }
+   }
+  },
+  "TypeProvider": {
+   "id": "TypeProvider",
+   "type": "object",
+   "description": "A type provider that describes a service-backed Type.",
+   "properties": {
+    "collectionOverrides": {
+     "type": "array",
+     "description": "Allows resource handling overrides for specific collections",
+     "items": {
+      "$ref": "CollectionOverride"
+     }
+    },
+    "credential": {
+     "$ref": "Credential",
+     "description": "Credential used when interacting with this type."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional textual description of the resource; provided by the client when the resource is created."
+    },
+    "descriptorUrl": {
+     "type": "string",
+     "description": "Descriptor Url for the this type provider."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+     "format": "uint64"
+    },
+    "insertTime": {
+     "type": "string",
+     "description": "[Output Only] Timestamp when the type provider was created, in RFC3339 text format."
+    },
+    "labels": {
+     "type": "array",
+     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "items": {
+      "$ref": "TypeProviderLabelEntry"
+     }
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the type provider."
+    },
+    "operation": {
+     "$ref": "Operation",
+     "description": "[Output Only] The Operation that most recently ran, or is currently running, on this type provider."
+    },
+    "options": {
+     "$ref": "Options",
+     "description": "Options to apply when handling any resources in this service."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Self link for the type provider."
+    }
+   }
+  },
+  "TypeProviderLabelEntry": {
+   "id": "TypeProviderLabelEntry",
+   "type": "object",
+   "properties": {
+    "key": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
+    }
+   }
+  },
+  "TypeProvidersListResponse": {
+   "id": "TypeProvidersListResponse",
+   "type": "object",
+   "description": "A response that returns all Type Providers supported by Deployment Manager",
+   "properties": {
+    "nextPageToken": {
+     "type": "string",
+     "description": "A token used to continue a truncated list request."
+    },
+    "typeProviders": {
+     "type": "array",
+     "description": "[Output Only] A list of resource type providers supported by Deployment Manager.",
+     "items": {
+      "$ref": "TypeProvider"
+     }
     }
    }
   },
@@ -1038,6 +1359,39 @@
       "https://www.googleapis.com/auth/cloud-platform.read-only",
       "https://www.googleapis.com/auth/ndev.cloudman",
       "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "getIamPolicy": {
+     "id": "deploymentmanager.deployments.getIamPolicy",
+     "path": "{project}/global/deployments/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
      ]
     },
     "insert": {
@@ -1189,6 +1543,42 @@
       "https://www.googleapis.com/auth/ndev.cloudman"
      ]
     },
+    "setIamPolicy": {
+     "id": "deploymentmanager.deployments.setIamPolicy",
+     "path": "{project}/global/deployments/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "Policy"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
     "stop": {
      "id": "deploymentmanager.deployments.stop",
      "path": "{project}/global/deployments/{deployment}/stop",
@@ -1219,6 +1609,42 @@
      },
      "response": {
       "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "deploymentmanager.deployments.testIamPermissions",
+     "path": "{project}/global/deployments/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -1578,6 +2004,224 @@
       "https://www.googleapis.com/auth/cloud-platform.read-only",
       "https://www.googleapis.com/auth/ndev.cloudman",
       "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    }
+   }
+  },
+  "typeProviders": {
+   "methods": {
+    "delete": {
+     "id": "deploymentmanager.typeProviders.delete",
+     "path": "{project}/global/typeProviders/{typeProvider}",
+     "httpMethod": "DELETE",
+     "description": "Deletes a type provider.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "get": {
+     "id": "deploymentmanager.typeProviders.get",
+     "path": "{project}/global/typeProviders/{typeProvider}",
+     "httpMethod": "GET",
+     "description": "Gets information about a specific type provider.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider"
+     ],
+     "response": {
+      "$ref": "TypeProvider"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "insert": {
+     "id": "deploymentmanager.typeProviders.insert",
+     "path": "{project}/global/typeProviders",
+     "httpMethod": "POST",
+     "description": "Creates a type provider.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "TypeProvider"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "list": {
+     "id": "deploymentmanager.typeProviders.list",
+     "path": "{project}/global/typeProviders",
+     "httpMethod": "GET",
+     "description": "Lists all resource type providers for Deployment Manager.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter expression for filtering listed resources, in the form filter={expression}. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use filter=name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests.",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "maximum": "500",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "TypeProvidersListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.cloudman",
+      "https://www.googleapis.com/auth/ndev.cloudman.readonly"
+     ]
+    },
+    "patch": {
+     "id": "deploymentmanager.typeProviders.patch",
+     "path": "{project}/global/typeProviders/{typeProvider}",
+     "httpMethod": "PATCH",
+     "description": "Updates a type provider. This method supports patch semantics.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider"
+     ],
+     "request": {
+      "$ref": "TypeProvider"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
+     ]
+    },
+    "update": {
+     "id": "deploymentmanager.typeProviders.update",
+     "path": "{project}/global/typeProviders/{typeProvider}",
+     "httpMethod": "PUT",
+     "description": "Updates a type provider.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "The project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "typeProvider": {
+       "type": "string",
+       "description": "The name of the type provider for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "typeProvider"
+     ],
+     "request": {
+      "$ref": "TypeProvider"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.cloudman"
      ]
     }
    }

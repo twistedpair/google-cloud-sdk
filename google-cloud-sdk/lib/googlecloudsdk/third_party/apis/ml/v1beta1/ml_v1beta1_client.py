@@ -198,7 +198,7 @@ is a Version.
         request: (MlProjectsModelsVersionsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleProtobufEmpty) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -213,7 +213,7 @@ is a Version.
         relative_path=u'v1beta1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
         request_field='',
         request_type_name=u'MlProjectsModelsVersionsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
+        response_type_name=u'GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -577,11 +577,51 @@ to use different resource name schemes, such as `users/*/operations`.
     def Predict(self, request, global_params=None):
       """Performs prediction on the data in the request.
 
+Responses are very similar to requests. There are two top-level fields,
+each of which are JSON lists:
+
+ * `predictions`: The list of predictions for each of the inputs
+in the request.
+ * `error`: An error message if any instance produced an error.
+
+There is a one-to-one correspondence between the predictions and the
+instances in the request. Each individual prediction takes the same form
+as an instance in the request, namely JSON strings, numbers, booleans,
+or lists thereof. If your model has more than one output tensor, each
+prediction will be a JSON object with the keys being the output aliases
+in the graph.
+
+If there is an error processing any single instance, no predictions
+are returned and the `error` field is populated with the error message.
+
+Examples:
+
+<pre>
+# Predictions for three input instances, predictions are an integer label,
+
+# e.g., a digit in digit recognition
+
+{"predictions": [5, 4, 3]}
+
+# Predictions for two input instances in a two-class classification
+
+# problem. The labels are strings and scores are the probability of
+
+# "car" and "beach".
+
+{"predictions": [{"label": "beach", "scores": [0.1, 0.9]},
+                 {"label": "car", "scores": [0.75, 0.25]}]}
+
+# An error:
+
+ {"error": "Divide by zero"}
+</pre>
+
       Args:
         request: (MlProjectsPredictRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudMlV1beta1PredictResponse) The response message.
+        (GoogleApiHttpBody) The response message.
       """
       config = self.GetMethodConfig('Predict')
       return self._RunMethod(
@@ -596,6 +636,6 @@ to use different resource name schemes, such as `users/*/operations`.
         relative_path=u'v1beta1/projects/{projectsId}:predict',
         request_field=u'googleCloudMlV1beta1PredictRequest',
         request_type_name=u'MlProjectsPredictRequest',
-        response_type_name=u'GoogleCloudMlV1beta1PredictResponse',
+        response_type_name=u'GoogleApiHttpBody',
         supports_download=False,
     )

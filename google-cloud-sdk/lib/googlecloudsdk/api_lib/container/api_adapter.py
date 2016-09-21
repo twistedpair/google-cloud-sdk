@@ -69,8 +69,9 @@ def NewAPIAdapter():
   api_compute_client.check_response_func = CheckResponse
   compute_messages = core_apis.GetMessagesModule('compute', 'v1')
 
-  registry = cloud_resources.REGISTRY.CloneAndSwitchAPIs(
-      api_client, api_compute_client)
+  registry = cloud_resources.REGISTRY.Clone()
+  registry.RegisterApiByName('container', 'v1')
+  registry.RegisterApiByName('compute', 'v1')
 
   adapter = V1Adapter
 

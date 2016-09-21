@@ -43,7 +43,7 @@ def CreateNetworkInterfaceMessage(
         subnetwork=subnet_ref.SelfLink())
   else:
     network_ref = scope_prompter.CreateGlobalReference(
-        network, resource_type='networks')
+        network or constants.DEFAULT_NETWORK, resource_type='networks')
     network_interface = messages.NetworkInterface(
         network=network_ref.SelfLink())
 

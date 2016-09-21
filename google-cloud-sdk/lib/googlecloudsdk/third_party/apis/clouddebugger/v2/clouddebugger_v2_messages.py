@@ -312,8 +312,8 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
       by the caller.
     includeInactive: When set to `true`, the response includes active and
       inactive breakpoints. Otherwise, it includes only active breakpoints.
-    stripResults: When set to `true`, the response breakpoints are stripped of
-      the results fields: `stack_frames`, `evaluated_expressions` and
+    stripResults: This field is deprecated. The following fields are always
+      stripped out of the result: `stack_frames`, `evaluated_expressions` and
       `variable_table`.
     waitToken: A wait token that, if specified, blocks the call until the
       breakpoints list has changed, or a server selected timeout has expired.
@@ -586,8 +586,10 @@ class ListBreakpointsResponse(_messages.Message):
   """Response for listing breakpoints.
 
   Fields:
-    breakpoints: List of all breakpoints with complete state. The fields `id`
-      and `location` are guaranteed to be set on each breakpoint.
+    breakpoints: List of breakpoints matching the request. The fields `id` and
+      `location` are guaranteed to be set on each breakpoint. The fields:
+      `stack_frames`, `evaluated_expressions` and `variable_table` are cleared
+      on each breakpoint regardless of it's status.
     nextWaitToken: A wait token that can be used in the next call to `list`
       (REST) or `ListBreakpoints` (RPC) to block until the list of breakpoints
       has changes.

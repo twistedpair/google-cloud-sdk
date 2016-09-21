@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
+import argparse
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
@@ -380,7 +382,8 @@ def ValidateDiskBootFlags(args):
           'new boot disk.')
 
 
-def AddAddressArgs(parser, instances=True):
+def AddAddressArgs(parser, instances=True,
+                   multiple_network_interface_cards=False):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   addresses.add_argument(
@@ -403,6 +406,21 @@ def AddAddressArgs(parser, instances=True):
         Assigns the given external IP address to the instance that is created.
         This option can only be used when creating a single instance.
         """
+  if multiple_network_interface_cards:
+    parser.add_argument(
+        '--network-interface',
+        type=arg_parsers.ArgDict(
+            spec={
+                'network': str,
+                'subnet': str,
+                'private-network-ip': str,
+                'address': str,
+            },
+        ),
+        action='append',  # pylint:disable=protected-access
+        help=argparse.SUPPRESS,
+        metavar='PROPERTY=VALUE',
+    )
 
 
 def AddMachineTypeArgs(parser, required=False):
@@ -438,7 +456,6 @@ def AddNetworkArgs(parser):
 
   network = netparser.add_argument(
       '--network',
-      default=constants.DEFAULT_NETWORK,
       help='Specifies the network that the instances will be part of.')
 
   network.detailed_help = """\
@@ -760,3 +777,17 @@ def ValidateLocalSsdFlags(args):
           'Legal values are [{ok}].'
           .format(given=interface,
                   ok=', '.join(LOCAL_SSD_INTERFACES)))
+
+
+def ValidateAddressFlags(args):
+  conflicting_args = [
+      'address', 'network', 'private_network_ip', 'subnet']
+  conflicting_args_present = [
+      arg for arg in conflicting_args if getattr(args, arg)]
+  if (hasattr(args, 'network_interface') and args.network_interface is not None
+      and conflicting_args_present):
+    conflicting_args = ['--{0}'.format(arg.replace('_', '-'))
+                        for arg in conflicting_args_present]
+    raise exceptions.ConflictingArgumentsException(
+        '--network-interface',
+        'all of the following: ' + ', '.join(conflicting_args))

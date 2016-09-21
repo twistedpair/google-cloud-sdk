@@ -608,7 +608,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the BackendBucket resource. This method supports patch semantics.
+      """Updates the specified BackendBucket resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendBucketsPatchRequest) input message
@@ -686,7 +686,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the BackendBucket resource.
+      """Updates the specified BackendBucket resource with the data included in the request.
 
       Args:
         request: (ComputeBackendBucketsUpdateRequest) input message
@@ -878,7 +878,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -930,7 +930,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -5418,7 +5418,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports patch semantics.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -5470,7 +5470,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Update the entire content of the regional BackendService resource. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
+      """Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeRegionBackendServicesUpdateRequest) input message
@@ -6632,7 +6632,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the Router resource. This method supports patch semantics.
+      """Updates the specified Router resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -6710,7 +6710,7 @@ If you increase the size of the instance group, the group creates new instances 
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the Router resource.
+      """Updates the specified Router resource with the data included in the request.
 
       Args:
         request: (ComputeRoutersUpdateRequest) input message
@@ -7372,6 +7372,32 @@ For more information, see Deleting snaphots.
         request_field=u'policy',
         request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetPrivateIpGoogleAccess(self, request, global_params=None):
+      """Set whether VMs in this subnet can access Google services without assigning external IP addresses through Cloudpath.
+
+      Args:
+        request: (ComputeSubnetworksSetPrivateIpGoogleAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetPrivateIpGoogleAccess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetPrivateIpGoogleAccess.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.subnetworks.setPrivateIpGoogleAccess',
+        ordered_params=[u'project', u'region', u'subnetwork'],
+        path_params=[u'project', u'region', u'subnetwork'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}/setPrivateIpGoogleAccess',
+        request_field=u'subnetworksSetPrivateIpGoogleAccessRequest',
+        request_type_name=u'ComputeSubnetworksSetPrivateIpGoogleAccessRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -8964,7 +8990,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the entire content of the UrlMap resource. This method supports patch semantics.
+      """Updates the specified UrlMap resource with the data included in the request. This method supports patch semantics.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -9016,7 +9042,7 @@ For more information, see Deleting snaphots.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the entire content of the UrlMap resource.
+      """Updates the specified UrlMap resource with the data included in the request.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message

@@ -106,19 +106,16 @@ class BuildOptions(_messages.Message):
   """Optional arguments to enable specific features of builds.
 
   Enums:
-    RequestedVerifyOptionValueValuesEnum: Options for a verifiable build with
-      details uploaded to the Analysis API.
+    RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
 
   Fields:
-    requestedVerifyOption: Options for a verifiable build with details
-      uploaded to the Analysis API.
+    requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
   """
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
-    """Options for a verifiable build with details uploaded to the Analysis
-    API.
+    """Requested verifiability options.
 
     Values:
       NOT_VERIFIED: Not a verifiable build. (default)
@@ -175,6 +172,10 @@ class BuildTrigger(_messages.Message):
   Fields:
     build: Contents of the build template.
     createTime: Time when the trigger was created.  @OutputOnly
+    description: Human-readable description of this trigger.
+    disabled: If true, the trigger will never result in a build.
+    filename: Path, from the source root, to a file whose contents is used for
+      the template.
     id: Unique identifier of the trigger.  @OutputOnly
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
@@ -184,8 +185,11 @@ class BuildTrigger(_messages.Message):
 
   build = _messages.MessageField('Build', 1)
   createTime = _messages.StringField(2)
-  id = _messages.StringField(3)
-  triggerTemplate = _messages.MessageField('RepoSource', 4)
+  description = _messages.StringField(3)
+  disabled = _messages.BooleanField(4)
+  filename = _messages.StringField(5)
+  id = _messages.StringField(6)
+  triggerTemplate = _messages.MessageField('RepoSource', 7)
 
 
 class BuiltImage(_messages.Message):
@@ -274,14 +278,16 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   """A CloudbuildProjectsBuildsListRequest object.
 
   Fields:
+    filter: The raw filter text to constrain the results.
     pageSize: Number of results to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
     projectId: ID of the project.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  projectId = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
 
 
 class CloudbuildProjectsTriggersCreateRequest(_messages.Message):

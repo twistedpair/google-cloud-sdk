@@ -16,6 +16,7 @@
 Mostly created to selectively enable Cloud Endpoints in the beta/preview release
 tracks.
 """
+import argparse
 import os
 
 from googlecloudsdk.api_lib.app import appengine_api_client
@@ -31,14 +32,17 @@ from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.app import flags
 from googlecloudsdk.command_lib.app import output_helpers
+from googlecloudsdk.command_lib.app import staging
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 
 
 class VersionPromotionError(core_exceptions.Error):
@@ -60,19 +64,27 @@ class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
   No deployment details (e.g. targets for a specific deployment).
+
+  Attributes:
+    promote: True if the deployed version should recieve all traffic.
+    stop_previous_version: Stop previous version
+    enable_endpoints: Enable Cloud Endpoints for the deployed app.
+    app_create: Offer to create an app if current GCP project is appless.
   """
 
-  def __init__(self, promote, stop_previous_version, enable_endpoints):
+  def __init__(self, promote, stop_previous_version, enable_endpoints,
+               app_create):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
+    self.app_create = app_create
 
   @classmethod
-  def FromProperties(cls, enable_endpoints):
+  def FromProperties(cls, enable_endpoints, app_create):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    return cls(promote, stop_previous_version, enable_endpoints)
+    return cls(promote, stop_previous_version, enable_endpoints, app_create)
 
 
 def _UploadFiles(service, code_bucket_ref):
@@ -106,10 +118,93 @@ def _UploadFiles(service, code_bucket_ref):
 
 
 class ServiceDeployer(object):
+  """Coordinator (reusable) for deployment of one service at a time.
 
-  def __init__(self, api_client, deploy_options):
+  Attributes:
+    api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
+        Admin API client.
+    stager: command_lib.app.staging.Stager, the object used to potentially stage
+        applications with matching runtime/environment combinations.
+    deploy_options: DeployOptions, the options to use for services deployed by
+        this ServiceDeployer.
+  """
+
+  def __init__(self, api_client, stager, deploy_options):
     self.api_client = api_client
+    self.stager = stager
     self.deploy_options = deploy_options
+
+  def _PossiblyConfigureEndpoints(self, service, new_version):
+    """Configures endpoints for this service (if enabled).
+
+    If the app has enabled Endpoints API Management features, pass control to
+    the cloud_endpoints handler.
+
+    The cloud_endpoints handler calls the Service Management APIs and creates an
+    endpoints/service.json file on disk which will need to be bundled into the
+    app Docker image.
+
+    Args:
+      service: yaml_parsing.ServiceYamlInfo, service configuration to be
+        deployed
+      new_version: version_util.Version describing where to deploy the service
+
+    Returns:
+      EndpointsServiceInfo, or None if endpoints were not created.
+    """
+    if self.deploy_options.enable_endpoints:
+      return cloud_endpoints.ProcessEndpointsService(service,
+                                                     new_version.project)
+    return None
+
+  def _PossiblyBuildAndPush(self, new_version, service, image, code_bucket_ref):
+    """Builds and Pushes the Docker image if necessary for this service.
+
+    Args:
+      new_version: version_util.Version describing where to deploy the service
+      service: yaml_parsing.ServiceYamlInfo, service configuration to be
+        deployed
+      image: str or None, the URL for the Docker image to be deployed (if image
+        already exists).
+      code_bucket_ref: cloud_storage.BucketReference where the service's files
+        have been uploaded
+
+    Returns:
+      str, The name of the pushed or given container image or None if the
+        service does not require an image.
+    """
+    if service.RequiresImage():
+      log.warning('Deployment of App Engine Flexible Environment apps is '
+                  'currently in Beta')
+      if not image:
+        image = deploy_command_util.BuildAndPushDockerImage(
+            new_version.project, service, new_version.id, code_bucket_ref)
+    else:
+      image = None
+    return image
+
+  def _PossiblyPromote(self, all_services, new_version):
+    """Promotes the new version to default (if specified by the user).
+
+    Args:
+      all_services: dict of service ID to service_util.Service objects
+        corresponding to all pre-existing services (used to determine how to
+        promote this version to receive all traffic, if applicable).
+      new_version: version_util.Version describing where to deploy the service
+
+    Raises:
+      VersionPromotionError: if the version could not successfully promoted
+    """
+    if self.deploy_options.promote:
+      try:
+        version_util.PromoteVersion(
+            all_services, new_version, self.api_client,
+            self.deploy_options.stop_previous_version)
+      except calliope_exceptions.HttpException as err:
+        raise VersionPromotionError(err)
+    elif self.deploy_options.stop_previous_version:
+      log.info('Not stopping previous version because new version was '
+               'not promoted.')
 
   def Deploy(self, service, new_version, code_bucket_ref, image, all_services):
     """Deploy the given service.
@@ -138,44 +233,26 @@ class ServiceDeployer(object):
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
 
-    # If the app has enabled Endpoints API Management features, pass
-    # control to the cloud_endpoints handler.
-    # The cloud_endpoints handler calls the Service Management APIs and
-    # creates an endpoints/service.json file on disk which will need to
-    # be bundled into the app Docker image.
-    endpoints_info = None
-    if self.deploy_options.enable_endpoints:
-      endpoints_info = cloud_endpoints.ProcessEndpointsService(
-          service, new_version.project)
+    with self.stager.Stage(service.runtime, service.env) as app_yaml:
+      if app_yaml:
+        app_dir = os.path.dirname(app_yaml)
+      else:
+        app_dir = os.getcwd()
+      with files.ChDir(app_dir):
+        endpoints_info = self._PossiblyConfigureEndpoints(service, new_version)
+        image = self._PossiblyBuildAndPush(new_version, service, image,
+                                           code_bucket_ref)
+        manifest = _UploadFiles(service, code_bucket_ref)
 
-    # Build and Push the Docker image if necessary for this service.
-    if service.RequiresImage():
-      log.warning('Deployment of App Engine Flexible Environment apps is '
-                  'currently in Beta')
-      if not image:
-        image = deploy_command_util.BuildAndPushDockerImage(
-            new_version.project, service, new_version.id, code_bucket_ref)
-    else:
-      image = None
-
-    manifest = _UploadFiles(service, code_bucket_ref)
-
-    # Actually create the new version of the service.
-    message = 'Updating service [{service}]'.format(service=new_version.service)
-    with console_io.ProgressTracker(message):
-      self.api_client.DeployService(new_version.service, new_version.id,
-                                    service, manifest, image, endpoints_info)
-      metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-      if self.deploy_options.promote:
-        try:
-          version_util.PromoteVersion(
-              all_services, new_version, self.api_client,
-              self.deploy_options.stop_previous_version)
-        except calliope_exceptions.HttpException as err:
-          raise VersionPromotionError(err)
-      elif self.deploy_options.stop_previous_version:
-        log.info('Not stopping previous version because new version was '
-                 'not promoted.')
+        # Actually create the new version of the service.
+        message = 'Updating service [{service}]'.format(
+            service=new_version.service)
+        with console_io.ProgressTracker(message):
+          self.api_client.DeployService(new_version.service, new_version.id,
+                                        service, manifest, image,
+                                        endpoints_info)
+          metrics.CustomTimedEvent(metric_names.DEPLOY_API)
+          self._PossiblyPromote(all_services, new_version)
 
 
 def ArgsDeploy(parser):
@@ -227,14 +304,19 @@ def ArgsDeploy(parser):
       'True by default. To change the default behavior for your current '
       'environment, run:\n\n'
       '    $ gcloud config set app/promote_by_default false')
+  parser.add_argument(
+      '--skip-staging',
+      action='store_true',
+      default=False,
+      help=argparse.SUPPRESS)
 
 
-def RunDeploy(unused_self, args, enable_endpoints=False):
+def RunDeploy(unused_self, args, enable_endpoints=False, app_create=False):
   """Perform a deployment based on the given args."""
   version_id = args.version or util.GenerateVersionId()
   flags.ValidateVersion(version_id)
   project = properties.VALUES.core.project.Get(required=True)
-  deploy_options = DeployOptions.FromProperties(enable_endpoints)
+  deploy_options = DeployOptions.FromProperties(enable_endpoints, app_create)
 
   # Parse existing app.yamls or try to generate a new one if the directory is
   # empty.
@@ -265,12 +347,7 @@ def RunDeploy(unused_self, args, enable_endpoints=False):
   ac_client = appengine_client.AppengineClient(
       args.server, args.ignore_bad_certs)
 
-  app = None
-  if services:
-    try:
-      app = api_client.GetApplication()
-    except api_lib_exceptions.NotFoundError:
-      raise exceptions.MissingApplicationError(project)
+  app = _PossiblyCreateApp(api_client, project, deploy_options.app_create)
 
   # Tell the user what is going to happen, and ask them to confirm.
   deployed_urls = output_helpers.DisplayProposedDeployment(
@@ -293,7 +370,8 @@ def RunDeploy(unused_self, args, enable_endpoints=False):
     all_services = {}
 
   new_versions = []
-  deployer = ServiceDeployer(api_client, deploy_options)
+  stager = staging.GetNoopStager() if args.skip_staging else staging.GetStager()
+  deployer = ServiceDeployer(api_client, stager, deploy_options)
   for (name, service) in services.iteritems():
     new_version = version_util.Version(project, name, version_id)
     deployer.Deploy(service, new_version, code_bucket_ref, args.image_url,
@@ -358,3 +436,38 @@ def PrintPostDeployHints(new_versions, updated_configs):
   log.status.Print(
       '\nTo view your application in the web browser run:\n'
       '  $ gcloud app browse' + service_hint)
+
+
+def _PossiblyCreateApp(api_client, project, app_create):
+  """Returns an app resource, and creates it if the stars are aligned.
+
+  App creation happens only if the current project is app-less,
+  app_create is True, we are running in interactive mode and the user
+  explicitly wants to.
+
+  Args:
+    api_client: Admin API client.
+    project: The GCP project/app id.
+    app_create: True if interactive app creation should be allowed.
+
+  Returns:
+    An app object (never returns None).
+
+  Raises:
+    MissingApplicationError: If an app does not exist and cannot be created.
+  """
+  try:
+    return api_client.GetApplication()
+  except api_lib_exceptions.NotFoundError:
+    # Invariant: GCP Project does exist but (singleton) GAE app is not yet
+    # created. Offer to create one if the following conditions are true:
+    # 1. `app_create` is True (currently `beta` only)
+    # 2. We are currently running in interactive mode
+    msg = output_helpers.CREATE_APP_PROMPT.format(project=project)
+    if (app_create and console_io.CanPrompt() and
+        console_io.PromptContinue(message=msg)):
+      # Equivalent to running `gcloud beta app create`
+      create_util.CreateAppInteractively(api_client, project)
+      # App resource must be fetched again
+      return api_client.GetApplication()
+    raise exceptions.MissingApplicationError(project)

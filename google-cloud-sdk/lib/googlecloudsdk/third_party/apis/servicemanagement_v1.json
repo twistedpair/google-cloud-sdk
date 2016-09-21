@@ -182,7 +182,7 @@
     },
     "Service": {
       "id": "Service",
-      "description": "`Service` is the root object of the configuration schema. It\ndescribes basic information like the name of the service and the\nexposed API interfaces, and delegates other aspects to configuration\nsub-sections.\n\nExample:\n\n    type: google.api.Service\n    config_version: 1\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.Calendar\n    backend:\n      rules:\n      - selector: \"*\"\n        address: calendar.example.com",
+      "description": "`Service` is the root object of Google service configuration schema. It\ndescribes basic information about a service, such as the name and the\ntitle, and delegates other aspects to sub-sections. Each sub-section is\neither a proto message or a repeated proto message that configures a\nspecific aspect, such as auth. See each proto message definition for details.\n\nExample:\n\n    type: google.api.Service\n    config_version: 3\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.v3.Calendar\n    backend:\n      rules:\n      - selector: \"google.calendar.v3.*\"\n        address: calendar.example.com",
       "type": "object",
       "properties": {
         "configVersion": {
@@ -292,15 +292,15 @@
           }
         },
         "logging": {
-          "description": "Logging configuration of the service.",
+          "description": "Logging configuration.",
           "$ref": "Logging"
         },
         "monitoring": {
-          "description": "Monitoring configuration of the service.",
+          "description": "Monitoring configuration.",
           "$ref": "Monitoring"
         },
         "systemParameters": {
-          "description": "Configuration for system parameters.",
+          "description": "System parameter configuration.",
           "$ref": "SystemParameters"
         },
         "systemTypes": {
@@ -1245,7 +1245,7 @@
           }
         },
         "metricKind": {
-          "description": "Whether the metric records instantaneous values, changes to a value, etc.",
+          "description": "Whether the metric records instantaneous values, changes to a value, etc.\nSome combinations of `metric_kind` and `value_type` might not be supported.",
           "enumDescriptions": [
             "Do not use this default value.",
             "An instantaneous measurement of a value.",
@@ -1261,7 +1261,7 @@
           ]
         },
         "valueType": {
-          "description": "Whether the measurement is an integer, a floating-point number, etc.",
+          "description": "Whether the measurement is an integer, a floating-point number, etc.\nSome combinations of `metric_kind` and `value_type` might not be supported.",
           "enumDescriptions": [
             "Do not use this default value.",
             "The value is a boolean.\nThis value type can be used only if the metric kind is `GAUGE`.",
@@ -1586,14 +1586,14 @@
       "type": "object",
       "properties": {
         "consumerOverrides": {
-          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for quotas defined within quota groups,\nwhere GROUP_NAME is the google.api.QuotaGroup.name field and\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig.  For example: 'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for quotas defined without quota groups, where LIMIT_NAME\nis the google.api.QuotaLimit.name field from the service config. For\nexample: 'borrowedCountPerOrganization'.",
+          "description": "Quota overrides set by the consumer. Consumer overrides will only have\nan effect up to the max_limit specified in the service config, or the\nthe producer override, if one exists.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for group-based quotas, where GROUP_NAME is\nthe google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config. For example:\n'borrowedCountPerOrganization'.\n\n- '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig and <REGION_OR_ZONE> is the name of the region or zone for which\nthe override is defined. For example:\n'borrowedCountPerOrganization:us-central1'.\nOnly metric-based quotas can have per-region overrides. Per-region override\ntakes effect if both per-region override and global override are defined.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
           }
         },
         "producerOverrides": {
-          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for quotas defined within quota groups,\nwhere GROUP_NAME is the google.api.QuotaGroup.name field and\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig.  For example: 'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for quotas defined without quota groups, where LIMIT_NAME\nis the google.api.QuotaLimit.name field from the service config. For\nexample: 'borrowedCountPerOrganization'.",
+          "description": "Quota overrides set by the producer. Note that if a consumer override is\nalso specified, then the minimum of the two will be used. This allows\nconsumers to cap their usage voluntarily.\n\nThe key for this map is one of the following:\n\n- '<GROUP_NAME>\/<LIMIT_NAME>' for group-based quotas, where GROUP_NAME is\nthe google.api.QuotaGroup.name field and LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config.  For example:\n'ReadGroup\/ProjectDaily'.\n\n- '<LIMIT_NAME>' for metric-based quotas, where LIMIT_NAME is the\ngoogle.api.QuotaLimit.name field from the service config. For example:\n'borrowedCountPerOrganization'.\n\n- '<LIMIT_NAME>:<REGION_OR_ZONE>' for per-region quota overrides, where\nLIMIT_NAME is the google.api.QuotaLimit.name field from the service\nconfig and <REGION_OR_ZONE> is the name of the region or zone for which\nthe override is defined. For example:\n'borrowedCountPerOrganization:us-central1'.\nOnly metric-based quotas can have per-region overrides. Per-region override\ntakes effect if both per-region override and global override are defined.",
           "type": "object",
           "additionalProperties": {
             "$ref": "QuotaLimitOverride"
@@ -1614,14 +1614,14 @@
           }
         },
         "effectiveQuotaGroups": {
-          "description": "Use this field for quota limits defined under quota groups.\nCombines service quota configuration and project-specific settings, as\na map from quota group name to the effective quota information for that\ngroup.\nOutput-only.",
+          "description": "Use this field for group-based quota limits.\nCombines service quota configuration and project-specific settings, as\na map from quota group name to the effective quota information for that\ngroup.\nOutput-only.",
           "type": "array",
           "items": {
             "$ref": "EffectiveQuotaGroup"
           }
         },
         "effectiveQuotaForMetrics": {
-          "description": "Use this field for quota limits defined without quota groups, i.e., new\nstyle quota configuration.\nCombines service quota configuration and project-specific settings, as\na map from metric name to the effective quota information for quota limits\non that metric.\nOutput-only",
+          "description": "Use this field for metric-based quota limits.\nCombines service quota configuration and project-specific settings, as\na map from metric name to the effective quota information for quota limits\non that metric.\nOutput-only",
           "type": "array",
           "items": {
             "$ref": "EffectiveQuotasForMetric"

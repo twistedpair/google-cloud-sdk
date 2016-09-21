@@ -441,7 +441,7 @@
           }
         },
         "requestedVerifyOption": {
-          "description": "Options for a verifiable build with details uploaded to the Analysis API.",
+          "description": "Requested verifiability options.",
           "enumDescriptions": [
             "Not a verifiable build. (default)",
             "Verified build."
@@ -550,6 +550,10 @@
           "description": "Unique identifier of the trigger.\n\n@OutputOnly",
           "type": "string"
         },
+        "description": {
+          "description": "Human-readable description of this trigger.",
+          "type": "string"
+        },
         "triggerTemplate": {
           "description": "Template describing the types of source changes to trigger a build.\n\nBranch and tag names in trigger templates are interpreted as regular\nexpressions. Any branch or tag change that matches that regular expression\nwill trigger a build.",
           "$ref": "RepoSource"
@@ -558,10 +562,18 @@
           "description": "Contents of the build template.",
           "$ref": "Build"
         },
+        "filename": {
+          "description": "Path, from the source root, to a file whose contents is used for the\ntemplate.",
+          "type": "string"
+        },
         "createTime": {
           "description": "Time when the trigger was created.\n\n@OutputOnly",
           "type": "string",
           "format": "google-datetime"
+        },
+        "disabled": {
+          "description": "If true, the trigger will never result in a build.",
+          "type": "boolean"
         }
       }
     },
@@ -700,6 +712,11 @@
                 },
                 "pageToken": {
                   "description": "Token to provide to skip to a particular spot in the list.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The raw filter text to constrain the results.",
                   "location": "query",
                   "type": "string"
                 }

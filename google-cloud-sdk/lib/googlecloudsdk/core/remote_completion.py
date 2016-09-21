@@ -517,7 +517,7 @@ class RemoteCompletion(object):
     elif list_command_updates_cache:
       command.append('--format=none')
     else:
-      command.append('--format=none[disable]')
+      command.append('--format=disable')
     with tracker:
       items = cli().Execute(command, call_arg_complete=False)
     if parse_output:

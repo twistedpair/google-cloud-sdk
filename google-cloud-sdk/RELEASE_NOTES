@@ -2,6 +2,42 @@
 
 Copyright 2014-2016 Google Inc. All rights reserved.
 
+## 127.0.0 (2016/09/21)
+
+### Google BigQuery
+
+*  New load/query option in BigQuery client to support schema update within a
+   load/query job.
+*  New query option in BigQuery client to specify query parameters in
+   Standard SQL.
+
+### Google Cloud Dataproc
+
+* `gcloud dataproc clusters create` flag `--preemptible-worker-boot-disk-size`
+   can be used to specify future preemptible VM boot disk size.
+
+### Google Container Engine
+
+*  Update kubectl to version 1.3.7.
+
+### Google Cloud ML
+
+*  New `gcloud beta ml predict` command to do online prediction.
+*  New `gcloud beta ml jobs submit prediction` command to submit batch
+   prediction job.
+
+### Google Cloud SQL
+
+*  New arguments to beta sql instances create/patch commands for Cloud SQL
+   Second Generation instances:
+   * `--storage-size` Sets storage size in GB.
+   * `--maintenance-release-channel` Sets production or preview channel for
+     maintenance window.
+   * `--maintenance-window-day` Sets day of week for maintenance window.
+   * `--maintenance-window-hour` Sets hour of day for maintenance window.
+   * `--maintenance-window-any` (patch only) Clears maintenance window setting.
+
+
 
 ## 126.0.0 (2016/09/14)
 
